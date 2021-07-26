@@ -538,7 +538,7 @@ TEST_F(PrerenderHostRegistryTest,
       navigation_request->IsCommitDeferringConditionDeferredForTesting());
 
   // The primary page should still be the original page.
-  EXPECT_EQ(web_contents->GetURL(), kOriginalUrl);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kOriginalUrl);
 
   // Cancel the prerender while the CommitDeferringCondition is running.
   registry->CancelHost(prerender_frame_tree_node_id,
@@ -604,7 +604,7 @@ TEST_F(PrerenderHostRegistryTest,
       navigation_request->IsCommitDeferringConditionDeferredForTesting());
 
   // The primary page should still be the original page.
-  EXPECT_EQ(web_contents->GetURL(), kOriginalUrl);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kOriginalUrl);
 
   // Cancel the prerender while the CommitDeferringCondition is running.
   registry->CancelHost(prerender_frame_tree_node_id,

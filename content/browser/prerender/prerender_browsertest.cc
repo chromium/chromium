@@ -263,7 +263,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
 
     // Activate the prerendered page.
     NavigatePrimaryPage(prerender_url);
-    EXPECT_EQ(web_contents()->GetURL(), prerender_url);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerender_url);
 
     // The activated page should no longer be in the prerendering state.
     RenderFrameHostImpl* navigated_render_frame_host = current_frame_host();
@@ -301,7 +301,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
   void TestNavigationHistory(const GURL& expected_current_url,
                              int expected_history_index,
                              int expected_history_length) {
-    ASSERT_EQ(expected_current_url, web_contents()->GetURL());
+    ASSERT_EQ(expected_current_url, web_contents()->GetLastCommittedURL());
     EXPECT_EQ(expected_history_index,
               web_contents()->GetController().GetCurrentEntryIndex());
     EXPECT_EQ(expected_history_length,
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateOnLinkClick) {
   )";
   EXPECT_TRUE(ExecJs(web_contents(), kLinkClickScript));
   nav_observer.WaitForNavigationFinished();
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_TRUE(prerender_observer.was_activated());
 }
 
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ResponseHeaders) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl` and check if `X-Foo` header is
   // observed.
@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderChain) {
 
   // Activate the prerendering page to grant the deferred prerender requests.
   NavigatePrimaryPage(kPrerenderChain1);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderChain1);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderChain1);
 
   // The prerendered page was activated. The prerender requests should be
   // processed.
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CloseOnPrerendering) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -1049,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Activate.
   NavigatePrimaryPage(kPrerenderingUrl);
-  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   ASSERT_EQ("LOADED",
             EvalJs(prerender_frame_host, JsReplace("wait_iframe_async($1)",
                                                    kCrossOriginSubframeUrl)));
@@ -1134,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Activate.
   NavigatePrimaryPage(kPrerenderingUrl);
-  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   ASSERT_EQ("LOADED", EvalJs(prerender_frame_host,
                              JsReplace("wait_iframe_async($1)",
                                        kServerRedirectSubframeUrl)));
@@ -1276,7 +1276,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
   // exists.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
 
   // Activation shouldn't happen, so the prerender host should not be consumed.
@@ -1313,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivatePageWithInnerContents) {
   ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, kInnerContentsUrl));
 
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_EQ(GetRequestCount(kInnerContentsUrl), 1);
 }
@@ -1352,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // wait until the prerendered page has finished navigating.
   {
     ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-    ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+    ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
     AddPrerender(kPrerenderingUrl);
     ASSERT_NE(GetHostForUrl(kPrerenderingUrl),
               RenderFrameHost::kNoFrameTreeNodeId);
@@ -1384,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
 
   // Navigate to the initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   NavigationThrottle* throttle = nullptr;
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivationDoesntRunThrottles) {
   {
     NavigatePrimaryPage(kPrerenderingUrl);
     prerender_observer.WaitForActivation();
-    EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
     EXPECT_EQ(throttle, nullptr);
   }
 }
@@ -1453,7 +1453,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SuppressOpenURL) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -1614,7 +1614,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start a prerender.
   const int host_id = AddPrerender(kPrerenderingUrl);
@@ -1666,7 +1666,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
 
   // Activate the prerendered page.
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // Wait until the deferred interface is granted on all frames.
   run_loop.Run();
@@ -1688,7 +1688,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start a prerender.
   const int host_id = AddPrerender(kPrerenderingUrl);
@@ -1729,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start a prerender.
   const int host_id = AddPrerender(kPrerenderingUrl);
@@ -1775,7 +1775,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
@@ -1949,7 +1949,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
     // The URL should still point to the kInitialUrl until the activation is
     // completed.
-    EXPECT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
     // Make sure that the prerender was not activated yet.
     EXPECT_FALSE(prerender_observer.was_activated());
@@ -1962,7 +1962,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   {
     EXPECT_TRUE(prerender_observer.was_activated());
     EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-    EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   }
 
   // "Navigation.Prerender.ActivationCommitDeferTime" histogram should be
@@ -2151,7 +2151,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderDocumentHostUserData) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start a prerender.
   const int host_id = AddPrerender(kPrerenderingUrl);
@@ -2167,7 +2167,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderDocumentHostUserData) {
 
   // Activate the prerendered page.
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // The prerender host should be consumed.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
@@ -2237,7 +2237,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorAfterNavigation) {
   // Activate the prerendered page to dispatch the prerenderingchange event and
   // run the Gamepad API in the event.
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   // Wait for the completion of the prerenderingchange event to make sure the
   // API is called.
   EXPECT_EQ(true, EvalJs(shell()->web_contents(), "prerenderingChanged"));
@@ -2450,7 +2450,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -2499,7 +2499,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, InputRoutedToPrimaryFrameTree) {
       std::make_unique<SyntheticTapGesture>(params), base::DoNothing());
   navigation_observer.Wait();
 
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VisibilityWhilePrerendering) {
@@ -2508,7 +2508,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VisibilityWhilePrerendering) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -2563,7 +2563,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TitleWhilePrerendering) {
   EXPECT_EQ(shell()->web_contents()->GetTitle(), kInitialTitle);
 
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   // The title should be updated with the activated page.
   EXPECT_EQ(shell()->web_contents()->GetTitle(), kPrerenderingTitle);
 }
@@ -2577,7 +2577,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -2655,7 +2655,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -2741,7 +2741,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     NavigationRequest* request =
         web_contents_impl()->GetFrameTree()->root()->navigation_request();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
-    EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
 
   // Make a navigation in the prerendered page. This navigation should
@@ -2754,7 +2754,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // PrerenderNavigationThrottle also cancels the activation and then starts
   // regular navigation.
   condition.CallResumeClosure();
-  EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // The prerender host should have been abandoned.
   EXPECT_FALSE(
@@ -2771,7 +2771,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // page activation.
   activation_observer.WaitForNavigationFinished();
   EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
-  EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Tests that cross-origin subframe navigations in a prerendered page are
@@ -2787,7 +2787,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   int prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
@@ -2818,7 +2818,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     NavigationRequest* request =
         web_contents_impl()->GetFrameTree()->root()->navigation_request();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
-    EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
 
   // Start a cross-origin subframe navigation in the prerendered page. It
@@ -2862,7 +2862,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   int prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
@@ -2896,7 +2896,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     NavigationRequest* request =
         web_contents_impl()->GetFrameTree()->root()->navigation_request();
     EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
-    EXPECT_EQ(web_contents()->GetURL(), kInitialUrl);
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
   }
 
   // Use the OpenURL API to navigate the iframe in the prerendering frame tree.
@@ -2951,7 +2951,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DataSaver) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -2971,7 +2971,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LazyLoading) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // Start prerendering `kPrerenderingUrl`.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
@@ -3320,7 +3320,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
   AddPrerender(kPrerenderingUrl);
@@ -3333,7 +3333,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderWithProactiveBrowsingInstanceSwap,
   // The test passes if we don't crash while cleaning up speculative render
   // frame host.
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // The prerender host should be consumed.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
@@ -3661,7 +3661,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FrameOwnerPropertiesDisplayNone) {
 
   // Activate.
   NavigatePrimaryPage(kPrerenderingUrl);
-  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // The frames should still have the same display properties.
   EXPECT_FALSE(prerender_frame_host->IsFrameDisplayNone());
@@ -3686,7 +3686,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TriggeredPrerenderUkm) {
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
 
   // PrerenderPageLoad metric should not be recorded yet.
   EXPECT_EQ(0u,
@@ -3747,7 +3747,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ColorSchemeDarkInNonPrimaryPage) {
   EXPECT_CALL(background_color_observer, OnBackgroundColorChanged())
       .Times(Exactly(1));
   NavigatePrimaryPage(kPrerenderingUrl);
-  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   // Wait for the page background to change.
   prerendered_page_background_waiter.Wait();
 }
@@ -3778,7 +3778,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_CALL(theme_color_observer, DidChangeThemeColor()).Times(Exactly(1));
 
   NavigatePrimaryPage(kPrerenderingUrl);
-  ASSERT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
   theme_change_waiter.Wait();
 }
 }  // namespace

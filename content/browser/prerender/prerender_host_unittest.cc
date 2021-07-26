@@ -215,7 +215,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
       navigation_request->IsCommitDeferringConditionDeferredForTesting());
 
   // The primary page should still be the original page.
-  EXPECT_EQ(web_contents->GetURL(), kOriginUrl);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), kOriginUrl);
 
   const GURL kBadUrl("https://example2.test/");
   TestNavigationManager tno(web_contents.get(), kBadUrl);
