@@ -830,6 +830,18 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     dispatch_async(dispatch_get_main_queue(), ^{
       completion(nil);
     });
+    return;
+  }
+
+  if (@available(iOS 15, *)) {
+    if (![self contentIsHTML]) {
+      // On iOS 15, web process will die if a snapshot is takent on a PDF file.
+      // TODO(crbug.com/1233014): reenable PDF snapshots.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        completion(nil);
+      });
+      return;
+    }
   }
 
   WKSnapshotConfiguration* configuration =
