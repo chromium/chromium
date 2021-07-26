@@ -130,24 +130,6 @@ crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_co
 crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc7-rgba-unorm";* [ Failure ]
 crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc7-rgba-unorm-srgb";* [ Failure ]
 
-crbug.com/dawn/991 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:shader_stages_and_visibility:compute=true;* [ Failure ]
-
-crbug.com/dawn/992 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_color:compute=true;type0="sampled-texture";type1="writeonly-storage-texture";binding0InBundle=false;binding1InBundle=false;levelCount0=1;layerCount0=1;baseLevel1=1;levelCount1=1;baseLayer1=1;layerCount1=1 [ Failure ]
-crbug.com/dawn/992 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_color:compute=true;type0="readonly-storage-texture";type1="writeonly-storage-texture";binding0InBundle=false;binding1InBundle=false;levelCount0=1;layerCount0=1;baseLevel1=1;levelCount1=1;baseLayer1=1;layerCount1=1 [ Failure ]
-
-crbug.com/dawn/993 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:compute=false;binding0InBundle=true;binding1InBundle=false;format="depth24plus";baseLevel=2;baseLayer=1;aspect0="all";aspect1="all";type0="sampled-texture";type1="render-target" [ Failure ]
-crbug.com/dawn/993 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:compute=false;binding0InBundle=true;binding1InBundle=false;format="depth32float";baseLevel=2;baseLayer=1;aspect0="all";aspect1="all";type0="sampled-texture";type1="render-target" [ Failure ]
-# Only some subcases fail
-# Mac is not listed here because it's a real failure in the Metal-specific section
-crbug.com/dawn/993 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";* [ Failure ]
-crbug.com/dawn/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";* [ Failure ]
-
-crbug.com/dawn/997 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:unused_bindings_in_pipeline:compute=true;callDrawOrDispatch=true;* [ Failure ]
-crbug.com/dawn/997 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_draws_or_dispatches:compute=true [ Failure ]
-crbug.com/dawn/991 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,different_passes:compute=true [ Failure ]
-
-crbug.com/dawn/991 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:validation_scope,same_draw_or_dispatch:compute=true [ Failure ]
-
 crbug.com/dawn/1009 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 crbug.com/dawn/1009 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 
@@ -259,10 +241,8 @@ crbug.com/dawn/1006 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encodin
 # The [ Crash Timeout ] annotations can be removed after dawn:812 is fixed.
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="DepthTest";format="depth24plus-stencil8";* [ Failure Crash Timeout ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="StencilTest";format="depth24plus-stencil8";* [ Failure Crash Timeout ]
-
-crbug.com/dawn/1012 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";type="array<f32,3>";* [ Failure ]
-crbug.com/dawn/1012 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";type="array<i32,3>";* [ Failure ]
-crbug.com/dawn/1012 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";type="array<u32,3>";* [ Failure ]
+crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="depth-only";type1="render-target";* [ Failure ]
+crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="stencil-only";type1="render-target";* [ Failure ]
 
 ###
 ### Mac (Metal) specific
