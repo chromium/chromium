@@ -168,10 +168,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
 
 void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     const LayoutBox* box,
-    LayoutUnit block_offset,
     PhysicalSize accumulated_containing_block_size,
-    const NGBoxFragmentBuilder& container_builder,
-    wtf_size_t fragment_index,
     InlineContainingBlockMap* inline_containing_block_map) {
   if (inline_containing_block_map->IsEmpty())
     return;
@@ -186,29 +183,13 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
   WritingModeConverter containing_block_converter = WritingModeConverter(
       writing_direction, accumulated_containing_block_size);
 
-  const auto& children = container_builder.Children();
-  DCHECK(children.size());
-  DCHECK_LT(fragment_index, children.size());
-
-  // Previous fragmentainer break token that is used to determine the
-  // block offset of the containing block relative to the top of the
-  // fragmentation context root.
-  const NGBlockBreakToken* previous_break_token =
-      PreviousFragmentainerBreakToken(container_builder, fragment_index);
+  // Used to keep track of the block contribution from previous fragments
+  // so that the child offsets are relative to the top of the containing block,
+  // as if all fragments are stacked.
+  LayoutUnit current_block_offset;
 
   HashMap<const LayoutObject*, LineBoxPair> containing_linebox_map;
   for (auto& physical_fragment : box->PhysicalFragments()) {
-    // Find the next fragmentainer (excluding column spanners and OOFs contained
-    // by the multicol container).
-    while (fragment_index < children.size() &&
-           !children[fragment_index].fragment->IsFragmentainerBox()) {
-      fragment_index++;
-    }
-    // Ensure that the offset includes the block size from previous
-    // fragmentainers.
-    LayoutUnit current_block_offset = block_offset;
-    if (previous_break_token)
-      current_block_offset += previous_break_token->ConsumedBlockSize();
     LogicalOffset logical_offset(LayoutUnit(), current_block_offset);
     PhysicalOffset offset = containing_block_converter.ToPhysical(
         logical_offset, accumulated_containing_block_size);
@@ -242,11 +223,9 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
             &current_fragment_converter, &containing_block_converter);
       }
     }
-    if (fragment_index < children.size()) {
-      previous_break_token = To<NGBlockBreakToken>(
-          children[fragment_index].fragment->BreakToken());
-      fragment_index++;
-    }
+    if (auto* break_token =
+            To<NGBlockBreakToken>(physical_fragment.BreakToken()))
+      current_block_offset = break_token->ConsumedBlockSize();
   }
 }
 

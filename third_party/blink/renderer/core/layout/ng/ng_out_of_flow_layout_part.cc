@@ -402,13 +402,6 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     const Vector<NGLogicalOutOfFlowPositionedNode>& descendants) {
   struct InlineContainingBlockInfo {
     InlineContainingBlockUtils::InlineContainingBlockMap map;
-    // The block offset of the containing block relative to the first
-    // fragmentainer it is found in.
-    LayoutUnit block_offset;
-    // The total block size of the containing block.
-    LayoutUnit block_size;
-    // The fragmentainer index the containing block starts in.
-    wtf_size_t fragmentainer_index;
     // The relative offset of the inline's containing block to the
     // fragmentation context root.
     LogicalOffset relative_offset;
@@ -438,26 +431,11 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
         }
         continue;
       }
-      // Find the fragmentainer that the containing block starts in and the
-      // offset of the containing block relative to that fragmentainer. This
-      // will be used when computing the inline container geometry to ensure
-      // the final containing block rect is relative to the fragmentation
-      // context root.
-      wtf_size_t start_index = 0;
-      LayoutUnit block_size = LayoutBoxUtils::TotalBlockSize(*containing_block);
-      LogicalOffset offset = descendant.containing_block.offset;
-      ComputeStartFragmentIndexAndRelativeOffset(
-          containing_block->StyleRef().GetWritingMode(), block_size,
-          &start_index, &offset);
-
       InlineContainingBlockUtils::InlineContainingBlockMap inline_containers;
       inline_containers.insert(descendant.inline_container.container,
                                inline_geometry);
       InlineContainingBlockInfo inline_info{
           inline_containers,
-          offset.block_offset,
-          block_size,
-          start_index,
           descendant.containing_block.relative_offset,
           descendant.containing_block.offset};
       inline_containg_blocks.insert(containing_block, inline_info);
@@ -469,15 +447,13 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     InlineContainingBlockInfo& inline_info = inline_containg_block.value;
 
     LogicalSize size(LayoutBoxUtils::InlineSize(*containing_block),
-                     inline_info.block_size);
+                     LayoutBoxUtils::TotalBlockSize(*containing_block));
     PhysicalSize container_builder_physical_size =
         ToPhysicalSize(size, containing_block->StyleRef().GetWritingMode());
 
     // Fetch the inline start/end fragment geometry.
     InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
-        containing_block, inline_info.block_offset,
-        container_builder_physical_size, *container_builder_,
-        inline_info.fragmentainer_index, &inline_info.map);
+        containing_block, container_builder_physical_size, &inline_info.map);
 
     AddInlineContainingBlockInfo(
         inline_info.map, containing_block->StyleRef().GetWritingDirection(),
@@ -630,6 +606,11 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         start_offset - block_info.value->relative_offset;
     LogicalOffset total_relative_offset =
         containing_block_relative_offset + block_info.value->relative_offset;
+
+    // The offset of the container is currently relative to the containing
+    // block. Add the offset of the containng block to the fragmentation context
+    // root so that it is relative to the fragmentation context root, instead.
+    container_offset += containing_block_offset;
 
     // If an OOF has an inline containing block, the OOF offset that is written
     // back to legacy is relative to the containing block of the inline rather
