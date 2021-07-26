@@ -41,14 +41,14 @@ using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
 static void ExpectEqualLanguageLists(
-    const base::ListValue& language_values,
+    const base::Value& language_values,
     const std::vector<std::string>& languages) {
   const int input_size = languages.size();
-  ASSERT_EQ(input_size, static_cast<int>(language_values.GetSize()));
+  base::Value::ConstListView language_values_view = language_values.GetList();
+  ASSERT_EQ(input_size, static_cast<int>(language_values_view.size()));
   for (int i = 0; i < input_size; ++i) {
-    std::string value;
-    language_values.GetString(i, &value);
-    EXPECT_EQ(languages[i], value);
+    ASSERT_TRUE(language_values_view[i].is_string());
+    EXPECT_EQ(languages[i], language_values_view[i].GetString());
   }
 }
 
@@ -78,7 +78,7 @@ class TranslatePrefsTest : public testing::Test {
 
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& list) const {
-    const base::ListValue* const never_prompt_list =
+    const base::Value* const never_prompt_list =
         prefs_.GetList(language::prefs::kFluentLanguages);
     ExpectEqualLanguageLists(*never_prompt_list, list);
   }

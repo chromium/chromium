@@ -18,7 +18,6 @@
 #include "components/variations/service/variations_service.h"
 
 namespace base {
-class DictionaryValue;
 class ListValue;
 class Value;
 }  // namespace base
@@ -35,9 +34,9 @@ class TranslateInternalsHandler {
   TranslateInternalsHandler();
   ~TranslateInternalsHandler();
 
-  // Returns a dictionary of languages in |dict| where each key is a language
+  // Returns a dictionary of languages where each key is a language
   // code and each value is a language name in the locale.
-  static void GetLanguages(base::DictionaryValue* dict);
+  static base::Value GetLanguages();
 
   virtual TranslateClient* GetTranslateClient() = 0;
   virtual variations::VariationsService* GetVariationsService() = 0;
