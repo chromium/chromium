@@ -661,7 +661,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
     context_menu_model_->AddItemWithIcon(
         static_cast<int>(HoldingSpaceCommandId::kRemoveItem),
         l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_REMOVE),
-        ui::ImageModel::FromVectorIcon(kRemoveCircleOutlineIcon,
+        ui::ImageModel::FromVectorIcon(kCancelCircleOutlineIcon,
                                        /*color_id=*/-1, kHoldingSpaceIconSize));
   }
 
