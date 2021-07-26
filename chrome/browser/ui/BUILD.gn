@@ -1683,6 +1683,7 @@ static_library("ui") {
     if (enable_extensions) {
       deps += [
         "//chrome/browser/web_applications/extensions",
+        "//google_apis/common",
         "//google_apis/drive",
       ]
     }
@@ -2867,6 +2868,7 @@ static_library("ui") {
       "//extensions/browser/api/messaging",
       "//extensions/browser/api/virtual_keyboard_private",
       "//extensions/browser/api/vpn_provider",
+      "//google_apis/common",
       "//google_apis/drive",
       "//media/capture:capture_lib",
       "//mojo/public/js:resources_grit",

@@ -592,7 +592,8 @@ static_library("test_support") {
       "//chrome/common/extensions/api",
       "//components/guest_view/browser:test_support",
       "//extensions:test_support",
-      "//google_apis/drive:test_support",
+      "//google_apis/common:test_support",
+      "//google_apis/drive",
     ]
 
     deps += [
@@ -2836,7 +2837,8 @@ if (!is_android) {
         "//components/media_router/browser:test_support",
         "//components/media_router/common:test_support",
         "//components/web_package:test_support",
-        "//google_apis/drive:test_support",
+        "//google_apis/common:test_support",
+        "//google_apis/drive",
 
         # TODO(rockot) bug 505926: The chrome_extensions_browsertests target
         # should be deleted and this line removed. See the
@@ -7784,7 +7786,10 @@ if (!is_android) {
       ]
 
       if (enable_extensions) {
-        deps += [ "//google_apis/drive:test_support" ]
+        deps += [
+          "//google_apis/common:test_support",
+          "//google_apis/drive",
+        ]
       }
     }
   }
@@ -8880,7 +8885,10 @@ if (!is_android) {
     ]
 
     if (enable_extensions) {
-      deps += [ "//google_apis/drive:test_support" ]
+      deps += [
+        "//google_apis/common:test_support",
+        "//google_apis/drive",
+      ]
     }
 
     if (use_ozone) {
@@ -9004,7 +9012,10 @@ if (!is_android) {
       ]
 
       if (enable_extensions) {
-        deps += [ "//google_apis/drive:test_support" ]
+        deps += [
+          "//google_apis/common:test_support",
+          "//google_apis/drive",
+        ]
       }
 
       if (use_ozone) {

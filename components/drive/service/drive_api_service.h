@@ -17,8 +17,8 @@
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "google_apis/drive/auth_service_interface.h"
-#include "google_apis/drive/auth_service_observer.h"
+#include "google_apis/common/auth_service_interface.h"
+#include "google_apis/common/auth_service_observer.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -27,7 +27,7 @@ class GURL;
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace google_apis {
 class FilesListRequestRunner;

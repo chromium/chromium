@@ -246,6 +246,7 @@ test("google_apis_unittests") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//google_apis/calendar:calendar_unittests",
+    "//google_apis/common:common_unittests",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -254,6 +255,10 @@ test("google_apis_unittests") {
     deps += [ ":google_apis_unittest_bundle_data" ]
   } else {
     data = [ "test/" ]
+  }
+
+  if (is_android) {
+    deps += [ "//net/android:net_java" ]
   }
 
   if (is_fuchsia) {

@@ -24,7 +24,7 @@
 #include "content/public/common/url_utils.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/task_util.h"
 #include "net/base/escape.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"

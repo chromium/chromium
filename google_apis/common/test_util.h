@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_TEST_UTIL_H_
-#define GOOGLE_APIS_DRIVE_TEST_UTIL_H_
+#ifndef GOOGLE_APIS_COMMON_TEST_UTIL_H_
+#define GOOGLE_APIS_COMMON_TEST_UTIL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,8 +17,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "google_apis/common/api_error_codes.h"
-#include "google_apis/drive/base_requests.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/base_requests.h"
+#include "google_apis/common/task_util.h"
 
 class GURL;
 
@@ -104,10 +104,9 @@ bool ParseContentRangeHeader(const std::string& value,
                              int64_t* end_position,
                              int64_t* length);
 
-// Google API related code and Drive File System code work on asynchronous
-// architecture and return the results via callbacks.
-// Following code implements a callback to copy such results.
-// Here is how to use:
+// Google API related code work on asynchronous architecture and return the
+// results via callbacks. Following code implements a callback to copy such
+// results. Here is how to use:
 //
 //   // Prepare result storage.
 //   ResultType1 result1;
@@ -283,6 +282,8 @@ void AppendProgressCallbackResult(std::vector<ProgressInfo>* progress_values,
 class TestGetContentCallback {
  public:
   TestGetContentCallback();
+  TestGetContentCallback(const TestGetContentCallback&) = delete;
+  TestGetContentCallback& operator=(const TestGetContentCallback&) = delete;
   ~TestGetContentCallback();
 
   const GetContentCallback& callback() const { return callback_; }
@@ -299,11 +300,9 @@ class TestGetContentCallback {
 
   const GetContentCallback callback_;
   std::vector<std::unique_ptr<std::string>> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGetContentCallback);
 };
 
 }  // namespace test_util
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_TEST_UTIL_H_
+#endif  // GOOGLE_APIS_COMMON_TEST_UTIL_H_

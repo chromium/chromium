@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -14,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "google_apis/drive/drive_api_parser.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"

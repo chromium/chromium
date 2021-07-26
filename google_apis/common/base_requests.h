@@ -5,8 +5,8 @@
 // This file provides base classes used to issue HTTP requests for Google
 // APIs.
 
-#ifndef GOOGLE_APIS_DRIVE_BASE_REQUESTS_H_
-#define GOOGLE_APIS_DRIVE_BASE_REQUESTS_H_
+#ifndef GOOGLE_APIS_COMMON_BASE_REQUESTS_H_
+#define GOOGLE_APIS_COMMON_BASE_REQUESTS_H_
 
 #include <stdint.h>
 
@@ -201,7 +201,10 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
   struct DownloadData {
     explicit DownloadData(
         scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+    DownloadData(const DownloadData&) = delete;
+    DownloadData& operator=(const DownloadData&) = delete;
     ~DownloadData();
+
     base::File output_file;
     base::FilePath output_file_path;
     GetContentCallback get_content_callback;
@@ -273,4 +276,4 @@ class UrlFetchRequestBase : public AuthenticatedRequestInterface,
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_BASE_REQUESTS_H_
+#endif  // GOOGLE_APIS_COMMON_BASE_REQUESTS_H_

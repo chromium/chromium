@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_AUTH_SERVICE_OBSERVER_H_
-#define GOOGLE_APIS_DRIVE_AUTH_SERVICE_OBSERVER_H_
+#ifndef GOOGLE_APIS_COMMON_AUTH_SERVICE_OBSERVER_H_
+#define GOOGLE_APIS_COMMON_AUTH_SERVICE_OBSERVER_H_
 
 namespace google_apis {
 
@@ -15,9 +15,9 @@ class AuthServiceObserver {
   virtual void OnOAuth2RefreshTokenChanged() = 0;
 
  protected:
-  virtual ~AuthServiceObserver() {}
+  virtual ~AuthServiceObserver() = default;
 };
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_AUTH_SERVICE_OBSERVER_H_
+#endif  // GOOGLE_APIS_COMMON_AUTH_SERVICE_OBSERVER_H_

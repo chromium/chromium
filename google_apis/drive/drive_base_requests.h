@@ -22,7 +22,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "google_apis/common/api_error_codes.h"
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/common/base_requests.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -76,9 +76,8 @@ class DriveUrlFetchRequestBase : public UrlFetchRequestBase {
                            ProgressCallback download_progress_callback);
   ~DriveUrlFetchRequestBase() override;
 
-  google_apis::ApiErrorCode MapReasonToError(
-      google_apis::ApiErrorCode code,
-      const std::string& reason) override;
+  ApiErrorCode MapReasonToError(ApiErrorCode code,
+                                const std::string& reason) override;
 
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
 };

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_REQUEST_SENDER_H_
-#define GOOGLE_APIS_DRIVE_REQUEST_SENDER_H_
+#ifndef GOOGLE_APIS_COMMON_REQUEST_SENDER_H_
+#define GOOGLE_APIS_COMMON_REQUEST_SENDER_H_
 
 #include <memory>
 #include <set>
@@ -47,6 +47,8 @@ class RequestSender {
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
       const std::string& custom_user_agent,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+  RequestSender(const RequestSender&) = delete;
+  RequestSender& operator=(const RequestSender&) = delete;
   ~RequestSender();
 
   AuthServiceInterface* auth_service() { return auth_service_.get(); }
@@ -112,10 +114,8 @@ class RequestSender {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<RequestSender> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestSender);
 };
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_REQUEST_SENDER_H_
+#endif  // GOOGLE_APIS_COMMON_REQUEST_SENDER_H_

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/request_sender.h"
+#include "google_apis/common/request_sender.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/sequenced_task_runner.h"
-#include "google_apis/drive/auth_service.h"
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/common/auth_service.h"
+#include "google_apis/common/base_requests.h"
 
 namespace google_apis {
 

@@ -54,9 +54,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/time_util.h"
 #include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/time_util.h"
 #include "net/base/filename_util.h"
 
 using content::BrowserThread;

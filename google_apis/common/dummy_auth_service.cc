@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/dummy_auth_service.h"
+#include "google_apis/common/dummy_auth_service.h"
 
 namespace google_apis {
 
@@ -11,11 +11,9 @@ DummyAuthService::DummyAuthService() {
   set_refresh_token("dummy");
 }
 
-void DummyAuthService::AddObserver(AuthServiceObserver* observer) {
-}
+void DummyAuthService::AddObserver(AuthServiceObserver* observer) {}
 
-void DummyAuthService::RemoveObserver(AuthServiceObserver* observer) {
-}
+void DummyAuthService::RemoveObserver(AuthServiceObserver* observer) {}
 
 void DummyAuthService::StartAuthentication(AuthStatusCallback callback) {}
 

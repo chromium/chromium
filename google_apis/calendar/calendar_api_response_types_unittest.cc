@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace google_apis {

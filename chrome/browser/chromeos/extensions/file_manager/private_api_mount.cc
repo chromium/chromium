@@ -28,7 +28,7 @@
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/drive/event_logger.h"
 #include "content/public/browser/browser_thread.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 

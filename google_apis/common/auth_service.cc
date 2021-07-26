@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/auth_service.h"
 
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "google_apis/drive/auth_service_observer.h"
+#include "google_apis/common/auth_service_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -47,6 +47,8 @@ class AuthRequest {
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               AuthStatusCallback callback,
               const std::vector<std::string>& scopes);
+  AuthRequest(const AuthRequest&) = delete;
+  AuthRequest& operator=(const AuthRequest&) = delete;
   ~AuthRequest();
 
  private:
@@ -56,8 +58,6 @@ class AuthRequest {
   AuthStatusCallback callback_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthRequest);
 };
 
 AuthRequest::AuthRequest(
@@ -214,8 +214,8 @@ void AuthService::OnAuthCompleted(AuthStatusCallback callback,
   } else if (error == HTTP_UNAUTHORIZED) {
     // Refreshing access token using the refresh token is failed with 401 error
     // (HTTP_UNAUTHORIZED). This means the current refresh token is invalid for
-    // Drive, hence we clear the refresh token here to make HasRefreshToken()
-    // false, thus the invalidness is clearly observable.
+    // the current scope,  hence we clear the refresh token here to make
+    // HasRefreshToken() false, thus the invalidness is clearly observable.
     // This is not for triggering refetch of the refresh token. UI should
     // show some message to encourage user to log-off and log-in again in order
     // to fetch new valid refresh token.

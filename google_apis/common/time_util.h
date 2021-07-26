@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_TIME_UTIL_H_
-#define GOOGLE_APIS_DRIVE_TIME_UTIL_H_
+#ifndef GOOGLE_APIS_COMMON_TIME_UTIL_H_
+#define GOOGLE_APIS_COMMON_TIME_UTIL_H_
 
 #include <string>
 
@@ -32,4 +32,4 @@ std::string FormatTimeAsStringLocaltime(const base::Time& time);
 }  // namespace util
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_TIME_UTIL_H_
+#endif  // GOOGLE_APIS_COMMON_TIME_UTIL_H_

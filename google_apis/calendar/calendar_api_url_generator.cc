@@ -4,7 +4,7 @@
 
 #include "google_apis/calendar/calendar_api_url_generator.h"
 
-#include "google_apis/drive/time_util.h"
+#include "google_apis/common/time_util.h"
 #include "net/base/url_util.h"
 
 namespace google_apis {

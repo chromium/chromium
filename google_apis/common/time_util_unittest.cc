@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/time_util.h"
+#include "google_apis/common/time_util.h"
 
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"

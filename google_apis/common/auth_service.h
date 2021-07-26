@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_AUTH_SERVICE_H_
-#define GOOGLE_APIS_DRIVE_AUTH_SERVICE_H_
+#ifndef GOOGLE_APIS_COMMON_AUTH_SERVICE_H_
+#define GOOGLE_APIS_COMMON_AUTH_SERVICE_H_
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "google_apis/drive/auth_service_interface.h"
+#include "google_apis/common/auth_service_interface.h"
 #include "google_apis/gaia/core_account_id.h"
 
 namespace network {
@@ -42,6 +42,8 @@ class AuthService : public AuthServiceInterface {
               const CoreAccountId& account_id,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
               const std::vector<std::string>& scopes);
+  AuthService(const AuthService&) = delete;
+  AuthService& operator=(const AuthService&) = delete;
   ~AuthService() override;
 
   // Overriden from AuthServiceInterface:
@@ -80,10 +82,8 @@ class AuthService : public AuthServiceInterface {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<AuthService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AuthService);
 };
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_AUTH_SERVICE_H_
+#endif  // GOOGLE_APIS_COMMON_AUTH_SERVICE_H_

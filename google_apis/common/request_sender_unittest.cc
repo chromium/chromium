@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/request_sender.h"
+#include "google_apis/common/request_sender.h"
 
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "google_apis/drive/base_requests.h"
-#include "google_apis/drive/drive_common_callbacks.h"
-#include "google_apis/drive/dummy_auth_service.h"
+#include "google_apis/common/base_requests.h"
+#include "google_apis/common/dummy_auth_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -147,7 +146,7 @@ TEST_F(RequestSenderTest, StartAndFinishRequest) {
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr =
       request_ptr->GetWeakPtr();
 
-  CancelCallbackOnce cancel_closure =
+  base::OnceClosure cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 
@@ -170,7 +169,7 @@ TEST_F(RequestSenderTest, StartAndCancelRequest) {
       &request_sender_, &start_called, &finish_reason);
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr = request->GetWeakPtr();
 
-  CancelCallbackOnce cancel_closure =
+  base::OnceClosure cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
   EXPECT_TRUE(start_called);
@@ -190,7 +189,7 @@ TEST_F(RequestSenderTest, NoRefreshToken) {
       &request_sender_, &start_called, &finish_reason);
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr = request->GetWeakPtr();
 
-  CancelCallbackOnce cancel_closure =
+  base::OnceClosure cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 
@@ -211,7 +210,7 @@ TEST_F(RequestSenderTest, ValidRefreshTokenAndNoAccessToken) {
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr =
       request_ptr->GetWeakPtr();
 
-  CancelCallbackOnce cancel_closure =
+  base::OnceClosure cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 
@@ -233,7 +232,7 @@ TEST_F(RequestSenderTest, AccessTokenRejectedSeveralTimes) {
   base::WeakPtr<AuthenticatedRequestInterface> weak_ptr =
       request_ptr->GetWeakPtr();
 
-  CancelCallbackOnce cancel_closure =
+  base::OnceClosure cancel_closure =
       request_sender_.StartRequestWithAuthRetry(std::move(request));
   EXPECT_TRUE(!cancel_closure.is_null());
 

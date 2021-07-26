@@ -24,7 +24,7 @@
 #include "components/drive/drive_notification_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
-#include "google_apis/drive/time_util.h"
+#include "google_apis/common/time_util.h"
 
 using drive::EventLogger;
 using sync_file_system::SyncFileSystemServiceFactory;

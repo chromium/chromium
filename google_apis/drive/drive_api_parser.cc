@@ -14,7 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "google_apis/drive/time_util.h"
+#include "google_apis/common/time_util.h"
 
 namespace google_apis {
 

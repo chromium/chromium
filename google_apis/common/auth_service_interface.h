@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_AUTH_SERVICE_INTERFACE_H_
-#define GOOGLE_APIS_DRIVE_AUTH_SERVICE_INTERFACE_H_
+#ifndef GOOGLE_APIS_COMMON_AUTH_SERVICE_INTERFACE_H_
+#define GOOGLE_APIS_COMMON_AUTH_SERVICE_INTERFACE_H_
 
 #include <string>
 
@@ -35,7 +35,7 @@ class AuthServiceInterface {
   virtual void StartAuthentication(AuthStatusCallback callback) = 0;
 
   // True if an OAuth2 access token is retrieved and believed to be fresh.
-  // The access token is used to access the Drive server.
+  // The access token is used to access the Google API server.
   virtual bool HasAccessToken() const = 0;
 
   // True if an OAuth2 refresh token is present. Its absence means that user
@@ -55,4 +55,4 @@ class AuthServiceInterface {
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_AUTH_SERVICE_INTERFACE_H_
+#endif  // GOOGLE_APIS_COMMON_AUTH_SERVICE_INTERFACE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/time_util.h"
+#include "google_apis/common/time_util.h"
 
 #include <string>
 #include <vector>
@@ -71,8 +71,8 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       time = time_and_tz;
       time.remove_suffix(1);
     } else {
-      parts = base::SplitStringPiece(
-          time_and_tz, "+", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      parts = base::SplitStringPiece(time_and_tz, "+", base::KEEP_WHITESPACE,
+                                     base::SPLIT_WANT_NONEMPTY);
       if (parts.size() == 2) {
         // Timezone is "+hh:mm" format
         if (!ParseTimezone(parts[1], true, &offset_to_utc_in_minutes))
@@ -80,8 +80,8 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
         has_timezone = true;
         time = parts[0];
       } else {
-        parts = base::SplitStringPiece(
-            time_and_tz, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        parts = base::SplitStringPiece(time_and_tz, "-", base::KEEP_WHITESPACE,
+                                       base::SPLIT_WANT_NONEMPTY);
         if (parts.size() == 2) {
           // Timezone is "-hh:mm" format
           if (!ParseTimezone(parts[1], false, &offset_to_utc_in_minutes))
@@ -131,8 +131,7 @@ bool GetTimeFromString(base::StringPiece raw_value, base::Time* parsed_time) {
       return false;
 
     // Only accept milli-seconds (3-digits).
-    if (seconds_parts.size() > 1 &&
-        seconds_parts[1].length() == 3 &&
+    if (seconds_parts.size() > 1 && seconds_parts[1].length() == 3 &&
         !base::StringToInt(seconds_parts[1], &exploded.millisecond)) {
       return false;
     }
@@ -168,10 +167,10 @@ std::string FormatTimeAsStringLocaltime(const base::Time& time) {
 
   base::Time::Exploded exploded;
   time.LocalExplode(&exploded);
-  return base::StringPrintf(
-      "%04d-%02d-%02dT%02d:%02d:%02d.%03d",
-      exploded.year, exploded.month, exploded.day_of_month,
-      exploded.hour, exploded.minute, exploded.second, exploded.millisecond);
+  return base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03d", exploded.year,
+                            exploded.month, exploded.day_of_month,
+                            exploded.hour, exploded.minute, exploded.second,
+                            exploded.millisecond);
 }
 
 }  // namespace util

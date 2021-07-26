@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/cxx17_backports.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
@@ -147,18 +147,18 @@ TEST_F(DriveApiUrlGeneratorTest, GetFilesListUrl) {
     const std::string expected_query;
   };
   const TestPattern kTestPatterns[] = {
-    { 100, "", "", "" },
-    { 150, "", "", "maxResults=150" },
-    { 10, "", "", "maxResults=10" },
-    { 100, "token", "", "pageToken=token" },
-    { 150, "token", "", "maxResults=150&pageToken=token" },
-    { 10, "token", "", "maxResults=10&pageToken=token" },
-    { 100, "", "query", "q=query" },
-    { 150, "", "query", "maxResults=150&q=query" },
-    { 10, "", "query", "maxResults=10&q=query" },
-    { 100, "token", "query", "pageToken=token&q=query" },
-    { 150, "token", "query", "maxResults=150&pageToken=token&q=query" },
-    { 10, "token", "query", "maxResults=10&pageToken=token&q=query" },
+      {100, "", "", ""},
+      {150, "", "", "maxResults=150"},
+      {10, "", "", "maxResults=10"},
+      {100, "token", "", "pageToken=token"},
+      {150, "token", "", "maxResults=150&pageToken=token"},
+      {10, "token", "", "maxResults=10&pageToken=token"},
+      {100, "", "query", "q=query"},
+      {150, "", "query", "maxResults=150&q=query"},
+      {10, "", "query", "maxResults=10&q=query"},
+      {100, "token", "query", "pageToken=token&q=query"},
+      {150, "token", "query", "maxResults=150&pageToken=token&q=query"},
+      {10, "token", "query", "maxResults=10&pageToken=token&q=query"},
   };
   const std::string kV2FilesUrlPrefixWithTeamDrives =
       "https://www.example.com/drive/v2/files?supportsTeamDrives=true&"
@@ -240,44 +240,44 @@ TEST_F(DriveApiUrlGeneratorTest, GetChangesListUrl) {
     const std::string expected_query;
   };
   const TestPattern kTestPatterns[] = {
-    { true, 100, "", 0, "" },
-    { false, 100, "", 0, "includeDeleted=false" },
-    { true, 150, "", 0, "maxResults=150" },
-    { false, 150, "", 0, "includeDeleted=false&maxResults=150" },
-    { true, 10, "", 0, "maxResults=10" },
-    { false, 10, "", 0, "includeDeleted=false&maxResults=10" },
+      {true, 100, "", 0, ""},
+      {false, 100, "", 0, "includeDeleted=false"},
+      {true, 150, "", 0, "maxResults=150"},
+      {false, 150, "", 0, "includeDeleted=false&maxResults=150"},
+      {true, 10, "", 0, "maxResults=10"},
+      {false, 10, "", 0, "includeDeleted=false&maxResults=10"},
 
-    { true, 100, "token", 0, "pageToken=token" },
-    { false, 100, "token", 0, "includeDeleted=false&pageToken=token" },
-    { true, 150, "token", 0, "maxResults=150&pageToken=token" },
-    { false, 150, "token", 0,
-      "includeDeleted=false&maxResults=150&pageToken=token" },
-    { true, 10, "token", 0, "maxResults=10&pageToken=token" },
-    { false, 10, "token", 0,
-      "includeDeleted=false&maxResults=10&pageToken=token" },
+      {true, 100, "token", 0, "pageToken=token"},
+      {false, 100, "token", 0, "includeDeleted=false&pageToken=token"},
+      {true, 150, "token", 0, "maxResults=150&pageToken=token"},
+      {false, 150, "token", 0,
+       "includeDeleted=false&maxResults=150&pageToken=token"},
+      {true, 10, "token", 0, "maxResults=10&pageToken=token"},
+      {false, 10, "token", 0,
+       "includeDeleted=false&maxResults=10&pageToken=token"},
 
-    { true, 100, "", 12345, "startChangeId=12345" },
-    { false, 100, "", 12345, "includeDeleted=false&startChangeId=12345" },
-    { true, 150, "", 12345, "maxResults=150&startChangeId=12345" },
-    { false, 150, "", 12345,
-      "includeDeleted=false&maxResults=150&startChangeId=12345" },
-    { true, 10, "", 12345, "maxResults=10&startChangeId=12345" },
-    { false, 10, "", 12345,
-      "includeDeleted=false&maxResults=10&startChangeId=12345" },
+      {true, 100, "", 12345, "startChangeId=12345"},
+      {false, 100, "", 12345, "includeDeleted=false&startChangeId=12345"},
+      {true, 150, "", 12345, "maxResults=150&startChangeId=12345"},
+      {false, 150, "", 12345,
+       "includeDeleted=false&maxResults=150&startChangeId=12345"},
+      {true, 10, "", 12345, "maxResults=10&startChangeId=12345"},
+      {false, 10, "", 12345,
+       "includeDeleted=false&maxResults=10&startChangeId=12345"},
 
-    { true, 100, "token", 12345, "pageToken=token&startChangeId=12345" },
-    { false, 100, "token", 12345,
-      "includeDeleted=false&pageToken=token&startChangeId=12345" },
-    { true, 150, "token", 12345,
-      "maxResults=150&pageToken=token&startChangeId=12345" },
-    { false, 150, "token", 12345,
-      "includeDeleted=false&maxResults=150&pageToken=token"
-      "&startChangeId=12345" },
-    { true, 10, "token", 12345,
-      "maxResults=10&pageToken=token&startChangeId=12345" },
-    { false, 10, "token", 12345,
-      "includeDeleted=false&maxResults=10&pageToken=token"
-      "&startChangeId=12345" },
+      {true, 100, "token", 12345, "pageToken=token&startChangeId=12345"},
+      {false, 100, "token", 12345,
+       "includeDeleted=false&pageToken=token&startChangeId=12345"},
+      {true, 150, "token", 12345,
+       "maxResults=150&pageToken=token&startChangeId=12345"},
+      {false, 150, "token", 12345,
+       "includeDeleted=false&maxResults=150&pageToken=token"
+       "&startChangeId=12345"},
+      {true, 10, "token", 12345,
+       "maxResults=10&pageToken=token&startChangeId=12345"},
+      {false, 10, "token", 12345,
+       "includeDeleted=false&maxResults=10&pageToken=token"
+       "&startChangeId=12345"},
   };
 
   const std::string kV2ChangesUrlPrefixWithTeamDrives =
@@ -440,9 +440,8 @@ TEST_F(DriveApiUrlGeneratorTest, GenerateThumbnailUrl) {
       "https://thumbnail.example.com/d/0ADK06pfg=w500-h480",
       url_generator_.GetThumbnailUrl("0ADK06pfg", 500, 480, false).spec());
 
-  EXPECT_EQ(
-      "https://thumbnail.example.com/d/0ADK06pfg=w360-h380-c",
-      url_generator_.GetThumbnailUrl("0ADK06pfg", 360, 380, true).spec());
+  EXPECT_EQ("https://thumbnail.example.com/d/0ADK06pfg=w360-h380-c",
+            url_generator_.GetThumbnailUrl("0ADK06pfg", 360, 380, true).spec());
 }
 
 TEST_F(DriveApiUrlGeneratorTest, BatchUploadUrl) {

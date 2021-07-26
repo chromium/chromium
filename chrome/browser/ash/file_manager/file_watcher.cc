@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "content/public/browser/browser_thread.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/task_util.h"
 
 using content::BrowserThread;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/common/base_requests.h"
 
 #include <stddef.h>
 
@@ -12,14 +12,13 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "google_apis/drive/request_sender.h"
-#include "google_apis/drive/task_util.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/common/task_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -255,6 +254,18 @@ void UrlFetchRequestBase::OnResponseStarted(
   DVLOG(1) << "Response headers:\n"
            << GetResponseHeadersAsString(response_head);
   response_content_length_ = response_head.content_length;
+}
+
+UrlFetchRequestBase::DownloadData::DownloadData(
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
+    : blocking_task_runner_(blocking_task_runner) {}
+
+UrlFetchRequestBase::DownloadData::~DownloadData() {
+  if (output_file.IsValid()) {
+    blocking_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce([](base::File file) {}, std::move(output_file)));
+  }
 }
 
 // static

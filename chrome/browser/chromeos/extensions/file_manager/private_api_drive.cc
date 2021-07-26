@@ -57,7 +57,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_registry.h"
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/auth_service.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"

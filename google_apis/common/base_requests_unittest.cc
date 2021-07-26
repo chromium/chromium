@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/common/base_requests.h"
 
 #include <stdint.h>
 
@@ -13,9 +13,9 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "google_apis/drive/dummy_auth_service.h"
-#include "google_apis/drive/request_sender.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/dummy_auth_service.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/common/test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

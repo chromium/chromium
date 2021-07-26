@@ -71,7 +71,7 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "google_apis/drive/auth_service.h"
+#include "google_apis/common/auth_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"

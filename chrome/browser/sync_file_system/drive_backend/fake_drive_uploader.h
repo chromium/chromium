@@ -13,7 +13,7 @@
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
 #include "google_apis/common/api_error_codes.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "net/base/escape.h"
 
 namespace sync_file_system {

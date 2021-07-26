@@ -29,9 +29,9 @@
 #include "base/values.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
+#include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_common_callbacks.h"
-#include "google_apis/drive/test_util.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
 

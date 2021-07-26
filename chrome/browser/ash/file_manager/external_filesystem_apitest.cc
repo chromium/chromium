@@ -38,7 +38,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/test/result_catcher.h"
-#include "google_apis/drive/test_util.h"
+#include "google_apis/common/test_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"

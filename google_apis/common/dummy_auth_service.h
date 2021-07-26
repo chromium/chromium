@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_DRIVE_DUMMY_AUTH_SERVICE_H_
-#define GOOGLE_APIS_DRIVE_DUMMY_AUTH_SERVICE_H_
+#ifndef GOOGLE_APIS_COMMON_DUMMY_AUTH_SERVICE_H_
+#define GOOGLE_APIS_COMMON_DUMMY_AUTH_SERVICE_H_
 
 #include "base/compiler_specific.h"
-#include "google_apis/drive/auth_service_interface.h"
+#include "google_apis/common/auth_service_interface.h"
 
 namespace google_apis {
 
@@ -40,4 +40,4 @@ class DummyAuthService : public AuthServiceInterface {
 
 }  // namespace google_apis
 
-#endif  // GOOGLE_APIS_DRIVE_DUMMY_AUTH_SERVICE_H_
+#endif  // GOOGLE_APIS_COMMON_DUMMY_AUTH_SERVICE_H_
