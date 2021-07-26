@@ -105,4 +105,9 @@ const char kTraceUploadURL[] = "trace-upload-url";
 // kEnableBackgroundTracing is also specified.
 const char kBackgroundTracingOutputFile[] = "background-tracing-output-file";
 
+// Configures the size of the shared memory buffer used for tracing. Value is
+// provided in kB. Defaults to 4096. Should be a multiple of the SMB page size
+// (currently 32kB on Desktop or 4kB on Android).
+const char kTraceSmbSize[] = "trace-smb-size";
+
 }  // namespace switches

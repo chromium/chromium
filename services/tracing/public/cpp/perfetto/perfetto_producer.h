@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 #endif
 
   // TODO(crbug.com/839071): Figure out a good buffer size.
-  static constexpr size_t kSMBSizeBytes = 4 * 1024 * 1024;
+  static constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
   // TODO(lri): replace this constant with its version in the client library,
   // when we move over.
@@ -139,6 +139,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   static constexpr uint32_t kShmArbiterBatchCommitDurationMs = 1000;
 
   base::tracing::PerfettoTaskRunner* task_runner();
+
+  size_t GetPreferredSmbSizeBytes();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
