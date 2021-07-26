@@ -644,7 +644,7 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultDocument(blob, name) {
+  async handleResultDocument({blob, resolution}, name) {
     // TODO(b/190689433): Send metrics event for counting usage.
     try {
       await this.resultSaver_.savePhoto(blob, name);

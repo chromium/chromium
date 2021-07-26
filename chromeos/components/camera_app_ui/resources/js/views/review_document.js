@@ -28,6 +28,12 @@ export class ReviewDocument extends View {
      * @private {!HTMLButtonElement}
      * @const
      */
+    this.savePdf_ = dom.get('#save-pdf-document', HTMLButtonElement);
+
+    /**
+     * @private {!HTMLButtonElement}
+     * @const
+     */
     this.savePhoto_ = dom.get('#save-photo-document', HTMLButtonElement);
 
     /**
@@ -60,6 +66,7 @@ export class ReviewDocument extends View {
   async startReview() {
     nav.open(ViewName.REVIEW_DOCUMENT);
     const result = await new Promise((resolve) => {
+      this.savePdf_.onclick = () => resolve(MimeType.PDF);
       this.savePhoto_.onclick = () => resolve(MimeType.JPEG);
       this.retake_.onclick = () => resolve(null);
     });

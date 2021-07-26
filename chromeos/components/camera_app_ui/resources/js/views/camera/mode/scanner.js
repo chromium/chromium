@@ -14,8 +14,16 @@ import {
   Photo,
   PhotoBaseFactory,
   PhotoHandler,  // eslint-disable-line no-unused-vars
-  PhotoResult,   // eslint-disable-line no-unused-vars
 } from './photo.js';
+
+/**
+ * Contains photo taking result.
+ * @typedef {{
+ *     resolution: !Resolution,
+ *     blob: !Blob,
+ * }}
+ */
+export let DocumentResult;
 
 /**
  * Provides external dependency functions used by photo mode and handles the
@@ -40,18 +48,19 @@ export class ScannerHandler {
   async setReviewDocument(blob) {}
 
   /**
-   * @return {!Promise<?MimeType>}
+   * @return {!Promise<?MimeType>} Returns which mime type user choose to save.
+   *     Null for cancel document.
    */
   async getDocumentReviewResult() {}
 
   /**
    * Handles the result document.
-   * @param {!Blob} doc
+   * @param {!DocumentResult} result
    * @param {string} name Name of the document result to be saved as.
    * @return {!Promise}
    * @abstract
    */
-  handleResultDocument(doc, name) {}
+  handleResultDocument(result, name) {}
 }
 
 /**
@@ -81,17 +90,15 @@ class DocumentPhotoHandler {
     await this.handler_.setReviewDocument(jpegBlob);
     this.handler_.clearBlockingShutterEffect();
     const mimeType = await this.handler_.getDocumentReviewResult();
-    switch (mimeType) {
-      case null:
-        return;
-      case MimeType.JPEG:
-        await this.handler_.handleResultDocument(
-            jpegBlob, namer.newDocumentName(MimeType.JPEG));
-        return;
-      case MimeType.PDF:
-        // TODO(b/190689433): Add code path handle pdf result.
-        return;
+    if (mimeType === null) {
+      return;
     }
+    const name = namer.newDocumentName(mimeType);
+    let blob = jpegBlob;
+    if (mimeType === MimeType.PDF) {
+      blob = await helper.convertToPdf(blob);
+    }
+    await this.handler_.handleResultDocument({blob, resolution}, name);
   }
 
   /**
