@@ -2334,6 +2334,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   friend class TextInputTestLocalFrame;
   friend class WebContentsSplitCacheBrowserTest;
   friend class RenderFrameHostManagerUnloadBrowserTest;
+  friend class WebBluetoothServiceImplBrowserTest;
 
   FRIEND_TEST_ALL_PREFIXES(NavigatorTest, TwoNavigationsRacingCommit);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBeforeUnloadBrowserTest,
@@ -2417,10 +2418,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderDocumentHostUserDataTest,
                            CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
-  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBrowserTest,
-                           NoShowBluetoothScanningPromptInPrerendering);
-  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBrowserTest,
-                           RequestDeviceInPrerendering);
 
   class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;

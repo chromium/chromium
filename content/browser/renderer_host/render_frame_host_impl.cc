@@ -8731,7 +8731,8 @@ void RenderFrameHostImpl::CreateWebBluetoothService(
 
 WebBluetoothServiceImpl*
 RenderFrameHostImpl::GetWebBluetoothServiceForTesting() {
-  DCHECK(web_bluetooth_services_.back());
+  if (web_bluetooth_services_.empty())
+    return nullptr;
   return web_bluetooth_services_.back().get();
 }
 
