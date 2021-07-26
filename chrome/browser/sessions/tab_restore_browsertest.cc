@@ -1828,3 +1828,65 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   EXPECT_NE(original_group,
             third_browser->tab_strip_model()->GetTabGroupForTab(1));
 }
+
+// Ensures window.tab_groups is kept in sync with the groups referenced
+// in window.tabs
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+
+  AddSomeTabs(browser(), 3);
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
+
+  // Create a new browser from which to restore the first.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  ASSERT_EQ(2u, active_browser_list_->size());
+  Browser* second_browser = GetBrowser(1);
+  ASSERT_NE(browser(), second_browser);
+
+  const auto single_entry_group =
+      browser()->tab_strip_model()->AddToNewGroup({3});
+  const auto double_entry_group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1u, active_browser_list_->size());
+
+  // We should have a restore entry for the window.
+  const sessions::TabRestoreService::Entries& entries = service->entries();
+  ASSERT_GE(entries.size(), 1u);
+  ASSERT_EQ(entries.front()->type, sessions::TabRestoreService::WINDOW);
+
+  const auto* const window_entry =
+      static_cast<sessions::TabRestoreService::Window*>(entries.front().get());
+  ASSERT_NE(window_entry->tab_groups.find(single_entry_group),
+            window_entry->tab_groups.end());
+  ASSERT_NE(window_entry->tab_groups.find(double_entry_group),
+            window_entry->tab_groups.end());
+
+  // Restore the first and only tab in the single entry group.
+  service->RestoreEntryById(second_browser->live_tab_context(),
+                            window_entry->tabs[3]->id,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  // The window should no longer track the single entry group.
+  ASSERT_EQ(window_entry->tab_groups.find(single_entry_group),
+            window_entry->tab_groups.end());
+
+  // Restore one of the tabs in the double entry group.
+  service->RestoreEntryById(second_browser->live_tab_context(),
+                            window_entry->tabs[2]->id,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  // The window should still track the double entry group.
+  ASSERT_NE(window_entry->tab_groups.find(double_entry_group),
+            window_entry->tab_groups.end());
+
+  // Restore the remaining tab in the double entry group.
+  service->RestoreEntryById(second_browser->live_tab_context(),
+                            window_entry->tabs[1]->id,
+                            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  // The window should no longer track the double entry group.
+  ASSERT_EQ(window_entry->tab_groups.find(double_entry_group),
+            window_entry->tab_groups.end());
+}
