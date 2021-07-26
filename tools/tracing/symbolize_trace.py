@@ -20,6 +20,7 @@ sys.path.insert(
 from systrace import util
 import metadata_extractor
 import symbol_fetcher
+import breakpad_file_extractor
 
 
 def SymbolizeTrace(trace_file, options):
@@ -46,35 +47,19 @@ def SymbolizeTrace(trace_file, options):
       need_cleanup = True
       logging.debug('Created temporary directory to hold symbol files.')
     else:
-      if not os.path.isdir(options.breakpad_output_dir):
-        os.makedirs(options.breakpad_output_dir)
-        logging.debug('Created directory to hold symbol files.')
-      else:
-        # Assert breakpad_output_dir is empty
+      if os.path.isdir(options.breakpad_output_dir):
         if os.listdir(options.breakpad_output_dir):
           raise Exception('Breakpad output directory is not empty: ' +
                           options.breakpad_output_dir)
+      else:
+        os.makedirs(options.breakpad_output_dir)
+        logging.debug('Created directory to hold symbol files.')
   else:
     if not os.path.isdir(options.local_breakpad_dir):
       raise FileNotFoundError('Local breakpad directory is not valid.')
     options.breakpad_output_dir = options.local_breakpad_dir
 
-  if options.local_build_dir is None and options.local_breakpad_dir is None:
-    # Extract Metadata
-    logging.info('Extracting proto trace metadata.')
-    trace_metadata = metadata_extractor.MetadataExtractor(
-        options.trace_processor_path, trace_file)
-    trace_metadata.Initialize()
-    logging.info(trace_metadata)
-
-    # Fetch trace breakpad symbols from GCS
-    logging.info('Fetching and extracting trace breakpad symbols.')
-    symbol_fetcher.GetTraceBreakpadSymbols(options.cloud_storage_bucket,
-                                           trace_metadata,
-                                           options.breakpad_output_dir)
-
-  # TODO(uwemwilson): Add call to function to extract breakpad symbol files from
-  # local build directory.
+  _EnsureBreakpadSymbols(trace_file, options)
 
   # Set output file to write trace data and symbols to.
   if options.output_file is None:
@@ -89,6 +74,43 @@ def SymbolizeTrace(trace_file, options):
   if need_cleanup:
     logging.debug('Cleaning up symbol files.')
     shutil.rmtree(options.breakpad_output_dir)
+
+
+def _EnsureBreakpadSymbols(trace_file, options):
+  """Ensures that there are breakpad symbols to symbolize with.
+
+  Args:
+    trace_file: The trace file to be symbolized.
+    options: The options set by the commandline args. This is used to check if
+      symbols need to be fetched, extracted, or if they are already present.
+  """
+  # If |options.local_breakpad_dir| is not None, then this can be skipped and
+  # |trace_file| can be symbolized using those symbols.
+  if options.local_breakpad_dir:
+    return
+  if options.local_build_dir:
+    # Extract breakpad symbol files from binaries in |options.local_build_dir|.
+    breakpad_file_extractor.ExtractBreakpadFiles(options.dump_syms_path,
+                                                 options.local_build_dir,
+                                                 options.breakpad_output_dir)
+    symbol_fetcher.RenameBreakpadFiles(options.breakpad_output_dir,
+                                       options.breakpad_output_dir)
+    return
+
+  # Extract Metadata
+  logging.info('Extracting proto trace metadata.')
+  trace_metadata = metadata_extractor.MetadataExtractor(
+      options.trace_processor_path, trace_file)
+  trace_metadata.Initialize()
+  logging.info(trace_metadata)
+
+  # Fetch trace breakpad symbols from GCS
+  logging.info('Fetching and extracting trace breakpad symbols.')
+  symbol_fetcher.GetTraceBreakpadSymbols(options.cloud_storage_bucket,
+                                         trace_metadata,
+                                         options.breakpad_output_dir)
+  symbol_fetcher.RenameBreakpadFiles(options.breakpad_output_dir,
+                                     options.breakpad_output_dir)
 
 
 def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
@@ -120,10 +142,15 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
     with open(output_file, 'w') as f:
       f.write(trace_data)
       f.write(symbol_data)
+      logging.debug(
+          'Symbolized {file}({x} bytes) with {y} bytes of symbol data'.format(
+              file=trace_file, x=len(trace_data), y=len(symbol_data)))
 
 
 def _RunSymbolizer(cmd, env, stdout):
   proc = subprocess.Popen(cmd, env=env, stdout=stdout, stderr=subprocess.PIPE)
-  stderr = proc.communicate()[1]
+  out, stderr = proc.communicate()
+  logging.debug('STDOUT:{}'.format(str(out)))
+  logging.debug('STDERR:{}'.format(str(stderr)))
   if proc.returncode != 0:
     raise RuntimeError(str(stderr))

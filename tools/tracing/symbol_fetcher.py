@@ -151,10 +151,10 @@ def _UnzipAndRenameBreakpadFiles(breakpad_zip_file, breakpad_output_dir):
     zip_file.extractall(breakpad_dir)
 
   # Rename breakpad files.
-  _RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
+  RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
 
 
-def _RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
+def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
   """Move breakpad files to new directory and rename them.
 
   Breakpad files (files that contain '.breakpad') are renamed

@@ -27,7 +27,8 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
     Exception: If none of the files in |build_dir| could be symbolized.
   """
   # Check to see if |dump_syms_path| is a file.
-  if not _DumpSymsExists(dump_syms_path, build_dir):
+  dump_syms_binary = _GetDumpSyms(dump_syms_path, build_dir)
+  if dump_syms_binary is None:
     raise FileNotFoundError(
         'dump_syms is missing. you can build dump_syms in the {build_dir} by'
         'running ninja -C {build_dir} dump_syms'.format(build_dir=build_dir))
@@ -49,8 +50,7 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
     if os.path.isfile(input_file_path) and _IsValidBinaryPath(input_file_path):
       # Construct absolute file paths for input and output files.
       output_file_path = os.path.join(breakpad_output_dir, file + '.breakpad')
-      cmd = [dump_syms_path, '-c', '-r', input_file_path]
-      if _RunDumpSyms(cmd, output_file_path):
+      if _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
         breakpad_file_count += 1
 
   # Extracting breakpad symbols should be successful with at least one file.
@@ -60,10 +60,9 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
         format(symbol_dir=symbol_dir))
 
 
-def _RunDumpSyms(cmd, output_file_path):
+def _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
   """Runs the dump_syms binary on a file and outputs the resulting breakpad
      symbols to the specified file.
-
   Args:
     cmd: The command to run dump_syms.
     output_file_path: The file path for the output breakpad symbol file.
@@ -71,19 +70,21 @@ def _RunDumpSyms(cmd, output_file_path):
   Returns:
     True if the command succeeded and false otherwise.
   """
+  cmd = [dump_syms_binary, '-c', '-r', input_file_path]
   with open(output_file_path, 'w') as f:
     proc = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
   stderr = proc.communicate()[1]
   if proc.returncode != 0:
     logging.warning('{dump_syms_err}'.format(dump_syms_err=str(stderr)))
     logging.debug(
-        'Could not create breakpad symbols {file}'.format(file=cmd[1]))
+        'Could not create breakpad symbols {file}'.format(file=input_file_path))
     return False
-  logging.debug('Created breakpad symbols from {file}'.format(file=cmd[1]))
+  logging.debug(
+      'Created breakpad symbols from {file}'.format(file=input_file_path))
   return True
 
 
-def _DumpSymsExists(dump_syms_path, build_dir):
+def _GetDumpSyms(dump_syms_path, build_dir):
   """Checks to see if dump_syms can be found.
 
   Args:
@@ -91,20 +92,22 @@ def _DumpSymsExists(dump_syms_path, build_dir):
     build_dir: The path to a directory.
 
   Returns:
-    True if a path to dump_syms is found and false otherwise.
+    The path to the dump_syms binary or None if none is found.
     """
-  if 'dump_syms' not in dump_syms_path or not os.path.isfile(dump_syms_path):
-    path_to_dump_syms = os.path.join(build_dir, 'dump_syms')
-    if not os.path.isfile(path_to_dump_syms):
-      return False
-  return True
+  if dump_syms_path is not None and os.path.isfile(
+      dump_syms_path) and 'dump_syms' in dump_syms_path:
+    return dump_syms_path
+  path_to_dump_syms = os.path.join(build_dir, 'dump_syms')
+  if os.path.isfile(path_to_dump_syms):
+    return path_to_dump_syms
+  return None
 
 
 def _IsValidBinaryPath(path):
   # Get the file name from the full file path.
   file_name = os.path.basename(path)
   if file_name.endswith('partition.so') or file_name.endswith(
-      '.dwp') or file_name.endswith('.dwo'):
+      '.dwp') or file_name.endswith('.dwo') or '_combined' in file_name:
     return False
   return 'chrome' in file_name or file_name.endswith(
       '.so') or file_name.endswith('.exe')
