@@ -35,6 +35,15 @@ enum class CounterStyleSystem {
   kUnresolvedExtends,
 };
 
+enum class CounterStyleSpeakAs {
+  kAuto,
+  kBullets,
+  kNumbers,
+  kWords,
+  kSpellOut,
+  kReference,
+};
+
 // Represents a valid counter style defined in a tree scope.
 class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
  public:
@@ -68,8 +77,8 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   void TraverseAndMarkDirtyIfNeeded(HeapHashSet<Member<CounterStyle>>& visited);
 
-  // Set to true when there's no counter style matching 'extends' or 'fallback',
-  // and therefore we are resorting to 'decimal'.
+  // Set to true when there's no counter style matching 'extends', 'fallback' or
+  // 'speak-as', so this style must be dirtied when new styles are added.
   void SetHasInexistentReferences() { has_inexistent_references_ = true; }
 
   // https://drafts.csswg.org/css-counter-styles/#generate-a-counter
@@ -89,6 +98,24 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   const CounterStyle& GetFallbackStyle() const { return *fallback_style_; }
   bool HasUnresolvedFallback() const { return !fallback_style_; }
   void ResolveFallback(CounterStyle& fallback) { fallback_style_ = &fallback; }
+
+  CounterStyleSpeakAs GetSpeakAs() const { return speak_as_; }
+  AtomicString GetSpeakAsName() const { return speak_as_name_; }
+  bool HasUnresolvedSpeakAsReference() const {
+    return speak_as_ == CounterStyleSpeakAs::kReference && !speak_as_style_;
+  }
+  void ResolveInvalidSpeakAsReference() {
+    speak_as_ = CounterStyleSpeakAs::kAuto;
+    speak_as_style_ = nullptr;
+  }
+  void ResolveSpeakAsReference(CounterStyle& speak_as) {
+    DCHECK_NE(CounterStyleSpeakAs::kReference, speak_as.speak_as_);
+    speak_as_style_ = speak_as;
+  }
+  const CounterStyle& GetSpeakAsStyle() const {
+    DCHECK_EQ(CounterStyleSpeakAs::kReference, speak_as_);
+    return *speak_as_style_;
+  }
 
   void Trace(Visitor*) const;
 
@@ -129,6 +156,12 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
 
   AtomicString fallback_name_ = "decimal";
   Member<CounterStyle> fallback_style_;
+
+  CounterStyleSpeakAs speak_as_ = CounterStyleSpeakAs::kAuto;
+
+  // These two members are set if 'speak-as' references another counter style.
+  AtomicString speak_as_name_;
+  Member<CounterStyle> speak_as_style_;
 
   // True if we are looking for a fallback counter style to generate a counter
   // value. Supports cycle detection in fallback.

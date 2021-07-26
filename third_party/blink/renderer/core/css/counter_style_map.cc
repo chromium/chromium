@@ -172,6 +172,43 @@ void CounterStyleMap::ResolveFallbackFor(CounterStyle& counter_style) {
   }
 }
 
+void CounterStyleMap::ResolveSpeakAsReferenceFor(CounterStyle& counter_style) {
+  DCHECK(counter_style.HasUnresolvedSpeakAsReference());
+
+  HeapVector<Member<CounterStyle>, 2> speak_as_chain;
+  HeapHashSet<Member<CounterStyle>> unresolved_styles;
+  speak_as_chain.push_back(&counter_style);
+  do {
+    unresolved_styles.insert(speak_as_chain.back());
+    AtomicString speak_as_name = speak_as_chain.back()->GetSpeakAsName();
+    speak_as_chain.push_back(FindCounterStyleAcrossScopes(speak_as_name));
+  } while (speak_as_chain.back() &&
+           speak_as_chain.back()->HasUnresolvedSpeakAsReference() &&
+           !unresolved_styles.Contains(speak_as_chain.back()));
+
+  if (!speak_as_chain.back()) {
+    // If the specified style does not exist, this value is treated as 'auto'.
+    DCHECK_GE(speak_as_chain.size(), 2u);
+    speak_as_chain.pop_back();
+    speak_as_chain.back()->ResolveInvalidSpeakAsReference();
+    speak_as_chain.back()->SetHasInexistentReferences();
+  } else if (speak_as_chain.back()->HasUnresolvedSpeakAsReference()) {
+    // If a loop is detected when following 'speak-as' references, this value is
+    // treated as 'auto' for the counter styles participating in the loop.
+    CounterStyle* cycle_start = speak_as_chain.back();
+    do {
+      speak_as_chain.back()->ResolveInvalidSpeakAsReference();
+      speak_as_chain.pop_back();
+    } while (speak_as_chain.back() != cycle_start);
+  }
+
+  CounterStyle* back = speak_as_chain.back();
+  while (speak_as_chain.size() > 1u) {
+    speak_as_chain.pop_back();
+    speak_as_chain.back()->ResolveSpeakAsReference(*back);
+  }
+}
+
 void CounterStyleMap::ResolveReferences(
     HeapHashSet<Member<CounterStyleMap>>& visited_maps) {
   if (visited_maps.Contains(this))
@@ -187,6 +224,11 @@ void CounterStyleMap::ResolveReferences(
       ResolveExtendsFor(*counter_style);
     if (counter_style->HasUnresolvedFallback())
       ResolveFallbackFor(*counter_style);
+    if (RuntimeEnabledFeatures::
+            CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
+      if (counter_style->HasUnresolvedSpeakAsReference())
+        ResolveSpeakAsReferenceFor(*counter_style);
+    }
   }
 }
 
@@ -255,6 +297,7 @@ void CounterStyleMap::ResolveAllReferences(
         DCHECK(!counter_style->IsDirty());
         DCHECK(!counter_style->HasUnresolvedExtends());
         DCHECK(!counter_style->HasUnresolvedFallback());
+        DCHECK(!counter_style->HasUnresolvedSpeakAsReference());
       }
 #endif
     }

@@ -602,6 +602,26 @@ CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
   }
 }
 
+// static
+CounterStyleSpeakAs ToCounterStyleSpeakAsEnum(
+    const CSSIdentifierValue& keyword) {
+  switch (keyword.GetValueID()) {
+    case CSSValueID::kAuto:
+      return CounterStyleSpeakAs::kAuto;
+    case CSSValueID::kBullets:
+      return CounterStyleSpeakAs::kBullets;
+    case CSSValueID::kNumbers:
+      return CounterStyleSpeakAs::kNumbers;
+    case CSSValueID::kWords:
+      return CounterStyleSpeakAs::kWords;
+    case CSSValueID::kSpellOut:
+      return CounterStyleSpeakAs::kSpellOut;
+    default:
+      NOTREACHED();
+      return CounterStyleSpeakAs::kAuto;
+  }
+}
+
 CounterStyle::~CounterStyle() = default;
 
 AtomicString CounterStyle::GetName() const {
@@ -678,7 +698,17 @@ CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
   if (const CSSValue* suffix = rule.GetSuffix())
     suffix_ = SymbolToString(*suffix);
 
-  // TODO(crbug.com/1166766): Implement 'speak-as'.
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
+    if (const CSSValue* speak_as = rule.GetSpeakAs()) {
+      if (const auto* keyword = DynamicTo<CSSIdentifierValue>(speak_as)) {
+        speak_as_ = ToCounterStyleSpeakAsEnum(*keyword);
+      } else {
+        DCHECK(speak_as->IsCustomIdentValue());
+        speak_as_ = CounterStyleSpeakAs::kReference;
+        speak_as_name_ = To<CSSCustomIdentValue>(speak_as)->Value();
+      }
+    }
+  }
 }
 
 void CounterStyle::ResolveExtends(CounterStyle& extended) {
@@ -717,7 +747,13 @@ void CounterStyle::ResolveExtends(CounterStyle& extended) {
   if (!style_rule_->GetSuffix())
     suffix_ = extended.suffix_;
 
-  // TODO(crbug.com/1166766): Implement 'speak-as'.
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
+    if (!style_rule_->GetSpeakAs()) {
+      speak_as_ = extended.speak_as_;
+      speak_as_name_ = extended.speak_as_name_;
+      speak_as_style_ = nullptr;
+    }
+  }
 }
 
 bool CounterStyle::RangeContains(int value) const {
@@ -933,6 +969,7 @@ void CounterStyle::Trace(Visitor* visitor) const {
   visitor->Trace(style_rule_);
   visitor->Trace(extended_style_);
   visitor->Trace(fallback_style_);
+  visitor->Trace(speak_as_style_);
 }
 
 }  // namespace blink

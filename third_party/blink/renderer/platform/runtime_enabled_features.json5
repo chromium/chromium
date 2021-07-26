@@ -508,6 +508,10 @@
       status: "test",
     },
     {
+      // https://drafts.csswg.org/css-counter-styles/#counter-style-speak-as
+      name: "CSSAtRuleCounterStyleSpeakAsDescriptor"
+    },
+    {
       name: "CSSCalcAsInt",
       status: "test",
     },
