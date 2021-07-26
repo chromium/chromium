@@ -386,26 +386,26 @@ size=2 clientWidth=22
 size=3 clientWidth=29
 size=4 clientWidth=36
 size=5 clientWidth=43
-size=10 clientWidth=78
-size=20 clientWidth=148
-size=50 clientWidth=358
-size=100 clientWidth=708
-size=500 clientWidth=3508
-size=1000 clientWidth=7008
+size=10 clientWidth=79
+size=20 clientWidth=150
+size=50 clientWidth=363
+size=100 clientWidth=719
+size=500 clientWidth=3562
+size=1000 clientWidth=7116
 
 
 textarea
-cols=1 clientWidth=24
-cols=2 clientWidth=31
-cols=3 clientWidth=38
-cols=4 clientWidth=45
-cols=5 clientWidth=52
-cols=10 clientWidth=87
-cols=20 clientWidth=157
-cols=50 clientWidth=367
-cols=100 clientWidth=717
-cols=500 clientWidth=3517
-cols=1000 clientWidth=7017
+cols=1 clientWidth=25
+cols=2 clientWidth=32
+cols=3 clientWidth=39
+cols=4 clientWidth=46
+cols=5 clientWidth=53
+cols=10 clientWidth=89
+cols=20 clientWidth=160
+cols=50 clientWidth=373
+cols=100 clientWidth=728
+cols=500 clientWidth=3571
+cols=1000 clientWidth=7125
 
 
 PASS successfullyParsed is true

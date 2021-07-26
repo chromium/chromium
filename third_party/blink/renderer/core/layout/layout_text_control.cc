@@ -190,8 +190,15 @@ bool LayoutTextControl::HasValidAvgCharWidth(const Font& font) {
 float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
   const Font& font = style.GetFont();
   const SimpleFontData* primary_font = font.PrimaryFont();
-  if (primary_font && HasValidAvgCharWidth(font))
-    return roundf(primary_font->AvgCharWidth());
+  if (primary_font && HasValidAvgCharWidth(font)) {
+    const float width = primary_font->AvgCharWidth();
+    // We apply roundf() only if the fractional part of |width| is >= 0.5
+    // because:
+    // * We have done it for a long time.
+    // * Removing roundf() would make the intrinsic width smaller, and it
+    //   would have a compatibility risk.
+    return std::max(width, roundf(width));
+  }
 
   const UChar kCh = '0';
   const String str = String(&kCh, 1);

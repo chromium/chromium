@@ -1908,8 +1908,12 @@ crbug.com/1005518 external/wpt/css/css-writing-modes/table-progression-vrl-004.h
 # css-pseudo-4 ::spelling-error and ::grammar-error not implemented
 crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-001.html [ Skip ]
 crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-001.html [ Skip ]
+crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-002-manual.html [ Skip ]
+crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-003-manual.html [ Skip ]
 crbug.com/1035708 external/wpt/css/css-pseudo/selection-overlay-and-grammar-001.html [ Skip ]
 crbug.com/1035708 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001.html [ Skip ]
+crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-002-manual.html [ Skip ]
+crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-003-manual.html [ Skip ]
 crbug.com/626703 external/wpt/html/browsers/windows/restore-window-name-manual.https.html [ Skip ]
 crbug.com/626703 external/wpt/fullscreen/api/element-request-fullscreen-cross-origin-manual.sub.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/html/pointerevent_drag_interaction-manual.html [ Skip ]
