@@ -422,6 +422,9 @@ UIWindow* GetAnyKeyWindow();
 // Returns YES if the window with given number's current WebState is loading.
 - (BOOL)isLoadingInWindowWithNumber:(int)windowNumber WARN_UNUSED_RESULT;
 
+// Waits for the current web state for window to be visible.
+- (void)waitForWebStateVisible;
+
 // Waits for the current web state for window with given number, to contain
 // |UTF8Text|. If the condition is not met within a timeout a GREYAssert is
 // induced.
