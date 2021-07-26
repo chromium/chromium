@@ -33969,6 +33969,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="BlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory"/>
   <int value="3964"
       label="BlobStoreAccessAcrossAgentClustersInResolveForNavigation"/>
+  <int value="3965" label="TapDelayEnabled"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

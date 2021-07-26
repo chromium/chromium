@@ -3277,6 +3277,7 @@ enum WebFeature {
   kSameSiteCookieInclusionChangedByCrossSiteRedirect = 3962,
   kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory = 3963,
   kBlobStoreAccessAcrossAgentClustersInResolveForNavigation = 3964,
+  kTapDelayEnabled = 3965,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
