@@ -1294,7 +1294,7 @@
       "cr_bugs": [710273],
       "os": {
         "type": "android",
-	"version": {
+        "version": {
           "op": "<",
           "value": "7.0"
         }
@@ -1552,6 +1552,22 @@
       },
       "features": [
         "accelerated_video_decode"
+      ]
+    },
+    {
+      "id": 168,
+      "description": "PowerVR Driver crashes with ANGLE",
+      "cr_bugs": [1203652,1221321],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "5.1.1"
+        }
+      },
+      "gl_renderer": "ANGLE (Imagination Technologies, PowerVR .*",
+      "features": [
+        "all"
       ]
     }
   ]
