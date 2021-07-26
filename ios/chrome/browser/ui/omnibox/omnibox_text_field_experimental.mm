@@ -767,6 +767,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     UITextPosition* endOfUserText =
         [self positionFromPosition:self.endOfDocument
                             offset:-autocompleteLength];
+    // Move the cursor to the beginning of the field before setting the position
+    // to the end of the user input so if the text is very wide, the user sees
+    // the beginning of the text instead of the end.
+    self.selectedTextRange =
+        [self textRangeFromPosition:self.beginningOfDocument
+                         toPosition:self.beginningOfDocument];
     // Preserve the cursor position at the end of the user input.
     self.selectedTextRange = [self textRangeFromPosition:endOfUserText
                                               toPosition:endOfUserText];
