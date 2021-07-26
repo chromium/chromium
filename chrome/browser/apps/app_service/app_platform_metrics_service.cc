@@ -51,7 +51,7 @@ int AppPlatformMetricsService::GetDayIdForTesting(base::Time time) {
 void AppPlatformMetricsService::Start(
     apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry) {
-  app_platform_app_metrics_ = std::make_unique<AppPlatformMetrics>(
+  app_platform_app_metrics_ = std::make_unique<apps::AppPlatformMetrics>(
       profile_, app_registry_cache, instance_registry);
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);

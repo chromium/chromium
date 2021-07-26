@@ -522,6 +522,27 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     ASSERT_EQ(1, count);
   }
 
+  void VerifyAppsLaunchUkm(const std::string& app_info,
+                           AppTypeName app_type_name,
+                           apps::mojom::LaunchSource launch_source) {
+    const auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.Launch");
+    int count = 0;
+    for (const auto* entry : entries) {
+      const ukm::UkmSource* src =
+          test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (src == nullptr || src->url() != GURL(app_info)) {
+        continue;
+      }
+      ++count;
+      test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                             (int)app_type_name);
+      test_ukm_recorder()->ExpectEntryMetric(entry, "LaunchSource",
+                                             (int)launch_source);
+    }
+    ASSERT_EQ(1, count);
+  }
+
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
     return test_ukm_recorder_.get();
   }
@@ -534,6 +555,12 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   int GetDayIdPref() {
     return GetPrefService()->GetInteger(kAppPlatformMetricsDayId);
   }
+
+  std::unique_ptr<AppPlatformMetricsService> GetAppPlatformMetricsService() {
+    return std::move(app_platform_metrics_service_);
+  }
+
+  TestingProfile* profile() { return testing_profile_.get(); }
 
   syncer::TestSyncService* sync_service() { return sync_service_; }
 
@@ -1004,6 +1031,38 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   VerifyInstalledAppsUkm("app://com.google.AA", AppTypeName::kArc,
                          apps::mojom::InstallSource::kUser,
                          InstallTime::kRunning);
+}
+
+TEST_F(AppPlatformMetricsServiceTest, LaunchAppsUkm) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+
+  proxy->Launch(
+      /*app_id=*/"c", ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  // Verify UKM is not reported for the Crostini app.
+  const auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.Launch");
+  ASSERT_EQ(0U, entries.size());
+
+  proxy->Launch(
+      /*app_id=*/"a", ui::EventFlags::EF_NONE,
+      apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
+  VerifyAppsLaunchUkm("app://com.google.A", AppTypeName::kArc,
+                      apps::mojom::LaunchSource::kFromChromeInternal);
+
+  proxy->LaunchAppWithUrl(
+      /*app_id=*/"w", ui::EventFlags::EF_NONE, GURL("https://boo.com/a"),
+      apps::mojom::LaunchSource::kFromFileManager, nullptr);
+  VerifyAppsLaunchUkm("https://foo.com", AppTypeName::kChromeBrowser,
+                      apps::mojom::LaunchSource::kFromFileManager);
+
+  proxy->BrowserAppLauncher()->LaunchAppWithParams(apps::AppLaunchParams(
+      "s", apps::mojom::LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      apps::mojom::AppLaunchSource::kSourceTest));
+  VerifyAppsLaunchUkm("https://os-settings", AppTypeName::kChromeBrowser,
+                      apps::mojom::LaunchSource::kFromTest);
 }
 
 }  // namespace apps

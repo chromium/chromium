@@ -32,6 +32,7 @@ class WebAppsChromeOs;
 
 namespace apps {
 
+class AppPlatformMetrics;
 class AppPlatformMetricsService;
 class BorealisApps;
 class BuiltInChromeOsApps;
@@ -61,6 +62,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   ~AppServiceProxyChromeOs() override;
 
   apps::InstanceRegistry& InstanceRegistry();
+  apps::AppPlatformMetrics* AppPlatformMetrics();
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
@@ -94,6 +96,9 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   void UninstallForTesting(const std::string& app_id,
                            gfx::NativeWindow parent_window,
                            base::OnceClosure callback);
+  void SetAppPlatformMetricsServiceForTesting(
+      std::unique_ptr<apps::AppPlatformMetricsService>
+          app_platform_metrics_service);
 
  private:
   using UninstallDialogs = std::set<std::unique_ptr<apps::UninstallDialog>,
@@ -189,7 +194,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
 
   UninstallDialogs uninstall_dialogs_;
 
-  std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
+  std::unique_ptr<apps::AppPlatformMetricsService>
+      app_platform_metrics_service_;
 
   base::WeakPtrFactory<AppServiceProxyChromeOs> weak_ptr_factory_{this};
 };
