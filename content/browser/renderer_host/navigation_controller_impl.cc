@@ -3498,7 +3498,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          frame_entry->committed_origin(), network::mojom::WebSandboxFlags(),
+          frame_entry->committed_origin(),
+          // The correct storage key will be computed before committing the
+          // navigation.
+          blink::StorageKey(), network::mojom::WebSandboxFlags(),
           override_user_agent, params.redirect_chain,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),

@@ -857,7 +857,10 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          origin_to_commit, network::mojom::WebSandboxFlags(),
+          origin_to_commit,
+          // The correct storage key will be computed before committing the
+          // navigation.
+          blink::StorageKey(), network::mojom::WebSandboxFlags(),
           GetIsOverridingUserAgent(), redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), std::string(), original_url,

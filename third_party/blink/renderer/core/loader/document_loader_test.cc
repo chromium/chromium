@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-blink.h"
@@ -496,6 +497,53 @@ TEST_F(DocumentLoaderTest, CrossOriginNavigation) {
   EXPECT_FALSE(local_frame->Loader()
                    .GetDocumentLoader()
                    ->LastNavigationHadTrustedInitiator());
+}
+
+TEST_F(DocumentLoaderTest, StorageKeyFromNavigationParams) {
+  const KURL& requestor_url =
+      KURL(NullURL(), "https://www.example.com/foo.html");
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("https://example.com/foo.html");
+
+  const KURL& other_origin_url =
+      KURL(NullURL(), "https://www.another.com/bar.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithHTMLBufferForTesting(
+          SharedBuffer::Create(), other_origin_url);
+  params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+
+  blink::StorageKey storage_key_to_commit = blink::StorageKey::CreateWithNonce(
+      url::Origin(), base::UnguessableToken::Create());
+  params->storage_key = storage_key_to_commit;
+
+  LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_EQ(
+      BlinkStorageKey::CreateWithNonce(SecurityOrigin::Create(other_origin_url),
+                                       storage_key_to_commit.nonce().value()),
+      local_frame->DomWindow()->GetStorageKey());
+}
+
+// Tests that committing a Javascript URL keeps the storage key's nonce of the
+// previous document, ensuring that
+// `DocumentLoader::CreateWebNavigationParamsToCloneDocument` works correctly
+// w.r.t. storage key.
+TEST_F(DocumentLoaderTest, JavascriptURLKeepsStorageKeyNonce) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+
+  BlinkStorageKey storage_key = BlinkStorageKey::CreateWithNonce(
+      SecurityOrigin::CreateUniqueOpaque(), base::UnguessableToken::Create());
+
+  LocalFrame* frame = To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  frame->DomWindow()->SetStorageKey(storage_key);
+
+  frame->LoadJavaScriptURL(
+      url_test_helpers::ToKURL("javascript:'<p>hello world</p>'"));
+
+  EXPECT_EQ(storage_key.GetNonce(),
+            frame->DomWindow()->GetStorageKey().GetNonce());
 }
 
 TEST_F(DocumentLoaderTest, PublicSecureNotCounted) {

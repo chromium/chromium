@@ -62,6 +62,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -7648,6 +7649,39 @@ TEST_F(WebFrameTest, IPAddressSpace) {
         web_view->MainFrameImpl()->GetFrame()->DomWindow();
     EXPECT_EQ(value, context->AddressSpace());
   }
+}
+
+TEST_F(WebFrameTest,
+       CommitSynchronousNavigationForAboutBlankAndCheckStorageKeyNonce) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("data:text/html,<iframe></iframe>");
+
+  StorageKey storage_key = StorageKey::CreateWithNonce(
+      url::Origin(), base::UnguessableToken::Create());
+
+  auto* child_frame =
+      To<WebLocalFrameImpl>(web_view_helper.LocalMainFrame()->FirstChild());
+  child_frame->GetFrame()->DomWindow()->SetStorageKey(storage_key);
+
+  auto params = std::make_unique<WebNavigationParams>();
+  params->url = url_test_helpers::ToKURL("about:blank");
+  params->navigation_timings.navigation_start = base::TimeTicks::Now();
+  params->navigation_timings.fetch_start = base::TimeTicks::Now();
+  params->is_browser_initiated = true;
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<WebPolicyContainer>(
+      WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
+  params->is_synchronous_commit_for_bug_778318 = true;
+
+  params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
+  child_frame->CommitNavigation(std::move(params), nullptr);
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(child_frame);
+
+  // The synchronous commit for bug 778318 should not change the storage key.
+  EXPECT_EQ(storage_key.nonce(),
+            child_frame->GetFrame()->DomWindow()->GetStorageKey().GetNonce());
 }
 
 class TestDidNavigateCommitTypeWebFrameClient

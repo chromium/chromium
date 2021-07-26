@@ -983,7 +983,11 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   // renderer and sent to the browser instead of being measured here.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          absl::nullopt, network::mojom::WebSandboxFlags(), override_user_agent,
+          absl::nullopt,
+          // The correct storage key will be computed before committing the
+          // navigation.
+          blink::StorageKey(), network::mojom::WebSandboxFlags(),
+          override_user_agent,
           /*redirects=*/std::vector<GURL>(),
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
@@ -1113,8 +1117,12 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   // not used by the browser after commit.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
-          origin, network::mojom::WebSandboxFlags(), is_overriding_user_agent,
-          redirects, std::vector<network::mojom::URLResponseHeadPtr>(),
+          origin,
+          // The correct storage key is computed right after creating the
+          // NavigationRequest below.
+          blink::StorageKey(), network::mojom::WebSandboxFlags(),
+          is_overriding_user_agent, redirects,
+          std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(),
           std::string() /* redirect_response */, original_url,
           method /* original_method */, false /* can_load_local_resources */,
@@ -1166,6 +1174,15 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */));
 
+  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
+  // top frame origin.
+  navigation_request->commit_params_->storage_key =
+      navigation_request->anonymous()
+          ? blink::StorageKey::CreateWithNonce(origin,
+                                               render_frame_host->GetMainFrame()
+                                                   ->GetPage()
+                                                   .anonymous_iframes_nonce())
+          : blink::StorageKey(origin);
   navigation_request->web_bundle_navigation_info_ =
       std::move(web_bundle_navigation_info);
   if (subresource_web_bundle_navigation_info) {
@@ -4101,6 +4118,19 @@ void NavigationRequest::CommitNavigation() {
       render_frame_host_->ComputeIsolationInfoForSubresourcesForPendingCommit(
           origin);
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
+
+  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
+  // top frame origin.
+  //
+  // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
+  // moment. We will be able to use it once the browser can compute the origin
+  // to commit.
+  commit_params_->storage_key =
+      anonymous() ? blink::StorageKey::CreateWithNonce(
+                        GetOriginToCommit(), render_frame_host_->GetMainFrame()
+                                                 ->GetPage()
+                                                 .anonymous_iframes_nonce())
+                  : blink::StorageKey(GetOriginToCommit());
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();

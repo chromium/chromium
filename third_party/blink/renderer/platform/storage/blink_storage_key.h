@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -30,6 +31,12 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // Creates a BlinkStorageKey with the given origin. `origin` must not be null.
   // `origin` can be opaque.
   explicit BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin);
+
+  // Creates a BlinkStorageKey converting the given StorageKey `storage_key`.
+  BlinkStorageKey(const StorageKey& storage_key);
+
+  // Converts this BlinkStorageKey into a StorageKey.
+  operator StorageKey() const;
 
   ~BlinkStorageKey() = default;
 

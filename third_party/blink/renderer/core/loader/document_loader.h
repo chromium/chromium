@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -537,6 +538,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       content_security_notifier_;
 
   const scoped_refptr<SecurityOrigin> origin_to_commit_;
+  blink::BlinkStorageKey storage_key_;
   const network::mojom::WebSandboxFlags sandbox_flags_;
   WebNavigationType navigation_type_;
 

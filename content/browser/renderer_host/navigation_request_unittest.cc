@@ -614,6 +614,32 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetDnsAliases().empty());
 }
 
+TEST_F(NavigationRequestTest, StorageKeyToCommit) {
+  TestRenderFrameHost* child_document = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild(""));
+  child_document->frame_tree_node()->set_anonymous(true);
+
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_document);
+  navigation->ReadyToCommit();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  EXPECT_TRUE(request->commit_params().storage_key.nonce().has_value());
+  EXPECT_EQ(child_document->GetMainFrame()->GetPage().anonymous_iframes_nonce(),
+            request->commit_params().storage_key.nonce().value());
+
+  navigation->Commit();
+  child_document =
+      static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
+  EXPECT_TRUE(child_document->anonymous());
+  EXPECT_EQ(
+      blink::StorageKey::CreateWithNonce(
+          url::Origin::Create(kUrl),
+          child_document->GetMainFrame()->GetPage().anonymous_iframes_nonce()),
+      child_document->storage_key());
+}
+
 // Test that the required CSP of every frame is computed/inherited correctly and
 // that the Sec-Required-CSP header is set.
 class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {

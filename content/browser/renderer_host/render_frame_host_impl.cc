@@ -10120,13 +10120,18 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   required_csp_ = navigation_request->TakeRequiredCSP();
   anonymous_ = navigation_request->anonymous();
 
-  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
-  // top frame origin.
+  // TODO(https://crbug.com/888079): Once we are able to compute the origin to
+  // commit in the browser, `navigation_request->commit_params().storage_key`
+  // will contain the correct origin and it won't be necessary to override it
+  // with `param.origin` anymore.
+  const blink::StorageKey& provisional_storage_key =
+      navigation_request->commit_params().storage_key;
   blink::StorageKey storage_key_to_commit =
-      anonymous() ? blink::StorageKey::CreateWithNonce(
-                        GetLastCommittedOrigin(),
-                        GetMainFrame()->GetPage().anonymous_iframes_nonce())
-                  : blink::StorageKey(GetLastCommittedOrigin());
+      provisional_storage_key.nonce().has_value()
+          ? blink::StorageKey::CreateWithNonce(
+                GetLastCommittedOrigin(),
+                provisional_storage_key.nonce().value())
+          : blink::StorageKey(GetLastCommittedOrigin());
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

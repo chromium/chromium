@@ -1033,6 +1033,7 @@ void FillMiscNavigationParams(
     navigation_params->origin_to_commit =
         commit_params.origin_to_commit.value();
   }
+  navigation_params->storage_key = std::move(commit_params.storage_key);
   navigation_params->sandbox_flags = commit_params.sandbox_flags;
 
   navigation_params->appcache_host_id =
@@ -5277,6 +5278,7 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
 
   // TODO(dgozman): should we follow the RFI::CommitNavigation path instead?
   auto navigation_params = WebNavigationParams::CreateFromInfo(*info);
+  navigation_params->is_synchronous_commit_for_bug_778318 = true;
   // We need the provider to be non-null, otherwise Blink crashes, even
   // though the provider should not be used for any actual networking.
   navigation_params->service_worker_network_provider =

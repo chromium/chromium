@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+
 namespace blink {
 
 BlinkStorageKey::BlinkStorageKey()
@@ -27,6 +29,17 @@ BlinkStorageKey BlinkStorageKey::CreateWithNonce(
     const base::UnguessableToken& nonce) {
   DCHECK(!nonce.is_empty());
   return BlinkStorageKey(std::move(origin), &nonce);
+}
+
+BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)
+    : BlinkStorageKey(
+          SecurityOrigin::CreateFromUrlOrigin(storage_key.origin()),
+          storage_key.nonce() ? &storage_key.nonce().value() : nullptr) {}
+
+BlinkStorageKey::operator StorageKey() const {
+  return nonce_.has_value() ? StorageKey::CreateWithNonce(
+                                  origin_->ToUrlOrigin(), nonce_.value())
+                            : StorageKey(origin_->ToUrlOrigin());
 }
 
 String BlinkStorageKey::ToDebugString() const {

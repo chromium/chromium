@@ -262,6 +262,7 @@ struct SameSizeAsDocumentLoader
   bool is_error_page_for_failed_navigation;
   mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
   scoped_refptr<SecurityOrigin> origin_to_commit;
+  BlinkStorageKey storage_key;
   network::mojom::WebSandboxFlags sandbox_flags;
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
@@ -387,6 +388,7 @@ DocumentLoader::DocumentLoader(
       origin_to_commit_(params_->origin_to_commit.IsNull()
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
+      storage_key_(std::move(params_->storage_key)),
       sandbox_flags_(params_->sandbox_flags),
       navigation_type_(navigation_type),
       document_load_timing_(*this),
@@ -507,6 +509,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // javascript: URL in an about:blank frame that inherited an origin will cause
   // the origin to no longer be aliased).
   params->origin_to_commit = window->GetSecurityOrigin();
+  params->storage_key = window->GetStorageKey();
   params->sandbox_flags = sandbox_flags_;
   params->origin_agent_cluster = origin_agent_cluster_;
   params->grant_load_local_resources = grant_load_local_resources_;
@@ -2154,9 +2157,14 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
   security_context.SetSandboxFlags(sandbox_flags_);
 
-  // TODO(https://crbug.com/1224901): Send storage key with the commit params
-  // and use the storage key sent by the browser directly here.
-  frame_->DomWindow()->SetStorageKey(BlinkStorageKey(security_origin));
+  // TODO(https://crbug.com/888079): Just use the storage key sent by the
+  // browser once the browser will be able to compute the origin in all cases.
+  frame_->DomWindow()->SetStorageKey(
+      storage_key_.GetNonce().has_value()
+          ? BlinkStorageKey::CreateWithNonce(security_origin,
+                                             storage_key_.GetNonce().value())
+          : BlinkStorageKey(security_origin));
+
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
   // wants to inspect sandbox flags.

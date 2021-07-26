@@ -2354,6 +2354,10 @@ void WebLocalFrameImpl::CommitNavigation(
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(GetFrame());
   DCHECK(!navigation_params->url.ProtocolIs("javascript"));
+  if (navigation_params->is_synchronous_commit_for_bug_778318) {
+    DCHECK(WebDocumentLoader::WillLoadUrlAsEmpty(navigation_params->url));
+    navigation_params->storage_key = GetFrame()->DomWindow()->GetStorageKey();
+  }
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();
   GetFrame()->Loader().CommitNavigation(std::move(navigation_params),

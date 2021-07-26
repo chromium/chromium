@@ -8,6 +8,7 @@
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -77,6 +78,57 @@ TEST(BlinkStorageKeyTest, CreateFromNonOpaqueOrigin) {
     // Test that two StorageKeys from the same origin are the same.
     BlinkStorageKey storage_key_from_copy(std::move(copied));
     EXPECT_EQ(storage_key, storage_key_from_copy);
+  }
+}
+
+// Tests that the conversion BlinkStorageKey -> StorageKey -> BlinkStorageKey is
+// the identity.
+TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
+  scoped_refptr<const SecurityOrigin> origin1 =
+      SecurityOrigin::CreateUniqueOpaque();
+  scoped_refptr<const SecurityOrigin> origin2 =
+      SecurityOrigin::CreateFromString("http://example.site");
+  scoped_refptr<const SecurityOrigin> origin3 =
+      SecurityOrigin::CreateFromString("https://example.site");
+  scoped_refptr<const SecurityOrigin> origin4 =
+      SecurityOrigin::CreateFromString("file:///path/to/file");
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  Vector<BlinkStorageKey> keys = {
+      BlinkStorageKey(),
+      BlinkStorageKey(origin1),
+      BlinkStorageKey(origin2),
+      BlinkStorageKey(origin3),
+      BlinkStorageKey(origin4),
+      BlinkStorageKey::CreateWithNonce(origin1, nonce),
+      BlinkStorageKey::CreateWithNonce(origin2, nonce),
+  };
+
+  for (BlinkStorageKey& key : keys) {
+    EXPECT_EQ(key, BlinkStorageKey(StorageKey(key)));
+  }
+}
+
+// Tests that the conversion StorageKey -> BlinkStorageKey -> StorageKey is the
+// identity.
+TEST(BlinkStorageKey, StorageKeyRoundTripConversion) {
+  url::Origin url_origin1;
+  url::Origin url_origin2 = url::Origin::Create(GURL("http://example.site"));
+  url::Origin url_origin3 = url::Origin::Create(GURL("https://example.site"));
+  url::Origin url_origin4 = url::Origin::Create(GURL("file:///path/to/file"));
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  Vector<StorageKey> storage_keys = {
+      StorageKey(url_origin1),
+      StorageKey(url_origin2),
+      StorageKey(url_origin3),
+      StorageKey(url_origin4),
+      StorageKey::CreateWithNonce(url_origin1, nonce),
+      StorageKey::CreateWithNonce(url_origin2, nonce),
+  };
+
+  for (const auto& key : storage_keys) {
+    EXPECT_EQ(key, StorageKey(BlinkStorageKey(key)));
   }
 }
 
