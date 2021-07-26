@@ -7371,6 +7371,27 @@
             ]
         }
     ],
+    "SafeBrowsingVisualFeaturesSizes": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210719",
+                    "params": {
+                        "min_height": "258",
+                        "min_width": "258",
+                        "phash_height": "192",
+                        "phash_width": "108"
+                    },
+                    "enable_features": [
+                        "VisualFeaturesSizes"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrollResamplingRollout": [
         {
             "platforms": [
