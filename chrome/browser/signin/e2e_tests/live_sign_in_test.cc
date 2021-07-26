@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 
   TestAccount ta;
   CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
-  SignInFromSettings(ta, 0);
+  TurnOnSync(ta, 0);
 
   CoreAccountInfo core_account_info =
       identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
