@@ -424,6 +424,17 @@ class PLATFORM_EXPORT FontCachePurgePreventer {
 
 AtomicString ToAtomicString(const SkString&);
 
+#if defined(OS_ANDROID)
+// static
+inline const char* FontCache::GetLocaleSpecificFamilyName(
+    const AtomicString& family_name) {
+  // Only `serif` has `fallbackFor` according to the current `fonts.xml`.
+  if (family_name == font_family_names::kWebkitSerif)
+    return "serif";
+  return nullptr;
+}
+#endif
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CACHE_H_

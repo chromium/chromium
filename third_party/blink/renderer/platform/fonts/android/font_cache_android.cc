@@ -82,15 +82,6 @@ const AtomicString& FontCache::SystemFontFamily() {
 // static
 void FontCache::SetSystemFontFamily(const AtomicString&) {}
 
-// static
-const char* FontCache::GetLocaleSpecificFamilyName(
-    const AtomicString& family_name) {
-  // Only `serif` has `fallbackFor` according to the current `fonts.xml`.
-  if (family_name == font_family_names::kWebkitSerif)
-    return "serif";
-  return nullptr;
-}
-
 sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
     const FontDescription& font_description,
     const char* locale_family_name) {
