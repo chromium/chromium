@@ -6100,7 +6100,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20200820",
+                    "name": "Enabled_20210726",
+                    "params": {
+                        "compress_bitmaps": "true"
+                    },
                     "enable_features": [
                         "PaintPreviewShowOnStartup"
                     ]
