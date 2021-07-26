@@ -20,6 +20,8 @@ source_set("signin") {
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",
     "chrome_account_manager_service_factory.mm",
+    "chrome_account_manager_service_observer_bridge.h",
+    "chrome_account_manager_service_observer_bridge.mm",
     "chrome_identity_service_observer_bridge.h",
     "chrome_identity_service_observer_bridge.mm",
     "constants.h",
@@ -124,6 +126,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "authentication_service_unittest.mm",
+    "chrome_account_manager_service_observer_bridge_unittest.mm",
     "chrome_account_manager_service_unittest.mm",
     "chrome_identity_service_observer_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
