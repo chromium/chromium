@@ -70,6 +70,7 @@
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
 
 namespace views {
@@ -4137,9 +4138,9 @@ namespace {
 bool CanHaveCompositingManager() {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
-    const auto* const egl_utility =
+    auto* const egl_utility =
         ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-    return egl_utility != nullptr;
+    return (egl_utility != nullptr) && egl_utility->HasVisualManager();
   }
 #endif
 #if defined(USE_X11)

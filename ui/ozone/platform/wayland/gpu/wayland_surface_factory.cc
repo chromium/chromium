@@ -150,6 +150,8 @@ WaylandSurfaceFactory::GetAllowedGLImplementations() {
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     impls.emplace_back(
         gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
   }
   return impls;
 }
@@ -159,6 +161,7 @@ GLOzone* WaylandSurfaceFactory::GetGLOzone(
   switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
+    case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:
       return nullptr;

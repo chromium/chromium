@@ -172,13 +172,7 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 
 GLImplementationParts GetSoftwareGLForTestsImplementation() {
 #if defined(OS_WIN) || defined(OS_LINUX)
-#if defined(USE_OZONE)
-  if (!features::IsUsingOzonePlatform() ||
-      (ui::OzonePlatform::GetPlatformNameForTest() != "wayland"))
-#endif
-  {
-    return GetSoftwareGLImplementation();
-  }
+  return GetSoftwareGLImplementation();
 #endif
   return GetLegacySoftwareGLImplementation();
 }

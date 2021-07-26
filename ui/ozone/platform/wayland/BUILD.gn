@@ -35,6 +35,8 @@ source_set("wayland") {
     "gpu/wayland_buffer_manager_gpu.h",
     "gpu/wayland_canvas_surface.cc",
     "gpu/wayland_canvas_surface.h",
+    "gpu/wayland_gl_egl_utility.cc",
+    "gpu/wayland_gl_egl_utility.h",
     "gpu/wayland_overlay_candidates.cc",
     "gpu/wayland_overlay_candidates.h",
     "gpu/wayland_overlay_manager.cc",
