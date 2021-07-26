@@ -8,40 +8,22 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-class ChromeBrowserState;
-class WebStateList;
 class Browser;
 
-// A model of a tab "strip". Although the UI representation may not be a
-// traditional strip at all, tabs are still accessed via an integral index.
-// The model knows about the currently selected tab in order to maintain
-// consistency between multiple views that need the current tab to be
-// synchronized.
+// A legacy class that encapsulates some lifecycle business logic for tabs in
+// a WebStateList. This class is moribund (see crbug.com/783777).
 @interface TabModel : NSObject
-
-// BrowserState associated with this TabModel.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
-
-// Determines the number of tabs in the model.
-@property(nonatomic, readonly) NSUInteger count;
-
-// The WebStateList owned by the TabModel.
-@property(nonatomic, readonly) WebStateList* webStateList;
-
-// Initializes tabs from existing browser object. |-setCurrentTab| needs to be
-// called in order to display the views associated with the tabs. Waits until
-// the views are ready.
+// Initializes a TabModel from a browser.
 - (instancetype)initWithBrowser:(Browser*)browser;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Tells the receiver to disconnect from the model object it depends on. This
-// should be called before destroying the browser state that the receiver was
+// should be called before destroying the browser that the receiver was
 // initialized with.
 // It is safe to call this method multiple times.
 // At this point the tab model will no longer ever be active, and will likely be
-// deallocated soon. Calling any other methods or accessing any properties on
-// the tab model after this is called is unsafe.
+// deallocated soon.
 - (void)disconnect;
 
 @end

@@ -9,7 +9,6 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/tab_parenting_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
@@ -72,15 +71,14 @@ void CleanCertificatePolicyCache(
   // Enabler for |_webStateList|
   WebUsageEnablerBrowserAgent* _webEnabler;
 
-  // WebStateListObservers reacting to modifications of the model (may send
-  // notification, translate and forward events, update metrics, ...).
-  std::vector<std::unique_ptr<WebStateListObserver>> _webStateListObservers;
-
   // Weak reference to the session restoration agent.
   SessionRestorationBrowserAgent* _sessionRestorationBrowserAgent;
 
   // Used to ensure thread-safety of the certificate policy management code.
   base::CancelableTaskTracker _clearPoliciesTaskTracker;
+
+  // BrowserState associated with this TabModel.
+  ChromeBrowserState* _browserState;
 }
 
 @end
@@ -88,8 +86,6 @@ void CleanCertificatePolicyCache(
 @implementation TabModel {
   BOOL _savedSessionDuringBackgrounding;
 }
-
-@synthesize browserState = _browserState;
 
 #pragma mark - Overriden
 
@@ -100,16 +96,6 @@ void CleanCertificatePolicyCache(
 
 #pragma mark - Public methods
 
-- (NSUInteger)count {
-  DCHECK_GE(_webStateList->count(), 0);
-  return static_cast<NSUInteger>(_webStateList->count());
-}
-
-- (WebStateList*)webStateList {
-  DCHECK(_webStateList);
-  return _webStateList;
-}
-
 - (instancetype)initWithBrowser:(Browser*)browser {
   if ((self = [super init])) {
     _webStateList = browser->GetWebStateList();
@@ -119,11 +105,6 @@ void CleanCertificatePolicyCache(
     _sessionRestorationBrowserAgent =
         SessionRestorationBrowserAgent::FromBrowser(browser);
     _webEnabler = WebUsageEnablerBrowserAgent::FromBrowser(browser);
-
-    _webStateListObservers.push_back(std::make_unique<TabParentingObserver>());
-
-    for (const auto& webStateListObserver : _webStateListObservers)
-      _webStateList->AddObserver(webStateListObserver.get());
 
     _savedSessionDuringBackgrounding = NO;
 
@@ -173,13 +154,7 @@ void CleanCertificatePolicyCache(
     _webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
   }
 
-  // Unregister all observers after closing all the tabs as some of them are
-  // required to properly clean up the Tabs.
-  for (const auto& webStateListObserver : _webStateListObservers)
-    _webStateList->RemoveObserver(webStateListObserver.get());
-  _webStateListObservers.clear();
   _webStateList = nullptr;
-
   _clearPoliciesTaskTracker.TryCancelAll();
 }
 
