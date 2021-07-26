@@ -87,8 +87,8 @@ base::Time GetTime(int year, int month, int day_of_month, int day_of_week) {
 // 09/07/2021.
 bool IsNowInValidTimePeriod() {
   const auto now = base::Time::Now();
-  return now <= GetTime(2021, 9, 7, /*Tuesday=*/3) &&
-         now >= GetTime(2021, 7, 27, /*Tuesday=*/3);
+  return now <= GetTime(2021, 9, 7, /*Tuesday=*/2) &&
+         now >= GetTime(2021, 7, 27, /*Tuesday=*/2);
 }
 
 }  // namespace
