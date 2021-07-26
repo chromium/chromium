@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin.ui;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -86,14 +88,28 @@ public class SigninPromoControllerTest {
     }
 
     @Test
-    public void shouldShowSyncPromoForNTPWhenSecondaryAccountCannotOfferSyncPromos() {
+    public void shouldHideSyncPromoForNTPWhenDefaultAccountCapabilityIsNotFetched() {
         final Account account =
-                AccountUtils.createAccountFromName("test.account.secondary@gmail.com");
-        mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
+                AccountUtils.createAccountFromName("test.account.default@gmail.com");
         mAccountManagerTestRule.addAccount(account);
-        doReturn(Optional.of(false))
+        mAccountManagerTestRule.addAccount("test.account.secondary@gmail.com");
+
+        Assert.assertTrue(SigninPromoController.shouldHideSyncPromoForNTP(
+                SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldShowSyncPromoForNTPWhenSecondaryAccountCannotOfferSyncPromos() {
+        final Account secondAccount =
+                AccountUtils.createAccountFromName("test.account.secondary@gmail.com");
+        doAnswer(invocation -> {
+            final Account account0 = invocation.getArgument(0);
+            return Optional.of(!account0.equals(secondAccount));
+        })
                 .when(mFakeAccountManagerFacade)
-                .canOfferExtendedSyncPromos(account);
+                .canOfferExtendedSyncPromos(any());
+        mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
+        mAccountManagerTestRule.addAccount(secondAccount);
 
         Assert.assertFalse(SigninPromoController.shouldHideSyncPromoForNTP(
                 SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));

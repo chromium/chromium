@@ -119,7 +119,7 @@ public class SigninPromoController {
         }
         final boolean canNotOfferPromoForMinorAccount =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
-                && !accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(true);
+                && !accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(false);
         return canNotOfferPromoForMinorAccount
                 || ChromeFeatureList.isEnabled(
                         ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS);

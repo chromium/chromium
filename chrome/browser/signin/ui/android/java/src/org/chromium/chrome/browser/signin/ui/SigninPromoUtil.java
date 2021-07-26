@@ -94,7 +94,7 @@ public final class SigninPromoUtil {
         }
 
         final boolean canDefaultAccountOfferExtendedSyncPromos =
-                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0)).or(true);
+                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0)).or(false);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
                 && !canDefaultAccountOfferExtendedSyncPromos) {
             return false;
