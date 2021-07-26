@@ -57,13 +57,14 @@
 - (void)presentFromButton:(UIButton*)button {
   self.viewController.modalPresentationStyle = UIModalPresentationPopover;
 
-  // The |button.window.rootViewController| is used in order to present above
-  // the keyboard. This way the popover will be dismissed on keyboard
-  // interaction and it won't be covered when the keyboard is near the top of
-  // the screen.
-  [button.window.rootViewController presentViewController:self.viewController
-                                                 animated:YES
-                                               completion:nil];
+  // |topFrontWindow| is used in order to present above the keyboard. This way
+  // the popover will be dismissed on keyboard interaction and it won't be
+  // covered when the keyboard is near the top of the screen.
+  UIWindow* topFrontWindow =
+      [[[UIApplication sharedApplication] windows] lastObject];
+  [topFrontWindow.rootViewController presentViewController:self.viewController
+                                                  animated:YES
+                                                completion:nil];
 
   UIPopoverPresentationController* popoverPresentationController =
       self.viewController.popoverPresentationController;
