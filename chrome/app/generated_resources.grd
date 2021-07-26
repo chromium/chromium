@@ -2521,25 +2521,25 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <!-- WebApp name/icon update dialog -->
-      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the dialog when only the name changed.">
-        Review name updates
+      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the dialog when only the name changed." formatter_data="android_java">
+        Review name update
       </message>
-      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_ICON" desc="The title at the top of the dialog when only the icon changed.">
-        Review icon updates
+      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_ICON" desc="The title at the top of the dialog when only the icon changed." formatter_data="android_java">
+        Review icon update
       </message>
-      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON" desc="The title at the top of the dialog when the name and icon changed.">
+      <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON" desc="The title at the top of the dialog when the name and icon changed." formatter_data="android_java">
         Review name &amp; icon updates
       </message>
-      <message name="IDS_WEBAPP_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity.">
-        If this web app is trying to trick you into thinking it is a different app, uninstall it.
+      <message name="IDS_WEBAPP_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity." formatter_data="android_java">
+        If this web app is trying to trick you into thinking it's a different app, uninstall it.
       </message>
-      <message name="IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team.">
+      <message name="IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team." formatter_data="android_java">
         Uninstall app
       </message>
-      <message name="IDS_UPDATE_WEBAPP_CURRENT_ICON" desc="The accessibility string explaining which icon is the current icon.">
+      <message name="IDS_WEBAPP_UPDATE_CURRENT_ICON" desc="The accessibility string explaining which icon is the current icon." formatter_data="android_java">
         Current icon
       </message>
-      <message name="IDS_UPDATE_WEBAPP_UPDATED_ICON" desc="The accessibility string explaining which icon is the new icon.">
+      <message name="IDS_WEBAPP_UPDATE_NEW_ICON" desc="The accessibility string explaining which icon is the new icon." formatter_data="android_java">
         New icon
       </message>
 

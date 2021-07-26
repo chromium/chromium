@@ -771,29 +771,6 @@
         Drag from top and touch the back button to exit full screen.
       </message>
 
-      <!-- WebApk name/icon update dialog -->
-      <message name="IDS_WEBAPK_UPDATE_DIALOG_TITLE_NAME" desc="The title at the top of the dialog when only the name changed.">
-        Review name updates
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_DIALOG_TITLE_ICON" desc="The title at the top of the dialog when only the icon changed.">
-        Review icon updates
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_DIALOG_TITLE_NAME_AND_ICON" desc="The title at the top of the dialog when the name and icon changed.">
-        Review name &amp; icon updates
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_EXPLANATION" desc="The text at the top of the dialog, explaining what to do when an app changes its identity.">
-        If this web app is trying to trick you into thinking it is a different app, uninstall it.
-      </message>
-      <message name="IDS_WEBAPK_UPDATE_NEGATIVE_BUTTON" desc="The text for the negative button (aka. cancel button), allowing the user to uninstall the app and report it to the abuse team.">
-        Uninstall app
-      </message>
-      <message name="IDS_UPDATE_WEBAPK_CURRENT_ICON" desc="The accessibility string explaining which icon is the current icon.">
-        Current icon
-      </message>
-      <message name="IDS_UPDATE_WEBAPK_UPDATED_ICON" desc="The accessibility string explaining which icon is the new icon.">
-        New icon
-      </message>
-
       <!-- WebApk name/icon report abuse dialog -->
       <message name="IDS_WEBAPK_REPORT_ABUSE_DIALOG_TITLE" desc="The title at the top of the report abuse dialog.">
         Uninstall '<ph name="APP_NAME">%1$s<ex>Google App</ex></ph>'?

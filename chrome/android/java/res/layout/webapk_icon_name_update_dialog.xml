@@ -26,7 +26,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:visibility="gone"
-            android:contentDescription="@string/update_webapk_current_icon" />
+            android:contentDescription="@string/webapp_update_current_icon" />
 
         <TextView
             android:id="@+id/short_app_name_old"
@@ -67,7 +67,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:visibility="gone"
-            android:contentDescription="@string/update_webapk_updated_icon"/>
+            android:contentDescription="@string/webapp_update_new_icon"/>
 
         <TextView
             android:id="@+id/short_app_name_new"

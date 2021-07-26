@@ -73,10 +73,10 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
 
         int titleId = 0;
         if (iconChanging && (shortNameChanging || nameChanging)) {
-            titleId = R.string.webapk_update_dialog_title_name_and_icon;
+            titleId = R.string.webapp_update_dialog_title_name_and_icon;
         } else {
-            titleId = iconChanging ? R.string.webapk_update_dialog_title_icon
-                                   : R.string.webapk_update_dialog_title_name;
+            titleId = iconChanging ? R.string.webapp_update_dialog_title_icon
+                                   : R.string.webapp_update_dialog_title_name;
         }
 
         WebApkIconNameUpdateCustomView dialogCustomView =
@@ -102,12 +102,12 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.TITLE, resources, titleId)
                         .with(ModalDialogProperties.MESSAGE, resources,
-                                R.string.webapk_update_explanation)
+                                R.string.webapp_update_explanation)
                         .with(ModalDialogProperties.CUSTOM_VIEW, dialogCustomView)
                         .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                R.string.webapk_update_negative_button)
+                                R.string.webapp_update_negative_button)
                         .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
                         .build();
 

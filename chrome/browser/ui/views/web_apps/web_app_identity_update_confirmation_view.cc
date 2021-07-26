@@ -134,6 +134,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
   gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
   old_icon_image_view->SetImageSize(image_size);
   old_icon_image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(old_icon));
+  old_icon_image_view->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_CURRENT_ICON));
   layout->AddView(std::move(old_icon_image_view));
 
   auto arrow =
@@ -145,6 +147,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
   auto new_icon_image_view = std::make_unique<views::ImageView>();
   new_icon_image_view->SetImageSize(image_size);
   new_icon_image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(new_icon));
+  new_icon_image_view->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEW_ICON));
   layout->AddView(std::move(new_icon_image_view));
 
   layout->AddPaddingRow(
