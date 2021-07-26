@@ -94,6 +94,7 @@ using signin_metrics::PromoAction;
   }
 
   DCHECK(self.identityInteractionManager);
+  self.manager.signinInterrupted = YES;
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:
     case SigninCoordinatorInterruptActionDismissWithoutAnimation:
@@ -188,6 +189,11 @@ using signin_metrics::PromoAction;
   // Add account is done, we don't need |self.identityInteractionManager|
   // anymore.
   self.identityInteractionManager = nil;
+  if (signinResult == SigninCoordinatorResultInterrupted) {
+    // Stop the reauth flow.
+    [self addAccountDoneWithSigninResult:signinResult identity:nil];
+    return;
+  }
   switch (self.signinIntent) {
     case AddAccountSigninIntentReauthPrimaryAccount: {
       if (self.openAccountCreationURL) {
