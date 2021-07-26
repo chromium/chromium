@@ -10631,7 +10631,42 @@
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
   "DeviceLoginScreenCaretHighlightEnabled": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.a11y.caret_highlight": {
+            "location": "signin_profile",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenCaretHighlightEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.caret_highlight": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenCaretHighlightEnabled": false
+        },
+        "prefs": {
+          "settings.a11y.caret_highlight": {
+            "location": "signin_profile",
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "DeviceLoginScreenMonoAudioEnabled": {
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
