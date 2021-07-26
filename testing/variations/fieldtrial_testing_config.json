@@ -6404,7 +6404,7 @@
                 {
                     "name": "Enabled_ThrottleIdleAndNopAnimation",
                     "params": {
-                        "include_charging": "true",
+                        "include_charging": "false",
                         "min_cputime_ratio": "0.5",
                         "min_time_in_mode_ms": "500",
                         "policy": "kThrottleIdleAndNopAnimation",
