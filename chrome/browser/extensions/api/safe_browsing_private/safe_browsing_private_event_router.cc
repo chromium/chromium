@@ -979,23 +979,27 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
       now_exploded.month, now_exploded.day_of_month, now_exploded.hour,
       now_exploded.minute, now_exploded.second, now_exploded.millisecond);
 
+  auto* client = settings.per_profile ? profile_client_ : browser_client_;
   base::Value wrapper(base::Value::Type::DICTIONARY);
   wrapper.SetStringKey("time", now_str);
   wrapper.SetKey(name, std::move(event));
 
   auto upload_callback = base::BindOnce(
-      [](base::Value wrapper, bool uploaded) {
+      [](base::Value wrapper, bool per_profile, std::string dm_token,
+         bool uploaded) {
         // Show the report on chrome://safe-browsing, if appropriate.
         wrapper.SetBoolKey("uploaded_successfully", uploaded);
+        wrapper.SetStringKey(
+            per_profile ? "profile_dm_token" : "browser_dm_token",
+            std::move(dm_token));
         safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
             wrapper);
       },
-      wrapper.Clone());
+      wrapper.Clone(), settings.per_profile, client->dm_token());
 
   base::Value event_list(base::Value::Type::LIST);
   event_list.Append(std::move(wrapper));
 
-  auto* client = settings.per_profile ? profile_client_ : browser_client_;
   client->UploadSecurityEventReport(
       context_,
       /* include_device_info */ !settings.per_profile,
