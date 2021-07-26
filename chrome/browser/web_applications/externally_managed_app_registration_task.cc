@@ -12,6 +12,8 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -50,7 +52,7 @@ ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
 
   // Check to see if there is already a service worker for the install url.
   service_worker_context_->CheckHasServiceWorker(
-      install_url,
+      install_url, blink::StorageKey(url::Origin::Create(install_url)),
       base::BindOnce(
           &ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker,
           weak_ptr_factory_.GetWeakPtr()));

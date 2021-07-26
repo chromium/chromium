@@ -83,6 +83,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/url_constants.h"
 
@@ -234,13 +235,13 @@ class ServiceWorkerTest : public ExtensionApiTest {
     return ExtractInnerText(Navigate(url));
   }
 
-  size_t GetWorkerRefCount(const url::Origin& origin) {
+  size_t GetWorkerRefCount(const blink::StorageKey& key) {
     content::ServiceWorkerContext* sw_context =
         browser()
             ->profile()
             ->GetDefaultStoragePartition()
             ->GetServiceWorkerContext();
-    return sw_context->CountExternalRequestsForTest(origin);
+    return sw_context->CountExternalRequestsForTest(key);
   }
 
  private:
@@ -2280,10 +2281,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   url::Origin extension_origin = url::Origin::Create(extension->url());
+  blink::StorageKey extension_key(extension_origin);
 
   // Service worker should have no pending requests because it hasn't performed
   // any extension API request yet.
-  EXPECT_EQ(0u, GetWorkerRefCount(extension_origin));
+  EXPECT_EQ(0u, GetWorkerRefCount(extension_key));
 
   ExtensionTestMessageListener worker_listener("CHECK_REF_COUNT", true);
   worker_listener.set_failure_message("FAILURE");
@@ -2292,7 +2294,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
 
   // Service worker should have exactly one pending request because
   // chrome.test.sendMessage() API call is in-flight.
-  EXPECT_EQ(1u, GetWorkerRefCount(extension_origin));
+  EXPECT_EQ(1u, GetWorkerRefCount(extension_key));
 
   // Perform another extension API request while one is ongoing.
   {
@@ -2303,7 +2305,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
     ASSERT_TRUE(listener.WaitUntilSatisfied());
 
     // Service worker currently has two extension API requests in-flight.
-    EXPECT_EQ(2u, GetWorkerRefCount(extension_origin));
+    EXPECT_EQ(2u, GetWorkerRefCount(extension_key));
     // Finish executing the nested chrome.test.sendMessage() first.
     listener.Reply("Hello world");
   }
@@ -2330,7 +2332,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, WorkerRefCount) {
   }
 
   // The ref count should drop to 0.
-  EXPECT_EQ(0u, GetWorkerRefCount(extension_origin));
+  EXPECT_EQ(0u, GetWorkerRefCount(extension_key));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,

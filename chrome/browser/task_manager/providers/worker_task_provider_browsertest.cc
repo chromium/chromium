@@ -31,7 +31,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -189,8 +191,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(browser())->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser())->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -226,8 +229,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(incognito)->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(incognito)->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -279,13 +283,15 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(browser_1)->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser_1)->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(1);
   EXPECT_EQ(task_2, tasks()[0]);
 
-  GetServiceWorkerContext(browser_2)->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser_2)->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();
@@ -318,8 +324,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
               .spec()),
       base::CompareCase::INSENSITIVE_ASCII));
 
-  GetServiceWorkerContext(browser())->StopAllServiceWorkersForOrigin(
-      url::Origin::Create(embedded_test_server()->base_url()));
+  GetServiceWorkerContext(browser())->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(
+          url::Origin::Create(embedded_test_server()->base_url())));
   WaitUntilTaskCount(0);
 
   StopUpdating();

@@ -153,9 +153,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void RemoveObserver(ServiceWorkerContextObserver* observer) override;
   void RegisterServiceWorker(
       const GURL& script_url,
+      const blink::StorageKey& key,
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       StatusCodeCallback callback) override;
   void UnregisterServiceWorker(const GURL& scope,
+                               const blink::StorageKey& key,
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
@@ -163,28 +165,34 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
-  size_t CountExternalRequestsForTest(const url::Origin& origin) override;
+  size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
   bool MaybeHasRegistrationForOrigin(const url::Origin& origin) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
-  void DeleteForOrigin(const url::Origin& origin,
-                       ResultCallback callback) override;
+  void DeleteForStorageKey(const blink::StorageKey& key,
+                           ResultCallback callback) override;
   void CheckHasServiceWorker(const GURL& url,
+                             const blink::StorageKey& key,
                              CheckHasServiceWorkerCallback callback) override;
   void CheckOfflineCapability(const GURL& url,
+                              const blink::StorageKey& key,
                               CheckOfflineCapabilityCallback callback) override;
 
   void ClearAllServiceWorkersForTest(base::OnceClosure callback) override;
   void StartWorkerForScope(const GURL& scope,
+                           const blink::StorageKey& key,
                            StartWorkerCallback info_callback,
                            StatusCodeCallback failure_callback) override;
   void StartServiceWorkerAndDispatchMessage(
       const GURL& scope,
+      const blink::StorageKey& key,
       blink::TransferableMessage message,
       ResultCallback result_callback) override;
   void StartServiceWorkerForNavigationHint(
       const GURL& document_url,
+      const blink::StorageKey& key,
       StartServiceWorkerForNavigationHintCallback callback) override;
-  void StopAllServiceWorkersForOrigin(const url::Origin& origin) override;
+  void StopAllServiceWorkersForStorageKey(
+      const blink::StorageKey& key) override;
   void StopAllServiceWorkers(base::OnceClosure callback) override;
   const base::flat_map<int64_t, ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;

@@ -58,6 +58,8 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
@@ -467,8 +469,9 @@ void ChromeAutocompleteProviderClient::StartServiceWorker(
   if (!context)
     return;
 
-  context->StartServiceWorkerForNavigationHint(destination_url,
-                                               base::DoNothing());
+  context->StartServiceWorkerForNavigationHint(
+      destination_url, blink::StorageKey(url::Origin::Create(destination_url)),
+      base::DoNothing());
 }
 
 bool ChromeAutocompleteProviderClient::IsTabOpenWithURL(

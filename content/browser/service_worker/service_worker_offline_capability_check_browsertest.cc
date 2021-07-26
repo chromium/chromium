@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -275,8 +276,9 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
   void CheckOfflineCapabilityOnCoreThread(
       const std::string& path,
       ServiceWorkerContext::CheckOfflineCapabilityCallback callback) {
-    wrapper()->CheckOfflineCapability(embedded_test_server()->GetURL(path),
-                                      std::move(callback));
+    GURL url = embedded_test_server()->GetURL(path);
+    wrapper()->CheckOfflineCapability(
+        url, blink::StorageKey(url::Origin::Create(url)), std::move(callback));
   }
 
   OfflineCapability CheckOfflineCapability(const std::string& path) {

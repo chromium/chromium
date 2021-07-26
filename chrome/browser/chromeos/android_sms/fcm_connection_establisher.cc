@@ -13,6 +13,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace chromeos {
 
@@ -141,7 +143,9 @@ void FcmConnectionEstablisher::SendInFlightMessage() {
 
   PA_LOG(VERBOSE) << "Dispatching message " << message.message_type;
   message.service_worker_context->StartServiceWorkerAndDispatchMessage(
-      message.service_worker_scope, std::move(msg),
+      message.service_worker_scope,
+      blink::StorageKey(url::Origin::Create(message.service_worker_scope)),
+      std::move(msg),
       base::BindOnce(&FcmConnectionEstablisher::OnMessageDispatchResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

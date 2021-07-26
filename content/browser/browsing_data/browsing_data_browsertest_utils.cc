@@ -29,7 +29,9 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -104,11 +106,12 @@ void AddServiceWorker(const std::string& origin,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       scope_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   RunOrPostTaskOnThread(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(&ServiceWorkerContextWrapper::RegisterServiceWorker,
-                     base::Unretained(service_worker_context), js_url, options,
-                     base::BindOnce(&AddServiceWorkerCallback)));
+                     base::Unretained(service_worker_context), js_url, key,
+                     options, base::BindOnce(&AddServiceWorkerCallback)));
 
   // Wait for its activation.
   base::RunLoop run_loop;

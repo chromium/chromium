@@ -22,6 +22,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 // This file has tests involving render process selection for service workers.
 
@@ -205,6 +207,7 @@ IN_PROC_BROWSER_TEST_P(
       base::BindOnce(
           &ServiceWorkerContextWrapper::StartWorkerForScope,
           std::move(wrapper_ref), scope,
+          blink::StorageKey(url::Origin::Create(scope)),
           base::BindLambdaForTesting(
               [&](int64_t version_id, int process_id, int thread_id) {
                 worker_process_id = process_id;

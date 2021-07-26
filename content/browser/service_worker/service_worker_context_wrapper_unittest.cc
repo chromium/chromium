@@ -153,12 +153,12 @@ TEST_F(ServiceWorkerContextWrapperTest, HasRegistration) {
       url::Origin::Create(GURL("https://example.org"))));
 }
 
-// This test involves storing two registrations for the same origin to storage
-// and deleting one of them to check that MaybeHasRegistrationForOrigin still
-// correctly returns TRUE since there is still one registration for the origin,
-// and should only return FALSE when ALL registrations for that origin have been
-// deleted from storage.
-TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameOrigin) {
+// This test involves storing two registrations for the same key to storage
+// and deleting one of them to check that MaybeHasRegistrationForOrigin
+// still correctly returns TRUE since there is still one registration for the
+// key, and should only return FALSE when ALL registrations for that key
+// have been deleted from storage.
+TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameKey) {
   wrapper_->WaitForRegistrationsInitializedForTest();
 
   // Make two registrations for same origin.
@@ -186,10 +186,10 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameOrigin) {
 
   // Run loop until idle to wait for
   // ServiceWorkerRegistry::DidDeleteRegistration() to be executed, and make
-  // sure that NotifyAllRegistrationsDeletedForOrigin() is not called.
+  // sure that NotifyAllRegistrationsDeletedForStorageKey() is not called.
   base::RunLoop().RunUntilIdle();
 
-  // Now test that a registration for an origin is still recognized.
+  // Now test that a registration for a key is still recognized.
   EXPECT_TRUE(wrapper_->MaybeHasRegistrationForOrigin(
       url::Origin::Create(GURL("https://example1.com"))));
 
@@ -199,10 +199,10 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistrationsForSameOrigin) {
 
   // Run loop until idle to wait for
   // ServiceWorkerRegistry::DidDeleteRegistration() to be executed, and make
-  // sure that this time NotifyAllRegistrationsDeletedForOrigin() is called.
+  // sure that this time NotifyAllRegistrationsDeletedForStorageKey() is called.
   base::RunLoop().RunUntilIdle();
 
-  // Now test that origin does not have any registrations.
+  // Now test that key does not have any registrations.
   EXPECT_FALSE(wrapper_->MaybeHasRegistrationForOrigin(
       url::Origin::Create(GURL("https://example1.com"))));
 }
@@ -239,7 +239,7 @@ TEST_F(ServiceWorkerContextWrapperTest, DeleteRegistration) {
   // Finish deleting registration from storage.
   base::RunLoop().RunUntilIdle();
 
-  // Now test that origin does not have any registrations. This should return
+  // Now test that key does not have any registrations. This should return
   // FALSE even when live registrations may exist, as the registrations have
   // been deleted from storage.
   EXPECT_FALSE(wrapper_->MaybeHasRegistrationForOrigin(

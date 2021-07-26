@@ -54,8 +54,10 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace chrome_service_worker_browser_test {
 
@@ -148,8 +150,9 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
 
-    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-        url::Origin::Create(embedded_test_server()->base_url()));
+    GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
+        blink::StorageKey(
+            url::Origin::Create(embedded_test_server()->base_url())));
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                    CONTENT_SETTING_BLOCK);
@@ -182,12 +185,13 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
     msg.encoded_message = msg.owned_encoded_message;
 
+    GURL url = embedded_test_server()->GetURL("/scope/");
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&content::ServiceWorkerContext::
                            StartServiceWorkerAndDispatchMessage,
-                       base::Unretained(GetServiceWorkerContext()),
-                       embedded_test_server()->GetURL("/scope/"),
+                       base::Unretained(GetServiceWorkerContext()), url,
+                       blink::StorageKey(url::Origin::Create(url)),
                        std::move(msg),
                        base::BindRepeating(&ExpectResultAndRun<bool>, true,
                                            run_loop.QuitClosure())));
@@ -213,8 +217,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/service_worker.js"), options,
+      embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
@@ -241,8 +246,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/service_worker.js"), options,
+      embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
@@ -269,8 +275,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   blink::mojom::ServiceWorkerRegistrationOptions options(
       embedded_test_server()->GetURL("/"), blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/service_worker.js"), options,
+      embedded_test_server()->GetURL("/service_worker.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kErrorDisallowed,
                      run_loop.QuitClosure()));
@@ -659,8 +666,9 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
       content::StartServiceWorkerForNavigationHintResult expected_result,
       bool expected_started) {
     base::RunLoop run_loop;
+    GURL url = embedded_test_server()->GetURL(scope);
     GetServiceWorkerContext()->StartServiceWorkerForNavigationHint(
-        embedded_test_server()->GetURL(scope),
+        url, blink::StorageKey(url::Origin::Create(url)),
         base::BindOnce(&ExpectResultAndRun<
                            content::StartServiceWorkerForNavigationHintResult>,
                        expected_result, run_loop.QuitClosure()));
@@ -688,8 +696,9 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
-    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-        url::Origin::Create(embedded_test_server()->base_url()));
+    GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
+        blink::StorageKey(
+            url::Origin::Create(embedded_test_server()->base_url())));
     RunNavigationHintTest(
         "/scope/", content::StartServiceWorkerForNavigationHintResult::STARTED,
         true);
@@ -711,8 +720,9 @@ class ChromeServiceWorkerNavigationHintTest : public ChromeServiceWorkerTest {
     WriteFile(FILE_PATH_LITERAL("test.html"), test_script);
     InitializeServer();
     NavigateToPageAndWaitForReadyTitle("/test.html");
-    GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
-        url::Origin::Create(embedded_test_server()->base_url()));
+    GetServiceWorkerContext()->StopAllServiceWorkersForStorageKey(
+        blink::StorageKey(
+            url::Origin::Create(embedded_test_server()->base_url())));
     RunNavigationHintTest(
         "/scope/",
         content::StartServiceWorkerForNavigationHintResult::NO_FETCH_HANDLER,
@@ -761,8 +771,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationHintTest,
       embedded_test_server()->GetURL("/scope/"),
       blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      embedded_test_server()->GetURL("/sw.js"), options,
+      embedded_test_server()->GetURL("/sw.js"), key, options,
       base::BindOnce(&ExpectResultAndRun<blink::ServiceWorkerStatusCode>,
                      blink::ServiceWorkerStatusCode::kOk,
                      run_loop.QuitClosure()));
@@ -848,8 +859,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, DisallowChromeScheme) {
   blink::mojom::ServiceWorkerRegistrationOptions options(
       kScope, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  blink::StorageKey key(url::Origin::Create(options.scope));
   GetServiceWorkerContext()->RegisterServiceWorker(
-      kScript, options,
+      kScript, key, options,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              blink::ServiceWorkerStatusCode* out_result,

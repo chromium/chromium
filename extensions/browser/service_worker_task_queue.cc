@@ -30,7 +30,9 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 
@@ -371,7 +373,7 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
     option.type = blink::mojom::ScriptType::kModule;
   option.scope = extension->url();
   service_worker_context->RegisterServiceWorker(
-      script_url, option,
+      script_url, blink::StorageKey(url::Origin::Create(option.scope)), option,
       base::BindOnce(&ServiceWorkerTaskQueue::DidRegisterServiceWorker,
                      weak_factory_.GetWeakPtr(), context_id,
                      base::Time::Now()));
@@ -402,6 +404,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
 
   service_worker_context->UnregisterServiceWorker(
       extension->url(),
+      blink::StorageKey(url::Origin::Create(extension->url())),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id, *sequence));
 
@@ -426,8 +429,9 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
   content::ServiceWorkerContext* service_worker_context =
       partition->GetServiceWorkerContext();
 
+  const GURL& scope = context_id.first.service_worker_scope();
   service_worker_context->StartWorkerForScope(
-      context_id.first.service_worker_scope(),
+      scope, blink::StorageKey(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
                      weak_factory_.GetWeakPtr(), context_id, base::Time::Now()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,

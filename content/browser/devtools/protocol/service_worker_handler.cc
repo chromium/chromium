@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -251,7 +252,9 @@ Response ServiceWorkerHandler::Unregister(const std::string& scope_url) {
     return CreateDomainNotEnabledErrorResponse();
   if (!context_)
     return CreateContextErrorResponse();
-  context_->UnregisterServiceWorker(GURL(scope_url), base::DoNothing());
+  GURL url(scope_url);
+  blink::StorageKey key(url::Origin::Create(url));
+  context_->UnregisterServiceWorker(url, key, base::DoNothing());
   return Response::Success();
 }
 

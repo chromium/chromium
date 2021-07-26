@@ -28,6 +28,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -66,7 +68,7 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
             ->GetStoragePartition(web_contents->GetSiteInstance())
             ->GetServiceWorkerContext();
     service_worker_context->CheckHasServiceWorker(
-        url,
+        url, blink::StorageKey(url::Origin::Create(url)),
         base::BindLambdaForTesting(
             [&run_loop, status](content::ServiceWorkerCapability capability) {
               CHECK_EQ(status, capability);

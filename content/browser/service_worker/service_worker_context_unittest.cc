@@ -572,7 +572,8 @@ TEST_F(ServiceWorkerContextTest, OnVersionRunningStatusChangedObserver) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId());
   run_loop.Run();
 
-  context_wrapper()->StopAllServiceWorkersForOrigin(url::Origin::Create(scope));
+  context_wrapper()->StopAllServiceWorkersForStorageKey(
+      blink::StorageKey(url::Origin::Create(scope)));
   base::RunLoop().RunUntilIdle();
 
   std::vector<TestServiceWorkerContextObserver::EventLog> events;

@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using content::BrowserThread;
 using content::ServiceWorkerContext;
@@ -81,7 +82,10 @@ void ServiceWorkerHelper::FetchServiceWorkerUsageInfoOnCoreThread(
 void ServiceWorkerHelper::DeleteServiceWorkersOnCoreThread(
     const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  service_worker_context_->DeleteForOrigin(origin, base::DoNothing());
+  // TODO(crbug.com/1199077): Update this when the cookie tree model understands
+  // StorageKey.
+  service_worker_context_->DeleteForStorageKey(blink::StorageKey(origin),
+                                               base::DoNothing());
 }
 
 CannedServiceWorkerHelper::CannedServiceWorkerHelper(

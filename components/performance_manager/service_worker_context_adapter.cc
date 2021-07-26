@@ -104,6 +104,7 @@ void ServiceWorkerContextAdapter::RemoveObserver(
 
 void ServiceWorkerContextAdapter::RegisterServiceWorker(
     const GURL& script_url,
+    const blink::StorageKey& key,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     StatusCodeCallback callback) {
   NOTIMPLEMENTED();
@@ -111,6 +112,7 @@ void ServiceWorkerContextAdapter::RegisterServiceWorker(
 
 void ServiceWorkerContextAdapter::UnregisterServiceWorker(
     const GURL& scope,
+    const blink::StorageKey& key,
     ResultCallback callback) {
   NOTIMPLEMENTED();
 }
@@ -132,7 +134,7 @@ ServiceWorkerContextAdapter::FinishedExternalRequest(
 }
 
 size_t ServiceWorkerContextAdapter::CountExternalRequestsForTest(
-    const url::Origin& origin) {
+    const blink::StorageKey& key) {
   NOTIMPLEMENTED();
   return 0u;
 }
@@ -148,19 +150,22 @@ void ServiceWorkerContextAdapter::GetAllOriginsInfo(
   NOTIMPLEMENTED();
 }
 
-void ServiceWorkerContextAdapter::DeleteForOrigin(const url::Origin& origin_url,
-                                                  ResultCallback callback) {
+void ServiceWorkerContextAdapter::DeleteForStorageKey(
+    const blink::StorageKey& key,
+    ResultCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void ServiceWorkerContextAdapter::CheckHasServiceWorker(
     const GURL& url,
+    const blink::StorageKey& key,
     CheckHasServiceWorkerCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void ServiceWorkerContextAdapter::CheckOfflineCapability(
     const GURL& url,
+    const blink::StorageKey& key,
     CheckOfflineCapabilityCallback callback) {
   NOTIMPLEMENTED();
 }
@@ -172,6 +177,7 @@ void ServiceWorkerContextAdapter::ClearAllServiceWorkersForTest(
 
 void ServiceWorkerContextAdapter::StartWorkerForScope(
     const GURL& scope,
+    const blink::StorageKey& key,
     StartWorkerCallback info_callback,
     StatusCodeCallback status_callback) {
   NOTIMPLEMENTED();
@@ -179,6 +185,7 @@ void ServiceWorkerContextAdapter::StartWorkerForScope(
 
 void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
     const GURL& scope,
+    const blink::StorageKey& key,
     blink::TransferableMessage message,
     ResultCallback result_callback) {
   NOTIMPLEMENTED();
@@ -186,12 +193,13 @@ void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
 
 void ServiceWorkerContextAdapter::StartServiceWorkerForNavigationHint(
     const GURL& document_url,
+    const blink::StorageKey& key,
     StartServiceWorkerForNavigationHintCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void ServiceWorkerContextAdapter::StopAllServiceWorkersForOrigin(
-    const url::Origin& origin) {
+void ServiceWorkerContextAdapter::StopAllServiceWorkersForStorageKey(
+    const blink::StorageKey& key) {
   NOTIMPLEMENTED();
 }
 

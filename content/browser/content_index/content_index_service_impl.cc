@@ -16,6 +16,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -105,7 +107,7 @@ void ContentIndexServiceImpl::CheckOfflineCapability(
   // TODO(rayankans): Figure out if we can check the service worker specified
   // by |service_worker_registration_id| rather than any service worker.
   service_worker_context_->CheckOfflineCapability(
-      launch_url,
+      launch_url, blink::StorageKey(url::Origin::Create(launch_url)),
       base::BindOnce(&DidCheckOfflineCapability, std::move(callback),
                      service_worker_registration_id));
 }
