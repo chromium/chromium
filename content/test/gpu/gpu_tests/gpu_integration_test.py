@@ -634,11 +634,15 @@ class GpuIntegrationTest(
         'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
         'vmware,',  # VMs
         'vmware,-0x1050',  # ChromeOS VMs
+        'mesa/x.org',  # ChromeOS VMs
+        'mesa/x.org-0x1050',  # ChromeOS VMs
         # Fuchsia VMs
         ('google-angle-(vulkan-1.1.0(swiftshader-device-('
          'llvm-7.0.1)-(0x0000c0de)))'),
         ('google-angle-(vulkan-1.1.0(swiftshader-device-('
          'llvm-10.0.0)-(0x0000c0de)))'),
+        ('google-vulkan-1.1.0-(swiftshader-device-('
+         'llvm-10.0.0)-(0x0000c0de))'),
         # These browsers are analogous to a particular OS, and specifying the
         # OS name is clearer.
         'cros-chrome',  # ChromeOS
@@ -657,6 +661,12 @@ class GpuIntegrationTest(
         # "exact" is a valid browser type in Telemetry, but should never be used
         # on the bots.
         'exact',
+        # Unknown what exactly causes these to be generated, but they're
+        # harmless.
+        'win-laptop',
+        'unknown-gpu',
+        'unknown-gpu-0x8c',
+        'unknown-gpu-',
     ]
 
 
