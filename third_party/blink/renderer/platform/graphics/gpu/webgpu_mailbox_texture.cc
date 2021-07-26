@@ -59,9 +59,14 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
       device_(device),
       destroy_callback_(std::move(destroy_callback)),
       recyclable_canvas_resource_(std::move(recyclable_canvas_resource)) {
+  DCHECK(dawn_control_client_->GetContextProviderWeakPtr());
+
   dawn_control_client_->GetProcs().deviceReference(device_);
 
-  gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
+  gpu::webgpu::WebGPUInterface* webgpu =
+      dawn_control_client_->GetContextProviderWeakPtr()
+          ->ContextProvider()
+          ->WebGPUInterface();
 
   // Wait on any work using the image.
   webgpu->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
@@ -84,16 +89,20 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
 WebGPUMailboxTexture::~WebGPUMailboxTexture() {
   DCHECK_NE(wire_texture_id_, 0u);
 
-  gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
-  webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
+  if (auto context_provider =
+          dawn_control_client_->GetContextProviderWeakPtr()) {
+    gpu::webgpu::WebGPUInterface* webgpu =
+        context_provider->ContextProvider()->WebGPUInterface();
+    webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
 
-  if (destroy_callback_) {
-    gpu::SyncToken finished_access_token;
-    webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
-    std::move(destroy_callback_).Run(finished_access_token);
+    if (destroy_callback_) {
+      gpu::SyncToken finished_access_token;
+      webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
+      std::move(destroy_callback_).Run(finished_access_token);
+    }
+    dawn_control_client_->GetProcs().textureRelease(texture_);
+    dawn_control_client_->GetProcs().deviceRelease(device_);
   }
-  dawn_control_client_->GetProcs().textureRelease(texture_);
-  dawn_control_client_->GetProcs().deviceRelease(device_);
 }
 
 }  // namespace blink

@@ -10,38 +10,44 @@
 
 namespace blink {
 
+// static
+scoped_refptr<DawnControlClientHolder> DawnControlClientHolder::Create(
+    std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  auto dawn_control_client_holder =
+      base::MakeRefCounted<DawnControlClientHolder>(std::move(context_provider),
+                                                    std::move(task_runner));
+  dawn_control_client_holder->context_provider_->ContextProvider()
+      ->SetLostContextCallback(
+          WTF::BindRepeating(&DawnControlClientHolder::SetContextLost,
+                             dawn_control_client_holder));
+  return dawn_control_client_holder;
+}
+
 DawnControlClientHolder::DawnControlClientHolder(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : context_provider_(std::make_unique<WebGraphicsContext3DProviderWrapper>(
           std::move(context_provider))),
-      interface_(GetContextProvider()->WebGPUInterface()),
-      procs_(interface_->GetProcs()),
-      recyclable_resource_cache_(interface_, task_runner) {}
-
-void DawnControlClientHolder::SetLostContextCallback() {
-  GetContextProvider()->SetLostContextCallback(WTF::BindRepeating(
-      &DawnControlClientHolder::SetContextLost, base::WrapRefCounted(this)));
-}
+      procs_(
+          context_provider_->ContextProvider()->WebGPUInterface()->GetProcs()),
+      recyclable_resource_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
 void DawnControlClientHolder::Destroy() {
   SetContextLost();
-  interface_->DisconnectContextAndDestroyServer();
+  if (context_provider_) {
+    context_provider_->ContextProvider()
+        ->WebGPUInterface()
+        ->DisconnectContextAndDestroyServer();
+  }
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 DawnControlClientHolder::GetContextProviderWeakPtr() const {
+  if (!context_provider_) {
+    return nullptr;
+  }
   return context_provider_->GetWeakPtr();
-}
-
-WebGraphicsContext3DProvider* DawnControlClientHolder::GetContextProvider()
-    const {
-  return context_provider_->ContextProvider();
-}
-
-gpu::webgpu::WebGPUInterface* DawnControlClientHolder::GetInterface() const {
-  DCHECK(interface_);
-  return interface_;
 }
 
 void DawnControlClientHolder::SetContextLost() {

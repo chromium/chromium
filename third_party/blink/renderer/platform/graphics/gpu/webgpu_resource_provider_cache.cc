@@ -61,9 +61,9 @@ RecyclableCanvasResource::~RecyclableCanvasResource() {
 }
 
 WebGPURecyclableResourceCache::WebGPURecyclableResourceCache(
-    gpu::webgpu::WebGPUInterface* webgpu_interface,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : webgpu_interface_(webgpu_interface),
+    : context_provider_(std::move(context_provider)),
       task_runner_(std::move(task_runner)) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
   timer_func_ = WTF::BindRepeating(
@@ -98,16 +98,18 @@ void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
   int resource_size = resource_provider->Size().Width() *
                       resource_provider->Size().Height() *
                       resource_provider->ColorParams().BytesPerPixel();
-  total_unused_resources_in_bytes_ += resource_size;
+  if (context_provider_) {
+    total_unused_resources_in_bytes_ += resource_size;
 
-  // WaitSyncToken on the canvas resource.
-  gpu::SyncToken finished_access_token;
-  webgpu_interface_->GenUnverifiedSyncTokenCHROMIUM(
-      finished_access_token.GetData());
-  resource_provider->OnDestroyRecyclableCanvasResource(finished_access_token);
+    // WaitSyncToken on the canvas resource.
+    gpu::SyncToken finished_access_token;
+    auto* webgpu = context_provider_->ContextProvider()->WebGPUInterface();
+    webgpu->GenUnverifiedSyncTokenCHROMIUM(finished_access_token.GetData());
+    resource_provider->OnDestroyRecyclableCanvasResource(finished_access_token);
 
-  unused_providers_.push_front(
-      Resource(std::move(resource_provider), current_timer_id_, resource_size));
+    unused_providers_.push_front(Resource(std::move(resource_provider),
+                                          current_timer_id_, resource_size));
+  }
 
   if (last_seen_max_unused_resources_in_bytes_ <
       total_unused_resources_in_bytes_) {

@@ -53,7 +53,7 @@ class PLATFORM_EXPORT RecyclableCanvasResource {
 class PLATFORM_EXPORT WebGPURecyclableResourceCache {
  public:
   explicit WebGPURecyclableResourceCache(
-      gpu::webgpu::WebGPUInterface* webgpu_interface,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebGPURecyclableResourceCache() = default;
 
@@ -67,7 +67,6 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   void OnDestroyRecyclableResource(
       std::unique_ptr<CanvasResourceProvider> resource_provider);
 
-  void ConfigureForTesting(gpu::webgpu::WebGPUInterface* webgpu_interface);
   wtf_size_t CleanUpResourcesAndReturnSizeForTesting();
 
   int GetWaitCountBeforeDeletionForTesting() {
@@ -131,7 +130,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   uint64_t last_seen_max_unused_resources_in_bytes_ = 0;
   wtf_size_t last_seen_max_unused_resources_ = 0;
 
-  gpu::webgpu::WebGPUInterface* webgpu_interface_;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::RepeatingCallback<void()> timer_func_;

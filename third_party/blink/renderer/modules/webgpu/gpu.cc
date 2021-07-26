@@ -186,7 +186,8 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
+  if (!dawn_control_client_ || dawn_control_client_->IsContextLost() ||
+      !dawn_control_client_->GetContextProviderWeakPtr()) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
     // TODO(natlee@microsoft.com): if GPU process is lost, wait for the GPU
@@ -203,10 +204,9 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     } else {
       // Make a new DawnControlClientHolder with the context provider we just
       // made and set the lost context callback
-      dawn_control_client_ = base::MakeRefCounted<DawnControlClientHolder>(
+      dawn_control_client_ = DawnControlClientHolder::Create(
           std::move(context_provider),
           execution_context->GetTaskRunner(TaskType::kWebGPU));
-      dawn_control_client_->SetLostContextCallback();
     }
   }
 
@@ -224,7 +224,9 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     power_preference = gpu::webgpu::PowerPreference::kLowPower;
   }
 
-  dawn_control_client_->GetInterface()->RequestAdapterAsync(
+  auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
+  DCHECK(context_provider);
+  context_provider->ContextProvider()->WebGPUInterface()->RequestAdapterAsync(
       power_preference,
       WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                 WrapPersistent(script_state), WrapPersistent(options),

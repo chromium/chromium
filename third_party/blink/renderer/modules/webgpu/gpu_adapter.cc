@@ -177,10 +177,15 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
 
   WGPUDeviceProperties requested_device_properties = AsDawnType(descriptor);
 
-  GetInterface()->RequestDeviceAsync(
-      adapter_service_id_, requested_device_properties,
-      WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                WrapPersistent(resolver), WrapPersistent(descriptor)));
+  if (auto context_provider = GetContextProviderWeakPtr()) {
+    context_provider->ContextProvider()->WebGPUInterface()->RequestDeviceAsync(
+        adapter_service_id_, requested_device_properties,
+        WTF::Bind(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
+                  WrapPersistent(resolver), WrapPersistent(descriptor)));
+  } else {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, "WebGPU context lost"));
+  }
 
   return promise;
 }

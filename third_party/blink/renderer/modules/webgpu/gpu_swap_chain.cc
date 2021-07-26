@@ -156,7 +156,11 @@ bool GPUSwapChain::CopyToResourceProvider(
 
   auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
 
-  gpu::webgpu::WebGPUInterface* webgpu = GetDawnControlClient()->GetInterface();
+  if (!GetContextProviderWeakPtr()) {
+    return false;
+  }
+  gpu::webgpu::WebGPUInterface* webgpu =
+      GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
   gpu::webgpu::ReservedTexture reservation =
       webgpu->ReserveTexture(device_->GetHandle());
   DCHECK(reservation.texture);

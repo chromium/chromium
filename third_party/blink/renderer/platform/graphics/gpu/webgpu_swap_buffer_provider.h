@@ -61,10 +61,11 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
  private:
   // Holds resources and synchronization for one of the swapchain images.
   struct SwapBuffer {
-    SwapBuffer(WebGPUSwapBufferProvider*,
-               gpu::Mailbox mailbox,
-               gpu::SyncToken creation_token,
-               gfx::Size size);
+    SwapBuffer(
+        base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
+        gpu::Mailbox mailbox,
+        gpu::SyncToken creation_token,
+        gfx::Size size);
     SwapBuffer(const SwapBuffer&) = delete;
     SwapBuffer& operator=(const SwapBuffer&) = delete;
     ~SwapBuffer();
@@ -72,12 +73,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     gfx::Size size;
     gpu::Mailbox mailbox;
 
-    // A reference back to the swap buffers so that the destructor can access
-    // data in the swap buffers. This is a weak reference since the swap buffer
-    // is held alive by both the provider and the TransferableResource. If the
-    // swap chain gets destroyed, the TransferableResource release CB
-    // keeps the in-flight swap buffer alive.
-    WebGPUSwapBufferProvider* swap_buffers = nullptr;
+    // A weak ptr to the context provider so that the destructor can
+    // destroy shared images.
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider;
 
     // A token signaled when the previous user of the image is finished using
     // it. It could be WebGPU, the compositor or the shared image creation.
@@ -85,6 +83,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   };
 
   std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
+      gpu::SharedImageInterface* sii,
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       const gfx::Size& size);
 
   void RecycleSwapBuffer(std::unique_ptr<SwapBuffer> swap_buffer);

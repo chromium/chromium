@@ -29,20 +29,24 @@ namespace blink {
 class PLATFORM_EXPORT DawnControlClientHolder
     : public RefCounted<DawnControlClientHolder> {
  public:
+  static scoped_refptr<DawnControlClientHolder> Create(
+      std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   DawnControlClientHolder(
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void Destroy();
 
+  // Returns a weak pointer to |context_provider_|. If the pointer is valid and
+  // non-null, the WebGPU context has not been destroyed, and it is safe to use
+  // the WebGPU interface.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
-  WebGraphicsContext3DProvider* GetContextProvider() const;
-  gpu::webgpu::WebGPUInterface* GetInterface() const;
   const DawnProcTable& GetProcs() const { return procs_; }
   void SetContextLost();
   bool IsContextLost() const;
-  void SetLostContextCallback();
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
       const IntSize& size,
       const CanvasResourceParams& params,
@@ -53,7 +57,6 @@ class PLATFORM_EXPORT DawnControlClientHolder
   ~DawnControlClientHolder() = default;
 
   std::unique_ptr<WebGraphicsContext3DProviderWrapper> context_provider_;
-  gpu::webgpu::WebGPUInterface* interface_;
   DawnProcTable procs_;
   bool lost_ = false;
   WebGPURecyclableResourceCache recyclable_resource_cache_;

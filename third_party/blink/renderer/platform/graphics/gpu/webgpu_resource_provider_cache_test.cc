@@ -36,12 +36,10 @@ void WebGPURecyclableResourceCacheTest::SetUp() {
   test_context_provider_ = viz::TestContextProvider::Create();
   InitializeSharedGpuContext(test_context_provider_.get(),
                              &image_decode_cache_);
-  auto* webgpu_interface = SharedGpuContext::ContextProviderWrapper()
-                               ->ContextProvider()
-                               ->WebGPUInterface();
 
   recyclable_resource_cache_ = std::make_unique<WebGPURecyclableResourceCache>(
-      webgpu_interface, base::ThreadTaskRunnerHandle::Get());
+      SharedGpuContext::ContextProviderWrapper(),
+      base::ThreadTaskRunnerHandle::Get());
 }
 
 void WebGPURecyclableResourceCacheTest::TearDown() {
