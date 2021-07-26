@@ -1,15 +1,27 @@
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startHTML(`
+  var {page, session, dp} = await testRunner.startHTML(
+      `
     <div contenteditable></div>
-  `, `Tests Input.dispatchDragEvent method.`);
+  `,
+      `Tests Input.dispatchDragEvent method.`);
 
 
   function dumpError(message) {
     if (message.error)
       testRunner.log('Error: ' + message.error.message);
   }
-  await session.evaluate(`document.querySelector('div').addEventListener('dragover', event => {
+  await session.evaluate(`
+  document.querySelector('div').addEventListener('dragover', event => {
     event.dataTransfer.dropEffect = 'copy';
+  });
+
+  document.querySelector('div').addEventListener('drop', event => {
+    for (const item of event.dataTransfer.items) {
+      if (item.kind === 'file') {
+        event.target.innerHTML += item.getAsFile().name + '<br/>';
+        event.preventDefault();
+      }
+    }
   })`);
 
   testRunner.log('\nDropping plain text');
@@ -24,7 +36,6 @@
     data: '<a href="foo.html">foo</a>',
     baseURL: 'https://example.com',
   });
-
 
   testRunner.log('\nDropping a link to example.com');
   await drop({
@@ -45,13 +56,17 @@
     data: 'should not see this',
   }, 2);
 
+  testRunner.log('\nDropping files');
+  await drop(null, 1, ['path1']);
+
   testRunner.completeTest();
 
 
-  async function drop(item, dragOperationsMask = 1) {
+  async function drop(item, dragOperationsMask = 1, files = undefined) {
     await session.evaluate(`document.querySelector('div').textContent = ''`);
     const data = {
-      items: [item],
+      items: item ? [item] : [],
+      files,
       dragOperationsMask,
     };
     dumpError(await dp.Input.dispatchDragEvent({

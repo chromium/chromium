@@ -3944,6 +3944,8 @@ domain Input
   experimental type DragData extends object
     properties
       array of DragDataItem items
+      # List of filenames that should be included when dropping
+      optional array of string files
       # Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
       integer dragOperationsMask
 

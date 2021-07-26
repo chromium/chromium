@@ -342,7 +342,15 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
   blink::mojom::DragDataPtr mojo_data =
       blink::mojom::DragData::New(std::move(items), absl::nullopt,
                                   network::mojom::ReferrerPolicy::kDefault);
-  return DragDataToDropData(*mojo_data);
+  DropData drop_data = DragDataToDropData(*mojo_data);
+
+  protocol::Array<protocol::String> default_value;
+  for (const auto& file : *data->GetFiles(&default_value)) {
+    drop_data.filenames.emplace_back(base::FilePath::FromUTF8Unsafe(file),
+                                     base::FilePath());
+  }
+
+  return drop_data;
 }
 
 }  // namespace
@@ -517,11 +525,12 @@ class InputHandler::InputInjector
   DISALLOW_COPY_AND_ASSIGN(InputInjector);
 };
 
-InputHandler::InputHandler()
+InputHandler::InputHandler(bool allow_file_access)
     : DevToolsDomainHandler(Input::Metainfo::domainName),
       host_(nullptr),
       page_scale_factor_(1.0),
-      last_id_(0) {}
+      last_id_(0),
+      allow_file_access_(allow_file_access) {}
 
 InputHandler::~InputHandler() = default;
 
@@ -816,6 +825,11 @@ void InputHandler::DispatchDragEvent(
     std::unique_ptr<Input::DragData> data,
     Maybe<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback) {
+  if (!allow_file_access_ && data->HasFiles()) {
+    callback->sendFailure(Response::InvalidParams("Not allowed"));
+    return;
+  }
+
   RenderWidgetHostImpl* widget_host =
       host_ ? host_->GetRenderWidgetHost() : nullptr;
   if (!widget_host || !widget_host->delegate() ||
