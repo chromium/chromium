@@ -103,6 +103,7 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
                  completion:(ProceduralBlock)completion {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
+  _identityManagerObserverBridge.reset();
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock consistencyCompletion = ^() {
     [weakSelf finalizeInterruptWithAction:action completion:completion];
@@ -172,7 +173,7 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
 // Dismisses the consistency sheet view controller.
 - (void)dismissNavigationViewController {
   __weak __typeof(self) weakSelf = self;
-  [self.navigationController
+  [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:^() {
                            [weakSelf finishedWithResult:
@@ -303,7 +304,7 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
     case SigninCoordinatorInterruptActionDismissWithAnimation: {
       BOOL animated =
           action == SigninCoordinatorInterruptActionDismissWithAnimation;
-      [self.navigationController
+      [self.navigationController.presentingViewController
           dismissViewControllerAnimated:animated
                              completion:finishCompletionBlock];
     }
@@ -404,6 +405,12 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
 
+- (void)consistencyDefaultAccountCoordinatorAllIdentityRemoved:
+    (ConsistencyDefaultAccountCoordinator*)coordinator {
+  [self interruptWithAction:SigninCoordinatorInterruptActionDismissWithAnimation
+                 completion:nil];
+}
+
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -475,7 +482,8 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
           signin::ConsentLevel::kSignin) &&
       accountsInCookieJarInfo.signed_in_accounts.size() > 0) {
     [self.defaultAccountCoordinator stopSigninSpinner];
-    [self.navigationController
+    _identityManagerObserverBridge.reset();
+    [self.navigationController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:^() {
                              [weakSelf
