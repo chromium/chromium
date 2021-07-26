@@ -238,10 +238,13 @@ std::string PerFrameTranslateAgent::ExecuteScriptAndGetStringResult(
   DCHECK(result->IsString());
 
   v8::Local<v8::String> v8_str = result.As<v8::String>();
-  int length = v8_str->Utf8Length(isolate) + 1;
-  std::unique_ptr<char[]> str(new char[length]);
-  v8_str->WriteUtf8(isolate, str.get(), length);
-  return std::string(str.get());
+  int length = v8_str->Utf8Length(isolate);
+  if (length <= 0)
+    return std::string();
+
+  std::string str(static_cast<size_t>(length), '\0');
+  v8_str->WriteUtf8(isolate, &str[0], length);
+  return str;
 }
 
 double PerFrameTranslateAgent::ExecuteScriptAndGetDoubleResult(
