@@ -487,8 +487,10 @@ bool NavigationManagerImpl::RestoreSessionFromCache(const GURL& url) {
       restored_visible_item_->GetUserAgentType() != UserAgentType::NONE) {
     NavigationItem* last_committed_item =
         GetLastCommittedItemInCurrentOrRestoredSession();
-    last_committed_item->SetUserAgentType(
-        restored_visible_item_->GetUserAgentType());
+    if (last_committed_item) {
+      last_committed_item->SetUserAgentType(
+          restored_visible_item_->GetUserAgentType());
+    }
   }
   restored_visible_item_.reset();
   FinalizeSessionRestore();
