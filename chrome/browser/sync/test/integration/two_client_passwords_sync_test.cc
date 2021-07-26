@@ -23,12 +23,10 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
 
-using passwords_helper::AddInsecureCredential;
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
-using passwords_helper::CreateInsecureCredential;
 using passwords_helper::CreateTestPasswordForm;
-using passwords_helper::GetAllInsecureCredentials;
+using passwords_helper::GetAllLogins;
 using passwords_helper::GetLogins;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetPasswordStore;
@@ -36,17 +34,29 @@ using passwords_helper::GetProfilePasswordStoreInterface;
 using passwords_helper::GetVerifierPasswordCount;
 using passwords_helper::GetVerifierPasswordStore;
 using passwords_helper::GetVerifierProfilePasswordStoreInterface;
-using passwords_helper::RemoveInsecureCredentials;
 using passwords_helper::RemoveLogins;
-using CheckForInsecure = SamePasswordFormsChecker::CheckForInsecure;
 
-using password_manager::InsecureCredential;
 using password_manager::InsecureType;
+using password_manager::InsecurityMetadata;
+using password_manager::IsMuted;
 using password_manager::PasswordForm;
 
+using testing::ElementsAre;
+using testing::Pointee;
 using testing::UnorderedElementsAre;
 
 static const char* kValidPassphrase = "passphrase!";
+
+// PasswordForm::date_synced is a local field. Therefore it may be different
+// across clients.
+std::vector<std::unique_ptr<PasswordForm>> GetAllLoginsWithoutSyncDate(
+    int index) {
+  auto forms = GetAllLogins(GetProfilePasswordStoreInterface(index));
+  for (auto& form : forms) {
+    form->date_synced = base::Time();
+  }
+  return forms;
+}
 
 class TwoClientPasswordsSyncTest : public SyncTest {
  public:
@@ -389,16 +399,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   PasswordForm form0 = CreateTestPasswordForm(0);
   PasswordForm form1 = CreateTestPasswordForm(1);
 
-  const InsecureCredential issue0 =
-      CreateInsecureCredential(0, InsecureType::kLeaked);
-  const InsecureCredential issue1 =
-      CreateInsecureCredential(1, InsecureType::kPhished);
+  form0.password_issues->insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+  form1.password_issues->insert(
+      {InsecureType::kPhished,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add the passwords and security issues to Client 0.
   GetProfilePasswordStoreInterface(0)->AddLogin(form0);
-  AddInsecureCredential(GetPasswordStore(0), issue0);
 
   // Enable sync on Client 0 and wait until they are committed.
   ASSERT_TRUE(GetClient(0)->SetupSync()) << "GetClient(0)->SetupSync() failed.";
@@ -406,16 +417,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Add the passwords and security issues to Client 1.
   GetProfilePasswordStoreInterface(1)->AddLogin(form1);
-  AddInsecureCredential(GetPasswordStore(1), issue1);
 
   // Enable sync on Client 1 and wait until all passwords are merged.
   ASSERT_TRUE(GetClient(1)->SetupSync()) << "GetClient(1)->SetupSync() failed.";
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
-  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(0)),
-              UnorderedElementsAre(issue0, issue1));
-  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
-              UnorderedElementsAre(issue0, issue1));
+  EXPECT_THAT(GetAllLoginsWithoutSyncDate(0),
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
+  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1),
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -424,21 +434,20 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  const InsecureCredential issue1 =
-      CreateInsecureCredential(0, InsecureType::kLeaked);
-  const InsecureCredential issue2 =
-      CreateInsecureCredential(0, InsecureType::kPhished);
+  PasswordForm form = CreateTestPasswordForm(0);
+  form.password_issues->insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+  form.password_issues->insert(
+      {InsecureType::kPhished,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
 
   // Add the form and security issues to Client 0.
-  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
-  AddInsecureCredential(GetPasswordStore(0), issue1);
-  AddInsecureCredential(GetPasswordStore(0), issue2);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
 
   // Wait until Client 1 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
-  ASSERT_EQ(1, GetPasswordCount(1));
-  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
-              UnorderedElementsAre(issue1, issue2));
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1), ElementsAre(Pointee(form)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
@@ -446,29 +455,33 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  const InsecureCredential issue1 =
-      CreateInsecureCredential(0, InsecureType::kLeaked);
-  const InsecureCredential issue2 =
-      CreateInsecureCredential(1, InsecureType::kPhished);
+  PasswordForm form0 = CreateTestPasswordForm(0);
+  PasswordForm form1 = CreateTestPasswordForm(1);
+
+  form0.password_issues->insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+  form1.password_issues->insert(
+      {InsecureType::kPhished,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
 
   // Add the form and security issues to Client 0.
-  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
-  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(1));
-  AddInsecureCredential(GetPasswordStore(0), issue1);
-  AddInsecureCredential(GetPasswordStore(0), issue2);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form1);
 
   // Wait until Client 1 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
-  ASSERT_EQ(2, GetPasswordCount(1));
-  ASSERT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
-              UnorderedElementsAre(issue1, issue2));
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1),
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 
   // Remove security issues on Client 1.
-  RemoveInsecureCredentials(GetPasswordStore(1), issue2);
+  form0.password_issues->clear();
+  GetProfilePasswordStoreInterface(1)->UpdateLogin(form0);
+
   // Wait until Client 0 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
-  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(0)),
-              UnorderedElementsAre(issue1));
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1),
+              UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
@@ -477,25 +490,22 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  InsecureCredential issue = CreateInsecureCredential(0, InsecureType::kLeaked);
+  PasswordForm form = CreateTestPasswordForm(0);
+  form.password_issues->insert(
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))});
+
   // Add the form and security issue to Client 0.
-  GetProfilePasswordStoreInterface(0)->AddLogin(CreateTestPasswordForm(0));
-  AddInsecureCredential(GetPasswordStore(0), issue);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  ASSERT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
-              UnorderedElementsAre(issue));
 
   // Update is_muted field on Client 0.
-  RemoveInsecureCredentials(GetPasswordStore(0), issue);
-  issue.is_muted = password_manager::IsMuted(true);
-  AddInsecureCredential(GetPasswordStore(0), issue);
-  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(0)),
-              UnorderedElementsAre(issue));
+  form.password_issues->at(InsecureType::kLeaked).is_muted = IsMuted(true);
+  GetProfilePasswordStoreInterface(0)->UpdateLogin(form);
 
   // Wait until Client 1 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
-  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
-              UnorderedElementsAre(issue));
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1), ElementsAre(Pointee(form)));
 }

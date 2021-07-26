@@ -19,12 +19,12 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
-#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -34,7 +34,6 @@
 #include "net/base/escape.h"
 #include "url/gurl.h"
 
-using password_manager::InsecureCredential;
 using password_manager::PasswordForm;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
@@ -45,13 +44,6 @@ namespace {
 const char kFakeSignonRealm[] = "http://fake-signon-realm.google.com/";
 const char kIndexedFakeOrigin[] = "http://fake-signon-realm.google.com/%d";
 
-// We use a WaitableEvent to wait when logins are added, removed, or updated
-// instead of running the UI message loop because of a restriction that
-// prevents a DB thread from initiating a quit of the UI message loop.
-void PasswordStoreCallback(base::WaitableEvent* wait_event) {
-  // Wake up passwords_helper::AddLogin.
-  wait_event->Signal();
-}
 
 class PasswordStoreConsumerHelper
     : public password_manager::PasswordStoreConsumer {
@@ -77,70 +69,12 @@ class PasswordStoreConsumerHelper
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
-class InsecureCredentialsConsumerHelper
-    : public password_manager::InsecureCredentialsConsumer {
- public:
-  InsecureCredentialsConsumerHelper() = default;
-
-  void OnGetInsecureCredentials(
-      std::vector<InsecureCredential> insecure_credentials) override {
-    insecure_credentials_ = std::move(insecure_credentials);
-    run_loop_.Quit();
-  }
-
-  std::vector<InsecureCredential> WaitForResult() {
-    DCHECK(!run_loop_.running());
-    content::RunThisRunLoop(&run_loop_);
-    return insecure_credentials_;
-  }
-
- private:
-  base::RunLoop run_loop_;
-  std::vector<InsecureCredential> insecure_credentials_;
-
-  DISALLOW_COPY_AND_ASSIGN(InsecureCredentialsConsumerHelper);
-};
-
 // PasswordForm::date_synced is a local field. Therefore it may be different
 // across clients.
 void ClearSyncDateField(std::vector<std::unique_ptr<PasswordForm>>* forms) {
   for (auto& form : *forms) {
     form->date_synced = base::Time();
   }
-}
-
-sync_pb::PasswordSpecificsData SpecificsDataFromPasswordForm(
-    const password_manager::PasswordForm& password_form) {
-  sync_pb::PasswordSpecificsData password_data;
-  password_data.set_scheme(static_cast<int>(password_form.scheme));
-  password_data.set_signon_realm(password_form.signon_realm);
-  password_data.set_origin(password_form.url.spec());
-  password_data.set_action(password_form.action.spec());
-  password_data.set_username_element(
-      base::UTF16ToUTF8(password_form.username_element));
-  password_data.set_password_element(
-      base::UTF16ToUTF8(password_form.password_element));
-  password_data.set_username_value(
-      base::UTF16ToUTF8(password_form.username_value));
-  password_data.set_password_value(
-      base::UTF16ToUTF8(password_form.password_value));
-  password_data.set_date_last_used(
-      password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data.set_date_created(
-      password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data.set_date_password_modified_windows_epoch_micros(
-      password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-  password_data.set_blacklisted(password_form.blocked_by_user);
-  password_data.set_type(static_cast<int>(password_form.type));
-  password_data.set_times_used(password_form.times_used);
-  password_data.set_display_name(base::UTF16ToUTF8(password_form.display_name));
-  password_data.set_avatar_url(password_form.icon_url.spec());
-  password_data.set_federation_url(
-      password_form.federation_origin.opaque()
-          ? std::string()
-          : password_form.federation_origin.Serialize());
-  return password_data;
 }
 
 sync_pb::EntitySpecifics EncryptPasswordSpecifics(
@@ -173,17 +107,6 @@ std::string GetClientTag(const sync_pb::PasswordSpecificsData& password_data) {
 
 namespace passwords_helper {
 
-void AddInsecureCredential(PasswordStore* store,
-                           const InsecureCredential& issue) {
-  ASSERT_TRUE(store);
-  base::WaitableEvent wait_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  store->AddInsecureCredential(issue);
-  store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
-  wait_event.Wait();
-}
-
 std::vector<std::unique_ptr<PasswordForm>> GetLogins(
     PasswordStoreInterface* store) {
   EXPECT_TRUE(store);
@@ -202,33 +125,11 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(
   return consumer.WaitForResult();
 }
 
-std::vector<InsecureCredential> GetAllInsecureCredentials(
-    PasswordStore* store) {
-  DCHECK(store);
-  InsecureCredentialsConsumerHelper consumer;
-  store->GetAllInsecureCredentials(&consumer);
-  return consumer.WaitForResult();
-}
-
 void RemoveLogins(PasswordStoreInterface* store) {
   // Null Time values enforce unbounded deletion in both direction
   store->RemoveLoginsCreatedBetween(/*delete_begin=*/base::Time(),
                                     /*delete_end=*/base::Time::Max(),
                                     /*completion=*/base::NullCallback());
-}
-
-void RemoveInsecureCredentials(PasswordStore* store,
-                               const InsecureCredential& credential) {
-  ASSERT_TRUE(store);
-  base::WaitableEvent wait_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  store->RemoveInsecureCredentials(
-      credential.signon_realm, credential.username,
-      // kRemove used for arbitrary reason just for test.
-      password_manager::RemoveInsecureCredentialsReason::kRemove);
-  store->ScheduleTask(base::BindOnce(&PasswordStoreCallback, &wait_event));
-  wait_event.Wait();
 }
 
 PasswordStore* GetPasswordStore(int index) {
@@ -330,19 +231,6 @@ bool AllProfilesContainSamePasswordForms() {
   return true;
 }
 
-bool AllProfilesContainSameInsecurePasswords() {
-  auto MatchesProfile0 = testing::Matches(testing::UnorderedElementsAreArray(
-      GetAllInsecureCredentials(GetPasswordStore(0))));
-  for (int i = 1; i < test()->num_clients(); ++i) {
-    if (!MatchesProfile0(GetAllInsecureCredentials(GetPasswordStore(i)))) {
-      DVLOG(1) << "Profile " << i
-               << " does not contain the same insecure passwords as Profile 0.";
-      return false;
-    }
-  }
-  return true;
-}
-
 int GetPasswordCount(int index) {
   return GetLogins(GetProfilePasswordStoreInterface(index)).size();
 }
@@ -369,27 +257,16 @@ PasswordForm CreateTestPasswordForm(int index) {
   return form;
 }
 
-InsecureCredential CreateInsecureCredential(
-    int index,
-    password_manager::InsecureType type) {
-  InsecureCredential issue;
-  issue.signon_realm = kFakeSignonRealm;
-  // This should stay compatible with the implementation of
-  // CreateTestPasswordForm() and use the same username format.
-  issue.username = base::ASCIIToUTF16(base::StringPrintf("username%d", index));
-  issue.create_time = base::Time::Now();
-  issue.insecure_type = type;
-  return issue;
-}
-
 void InjectEncryptedServerPassword(
     const password_manager::PasswordForm& form,
     const std::string& encryption_passphrase,
     const syncer::KeyDerivationParams& key_derivation_params,
     fake_server::FakeServer* fake_server) {
-  InjectEncryptedServerPassword(SpecificsDataFromPasswordForm(form),
-                                encryption_passphrase, key_derivation_params,
-                                fake_server);
+  sync_pb::PasswordSpecificsData password_data =
+      password_manager::SpecificsFromPassword(form)
+          .client_only_encrypted_data();
+  InjectEncryptedServerPassword(password_data, encryption_passphrase,
+                                key_derivation_params, fake_server);
 }
 
 void InjectEncryptedServerPassword(
@@ -410,8 +287,10 @@ void InjectEncryptedServerPassword(
 void InjectKeystoreEncryptedServerPassword(
     const password_manager::PasswordForm& form,
     fake_server::FakeServer* fake_server) {
-  InjectKeystoreEncryptedServerPassword(SpecificsDataFromPasswordForm(form),
-                                        fake_server);
+  sync_pb::PasswordSpecificsData password_data =
+      password_manager::SpecificsFromPassword(form)
+          .client_only_encrypted_data();
+  InjectKeystoreEncryptedServerPassword(password_data, fake_server);
 }
 
 void InjectKeystoreEncryptedServerPassword(
@@ -434,13 +313,8 @@ bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 SamePasswordFormsChecker::SamePasswordFormsChecker()
-    : SamePasswordFormsChecker(CheckForInsecure(false)) {}
-
-SamePasswordFormsChecker::SamePasswordFormsChecker(
-    CheckForInsecure check_for_insecure)
     : MultiClientStatusChangeChecker(
-          sync_datatype_helper::test()->GetSyncServices()),
-      check_for_insecure_(check_for_insecure) {}
+          sync_datatype_helper::test()->GetSyncServices()) {}
 
 SamePasswordFormsChecker::~SamePasswordFormsChecker() = default;
 
@@ -472,9 +346,7 @@ bool SamePasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
   in_progress_ = true;
   do {
     needs_recheck_ = false;
-    result = passwords_helper::AllProfilesContainSamePasswordForms() &&
-             (!check_for_insecure_ ||
-              passwords_helper::AllProfilesContainSameInsecurePasswords());
+    result = passwords_helper::AllProfilesContainSamePasswordForms();
   } while (needs_recheck_);
   in_progress_ = false;
   return result;

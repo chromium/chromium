@@ -21,6 +21,10 @@ namespace password_manager {
 
 class PasswordStoreSync;
 
+// Returns sync_pb::PasswordSpecifics based on given |password_form|.
+sync_pb::PasswordSpecifics SpecificsFromPassword(
+    const PasswordForm& password_form);
+
 // Sync bridge implementation for PASSWORDS model type. Takes care of
 // propagating local passwords to other clients and vice versa.
 //
