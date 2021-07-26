@@ -18,13 +18,13 @@ class CONTENT_EXPORT FontEnumerationCacheFontconfig
     : public FontEnumerationCache {
  public:
   FontEnumerationCacheFontconfig();
-  ~FontEnumerationCacheFontconfig();
 
-  // Disallow copy and assign.
   FontEnumerationCacheFontconfig(const FontEnumerationCacheFontconfig&) =
       delete;
-  FontEnumerationCacheFontconfig operator=(
+  FontEnumerationCacheFontconfig& operator=(
       const FontEnumerationCacheFontconfig&) = delete;
+
+  ~FontEnumerationCacheFontconfig();
 
   static FontEnumerationCacheFontconfig* GetInstance();
 

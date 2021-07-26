@@ -31,6 +31,10 @@ namespace content {
 class CONTENT_EXPORT FontEnumerationCache {
  public:
   FontEnumerationCache();
+
+  FontEnumerationCache(const FontEnumerationCache&) = delete;
+  FontEnumerationCache& operator=(const FontEnumerationCache&) = delete;
+
   ~FontEnumerationCache();
 
   using CacheTaskCallback =

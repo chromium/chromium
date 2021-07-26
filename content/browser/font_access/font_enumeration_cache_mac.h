@@ -19,11 +19,11 @@ namespace content {
 class CONTENT_EXPORT FontEnumerationCacheMac : public FontEnumerationCache {
  public:
   FontEnumerationCacheMac();
-  ~FontEnumerationCacheMac();
 
-  // Disallow copy and assign.
   FontEnumerationCacheMac(const FontEnumerationCacheMac&) = delete;
-  FontEnumerationCacheMac operator=(const FontEnumerationCacheMac&) = delete;
+  FontEnumerationCacheMac& operator=(const FontEnumerationCacheMac&) = delete;
+
+  ~FontEnumerationCacheMac();
 
   static FontEnumerationCacheMac* GetInstance();
 

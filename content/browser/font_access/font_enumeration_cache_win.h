@@ -29,11 +29,11 @@ namespace content {
 class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
  public:
   FontEnumerationCacheWin();
-  ~FontEnumerationCacheWin();
 
-  // Disallow copy and assign.
   FontEnumerationCacheWin(const FontEnumerationCacheWin&) = delete;
-  FontEnumerationCacheWin operator=(const FontEnumerationCacheWin&) = delete;
+  FontEnumerationCacheWin& operator=(const FontEnumerationCacheWin&) = delete;
+
+  ~FontEnumerationCacheWin();
 
   // A data structure to hold font family results from DirectWrite.
   struct FamilyDataResult {

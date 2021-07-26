@@ -44,11 +44,11 @@ class CONTENT_EXPORT FontAccessManagerImpl
       public FontAccessContext {
  public:
   FontAccessManagerImpl();
-  ~FontAccessManagerImpl() override;
 
-  // Disallow copy and assign.
   FontAccessManagerImpl(const FontAccessManagerImpl&) = delete;
-  FontAccessManagerImpl operator=(const FontAccessManagerImpl&) = delete;
+  FontAccessManagerImpl& operator=(const FontAccessManagerImpl&) = delete;
+
+  ~FontAccessManagerImpl() override;
 
   struct BindingContext {
     BindingContext(const url::Origin& origin, GlobalRenderFrameHostId frame_id)
