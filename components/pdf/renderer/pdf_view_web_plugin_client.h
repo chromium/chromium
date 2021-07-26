@@ -22,6 +22,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
 
   // chrome_pdf::PdfViewWebPlugin::Client:
   void Print(const blink::WebElement& element) override;
+  void RecordComputedAction(const std::string& action) override;
 
  private:
   content::RenderFrame* const render_frame_;

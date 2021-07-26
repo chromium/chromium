@@ -14,8 +14,6 @@
 
 #include "base/check_op.h"
 #include "base/i18n/string_search.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
@@ -781,7 +779,7 @@ void PdfViewWebPlugin::NotifyUnsupportedFeature() {
 }
 
 void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
-  base::RecordAction(base::UserMetricsAction(action.c_str()));
+  client_->RecordComputedAction(action);
 }
 
 void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,

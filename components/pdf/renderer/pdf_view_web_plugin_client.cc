@@ -5,6 +5,7 @@
 #include "components/pdf/renderer/pdf_view_web_plugin_client.h"
 
 #include "base/check.h"
+#include "content/public/renderer/render_thread.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/web/web_element.h"
 
@@ -27,6 +28,10 @@ void PdfViewWebPluginClient::Print(const blink::WebElement& element) {
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::PrintRenderFrameHelper::Get(render_frame_)->PrintNode(element);
 #endif  // BUILDFLAG(ENABLE_PRINTING)
+}
+
+void PdfViewWebPluginClient::RecordComputedAction(const std::string& action) {
+  content::RenderThread::Get()->RecordComputedAction(action);
 }
 
 }  // namespace pdf

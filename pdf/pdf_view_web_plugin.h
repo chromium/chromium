@@ -119,6 +119,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
     // Prints the given `element`.
     virtual void Print(const blink::WebElement& element) {}
+
+    // Sends over a string to be recorded by user metrics as a computed action.
+    // When you use this, you need to also update the rules for extracting known
+    // actions in tools/metrics/actions/extract_actions.py.
+    virtual void RecordComputedAction(const std::string& action) {}
   };
 
   PdfViewWebPlugin(
