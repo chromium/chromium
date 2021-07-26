@@ -128,6 +128,7 @@ export class Camera extends View {
       new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
       new PTZPanel(),
       this.reviewDocumentView_,
+      new View(ViewName.FLASH),
     ];
 
     /**
@@ -706,16 +707,15 @@ export class Camera extends View {
    * @override
    */
   playBlockingShutterEffect() {
-    // TODO(b/190689433): Add flash shutter effect.
     sound.play(dom.get('#sound-shutter', HTMLAudioElement));
-    animate.play(this.preview_.video);
+    nav.open(ViewName.FLASH);
   }
 
   /**
    * @override
    */
   clearBlockingShutterEffect() {
-    // TODO(b/190689433): Clear flash shutter effect.
+    nav.close(ViewName.FLASH);
   }
 
   /**

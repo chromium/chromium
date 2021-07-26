@@ -121,6 +121,7 @@ export const Facing = {
 export const ViewName = {
   CAMERA: 'view-camera',
   EXPERT_SETTINGS: 'view-expert-settings',
+  FLASH: 'view-flash',
   GRID_SETTINGS: 'view-grid-settings',
   MESSAGE_DIALOG: 'view-message-dialog',
   PHOTO_RESOLUTION_SETTINGS: 'view-photo-resolution-settings',

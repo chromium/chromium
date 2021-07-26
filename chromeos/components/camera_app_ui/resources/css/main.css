@@ -710,6 +710,7 @@ body.should-handle-intent-result #open-settings {
 #view-camera,
 #view-ptz-panel,
 #view-review-document,
+#view-flash,
 #view-settings,
 #view-grid-settings,
 #view-timer-settings,
@@ -733,6 +734,7 @@ body.should-handle-intent-result #open-settings {
 body.view-camera #view-camera,
 body.view-ptz-panel #view-ptz-panel,
 body.view-review-document #view-review-document,
+body.view-flash #view-flash,
 body.view-settings #view-settings,
 body.view-grid-settings #view-grid-settings,
 body.view-timer-settings #view-timer-settings,
@@ -1512,6 +1514,11 @@ body.tab-navigation .dialog-buttons button:focus::after {
 #view-splash {
   background: no-repeat center url(/images/camera_mode_photo.svg), black;
   z-index: 2;
+}
+
+body.view-flash #view-flash {
+  background: white;
+  transition: opacity var(--moderate2-duration);
 }
 
 body:not(.mode-switching):not(.streaming):not(.review-result) #spinner {
