@@ -312,7 +312,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
      * Object saving information of device supported constant fps. Each of its
      * key as device id and value as an object mapping from resolution to all
      * constant fps options supported by that resolution.
-     * @type {!Object<string, !Object<!Resolution, !Array<number>>>}
+     * @type {!Object<string, !Object<string, !Array<number>>>}
      * @private
      */
     this.constFpsInfo_ = {};
@@ -321,7 +321,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
      * Object saving fps preference that each of its key as device id and value
      * as an object mapping from resolution to preferred constant fps for that
      * resolution.
-     * @type {!Object<string, !Object<!Resolution, number>>}
+     * @type {!Object<string, !Object<string, number>>}
      * @private
      */
     this.prefFpses_ = {};
@@ -417,7 +417,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     SUPPORTED_CONSTANT_FPS.forEach(
         (fps) => state.set(state.assertState(`fps-${fps}`), fps === prefFps));
     this.prefFpses_[deviceId] = this.prefFpses_[deviceId] || {};
-    this.prefFpses_[deviceId][resolution] = prefFps;
+    this.prefFpses_[deviceId][resolution.toString()] = prefFps;
     this.saveFpsPreference_();
   }
 
@@ -472,9 +472,10 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
       const /** !Array<number> */ constFpses =
           fpsRanges.filter(({minFps, maxFps}) => minFps === maxFps)
               .map(({minFps}) => minFps);
-      const /** !Object<(!Resolution|string), !Array<number>> */ fpsInfo = {};
+      /** @type {!Object<string, !Array<number>>} */
+      const fpsInfo = {};
       for (const [resolution, maxFps] of Object.entries(videoMaxFps)) {
-        fpsInfo[/** @type {string} */ (resolution)] =
+        fpsInfo[resolution.toString()] =
             constFpses.filter((fps) => fps <= /** @type {number} */ (maxFps));
       }
       this.constFpsInfo_[deviceId] = fpsInfo;
@@ -495,7 +496,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     const fps = stream.getVideoTracks()[0].getSettings().frameRate;
     this.setPreferredConstFps_(deviceId, this.resolution_, fps);
     const supportedConstFpses =
-        this.constFpsInfo_[deviceId][this.resolution_].filter(
+        this.constFpsInfo_[deviceId][this.resolution_.toString()].filter(
             (fps) => SUPPORTED_CONSTANT_FPS.includes(fps));
     // Only enable multi fps UI on external camera.
     // See https://crbug.com/1059191 for details.
@@ -523,12 +524,13 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     const getFpses = (r) => {
       let /** !Array<?number> */ constFpses = [null];
       /** @type {!Array<number>} */
-      const constFpsInfo = this.constFpsInfo_[deviceId][r];
+      const constFpsInfo = this.constFpsInfo_[deviceId][r.toString()];
       // The higher constant fps will be ignored if constant 30 and 60 presented
       // due to currently lack of UI support for toggling it.
       if (constFpsInfo.includes(30) && constFpsInfo.includes(60)) {
-        const prefFps =
-            this.prefFpses_[deviceId] && this.prefFpses_[deviceId][r] || 30;
+        const prefFps = this.prefFpses_[deviceId] ?
+            this.prefFpses_[deviceId][r.toString()] :
+            30;
         constFpses = prefFps === 30 ? [30, 60] : [60, 30];
       } else {
         constFpses =
@@ -587,12 +589,13 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     const getFpses = (r) => {
       let /** !Array<?number> */ constFpses = [null];
       /** @type {!Array<number>} */
-      const constFpsInfo = this.constFpsInfo_[deviceId][r];
+      const constFpsInfo = this.constFpsInfo_[deviceId][r.toString()];
       // The higher constant fps will be ignored if constant 30 and 60 presented
       // due to currently lack of UI support for toggling it.
       if (constFpsInfo.includes(30) && constFpsInfo.includes(60)) {
-        const prefFps =
-            this.prefFpses_[deviceId] && this.prefFpses_[deviceId][r] || 30;
+        const prefFps = this.prefFpses_[deviceId] ?
+            this.prefFpses_[deviceId][r.toString()] :
+            30;
         constFpses = prefFps === 30 ? [30, 60] : [60, 30];
       } else {
         constFpses =
