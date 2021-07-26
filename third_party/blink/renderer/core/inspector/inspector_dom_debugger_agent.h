@@ -57,7 +57,8 @@ class DictionaryValue;
 }
 
 class CORE_EXPORT InspectorDOMDebuggerAgent final
-    : public InspectorBaseAgent<protocol::DOMDebugger::Metainfo> {
+    : public InspectorBaseAgent<protocol::DOMDebugger::Metainfo>,
+      public InspectorDOMAgent::DOMListener {
  public:
   static void EventListenersInfoForTarget(v8::Isolate*,
                                           v8::Local<v8::Value>,
@@ -101,7 +102,7 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   void WillInsertDOMNode(Node* parent);
   void DidInvalidateStyleAttr(Node*);
   void DidInsertDOMNode(Node*);
-  void WillRemoveDOMNode(Node*);
+  void CharacterDataModified(CharacterData*);
   void DidRemoveDOMNode(Node*);
   void WillModifyDOMAttr(Element*, const AtomicString&, const AtomicString&);
   void WillSendXMLHttpOrFetchNetworkRequest(const String& url);
@@ -170,6 +171,11 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
   void DidAddBreakpoint();
   void DidRemoveBreakpoint();
   void SetEnabled(bool);
+
+  // InspectorDOMAgent::DOMListener implementation
+  void DidAddDocument(Document*) override;
+  void WillRemoveDOMNode(Node*) override;
+  void DidModifyDOMAttr(Element*) override;
 
   std::unique_ptr<protocol::DOMDebugger::EventListener>
   BuildObjectForEventListener(v8::Local<v8::Context>,

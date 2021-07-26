@@ -526,6 +526,11 @@ void InspectorDOMDebuggerAgent::WillInsertDOMNode(Node* parent) {
     BreakProgramOnDOMEvent(parent, SubtreeModified, true);
 }
 
+void InspectorDOMDebuggerAgent::CharacterDataModified(CharacterData* node) {
+  if (HasBreakpoint(node, SubtreeModified))
+    BreakProgramOnDOMEvent(node, SubtreeModified, false);
+}
+
 void InspectorDOMDebuggerAgent::WillRemoveDOMNode(Node* node) {
   Node* parent_node = InspectorDOMAgent::InnerParentNode(node);
   if (HasBreakpoint(node, NodeRemoved))
@@ -793,12 +798,20 @@ void InspectorDOMDebuggerAgent::DidRemoveBreakpoint() {
 }
 
 void InspectorDOMDebuggerAgent::SetEnabled(bool enabled) {
-  enabled_.Set(enabled);
-  if (enabled)
+  if (enabled && !enabled_.Get()) {
     instrumenting_agents_->AddInspectorDOMDebuggerAgent(this);
-  else
+    dom_agent_->AddDOMListener(this);
+    enabled_.Set(true);
+  } else if (!enabled && enabled_.Get()) {
     instrumenting_agents_->RemoveInspectorDOMDebuggerAgent(this);
+    dom_agent_->RemoveDOMListener(this);
+    enabled_.Set(false);
+  }
 }
+
+void InspectorDOMDebuggerAgent::DidAddDocument(Document* document) {}
+
+void InspectorDOMDebuggerAgent::DidModifyDOMAttr(Element* element) {}
 
 void InspectorDOMDebuggerAgent::DidCommitLoadForLocalFrame(LocalFrame*) {
   dom_breakpoints_.clear();

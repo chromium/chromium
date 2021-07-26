@@ -88,6 +88,7 @@
     InspectorDOMDebuggerAgent: {
       probes: [
         "BreakableLocation",
+        "CharacterDataModified",
         "DidCreateCanvasContext",
         "DidFireWebGLError",
         "DidFireWebGLErrorOrWarning",
@@ -99,7 +100,6 @@
         "UserCallback",
         "WillInsertDOMNode",
         "WillModifyDOMAttr",
-        "WillRemoveDOMNode",
         "WillSendXMLHttpOrFetchNetworkRequest",
         "DidCreateAudioContext",
         "DidCloseAudioContext",
