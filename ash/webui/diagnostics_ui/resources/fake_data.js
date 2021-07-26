@@ -357,6 +357,23 @@ export let fakeWifiNetworkMultipleNameServers = {
   },
 };
 
+export let fakeDisconnectedWifiNetwork = {
+  state: NetworkState.kNotConnected,
+  type: NetworkType.kWiFi,
+  typeProperties: {
+    wifi: {
+      signalStrength: 0,
+      frequency: 0,
+      bssid: '',
+      ssid: '',
+    },
+  },
+  guid: 'wifiDisconnectedGuid',
+  name: '',
+  macAddress: '84:C5:A6:30:3F:31',
+  ipConfig: null,
+};
+
 /** @type {!Network} */
 export let fakeEthernetNetwork = {
   state: NetworkState.kOnline,
@@ -373,6 +390,19 @@ export let fakeEthernetNetwork = {
     nameServers: ['192.168.86.1'],
     routingPrefix: 24,
   },
+};
+
+/** @type {!Network} */
+export let fakeDisconnectedEthernetNetwork = {
+  state: NetworkState.kNotConnected,
+  type: NetworkType.kEthernet,
+  typeProperties: {
+    ethernet: {},
+  },
+  guid: 'ethernetDisconnectedGuid',
+  name: 'ethernetName',
+  macAddress: '81:C5:A6:30:3F:32',
+  ipConfig: null,
 };
 
 /** @type {!Network} */

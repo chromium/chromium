@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -44,7 +44,10 @@ export function networkCardTestSuite() {
     provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
     provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
     provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
-
+    provider.setFakeNetworkState(
+        'ethernetDisconnectedGuid', [fakeDisconnectedEthernetNetwork]);
+    provider.setFakeNetworkState(
+        'wifiDisconnectedGuid', [fakeDisconnectedWifiNetwork]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -55,10 +58,27 @@ export function networkCardTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * @return {!HTMLElement}
+   */
+  function getTroubleConnectingElement() {
+    return /** @type {!HTMLElement} */ (
+        networkCardElement.$$('#troubleConnectingContainer'));
+  }
+
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
     return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'WiFi (Connected)');
+      assertFalse(isVisible(getTroubleConnectingElement()));
+    });
+  });
+
+  test('WifiDisconnectedShowTroubleShooting', () => {
+    return initializeNetworkCard('wifiDisconnectedGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'), 'WiFi (Not Connected)');
+      assertTrue(isVisible(getTroubleConnectingElement()));
     });
   });
 
@@ -66,24 +86,16 @@ export function networkCardTestSuite() {
     return initializeNetworkCard('ethernetGuid').then(() => {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Ethernet (Online)');
+      assertFalse(isVisible(getTroubleConnectingElement()));
     });
   });
 
-  test('EthernetNotDetectedStateVisible', () => {
-    return initializeNetworkCard('ethernetGuid')
-        .then(
-            () => assertTrue(isVisible(
-                /** @type {!HTMLElement} */ (
-                    networkCardElement.$$('#troubleConnectingContainer')))));
-  });
-
-  test('EthernetNotDetectedStateHidden', () => {
-    // Trouble connecting state should only be visible for Ethernet networks.
-    return initializeNetworkCard('wifiGuid')
-        .then(
-            () => assertFalse(isVisible(
-                /** @type {!HTMLElement} */ (
-                    networkCardElement.$$('#troubleConnectingContainer')))));
+  test('EthernetDisconnectedShowTroubleShooting', () => {
+    return initializeNetworkCard('ethernetDisconnectedGuid').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'), 'Ethernet (Not Connected)');
+      assertTrue(isVisible(getTroubleConnectingElement()));
+    });
   });
 
   test('CardDrawerInitializedCorrectly', () => {

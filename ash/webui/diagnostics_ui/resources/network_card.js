@@ -11,7 +11,7 @@ import './network_info.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
+import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType} from './diagnostics_types.js';
 import {getNetworkState, getNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
@@ -64,7 +64,7 @@ Polymer({
     /** @protected {boolean} */
     showTroubleConnectingState_: {
       type: Boolean,
-      value: false,
+      computed: 'computeShouldShowTroubleConnecting_(network.state)',
     },
   },
 
@@ -104,7 +104,6 @@ Polymer({
   onNetworkStateChanged(network) {
     this.networkType_ = getNetworkType(network.type);
     this.networkState_ = getNetworkState(network.state);
-    this.showTroubleConnectingState_ = network.type === NetworkType.kEthernet;
     this.set('network', network);
   },
 
@@ -123,5 +122,23 @@ Polymer({
     }
 
     return title;
+  },
+
+  /** @protected */
+  computeShouldShowTroubleConnecting_() {
+    // Wait until the network is present before deciding.
+    if (!this.network) {
+      return false;
+    }
+
+    // Show the troubleshooting state when not connected or connecting.
+    switch (this.network.state) {
+      case NetworkState.kOnline:
+      case NetworkState.kConnected:
+      case NetworkState.kConnecting:
+        return false;
+      default:
+        return true;
+    }
   },
 });
