@@ -74,7 +74,17 @@ TEST_F(RssLinksFetcherUnitTest, Success) {
                     receiver->BindNewPipeAndPassRemote()),
                 rss_links.Bind());
   link_reader.WaitForCall();
-  link_reader.Respond(feed::mojom::RssLinks::New(TestPageUrl(), TestRssUrls()));
+
+  {
+    // Have link reader return TesetRssUrls as well as some invalid URLs which
+    // are filtered out.
+    std::vector<GURL> returned_urls = TestRssUrls();
+    returned_urls.push_back(GURL());
+    returned_urls.push_back(GURL("chrome://non-http-url-is-ignored"));
+    link_reader.Respond(
+        feed::mojom::RssLinks::New(TestPageUrl(), returned_urls));
+  }
+
   EXPECT_EQ(TestRssUrls(), rss_links.RunAndGetResult());
 }
 

@@ -56,8 +56,13 @@ class RssLinksFetcher {
  private:
   void GetRssLinksComplete(feed::mojom::RssLinksPtr rss_links) {
     if (rss_links) {
-      if (rss_links->page_url == page_url_)
-        result_ = rss_links->links;
+      if (rss_links->page_url == page_url_) {
+        for (GURL& link : rss_links->links) {
+          if (link.is_valid() && link.SchemeIsHTTPOrHTTPS()) {
+            result_.push_back(std::move(link));
+          }
+        }
+      }
     }
 
     SendResultAndDeleteSelf();
