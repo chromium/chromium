@@ -20,6 +20,11 @@ void SetNetworkContextGetter(NetworkContextGetter network_context_getter) {
   *getter = std::move(network_context_getter);
 }
 
+void ClearNetworkContextGetter() {
+  NetworkContextGetter* getter = GetInstance();
+  getter->Reset();
+}
+
 bool HasNetworkContextGetter() {
   return !GetInstance()->is_null();
 }

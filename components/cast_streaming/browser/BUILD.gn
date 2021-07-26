@@ -43,6 +43,7 @@ source_set("receiver_session_public") {
 source_set("receiver_session") {
   deps = [
     ":core",
+    ":network_context",
     ":receiver_session_public",
     ":streaming_session",
     "//base",

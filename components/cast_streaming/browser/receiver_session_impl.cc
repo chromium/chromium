@@ -5,6 +5,7 @@
 #include "components/cast_streaming/browser/receiver_session_impl.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -34,6 +35,8 @@ ReceiverSessionImpl::~ReceiverSessionImpl() = default;
 void ReceiverSessionImpl::SetCastStreamingReceiver(
     mojo::AssociatedRemote<mojom::CastStreamingReceiver>
         cast_streaming_receiver) {
+  DCHECK(HasNetworkContextGetter());
+
   DVLOG(1) << __func__;
   cast_streaming_receiver_ = std::move(cast_streaming_receiver);
 
