@@ -3473,6 +3473,12 @@ const char kRelatedSearchesUiDescription[] =
     "regardless of whether they are safe or useful. This requires the Related "
     "Searches feature flag to also be enabled.";
 
+const char kShareUsageRankingName[] =
+    "Incorporate usage history into share target ranking.";
+const char kShareUsageRankingDescription[] =
+    "Incorporate the history of which apps were shared to when producing the "
+    "ordered list of 3P share targets in the share hub.";
+
 const char kRequestDesktopSiteForTabletsName[] =
     "Request desktop site for tablets on Android";
 const char kRequestDesktopSiteForTabletsDescription[] =

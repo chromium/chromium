@@ -1981,6 +1981,9 @@ extern const char kRelatedSearchesSimplifiedUxDescription[];
 extern const char kRelatedSearchesUiName[];
 extern const char kRelatedSearchesUiDescription[];
 
+extern const char kShareUsageRankingName[];
+extern const char kShareUsageRankingDescription[];
+
 extern const char kSingleTouchSelectName[];
 extern const char kSingleTouchSelectDescription[];
 

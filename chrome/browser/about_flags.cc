@@ -7592,6 +7592,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kUpdatedConnectionSecurityIndicators)},
 #endif
 
+#if defined(OS_ANDROID)
+    {"share-usage-ranking", flag_descriptions::kShareUsageRankingName,
+     flag_descriptions::kShareUsageRankingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kShareUsageRanking)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -5025,6 +5025,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "share-usage-ranking",
+    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "shared-clipboard-ui",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 90
