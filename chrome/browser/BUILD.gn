@@ -4335,12 +4335,15 @@ static_library("browser") {
         "chrome_browser_main_posix.h",
         "importer/firefox_profile_lock_posix.cc",
         "process_singleton_posix.cc",
-        "task_manager/sampling/shared_sampler_posix.cc",
       ]
 
       if (!is_chromeos_lacros) {
         sources += [ "first_run/first_run_internal_posix.cc" ]
       }
+    }
+
+    if (is_posix || is_fuchsia) {
+      sources += [ "task_manager/sampling/shared_sampler_stub.cc" ]
     }
   }
 
@@ -5333,7 +5336,7 @@ static_library("browser") {
       "enterprise/signals/device_info_fetcher_linux.h",
       "first_run/first_run_internal_linux.cc",
       "memory_details_linux.cc",
-      "obsolete_system/obsolete_system_linux.cc",
+      "obsolete_system/obsolete_system_stub.cc",
       "policy/browser_dm_token_storage_linux.cc",
       "policy/browser_dm_token_storage_linux.h",
     ]
@@ -5407,6 +5410,17 @@ static_library("browser") {
     }
   }
 
+  if (is_fuchsia) {
+    sources += [
+      "chrome_browser_main_parts_fuchsia.cc",
+      "chrome_browser_main_parts_fuchsia.h",
+      "icon_loader_fuchsia.cc",
+      "memory_details_fuchsia.cc",
+      "obsolete_system/obsolete_system_stub.cc",
+      "shell_integration_fuchsia.cc",
+    ]
+  }
+
   if (is_posix) {
     sources += [
       "shutdown_signal_handlers_posix.cc",
@@ -5439,7 +5453,6 @@ static_library("browser") {
       "renderer_context_menu/spelling_options_submenu_observer.h",
     ]
 
-    # Lens Region Search feature is available on all desktop platforms except Mac.
     # TODO(crbug/1229334): Add Mac support for Lens Region Search feature.
     deps += [ "//chrome/browser/lens/region_search" ]
   }

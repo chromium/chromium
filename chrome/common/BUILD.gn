@@ -80,6 +80,8 @@ source_set("channel_info") {
     deps += [ "//chromeos/crosapi/cpp" ]
   } else if (is_posix) {
     sources += [ "channel_info_posix.cc" ]
+  } else if (is_fuchsia) {
+    sources += [ "channel_info_fuchsia.cc" ]
   }
 }
 
@@ -644,6 +646,9 @@ static_library("constants") {
   if (is_win) {
     sources += [ "chrome_paths_win.cc" ]
     deps += [ "//chrome/install_static:install_static_util" ]
+  }
+  if (is_fuchsia) {
+    sources += [ "chrome_paths_fuchsia.cc" ]
   }
 
   if (enable_widevine && enable_library_cdms) {

@@ -188,6 +188,10 @@ source_set("web_applications") {
     ]
   }
 
+  if (is_fuchsia) {
+    sources += [ "components/web_app_stubs.cc" ]
+  }
+
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [

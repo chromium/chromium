@@ -13,7 +13,9 @@ SharedSampler::SharedSampler(
 
 SharedSampler::~SharedSampler() {}
 
-int64_t SharedSampler::GetSupportedFlags() const { return 0; }
+int64_t SharedSampler::GetSupportedFlags() const {
+  return 0;
+}
 
 void SharedSampler::RegisterCallback(
     base::ProcessId process_id,
@@ -21,7 +23,7 @@ void SharedSampler::RegisterCallback(
 
 void SharedSampler::UnregisterCallback(base::ProcessId process_id) {}
 
-void SharedSampler::Refresh(base::ProcessId process_id,
-                             int64_t refresh_flags) {}
+void SharedSampler::Refresh(base::ProcessId process_id, int64_t refresh_flags) {
+}
 
 }  // namespace task_manager
