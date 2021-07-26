@@ -528,6 +528,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' දැනටමත් '<ph name="ACTION" />' ක්‍රියාව වෙත පවරා ඇත. <ph name="RESPONSE" />ට ඕනෑම යතුරක් ඔබන්න.</translation>
 <translation id="1567993339577891801">JavaScript කොන්සෝලය</translation>
 <translation id="1568323446248056064">සංදර්ශක උපාංග සැකසීම් විවෘත කරන්න</translation>
+<translation id="1571738973904005196">ටැබය බලන්න: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (අමුත්තා)</translation>
 <translation id="1572266655485775982">Wi-Fi සබල කිරීම</translation>
 <translation id="1572876035008611720">ඔබේ ඊ-තැපැල ඇතුළු කරන්න</translation>
@@ -5646,6 +5647,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7117247127439884114">නැවත සයින් ඉන් වන්න...</translation>
 <translation id="711840821796638741">කළමනාකරණය කළ පිටු සලකුණු පෙන්වන්න</translation>
 <translation id="711902386174337313">ඔබ පිරූ උපාංග ලැයිස්තුව කියවන්න</translation>
+<translation id="711985611146095797">මෙම පිටුව ඔබට ඔබගේ පුරන ලද Google ගිණුම් කළමනාකරණය කිරීමට ඉඩ දෙයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN සම්බන්ධ කර තිබේ නම් මිස Chrome බ්‍රවුසරය සහ Android තදබදය අවහිර කරනු ඇත</translation>
 <translation id="7120865473764644444">සමමුහුර්ත සේවාදායකය වෙත සම්බන්ධ විය නොහැකි විය. යළි උත්සාහ කරමින්...</translation>
 <translation id="7121438501124788993">සංවර්ධක ප්‍රකාරය</translation>
@@ -6120,6 +6122,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7639914187072011620">සේවාදායකයෙන් SAML ප්‍රතියොමු URL යළි ලබා ගැනීමට අපොහොසත් විය</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> විසින් ඔබ සුරැකි මුරපද සමඟ සුදුසු වෙබ් අඩවි වෙත ඔබව ස්වයංක්‍රීයව පුරනය කරවයි.</translation>
 <translation id="7641513591566880111">නව පැතිකඩ නම</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> එක් කරන ලදී</translation>
 <translation id="7642778300616172920">සංවේදී අන්තර්ගතය සඟවන්න</translation>
 <translation id="7643842463591647490">{0,plural, =1{# විවෘත කවුළුවක්}one{විවෘත කවුළු #ක්}other{විවෘත කවුළු #ක්}}</translation>
 <translation id="7643932971554933646">වෙබ් අඩවියට ගොනු බැලීමට ඉඩ දෙන්නේද?</translation>
@@ -7180,6 +7183,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8756969031206844760">මුරපදය යාවත්කාලීන කරන්න ද?</translation>
 <translation id="8757090071857742562">වැඩතලය විකාශය කිරීමට නොහැකිය.  ඔබ ඔබේ තිරය බෙදා ගැනීම ආරම්භ කිරීමට ප්‍රේරකය තහවුරු කර තිබේද යන්න බැලීමට පරීක්ෂා කරන්න.</translation>
 <translation id="8757203080302669031">මෙම ටැබය බ්ලූටූත් උපාංග සඳහා සක්‍රියව ස්කෑන් කරයි.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ඉවත් කරන ලදී</translation>
 <translation id="8758418656925882523">අනුලේඛනය සබල කරන්න (යතුරු ලිවීමට කථා කරන්න)</translation>
 <translation id="8759408218731716181">බහු පිවිසුම් සැකසිය නොහැක</translation>
 <translation id="8759753423332885148">තවත් දැනගන්න.</translation>

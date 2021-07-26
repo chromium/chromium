@@ -191,6 +191,7 @@
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
 <translation id="2278052315791335171">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">כתובת לחיוב</translation>
+<translation id="2294030144029925122">‏מדיניות הפרטיות של Chrome</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="230155349749732438">כדי להשתמש בהגדרה זו, יש להפעיל את האפשרות <ph name="BEGIN_LINK" />שיפור של חיפושים וגלישה<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
@@ -451,6 +452,7 @@
 <translation id="3928666092801078803">שילוב הנתונים שלי</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">חיפוש קולי מופעל לא זמין</translation>
+<translation id="395377504920307820">שימוש ללא חשבון</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏Chrome יטען את הדף כשיהיה מוכן}two{‏Chrome יטען את הדפים כשיהיו מוכנים}many{‏Chrome יטען את הדפים כשיהיו מוכנים}other{‏Chrome יטען את הדפים כשיהיו מוכנים}}</translation>
 <translation id="3962957115499249330">‏תוצג לך התראה כשההורדה הזו תתחיל דרך Wi-Fi.</translation>
 <translation id="3963007978381181125">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -498,6 +500,7 @@
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4263656433980196874">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בגובה מלא</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
+<translation id="4281359692687148179">כדי לרענן, מושכים כלפי מטה</translation>
 <translation id="4290281343757112331">להוריד מאוחר יותר במקום זאת?</translation>
 <translation id="4296252229500326964">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
@@ -1014,6 +1017,7 @@
 <translation id="7481864133709957613">כדי לבצע חיפוש בדף זה, יש ללחוץ לחיצה ארוכה על מילים במקום להקיש עליהן.</translation>
 <translation id="7482656565088326534">כרטיסיית תצוגה מקדימה</translation>
 <translation id="7484997419527351112">‏Discover – כבוי</translation>
+<translation id="7485033510383818941">כדי לרענן את התוכן בפיד, מושכים את הדף כלפי מטה</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">חיסכון בחבילת הגלישה</translation>
 <translation id="7498271377022651285">נא להמתין…</translation>

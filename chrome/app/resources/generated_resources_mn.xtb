@@ -528,6 +528,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-г аль хэдийн '<ph name="ACTION" />' үйлдэлд оноосон байна. <ph name="RESPONSE" />-н тулд дурын товчлуурыг дарна уу.</translation>
 <translation id="1567993339577891801">JavaScript консол</translation>
 <translation id="1568323446248056064">Төхөөрөмжийн дэлгэцийн тохиргоог харуулах</translation>
+<translation id="1571738973904005196">Таб үзэх: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719">(Зочин) <ph name="WINDOW_TITLE" /></translation>
 <translation id="1572266655485775982">Wi-Fi-г идэвхжүүлэх</translation>
 <translation id="1572876035008611720">Имэйлээ оруулна уу</translation>
@@ -5654,6 +5655,7 @@
 <translation id="7117247127439884114">Дахин нэвтрэх...</translation>
 <translation id="711840821796638741">Удирдлагатай хадгалагдсан хуудсуудыг харуулах</translation>
 <translation id="711902386174337313">Өөрийнхөө нэвтэрч орсон төхөөрөмжүүдийн жагсаалтыг уншуул</translation>
+<translation id="711985611146095797">Энэ хуудас танд нэвтэрсэн Google Бүртгэлүүдээ удирдах боломжийг олгоно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN холбогдоогүй тохиолдолд Chrome хөтөч болон Android-н ачааллыг блоклоно</translation>
 <translation id="7120865473764644444">Синк серверт холбогдож чадсангүй. Дахин оролдож байна...</translation>
 <translation id="7121438501124788993">Хөгжүүлэгч горим</translation>
@@ -6128,6 +6130,7 @@
 <translation id="7639914187072011620">SAML-н дахин чиглүүлэхийг серверээс дуудаж чадсангүй</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> нь таны хадгалсан нууц үгээр хууль ёсны сайтад таныг автоматаар нэвтрүүлнэ.</translation>
 <translation id="7641513591566880111">Профайлын шинэ нэр</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" />-г нэмсэн</translation>
 <translation id="7642778300616172920">Эмзэг агуулгыг нуух</translation>
 <translation id="7643842463591647490">{0,plural, =1{Нээлттэй # цонх}other{Нээлттэй # цонх}}</translation>
 <translation id="7643932971554933646">Файл уншихыг сайтад зөвшөөрөх үү?</translation>
@@ -7187,6 +7190,7 @@
 <translation id="8756969031206844760">Нууц үгийг шинэчлэх үү?</translation>
 <translation id="8757090071857742562">Компьютерийн дэлгэцийг дамжуулах боломжгүй. Та дэлгэцээ хуваалцах тохиргоог зөвшөөрсөн эсэхээ шалгана уу.</translation>
 <translation id="8757203080302669031">Энэ таб Bluetooth төхөөрөмжүүдийг идэвхтэйгээр скан хийж байна.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" />-г хассан</translation>
 <translation id="8758418656925882523">Диктафоныг идэвхжүүлэх (бичихийн тулд чангаар унших)</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
 <translation id="8759753423332885148">Дэлгэрэнгүй үзэх.</translation>

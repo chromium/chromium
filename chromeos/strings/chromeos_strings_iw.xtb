@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
+<translation id="3540383942695635079">‏כתובת MAC</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
 <translation id="4511264077854731334">פורטל</translation>
+<translation id="4536864596629708641">‏תצורת IP</translation>
 <translation id="4548483925627140043">לא אותר אות</translation>
 <translation id="455835558791489930">סוללה בהספק של <ph name="CHARGE_VALUE" /> מיליאמפר לשעה</translation>
 <translation id="4562494484721939086">אין שירות</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
 <translation id="4652335678334611408">לשמירת יומן הפעילות</translation>
+<translation id="4654549501020883054">שינוי מדי יום</translation>
 <translation id="4665014895760275686">יצרן</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="467715984478005772">חומת אש חשודה</translation>
@@ -389,6 +392,7 @@
 <translation id="8498220429738806196">מוני תנועה</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8503836310948963452">רק עוד מספר דקות…</translation>
+<translation id="8521021929829989041">שימוש כמכשיר אישי</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>

@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
+<translation id="3540383942695635079">‏عنوان MAC</translation>
 <translation id="357889014807611375">‏شبكة Wi-Fi تفرض تكلفة استخدام</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
@@ -161,6 +162,7 @@
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4511264077854731334">المدخل</translation>
+<translation id="4536864596629708641">‏إعدادات عنوان IP</translation>
 <translation id="4548483925627140043">لم يتم العثور على إشارة.</translation>
 <translation id="455835558791489930">بطارية بسعة <ph name="CHARGE_VALUE" /> ملّي أمبير في الساعة</translation>
 <translation id="4562494484721939086">لا تتوفر أي خدمة.</translation>
@@ -169,6 +171,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
 <translation id="4652335678334611408">حفظ سجلّ الجلسة</translation>
+<translation id="4654549501020883054">التغيير يوميًا</translation>
 <translation id="4665014895760275686">جهة التصنيع</translation>
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
 <translation id="467715984478005772">تم الاشتباه في جدار ناري.</translation>
@@ -387,6 +390,7 @@
 <translation id="8498220429738806196">عدّادات حركة بيانات الشبكة</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
+<translation id="8521021929829989041">الاستخدام كجهاز شخصي</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>

@@ -531,6 +531,7 @@
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" is reeds toegewys aan die handeling "<ph name="ACTION" />". Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsole</translation>
 <translation id="1568323446248056064">Maak vertoontoestelinstellings oop</translation>
+<translation id="1571738973904005196">Bekyk oortjie: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gas)</translation>
 <translation id="1572266655485775982">Aktiveer Wi-Fi</translation>
 <translation id="1572876035008611720">Voer jou e-posadres in</translation>
@@ -5660,6 +5661,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7117247127439884114">Meld weer aan …</translation>
 <translation id="711840821796638741">Wys bestuurde boekmerke</translation>
 <translation id="711902386174337313">Lees die lys van jou aangemelde toestelle</translation>
+<translation id="711985611146095797">Met hierdie bladsy kan jy jou aangemelde Google-rekeninge bestuur. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-blaaier en Android-verkeer sal geblokkeer word, tensy 'n VPN gekoppel is</translation>
 <translation id="7120865473764644444">Kon nie aan die sinkroniseringbediener koppel nie. Herprobeer tans …</translation>
 <translation id="7121438501124788993">Ontwikkelaarmodus</translation>
@@ -6134,6 +6136,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7639914187072011620">Kon nie die SAML-herlei-URL by die bediener gaan haal nie</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> meld jou outomaties by geskikte werwe aan met wagwoorde wat jy gestoor het.</translation>
 <translation id="7641513591566880111">Nuwe profielnaam</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> is bygevoeg</translation>
 <translation id="7642778300616172920">Versteek sensitiewe inhoud</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oop venster}other{# oop vensters}}</translation>
 <translation id="7643932971554933646">Laat werf lêers bekyk?</translation>
@@ -7197,6 +7200,7 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8756969031206844760">Dateer wagwoord op?</translation>
 <translation id="8757090071857742562">Kan nie die werkskerm uitsaai nie. Kyk of jy die aanporboodskap om jou skerm te begin deel, bevestig het.</translation>
 <translation id="8757203080302669031">Hierdie oortjie soek tans aktief na Bluetooth-toestelle</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> is verwyder</translation>
 <translation id="8758418656925882523">Aktiveer diktee (praat om te tik)</translation>
 <translation id="8759408218731716181">Kan nie veelvuldige aanmelding opstel nie</translation>
 <translation id="8759753423332885148">Kom meer te wete.</translation>
