@@ -31,6 +31,8 @@ component("ash") {
     "accelerators/accelerator_history_impl.cc",
     "accelerators/accelerator_history_impl.h",
     "accelerators/accelerator_ids.h",
+    "accelerators/accelerator_notifications.cc",
+    "accelerators/accelerator_notifications.h",
     "accelerators/accelerator_table.cc",
     "accelerators/accelerator_table.h",
     "accelerators/ash_focus_manager_factory.cc",

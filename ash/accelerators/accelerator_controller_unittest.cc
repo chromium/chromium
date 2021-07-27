@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_history_impl.h"
+#include "ash/accelerators/accelerator_notifications.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -2252,9 +2253,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should be shown at login.
   SimulateUserLogin("user1@email.com");
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
@@ -2264,9 +2263,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should not be shown at login.
   SimulateUserLogin("user1@email.com");
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
@@ -2276,9 +2273,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should not be shown at login.
   SimulateUserLogin("user1@email.com", user_manager::USER_TYPE_GUEST);
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
@@ -2289,9 +2284,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
   SimulateNewUserFirstLogin("user1@email.com");
 
   // Notification should not be shown at a new user's first login.
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
@@ -2301,9 +2294,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should be shown at login.
   SimulateUserLogin("user1@email.com");
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
 
   // Reset the notifications.
   message_center()->RemoveAllNotifications(
@@ -2311,9 +2302,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Login again and there should not be another notification.
   SimulateUserLogin("user1@email.com");
-  notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
@@ -2323,9 +2312,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should be shown at first login.
   SimulateUserLogin("user1@email.com");
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
 
   // Reset the notifications.
   message_center()->RemoveAllNotifications(
@@ -2333,9 +2320,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Switch to user 2, and also should be shown at first login.
   SimulateUserLogin("user2@email.com");
-  notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_TRUE(notification);
+  EXPECT_TRUE(FindShortcutsChangedNotificationForTest());
 
   // Reset the notifications.
   message_center()->RemoveAllNotifications(
@@ -2344,15 +2329,11 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
   // Switch back to to user 1, and it should not be shown.
   auto* session = GetSessionControllerClient();
   session->SwitchActiveUser(AccountId::FromUserEmail("user1@email.com"));
-  notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
 
   // Switch again to user 2, and it should not be shown.
   session->SwitchActiveUser(AccountId::FromUserEmail("user2@email.com"));
-  notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
-  EXPECT_FALSE(notification);
+  EXPECT_FALSE(FindShortcutsChangedNotificationForTest());
 }
 
 TEST_F(AcceleratorControllerStartupNotificationTest,
@@ -2362,8 +2343,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should be shown at login.
   SimulateUserLogin("user1@email.com");
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
+  auto* notification = FindShortcutsChangedNotificationForTest();
   EXPECT_TRUE(notification);
 
   // Setup the expectation that the learn more button opens this shortcut
@@ -2387,8 +2367,7 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Notification should be shown at login.
   SimulateUserLogin("user1@email.com");
-  auto* notification = message_center()->FindVisibleNotificationById(
-      kStartupNewShortcutNotificationId);
+  auto* notification = FindShortcutsChangedNotificationForTest();
   EXPECT_TRUE(notification);
 
   // Setup the expectation that clicking the message body will show the

@@ -58,19 +58,8 @@ enum class WindowSnapAcceleratorAction {
   kMaxValue = kCycleRightSnapInTablet,
 };
 
-// Notification ID for shortcut shown to tell users about new shortcuts.
-ASH_EXPORT extern const char kStartupNewShortcutNotificationId[];
-
 // Histogram for volume adjustment in tablet mode.
 ASH_EXPORT extern const char kTabletCountOfVolumeAdjustType[];
-
-// URL for keyboard shortcut help.
-ASH_EXPORT extern const char kKeyboardShortcutHelpPageUrl[];
-
-// Identifiers for toggling accelerator notifications.
-ASH_EXPORT extern const char kHighContrastToggleAccelNotificationId[];
-ASH_EXPORT extern const char kDockedMagnifierToggleAccelNotificationId[];
-ASH_EXPORT extern const char kFullscreenMagnifierToggleAccelNotificationId[];
 
 // UMA accessibility histogram names.
 ASH_EXPORT extern const char kAccessibilityHighContrastShortcut[];
