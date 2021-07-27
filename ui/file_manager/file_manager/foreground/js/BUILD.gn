@@ -198,6 +198,7 @@ js_library("banner_controller") {
   deps = [
     "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
@@ -207,6 +208,16 @@ js_unittest("banner_controller_unittest.m") {
     ":banner_controller",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:xfm",
+  ]
+}
+
+js_unittest("banner_util_unittest.m") {
+  deps = [
+    ":banner_controller",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+    "//ui/file_manager/file_manager/externs:volume_info",
   ]
 }
 
@@ -1245,6 +1256,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [
     ":actions_model_unittest.m",
     ":banner_controller_unittest.m",
+    ":banner_util_unittest.m",
     ":directory_contents_unittest.m",
     ":file_list_model_unittest.m",
     ":file_manager_commands_unittest.m",

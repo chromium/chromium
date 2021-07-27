@@ -6,6 +6,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
  * Local storage key suffix for how many times a banner was shown.
@@ -111,4 +112,28 @@ export class BannerController extends EventTarget {
       }
     }
   }
+}
+
+/**
+ * Identifies if the current volume is in the list of allowed volume type
+ * array for a specific banner.
+ * @param {!VolumeInfo} currentVolume Volume that is currently navigated.
+ * @param {!Array<!Banner.AllowedVolumeType>} allowedVolumeTypes Array of
+ * allowed volumes
+ * @return {boolean}
+ */
+export function isAllowedVolume(currentVolume, allowedVolumeTypes) {
+  for (let i = 0; i < allowedVolumeTypes.length; i++) {
+    const {type, id} = allowedVolumeTypes[i];
+    if (currentVolume.volumeType !== type) {
+      continue;
+    }
+    // Avoid verifying the volumeId against null in the case a Banner wants to
+    // show for all volumeId's of a specific volumeType.
+    if (id && currentVolume.volumeId !== id) {
+      continue;
+    }
+    return true;
+  }
+  return false;
 }
