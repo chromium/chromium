@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
@@ -34,12 +33,6 @@ using chrome_test_util::PrimarySignInButton;
 @end
 
 @implementation SyncEncryptionPassphraseTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(signin::kMobileIdentityConsistency);
-  return config;
-}
 
 // Tests to open the sync passphrase view, and to close it.
 - (void)testShowSyncPassphraseAndDismiss {
@@ -100,11 +93,6 @@ using chrome_test_util::PrimarySignInButton;
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
   [SigninEarlGreyUI tapSettingsLink];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncCellAccessibilityIdentifier)]
-      performAction:grey_tap()];
-
   // Scroll to bottom of Manage Sync Settings, if necessary.
   [[EarlGrey selectElementWithMatcher:
                  grey_allOf(grey_accessibilityID(
@@ -129,8 +117,6 @@ using chrome_test_util::PrimarySignInButton;
                                        l10n_util::GetNSString(
                                            IDS_IOS_SYNC_DECRYPT_BUTTON)),
                                    nil)] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SyncSettingsConfirmButton()]
       performAction:grey_tap()];
 
