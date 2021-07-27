@@ -46,8 +46,6 @@ namespace media {
 
 namespace {
 
-constexpr SampleFormat kSampleFormat = kSampleFormatS16;
-
 void LogCallbackDummy(const std::string& /* message */) {}
 
 }  // namespace
@@ -463,10 +461,6 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
 
   MockAudioInputCallback sink;
 
-  // Derive the expected size in bytes of each recorded packet.
-  uint32_t bytes_per_packet = aisw.channels() * aisw.frames_per_buffer() *
-                              SampleFormatToBytesPerChannel(kSampleFormat);
-
   {
     // We use 10ms packets and will run the test until ten packets are received.
     // All should contain valid packets of the same size and a valid delay
@@ -492,8 +486,6 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
   count = 0;
   ais.Reset(aisw.Create(2 * frames_per_buffer_10ms));
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
-  bytes_per_packet = aisw.channels() * aisw.frames_per_buffer() *
-                     SampleFormatToBytesPerChannel(kSampleFormat);
 
   {
     base::RunLoop run_loop;
@@ -513,8 +505,6 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
   count = 0;
   ais.Reset(aisw.Create(frames_per_buffer_10ms / 2));
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
-  bytes_per_packet = aisw.channels() * aisw.frames_per_buffer() *
-                     SampleFormatToBytesPerChannel(kSampleFormat);
 
   {
     base::RunLoop run_loop;
