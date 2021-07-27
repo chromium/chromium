@@ -147,6 +147,7 @@ suite('SidePanelBookmarksListTest', () => {
     await flushTasks();
     const childFolderBookmarks = getBookmarkElements(childFolder);
     assertEquals(2, childFolderBookmarks.length);
+    assertEquals('New bookmark', childFolderBookmarks[0].textContent);
   });
 
   test('MovesBookmarks', () => {
