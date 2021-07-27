@@ -1643,6 +1643,8 @@ source_set("browser") {
     "renderer_host/render_widget_targeter.cc",
     "renderer_host/render_widget_targeter.h",
     "renderer_host/should_swap_browsing_instance.h",
+    "renderer_host/stored_page.cc",
+    "renderer_host/stored_page.h",
     "renderer_host/text_input_manager.cc",
     "renderer_host/text_input_manager.h",
     "renderer_host/ui_events_helper.cc",

@@ -222,7 +222,7 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     const auto& entries = controller.GetBackForwardCache().GetEntries();
     for (const auto& entry : entries) {
       info->bfcached_root_frames.push_back(RenderFrameHostToFrameInfo(
-          (*entry).render_frame_host.get(),
+          (*entry).render_frame_host(),
           ::mojom::FrameInfo::Type::kBackForwardCache));
     }
 

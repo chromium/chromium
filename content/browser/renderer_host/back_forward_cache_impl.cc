@@ -375,7 +375,7 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
 // Returns true if any of the processes associated with the RenderViewHosts in
 // this Entry are foregrounded.
 bool HasForegroundedProcess(BackForwardCacheImpl::Entry& entry) {
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     if (!rvh->GetProcess()->IsProcessBackgrounded()) {
       return true;
     }
@@ -387,7 +387,7 @@ bool HasForegroundedProcess(BackForwardCacheImpl::Entry& entry) {
 // acknowledgement from renderer.
 bool AllRenderViewHostsReceivedAckFromRenderer(
     BackForwardCacheImpl::Entry& entry) {
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     if (!rvh->DidReceiveBackForwardCacheAck()) {
       return false;
     }
@@ -423,27 +423,19 @@ BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy() {
   }
 }
 
-BackForwardCacheImpl::Entry::Entry(
-    std::unique_ptr<RenderFrameHostImpl> rfh,
-    RenderFrameProxyHostMap proxies,
-    std::set<RenderViewHostImpl*> render_view_hosts)
-    : render_frame_host(std::move(rfh)),
-      proxy_hosts(std::move(proxies)),
-      render_view_hosts(std::move(render_view_hosts)) {}
+BackForwardCacheImpl::Entry::Entry(std::unique_ptr<StoredPage> stored_page)
+    : stored_page_(std::move(stored_page)) {}
 
 BackForwardCacheImpl::Entry::~Entry() = default;
 
 void BackForwardCacheImpl::Entry::WriteIntoTrace(
     perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("render_frame_host", render_frame_host);
+  dict.Add("render_frame_host", render_frame_host());
 }
 
 void BackForwardCacheImpl::Entry::StartMonitoringCookieChange() {
-  cookie_monitor = std::make_unique<CookieMonitor>(render_frame_host.get());
-}
-
-BackForwardCacheImpl::CookieMonitor::CookieMonitor(RenderFrameHostImpl* rfh) {
+  RenderFrameHostImpl* rfh = stored_page_->render_frame_host.get();
   StoragePartition* storage_partition = rfh->GetStoragePartition();
   auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
   if (!cookie_listener_receiver_.is_bound()) {
@@ -458,19 +450,17 @@ BackForwardCacheImpl::CookieMonitor::CookieMonitor(RenderFrameHostImpl* rfh) {
   http_only_cookie_modified_ = false;
 }
 
-BackForwardCacheImpl::CookieMonitor::~CookieMonitor() = default;
-
-void BackForwardCacheImpl::CookieMonitor::OnCookieChange(
+void BackForwardCacheImpl::Entry::OnCookieChange(
     const net::CookieChangeInfo& change) {
   http_only_cookie_modified_ = change.cookie.IsHttpOnly();
   cookie_modified_ = true;
 }
 
-bool BackForwardCacheImpl::CookieMonitor::CookieModified() {
+bool BackForwardCacheImpl::Entry::CookieModified() {
   return cookie_modified_;
 }
 
-bool BackForwardCacheImpl::CookieMonitor::HTTPOnlyCookieModified() {
+bool BackForwardCacheImpl::Entry::HTTPOnlyCookieModified() {
   return http_only_cookie_modified_;
 }
 
@@ -795,7 +785,7 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
 void BackForwardCacheImpl::StoreEntry(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
   TRACE_EVENT("navigation", "BackForwardCache::StoreEntry", "entry", entry);
-  DCHECK(CanStorePageNow(entry->render_frame_host.get()));
+  DCHECK(CanStorePageNow(entry->render_frame_host()));
 
 #if defined(OS_ANDROID)
   if (!IsProcessBindingEnabled()) {
@@ -805,15 +795,16 @@ void BackForwardCacheImpl::StoreEntry(
     // priority RenderWidgetHost. We don't need to reset the priority in
     // RestoreEntry as it is taken care by WebContentsImpl::NotifyFrameSwapped
     // on restoration.
-    RenderWidgetHostImpl* rwh = entry->render_frame_host->GetRenderWidgetHost();
+    RenderWidgetHostImpl* rwh =
+        entry->render_frame_host()->GetRenderWidgetHost();
     ChildProcessImportance current_importance = rwh->importance();
     rwh->SetImportance(
         std::min(current_importance, kChildProcessImportanceParam.Get()));
   }
 #endif
 
-  entry->render_frame_host->DidEnterBackForwardCache();
-  if (entry->render_frame_host->scheduler_tracked_features().Has(
+  entry->render_frame_host()->DidEnterBackForwardCache();
+  if (entry->render_frame_host()->scheduler_tracked_features().Has(
           WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
     // Start monitoring the cookie change only when cache-control:no-store
     // header is present.
@@ -847,7 +838,7 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
   size_t count = 0;
   size_t not_received_ack_count = 0;
   for (auto& stored_entry : entries_) {
-    if (stored_entry->render_frame_host->is_evicted_from_back_forward_cache())
+    if (stored_entry->render_frame_host()->is_evicted_from_back_forward_cache())
       continue;
     if (foregrounded_only && !HasForegroundedProcess(*stored_entry))
       continue;
@@ -856,7 +847,7 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
       continue;
     }
     if (++count > limit) {
-      stored_entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+      stored_entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
           foregrounded_only
               ? BackForwardCacheMetrics::NotRestoredReason::
                     kForegroundCacheLimit
@@ -872,23 +863,23 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
 
 void BackForwardCacheImpl::MaybeEvictDueToCacheControlNoStoreBeforeRestore(
     Entry* entry) {
-  if (!entry->render_frame_host->scheduler_tracked_features().Has(
+  if (!entry->render_frame_host()->scheduler_tracked_features().Has(
           WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
     return;
 
-  if (entry->cookie_monitor->HTTPOnlyCookieModified()) {
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+  if (entry->HTTPOnlyCookieModified()) {
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::
             kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (entry->cookie_monitor->CookieModified()) {
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+  } else if (entry->CookieModified()) {
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::
             kCacheControlNoStoreCookieModified);
   } else {
     // Do not evict if the flag is on when cookies do not change.
     if (AllowRestoringPagesWithCacheControlNoStore())
       return;
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
   }
 }
@@ -898,11 +889,12 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT0("navigation", "BackForwardCache::RestoreEntry");
   // Select the RenderFrameHostImpl matching the navigation entry.
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [navigation_entry_id](std::unique_ptr<Entry>& entry) {
-        return entry->render_frame_host->nav_entry_id() == navigation_entry_id;
-      });
+  auto matching_entry =
+      std::find_if(entries_.begin(), entries_.end(),
+                   [navigation_entry_id](std::unique_ptr<Entry>& entry) {
+                     return entry->render_frame_host()->nav_entry_id() ==
+                            navigation_entry_id;
+                   });
 
   // Not found.
   if (matching_entry == entries_.end())
@@ -910,7 +902,8 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 
   // Don't restore an evicted frame.
   if ((*matching_entry)
-          ->render_frame_host->is_evicted_from_back_forward_cache())
+          ->render_frame_host()
+          ->is_evicted_from_back_forward_cache())
     return nullptr;
 
   std::unique_ptr<Entry> entry = std::move(*matching_entry);
@@ -920,12 +913,12 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 
   entries_.erase(matching_entry);
   RemoveProcessesForEntry(*entry);
-  entry->page_restore_params = std::move(page_restore_params);
-  RequestRecordTimeToVisible(entry->render_frame_host.get(),
-                             entry->page_restore_params->navigation_start);
-  entry->render_frame_host->WillLeaveBackForwardCache();
+  base::TimeTicks start_time = page_restore_params->navigation_start;
+  entry->SetPageRestoreParams(std::move(page_restore_params));
+  RequestRecordTimeToVisible(entry->render_frame_host(), start_time);
+  entry->render_frame_host()->WillLeaveBackForwardCache();
 
-  RestoreBrowserControlsState(entry->render_frame_host.get());
+  RestoreBrowserControlsState(entry->render_frame_host());
 
   return entry;
 }
@@ -933,7 +926,7 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
 void BackForwardCacheImpl::Flush() {
   TRACE_EVENT0("navigation", "BackForwardCache::Flush");
   for (std::unique_ptr<Entry>& entry : entries_) {
-    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+    entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kCacheFlushed);
   }
 }
@@ -949,9 +942,9 @@ void BackForwardCacheImpl::Shutdown() {
 void BackForwardCacheImpl::EvictFramesInRelatedSiteInstances(
     SiteInstance* site_instance) {
   for (std::unique_ptr<Entry>& entry : entries_) {
-    if (entry->render_frame_host->GetSiteInstance()->IsRelatedSiteInstance(
+    if (entry->render_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
             site_instance)) {
-      entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+      entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
           BackForwardCacheMetrics::NotRestoredReason::
               kConflictingBrowsingInstance);
     }
@@ -1017,24 +1010,27 @@ BackForwardCacheImpl::GetEntries() {
 
 BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
     int navigation_entry_id) {
-  auto matching_entry = std::find_if(
-      entries_.begin(), entries_.end(),
-      [navigation_entry_id](std::unique_ptr<Entry>& entry) {
-        return entry->render_frame_host->nav_entry_id() == navigation_entry_id;
-      });
+  auto matching_entry =
+      std::find_if(entries_.begin(), entries_.end(),
+                   [navigation_entry_id](std::unique_ptr<Entry>& entry) {
+                     return entry->render_frame_host()->nav_entry_id() ==
+                            navigation_entry_id;
+                   });
 
   if (matching_entry == entries_.end())
     return nullptr;
 
   if (AllowStoringPagesWithCacheControlNoStore() &&
       (*matching_entry)
-          ->render_frame_host->scheduler_tracked_features()
+          ->render_frame_host()
+          ->scheduler_tracked_features()
           .Has(WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
     MaybeEvictDueToCacheControlNoStoreBeforeRestore((*matching_entry).get());
 
   // Don't return the frame if it is evicted.
   if ((*matching_entry)
-          ->render_frame_host->is_evicted_from_back_forward_cache())
+          ->render_frame_host()
+          ->is_evicted_from_back_forward_cache())
     return nullptr;
 
   return (*matching_entry).get();
@@ -1043,7 +1039,7 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
 void BackForwardCacheImpl::AddProcessesForEntry(Entry& entry) {
   if (!UsingForegroundBackgroundCacheSizeLimit())
     return;
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     RenderProcessHostImpl* process =
         static_cast<RenderProcessHostImpl*>(rvh->GetProcess());
     if (observed_processes_.find(process) == observed_processes_.end())
@@ -1055,7 +1051,7 @@ void BackForwardCacheImpl::AddProcessesForEntry(Entry& entry) {
 void BackForwardCacheImpl::RemoveProcessesForEntry(Entry& entry) {
   if (!UsingForegroundBackgroundCacheSizeLimit())
     return;
-  for (auto* rvh : entry.render_view_hosts) {
+  for (auto* rvh : entry.render_view_hosts()) {
     RenderProcessHostImpl* process =
         static_cast<RenderProcessHostImpl*>(rvh->GetProcess());
     // Remove 1 instance of this process from the multiset.
@@ -1071,7 +1067,7 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
     return;
 
   base::EraseIf(entries_, [this](std::unique_ptr<Entry>& entry) {
-    if (entry->render_frame_host->is_evicted_from_back_forward_cache()) {
+    if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
       RemoveProcessesForEntry(*entry);
       return true;
     }
@@ -1143,7 +1139,7 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   // Disable JS eviction in renderers and defer the navigation commit until
   // we've received confirmation that eviction is disabled from renderers.
   auto cb = base::BarrierClosure(
-      bfcache_entry.render_view_hosts.size(),
+      bfcache_entry.render_view_hosts().size(),
       base::BindOnce(
           [](base::TimeTicks ipc_start_time, base::OnceClosure cb) {
             std::move(cb).Run();
@@ -1153,7 +1149,7 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
           },
           base::TimeTicks::Now(), std::move(done_callback)));
 
-  for (auto* rvh : bfcache_entry.render_view_hosts) {
+  for (auto* rvh : bfcache_entry.render_view_hosts()) {
     rvh->PrepareToLeaveBackForwardCache(cb);
   }
 }

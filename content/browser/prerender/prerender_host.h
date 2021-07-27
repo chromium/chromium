@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -94,15 +95,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  // Activates the prerendered page and returns BackForwardCacheImpl::Entry
-  // containing the page. This must be called after this host gets ready for
-  // activation.
-  //
-  // TODO(https://crbug.com/1181263): Refactor BackForwardCacheImpl::Entry into
-  // a generic "page" object to make clear that the same logic is also used for
-  // prerendering.
-  std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
-      NavigationRequest& navigation_request);
+  // Activates the prerendered page and returns StoredPage containing the page.
+  // This must be called after this host gets ready for activation.
+  std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request);
 
   // Returns true if the navigation params that were used in the initial
   // prerender navigation (i.e., in StartPrerendering()) match the navigation

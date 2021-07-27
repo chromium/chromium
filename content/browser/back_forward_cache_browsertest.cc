@@ -1934,7 +1934,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Verify proxies are stored as well.
   auto* cached_entry = cache.GetEntry(rfh_a->nav_entry_id());
-  EXPECT_EQ(2u, cached_entry->proxy_hosts.size());
+  EXPECT_EQ(2u, cached_entry->proxy_hosts_size());
 
   // 3. Navigate from an uncacheable to a cached page page (B->A).
   web_contents()->GetController().GoBack();
@@ -1963,7 +1963,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Verify proxies are stored as well.
   cached_entry = cache.GetEntry(rfh_a->nav_entry_id());
-  EXPECT_EQ(2u, cached_entry->proxy_hosts.size());
+  EXPECT_EQ(2u, cached_entry->proxy_hosts_size());
 
   // 5. Navigate from a cacheable page to a cached page (C->A).
   web_contents()->GetController().GoBack();
@@ -1980,7 +1980,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Verify proxies are stored as well.
   cached_entry = cache.GetEntry(rfh_c->nav_entry_id());
-  EXPECT_EQ(3u, cached_entry->proxy_hosts.size());
+  EXPECT_EQ(3u, cached_entry->proxy_hosts_size());
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

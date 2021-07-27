@@ -8,7 +8,6 @@
 #include <list>
 #include <memory>
 #include <set>
-#include <unordered_map>
 #include <unordered_set>
 
 #include "base/feature_list.h"
@@ -19,6 +18,7 @@
 #include "base/time/time.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
@@ -36,7 +36,6 @@
 namespace content {
 
 class RenderFrameHostImpl;
-class RenderFrameProxyHost;
 class RenderViewHostImpl;
 class SiteInstance;
 
@@ -86,18 +85,45 @@ class CONTENT_EXPORT BackForwardCacheImpl
   static MessageHandlingPolicyWhenCached
   GetChannelAssociatedMessageHandlingPolicy();
 
-  // For each BackForwardCacheImpl::Entry, |CookieMonitor| monitors cookie
-  // changes on the entry and records them. Owned by the entry.
-  class CookieMonitor : public ::network::mojom::CookieChangeListener {
+  // BackForwardCache entry, consisting of the page and associated metadata.
+  class Entry : public ::network::mojom::CookieChangeListener {
    public:
-    CookieMonitor(RenderFrameHostImpl* rfh);
-    ~CookieMonitor() override;
-    // Returns whether or not any cookie on the bfcache entry has been modified
-    // while the page is in bfcache.
+    explicit Entry(std::unique_ptr<StoredPage> stored_page);
+    ~Entry() override;
+
+    void WriteIntoTrace(perfetto::TracedValue context);
+
+    // Starts monitoring the cookie change in this entry.
+    void StartMonitoringCookieChange();
+    // Returns whether or not any cookie on the bfcache entry has been
+    // modified while the page is in bfcache.
     bool CookieModified();
     // Returns whether or not HTTPOnly cookie on the bfcache entry has been
     // modified while the page is in bfcache.
     bool HTTPOnlyCookieModified();
+
+    // Indicates whether or not all the |render_view_hosts| in this entry have
+    // received the acknowledgement from renderer that it finished running
+    // handlers.
+    bool AllRenderViewHostsReceivedAckFromRenderer();
+
+    std::unique_ptr<StoredPage> TakeStoredPage() {
+      return std::move(stored_page_);
+    }
+    void SetPageRestoreParams(
+        blink::mojom::PageRestoreParamsPtr page_restore_params) {
+      stored_page_->page_restore_params = std::move(page_restore_params);
+    }
+    // The main document being stored.
+    RenderFrameHostImpl* render_frame_host() {
+      return stored_page_->render_frame_host.get();
+    }
+
+    std::set<RenderViewHostImpl*> render_view_hosts() {
+      return stored_page_->render_view_hosts;
+    }
+
+    size_t proxy_hosts_size() { return stored_page_->proxy_hosts.size(); }
 
    private:
     // ::network::mojom::CookieChangeListener
@@ -112,56 +138,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // Indicates whether or not HTTPOnly cookie on the bfcache entry has been
     // modified while the entry is in bfcache.
     bool http_only_cookie_modified_ = false;
-  };
 
-  struct CONTENT_EXPORT Entry {
-    using RenderFrameProxyHostMap =
-        std::unordered_map<SiteInstanceId,
-                           std::unique_ptr<RenderFrameProxyHost>,
-                           SiteInstanceId::Hasher>;
-
-    Entry(std::unique_ptr<RenderFrameHostImpl> rfh,
-          RenderFrameProxyHostMap proxy_hosts,
-          std::set<RenderViewHostImpl*> render_view_hosts);
-    ~Entry();
-
-    void WriteIntoTrace(perfetto::TracedValue context);
-    // Indicates whether or not all the |render_view_hosts| in this entry have
-    // received the acknowledgement from renderer that it finished running
-    // handlers.
-    bool AllRenderViewHostsReceivedAckFromRenderer();
-
-    // Starts monitoring the cookie change in this entry.
-    void StartMonitoringCookieChange();
-
-    // The main document being stored.
-    std::unique_ptr<RenderFrameHostImpl> render_frame_host;
-
-    // Proxies of the main document as seen by other processes.
-    // Currently, we only store proxies for SiteInstances of all subframes on
-    // the page, because pages using window.open and nested WebContents are not
-    // cached.
-    RenderFrameProxyHostMap proxy_hosts;
-
-    // RenderViewHosts belonging to the main frame, and its proxies (if any).
-    //
-    // While RenderViewHostImpl(s) are in the BackForwardCache, they aren't
-    // reused for pages outside the cache. This prevents us from having two main
-    // frames, (one in the cache, one live), associated with a single
-    // RenderViewHost.
-    //
-    // Keeping these here also prevents RenderFrameHostManager code from
-    // unwittingly iterating over RenderViewHostImpls that are in the cache.
-    std::set<RenderViewHostImpl*> render_view_hosts;
-
-    // Additional parameters to send with SetPageLifecycleState calls when we're
-    // restoring a page from the back-forward cache.
-    blink::mojom::PageRestoreParamsPtr page_restore_params;
-
-    // Only populated if we are monitoring cookies for this entry.
-    std::unique_ptr<CookieMonitor> cookie_monitor;
-
-    DISALLOW_COPY_AND_ASSIGN(Entry);
+    std::unique_ptr<StoredPage> stored_page_;
   };
 
   // UnloadSupportStrategy is possible actions to take against pages with

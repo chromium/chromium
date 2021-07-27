@@ -588,9 +588,9 @@ void RenderViewHostImpl::OnBackForwardCacheTimeout() {
   const auto& entries =
       frame_tree_->controller().GetBackForwardCache().GetEntries();
   for (auto& entry : entries) {
-    for (auto* const rvh : entry->render_view_hosts) {
+    for (auto* const rvh : entry->render_view_hosts()) {
       if (rvh == this) {
-        RenderFrameHostImpl* rfh = entry->render_frame_host.get();
+        RenderFrameHostImpl* rfh = entry->render_frame_host();
         rfh->EvictFromBackForwardCacheWithReason(
             BackForwardCacheMetrics::NotRestoredReason::kTimeoutPuttingInCache);
         break;
@@ -606,9 +606,9 @@ void RenderViewHostImpl::MaybeEvictFromBackForwardCache() {
   const auto& entries =
       frame_tree_->controller().GetBackForwardCache().GetEntries();
   for (auto& entry : entries) {
-    for (auto* const rvh : entry->render_view_hosts) {
+    for (auto* const rvh : entry->render_view_hosts()) {
       if (rvh == this) {
-        RenderFrameHostImpl* rfh = entry->render_frame_host.get();
+        RenderFrameHostImpl* rfh = entry->render_frame_host();
         rfh->MaybeEvictFromBackForwardCache();
       }
     }

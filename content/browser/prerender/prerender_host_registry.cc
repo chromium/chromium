@@ -206,8 +206,7 @@ RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
   return iter->second.prerender_host->GetPrerenderedMainFrameHost();
 }
 
-std::unique_ptr<BackForwardCacheImpl::Entry>
-PrerenderHostRegistry::ActivateReservedHost(
+std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
     int frame_tree_node_id,
     NavigationRequest& navigation_request) {
   auto iter =

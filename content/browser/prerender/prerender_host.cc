@@ -47,7 +47,7 @@ void CollectAllChildren(RenderFrameHostImpl& rfh,
 // Iterate over RenderFrameHostImpl::children_ rather than FrameTree::Nodes()
 // because the |rfh| root node will not have a current_frame_host value. The
 // root node is set to null in MPArch prerender activation when generating a
-// BackForwardCacheImpl::Entry.
+// StoredPage.
 // TODO(mcnee): Implement in terms of RenderFrameHost::ForEachRenderFrameHost.
 std::vector<RenderFrameHostImpl*> AllDescendantActiveRenderFrameHosts(
     RenderFrameHostImpl& rfh) {
@@ -58,11 +58,11 @@ std::vector<RenderFrameHostImpl*> AllDescendantActiveRenderFrameHosts(
 
 struct ActivateResult {
   ActivateResult(PrerenderHost::FinalStatus status,
-                 std::unique_ptr<BackForwardCacheImpl::Entry> entry)
-      : status(status), entry(std::move(entry)) {}
+                 std::unique_ptr<StoredPage> page)
+      : status(status), page(std::move(page)) {}
 
   PrerenderHost::FinalStatus status = PrerenderHost::FinalStatus::kActivated;
-  std::unique_ptr<BackForwardCacheImpl::Entry> entry;
+  std::unique_ptr<StoredPage> page;
 };
 
 }  // namespace
@@ -179,7 +179,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     //
     // TODO(https://crbug.com/1176148): Investigate how to combine taking the
     // prerendered page and frame_tree_ destruction.
-    std::unique_ptr<BackForwardCacheImpl::Entry> page =
+    std::unique_ptr<StoredPage> page =
         frame_tree_->root()->render_manager()->TakePrerenderedPage();
 
     std::unique_ptr<NavigationEntryRestoreContextImpl> context =
@@ -388,7 +388,7 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   is_ready_for_activation_ = true;
 }
 
-std::unique_ptr<BackForwardCacheImpl::Entry> PrerenderHost::Activate(
+std::unique_ptr<StoredPage> PrerenderHost::Activate(
     NavigationRequest& navigation_request) {
   TRACE_EVENT1("navigation", "PrerenderHost::Activate", "navigation_request",
                &navigation_request);
@@ -406,7 +406,7 @@ std::unique_ptr<BackForwardCacheImpl::Entry> PrerenderHost::Activate(
     observer.OnActivated();
 
   RecordFinalStatus(FinalStatus::kActivated);
-  return std::move(result.entry);
+  return std::move(result.page);
 }
 
 bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(

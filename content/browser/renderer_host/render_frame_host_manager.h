@@ -18,12 +18,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
+#include "content/browser/renderer_host/stored_page.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_request_id.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -33,15 +34,7 @@
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
-namespace blink {
-struct FramePolicy;
-}  // namespace blink
-
 namespace content {
-namespace mojom {
-class Frame;
-}  // namespace mojom
-
 class FrameTree;
 class FrameTreeNode;
 class NavigationControllerImpl;
@@ -50,7 +43,6 @@ class NavigationRequest;
 class NavigatorTest;
 class RenderFrameHostManagerTest;
 class RenderFrameProxyHost;
-class RenderFrameHostImpl;
 class RenderViewHost;
 class RenderViewHostImpl;
 class RenderWidgetHostViewBase;
@@ -295,11 +287,11 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Returns whether it was deleted.
   bool DeleteFromPendingList(RenderFrameHostImpl* render_frame_host);
 
-  // BackForwardCache:
+  // BackForwardCache/Prerender:
   // During a history navigation, unfreezes and swaps in a document from the
-  // BackForwardCache, making it active.
-  void RestoreFromBackForwardCache(
-      std::unique_ptr<BackForwardCacheImpl::Entry>);
+  // BackForwardCache, making it active. This mechanism is also used for
+  // activating prerender page.
+  void RestorePage(std::unique_ptr<StoredPage> stored_page);
 
   // Temporary method to allow reusing back-forward cache activation for
   // prerender activation. Similar to RestoreFromBackForwardCache(), but cleans
@@ -307,7 +299,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // TODO(https://crbug.com/1190197). This method might not be needed if we do
   // not create the speculative RFH in the first place for Prerender
   // activations.
-  void ActivatePrerender(std::unique_ptr<BackForwardCacheImpl::Entry>);
+  void ActivatePrerender(std::unique_ptr<StoredPage>);
 
   // Deletes any proxy hosts associated with this node. Used during destruction
   // of WebContentsImpl.
@@ -566,16 +558,12 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   Delegate* delegate() { return delegate_; }
 
-  // Collects the current page into BackForwardCacheImpl::Entry in preparation
+  // Collects the current page into StoredPage in preparation
   // for it to be moved to another FrameTree for prerender activation. After
   // this call, |current_frame_host_| will become null, which breaks many
   // invariants in the code, so the caller is responsible for destroying the
   // FrameTree immediately after this call.
-  //
-  // TODO(https://crbug.com/1183523): Rename BackForwardCacheImpl::Entry to make
-  // clear that it is also used to transfer pages between FrameTrees for
-  // prerendering.
-  std::unique_ptr<BackForwardCacheImpl::Entry> TakePrerenderedPage();
+  std::unique_ptr<StoredPage> TakePrerenderedPage();
 
  private:
   friend class NavigatorTest;
@@ -890,15 +878,14 @@ class CONTENT_EXPORT RenderFrameHostManager
   //
   // This function is also called when restoring an entry from BackForwardCache.
   // In that case, |pending_rfh| is the RenderFrameHost to be restored, and
-  // |pending_bfcache_entry| provides additional state to be restored, such as
+  // |pending_stored_page| provides additional state to be restored, such as
   // proxies.
   // |clear_proxies_on_commit| Indicates if the proxies and opener must be
   // removed during the commit. This can happen following some BrowsingInstance
   // swaps, such as those for COOP.
-  void CommitPending(
-      std::unique_ptr<RenderFrameHostImpl> pending_rfh,
-      std::unique_ptr<BackForwardCacheImpl::Entry> pending_bfcache_entry,
-      bool clear_proxies_on_commit);
+  void CommitPending(std::unique_ptr<RenderFrameHostImpl> pending_rfh,
+                     std::unique_ptr<StoredPage> pending_stored_page,
+                     bool clear_proxies_on_commit);
 
   // Helper to call CommitPending() in all necessary cases.
   void CommitPendingIfNecessary(RenderFrameHostImpl* render_frame_host,
@@ -948,11 +935,16 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   NavigationControllerImpl& GetNavigationController();
 
+  void PrepareForCollectingPage(
+      RenderFrameHostImpl* main_render_frame_host,
+      std::set<RenderViewHostImpl*>* render_view_hosts,
+      RenderFrameProxyHostMap* proxy_hosts);
+
   // Collects all of the page-related state currently owned by
   // RenderFrameHostManager (including relevant RenderViewHosts and
-  // RenderFrameProxyHosts) into a BackForwardCacheImpl::Entry object to be
+  // RenderFrameProxyHosts) into a StoredPage object to be
   // stored in back-forward cache or to activate the prerenderer.
-  std::unique_ptr<BackForwardCacheImpl::Entry> CollectPage(
+  std::unique_ptr<StoredPage> CollectPage(
       std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
 
   // For use in creating RenderFrameHosts.
@@ -983,9 +975,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   // it.
   std::unique_ptr<RenderFrameHostImpl> speculative_render_frame_host_;
 
-  // After being set in RestoreFromBackForwardCache(), the bfcache entry is
-  // immediately consumed in CommitPending().
-  std::unique_ptr<BackForwardCacheImpl::Entry> bfcache_entry_to_restore_;
+  // After being set in RestoreFromBackForwardCache() or ActivatePrerenderer(),
+  // the stored page is immediately consumed in CommitPending().
+  std::unique_ptr<StoredPage> stored_page_to_restore_;
 
   // This callback is used when attaching an inner Delegate to |delegate_|
   // through |frame_tree_node_|.

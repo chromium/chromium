@@ -1348,7 +1348,7 @@ std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
   result.push_back(GetMainFrame());
 
   for (const auto& entry : GetController().GetBackForwardCache().GetEntries()) {
-    result.push_back(entry->render_frame_host.get());
+    result.push_back(entry->render_frame_host());
   }
 
   if (blink::features::IsPrerender2Enabled()) {
@@ -8876,7 +8876,7 @@ WebContentsImpl::GetRenderViewHostsIncludingBackForwardCached() {
   // Add RenderViewHostImpls in BackForwardCache.
   const auto& entries = GetController().GetBackForwardCache().GetEntries();
   for (const auto& entry : entries) {
-    std::set<RenderViewHostImpl*> bfcached_hosts = entry->render_view_hosts;
+    std::set<RenderViewHostImpl*> bfcached_hosts = entry->render_view_hosts();
     render_view_hosts.insert(bfcached_hosts.begin(), bfcached_hosts.end());
   }
 
