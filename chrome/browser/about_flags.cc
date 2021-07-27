@@ -4410,6 +4410,13 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxOnFocusSuggestionsContextualWebVariations,
          "OmniboxGoogleOnContent")},
 
+    {"omnibox-on-focus-suggestions-contextual-web-allow-srp",
+     flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebAllowSRPName,
+     flag_descriptions::
+         kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOnFocusSuggestionsContextualWebAllowSRP)},
+
     {"omnibox-experimental-suggest-scoring",
      flag_descriptions::kOmniboxExperimentalSuggestScoringName,
      flag_descriptions::kOmniboxExperimentalSuggestScoringDescription, kOsAll,

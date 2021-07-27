@@ -4186,6 +4186,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-on-focus-suggestions-contextual-web-allow-srp",
+    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "omnibox-pedals-batch2",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

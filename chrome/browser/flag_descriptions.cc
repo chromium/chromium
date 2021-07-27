@@ -1836,6 +1836,13 @@ const char kOmniboxRichEntitiesInLauncherName[] =
 const char kOmniboxRichEntitiesInLauncherDescription[] =
     "Enable rich entity formatting for Omnibox results in the launcher.";
 
+const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPName[] =
+    "Allow Omnibox contextual web on-focus suggestions on the SRP";
+const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription[] =
+    "Enables on-focus suggestions on the Search Results page. "
+    "Requires on-focus suggestions for the contextual web to be enabled. "
+    "Will only work if user is signed-in and syncing.";
+
 const char kOmniboxOnFocusSuggestionsContextualWebName[] =
     "Omnibox on-focus suggestions for the contextual Web";
 const char kOmniboxOnFocusSuggestionsContextualWebDescription[] =

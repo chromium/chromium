@@ -48766,6 +48766,8 @@ from previous Chrome versions.
   <int value="-78035185" label="custom_summary"/>
   <int value="-77872983" label="BookmarkAppsMac:disabled"/>
   <int value="-77789682" label="SharingPreferVapid:disabled"/>
+  <int value="-77230883"
+      label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:enabled"/>
   <int value="-77084779" label="ExperimentalFlingAnimation:enabled"/>
   <int value="-76631048" label="disable-offline-auto-reload-visible-only"/>
   <int value="-76445689" label="WasmCodeCache:enabled"/>
@@ -50946,6 +50948,8 @@ from previous Chrome versions.
       label="ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes:enabled"/>
   <int value="1706682238" label="ContextualSearchTranslations:disabled"/>
   <int value="1707283026" label="SyncPseudoUSSExtensions:disabled"/>
+  <int value="1707873180"
+      label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:disabled"/>
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
   <int value="1711286384" label="ContextMenuCopyImage:disabled"/>
   <int value="1712622545" label="Memories:disabled"/>
