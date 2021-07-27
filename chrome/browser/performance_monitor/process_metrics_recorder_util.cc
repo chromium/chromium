@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace performance_monitor {
@@ -52,5 +53,69 @@ void RecordProcessHistograms(const char* histogram_suffix,
       metrics.energy_impact);
 #endif
 }
+
+#if defined(OS_MAC)
+void RecordCoalitionData(const ProcessMonitor::Metrics& metrics) {
+  if (!metrics.coalition_data.has_value())
+    return;
+
+  // TODO(crbug.com/1229884): Review the units and buckets once we have
+  // sufficient data from the field.
+
+  // TODO(sebmarchand): Record with some scenario suffixes once the data have
+  // been proven to be reliable.
+
+  // Report the CPU and GPU time histogram with the same approach as the one
+  // used for the |AverageCPU2| histograms.
+
+  // Used to change the percentage scale from [0,1] to [0,100], e.g. 0.111
+  // 11.1% will be multiplied by 100 to be 11.1. This is necessary to reuse the
+  // same constants as for the |AverageCPU2| histograms.
+  constexpr int kPercentScaleFactor = 100;
+
+  base::UmaHistogramCustomCounts("PerformanceMonitor.ResourceCoalition.CPUTime",
+                                 metrics.coalition_data->cpu_time_per_second *
+                                     kPercentScaleFactor * kCPUUsageFactor,
+                                 kCPUUsageHistogramMin, kCPUUsageHistogramMax,
+                                 kCPUUsageHistogramBucketCount);
+  // The GPU usage should always be <= 100% so use a lower value for the
+  // histogram max.
+  // TODO(sebmarchand): Confirm this from the data.
+  base::UmaHistogramCustomCounts("PerformanceMonitor.ResourceCoalition.GPUTime",
+                                 metrics.coalition_data->gpu_time_per_second *
+                                     kPercentScaleFactor * kCPUUsageFactor,
+                                 kCPUUsageHistogramMin, 100 * kCPUUsageFactor,
+                                 kCPUUsageHistogramBucketCount);
+
+  // Report the metrics based on a count (e.g. wakeups) with a millievent/sec
+  // granularity. In theory it doesn't make much sense to talk about a
+  // milliwakeups but the wakeup rate should ideally be lower than one per
+  // second in some scenarios and this will provide more granularity.
+  constexpr int kMilliFactor = 1000;
+  auto scale_sample = [](double sample) -> int {
+    // Round the sample to the nearest integer value.
+    return sample * kMilliFactor + 0.5;
+  };
+  base::UmaHistogramCounts1M(
+      "PerformanceMonitor.ResourceCoalition.milliInterruptWakeupsPerSecond",
+      scale_sample(metrics.coalition_data->interrupt_wakeups_per_second));
+  base::UmaHistogramCounts1M(
+      "PerformanceMonitor.ResourceCoalition.milliPlatformIdleWakeupsPerSecond",
+      scale_sample(metrics.coalition_data->platform_idle_wakeups_per_second));
+  base::UmaHistogramCounts10M(
+      "PerformanceMonitor.ResourceCoalition.milliBytesReadPerSecond",
+      scale_sample(metrics.coalition_data->bytesread_per_second));
+  base::UmaHistogramCounts10M(
+      "PerformanceMonitor.ResourceCoalition.milliBytesWrittenPerSecond",
+      scale_sample(metrics.coalition_data->byteswritten_per_second));
+
+  constexpr int kNanoWattToMilliWatt = 1000 * 1000;
+  // Use a maximum of 100 watts, of 100 * 1000 milliwatts.
+  base::UmaHistogramCounts100000(
+      "PerformanceMonitor.ResourceCoalition.Energy",
+      metrics.coalition_data->energy_nj_per_second / kNanoWattToMilliWatt +
+          0.5);
+}
+#endif
 
 }  // namespace performance_monitor

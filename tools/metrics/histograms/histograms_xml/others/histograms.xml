@@ -11944,6 +11944,87 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
+<histogram name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond"
+    units="milliBytesPerSecond" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The IO reads reported by the resource coalition mechanism on macOS. Reported
+    every 2 minutes. The data is reported as the rate per second during this
+    interval with a millibyte granularity.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond"
+    units="milliBytesPerSecond" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The IO writes reported by the resource coalition mechanism on macOS.
+    Reported every 2 minutes. The data is reported as the rate per second during
+    this interval with a millibyte granularity.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceMonitor.ResourceCoalition.CPUTime"
+    units="hundredth of percent" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Average CPU utilization reported by the resource coalition mechanism on
+    macOS. Read out at each two-minute interval. The utilization is in the
+    0-100% range per CPU, which is then summed up and multiplied by 100. The
+    histogram is capped at 20000 (equivalent to 2 cores fully loaded). I.e. 4
+    cores busy at 25% each will read as 25 * 4 * 100 = 10000.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceMonitor.ResourceCoalition.Energy"
+    units="milliwatts" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The energy usage reported by the resource coalition mechanism on macOS.
+    Reported every 2 minutes. Only available on devices with an ARM CPU.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceMonitor.ResourceCoalition.GPUTime"
+    units="hundredth of percent" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Average GPU utilization reported by the resource coalition mechanism on
+    macOS. Read out at each two-minute interval. The utilization is in the
+    0-100% range and is multiplied by 100. The histogram is capped at 10000
+    (equivalent to the GPU being used 100% of the time).
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond"
+    units="milliWakeupsPerSecond" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The interrupt wakeup rate reported by the resource coalition mechanism on
+    macOS. Reported every 2 minutes. The data is reported as the rate per second
+    during this interval with a milliwakeup granularity.
+  </summary>
+</histogram>
+
+<histogram
+    name="PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond"
+    units="milliWakeupsPerSecond" expires_after="2021-11-30">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The platform idle wakeup rate reported by the resource coalition mechanism
+    on macOS. Reported every 2 minutes. The data is reported as the rate per
+    second during this interval with a milliwakeup granularity.
+  </summary>
+</histogram>
+
 <histogram name="PeriodicBackgroundSync.Event.BatchSize" units="events"
     expires_after="2022-07-31">
   <owner>nator@chromium.org</owner>

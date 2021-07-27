@@ -152,6 +152,9 @@ void PowerMetricsReporter::ReportHistograms(
   ReportCPUHistograms(metrics, suffixes);
   ReportBatteryHistograms(interval_duration, discharge_mode,
                           discharge_rate_during_interval, suffixes);
+#if defined(OS_MAC)
+  RecordCoalitionData(metrics);
+#endif
 }
 
 void PowerMetricsReporter::ReportBatteryHistograms(

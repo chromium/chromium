@@ -93,6 +93,13 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 
 constexpr base::TimeDelta ProcessMonitor::kGatherInterval;
 
+ProcessMonitor::Metrics::Metrics() = default;
+ProcessMonitor::Metrics::Metrics(const ProcessMonitor::Metrics& other) =
+    default;
+ProcessMonitor::Metrics& ProcessMonitor::Metrics::operator=(
+    const ProcessMonitor::Metrics& other) = default;
+ProcessMonitor::Metrics::~Metrics() = default;
+
 // static
 std::unique_ptr<ProcessMonitor> ProcessMonitor::Create() {
   DCHECK(!g_process_monitor);
@@ -258,6 +265,11 @@ void ProcessMonitor::GatherMetrics(
       ++iter;
     }
   }
+
+#if defined(OS_MAC)
+  if (coalition_data_provider_.IsAvailable())
+    aggregated_metrics.coalition_data = coalition_data_provider_.GetDataRate();
+#endif
 
   for (auto& observer : observer_list_)
     observer.OnAggregatedMetricsSampled(aggregated_metrics);

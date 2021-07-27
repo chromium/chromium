@@ -12842,6 +12842,18 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="30" label="More Than 30"/>
 </enum>
 
+<enum name="CoalitionIDAvailability">
+  <summary>
+    Details about whether or not it's possible to get coalition resource usage
+    data on the system.
+  </summary>
+  <int value="0" label="Available"/>
+  <int value="1" label="Not available"/>
+  <int value="2" label="Unable to get resource usage data from coalition"/>
+  <int value="3" label="Unable to get parent coalition ID"/>
+  <int value="4" label="Not alone in coalition"/>
+</enum>
+
 <enum name="ColorGamut">
   <int value="0" label="sRGB"/>
   <int value="1" label="Wide Color Gamut"/>
