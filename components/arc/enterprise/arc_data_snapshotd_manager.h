@@ -193,6 +193,12 @@ class ArcDataSnapshotdManager final
     void Parse();
     // Syncs stored snapshot info to local state.
     void Sync();
+
+    // Syncs stored snapshot info to local state.
+    // |callback| is executed once all changes to the local state have been
+    // committed.
+    void Sync(base::OnceClosure callback);
+
     // Clears snapshot related info in arc.snapshot preference either last
     // if |last| is true or previous otherwise.
     void ClearSnapshot(bool last);
