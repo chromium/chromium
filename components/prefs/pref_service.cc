@@ -13,6 +13,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
+#include "base/json/values_util.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
@@ -21,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/default_pref_store.h"
@@ -196,7 +196,7 @@ base::FilePath PrefService::GetFilePath(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
   if (!value)
     return base::FilePath();
-  absl::optional<base::FilePath> result = util::ValueToFilePath(*value);
+  absl::optional<base::FilePath> result = base::ValueToFilePath(*value);
   DCHECK(result);
   return *result;
 }
@@ -483,16 +483,16 @@ void PrefService::SetString(const std::string& path, const std::string& value) {
 
 void PrefService::SetFilePath(const std::string& path,
                               const base::FilePath& value) {
-  SetUserPrefValue(path, util::FilePathToValue(value));
+  SetUserPrefValue(path, base::FilePathToValue(value));
 }
 
 void PrefService::SetInt64(const std::string& path, int64_t value) {
-  SetUserPrefValue(path, util::Int64ToValue(value));
+  SetUserPrefValue(path, base::Int64ToValue(value));
 }
 
 int64_t PrefService::GetInt64(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
-  absl::optional<int64_t> integer = util::ValueToInt64(value);
+  absl::optional<int64_t> integer = base::ValueToInt64(value);
   DCHECK(integer);
   return integer.value_or(0);
 }
@@ -514,23 +514,23 @@ uint64_t PrefService::GetUint64(const std::string& path) const {
 }
 
 void PrefService::SetTime(const std::string& path, base::Time value) {
-  SetUserPrefValue(path, util::TimeToValue(value));
+  SetUserPrefValue(path, base::TimeToValue(value));
 }
 
 base::Time PrefService::GetTime(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
-  absl::optional<base::Time> time = util::ValueToTime(value);
+  absl::optional<base::Time> time = base::ValueToTime(value);
   DCHECK(time);
   return time.value_or(base::Time());
 }
 
 void PrefService::SetTimeDelta(const std::string& path, base::TimeDelta value) {
-  SetUserPrefValue(path, util::TimeDeltaToValue(value));
+  SetUserPrefValue(path, base::TimeDeltaToValue(value));
 }
 
 base::TimeDelta PrefService::GetTimeDelta(const std::string& path) const {
   const base::Value* value = GetPreferenceValueChecked(path);
-  absl::optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
+  absl::optional<base::TimeDelta> time_delta = base::ValueToTimeDelta(value);
   DCHECK(time_delta);
   return time_delta.value_or(base::TimeDelta());
 }

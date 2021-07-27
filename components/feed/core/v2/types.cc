@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/json/values_util.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/feed/core/v2/public/types.h"
 
@@ -153,9 +153,9 @@ DebugStreamData& DebugStreamData::operator=(const DebugStreamData&) = default;
 
 base::Value PersistentMetricsDataToValue(const PersistentMetricsData& data) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("day_start", util::TimeToValue(data.current_day_start));
+  dict.SetKey("day_start", base::TimeToValue(data.current_day_start));
   dict.SetKey("time_spent_in_feed",
-              util::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
+              base::TimeDeltaToValue(data.accumulated_time_spent_in_feed));
   return dict;
 }
 
@@ -164,12 +164,12 @@ PersistentMetricsData PersistentMetricsDataFromValue(const base::Value& value) {
   if (!value.is_dict())
     return result;
   absl::optional<base::Time> day_start =
-      util::ValueToTime(value.FindKey("day_start"));
+      base::ValueToTime(value.FindKey("day_start"));
   if (!day_start)
     return result;
   result.current_day_start = *day_start;
   absl::optional<base::TimeDelta> time_spent_in_feed =
-      util::ValueToTimeDelta(value.FindKey("time_spent_in_feed"));
+      base::ValueToTimeDelta(value.FindKey("time_spent_in_feed"));
   if (time_spent_in_feed) {
     result.accumulated_time_spent_in_feed = *time_spent_in_feed;
   }

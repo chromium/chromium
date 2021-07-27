@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/json/values_util.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +22,6 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/crx_file/id_util.h"
@@ -542,7 +542,7 @@ void ExtensionPrefs::SetTimePref(const std::string& id,
                                  const base::Time value) {
   DCHECK_EQ(pref.type, PrefType::kTime);
   UpdateExtensionPref(
-      id, pref, std::make_unique<base::Value>(::util::TimeToValue(value)));
+      id, pref, std::make_unique<base::Value>(::base::TimeToValue(value)));
 }
 
 void ExtensionPrefs::UpdateExtensionPref(
@@ -656,7 +656,7 @@ base::Time ExtensionPrefs::ReadPrefAsTime(const std::string& extension_id,
   const base::Value* value;
   if (!ext || !ext->Get(pref.name, &value))
     return base::Time();
-  absl::optional<base::Time> time = ::util::ValueToTime(value);
+  absl::optional<base::Time> time = ::base::ValueToTime(value);
   DCHECK(time);
   return time.value_or(base::Time());
 }

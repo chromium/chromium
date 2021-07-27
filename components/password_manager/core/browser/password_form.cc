@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 
 namespace password_manager {
@@ -181,7 +181,7 @@ void PasswordFormToJSON(const PasswordForm& form,
     base::Value issue_value(base::Value::Type::DICTIONARY);
     issue_value.SetStringPath("insecurity_type", ToString(issue.first));
     issue_value.SetPath("create_time",
-                        util::TimeToValue(issue.second.create_time));
+                        base::TimeToValue(issue.second.create_time));
     issue_value.SetBoolPath("is_muted",
                             static_cast<bool>(issue.second.is_muted));
     password_issues.push_back(std::move(issue_value));

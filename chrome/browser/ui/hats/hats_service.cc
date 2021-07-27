@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -352,9 +352,9 @@ void HatsService::RecordSurveyAsShown(std::string trigger_id) {
   pref_data->SetIntPath(GetMajorVersionPath(trigger),
                         version_info::GetVersion().components()[0]);
   pref_data->SetPath(GetLastSurveyStartedTime(trigger),
-                     util::TimeToValue(base::Time::Now()));
+                     base::TimeToValue(base::Time::Now()));
   pref_data->SetPath(kAnyLastSurveyStartedTimePath,
-                     util::TimeToValue(base::Time::Now()));
+                     base::TimeToValue(base::Time::Now()));
 }
 
 void HatsService::HatsNextDialogClosed() {
@@ -382,7 +382,7 @@ void HatsService::SetSurveyMetadataForTesting(
 
   if (metadata.last_survey_started_time.has_value()) {
     pref_data->SetPath(GetLastSurveyStartedTime(trigger),
-                       util::TimeToValue(*metadata.last_survey_started_time));
+                       base::TimeToValue(*metadata.last_survey_started_time));
   } else {
     pref_data->RemovePath(GetLastSurveyStartedTime(trigger));
   }
@@ -390,7 +390,7 @@ void HatsService::SetSurveyMetadataForTesting(
   if (metadata.any_last_survey_started_time.has_value()) {
     pref_data->SetPath(
         kAnyLastSurveyStartedTimePath,
-        util::TimeToValue(*metadata.any_last_survey_started_time));
+        base::TimeToValue(*metadata.any_last_survey_started_time));
   } else {
     pref_data->RemovePath(kAnyLastSurveyStartedTimePath);
   }
@@ -403,7 +403,7 @@ void HatsService::SetSurveyMetadataForTesting(
 
   if (metadata.last_survey_check_time.has_value()) {
     pref_data->SetPath(GetLastSurveyCheckTime(trigger),
-                       util::TimeToValue(*metadata.last_survey_check_time));
+                       base::TimeToValue(*metadata.last_survey_check_time));
   } else {
     pref_data->RemovePath(GetLastSurveyCheckTime(trigger));
   }
@@ -421,12 +421,12 @@ void HatsService::GetSurveyMetadataForTesting(
     metadata->last_major_version = last_major_version;
 
   absl::optional<base::Time> last_survey_started_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
+      base::ValueToTime(pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
   if (last_survey_started_time.has_value())
     metadata->last_survey_started_time = last_survey_started_time;
 
   absl::optional<base::Time> any_last_survey_started_time =
-      util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+      base::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
   if (any_last_survey_started_time.has_value())
     metadata->any_last_survey_started_time = any_last_survey_started_time;
 
@@ -436,7 +436,7 @@ void HatsService::GetSurveyMetadataForTesting(
     metadata->is_survey_full = is_survey_full;
 
   absl::optional<base::Time> last_survey_check_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
+      base::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value())
     metadata->last_survey_check_time = last_survey_check_time;
 }
@@ -544,7 +544,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
   }
 
   if (!config.user_prompted) {
-    absl::optional<base::Time> last_survey_started_time = util::ValueToTime(
+    absl::optional<base::Time> last_survey_started_time = base::ValueToTime(
         pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
     if (last_survey_started_time.has_value()) {
       base::TimeDelta elapsed_time_since_last_start =
@@ -561,7 +561,7 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
   // If an attempt to check with the HaTS servers whether a survey should be
   // delivered was made too recently, another survey cannot be shown.
   absl::optional<base::Time> last_survey_check_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
+      base::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value()) {
     base::TimeDelta elapsed_time_since_last_check =
         base::Time::Now() - *last_survey_check_time;
@@ -614,7 +614,7 @@ bool HatsService::CanShowAnySurvey(bool user_prompted) const {
     // If a user has received any HaTS survey too recently, they are also
     // ineligible.
     absl::optional<base::Time> last_any_started_time =
-        util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+        base::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
     if (last_any_started_time.has_value()) {
       base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
       if (elapsed_time_any_started < kMinimumTimeBetweenAnySurveyStarts) {
@@ -681,7 +681,7 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
   // the HaTS servers to check for a survey.
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
   update->SetPath(GetLastSurveyCheckTime(trigger),
-                  util::TimeToValue(base::Time::Now()));
+                  base::TimeToValue(base::Time::Now()));
 
   DCHECK(!hats_next_dialog_exists_);
   browser->window()->ShowHatsDialog(

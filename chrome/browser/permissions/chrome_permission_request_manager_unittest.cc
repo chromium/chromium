@@ -7,12 +7,12 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
@@ -595,7 +595,7 @@ TEST_F(ChromePermissionRequestManagerTest,
 
   // Check that we have cleared all entries >= |from_time| and <|end_time|.
   EXPECT_EQ(permissions_actions.size(), 3u);
-  EXPECT_EQ((util::ValueToTime(permissions_actions[0].FindKey("time")))
+  EXPECT_EQ((base::ValueToTime(permissions_actions[0].FindKey("time")))
                 .value_or(base::Time()),
             recorded_time);
 }

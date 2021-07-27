@@ -12,6 +12,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -309,7 +309,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
   DCHECK(!pending_requests_update->FindKey(id));
   base::Value request_data(base::Value::Type::DICTIONARY);
   request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                      ::util::TimeToValue(base::Time::Now()));
+                      ::base::TimeToValue(base::Time::Now()));
   if (!justification.empty()) {
     request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
                         base::Value(justification));

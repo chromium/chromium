@@ -8,9 +8,9 @@
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -175,7 +175,7 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
 base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
                                int avatar_icon_size) {
   base::Value profile_entry(base::Value::Type::DICTIONARY);
-  profile_entry.SetKey("profilePath", util::FilePathToValue(entry->GetPath()));
+  profile_entry.SetKey("profilePath", base::FilePathToValue(entry->GetPath()));
   profile_entry.SetStringKey("localProfileName", entry->GetLocalProfileName());
   profile_entry.SetBoolKey(
       "isSyncing", entry->GetSigninState() ==
@@ -331,7 +331,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
     return;
 
   absl::optional<base::FilePath> profile_path =
-      util::ValueToFilePath(*profile_path_value);
+      base::ValueToFilePath(*profile_path_value);
   if (!profile_path)
     return;
 
@@ -511,7 +511,7 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
     return;
 
   absl::optional<base::FilePath> profile_path =
-      util::ValueToFilePath(*profile_path_value);
+      base::ValueToFilePath(*profile_path_value);
   if (!profile_path)
     return;
 
@@ -604,7 +604,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
   CHECK_EQ(2U, args->GetSize());
   const base::Value& profile_path_value = args->GetList()[0];
   absl::optional<base::FilePath> profile_path =
-      util::ValueToFilePath(profile_path_value);
+      base::ValueToFilePath(profile_path_value);
 
   if (!profile_path) {
     NOTREACHED();
@@ -626,7 +626,7 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
   const base::Value& profile_path_value = args->GetList()[0];
   absl::optional<base::FilePath> profile_path =
-      util::ValueToFilePath(profile_path_value);
+      base::ValueToFilePath(profile_path_value);
 
   if (!profile_path) {
     NOTREACHED();
@@ -649,7 +649,7 @@ void ProfilePickerHandler::HandleGetProfileStatistics(
   CHECK_EQ(1U, args->GetSize());
   const base::Value& profile_path_value = args->GetList()[0];
   absl::optional<base::FilePath> profile_path =
-      util::ValueToFilePath(profile_path_value);
+      base::ValueToFilePath(profile_path_value);
   if (!profile_path)
     return;
 
@@ -680,7 +680,7 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
     base::FilePath profile_path,
     profiles::ProfileCategoryStats result) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("profilePath", util::FilePathToValue(profile_path));
+  dict.SetKey("profilePath", base::FilePathToValue(profile_path));
   base::Value stats(base::Value::Type::DICTIONARY);
   // Categories are defined in |kProfileStatisticsCategories|
   // {"BrowsingHistory", "Passwords", "Bookmarks", "Autofill"}.
@@ -864,7 +864,7 @@ void ProfilePickerHandler::OnProfileWasRemoved(
     const std::u16string& profile_name) {
   DCHECK(IsJavascriptAllowed());
   if (RemoveProfileFromList(profile_path))
-    FireWebUIListener("profile-removed", util::FilePathToValue(profile_path));
+    FireWebUIListener("profile-removed", base::FilePathToValue(profile_path));
 }
 
 void ProfilePickerHandler::OnProfileIsOmittedChanged(

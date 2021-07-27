@@ -5,8 +5,8 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_generator.h"
 
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -119,7 +119,7 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(
           timestamp_name,
-          ::util::TimeToValue(base::Time::FromJavaTime(kTimeStamp)));
+          ::base::TimeToValue(base::Time::FromJavaTime(kTimeStamp)));
       id_values->SetKey(id, std::move(request_data));
     }
 

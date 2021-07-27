@@ -4,12 +4,12 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 
+#include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
@@ -1891,7 +1891,7 @@ class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kPrivacySandboxFlocDataAccessibleSince,
         std::make_unique<base::Value>(
-            ::util::TimeToValue(base::Time::FromTimeT(12345))));
+            ::base::TimeToValue(base::Time::FromTimeT(12345))));
   }
 };
 
@@ -1912,7 +1912,7 @@ class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kPrivacySandboxFlocDataAccessibleSince,
         std::make_unique<base::Value>(
-            ::util::TimeToValue(base::Time::FromTimeT(12345))));
+            ::base::TimeToValue(base::Time::FromTimeT(12345))));
   }
 };
 

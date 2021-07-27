@@ -178,7 +178,6 @@ source_set("config_sources") {
   deps = [
     ":process_json",
     "//base",
-    "//base/util/values:values_util",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",

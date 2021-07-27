@@ -48,7 +48,7 @@
 //
 // Serialization:
 //
-// Use the helpers in //base/util/values/values_util.h when serializing `Time`
+// Use the helpers in //base/json/values_util.h when serializing `Time`
 // or `TimeDelta` to/from `base::Value`.
 //
 // Otherwise:
@@ -459,7 +459,7 @@ class TimeBase {
   }
 
   // For legacy serialization only. When serializing to `base::Value`, prefer
-  // the helpers from //base/util/values/values_util.h instead. Otherwise, use
+  // the helpers from //base/json/values_util.h instead. Otherwise, use
   // `Time::ToDeltaSinceWindowsEpoch()` for `Time` and
   // `TimeDelta::InMiseconds()` for `TimeDelta`. See http://crbug.com/634507.
   constexpr int64_t ToInternalValue() const { return us_; }
@@ -622,7 +622,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // 00:00:00 UTC).
   //
   // For serialization, when handling `base::Value`, prefer the helpers in
-  // //base/util/values/values_util.h instead. Otherwise, use these methods for
+  // //base/json/values_util.h instead. Otherwise, use these methods for
   // opaque serialization and deserialization, e.g.
   //
   //   // Serialization:
@@ -796,7 +796,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // because the integer type may be unclear from the perspective of a caller.
   //
   // DEPRECATED - Do not use in new code. When deserializing from `base::Value`,
-  // prefer the helpers from //base/util/values/values_util.h instead.
+  // prefer the helpers from //base/json/values_util.h instead.
   // Otherwise, use `Time::FromDeltaSinceWindowsEpoch()` for `Time` and
   // `TimeDelta::FromMiseconds()` for `TimeDelta`. http://crbug.com/634507
   static constexpr Time FromInternalValue(int64_t us) { return Time(us); }

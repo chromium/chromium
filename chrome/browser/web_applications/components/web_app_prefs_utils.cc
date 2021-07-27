@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/common/pref_names.h"
@@ -72,7 +72,7 @@ bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
 //       "file_handling_origin_trial_expiry_time": 1580475600000,
 //       "IPH_num_of_consecutive_ignore": 2,
 //       A string-flavored base::value representing the int64_t number of
-//       microseconds since the Windows epoch, using util::TimeToValue().
+//       microseconds since the Windows epoch, using base::TimeToValue().
 //       "IPH_last_ignore_time": "13249617864945580",
 //     },
 //     "<app_id_N>": {
@@ -84,7 +84,7 @@ bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
 //   "app_agnostic_iph_state": {
 //     "IPH_num_of_consecutive_ignore": 3,
 //     A string-flavored base::Value representing int64_t number of microseconds
-//     since the Windows epoch, using util::TimeToValue().
+//     since the Windows epoch, using base::TimeToValue().
 //     "IPH_last_ignore_time": "13249617864945500",
 //   },
 //   isolation_state is managed by isolation_prefs_utils
@@ -189,7 +189,7 @@ absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
                                              base::StringPiece path) {
   if (const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id)) {
     if (auto* value = web_app_prefs->FindPath(path))
-      return util::ValueToTime(value);
+      return base::ValueToTime(value);
   }
 
   return absl::nullopt;
@@ -204,7 +204,7 @@ void UpdateTimeWebAppPref(PrefService* pref_service,
 
   auto web_app_prefs = UpdateWebAppDictionary(update.Get(), app_id);
   web_app_prefs->Set(path,
-                     std::make_unique<base::Value>(util::TimeToValue(value)));
+                     std::make_unique<base::Value>(base::TimeToValue(value)));
 }
 
 void RemoveWebAppPref(PrefService* pref_service,
@@ -235,7 +235,7 @@ void RecordInstallIphIgnored(PrefService* pref_service,
   update->SetInteger(kIphIgnoreCount,
                      base::saturated_cast<int>(global_count + 1));
   update->Set(kIphLastIgnoreTime,
-              std::make_unique<base::Value>(util::TimeToValue(time)));
+              std::make_unique<base::Value>(base::TimeToValue(time)));
 }
 
 void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id) {
@@ -271,7 +271,7 @@ bool ShouldShowIph(PrefService* pref_service, const AppId& app_id) {
     return false;
   // Do not show IPH if the user ignored a promo for any app within N days.
   auto global_last_ignore =
-      util::ValueToTime(dict->FindKey(kIphLastIgnoreTime));
+      base::ValueToTime(dict->FindKey(kIphLastIgnoreTime));
   if (TimeOccurredWithinDays(global_last_ignore,
                              kIphAppAgnosticMuteTimeSpanDays)) {
     return false;

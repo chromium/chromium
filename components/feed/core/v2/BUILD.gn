@@ -143,7 +143,6 @@ source_set("feed_core_v2") {
   public_deps = [
     ":ios_shared",
     "//base",
-    "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/proto:proto_v2",
   ]
@@ -157,7 +156,6 @@ source_set("ios_shared") {
   ]
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/feed/core/common:feed_core_common",
     "//components/prefs",
   ]

@@ -6,9 +6,9 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -138,7 +138,7 @@ void SharingSyncPreference::SetVapidKey(
   DictionaryPrefUpdate update(prefs_, prefs::kSharingVapidKey);
   update->SetStringKey(kVapidECPrivateKey, base64_vapid_key);
   update->SetKey(kVapidCreationTimestamp,
-                 util::TimeToValue(creation_timestamp));
+                 base::TimeToValue(creation_timestamp));
 }
 
 void SharingSyncPreference::SetVapidKeyChangeObserver(
@@ -167,7 +167,7 @@ SharingSyncPreference::GetFCMRegistration() const {
   if (authorized_entity_ptr)
     authorized_entity = *authorized_entity_ptr;
 
-  absl::optional<base::Time> timestamp = util::ValueToTime(timestamp_value);
+  absl::optional<base::Time> timestamp = base::ValueToTime(timestamp_value);
   if (!timestamp)
     return absl::nullopt;
 
@@ -183,7 +183,7 @@ void SharingSyncPreference::SetFCMRegistration(FCMRegistration registration) {
     update->RemoveKey(kRegistrationAuthorizedEntity);
   }
   update->SetKey(kRegistrationTimestamp,
-                 util::TimeToValue(registration.timestamp));
+                 base::TimeToValue(registration.timestamp));
 }
 
 void SharingSyncPreference::ClearFCMRegistration() {

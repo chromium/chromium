@@ -773,7 +773,7 @@ static_library("extensions") {
   ]
   deps = [
     "//apps",
-    "//base/util/values:values_util",
+    "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//chrome:extra_resources",

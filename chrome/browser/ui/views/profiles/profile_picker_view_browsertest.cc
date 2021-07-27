@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
 #include "base/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -328,7 +328,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
                              bool open_settings) {
     base::ListValue args;
     args.Append(
-        base::Value::ToUniquePtrValue(util::FilePathToValue(profile_path)));
+        base::Value::ToUniquePtrValue(base::FilePathToValue(profile_path)));
     profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, &args);
   }
 
@@ -1391,7 +1391,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
   // Simulate clicking on the confirm switch button.
   ProfilePickerHandler* handler = profile_picker_handler();
   base::ListValue args;
-  args.Append(base::Value::ToUniquePtrValue(util::FilePathToValue(other_path)));
+  args.Append(base::Value::ToUniquePtrValue(base::FilePathToValue(other_path)));
   handler->HandleConfirmProfileSwitch(&args);
 
   // Browser for a pre-existing profile is displayed.

@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -29,7 +30,6 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -1513,7 +1513,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
           ->GetList()
           .empty());
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("https://bar.com", util::TimeToValue(base::Time::Now()));
+  dict.SetKey("https://bar.com", base::TimeToValue(base::Time::Now()));
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
       prefs->GetDictionary(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -3114,7 +3114,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                     ->FindKey("notifications")
                     ->GetList()
                     .size());
-  EXPECT_EQ((util::ValueToTime(prefs->GetDictionary(kPermissionActionsPrefPath)
+  EXPECT_EQ((base::ValueToTime(prefs->GetDictionary(kPermissionActionsPrefPath)
                                    ->FindKey("notifications")
                                    ->GetList()
                                    .begin()

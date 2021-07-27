@@ -160,7 +160,6 @@ static_library("common") {
     "//base",
     "//base:base_static",
     "//base:i18n",
-    "//base/util/values:values_util",
     "//build:branding_buildflags",
     "//chrome:resources",
     "//chrome:strings",

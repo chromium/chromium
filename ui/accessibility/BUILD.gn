@@ -81,7 +81,6 @@ component("ax_base") {
     ":ax_enums_mojo",
     "//base",
     "//base:i18n",
-    "//base/util/values:values_util",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -149,7 +148,7 @@ component("accessibility") {
   ]
 
   deps = [
-    "//base/util/values:values_util",
+    "//base",
     "//third_party/cld_3/src/src:cld_3",
   ]
 

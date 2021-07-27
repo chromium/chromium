@@ -7,10 +7,10 @@
 #include <ostream>
 
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -196,11 +196,11 @@ FeaturePromoSnoozeService::ReadSnoozeData(const base::Feature& iph_feature) {
       profile_->GetPrefs()->GetDictionary(kIPHSnoozeDataPath);
   absl::optional<bool> is_dismissed =
       pref_data->FindBoolPath(path_prefix + kIPHIsDismissedPath);
-  absl::optional<base::Time> show_time = util::ValueToTime(
+  absl::optional<base::Time> show_time = base::ValueToTime(
       pref_data->FindPath(path_prefix + kIPHLastShowTimePath));
-  absl::optional<base::Time> snooze_time = util::ValueToTime(
+  absl::optional<base::Time> snooze_time = base::ValueToTime(
       pref_data->FindPath(path_prefix + kIPHLastSnoozeTimePath));
-  absl::optional<base::TimeDelta> snooze_duration = util::ValueToTimeDelta(
+  absl::optional<base::TimeDelta> snooze_duration = base::ValueToTimeDelta(
       pref_data->FindPath(path_prefix + kIPHLastSnoozeDurationPath));
   absl::optional<int> snooze_count =
       pref_data->FindIntPath(path_prefix + kIPHSnoozeCountPath);
@@ -247,11 +247,11 @@ void FeaturePromoSnoozeService::SaveSnoozeData(
   pref_data->SetBoolPath(path_prefix + kIPHIsDismissedPath,
                          snooze_data.is_dismissed);
   pref_data->SetPath(path_prefix + kIPHLastShowTimePath,
-                     util::TimeToValue(snooze_data.last_show_time));
+                     base::TimeToValue(snooze_data.last_show_time));
   pref_data->SetPath(path_prefix + kIPHLastSnoozeTimePath,
-                     util::TimeToValue(snooze_data.last_snooze_time));
+                     base::TimeToValue(snooze_data.last_snooze_time));
   pref_data->SetPath(path_prefix + kIPHLastSnoozeDurationPath,
-                     util::TimeDeltaToValue(snooze_data.last_snooze_duration));
+                     base::TimeDeltaToValue(snooze_data.last_snooze_duration));
   pref_data->SetIntPath(path_prefix + kIPHSnoozeCountPath,
                         snooze_data.snooze_count);
   pref_data->SetIntPath(path_prefix + kIPHShowCountPath,

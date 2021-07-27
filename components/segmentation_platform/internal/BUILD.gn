@@ -66,7 +66,6 @@ static_library("internal") {
 
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/prefs",

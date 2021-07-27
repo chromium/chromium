@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/test/task_environment.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -676,7 +676,7 @@ TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
 
   // Set a deprecated pref. base::TimeDelta() meant that value is not set.
   known_user.SetPref(kDefaultAccountId, kDeprecatedPrefName,
-                     util::TimeDeltaToValue(base::TimeDelta()));
+                     base::TimeDeltaToValue(base::TimeDelta()));
 
   // Imitate that user is forced to online signin.
   const char kUserForceOnlineSignin[] = "UserForceOnlineSignin";
@@ -689,7 +689,7 @@ TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
 
   const base::TimeDelta kLegitValue = base::TimeDelta::FromDays(14);
   known_user.SetPref(kDefaultAccountId2, kDeprecatedPrefName,
-                     util::TimeDeltaToValue(kLegitValue));
+                     base::TimeDeltaToValue(kLegitValue));
 
   known_user.CleanObsoletePrefs();
 
@@ -703,7 +703,7 @@ TEST_F(KnownUserTest, MigrateOfflineSigninLimit) {
   EXPECT_FALSE(known_user.GetPref(kDefaultAccountId, kNewPrefName, &out_value));
 
   EXPECT_TRUE(known_user.GetPref(kDefaultAccountId2, kNewPrefName, &out_value));
-  EXPECT_EQ(kLegitValue, util::ValueToTimeDelta(*out_value));
+  EXPECT_EQ(kLegitValue, base::ValueToTimeDelta(*out_value));
 
   // Verify that user is not forced to online signin anymore.
   const base::DictionaryValue* prefs_force_online =

@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -45,8 +45,8 @@ class OriginData {
   base::Value ToDictValue() const {
     base::Value dict(base::Value::Type::DICTIONARY);
 
-    dict.SetKey(kOriginId, util::UnguessableTokenToValue(origin_id_));
-    dict.SetKey(kCreationTime, util::TimeToValue(creation_time_));
+    dict.SetKey(kOriginId, base::UnguessableTokenToValue(origin_id_));
+    dict.SetKey(kCreationTime, base::TimeToValue(creation_time_));
 
     return dict;
   }
@@ -63,7 +63,7 @@ class OriginData {
       return nullptr;
 
     absl::optional<base::UnguessableToken> origin_id =
-        util::ValueToUnguessableToken(*origin_id_value);
+        base::ValueToUnguessableToken(*origin_id_value);
     if (!origin_id)
       return nullptr;
 
@@ -71,7 +71,7 @@ class OriginData {
     if (!time_value)
       return nullptr;
 
-    absl::optional<base::Time> time = util::ValueToTime(time_value);
+    absl::optional<base::Time> time = base::ValueToTime(time_value);
     if (!time || time.value().is_null())
       return nullptr;
 

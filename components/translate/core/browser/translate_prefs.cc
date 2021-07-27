@@ -15,12 +15,12 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/json/values_util.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -472,7 +472,7 @@ void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
   AddValueToNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
   DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
-  update.Get()->SetKey(site, util::TimeToValue(base::Time::Now()));
+  update.Get()->SetKey(site, base::TimeToValue(base::Time::Now()));
 }
 
 void TranslatePrefs::RemoveSiteFromNeverPromptList(base::StringPiece site) {
@@ -488,7 +488,7 @@ std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
   std::vector<std::string> result;
   auto* dict = prefs_->GetDictionary(kPrefNeverPromptSitesWithTime);
   for (auto entry : dict->DictItems()) {
-    absl::optional<base::Time> time = util::ValueToTime(entry.second);
+    absl::optional<base::Time> time = base::ValueToTime(entry.second);
     if (!time) {
       NOTREACHED();
       continue;

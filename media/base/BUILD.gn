@@ -364,8 +364,8 @@ source_set("base") {
     "//ui/gl",
   ]
   deps = [
+    "//base",
     "//base/allocator:buildflags",
-    "//base/util/values:values_util",
     "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:interface_base",

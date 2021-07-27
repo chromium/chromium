@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -80,7 +80,7 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
     for (const auto& id : ids) {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::util::TimeToValue(base::Time::Now()));
+                          ::base::TimeToValue(base::Time::Now()));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(

@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "base/util/values/values_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -59,8 +59,8 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
   bool IsSortedInChronologicalOrder(const base::Value* ts) {
     return std::is_sorted(ts->GetList().begin(), ts->GetList().end(),
                           [](const base::Value& ts_a, const base::Value& ts_b) {
-                            return util::ValueToInt64(ts_a).value_or(0) <
-                                   util::ValueToInt64(ts_b).value_or(0);
+                            return base::ValueToInt64(ts_a).value_or(0) <
+                                   base::ValueToInt64(ts_b).value_or(0);
                           });
   }
 

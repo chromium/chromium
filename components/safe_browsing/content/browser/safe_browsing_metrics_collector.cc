@@ -4,11 +4,11 @@
 
 #include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
 
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -38,12 +38,12 @@ std::string UserStateToPrefKey(const UserState& user_state) {
 }
 
 base::Value TimeToPrefValue(const base::Time& time) {
-  return util::Int64ToValue(time.ToDeltaSinceWindowsEpoch().InSeconds());
+  return base::Int64ToValue(time.ToDeltaSinceWindowsEpoch().InSeconds());
 }
 
 base::Time PrefValueToTime(const base::Value& value) {
   return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(util::ValueToInt64(value).value_or(0)));
+      base::TimeDelta::FromSeconds(base::ValueToInt64(value).value_or(0)));
 }
 
 }  // namespace

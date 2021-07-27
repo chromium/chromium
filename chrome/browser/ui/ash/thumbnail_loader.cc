@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/single_thread_task_runner.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -267,7 +267,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
   base::Value request_value(base::Value::Type::DICTIONARY);
   request_value.SetKey("taskId", base::Value(request_id.ToString()));
   request_value.SetKey("url", base::Value(thumbnail_url.spec()));
-  request_value.SetKey("timestamp", util::TimeToValue(file_info.last_modified));
+  request_value.SetKey("timestamp", base::TimeToValue(file_info.last_modified));
   // TODO(crbug.com/2650014) : Add an arg to set this to false for sharesheet.
   request_value.SetBoolKey("cache", true);
   request_value.SetBoolKey("crop", true);

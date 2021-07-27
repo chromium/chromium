@@ -51,7 +51,6 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
-    "//base/util/values:values_util",
     "//build:chromeos_buildflags",
     "//components/assist_ranker",
     "//components/assist_ranker/proto",

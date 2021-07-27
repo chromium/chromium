@@ -7,9 +7,9 @@
 #include <set>
 
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -529,7 +529,7 @@ void AppPlatformMetrics::OnTenMinutes() {
       std::string app_type_name = GetAppTypeHistogramName(it.first);
       DCHECK(!app_type_name.empty());
       running_duration_update->SetPath(app_type_name,
-                                       util::TimeDeltaToValue(it.second));
+                                       base::TimeDeltaToValue(it.second));
     }
   }
 }
@@ -678,7 +678,7 @@ void AppPlatformMetrics::InitRunningDuration() {
     }
 
     absl::optional<base::TimeDelta> unreported_duration =
-        util::ValueToTimeDelta(running_duration_update->FindPath(key));
+        base::ValueToTimeDelta(running_duration_update->FindPath(key));
     if (unreported_duration.has_value()) {
       running_duration_[app_type_name] = unreported_duration.value();
     }

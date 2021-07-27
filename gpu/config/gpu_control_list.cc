@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -751,7 +751,7 @@ void GpuControlList::GetReasons(base::Value& problem_list,
     auto cr_bugs = base::Value(base::Value::Type::LIST);
     for (size_t jj = 0; jj < entry.cr_bug_size; ++jj)
       cr_bugs.Append(
-          util::Int64ToValue(static_cast<int64_t>(entry.cr_bugs[jj])));
+          base::Int64ToValue(static_cast<int64_t>(entry.cr_bugs[jj])));
     problem.SetKey("crBugs", std::move(cr_bugs));
 
     auto features = base::Value(base::Value::Type::LIST);

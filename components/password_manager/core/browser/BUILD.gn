@@ -420,7 +420,6 @@ source_set("password_form") {
   ]
   deps = [
     "//base",
-    "//base/util/values:values_util",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types_shared",
     "//url",

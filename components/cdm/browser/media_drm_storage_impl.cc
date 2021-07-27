@@ -10,11 +10,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -148,7 +148,7 @@ class OriginData {
   base::Value ToDictValue() const {
     base::Value dict(base::Value::Type::DICTIONARY);
 
-    dict.SetKey(kOriginId, util::UnguessableTokenToValue(origin_id_));
+    dict.SetKey(kOriginId, base::UnguessableTokenToValue(origin_id_));
     dict.SetKey(kCreationTime, base::Value(provision_time_.ToDoubleT()));
 
     return dict;
@@ -167,7 +167,7 @@ class OriginData {
       return nullptr;
 
     absl::optional<base::UnguessableToken> origin_id =
-        util::ValueToUnguessableToken(*origin_id_value);
+        base::ValueToUnguessableToken(*origin_id_value);
     if (!origin_id)
       return nullptr;
 

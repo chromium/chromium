@@ -5,13 +5,13 @@
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/base_switches.h"
+#include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
-#include "base/util/values/values_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -240,11 +240,11 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
       user_prefs::UserPrefs::Get(browser_context()),
       site_isolation::prefs::kWebTriggeredIsolatedOrigins);
   base::DictionaryValue* dict = update.Get();
-  dict->SetKey("https://foo1.com", util::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo2.com", util::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo3.com", util::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo4.com", util::TimeToValue(base::Time::Now()));
-  dict->SetKey("https://foo5.com", util::TimeToValue(base::Time::Now()));
+  dict->SetKey("https://foo1.com", base::TimeToValue(base::Time::Now()));
+  dict->SetKey("https://foo2.com", base::TimeToValue(base::Time::Now()));
+  dict->SetKey("https://foo3.com", base::TimeToValue(base::Time::Now()));
+  dict->SetKey("https://foo4.com", base::TimeToValue(base::Time::Now()));
+  dict->SetKey("https://foo5.com", base::TimeToValue(base::Time::Now()));
   EXPECT_THAT(GetStoredOrigins(),
               testing::UnorderedElementsAre(
                   "https://foo1.com", "https://foo2.com", "https://foo3.com",

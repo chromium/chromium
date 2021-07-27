@@ -8,10 +8,10 @@
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -301,8 +301,8 @@ base::Value NearbySharePrivateCertificate::ToDictionary() const {
   base::Value dict(base::Value::Type::DICTIONARY);
 
   dict.SetIntKey(kVisibility, static_cast<int>(visibility_));
-  dict.SetKey(kNotBefore, util::TimeToValue(not_before_));
-  dict.SetKey(kNotAfter, util::TimeToValue(not_after_));
+  dict.SetKey(kNotBefore, base::TimeToValue(not_before_));
+  dict.SetKey(kNotAfter, base::TimeToValue(not_after_));
 
   std::vector<uint8_t> key_pair;
   key_pair_->ExportPrivateKey(&key_pair);
@@ -334,13 +334,13 @@ NearbySharePrivateCertificate::FromDictionary(const base::Value& dict) {
   nearby_share::mojom::Visibility visibility =
       static_cast<nearby_share::mojom::Visibility>(*int_opt);
 
-  time_opt = util::ValueToTime(dict.FindPath(kNotBefore));
+  time_opt = base::ValueToTime(dict.FindPath(kNotBefore));
   if (!time_opt)
     return absl::nullopt;
 
   base::Time not_before = *time_opt;
 
-  time_opt = util::ValueToTime(dict.FindPath(kNotAfter));
+  time_opt = base::ValueToTime(dict.FindPath(kNotAfter));
   if (!time_opt)
     return absl::nullopt;
 

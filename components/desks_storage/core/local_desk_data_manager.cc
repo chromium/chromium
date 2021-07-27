@@ -8,11 +8,11 @@
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_template.h"
@@ -46,7 +46,7 @@ base::Value ConvertDeskTemplateToValue(ash::DeskTemplate* desk_template) {
   dict.SetKey(kDeskTemplateNameKey,
               base::Value(desk_template->template_name()));
   dict.SetKey(kDeskTemplateTimeCreatedKey,
-              util::TimeToValue(desk_template->created_time()));
+              base::TimeToValue(desk_template->created_time()));
   DCHECK(desk_template->desk_restore_data() != nullptr);
   dict.SetKey(kDeskTemplateRestoreDataKey,
               desk_template->desk_restore_data()->ConvertToValue());
@@ -57,7 +57,7 @@ base::Value ConvertDeskTemplateToValue(ash::DeskTemplate* desk_template) {
 // |ash::DeskTemplate|.
 std::unique_ptr<ash::DeskTemplate> ConvertValueToDeskTemplate(
     base::Value& desk_template_value) {
-  absl::optional<base::Time> created_time(util::ValueToTime(
+  absl::optional<base::Time> created_time(base::ValueToTime(
       desk_template_value.FindKey(kDeskTemplateTimeCreatedKey)));
   if (!created_time)
     return nullptr;

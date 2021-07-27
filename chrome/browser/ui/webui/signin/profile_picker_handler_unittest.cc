@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -16,7 +16,7 @@
 void VerifyProfileEntry(const base::Value& value,
                         ProfileAttributesEntry* entry) {
   EXPECT_EQ(*value.FindKey("profilePath"),
-            util::FilePathToValue(entry->GetPath()));
+            base::FilePathToValue(entry->GetPath()));
   EXPECT_EQ(*value.FindStringKey("localProfileName"),
             base::UTF16ToUTF8(entry->GetLocalProfileName()));
   EXPECT_EQ(value.FindBoolKey("isSyncing"),
@@ -58,7 +58,7 @@ class ProfilePickerHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     ASSERT_EQ("cr.webUIListenerCallback", data.function_name());
     ASSERT_EQ("profile-removed", data.arg1()->GetString());
-    ASSERT_EQ(*data.arg2(), util::FilePathToValue(profile_path));
+    ASSERT_EQ(*data.arg2(), base::FilePathToValue(profile_path));
   }
 
   void InitializeMainViewAndVerifyProfileList(

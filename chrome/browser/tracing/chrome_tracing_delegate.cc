@@ -10,13 +10,13 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -159,7 +159,7 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::Initialize() {
       if (!scenario || !timestamp_val) {
         continue;
       }
-      absl::optional<base::Time> upload_time = util::ValueToTime(timestamp_val);
+      absl::optional<base::Time> upload_time = base::ValueToTime(timestamp_val);
       if (!upload_time) {
         continue;
       }
@@ -194,7 +194,7 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::SaveState(
   for (const auto& it : scenario_upload_times) {
     base::DictionaryValue scenario;
     scenario.SetString(kScenarioKey, StripScenarioName(it.first));
-    scenario.SetKey(kUploadTimestampKey, util::TimeToValue(it.second));
+    scenario.SetKey(kUploadTimestampKey, base::TimeToValue(it.second));
     upload_times.Append(std::move(scenario));
   }
   dict.SetKey(kUploadTimesKey, std::move(upload_times));

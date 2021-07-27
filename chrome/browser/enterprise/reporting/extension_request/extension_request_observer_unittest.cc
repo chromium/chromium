@@ -5,9 +5,9 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -95,7 +95,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     for (const auto& id : ids) {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::util::TimeToValue(base::Time::Now()));
+                          ::base::TimeToValue(base::Time::Now()));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(

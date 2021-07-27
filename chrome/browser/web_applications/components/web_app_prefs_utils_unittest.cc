@@ -4,11 +4,11 @@
 
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/common/pref_names.h"
@@ -63,7 +63,7 @@ TEST_F(WebAppPrefsUtilsTest, TestIphIgnoreRecorded) {
   {
     auto* dict = prefs()->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
     EXPECT_EQ(dict->FindIntKey(kIphIgnoreCount).value_or(0), 1);
-    EXPECT_EQ(util::ValueToTime(dict->FindKey(kIphLastIgnoreTime)),
+    EXPECT_EQ(base::ValueToTime(dict->FindKey(kIphLastIgnoreTime)),
               last_ignore_time.value());
   }
 }
@@ -81,7 +81,7 @@ TEST_F(WebAppPrefsUtilsTest, TestIphIgnoreRecordUpdated) {
   {
     auto* dict = prefs()->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
     EXPECT_EQ(dict->FindIntKey(kIphIgnoreCount).value_or(0), 2);
-    EXPECT_NE(util::ValueToTime(dict->FindKey(kIphLastIgnoreTime)),
+    EXPECT_NE(base::ValueToTime(dict->FindKey(kIphLastIgnoreTime)),
               last_ignore_time.value());
   }
 }

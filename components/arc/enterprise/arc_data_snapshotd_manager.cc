@@ -10,12 +10,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -134,8 +134,8 @@ ArcDataSnapshotdManager::SnapshotInfo::SnapshotInfo(const base::Value* value,
   }
   {
     auto* found = dict->FindPath(kCreationDate);
-    if (found && util::ValueToTime(found).has_value()) {
-      auto parsed_time = util::ValueToTime(found).value();
+    if (found && base::ValueToTime(found).has_value()) {
+      auto parsed_time = base::ValueToTime(found).value();
       UpdateCreationDate(parsed_time);
     }
   }
@@ -172,7 +172,7 @@ void ArcDataSnapshotdManager::SnapshotInfo::Sync(base::Value* dict) {
 
   base::DictionaryValue value;
   value.SetStringKey(kOsVersion, os_version_);
-  value.SetKey(kCreationDate, util::TimeToValue(creation_date_));
+  value.SetKey(kCreationDate, base::TimeToValue(creation_date_));
   value.SetBoolKey(kVerified, verified_);
   value.SetBoolKey(kUpdated, updated_);
 

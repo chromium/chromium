@@ -4,18 +4,18 @@
 
 #include "services/network/trust_tokens/types.h"
 
+#include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 
 namespace network {
 namespace internal {
 
 absl::optional<base::Time> StringToTime(base::StringPiece my_string) {
-  return util::ValueToTime(base::Value(my_string));
+  return base::ValueToTime(base::Value(my_string));
 }
 
 std::string TimeToString(base::Time my_time) {
-  return util::TimeToValue(my_time).GetString();
+  return base::TimeToValue(my_time).GetString();
 }
 
 base::StringPiece TrustTokenOperationTypeToString(

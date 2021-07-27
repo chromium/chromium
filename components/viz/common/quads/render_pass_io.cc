@@ -11,9 +11,9 @@
 #include "base/base64.h"
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/util/values/values_util.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -887,7 +887,7 @@ base::Value SurfaceIdToDict(const SurfaceId& id) {
   dict.SetIntKey("sink_id", id.frame_sink_id().sink_id());
   dict.SetIntKey("parent_seq", id.local_surface_id().parent_sequence_number());
   dict.SetIntKey("child_seq", id.local_surface_id().child_sequence_number());
-  dict.SetKey("embed_token", util::UnguessableTokenToValue(
+  dict.SetKey("embed_token", base::UnguessableTokenToValue(
                                  id.local_surface_id().embed_token()));
 
   return dict;
@@ -905,7 +905,7 @@ absl::optional<SurfaceId> SurfaceIdFromDict(const base::Value& dict) {
   if (!client_id || !sink_id || !parent_seq || !child_seq || !embed_token_value)
     return absl::nullopt;
 
-  auto token = util::ValueToUnguessableToken(*embed_token_value);
+  auto token = base::ValueToUnguessableToken(*embed_token_value);
   if (!token) {
     return absl::nullopt;
   }

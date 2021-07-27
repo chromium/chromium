@@ -7,11 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -384,7 +384,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     absl::optional<base::TimeDelta> unreported_duration =
-        util::ValueToTimeDelta(update->FindPath(key));
+        base::ValueToTimeDelta(update->FindPath(key));
     if (time_delta.is_zero()) {
       EXPECT_FALSE(unreported_duration.has_value());
       return;

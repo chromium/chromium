@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
 
 #include <limits>
 
@@ -12,14 +12,14 @@
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace util {
+namespace base {
 
 namespace {
 
 TEST(ValuesUtilTest, BasicInt64Limits) {
   constexpr struct {
     int64_t input;
-    base::StringPiece expected;
+    StringPiece expected;
   } kTestCases[] = {
       {0, "0"},
       {-1234, "-1234"},
@@ -29,10 +29,9 @@ TEST(ValuesUtilTest, BasicInt64Limits) {
   };
   for (const auto& test_case : kTestCases) {
     int64_t input = test_case.input;
-    base::TimeDelta time_delta_input = base::TimeDelta::FromMicroseconds(input);
-    base::Time time_input =
-        base::Time::FromDeltaSinceWindowsEpoch(time_delta_input);
-    base::Value expected(test_case.expected);
+    TimeDelta time_delta_input = TimeDelta::FromMicroseconds(input);
+    Time time_input = Time::FromDeltaSinceWindowsEpoch(time_delta_input);
+    Value expected(test_case.expected);
     SCOPED_TRACE(testing::Message()
                  << "input: " << input << ", expected: " << expected);
 
@@ -48,20 +47,20 @@ TEST(ValuesUtilTest, BasicInt64Limits) {
 }
 
 TEST(ValuesUtilTest, InvalidInt64Values) {
-  const std::unique_ptr<base::Value> kTestCases[] = {
+  const std::unique_ptr<Value> kTestCases[] = {
       nullptr,
-      std::make_unique<base::Value>(),
-      std::make_unique<base::Value>(0),
-      std::make_unique<base::Value>(1234),
-      std::make_unique<base::Value>(true),
-      std::make_unique<base::Value>(base::Value::Type::BINARY),
-      std::make_unique<base::Value>(base::Value::Type::LIST),
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY),
-      std::make_unique<base::Value>(""),
-      std::make_unique<base::Value>("abcd"),
-      std::make_unique<base::Value>("1234.0"),
-      std::make_unique<base::Value>("1234a"),
-      std::make_unique<base::Value>("a1234"),
+      std::make_unique<Value>(),
+      std::make_unique<Value>(0),
+      std::make_unique<Value>(1234),
+      std::make_unique<Value>(true),
+      std::make_unique<Value>(Value::Type::BINARY),
+      std::make_unique<Value>(Value::Type::LIST),
+      std::make_unique<Value>(Value::Type::DICTIONARY),
+      std::make_unique<Value>(""),
+      std::make_unique<Value>("abcd"),
+      std::make_unique<Value>("1234.0"),
+      std::make_unique<Value>("1234a"),
+      std::make_unique<Value>("a1234"),
   };
   for (const auto& test_case : kTestCases) {
     EXPECT_FALSE(ValueToInt64(test_case.get()));
@@ -72,13 +71,13 @@ TEST(ValuesUtilTest, InvalidInt64Values) {
 
 TEST(ValuesUtilTest, FilePath) {
   // Ω is U+03A9 GREEK CAPITAL LETTER OMEGA, a non-ASCII character.
-  constexpr base::StringPiece kTestCases[] = {
+  constexpr StringPiece kTestCases[] = {
       "/unix/Ω/path.dat",
       "C:\\windows\\Ω\\path.dat",
   };
   for (auto test_case : kTestCases) {
-    base::FilePath input = base::FilePath::FromUTF8Unsafe(test_case);
-    base::Value expected(test_case);
+    FilePath input = FilePath::FromUTF8Unsafe(test_case);
+    Value expected(test_case);
     SCOPED_TRACE(testing::Message() << "test_case: " << test_case);
 
     EXPECT_EQ(FilePathToValue(input), expected);
@@ -90,14 +89,14 @@ TEST(ValuesUtilTest, UnguessableToken) {
   constexpr struct {
     uint64_t high;
     uint64_t low;
-    base::StringPiece expected;
+    StringPiece expected;
   } kTestCases[] = {
       {0x123456u, 0x9ABCu, "5634120000000000BC9A000000000000"},
   };
   for (const auto& test_case : kTestCases) {
-    base::UnguessableToken input =
-        base::UnguessableToken::Deserialize(test_case.high, test_case.low);
-    base::Value expected(test_case.expected);
+    UnguessableToken input =
+        UnguessableToken::Deserialize(test_case.high, test_case.low);
+    Value expected(test_case.expected);
     SCOPED_TRACE(testing::Message() << "expected: " << test_case.expected);
 
     EXPECT_EQ(UnguessableTokenToValue(input), expected);
@@ -107,4 +106,4 @@ TEST(ValuesUtilTest, UnguessableToken) {
 
 }  // namespace
 
-}  // namespace util
+}  // namespace base

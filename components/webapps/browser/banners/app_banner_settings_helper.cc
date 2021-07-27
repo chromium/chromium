@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/util/values/values_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/permissions_client.h"
@@ -219,12 +219,12 @@ absl::optional<NextInstallTextAnimation> NextInstallTextAnimation::Get(
     return absl::nullopt;
 
   absl::optional<base::Time> last_shown =
-      util::ValueToTime(next_dict->FindKey(kLastShownKey));
+      base::ValueToTime(next_dict->FindKey(kLastShownKey));
   if (!last_shown)
     return absl::nullopt;
 
   absl::optional<base::TimeDelta> delay =
-      util::ValueToTimeDelta(next_dict->FindKey(kDelayKey));
+      base::ValueToTimeDelta(next_dict->FindKey(kDelayKey));
   if (!delay)
     return absl::nullopt;
 
@@ -238,8 +238,8 @@ void NextInstallTextAnimation::RecordToPrefs(content::WebContents* web_contents,
     return;
 
   base::Value next_dict(base::Value::Type::DICTIONARY);
-  next_dict.SetKey(kLastShownKey, util::TimeToValue(last_shown));
-  next_dict.SetKey(kDelayKey, util::TimeDeltaToValue(delay));
+  next_dict.SetKey(kLastShownKey, base::TimeToValue(last_shown));
+  next_dict.SetKey(kDelayKey, base::TimeDeltaToValue(delay));
   app_prefs.dict()->SetKey(kNextInstallTextAnimation, std::move(next_dict));
   app_prefs.Save();
 }

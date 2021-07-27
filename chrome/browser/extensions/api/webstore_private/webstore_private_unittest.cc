@@ -8,10 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -119,7 +119,7 @@ void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
     ASSERT_NE(nullptr, actual_pending_request);
 
     // All extensions in the pending list are expected to have a timestamp.
-    EXPECT_EQ(::util::TimeToValue(expected_request.second.timestamp),
+    EXPECT_EQ(::base::TimeToValue(expected_request.second.timestamp),
               *actual_pending_request->FindKey(
                   extension_misc::kExtensionRequestTimestamp));
 
@@ -270,7 +270,7 @@ class WebstorePrivateRequestExtensionTest
     for (const auto& id : ids) {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::util::TimeToValue(GetFaketime()));
+                          ::base::TimeToValue(GetFaketime()));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(

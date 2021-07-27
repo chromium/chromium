@@ -7,9 +7,9 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
@@ -178,7 +178,7 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
     for (auto& cert : pub_certs) {
       expiration_dict.SetKey(
           EncodeString(cert.secret_id()),
-          util::TimeToValue(TimestampToTime(cert.end_time())));
+          base::TimeToValue(TimestampToTime(cert.end_time())));
       db_entries_.emplace(cert.secret_id(), std::move(cert));
     }
     pref_service_->Set(

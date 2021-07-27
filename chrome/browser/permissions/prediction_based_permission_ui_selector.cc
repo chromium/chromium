@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/permissions/permission_actions_history.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"

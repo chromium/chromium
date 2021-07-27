@@ -12,11 +12,11 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/util/values/values_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -235,7 +235,7 @@ void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
   // Reset the nudge prefs so that the nudge can be shown again.
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, 0);
-  update->SetPath(kLastTimeShown, util::TimeToValue(base::Time()));
+  update->SetPath(kLastTimeShown, base::TimeToValue(base::Time()));
   update->SetIntPath(kNewFeatureBadgeCount, 0);
 }
 
@@ -343,7 +343,7 @@ void ClipboardNudgeController::HandleNudgeShown() {
   const int shown_count = GetShownCount(prefs);
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, shown_count + 1);
-  update->SetPath(kLastTimeShown, util::TimeToValue(GetTime()));
+  update->SetPath(kLastTimeShown, base::TimeToValue(GetTime()));
 }
 
 void ClipboardNudgeController::OnClipboardHistoryMenuShown(
@@ -430,7 +430,7 @@ base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {
   if (!dictionary)
     return base::Time();
   absl::optional<base::Time> last_shown_time =
-      util::ValueToTime(dictionary->FindPath(kLastTimeShown));
+      base::ValueToTime(dictionary->FindPath(kLastTimeShown));
   return last_shown_time.value_or(base::Time());
 }
 

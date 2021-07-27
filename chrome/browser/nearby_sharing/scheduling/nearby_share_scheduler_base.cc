@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "base/i18n/time_formatting.h"
+#include "base/json/values_util.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -102,7 +102,7 @@ void NearbyShareSchedulerBase::Reschedule() {
 
 absl::optional<base::Time> NearbyShareSchedulerBase::GetLastSuccessTime()
     const {
-  return util::ValueToTime(pref_service_->GetDictionary(pref_name_)
+  return base::ValueToTime(pref_service_->GetDictionary(pref_name_)
                                ->FindKey(kLastSuccessTimeKeyName));
 }
 
@@ -164,7 +164,7 @@ void NearbyShareSchedulerBase::OnConnectionChanged(
 
 absl::optional<base::Time> NearbyShareSchedulerBase::GetLastAttemptTime()
     const {
-  return util::ValueToTime(pref_service_->GetDictionary(pref_name_)
+  return base::ValueToTime(pref_service_->GetDictionary(pref_name_)
                                ->FindKey(kLastAttemptTimeKeyName));
 }
 
@@ -178,14 +178,14 @@ void NearbyShareSchedulerBase::SetLastAttemptTime(
     base::Time last_attempt_time) {
   DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
-      ->SetKey(kLastAttemptTimeKeyName, util::TimeToValue(last_attempt_time));
+      ->SetKey(kLastAttemptTimeKeyName, base::TimeToValue(last_attempt_time));
 }
 
 void NearbyShareSchedulerBase::SetLastSuccessTime(
     base::Time last_success_time) {
   DictionaryPrefUpdate(pref_service_, pref_name_)
       .Get()
-      ->SetKey(kLastSuccessTimeKeyName, util::TimeToValue(last_success_time));
+      ->SetKey(kLastSuccessTimeKeyName, base::TimeToValue(last_success_time));
 }
 
 void NearbyShareSchedulerBase::SetNumConsecutiveFailures(size_t num_failures) {

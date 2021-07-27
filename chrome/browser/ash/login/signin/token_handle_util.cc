@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 
+#include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/known_user.h"
@@ -76,7 +76,7 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
   if (status != TokenHandleUtil::UNKNOWN) {
     // Update last checked timestamp.
     user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
-                                      util::TimeToValue(base::Time::Now()));
+                                      base::TimeToValue(base::Time::Now()));
   }
 
   if (status == TokenHandleUtil::INVALID) {
@@ -119,7 +119,7 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
     return false;
   }
 
-  absl::optional<base::Time> last_checked = util::ValueToTime(value);
+  absl::optional<base::Time> last_checked = base::ValueToTime(value);
   if (!last_checked.has_value()) {
     return false;
   }
@@ -185,7 +185,7 @@ void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
   user_manager::known_user::SetBooleanPref(account_id, kTokenHandleRotated,
                                            true);
   user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
-                                    util::TimeToValue(base::Time::Now()));
+                                    base::TimeToValue(base::Time::Now()));
 }
 
 // static
@@ -197,7 +197,7 @@ void TokenHandleUtil::SetInvalidTokenForTesting(const char* token) {
 void TokenHandleUtil::SetLastCheckedPrefForTesting(const AccountId& account_id,
                                                    base::Time time) {
   user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
-                                    util::TimeToValue(time));
+                                    base::TimeToValue(time));
 }
 
 void TokenHandleUtil::OnValidationComplete(const std::string& token) {

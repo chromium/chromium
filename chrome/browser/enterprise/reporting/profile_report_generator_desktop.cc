@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
@@ -100,7 +100,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
 
     auto* request = report->add_extension_requests();
     request->set_id(it.first);
-    absl::optional<base::Time> timestamp = ::util::ValueToTime(
+    absl::optional<base::Time> timestamp = ::base::ValueToTime(
         it.second.FindKey(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
       request->set_request_timestamp(timestamp->ToJavaTime());

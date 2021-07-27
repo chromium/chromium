@@ -4,10 +4,10 @@
 
 #include "chrome/common/custom_handlers/protocol_handler.h"
 
+#include "base/json/values_util.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/origin_util.h"
 #include "extensions/common/constants.h"
@@ -109,7 +109,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   value->GetString("protocol", &protocol);
   value->GetString("url", &url);
   absl::optional<base::Time> time_value =
-      util::ValueToTime(value->FindKey("last_modified"));
+      base::ValueToTime(value->FindKey("last_modified"));
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
@@ -141,7 +141,7 @@ std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
   auto d = std::make_unique<base::DictionaryValue>();
   d->SetString("protocol", protocol_);
   d->SetString("url", url_.spec());
-  d->SetKey("last_modified", util::TimeToValue(last_modified_));
+  d->SetKey("last_modified", base::TimeToValue(last_modified_));
   d->SetIntPath("security_level", static_cast<int>(security_level_));
 
   if (web_app_id_.has_value())

@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler.h"
@@ -41,7 +41,7 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   report->set_id(extension_id);
   if (request_data) {
     if (request_data->is_dict()) {
-      absl::optional<base::Time> timestamp = ::util::ValueToTime(
+      absl::optional<base::Time> timestamp = ::base::ValueToTime(
           request_data->FindKey(extension_misc::kExtensionRequestTimestamp));
       if (timestamp)
         report->set_request_timestamp_millis(timestamp->ToJavaTime());
@@ -149,7 +149,7 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
     std::string id = report.get()->id();
     if (!report.get()->removed()) {
       uploaded_requests_update->SetPath(id + ".upload_timestamp",
-                                        ::util::TimeToValue(base::Time::Now()));
+                                        ::base::TimeToValue(base::Time::Now()));
     } else {
       uploaded_requests_update->RemoveKey(id);
     }

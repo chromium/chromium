@@ -9,13 +9,13 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 
 #include "base/base64url.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
@@ -628,7 +628,7 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
   public_certificate_expirations_.reserve(dict->DictSize());
   for (const auto pair : dict->DictItems()) {
     absl::optional<std::string> id = DecodeString(pair.first);
-    absl::optional<base::Time> expiration = util::ValueToTime(pair.second);
+    absl::optional<base::Time> expiration = base::ValueToTime(pair.second);
     if (!id || !expiration)
       return false;
 
@@ -645,7 +645,7 @@ void NearbyShareCertificateStorageImpl::SavePublicCertificateExpirations() {
 
   for (const std::pair<std::string, base::Time>& pair :
        public_certificate_expirations_) {
-    dict.SetKey(EncodeString(pair.first), util::TimeToValue(pair.second));
+    dict.SetKey(EncodeString(pair.first), base::TimeToValue(pair.second));
   }
 
   pref_service_->Set(

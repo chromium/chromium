@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/reporting/real_time_report_generator_desktop.h"

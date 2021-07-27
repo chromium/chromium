@@ -11,12 +11,12 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/event_router.h"
@@ -78,7 +78,7 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
     if (list->GetDictionary(i, &alarm_dict) &&
         alarms::Alarm::Populate(*alarm_dict, alarm->js_alarm.get())) {
       absl::optional<base::TimeDelta> delta =
-          util::ValueToTimeDelta(alarm_dict->FindKey(kAlarmGranularity));
+          base::ValueToTimeDelta(alarm_dict->FindKey(kAlarmGranularity));
       if (delta) {
         alarm->granularity = *delta;
         // No else branch. It's okay to ignore the failure since we have
@@ -103,7 +103,7 @@ std::unique_ptr<base::ListValue> AlarmsToValue(
     std::unique_ptr<base::DictionaryValue> alarm =
         alarms[i]->js_alarm->ToValue();
     alarm->SetKey(kAlarmGranularity,
-                  util::TimeDeltaToValue(alarms[i]->granularity));
+                  base::TimeDeltaToValue(alarms[i]->granularity));
     list->Append(std::move(alarm));
   }
   return list;

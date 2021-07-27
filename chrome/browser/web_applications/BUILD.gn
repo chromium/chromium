@@ -321,10 +321,6 @@ source_set("web_applications") {
     deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-    deps += [ "//base/util/values:values_util" ]
-  }
-
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",

@@ -5,9 +5,9 @@
 #include "chrome/browser/permissions/permission_actions_history.h"
 
 #include "base/containers/adapters.h"
+#include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -99,14 +99,14 @@ void PermissionActionsHistory::RecordAction(
   const base::Time cutoff = base::Time::Now() - kPermissionActionMaxAge;
   permission_actions->EraseListValueIf([cutoff](const base::Value& entry) {
     const absl::optional<base::Time> timestamp =
-        util::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
+        base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
     return !timestamp || *timestamp < cutoff;
   });
 
   // Record the new permission action.
   base::DictionaryValue new_action_attributes;
   new_action_attributes.SetKey(kPermissionActionEntryTimestampKey,
-                               util::TimeToValue(base::Time::Now()));
+                               base::TimeToValue(base::Time::Now()));
   new_action_attributes.SetIntKey(kPermissionActionEntryActionKey,
                                   static_cast<int>(action));
   permission_actions->Append(std::move(new_action_attributes));
@@ -126,7 +126,7 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
     permission_entry.second.EraseListValueIf([delete_begin,
                                               delete_end](const auto& entry) {
       const absl::optional<base::Time> timestamp =
-          util::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
+          base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
       return (!timestamp ||
               (*timestamp >= delete_begin && *timestamp < delete_end));
     });
@@ -149,7 +149,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
 
   for (const auto& entry : permission_actions->GetList()) {
     const absl::optional<base::Time> timestamp =
-        util::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
+        base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
 
     if (timestamp >= begin) {
       const permissions::PermissionAction past_action =

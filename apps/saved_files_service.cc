@@ -13,7 +13,7 @@
 #include <utility>
 
 #include "apps/saved_files_service_factory.h"
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
@@ -69,7 +69,7 @@ void AddSavedFileEntry(ExtensionPrefs* prefs,
   std::unique_ptr<base::DictionaryValue> file_entry_dict =
       std::make_unique<base::DictionaryValue>();
   file_entry_dict->SetKey(kFileEntryPath,
-                          util::FilePathToValue(file_entry.path));
+                          base::FilePathToValue(file_entry.path));
   file_entry_dict->SetBoolean(kFileEntryIsDirectory, file_entry.is_directory);
   file_entry_dict->SetInteger(kFileEntrySequenceNumber,
                               file_entry.sequence_number);
@@ -127,7 +127,7 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
     if (!file_entry->Get(kFileEntryPath, &path_value))
       continue;
     absl::optional<base::FilePath> file_path =
-        util::ValueToFilePath(*path_value);
+        base::ValueToFilePath(*path_value);
     if (!file_path)
       continue;
     bool is_directory = false;

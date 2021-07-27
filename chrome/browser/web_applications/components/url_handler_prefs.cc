@@ -12,12 +12,12 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -121,7 +121,7 @@ bool FindBestMatchingIncludePathChoice(const std::string& url_path,
       continue;
     auto current_choice = static_cast<UrlHandlerSavedChoice>(*choice_opt);
     absl::optional<base::Time> current_timestamp =
-        util::ValueToTime(include_path_dict.FindKey(kTimestamp));
+        base::ValueToTime(include_path_dict.FindKey(kTimestamp));
     if (!current_timestamp)
       continue;
 
@@ -318,7 +318,7 @@ base::Value GetIncludePathsValue(const std::vector<std::string>& include_paths,
     path_dict.SetStringKey(kPath, include_path);
     path_dict.SetIntKey(kChoice,
                         static_cast<int>(UrlHandlerSavedChoice::kNone));
-    path_dict.SetKey(kTimestamp, util::TimeToValue(time));
+    path_dict.SetKey(kTimestamp, base::TimeToValue(time));
     value.Append(std::move(path_dict));
   }
   return value;
@@ -339,7 +339,7 @@ base::Value NewHandler(const AppId& app_id,
                        const base::Time& time) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(kAppId, app_id);
-  value.SetKey(kProfilePath, util::FilePathToValue(profile_path));
+  value.SetKey(kProfilePath, base::FilePathToValue(profile_path));
   value.SetBoolKey(kHasOriginWildcard, info.has_origin_wildcard);
   // Set include_paths and exclude paths from associated app.
   value.SetKey(kIncludePaths, GetIncludePathsValue(info.paths, time));
@@ -421,7 +421,7 @@ void UpdateSavedChoiceInIncludePaths(const PathSet& updated_include_paths,
 
     if (updated_include_paths.contains(*path)) {
       include_path_dict.SetIntKey(kChoice, static_cast<int>(choice));
-      include_path_dict.SetKey(kTimestamp, util::TimeToValue(time));
+      include_path_dict.SetKey(kTimestamp, base::TimeToValue(time));
     }
   }
   all_include_paths = base::Value(std::move(include_paths_list));
@@ -452,7 +452,7 @@ PathSet UpdateSavedChoice(const GURL& url,
     // timestamp.
     if (PathMatchesPathPattern(url.path(), *path)) {
       include_path_dict.SetIntKey(kChoice, static_cast<int>(choice));
-      include_path_dict.SetKey(kTimestamp, util::TimeToValue(time));
+      include_path_dict.SetKey(kTimestamp, base::TimeToValue(time));
       updated_include_paths.push_back(*path);
     }
   }
@@ -980,7 +980,7 @@ absl::optional<const HandlerView> GetConstHandlerView(
     return absl::nullopt;
 
   absl::optional<base::FilePath> handler_profile_path =
-      util::ValueToFilePath(handler.FindKey(kProfilePath));
+      base::ValueToFilePath(handler.FindKey(kProfilePath));
   if (!handler_profile_path)
     return absl::nullopt;
 

@@ -7,9 +7,9 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/util/values/values_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -124,7 +124,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(
           extension_misc::kExtensionRequestTimestamp,
-          ::util::TimeToValue(base::Time::FromJavaTime(kFakeTime)));
+          ::base::TimeToValue(base::Time::FromJavaTime(kFakeTime)));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/util/values/values_util.h"
+#include "base/json/values_util.h"
 
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,7 +14,7 @@
 // on disks. Therefore, changes in implementation could lead to data corruption
 // and must be done with caution.
 
-namespace util {
+namespace base {
 
 namespace {
 
@@ -32,89 +32,87 @@ union UnguessableTokenRepresentation {
 
 }  // namespace
 
-base::Value Int64ToValue(int64_t integer) {
-  return base::Value(base::NumberToString(integer));
+Value Int64ToValue(int64_t integer) {
+  return Value(NumberToString(integer));
 }
 
-absl::optional<int64_t> ValueToInt64(const base::Value* value) {
+absl::optional<int64_t> ValueToInt64(const Value* value) {
   return value ? ValueToInt64(*value) : absl::nullopt;
 }
 
-absl::optional<int64_t> ValueToInt64(const base::Value& value) {
+absl::optional<int64_t> ValueToInt64(const Value& value) {
   if (!value.is_string())
     return absl::nullopt;
 
   int64_t integer;
-  if (!base::StringToInt64(value.GetString(), &integer))
+  if (!StringToInt64(value.GetString(), &integer))
     return absl::nullopt;
 
   return integer;
 }
 
-base::Value TimeDeltaToValue(base::TimeDelta time_delta) {
+Value TimeDeltaToValue(TimeDelta time_delta) {
   return Int64ToValue(time_delta.InMicroseconds());
 }
 
-absl::optional<base::TimeDelta> ValueToTimeDelta(const base::Value* value) {
+absl::optional<TimeDelta> ValueToTimeDelta(const Value* value) {
   return value ? ValueToTimeDelta(*value) : absl::nullopt;
 }
 
-absl::optional<base::TimeDelta> ValueToTimeDelta(const base::Value& value) {
+absl::optional<TimeDelta> ValueToTimeDelta(const Value& value) {
   absl::optional<int64_t> integer = ValueToInt64(value);
   if (!integer)
     return absl::nullopt;
-  return base::TimeDelta::FromMicroseconds(*integer);
+  return TimeDelta::FromMicroseconds(*integer);
 }
 
-base::Value TimeToValue(base::Time time) {
+Value TimeToValue(Time time) {
   return TimeDeltaToValue(time.ToDeltaSinceWindowsEpoch());
 }
 
-absl::optional<base::Time> ValueToTime(const base::Value* value) {
+absl::optional<Time> ValueToTime(const Value* value) {
   return value ? ValueToTime(*value) : absl::nullopt;
 }
 
-absl::optional<base::Time> ValueToTime(const base::Value& value) {
-  absl::optional<base::TimeDelta> time_delta = ValueToTimeDelta(value);
+absl::optional<Time> ValueToTime(const Value& value) {
+  absl::optional<TimeDelta> time_delta = ValueToTimeDelta(value);
   if (!time_delta)
     return absl::nullopt;
-  return base::Time::FromDeltaSinceWindowsEpoch(*time_delta);
+  return Time::FromDeltaSinceWindowsEpoch(*time_delta);
 }
 
-base::Value FilePathToValue(base::FilePath file_path) {
-  return base::Value(file_path.AsUTF8Unsafe());
+Value FilePathToValue(FilePath file_path) {
+  return Value(file_path.AsUTF8Unsafe());
 }
 
-absl::optional<base::FilePath> ValueToFilePath(const base::Value* value) {
+absl::optional<FilePath> ValueToFilePath(const Value* value) {
   return value ? ValueToFilePath(*value) : absl::nullopt;
 }
 
-absl::optional<base::FilePath> ValueToFilePath(const base::Value& value) {
+absl::optional<FilePath> ValueToFilePath(const Value& value) {
   if (!value.is_string())
     return absl::nullopt;
-  return base::FilePath::FromUTF8Unsafe(value.GetString());
+  return FilePath::FromUTF8Unsafe(value.GetString());
 }
 
-base::Value UnguessableTokenToValue(base::UnguessableToken token) {
+Value UnguessableTokenToValue(UnguessableToken token) {
   UnguessableTokenRepresentation repr;
   repr.field.high = token.GetHighForSerialization();
   repr.field.low = token.GetLowForSerialization();
-  return base::Value(base::HexEncode(repr.buffer, sizeof(repr.buffer)));
+  return Value(HexEncode(repr.buffer, sizeof(repr.buffer)));
 }
 
-absl::optional<base::UnguessableToken> ValueToUnguessableToken(
-    const base::Value* value) {
+absl::optional<UnguessableToken> ValueToUnguessableToken(const Value* value) {
   return value ? ValueToUnguessableToken(*value) : absl::nullopt;
 }
 
-absl::optional<base::UnguessableToken> ValueToUnguessableToken(
-    const base::Value& value) {
+absl::optional<UnguessableToken> ValueToUnguessableToken(const Value& value) {
   if (!value.is_string())
     return absl::nullopt;
   UnguessableTokenRepresentation repr;
-  if (!base::HexStringToSpan(value.GetString(), repr.buffer))
+  if (!HexStringToSpan(value.GetString(), repr.buffer))
     return absl::nullopt;
-  return base::UnguessableToken::Deserialize(repr.field.high, repr.field.low);
+  return UnguessableToken::Deserialize(repr.field.high, repr.field.low);
 }
 
-}  // namespace util
+}  // namespace base

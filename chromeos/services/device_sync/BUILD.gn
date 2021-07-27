@@ -156,7 +156,6 @@ static_library("device_sync") {
   deps = [
     "//ash/constants",
     "//base",
-    "//base/util/values:values_util",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
     "//chromeos/network",

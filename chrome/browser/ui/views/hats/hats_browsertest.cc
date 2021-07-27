@@ -8,12 +8,12 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/values_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       browser()->profile()->GetPrefs()->GetDictionary(
           prefs::kHatsSurveyMetadata);
   absl::optional<base::Time> last_survey_started_time =
-      util::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
+      base::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
   absl::optional<int> last_major_version =
       pref_data->FindIntPath(kLastMajorVersion);
   ASSERT_FALSE(last_survey_started_time.has_value());
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   pref_data = browser()->profile()->GetPrefs()->GetDictionary(
       prefs::kHatsSurveyMetadata);
   last_survey_started_time =
-      util::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
+      base::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
   last_major_version = pref_data->FindIntPath(kLastMajorVersion);
   ASSERT_TRUE(last_survey_started_time.has_value());
   ASSERT_TRUE(last_major_version.has_value());

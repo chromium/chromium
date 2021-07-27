@@ -5,10 +5,10 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
-#include "base/util/values/values_util.h"
 
 namespace ash {
 
@@ -128,7 +128,7 @@ base::FilePath HoldingSpaceItem::DeserializeFilePath(
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const absl::optional<base::FilePath> file_path =
-      util::ValueToFilePath(dict.FindPath(kFilePathPath));
+      base::ValueToFilePath(dict.FindPath(kFilePathPath));
   DCHECK(file_path.has_value());
 
   return file_path.value();
@@ -142,7 +142,7 @@ base::DictionaryValue HoldingSpaceItem::Serialize() const {
   dict.SetIntPath(kVersionPath, kVersion);
   dict.SetIntPath(kTypePath, static_cast<int>(type_));
   dict.SetStringPath(kIdPath, id_);
-  dict.SetPath(kFilePathPath, util::FilePathToValue(file_path_));
+  dict.SetPath(kFilePathPath, base::FilePathToValue(file_path_));
   return dict;
 }
 

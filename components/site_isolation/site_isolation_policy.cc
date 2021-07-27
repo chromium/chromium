@@ -5,10 +5,10 @@
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
-#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -189,7 +189,7 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
 
   // Add the origin.  If it already exists, this will just update the
   // timestamp.
-  dict->SetKey(origin.Serialize(), util::TimeToValue(base::Time::Now()));
+  dict->SetKey(origin.Serialize(), base::TimeToValue(base::Time::Now()));
 
   // Check whether the maximum number of stored sites was exceeded and remove
   // one or more entries, starting with the oldest timestamp. Note that more
@@ -201,8 +201,8 @@ void SiteIsolationPolicy::PersistWebTriggeredIsolatedOrigin(
     auto items = dict->DictItems();
     auto oldest_site_time_pair = std::min_element(
         items.begin(), items.end(), [](auto pair_a, auto pair_b) {
-          absl::optional<base::Time> time_a = util::ValueToTime(pair_a.second);
-          absl::optional<base::Time> time_b = util::ValueToTime(pair_b.second);
+          absl::optional<base::Time> time_a = base::ValueToTime(pair_a.second);
+          absl::optional<base::Time> time_b = base::ValueToTime(pair_b.second);
           // has_value() should always be true unless the prefs were corrupted.
           // In that case, prioritize the corrupted entry for removal.
           return (time_a.has_value() ? time_a.value() : base::Time::Min()) <
@@ -251,7 +251,7 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
       for (auto site_time_pair : dict->DictItems()) {
         // Only isolate origins that haven't expired.
         absl::optional<base::Time> timestamp =
-            util::ValueToTime(site_time_pair.second);
+            base::ValueToTime(site_time_pair.second);
         base::TimeDelta expiration_timeout =
             ::features::
                 kSiteIsolationForCrossOriginOpenerPolicyExpirationTimeoutParam

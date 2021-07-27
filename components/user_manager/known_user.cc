@@ -9,10 +9,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -612,14 +612,14 @@ base::Value KnownUser::GetChallengeResponseKeys(const AccountId& account_id) {
 
 void KnownUser::SetLastOnlineSignin(const AccountId& account_id,
                                     base::Time time) {
-  SetPref(account_id, kLastOnlineSignin, util::TimeToValue(time));
+  SetPref(account_id, kLastOnlineSignin, base::TimeToValue(time));
 }
 
 base::Time KnownUser::GetLastOnlineSignin(const AccountId& account_id) {
   const base::Value* value = nullptr;
   if (!GetPref(account_id, kLastOnlineSignin, &value))
     return base::Time();
-  absl::optional<base::Time> time = util::ValueToTime(value);
+  absl::optional<base::Time> time = base::ValueToTime(value);
   if (!time)
     return base::Time();
   return *time;
@@ -632,7 +632,7 @@ void KnownUser::SetOfflineSigninLimit(
     ClearPref(account_id, kOfflineSigninLimit);
   } else {
     SetPref(account_id, kOfflineSigninLimit,
-            util::TimeDeltaToValue(time_delta.value()));
+            base::TimeDeltaToValue(time_delta.value()));
   }
 }
 
@@ -641,7 +641,7 @@ absl::optional<base::TimeDelta> KnownUser::GetOfflineSigninLimit(
   const base::Value* value = nullptr;
   if (!GetPref(account_id, kOfflineSigninLimit, &value))
     return absl::nullopt;
-  absl::optional<base::TimeDelta> time_delta = util::ValueToTimeDelta(value);
+  absl::optional<base::TimeDelta> time_delta = base::ValueToTimeDelta(value);
   return time_delta;
 }
 
@@ -774,11 +774,11 @@ void KnownUser::CleanObsoletePrefs() {
     // is not set because 0 is a legit value.
     const base::Value* value =
         user_entry.FindKey(kOfflineSigninLimitDeprecated);
-    absl::optional<base::TimeDelta> new_value = util::ValueToTimeDelta(value);
+    absl::optional<base::TimeDelta> new_value = base::ValueToTimeDelta(value);
     user_entry.RemoveKey(kOfflineSigninLimitDeprecated);
     if (new_value.has_value() && !new_value->is_zero()) {
       user_entry.SetKey(kOfflineSigninLimit,
-                        util::TimeDeltaToValue(*new_value));
+                        base::TimeDeltaToValue(*new_value));
     }
 
     if (new_value.has_value() && new_value->is_zero()) {
