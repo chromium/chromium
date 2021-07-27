@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_ADVERTISER_H_
-#define CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_ADVERTISER_H_
+#ifndef CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_FAST_INITIATION_ADVERTISER_H_
+#define CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_FAST_INITIATION_ADVERTISER_H_
 
 #include <memory>
 #include <vector>
@@ -12,10 +12,10 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 
 // FastInitiationAdvertiser broadcasts advertisements with the service UUID
-// 0xFE2C. The broadcast data will be
-// 0xFC128E along with 2 additional bytes of metadata at the end. Some remote
-// devices background scan for Fast Initiation advertisements, as a signal to
-// begin advertising via Nearby Connections.
+// 0xFE2C. The service data will be 0xFC128E along with 2 additional bytes of
+// metadata at the end. Some remote devices background scan for Fast Initiation
+// advertisements as a signal to begin advertising via Nearby Connections. This
+// scanning is performed in FastInitiationScanner.
 class FastInitiationAdvertiser
     : public device::BluetoothAdvertisement::Observer {
  public:
@@ -88,4 +88,4 @@ class FastInitiationAdvertiser
   base::WeakPtrFactory<FastInitiationAdvertiser> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_ADVERTISER_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_FAST_INITIATION_FAST_INITIATION_ADVERTISER_H_

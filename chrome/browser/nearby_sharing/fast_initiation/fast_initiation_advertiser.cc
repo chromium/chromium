@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/nearby_sharing/fast_initiation_advertiser.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_advertiser.h"
 
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
@@ -15,9 +18,11 @@ enum class FastInitVersion : uint8_t {
   kV1 = 0,
 };
 
-constexpr const char kNearbySharingFastInitiationServiceUuid[] =
+// This is the canonical service UUID used in outgoing Fast Initiation
+// advertisements. The service UUID of 0xfe2c is shared with
+// FastInitiationScanner in constants.h.
+constexpr const char kFastInitiationServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
-const uint8_t kNearbySharingFastPairId[] = {0xfc, 0x12, 0x8e};
 const FastInitVersion kVersion = FastInitVersion::kV1;
 const uint8_t kVersionBitmask = 0b111;
 const uint8_t kTypeBitmask = 0b111;
@@ -92,17 +97,17 @@ void FastInitiationAdvertiser::RegisterAdvertisement(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
   auto list = std::make_unique<device::BluetoothAdvertisement::UUIDList>();
-  list->push_back(kNearbySharingFastInitiationServiceUuid);
+  list->push_back(kFastInitiationServiceUuid);
   advertisement_data->set_service_uuids(std::move(list));
 
   auto service_data =
       std::make_unique<device::BluetoothAdvertisement::ServiceData>();
-  auto payload = std::vector<uint8_t>(std::begin(kNearbySharingFastPairId),
-                                      std::end(kNearbySharingFastPairId));
+  auto payload = std::vector<uint8_t>(std::begin(kFastInitiationModelId),
+                                      std::end(kFastInitiationModelId));
   auto metadata = GenerateFastInitV1Metadata(type);
   payload.insert(std::end(payload), std::begin(metadata), std::end(metadata));
   service_data->insert(std::pair<std::string, std::vector<uint8_t>>(
-      kNearbySharingFastInitiationServiceUuid, payload));
+      kFastInitiationServiceUuid, payload));
   advertisement_data->set_service_data(std::move(service_data));
 
   adapter_->RegisterAdvertisement(
