@@ -299,7 +299,6 @@ void TrafficAnnotationAuditor::GenerateFilesListForExtractor(
   base::GetCurrentDirectory(&original_path);
   base::SetCurrentDirectory(source_path_);
 
-  bool possibly_deleted_files = false;
   for (const auto& path_filter : path_filters_) {
 #if defined(OS_WIN)
     base::FilePath path = base::FilePath(
@@ -315,18 +314,11 @@ void TrafficAnnotationAuditor::GenerateFilesListForExtractor(
           source_path_,
           safe_list_[static_cast<int>(AuditorException::ExceptionType::ALL)],
           path_filter, file_paths);
-    } else {
-      // Add the file if it exists and is a relevant file which is not
-      // safe-listed.
-      if (base::PathExists(path)) {
-        if (!TrafficAnnotationAuditor::IsSafeListed(
-                path_filter, AuditorException::ExceptionType::ALL) &&
-            filter.IsFileRelevant(path_filter)) {
-          file_paths->push_back(path_filter);
-        }
-      } else {
-        possibly_deleted_files = true;
-      }
+    } else if (base::PathExists(path) &&
+               !TrafficAnnotationAuditor::IsSafeListed(
+                   path_filter, AuditorException::ExceptionType::ALL) &&
+               filter.IsFileRelevant(path_filter)) {
+      file_paths->push_back(path_filter);
     }
   }
 
