@@ -18,6 +18,7 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/interface.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status.pb.h"
@@ -279,6 +280,14 @@ EncryptedReportingServiceProvider::~EncryptedReportingServiceProvider() =
 void EncryptedReportingServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   DCHECK(OnOriginThread());
+
+  if (!::reporting::StorageSelector::is_uploader_required()) {
+    // In LaCros configuration only Ash chrome is expected to receive
+    // uploads.
+    LOG(WARNING) << "Uploads are not expected in this configuration";
+    return;
+  }
+
   exported_object->ExportMethod(
       chromeos::kChromeReportingServiceInterface,
       chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
@@ -304,6 +313,18 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecord(
     dbus::ExportedObject::ResponseSender response_sender) {
   DCHECK(OnOriginThread());
   auto response = dbus::Response::FromMethodCall(method_call);
+
+  if (!::reporting::StorageSelector::is_uploader_required()) {
+    // We should never get to here, since the provider is only exported
+    // when is_uploader_required() is true. Have this code only as
+    // in order to let `missive` daemon to log configuration inconsistency.
+    reporting::Status status{reporting::error::FAILED_PRECONDITION,
+                             "Uploads are not expected in this configuration"};
+    LOG(ERROR) << "Uploads are not expected in this configuration";
+    SendStatusAsResponse(std::move(response), std::move(response_sender),
+                         status);
+    return;
+  }
 
   reporting::UploadEncryptedRecordRequest request;
   dbus::MessageReader reader(method_call);

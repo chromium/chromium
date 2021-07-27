@@ -9,6 +9,7 @@
 
 #include "base/base64.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/messaging_layer/upload/fake_upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
@@ -207,11 +208,13 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     ASSERT_TRUE(reader.PopArrayOfBytesAsProto(encrypted_record_response));
   }
 
+  // Must be initialized before any other class member.
+  base::test::TaskEnvironment task_environment_;
+
   policy::MockCloudPolicyClient cloud_policy_client_;
   reporting::EncryptedRecord record_;
 
- private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestEncryptedReportingServiceProvider> service_provider_;
   ServiceProviderTestHelper test_helper_;
@@ -238,6 +241,21 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   CallRequestUploadEncryptedRecord(request, &response);
 
   EXPECT_EQ(response.status().code(), reporting::error::OK);
+}
+
+TEST_F(EncryptedReportingServiceProviderTest,
+       NoRecordUploadWhenUploaderDisabled) {
+  SetupForRequestUploadEncryptedRecord();
+  EXPECT_CALL(cloud_policy_client_, UploadEncryptedReport(_, _, _)).Times(0);
+
+  reporting::UploadEncryptedRecordRequest request;
+  request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
+
+  // Disable uploader.
+  scoped_feature_list_.InitFromCommandLine("", "ProvideUploader");
+
+  reporting::UploadEncryptedRecordResponse response;
+  CallRequestUploadEncryptedRecord(request, &response);
 }
 
 }  // namespace
