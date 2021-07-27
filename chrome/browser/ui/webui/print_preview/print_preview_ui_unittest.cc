@@ -224,4 +224,32 @@ TEST_F(PrintPreviewUIUnitTest, ParseDataPath) {
   EXPECT_EQ(page_index, 4);
 }
 
+// Ensures that a failure cancels all pending actions.
+TEST_F(PrintPreviewUIUnitTest, PrintPreviewFailureCancelsPendingActions) {
+  WebContents* initiator = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(initiator);
+
+  PrintPreviewDialogController* controller =
+      PrintPreviewDialogController::GetInstance();
+  ASSERT_TRUE(controller);
+
+  WebContents* preview_dialog = controller->GetOrCreatePreviewDialog(initiator);
+
+  EXPECT_NE(initiator, preview_dialog);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_TRUE(IsShowingWebContentsModalDialog(initiator));
+
+  PrintPreviewUI* preview_ui =
+      static_cast<PrintPreviewUI*>(preview_dialog->GetWebUI()->GetController());
+  ASSERT_TRUE(preview_ui);
+  preview_ui->SetPreviewUIId();
+
+  constexpr int kRequestId = 1;
+  preview_ui->OnPrintPreviewRequest(kRequestId);
+  EXPECT_FALSE(
+      PrintPreviewUI::ShouldCancelRequest(preview_ui->id_, kRequestId));
+  preview_ui->OnPrintPreviewFailed(kRequestId);
+  EXPECT_TRUE(PrintPreviewUI::ShouldCancelRequest(preview_ui->id_, kRequestId));
+}
+
 }  // namespace printing

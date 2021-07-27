@@ -949,10 +949,12 @@ bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {
 }
 
 void PrintPreviewUI::OnCancelPendingPreviewRequest() {
-  g_print_preview_request_id_map.Get().Set(*id_, -1);
+  if (id_)
+    g_print_preview_request_id_map.Get().Set(*id_, -1);
 }
 
 void PrintPreviewUI::OnPrintPreviewFailed(int request_id) {
+  OnCancelPendingPreviewRequest();
   handler_->OnPrintPreviewFailed(request_id);
 }
 
@@ -988,7 +990,7 @@ void PrintPreviewUI::OnClosePrintPreviewDialog() {
 void PrintPreviewUI::SetOptionsFromDocument(
     const mojom::OptionsFromDocumentParamsPtr params,
     int32_t request_id) {
-  if (request_id == -1)
+  if (ShouldCancelRequest(id_, request_id))
     return;
   handler_->SendPrintPresetOptions(params->is_scaling_disabled, params->copies,
                                    params->duplex, request_id);
@@ -1134,7 +1136,7 @@ void PrintPreviewUI::MetafileReadyForPrinting(
 void PrintPreviewUI::PrintPreviewFailed(int32_t document_cookie,
                                         int32_t request_id) {
   StopWorker(document_cookie);
-  if (request_id == -1)
+  if (ShouldCancelRequest(id_, request_id))
     return;
   OnPrintPreviewFailed(request_id);
 }
@@ -1143,7 +1145,7 @@ void PrintPreviewUI::PrintPreviewCancelled(int32_t document_cookie,
                                            int32_t request_id) {
   // Always need to stop the worker.
   StopWorker(document_cookie);
-  if (request_id == -1)
+  if (ShouldCancelRequest(id_, request_id))
     return;
   handler_->OnPrintPreviewCancelled(request_id);
 }
@@ -1151,7 +1153,7 @@ void PrintPreviewUI::PrintPreviewCancelled(int32_t document_cookie,
 void PrintPreviewUI::PrinterSettingsInvalid(int32_t document_cookie,
                                             int32_t request_id) {
   StopWorker(document_cookie);
-  if (request_id == -1)
+  if (ShouldCancelRequest(id_, request_id))
     return;
   handler_->OnInvalidPrinterSettings(request_id);
 }
