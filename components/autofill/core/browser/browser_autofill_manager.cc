@@ -1837,7 +1837,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // vector, which will be sent to the renderer.
     FillFieldWithValue(cached_field, profile_or_credit_card, &result.fields[i],
                        should_notify, optional_cvc ? *optional_cvc : kEmptyCvc,
-                       data_util::DetermineGroups(*form_structure),
+                       data_util::DetermineGroups(*form_structure), action,
                        &failure_to_fill);
     field_type_map[result.fields[i].global_id()] = field_type;
 
@@ -2374,9 +2374,10 @@ void BrowserAutofillManager::FillFieldWithValue(
     bool should_notify,
     const std::u16string& cvc,
     uint32_t profile_form_bitmask,
+    mojom::RendererFormDataAction action,
     std::string* failure_to_fill) {
   if (field_filler_.FillFormField(*autofill_field, profile_or_credit_card,
-                                  field_data, cvc, failure_to_fill)) {
+                                  field_data, cvc, action, failure_to_fill)) {
     if (failure_to_fill)
       *failure_to_fill = "Decided to fill";
     // Mark the cached field as autofilled, so that we can detect when a

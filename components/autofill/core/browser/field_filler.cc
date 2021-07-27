@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -805,6 +806,7 @@ bool FieldFiller::FillFormField(
         profile_or_credit_card,
     FormFieldData* field_data,
     const std::u16string& cvc,
+    mojom::RendererFormDataAction action,
     std::string* failure_to_fill) {
   const AutofillType type = field.Type();
 
@@ -824,6 +826,11 @@ bool FieldFiller::FillFormField(
 
     if (type.GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
       value = cvc;
+    } else if (type.GetStorableType() == CREDIT_CARD_NUMBER &&
+               action == mojom::RendererFormDataAction::kPreview) {
+      const CreditCard* credit_card =
+          absl::get<const CreditCard*>(profile_or_credit_card);
+      value = credit_card->ObfuscatedLastFourDigits();
     } else {
       value = absl::get<const CreditCard*>(profile_or_credit_card)
                   ->GetInfo(type, app_locale_);

@@ -603,6 +603,7 @@ class BrowserAutofillManager
       bool should_notify,
       const std::u16string& cvc,
       uint32_t profile_form_bitmask,
+      mojom::RendererFormDataAction action,
       std::string* failure_to_fill);
 
   // TODO(crbug/896689): Remove code duplication once experiment is finished.
