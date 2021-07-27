@@ -20,6 +20,7 @@ blink::xpath::EvaluationContext::node
 WTF::HashTableAddResult::container_
 WTF::HashTableAddResult::stored_value
 cast_channel::CastTransportTest::logger_
+content::IndexedDBDispatcherHost::indexed_db_context_
 
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
@@ -108,13 +109,16 @@ OpaqueBrowserFrameViewLayout::maximize_button_
 OpaqueBrowserFrameViewLayout::restore_button_
 OpaqueBrowserFrameViewLayout::close_button_
 
-# Populated manually - incompatibilities with tracing (TRACE_EVENT*) and
-# gmock/EXPECT_THAT.
+# Populated manually - incompatibilities with tracing (TRACE_EVENT*),
+# perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
 cc::GpuImageDecodeCache::dark_mode_filter_
 blink::scheduler::MainThreadSchedulerImpl::current_agent_group_scheduler_
 performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker_
 content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
 base::trace_event::MemoryDumpProviderInfo::name
+content::Navigationrequest::frame_tree_node_
+content::Navigationrequest::rfh_restored_from_back_forward_cache_
+scheduler::FrameSchedulerImpl::blame_context_
 
 # Populated manually - requires rewriting member pointer type
 courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::input
