@@ -420,6 +420,19 @@ void PermissionsUpdater::RevokeRuntimePermissions(
                         std::move(completion_callback));
 }
 
+void PermissionsUpdater::ApplyPolicyHostRestrictions(
+    const Extension& extension) {
+  ExtensionManagement* management =
+      ExtensionManagementFactory::GetForBrowserContext(browser_context_);
+  if (management->UsesDefaultPolicyHostRestrictions(&extension)) {
+    SetUsesDefaultHostRestrictions(&extension);
+  } else {
+    SetPolicyHostRestrictions(&extension,
+                              management->GetPolicyBlockedHosts(&extension),
+                              management->GetPolicyAllowedHosts(&extension));
+  }
+}
+
 void PermissionsUpdater::SetPolicyHostRestrictions(
     const Extension* extension,
     const URLPatternSet& runtime_blocked_hosts,
@@ -540,15 +553,7 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
   if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
     update_active_permissions = true;
     // Apply per-extension policy if set.
-    ExtensionManagement* management =
-        ExtensionManagementFactory::GetForBrowserContext(browser_context_);
-    if (!management->UsesDefaultPolicyHostRestrictions(extension)) {
-      SetPolicyHostRestrictions(extension,
-                                management->GetPolicyBlockedHosts(extension),
-                                management->GetPolicyAllowedHosts(extension));
-    } else {
-      SetUsesDefaultHostRestrictions(extension);
-    }
+    ApplyPolicyHostRestrictions(*extension);
   }
 
   SetPermissions(extension, std::move(granted_permissions),

@@ -530,11 +530,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Common helper to finish installing the given extension.
   void FinishInstallation(const Extension* extension);
 
-  // Sets the policy settings for the extension basically
-  // by delegating this to the permission_data_updater.
-  // Holds for default and policy settings.
-  void SetPolicySettingsForExtension(const Extension* extension);
-
   // Disables the extension if the privilege level has increased
   // (e.g., due to an upgrade).
   void CheckPermissionsIncrease(const Extension* extension,

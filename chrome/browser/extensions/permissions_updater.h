@@ -123,6 +123,10 @@ class PermissionsUpdater {
   void RemovePermissionsUnsafe(const Extension* extension,
                                const PermissionSet& permissions);
 
+  // Fetches the policy settings from the ExtensionManagement service and
+  // applies them to the extension.
+  void ApplyPolicyHostRestrictions(const Extension& extension);
+
   // Sets list of hosts |extension| may not interact with (overrides default).
   void SetPolicyHostRestrictions(const Extension* extension,
                                  const URLPatternSet& runtime_blocked_hosts,

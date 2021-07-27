@@ -1109,6 +1109,10 @@ void ExtensionService::RecordPermissionMessagesHistogram(
 // according to header file once diffs have settled down.
 void ExtensionService::PostActivateExtension(
     scoped_refptr<const Extension> extension) {
+  // Update policy permissions in case they were changed while extension was not
+  // active.
+  PermissionsUpdater(profile()).ApplyPolicyHostRestrictions(*extension);
+
   // TODO(kalman): Convert ExtensionSpecialStoragePolicy to a
   // BrowserContextKeyedService and use ExtensionRegistryObserver.
   profile_->GetExtensionSpecialStoragePolicy()->GrantRightsForExtension(
@@ -1191,7 +1195,7 @@ void ExtensionService::CheckManagementPolicy() {
       management->GetDefaultPolicyAllowedHosts());
 
   for (const auto& extension : registry_->enabled_extensions()) {
-    SetPolicySettingsForExtension(extension.get());
+    PermissionsUpdater(profile()).ApplyPolicyHostRestrictions(*extension);
   }
 
   // Loop through the disabled extension list, find extensions to re-enable
@@ -1842,19 +1846,6 @@ void ExtensionService::FinishInstallation(const Extension* extension) {
   // was not available.
   if (SharedModuleInfo::IsSharedModule(extension))
     MaybeFinishDelayedInstallations();
-}
-
-void ExtensionService::SetPolicySettingsForExtension(
-    const Extension* extension) {
-  ExtensionManagement* management =
-      ExtensionManagementFactory::GetForBrowserContext(profile());
-  if (management->UsesDefaultPolicyHostRestrictions(extension)) {
-    PermissionsUpdater(profile()).SetUsesDefaultHostRestrictions(extension);
-  } else {
-    PermissionsUpdater(profile()).SetPolicyHostRestrictions(
-        extension, management->GetPolicyBlockedHosts(extension),
-        management->GetPolicyAllowedHosts(extension));
-  }
 }
 
 const Extension* ExtensionService::GetPendingExtensionUpdate(

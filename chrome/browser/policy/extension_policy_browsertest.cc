@@ -2206,6 +2206,41 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
             extension_prefs->GetDisableReasons(kGoodCrxId));
 }
 
+// Verifies that policy host block/allow settings are applied even when
+// extension is disabled.
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionBlockedHostWhenDisabled) {
+  GURL test_url = GURL("http://www.google.com");
+  std::string* error = nullptr;
+  int tab_id = 1;
+
+  const extensions::Extension* extension = InstallExtension(kGoodCrxName);
+  ASSERT_TRUE(extension);
+  {
+    extensions::URLPatternSet new_hosts;
+    new_hosts.AddOrigin(URLPattern::SCHEME_ALL, test_url);
+    extension->permissions_data()->UpdateTabSpecificPermissions(
+        tab_id, extensions::PermissionSet(extensions::APIPermissionSet(),
+                                          extensions::ManifestPermissionSet(),
+                                          std::move(new_hosts),
+                                          extensions::URLPatternSet()));
+  }
+
+  ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
+
+  ASSERT_TRUE(
+      extension->permissions_data()->CanAccessPage(test_url, tab_id, error));
+
+  DisableExtension(extension->id());
+  {
+    extensions::ExtensionManagementPolicyUpdater pref(&provider_);
+    pref.AddPolicyBlockedHost(extension->id(), "*://*.google.com");
+  }
+  extension_service()->EnableExtension(extension->id());
+
+  EXPECT_FALSE(
+      extension->permissions_data()->CanAccessPage(test_url, tab_id, error));
+}
+
 // Similar to ExtensionPolicyTest but sets the WebAppInstallForceList policy
 // before the browser is started.
 class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
@@ -2482,10 +2517,10 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
     extensions::URLPatternSet new_hosts;
     new_hosts.AddOrigin(url_scheme, url);
     extension->permissions_data()->UpdateTabSpecificPermissions(
-        1, extensions::PermissionSet(extensions::APIPermissionSet(),
-                                     extensions::ManifestPermissionSet(),
-                                     std::move(new_hosts),
-                                     extensions::URLPatternSet()));
+        tab_id, extensions::PermissionSet(extensions::APIPermissionSet(),
+                                          extensions::ManifestPermissionSet(),
+                                          std::move(new_hosts),
+                                          extensions::URLPatternSet()));
   }
 
   MockConfigurationPolicyProvider* GetProfile1Policy() {
