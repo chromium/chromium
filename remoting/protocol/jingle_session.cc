@@ -75,6 +75,8 @@ ErrorCode AuthRejectionReasonToErrorCode(
       return SESSION_REJECTED;
     case Authenticator::REJECTED_BY_USER:
       return SESSION_REJECTED;
+    case Authenticator::AUTHZ_POLICY_CHECK_FAILED:
+      return AUTHZ_POLICY_CHECK_FAILED;
   }
   NOTREACHED();
   return UNKNOWN_ERROR;

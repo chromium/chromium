@@ -33,6 +33,7 @@
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/performance_tracker.h"
+#include "remoting/protocol/token_validator.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_renderer.h"
 #include "remoting/signaling/ftl_client_uuid_device_id_provider.h"
@@ -169,7 +170,7 @@ class ChromotingSession::Core : public ClientUserInterface,
   void HandleOnThirdPartyTokenFetched(
       const protocol::ThirdPartyTokenFetchedCallback& callback,
       const std::string& token,
-      const std::string& shared_secret);
+      const protocol::TokenValidator::ValidationResult& validation_result);
 
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner() {
     return runtime_->ui_task_runner();
@@ -626,13 +627,14 @@ void ChromotingSession::Core::FetchThirdPartyToken(
       [](scoped_refptr<AutoThreadTaskRunner> network_task_runner,
          base::WeakPtr<ChromotingSession::Core> core,
          const protocol::ThirdPartyTokenFetchedCallback& callback,
-         const std::string& token, const std::string& shared_secret) {
+         const std::string& token,
+         const protocol::TokenValidator::ValidationResult& validation_result) {
         DCHECK(!network_task_runner->BelongsToCurrentThread());
         network_task_runner->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &ChromotingSession::Core::HandleOnThirdPartyTokenFetched, core,
-                callback, token, shared_secret));
+                callback, token, validation_result));
       },
       network_task_runner(), GetWeakPtr(), token_fetched_callback);
 
@@ -646,12 +648,12 @@ void ChromotingSession::Core::FetchThirdPartyToken(
 void ChromotingSession::Core::HandleOnThirdPartyTokenFetched(
     const protocol::ThirdPartyTokenFetchedCallback& callback,
     const std::string& token,
-    const std::string& shared_secret) {
+    const protocol::TokenValidator::ValidationResult& validation_result) {
   DCHECK(network_task_runner()->BelongsToCurrentThread());
 
   logger_->SetAuthMethod(ChromotingEvent::AuthMethod::THIRD_PARTY);
 
-  callback.Run(token, shared_secret);
+  callback.Run(token, validation_result);
 }
 
 // ChromotingSession implementation.

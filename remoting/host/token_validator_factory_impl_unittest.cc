@@ -23,6 +23,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/test_rsa_key_pair.h"
+#include "remoting/protocol/token_validator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -94,18 +95,25 @@ class TokenValidatorFactoryImplTest : public testing::Test {
     net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
 
-  void SuccessCallback(const std::string& shared_secret) {
-    EXPECT_FALSE(shared_secret.empty());
+  void SuccessCallback(
+      const protocol::TokenValidator::ValidationResult& validation_result) {
+    EXPECT_TRUE(validation_result.is_success());
+    EXPECT_FALSE(validation_result.is_error());
+    EXPECT_TRUE(!validation_result.success().empty());
     run_loop_.QuitWhenIdle();
   }
 
-  void FailureCallback(const std::string& shared_secret) {
-    EXPECT_TRUE(shared_secret.empty());
+  void FailureCallback(
+      const protocol::TokenValidator::ValidationResult& validation_result) {
+    EXPECT_TRUE(validation_result.is_error());
+    EXPECT_FALSE(validation_result.is_success());
     run_loop_.QuitWhenIdle();
   }
 
-  void DeleteOnFailureCallback(const std::string& shared_secret) {
-    EXPECT_TRUE(shared_secret.empty());
+  void DeleteOnFailureCallback(
+      const protocol::TokenValidator::ValidationResult& validation_result) {
+    EXPECT_TRUE(validation_result.is_error());
+    EXPECT_FALSE(validation_result.is_success());
     token_validator_.reset();
     run_loop_.QuitWhenIdle();
   }

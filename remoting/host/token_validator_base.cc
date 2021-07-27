@@ -35,13 +35,20 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "remoting/base/logging.h"
+#include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
 
+namespace remoting {
+
 namespace {
+
+using RejectionReason = protocol::Authenticator::RejectionReason;
 
 constexpr int kBufferSize = 4096;
 constexpr char kCertIssuerWildCard[] = "*";
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
+constexpr char kForbiddenExceptionToken[] = "ForbiddenException: ";
+constexpr char kAuthzDeniedErrorCode[] = "Error Code 23:";
 
 // Returns a value from the issuer field for certificate selection, in order of
 // preference.  If the O or OU entries are populated with multiple values, we
@@ -107,8 +114,6 @@ HCERTSTORE OpenLocalMachineCertStore() {
 
 }  // namespace
 
-namespace remoting {
-
 TokenValidatorBase::TokenValidatorBase(
     const ThirdPartyAuthConfig& third_party_auth_config,
     const std::string& token_scope,
@@ -126,8 +131,7 @@ TokenValidatorBase::~TokenValidatorBase() = default;
 // TokenValidator interface.
 void TokenValidatorBase::ValidateThirdPartyToken(
     const std::string& token,
-    base::OnceCallback<void(const std::string& shared_secret)>
-        on_token_validated) {
+    TokenValidatedCallback on_token_validated) {
   DCHECK(!request_);
   DCHECK(!on_token_validated.is_null());
 
@@ -175,9 +179,9 @@ void TokenValidatorBase::OnReadCompleted(net::URLRequest* source,
     return;
 
   retrying_request_ = false;
-  std::string shared_token = ProcessResponse(net_result);
+  auto validation_result = ProcessResponse(net_result);
   request_.reset();
-  std::move(on_token_validated_).Run(shared_token);
+  std::move(on_token_validated_).Run(validation_result);
 }
 
 void TokenValidatorBase::OnReceivedRedirect(
@@ -278,18 +282,35 @@ bool TokenValidatorBase::IsValidScope(const std::string& token_scope) {
   return token_scope == token_scope_;
 }
 
-std::string TokenValidatorBase::ProcessResponse(int net_result) {
+protocol::TokenValidator::ValidationResult TokenValidatorBase::ProcessResponse(
+    int net_result) {
   // Verify that we got a successful response.
   if (net_result != net::OK) {
     LOG(ERROR) << "Error validating token, err=" << net_result;
-    return std::string();
+    return RejectionReason::INVALID_CREDENTIALS;
   }
 
   int response = request_->GetResponseCode();
   if (response != 200) {
     LOG(ERROR) << "Error " << response << " validating token: '" << data_
                << "'";
-    return std::string();
+    // If we receive a 403, check to see if we can extract an error reason from
+    // the response. This isn't ideal but for error cases we don't receive a
+    // structured response so we need to inspect the response data. The error
+    // retrieved is used to provide some guidance on how to rectify the issue to
+    // the client user, it won't affect the outcome of this connection attempt.
+    if (response == 403) {
+      // The received response can have quite a bit of cruft before the error
+      // so seek forward to the exception info and then scan it for the code.
+      size_t start_pos = data_.find(kForbiddenExceptionToken);
+      if (start_pos != std::string::npos) {
+        if (data_.find(kAuthzDeniedErrorCode, start_pos) != std::string::npos) {
+          return RejectionReason::AUTHZ_POLICY_CHECK_FAILED;
+        }
+      }
+    }
+
+    return RejectionReason::INVALID_CREDENTIALS;
   }
 
   // Decode the JSON data from the response.
@@ -303,19 +324,23 @@ std::string TokenValidatorBase::ProcessResponse(int net_result) {
   absl::optional<base::Value> value = base::JSONReader::Read(responseData);
   if (!value || !value->is_dict()) {
     LOG(ERROR) << "Invalid token validation response: '" << data_ << "'";
-    return std::string();
+    return RejectionReason::INVALID_CREDENTIALS;
   }
 
   std::string* token_scope = value->FindStringKey("scope");
   if (!token_scope || !IsValidScope(*token_scope)) {
     LOG(ERROR) << "Invalid scope: '" << *token_scope << "', expected: '"
                << token_scope_ << "'.";
-    return std::string();
+    return RejectionReason::INVALID_CREDENTIALS;
   }
 
   // Everything is valid, so return the shared secret to the caller.
   std::string* shared_secret = value->FindStringKey("access_token");
-  return shared_secret ? *shared_secret : std::string();
+  if (shared_secret && !shared_secret->empty()) {
+    return *shared_secret;
+  }
+
+  return RejectionReason::INVALID_CREDENTIALS;
 }
 
 }  // namespace remoting
