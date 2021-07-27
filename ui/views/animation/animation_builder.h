@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_EXAMPLES_ANIMATION_BUILDER_H_
-#define UI_VIEWS_EXAMPLES_ANIMATION_BUILDER_H_
+#ifndef UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
+#define UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_
 
 #include <map>
 #include <memory>
 #include <vector>
 
 #include "ui/views/view.h"
+#include "ui/views/views_export.h"
 
 namespace ui {
 class LayerAnimationSequence;
@@ -20,9 +21,7 @@ namespace views {
 
 // This AnimationBuilder API is currently in the experimental phase and only
 // used within ui/views/examples/.
-// This class should eventually be moved out of ui/views/examples/ if we proceed
-// with this implementation.
-class AnimationBuilder {
+class VIEWS_EXPORT AnimationBuilder {
  public:
   AnimationBuilder();
   ~AnimationBuilder();
@@ -55,4 +54,4 @@ class AnimationBuilder {
 };
 }  // namespace views
 
-#endif  // UI_VIEWS_EXAMPLES_ANIMATION_BUILDER_H_
+#endif  // UI_VIEWS_ANIMATION_ANIMATION_BUILDER_H_

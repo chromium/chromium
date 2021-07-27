@@ -21,9 +21,9 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
-#include "ui/views/examples/animation_builder.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
@@ -167,6 +167,8 @@ void AnimationExample::CreateExampleView(View* container) {
     gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
     AnimationBuilder b;
     for (auto* view : container->children()) {
+      // Property setting calls on the builder would be replaced with
+      // view->SetOpacity(..) after animation integration with view::View class
       b.SetDuration(base::TimeDelta::FromSeconds(10))
           .SetRoundedCorners(view, rounded_corners)
           .StartSequence()

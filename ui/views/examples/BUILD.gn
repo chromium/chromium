@@ -11,8 +11,6 @@ component("views_examples_lib") {
   testonly = true
 
   sources = [
-    "animation_builder.cc",
-    "animation_builder.h",
     "animation_example.cc",
     "animation_example.h",
     "ax_example.cc",
