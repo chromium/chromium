@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/message_center_ash.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -17,16 +16,10 @@ namespace settings {
 
 class AppNotificationHandler
     : public app_notification::mojom::AppNotificationsHandler,
-      public ::settings::SettingsPageUIHandler,
       public ash::MessageCenterAsh::Observer {
  public:
   AppNotificationHandler();
   ~AppNotificationHandler() override;
-
-  // SettingsPageUIHandler:
-  void RegisterMessages() override {}
-  void OnJavascriptAllowed() override {}
-  void OnJavascriptDisallowed() override {}
 
   // app_notification::mojom::AppNotificationHandler:
   void AddObserver(
