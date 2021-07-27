@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL self.reportError(1) self.reportError is not a function
+FAIL self.reportError(TypeError) self.reportError is not a function
+FAIL self.reportError(undefined) self.reportError is not a function
+PASS self.reportError() (without arguments) throws
+Harness: the test ran to completion.
+

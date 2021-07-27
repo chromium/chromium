@@ -278398,7 +278398,15 @@
          ]
         }
        }
-      }
+      },
+      "reporterror.any-expected.txt": [
+       "b5403a67242349fdef7622b5ab765036e0f39627",
+       []
+      ],
+      "reporterror.any.worker-expected.txt": [
+       "b5403a67242349fdef7622b5ab765036e0f39627",
+       []
+      ]
      },
      "structured-clone": {
       "structured-clone-battery-of-tests-harness.js": [
@@ -431360,7 +431368,18 @@
          {}
         ]
        ]
-      }
+      },
+      "reporterror.any.js": [
+       "080aa075d558bbdea4d1aa5f23e07165c5faf97d",
+       [
+        "html/webappapis/scripting/reporterror.any.html",
+        {}
+       ],
+       [
+        "html/webappapis/scripting/reporterror.any.worker.html",
+        {}
+       ]
+      ]
      },
      "system-state-and-capabilities": {
       "the-navigator-object": {
