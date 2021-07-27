@@ -404,11 +404,12 @@ TEST_F(MetricProviderSyncSettingsTest, NoLoadedUserProfile) {
       TestMetricProvider::RecordAttemptStatus::kNoLoadedProfile, 1);
 }
 
-TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncEnabled) {
+TEST_F(MetricProviderSyncSettingsTest, SettingsCategorizationAppSyncEnabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, both with OS App Sync enabled. The Default
   // profile has OS App Sync disabled but is skipped.
@@ -433,11 +434,12 @@ TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncEnabled) {
       TestMetricProvider::RecordAttemptStatus::kAppSyncEnabled, 1);
 }
 
-TEST_F(MetricProviderSyncSettingsTest, SplitSettingsAppSyncDisabled) {
+TEST_F(MetricProviderSyncSettingsTest, SettingsCategorizationAppSyncDisabled) {
   base::HistogramTester histogram_tester;
   std::vector<SampledProfile> stored_profiles;
   metric_provider_->OnUserLoggedIn();
-  feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  feature_list_.InitAndEnableFeature(
+      chromeos::features::kSyncSettingsCategorization);
 
   // Set up two testing profiles, one with OS App Sync enabled and the other
   // disabled.
