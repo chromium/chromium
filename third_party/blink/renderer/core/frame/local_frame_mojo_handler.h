@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
@@ -56,6 +57,8 @@ class LocalFrameMojoHandler
   }
 
   mojom::blink::ReportingServiceProxy* ReportingService();
+  mojom::blink::BackForwardCacheControllerHost&
+  BackForwardCacheControllerHostRemote();
 
 #if defined(OS_MAC)
   mojom::blink::TextInputHost& TextInputHost();
@@ -225,6 +228,9 @@ class LocalFrameMojoHandler
   void RequestFullscreenVideoElement() final;
 
   Member<blink::LocalFrame> frame_;
+
+  HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
+      back_forward_cache_controller_host_remote_{nullptr};
 
 #if defined(OS_MAC)
   HeapMojoRemote<mojom::blink::TextInputHost> text_input_host_{nullptr};

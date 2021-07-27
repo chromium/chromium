@@ -317,6 +317,9 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
 
 LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
     : frame_(frame) {
+  frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
+          frame.GetTaskRunner(TaskType::kInternalDefault)));
 #if defined(OS_MAC)
   // It should be bound before accessing TextInputHost which is the interface to
   // respond to GetCharacterIndexAtPoint.
@@ -344,6 +347,7 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
 
 void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(back_forward_cache_controller_host_remote_);
 #if defined(OS_MAC)
   visitor->Trace(text_input_host_);
 #endif
@@ -372,6 +376,11 @@ void LocalFrameMojoHandler::DidDetachFrame() {
 
 void LocalFrameMojoHandler::ClosePageForTesting() {
   ClosePage(base::DoNothing());
+}
+
+mojom::blink::BackForwardCacheControllerHost&
+LocalFrameMojoHandler::BackForwardCacheControllerHostRemote() {
+  return *back_forward_cache_controller_host_remote_.get();
 }
 
 #if defined(OS_MAC)

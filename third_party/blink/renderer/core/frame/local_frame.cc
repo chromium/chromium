@@ -326,9 +326,6 @@ void LocalFrame::Init(Frame* opener,
 
   CoreInitializer::GetInstance().InitLocalFrame(*this);
 
-  GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
-          GetTaskRunner(blink::TaskType::kInternalDefault)));
   GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   DCHECK(!mojo_handler_);
@@ -421,7 +418,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
-  visitor->Trace(back_forward_cache_controller_host_remote_);
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
@@ -2813,7 +2809,7 @@ mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() const {
 
 mojom::blink::BackForwardCacheControllerHost&
 LocalFrame::GetBackForwardCacheControllerHostRemote() {
-  return *back_forward_cache_controller_host_remote_.get();
+  return mojo_handler_->BackForwardCacheControllerHostRemote();
 }
 
 void LocalFrame::NotifyUserActivation(

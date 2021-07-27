@@ -43,7 +43,7 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
@@ -891,9 +891,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
   std::unique_ptr<WebPrescientNetworking> prescient_networking_;
 
-  // LocalFrame can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
-      back_forward_cache_controller_host_remote_{nullptr};
   Member<LocalFrameMojoHandler> mojo_handler_;
 
   // Variable to control burst of download requests.
