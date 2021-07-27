@@ -1153,10 +1153,6 @@ bool V4LocalDatabaseManager::AreAllStoresAvailableNow(
   } else if (!v4_database_->AreAllStoresAvailable(stores_to_check)) {
     result = StoreAvailabilityResult::STORE_UNAVAILABLE;
   }
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.V4LocalDatabaseManager.AreAllStoresAvailableNow", result,
-      StoreAvailabilityResult::COUNT);
   return (result == StoreAvailabilityResult::AVAILABLE);
 }
 
