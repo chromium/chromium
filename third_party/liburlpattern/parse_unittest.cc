@@ -76,10 +76,30 @@ TEST(ParseTest, FixedInGroup) {
   RunParseTest("{/foo}", expected_parts);
 }
 
+TEST(ParseTest, FixedAndFixedInGroup) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
+  };
+  RunParseTest("/{foo}", expected_parts);
+}
+
+TEST(ParseTest, FixedInGroupAndFixed) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
+  };
+  RunParseTest("{/}foo", expected_parts);
+}
+
+TEST(ParseTest, FixedInGroupAndFixedInGroup) {
+  std::vector<Part> expected_parts = {
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
+  };
+  RunParseTest("{/}{foo}", expected_parts);
+}
+
 TEST(ParseTest, FixedAndEmptyGroup) {
   std::vector<Part> expected_parts = {
-      Part(PartType::kFixed, "/f", Modifier::kNone),
-      Part(PartType::kFixed, "oo", Modifier::kNone),
+      Part(PartType::kFixed, "/foo", Modifier::kNone),
   };
   RunParseTest("/f{}oo", expected_parts);
 }

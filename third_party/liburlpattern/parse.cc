@@ -136,6 +136,23 @@ class State {
       }
     }
 
+    // If this is a `{ ... }` grouping containing only fixed text, then
+    // just add it to our pending value for now.  We want to collect as
+    // much fixed text as possible in the buffer before commiting it to
+    // a kFixed Part.
+    if (!name_token && !regex_or_wildcard_token &&
+        modifier == Modifier::kNone) {
+      AppendToPendingFixedValue(prefix);
+      return absl::OkStatus();
+    }
+
+    // We are about to add some kind of matching group Part to the list.
+    // Before doing that make sure to flush any pending fixed test to a
+    // kFixed Part.
+    absl::Status status = MaybeAddPartFromPendingFixedValue();
+    if (!status.ok())
+      return status;
+
     // If there is no name, regex, or wildcard tokens then this is just a fixed
     // string grouping; e.g. "{foo}?".  The fixed string ends up in the prefix
     // value since it consumed the entire text of the grouping.  If the prefix
@@ -324,11 +341,9 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
     }
 
     // There was not a kChar or kEscapedChar token, so we no we are at the end
-    // of any fixed string.  Therefore convert the pending fixed value into a
-    // kFixed Part now.
-    absl::Status status = state.MaybeAddPartFromPendingFixedValue();
-    if (!status.ok())
-      return status;
+    // of any fixed string.  Do not yet convert the pending fixed value into
+    // a kFixedPart, though.  Its possible there will be further fixed text in
+    // a `{ ... }` group, etc.
 
     // Look for the sequence:
     //
@@ -362,13 +377,19 @@ absl::StatusOr<Pattern> Parse(absl::string_view pattern,
 
       const Token* modifier_token = state.TryConsumeModifier();
 
-      status =
+      absl::Status status =
           state.AddPart(std::move(prefix), name_token, regex_or_wildcard_token,
                         std::move(suffix), modifier_token);
       if (!status.ok())
         return status;
       continue;
     }
+
+    // We are about to end the pattern string, so flush any pending text to
+    // a kFixed Part.
+    absl::Status status = state.MaybeAddPartFromPendingFixedValue();
+    if (!status.ok())
+      return status;
 
     // We didn't find any tokens allowed by the syntax, so we should be
     // at the end of the token list.  If there is a syntax error, this
