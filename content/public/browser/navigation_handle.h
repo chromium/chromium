@@ -498,6 +498,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns whether this navigation is currently deferred.
   virtual bool IsDeferredForTesting() = 0;
+  virtual bool IsCommitDeferringConditionDeferredForTesting() = 0;
 };
 
 }  // namespace content
