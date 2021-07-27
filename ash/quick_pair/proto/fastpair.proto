@@ -379,8 +379,16 @@ message GetObservedDeviceResponse {
   // The image icon that shows in the notification
   bytes image = 3;
 
-  // Strings to be displayed on notifications during the pairing process.
-  ObservedDeviceStrings strings = 4;
+  // NOTE: On Chrome OS the required string translations are included in the
+  // system image and we do not use the ObservedDeviceStrings provided by this
+  // API.  To save space in-memory, this is left off the proto definition.
+  // ObservedDeviceStrings strings = 4;
 
   reserved 2;
+  reserved 4;
+}
+
+// Device metadata used to load cache of popular devices.
+message GetObservedDeviceResponses {
+  repeated GetObservedDeviceResponse responses = 1;
 }
