@@ -9005,8 +9005,7 @@ void RenderFrameHostImpl::BindIdleManager(
     return;
   }
 
-  idle_manager_->CreateService(std::move(receiver),
-                               GetMainFrame()->GetLastCommittedOrigin());
+  idle_manager_->CreateService(std::move(receiver));
   OnSchedulerTrackedFeatureUsed(
       blink::scheduler::WebSchedulerTrackedFeature::kIdleManager);
 }

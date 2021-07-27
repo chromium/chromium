@@ -42,11 +42,10 @@ IdleManagerImpl::~IdleManagerImpl() {
 }
 
 void IdleManagerImpl::CreateService(
-    mojo::PendingReceiver<blink::mojom::IdleManager> receiver,
-    const url::Origin& origin) {
+    mojo::PendingReceiver<blink::mojom::IdleManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receivers_.Add(this, std::move(receiver), origin);
+  receivers_.Add(this, std::move(receiver));
 }
 
 void IdleManagerImpl::SetIdleOverride(
@@ -71,8 +70,7 @@ void IdleManagerImpl::AddMonitor(
     return;
   }
 
-  const url::Origin& origin = receivers_.current_context();
-  if (!HasPermission(origin)) {
+  if (!HasPermission()) {
     std::move(callback).Run(IdleManagerError::kPermissionDisabled, nullptr);
     return;
   }
@@ -97,12 +95,13 @@ void IdleManagerImpl::AddMonitor(
                           std::move(response_state));
 }
 
-bool IdleManagerImpl::HasPermission(const url::Origin& origin) {
+bool IdleManagerImpl::HasPermission() {
   PermissionController* permission_controller =
       render_frame_host_->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
-  PermissionStatus status = permission_controller->GetPermissionStatus(
-      PermissionType::IDLE_DETECTION, origin.GetURL(), origin.GetURL());
+  PermissionStatus status = permission_controller->GetPermissionStatusForFrame(
+      PermissionType::IDLE_DETECTION, render_frame_host_,
+      render_frame_host_->GetMainFrame()->GetLastCommittedURL().GetOrigin());
   return status == PermissionStatus::GRANTED;
 }
 

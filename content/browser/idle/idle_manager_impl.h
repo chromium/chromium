@@ -32,8 +32,7 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   IdleManagerImpl(const IdleManagerImpl&) = delete;
   IdleManagerImpl& operator=(const IdleManagerImpl&) = delete;
 
-  void CreateService(mojo::PendingReceiver<blink::mojom::IdleManager> receiver,
-                     const url::Origin& origin);
+  void CreateService(mojo::PendingReceiver<blink::mojom::IdleManager> receiver);
 
   // blink.mojom.IdleManager:
   void AddMonitor(base::TimeDelta threshold,
@@ -46,8 +45,8 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
 
  private:
   // Check permission controller to see if the notification permission is
-  // enabled for the origin.
-  bool HasPermission(const url::Origin&);
+  // enabled for this frame.
+  bool HasPermission();
 
   // Called internally when a monitor's pipe closes to remove it from
   // |monitors_|.
@@ -67,7 +66,7 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   RenderFrameHost* const render_frame_host_;
 
   // Registered clients.
-  mojo::ReceiverSet<blink::mojom::IdleManager, url::Origin> receivers_;
+  mojo::ReceiverSet<blink::mojom::IdleManager> receivers_;
 
   // Owns Monitor instances, added when clients call AddMonitor().
   base::LinkedList<IdleMonitor> monitors_;
