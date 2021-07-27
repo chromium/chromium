@@ -26,6 +26,9 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/test/widget_test_api.h"
 
@@ -99,7 +102,44 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
 
   histogram_tester()->ExpectUniqueSample(
       "Privacy.AccuracyTip.AccuracyTipInteraction",
-      AccuracyTipUI::Interaction::kIgnorePressed, 1);
+      AccuracyTipUI::Interaction::kClosed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  EXPECT_TRUE(IsUIShowing());
+
+  auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
+  // Simulate esc key pressed.
+  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
+  view->GetWidget()->OnKeyEvent(&key_event);
+  waiter.Wait();
+  EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipUI::Interaction::kClosed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
+  ui_test_utils::NavigateToURL(browser(), GetUrl("badurl.com"));
+  EXPECT_TRUE(IsUIShowing());
+
+  auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+
+  views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
+  // Simulate click on opt out button.
+  auto* button = static_cast<views::Button*>(view->GetExtraView());
+  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(button).NotifyClick(event);
+  waiter.Wait();
+  EXPECT_FALSE(IsUIShowing());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Privacy.AccuracyTip.AccuracyTipInteraction",
+      AccuracyTipUI::Interaction::kOptOutPressed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {

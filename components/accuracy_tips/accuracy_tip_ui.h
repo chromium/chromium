@@ -28,18 +28,14 @@ class AccuracyTipUI {
   // numeric values should never be reused.
   enum class Interaction {
     kNoAction = 0,
-    // Closed because user clicked outside the UI.
-    kLostFocus = 1,
-    // Pressed ESC or close button.
-    kClosed = 2,
-    // Ignore button pressed.
-    kIgnorePressed = 3,
-    // Opt out button pressed.
-    kOptOutPressed = 4,
     // Learn more button pressed.
-    kLearnMorePressed = 5,
+    kLearnMorePressed = 1,
+    // Opt out button pressed.
+    kOptOutPressed = 2,
+    // Pressed ESC or close button.
+    kClosed = 3,
     // Logged when the UI was not actually shown.
-    kDisabledByExperiment = 6,
+    kDisabledByExperiment = 4,
 
     kMaxValue = kDisabledByExperiment,
   };

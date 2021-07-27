@@ -1143,12 +1143,10 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="AccuracyTipInteraction">
   <int value="0" label="kNoAction"/>
-  <int value="1" label="kLostFocus"/>
-  <int value="2" label="kClosed"/>
-  <int value="3" label="kIgnorePressed"/>
-  <int value="4" label="kOptOutPressed"/>
-  <int value="5" label="kLearnMorePressed"/>
-  <int value="6" label="kDisabledByExperiment"/>
+  <int value="1" label="kLearnMorePressed"/>
+  <int value="2" label="kOptOutPressed"/>
+  <int value="3" label="kClosed"/>
+  <int value="4" label="kDisabledByExperiment"/>
 </enum>
 
 <enum name="AccuracyTipStatus">

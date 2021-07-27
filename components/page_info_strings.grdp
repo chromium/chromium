@@ -74,6 +74,9 @@
   <message name="IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON" desc="Text of button to close the accuracy tip page info bubble.">
     Ignore
   </message>
+  <message name="IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON" desc="Text of button to close the accuracy tip page info bubble and not show it again.">
+    Don't show again
+  </message>
 
   <!-- Viewing file strings -->
   <message name="IDS_PAGE_INFO_FILE_PAGE" desc="Message to display in the page info bubble when the page the user has navigated to is a file:// page">

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/accuracy_tip_bubble_view.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/platform_util.h"
@@ -26,6 +28,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -36,6 +39,8 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ClosedReason = views::Widget::ClosedReason;
 
 // The icon size is actually 16, but the vector icons being used generally all
 // have additional internal padding. Account for this difference by asking for
@@ -91,21 +96,26 @@ AccuracyTipBubbleView::AccuracyTipBubbleView(
                              web_contents),
       close_callback_(std::move(close_callback)) {
   DCHECK(status == accuracy_tips::AccuracyTipStatus::kShowAccuracyTip);
-
-  views::BubbleDialogDelegateView::CreateBubble(this);
+  set_close_on_deactivate(false);
 
   SetTitle(l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_TITLE));
 
   // Configure buttons.
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(ui::DIALOG_BUTTON_OK);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_LEARN_MORE_BUTTON));
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_IGNORE_BUTTON));
   SetAcceptCallback(base::BindRepeating(&AccuracyTipBubbleView::OpenHelpCenter,
                                         base::Unretained(this)));
+
+  SetExtraView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&AccuracyTipBubbleView::OnDontShowAgainClicked,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_ACCURACY_TIP_OPT_OUT_BUTTON)));
+
+  // The extra view doesn't seem to work if CreateBubble is already called and
+  // SetHeaderView can only be called afterwards...
+  views::BubbleDialogDelegateView::CreateBubble(this);
 
   // Configure header view.
   auto& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -151,36 +161,43 @@ AccuracyTipBubbleView::~AccuracyTipBubbleView() = default;
 void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
+  // There can either be an action already specified or a closed_reason.
+  DCHECK(!(action_taken_ != AccuracyTipUI::Interaction::kNoAction &&
+           widget->closed_reason() != ClosedReason::kUnspecified));
+
   switch (widget->closed_reason()) {
-    case views::Widget::ClosedReason::kUnspecified:
+    case ClosedReason::kUnspecified:
       // Do not modify action_taken_.  This may correspond to the
       // WebContentsObserver functions below, in which case a more explicit
       // action_taken_ may be set. Otherwise, keep default of kNoAction.
       break;
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
+    case ClosedReason::kAcceptButtonClicked:
       action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
       break;
-    case views::Widget::ClosedReason::kCancelButtonClicked:
-      action_taken_ = AccuracyTipUI::Interaction::kIgnorePressed;
-      break;
-    case views::Widget::ClosedReason::kLostFocus:
-      action_taken_ = AccuracyTipUI::Interaction::kLostFocus;
-      break;
-    case views::Widget::ClosedReason::kEscKeyPressed:
-    case views::Widget::ClosedReason::kCloseButtonClicked:
+    case ClosedReason::kEscKeyPressed:
+    case ClosedReason::kCloseButtonClicked:
+    case ClosedReason::kCancelButtonClicked:
       action_taken_ = AccuracyTipUI::Interaction::kClosed;
+      break;
+    case ClosedReason::kLostFocus:
+      NOTREACHED();
       break;
   }
   std::move(close_callback_).Run(action_taken_);
 }
 
 void AccuracyTipBubbleView::OpenHelpCenter() {
-  action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
   // TODO(crbug.com/1210891): Add link to the right info page.
+  action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
   web_contents()->OpenURL(content::OpenURLParams(
       GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
       false /*is_renderer_initiated*/));
+}
+
+void AccuracyTipBubbleView::OnDontShowAgainClicked() {
+  action_taken_ = AccuracyTipUI::Interaction::kOptOutPressed;
+  GetWidget()->Close();
 }
 
 void AccuracyTipBubbleView::DidStartNavigation(

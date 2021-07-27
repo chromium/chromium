@@ -52,6 +52,7 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
 
  private:
   void OpenHelpCenter();
+  void OnDontShowAgainClicked();
 
   // WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;
