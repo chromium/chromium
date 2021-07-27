@@ -12,6 +12,8 @@ import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
 } from '../../../device/constraints_preferrer.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../../../device/stream_constraints.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceOperator} from '../../../mojo/device_operator.js';
@@ -78,7 +80,7 @@ class ModeConfig {
   /**
    * Get general stream constraints of this mode for fake cameras.
    * @param {?string} deviceId
-   * @return {!Array<!MediaStreamConstraints>}
+   * @return {!Array<!StreamConstraints>}
    * @abstract
    */
   getConstraintsForFakeCamera(deviceId) {}
@@ -149,28 +151,27 @@ export class Modes {
      * Returns a set of general constraints for fake cameras.
      * @param {boolean} videoMode Is getting constraints for video mode.
      * @param {string} deviceId Id of video device.
-     * @return {!Array<!MediaStreamConstraints>} Result of
+     * @return {!Array<!StreamConstraints>} Result of
      *     constraints-candidates.
      */
     const getConstraintsForFakeCamera = function(videoMode, deviceId) {
-      const audio = videoMode ? {echoCancellation: false} : false;
       const frameRate = {min: 20, ideal: 30};
       return [
         {
-          audio,
+          deviceId,
+          audio: videoMode,
           video: {
             aspectRatio: {ideal: videoMode ? 1.7777777778 : 1.3333333333},
             width: {min: 1280},
             frameRate,
-            deviceId: {exact: deviceId},
           },
         },
         {
-          audio,
+          deviceId,
+          audio: videoMode,
           video: {
             width: {min: 640},
             frameRate,
-            deviceId: {exact: deviceId},
           },
         },
       ];

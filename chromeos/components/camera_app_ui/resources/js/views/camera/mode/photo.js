@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof, assertString} from '../../../chrome_util.js';
+import {assertInstanceof} from '../../../chrome_util.js';
 import {reportError} from '../../../error.js';
 import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
@@ -255,7 +255,7 @@ export class PhotoBaseFactory extends ModeFactory {
     this.captureResolution_ = resolution;
     const deviceOperator = await DeviceOperator.getInstance();
     if (deviceOperator !== null) {
-      const deviceId = assertString(constraints.video.deviceId.exact);
+      const deviceId = constraints.deviceId;
       await deviceOperator.setCaptureIntent(
           deviceId, cros.mojom.CaptureIntent.STILL_CAPTURE);
       await deviceOperator.setStillCaptureResolution(

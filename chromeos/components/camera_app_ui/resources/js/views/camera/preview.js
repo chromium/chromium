@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof} from '../../chrome_util.js';
+import {
+  StreamConstraints,  // eslint-disable-line no-unused-vars
+  toMediaStreamConstraints,
+} from '../../device/stream_constraints.js';
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import {FaceOverlay} from '../../face.js';
@@ -88,7 +92,7 @@ export class Preview {
     this.vidPid_ = null;
 
     /**
-     * @type {?MediaStreamConstraints}
+     * @type {?StreamConstraints}
      * @private
      */
     this.constraints_ = null;
@@ -141,7 +145,7 @@ export class Preview {
   }
 
   /**
-   * @return {!MediaStreamConstraints}
+   * @return {!StreamConstraints}
    */
   getConstraits() {
     assert(this.constraints_ !== null);
@@ -228,12 +232,13 @@ export class Preview {
 
   /**
    * Opens preview stream.
-   * @param {!MediaStreamConstraints} constraints Constraints of preview stream.
+   * @param {!StreamConstraints} constraints Constraints of preview stream.
    * @return {!Promise<!MediaStream>} Promise resolved to opened preview stream.
    */
   async open(constraints) {
     this.constraints_ = constraints;
-    this.stream_ = await navigator.mediaDevices.getUserMedia(constraints);
+    this.stream_ = await navigator.mediaDevices.getUserMedia(
+        toMediaStreamConstraints(constraints));
     try {
       await this.setSource_(this.stream_);
       // Use a watchdog since the stream.onended event is unreliable in the

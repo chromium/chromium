@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {
-  assert,
-  assertString,
-} from '../../../chrome_util.js';
+import {assert} from '../../../chrome_util.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {
   CaptureStream,  // eslint-disable-line no-unused-vars
   StreamManager,
@@ -34,7 +33,6 @@ import {
   NoChunkError,
   PerfEvent,
   Resolution,
-  ResolutionList,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
 import {WaitableEvent} from '../../../waitable_event.js';
 
@@ -175,7 +173,7 @@ export class VideoHandler {
 export class Video extends ModeBase {
   /**
    * @param {!MediaStream} stream Preview stream.
-   * @param {?MediaStreamConstraints} captureConstraints
+   * @param {?StreamConstraints} captureConstraints
    * @param {?Resolution} captureResolution
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
@@ -184,7 +182,7 @@ export class Video extends ModeBase {
     super(stream, facing);
 
     /**
-     * @const {?MediaStreamConstraints}
+     * @const {?StreamConstraints}
      * @private
      */
     this.captureConstraints_ = captureConstraints;
@@ -552,7 +550,7 @@ export class VideoFactory extends ModeFactory {
     this.handler_ = handler;
 
     /**
-     * @type {?MediaStreamConstraints}
+     * @type {?StreamConstraints}
      * @private
      */
     this.captureConstraints_ = null;
@@ -565,9 +563,9 @@ export class VideoFactory extends ModeFactory {
     this.captureResolution_ = resolution;
     if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
       this.captureConstraints_ = {
+        deviceId: constraints.deviceId,
         audio: constraints.audio,
         video: {
-          deviceId: constraints.video.deviceId,
           frameRate: constraints.video.frameRate,
         },
       };
@@ -581,7 +579,7 @@ export class VideoFactory extends ModeFactory {
     if (deviceOperator === null) {
       return;
     }
-    const deviceId = assertString(constraints.video.deviceId.exact);
+    const deviceId = constraints.deviceId;
     await deviceOperator.setCaptureIntent(
         deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
 

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from '../../../chrome_util.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../../../device/stream_constraints.js';
 import * as error from '../../../error.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceOperator} from '../../../mojo/device_operator.js';
@@ -164,7 +166,7 @@ export class ModeFactory {
 
   /**
    * Makes video capture device prepared for capturing in this mode.
-   * @param {!MediaStreamConstraints} constraints Constraints for preview
+   * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
    * @param {?Resolution} resolution Capture resolution
    * @return {!Promise}

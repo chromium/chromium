@@ -15,6 +15,8 @@ import {
 
 // eslint-disable-next-line no-unused-vars
 import {Camera3DeviceInfo} from './camera3_device_info.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from './stream_constraints.js';
 
 /**
  * Candidate of capturing with specified photo or video resolution and
@@ -23,7 +25,7 @@ import {Camera3DeviceInfo} from './camera3_device_info.js';
  * corresponding preview stream.
  * @typedef {{
  *   resolution: !Resolution,
- *   previewCandidates: !Array<!MediaStreamConstraints>
+ *   previewCandidates: !Array<!StreamConstraints>
  * }}
  */
 export let CaptureCandidate;
@@ -556,9 +558,9 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
             previewCandidates:
                 this.sortPreview_(previewRs, videoR)
                     .map(({width, height}) => ({
-                           audio: {echoCancellation: false},
+                           deviceId,
+                           audio: true,
                            video: {
-                             deviceId: {exact: deviceId},
                              frameRate: fps ? {exact: fps} :
                                               {min: 20, ideal: 30},
                              width,
@@ -607,12 +609,12 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     /**
      * @param {!Resolution} r
      * @param {number} fps
-     * @return {!MediaStreamConstraints}
+     * @return {!StreamConstraints}
      */
     const toPreivewConstraints = ({width, height}, fps) => ({
-      audio: {echoCancellation: false},
+      deviceId,
+      audio: true,
       video: {
-        deviceId: {exact: deviceId},
         frameRate: fps ? {exact: fps} : {min: 20, ideal: 30},
         width,
         height,
@@ -765,12 +767,11 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
         previewRs = [captureR];
       }
 
-      const /** !Array<!MediaStreamConstraints> */ previewCandidates =
+      const /** !Array<!StreamConstraints> */ previewCandidates =
           this.sortPreview_(previewRs, captureR).map(({width, height}) => ({
+                                                       deviceId,
                                                        audio: false,
                                                        video: {
-                                                         deviceId:
-                                                             {exact: deviceId},
                                                          width,
                                                          height,
                                                        },

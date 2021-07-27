@@ -13,6 +13,8 @@ import {
 } from '../device/constraints_preferrer.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../device/stream_constraints.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import {I18nString} from '../i18n_string.js';
@@ -274,7 +276,7 @@ export class Camera extends View {
     /**
      * Preview constraints saved for temporarily close/restore preview
      * before/after |ScannerHandler| review document result.
-     * @type {?MediaStreamConstraints}
+     * @type {?StreamConstraints}
      * @private
      */
     this.constraints_ = null;
