@@ -28,7 +28,7 @@ const base::Feature kDisablePotentiallyUwsExtensionsRemotely{
 // Safe Browsing CRX allowlist. This feature also controls if we show a warning
 // in 'chrome://extensions' for extensions not included in the allowlist.
 const base::Feature kSafeBrowsingCrxAllowlistShowWarnings{
-    "SafeBrowsingCrxAllowlistShowWarnings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingCrxAllowlistShowWarnings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Automatically disable extensions not included in the Safe Browsing CRX
 // allowlist if the user has turned on Enhanced Safe Browsing (ESB). The

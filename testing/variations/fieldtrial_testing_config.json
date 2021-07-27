@@ -7265,25 +7265,6 @@
             ]
         }
     ],
-    "SafeBrowsingCrxAllowlistShowWarnings": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingCrxAllowlistShowWarnings"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingCsdComponentVersion25": [
         {
             "platforms": [
