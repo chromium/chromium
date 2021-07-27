@@ -371,7 +371,8 @@ std::vector<GURL> GetValidIconUrlsToDownload(
 }
 
 void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
-                               const IconsMap* icons_map) {
+                               const IconsMap& icons_map) {
+  web_app_info->shortcuts_menu_icon_bitmaps.clear();
   for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
     IconBitmaps shortcut_icon_bitmaps;
 
@@ -379,8 +380,8 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
       std::map<SquareSizePx, SkBitmap> bitmaps;
       for (const auto& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        auto it = icons_map->find(icon.url);
-        if (it != icons_map->end()) {
+        auto it = icons_map.find(icon.url);
+        if (it != icons_map.end()) {
           std::set<SquareSizePx> sizes_to_generate;
           sizes_to_generate.emplace(icon.square_size_px);
           SizeToBitmap resized_bitmaps(
@@ -398,11 +399,8 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
   }
 }
 
-void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
-                                         const IconsMap* icons_map) {
-  if (icons_map)
-    PopulateShortcutItemIcons(web_app_info, icons_map);
-
+void PopulateProductIcons(WebApplicationInfo* web_app_info,
+                          const IconsMap* icons_map) {
   std::vector<WebApplicationIconInfo> icon_infos_any;
   std::vector<WebApplicationIconInfo> icon_infos_maskable;
   std::vector<WebApplicationIconInfo> icon_infos_monochrome;

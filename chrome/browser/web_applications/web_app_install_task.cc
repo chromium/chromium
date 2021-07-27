@@ -231,8 +231,9 @@ void WebAppInstallTask::InstallWebAppFromInfo(
     InstallManager::OnceInstallCallback callback) {
   CheckInstallPreconditions();
 
-  FilterAndResizeIconsGenerateMissing(web_application_info.get(),
-                                      /*icons_map*/ nullptr);
+  PopulateProductIcons(web_application_info.get(),
+                       /*icons_map*/ nullptr);
+  // No IconsMap to populate shortcut item icons from.
 
   if (install_params_)
     ApplyParamsToWebApplicationInfo(*install_params_, *web_application_info);
@@ -703,8 +704,8 @@ void WebAppInstallTask::OnIconsRetrieved(
 
   DCHECK(web_app_info);
 
-  // Installing from sync should not change icon links.
-  FilterAndResizeIconsGenerateMissing(web_app_info.get(), &icons_map);
+  PopulateProductIcons(web_app_info.get(), &icons_map);
+  PopulateShortcutItemIcons(web_app_info.get(), icons_map);
 
   install_finalizer_->FinalizeInstall(
       *web_app_info, finalize_options,
@@ -720,11 +721,8 @@ void WebAppInstallTask::OnIconsRetrievedShowDialog(
 
   DCHECK(web_app_info);
 
-  // The old BookmarkApp Sync System uses
-  // |WebAppInstallTask::OnIconsRetrieved|. The new WebApp USS System has no
-  // sync wars and it doesn't need to preserve icons. |is_for_sync| is always
-  // false for USS.
-  FilterAndResizeIconsGenerateMissing(web_app_info.get(), &icons_map);
+  PopulateProductIcons(web_app_info.get(), &icons_map);
+  PopulateShortcutItemIcons(web_app_info.get(), icons_map);
 
   if (background_installation_) {
     DCHECK(!dialog_callback_);
@@ -749,15 +747,10 @@ void WebAppInstallTask::OnIconsRetrievedFinalizeUpdate(
   DCHECK(web_app_info);
 
   // TODO(crbug.com/926083): Abort update if icons fail to download.
-  if (update_product_icons) {
-    FilterAndResizeIconsGenerateMissing(web_app_info.get(), &icons_map);
-  } else {
-    // FilterAndResizeIconsGenerateMissing calls PopulateShortcutItemIcons. We
-    // need that call to happen still if redownloading app icons is disabled, so
-    // manually call that here.
-    web_app_info->shortcuts_menu_icon_bitmaps.clear();
-    PopulateShortcutItemIcons(web_app_info.get(), &icons_map);
-  }
+  if (update_product_icons)
+    PopulateProductIcons(web_app_info.get(), &icons_map);
+
+  PopulateShortcutItemIcons(web_app_info.get(), icons_map);
 
   install_finalizer_->FinalizeUpdate(
       *web_app_info, web_contents(),

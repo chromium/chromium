@@ -410,6 +410,9 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   stage_ = Stage::kPendingAppIdentityCheck;
   Observe(nullptr);
 
+  PopulateShortcutItemIcons(&web_application_info_.value(),
+                            downloaded_icons_map);
+
   if (!AllowUnpromptedNameUpdate(app_id_, registrar_) &&
       !AllowUnpromptedIconUpdate(app_id_, registrar_) &&
       base::FeatureList::IsEnabled(features::kPwaUpdateDialogForNameAndIcon)) {
@@ -419,8 +422,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     // is necessary.
     // TODO(https://crbug.com/1184911): Reuse this data in the web app install
     // task.
-    FilterAndResizeIconsGenerateMissing(&web_application_info_.value(),
-                                        &downloaded_icons_map);
+    PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
     IconDiff icon_diff = IsUpdateNeededForIconContents(disk_icon_bitmaps);
     std::u16string old_title =
         base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_));
@@ -483,8 +485,8 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
       // update is necessary.
       // TODO(https://crbug.com/1184911): Reuse this data in the web app install
       // task.
-      FilterAndResizeIconsGenerateMissing(&web_application_info_.value(),
-                                          &downloaded_icons_map);
+      PopulateProductIcons(&web_application_info_.value(),
+                           &downloaded_icons_map);
     }
 
     // TODO: compare in a BEST_EFFORT blocking PostTaskAndReply.
@@ -492,19 +494,6 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
       UpdateAfterWindowsClose();
       return;
     }
-  } else if (!base::FeatureList::IsEnabled(
-                 features::kPwaUpdateDialogForNameAndIcon)) {
-    // When kPwaUpdateDialogForNameAndIcon is enabled, the FilterAndResizeIcons
-    // call has already been made.
-    // FilterAndResizeIconsGenerateMissing calls PopulateShortcutItemIcons. We
-    // need that call to happen still if redownloading app icons is disabled, so
-    // manually call that here.
-    // This call allows us to compare the shortcut icons on disk with the ones
-    // that would be generated after an update.
-    // TODO(https://crbug.com/1184911): Reuse this data in the web app install
-    // task.
-    PopulateShortcutItemIcons(&web_application_info_.value(),
-                              &downloaded_icons_map);
   }
 
   icon_manager_.ReadAllShortcutsMenuIcons(

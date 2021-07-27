@@ -631,7 +631,7 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
     icons_map.emplace(kIconUrl2, bmp2);
     icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon3.png"),
                       bmp3);
-    PopulateShortcutItemIcons(&web_app_info, &icons_map);
+    PopulateShortcutItemIcons(&web_app_info, icons_map);
   }
 
   // Ensure that reused shortcut icons are processed correctly.
@@ -653,16 +653,16 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIconsNoShortcutIcons) {
   icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon2.png"), bmp2);
   icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon3.png"), bmp3);
 
-  PopulateShortcutItemIcons(&web_app_info, &icons_map);
+  PopulateShortcutItemIcons(&web_app_info, icons_map);
 
   EXPECT_EQ(0U, web_app_info.shortcuts_menu_item_infos.size());
 }
 
-// Tests that when FilterAndResizeIconsGenerateMissing is called with maskable
+// Tests that when PopulateProductIcons is called with maskable
 // icons available, web_app_info.icon_bitmaps_{any,maskable} are correctly
 // populated.
-TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissing_MaskableIcons) {
-  // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
+TEST(WebAppInstallUtils, PopulateProductIcons_MaskableIcons) {
+  // Construct |icons_map| to pass to PopulateProductIcons().
   IconsMap icons_map;
   const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
@@ -686,7 +686,7 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissing_MaskableIcons) {
   info.purpose = Purpose::MASKABLE;
   web_app_info.icon_infos.push_back(info);
 
-  FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
+  PopulateProductIcons(&web_app_info, &icons_map);
 
   EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
   // Expect only icon at URL 1 to be used and resized as.
@@ -696,11 +696,10 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissing_MaskableIcons) {
   EXPECT_EQ(2u, web_app_info.icon_bitmaps.maskable.size());
 }
 
-// Tests that when FilterAndResizeIconsGenerateMissing is called with maskable
+// Tests that when PopulateProductIcons is called with maskable
 // icons only, web_app_info.icon_bitmaps_any is correctly populated.
-TEST(WebAppInstallUtils,
-     FilterAndResizeIconsGenerateMissing_MaskableIconsOnly) {
-  // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
+TEST(WebAppInstallUtils, PopulateProductIcons_MaskableIconsOnly) {
+  // Construct |icons_map| to pass to PopulateProductIcons().
   IconsMap icons_map;
   const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
@@ -714,7 +713,7 @@ TEST(WebAppInstallUtils,
   info.purpose = Purpose::MASKABLE;
   web_app_info.icon_infos.push_back(info);
 
-  FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
+  PopulateProductIcons(&web_app_info, &icons_map);
 
   // Expect to fall back to using icon from icons_map.
   EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
@@ -731,70 +730,19 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_InvalidManifestUrl) {
   EXPECT_TRUE(web_app_info.manifest_url.is_empty());
 }
 
-// Tests that when FilterAndResizeIconsGenerateMissing is called with no
+// Tests that when PopulateProductIcons is called with no
 // app icon or shortcut icon data in web_app_info, and kDesktopPWAShortcutsMenu
 // feature enabled, web_app_info.icon_bitmaps_any is correctly populated.
-TEST(WebAppInstallUtils,
-     FilterAndResizeIconsGenerateMissingNoWebAppIconData_WithShortcuts) {
+TEST(WebAppInstallUtils, PopulateProductIconsNoWebAppIconData_WithShortcuts) {
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
 
   IconsMap icons_map;
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
   icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon1.png"), bmp1);
-  FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
+  PopulateProductIcons(&web_app_info, &icons_map);
 
   // Expect to fall back to using icon from icons_map.
-  EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
-  for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
-    EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
-  }
-}
-
-// Tests that when FilterAndResizeIconsGenerateMissing is called with both
-// app icon and shortcut icon bitmaps in icons_map,
-// web_app_info.icon_bitmaps_any is correctly populated.
-TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingWithShortcutIcons) {
-  // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
-  IconsMap icons_map;
-  const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
-  std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
-  icons_map.emplace(kIconUrl1, bmp1);
-  const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
-  std::vector<SkBitmap> bmp2 = {CreateSquareIcon(kIconSize, SK_ColorBLUE)};
-  icons_map.emplace(kIconUrl2, bmp2);
-
-  // Construct |info| to add to |web_app_info.icon_infos|.
-  WebApplicationInfo web_app_info;
-  web_app_info.title = u"App Name";
-
-  WebApplicationIconInfo info;
-  info.url = kIconUrl1;
-  web_app_info.icon_infos.push_back(info);
-
-  // Construct |shortcuts_menu_item_info| to add to
-  // |web_app_info.shortcuts_menu_item_infos|.
-  WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
-  shortcuts_menu_item_info.name = kShortcutItemName;
-  shortcuts_menu_item_info.url =
-      GURL("http://www.chromium.org/shortcuts/action");
-  // Construct |icon| to add to |shortcuts_menu_item_info.shortcut_icon_infos|.
-  WebApplicationShortcutsMenuItemInfo::Icon icon;
-  icon.url = kIconUrl2;
-  icon.square_size_px = kIconSize;
-  shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
-                                                          {std::move(icon)});
-  web_app_info.shortcuts_menu_item_infos.push_back(
-      std::move(shortcuts_menu_item_info));
-  // Construct shortcut_icon_bitmap to add to
-  // |web_app_info.shortcuts_menu_icon_bitmaps|.
-  IconBitmaps shortcut_icon_bitmaps;
-  shortcut_icon_bitmaps.any[kIconSize] =
-      CreateSquareIcon(kIconSize, SK_ColorBLUE);
-  web_app_info.shortcuts_menu_icon_bitmaps.emplace_back(shortcut_icon_bitmaps);
-
-  FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
-
   EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
   for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
