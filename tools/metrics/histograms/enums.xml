@@ -65595,6 +65595,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="LoadMetadataError">
     Failed to load meta data from JSON.
   </int>
+  <int value="4" label="LoadModelError">Failed to load tflite model.</int>
+  <int value="5" label="CreateGraphExecutorError">
+    Failed to create graph executor.
+  </int>
 </enum>
 
 <enum name="PowerMLSmartDimComponentVersionType">

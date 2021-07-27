@@ -7715,24 +7715,6 @@
             ]
         }
     ],
-    "SmartDimAutoMLModel": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "smart_dim_experimental_version": "20210201.1"
-                    },
-                    "enable_features": [
-                        "SmartDimExperimentalComponent"
-                    ]
-                }
-            ]
-        }
-    ],
     "SmartSuggestionForLargeDownloads": [
         {
             "platforms": [
