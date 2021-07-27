@@ -482,7 +482,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackForwardCache.SameSite.ActionAfterPagehide2"
-    enum="BackForwardCacheActionAfterPagehide" expires_after="2021-11-21">
+    enum="BackForwardCacheActionAfterPagehide" expires_after="2022-01-23">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>

@@ -175,7 +175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PhoneHub.NotificationInteraction"
-    enum="PhoneHubNotificationInteraction" expires_after="2021-11-20">
+    enum="PhoneHubNotificationInteraction" expires_after="2022-01-23">
   <owner>meilinw@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <summary>

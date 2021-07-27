@@ -2027,7 +2027,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>shaktisahu@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -3133,7 +3133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CompositorLatency.MissedDeadlineFrame"
-    units="microseconds" expires_after="2021-11-21">
+    units="microseconds" expires_after="2022-01-23">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -3151,7 +3151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CompositorLatency.Type" enum="FrameReportType"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -3253,7 +3253,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.Resolution"
-    enum="DisplayResolution" expires_after="2021-11-21">
+    enum="DisplayResolution" expires_after="2022-01-23">
   <owner>dcastagna@chromium.org</owner>
   <owner>marcheu@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
@@ -3266,7 +3266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
-    units="count" expires_after="2021-11-20">
+    units="count" expires_after="2022-01-23">
   <owner>gildekel@chromium.org</owner>
   <owner>dcastagna@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
@@ -3278,7 +3278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
-    units="%" expires_after="2021-11-20">
+    units="%" expires_after="2022-01-23">
   <owner>gildekel@chromium.org</owner>
   <owner>dcastagna@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
@@ -3290,7 +3290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
-    units="count" expires_after="2021-11-20">
+    units="count" expires_after="2022-01-23">
   <owner>gildekel@chromium.org</owner>
   <owner>dcastagna@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
@@ -3434,7 +3434,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContextMenu.iOS.GetImageDataByJsResult"
-    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2021-11-21">
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2022-01-23">
   <owner>mrsuyi@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -5022,7 +5022,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DocumentScan.ScanRequested" enum="DocumentScanSaneBackend"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>fletcherw@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -7207,7 +7207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow"
-    units="%" expires_after="2021-11-18">
+    units="%" expires_after="2022-01-23">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -7224,7 +7224,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.PerSession.AveragePercentDroppedFrames"
-    units="%" expires_after="2021-11-18">
+    units="%" expires_after="2022-01-23">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -8193,7 +8193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.Promos.Snooze" units="SnoozeType"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
 <!-- Name completed by histogram_suffixes name="IPHFeatures" -->
 
   <owner>kerenzhu@chromium.org</owner>
@@ -8206,7 +8206,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.Promos.SnoozeCountAtAcknowledge" units="times"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
 <!-- Name completed by histogram_suffixes name="IPHFeatures" -->
 
   <owner>kerenzhu@chromium.org</owner>
@@ -8218,7 +8218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.Promos.SnoozeCountAtFollow" units="times"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
 <!-- Name completed by histogram_suffixes name="IPHFeatures" -->
 
   <owner>kerenzhu@chromium.org</owner>
@@ -8231,7 +8231,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InProductHelp.Promos.SnoozeCountAtTrigger" units="times"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
 <!-- Name completed by histogram_suffixes name="IPHFeatures" -->
 
   <owner>kerenzhu@chromium.org</owner>
@@ -8589,7 +8589,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kiosk.LaunchType" enum="KioskLaunchType"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>xiyuan@chromium.org</owner>
   <owner>aghuie@chromium.org</owner>
   <summary>
@@ -12833,7 +12833,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Privacy.ThirdPartyCookieBlockingEnabledForSite" enum="Boolean"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>dullweber@chromium.org</owner>
   <owner>huanzhong@chromium.org</owner>
   <summary>
@@ -15163,7 +15163,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteEngagementService.OriginsEngaged" units="units"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -16410,7 +16410,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SupervisedUsers.PerAppTimeLimits.Engagement" units="Apps"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>agawronska@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families@google.com</owner>
@@ -19419,7 +19419,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>

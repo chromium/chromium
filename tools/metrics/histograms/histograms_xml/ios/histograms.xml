@@ -783,7 +783,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.PeakMemoryUsage" units="MB"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -802,7 +802,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.MetricKit.TimeToFirstDraw" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

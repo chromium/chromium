@@ -395,7 +395,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>dmazzoni@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -630,7 +630,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels" enum="BooleanEnabled"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -686,7 +686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.PageLanguage" enum="LanguageName"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>katie@chromium.org</owner>
   <owner>dmazzoni@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1707,7 +1707,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2021-11-21">
+    enum="TextToSpeechFromExtensionAPI" expires_after="2022-01-23">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1791,7 +1791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
@@ -1813,7 +1813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>

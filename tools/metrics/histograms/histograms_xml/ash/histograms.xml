@@ -76,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Accelerators.Deprecated.ShowTaskManager"
-    enum="DeprecatedAcceleratorUsage" expires_after="2021-11-21">
+    enum="DeprecatedAcceleratorUsage" expires_after="2022-01-23">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
@@ -3171,7 +3171,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.Items" units="items"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>sammiequon@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>xdai@chromium.org</owner>

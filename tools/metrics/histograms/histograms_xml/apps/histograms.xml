@@ -458,7 +458,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Status"
-    enum="DriveZeroStateProviderStatus" expires_after="2021-11-21">
+    enum="DriveZeroStateProviderStatus" expires_after="2022-01-23">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1235,7 +1235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListLauncherIssuedSearchQueryLength"
-    units="characters" expires_after="2021-11-21">
+    units="characters" expires_after="2022-01-23">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -1522,7 +1522,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>newcomer@chromium.org</owner>
   <summary>
     The number of times the different sources for showing the app list are used.
@@ -1547,7 +1547,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSuggestedChipLaunched" units="indices"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>newcomer@chromium.org</owner>
   <owner>charleszhao@chromium.org</owner>
   <summary>

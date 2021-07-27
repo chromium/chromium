@@ -1082,7 +1082,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
-    enum="GPUProcessLifetimeEvent" expires_after="2021-11-21">
+    enum="GPUProcessLifetimeEvent" expires_after="2022-01-23">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is

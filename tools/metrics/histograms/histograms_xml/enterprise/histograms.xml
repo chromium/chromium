@@ -2176,7 +2176,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.UserSession.Logins"
-    enum="EnterpriseUserSessionLogins" expires_after="2021-11-21">
+    enum="EnterpriseUserSessionLogins" expires_after="2022-01-23">
   <owner>xiyuan@chromium.org</owner>
   <owner>sduraisamy@chromium.org</owner>
   <summary>Tracks the sign-in events on an enrolled device.</summary>

@@ -48,7 +48,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="Assistant.BetterOnboarding.Click"
-    enum="AssistantBetterOnboardingType" expires_after="2021-11-21">
+    enum="AssistantBetterOnboardingType" expires_after="2022-01-23">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -190,7 +190,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -313,7 +313,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -424,7 +424,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Duration" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

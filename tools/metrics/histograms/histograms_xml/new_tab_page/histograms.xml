@@ -1749,7 +1749,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.SuggestionsImpression" enum="MostVisitedTileIndex"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

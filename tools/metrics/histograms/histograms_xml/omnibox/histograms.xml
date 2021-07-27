@@ -841,7 +841,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.OfferedTabMatch" enum="BooleanOffered"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>gangwu@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -905,7 +905,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.SelectedTabMatch"
-    enum="BooleanSelected" expires_after="2021-11-21">
+    enum="BooleanSelected" expires_after="2022-01-23">
   <owner>gangwu@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>

@@ -1005,7 +1005,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DownloadManager.Menu.Action"
-    enum="Android.DownloadManager.Menu.Actions" expires_after="2021-11-21">
+    enum="Android.DownloadManager.Menu.Actions" expires_after="2022-01-23">
   <owner>dtrainor@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>The count of Download Home top level menu actions taken.</summary>
@@ -1997,7 +1997,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime"
-    units="microseconds" expires_after="2021-11-21">
+    units="microseconds" expires_after="2022-01-23">
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2024,7 +2024,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime"
-    units="microseconds" expires_after="2021-11-21">
+    units="microseconds" expires_after="2022-01-23">
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>

@@ -1569,7 +1569,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureManifestInvalidAppStatusError"
-    enum="ManifestInvalidAppStatusError" expires_after="2021-11-21">
+    enum="ManifestInvalidAppStatusError" expires_after="2022-01-23">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -3081,7 +3081,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2021-11-20">
+<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2022-01-23">
   <owner>battre@chromium.org</owner>
   <owner>karandeepb@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3089,7 +3089,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NetworkDelayPercentage" units="%"
-    expires_after="2021-11-20">
+    expires_after="2022-01-23">
   <owner>battre@chromium.org</owner>
   <owner>karandeepb@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

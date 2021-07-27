@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Coverage" enum="IMEAssistiveAction"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled.Emoji"
-    enum="IMEAssistiveDisabledReason" expires_after="2021-11-21">
+    enum="IMEAssistiveDisabledReason" expires_after="2022-01-23">
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -156,7 +156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.EmojiSuggestAddition.AcceptanceIndex"
-    units="times" expires_after="2021-11-21">
+    units="times" expires_after="2022-01-23">
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Match" enum="IMEAssistiveAction"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Success" enum="IMEAssistiveAction"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -285,7 +285,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Assistive.UserPref.Emoji" enum="BooleanEnabled"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

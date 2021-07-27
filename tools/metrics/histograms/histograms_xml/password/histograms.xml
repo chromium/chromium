@@ -702,7 +702,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"
-    enum="GetChangePasswordUrlMetric" expires_after="2021-11-21">
+    enum="GetChangePasswordUrlMetric" expires_after="2022-01-23">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -973,7 +973,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.PasswordCheckReferrer"
-    enum="PasswordCheckReferrer" expires_after="2021-11-21">
+    enum="PasswordCheckReferrer" expires_after="2022-01-23">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1973,7 +1973,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.PasswordReuse.NumberOfMatches"
-    units="credentials" expires_after="2021-11-21">
+    units="credentials" expires_after="2022-01-23">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2346,7 +2346,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SuccessfulLoginHappened"
-    enum="BooleanSuccessfulLoginHappenedOnHttps" expires_after="2021-11-21">
+    enum="BooleanSuccessfulLoginHappenedOnHttps" expires_after="2022-01-23">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
@@ -2523,7 +2523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.UsernameDetectionMethod"
-    enum="UsernameDetectionMethod" expires_after="2021-11-21">
+    enum="UsernameDetectionMethod" expires_after="2022-01-23">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <summary>

@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AppUninstallReason" enum="UninstallCounterReasonEnum"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>robsc@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -522,7 +522,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.CompanionLibraryApisCounter"
-    enum="CompanionLibraryApisList" expires_after="2021-11-21">
+    enum="CompanionLibraryApisList" expires_after="2022-01-23">
   <owner>sstan@google.com</owner>
   <owner>bartfab@chromium.org</owner>
   <owner>giovax@google.com</owner>
@@ -727,7 +727,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
