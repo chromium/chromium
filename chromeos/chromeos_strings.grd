@@ -1549,6 +1549,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION" desc="Label for `Authentication` type data-point in network card.">
         Authentication
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_LINK_SPEED" desc="Label for Ethernet `Link Speed` type data-point in network card.">
+        Link Speed
+      </message>
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">

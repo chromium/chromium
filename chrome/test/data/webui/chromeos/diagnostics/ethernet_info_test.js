@@ -64,4 +64,13 @@ export function ethernetInfoTestSuite() {
           ethernetInfoElement, '#authentication', expectedHeader, '');
     });
   });
+
+  test('EthernetInfoLinkSpeedBasedOnNetwork', () => {
+    return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
+      const expectedHeader = ethernetInfoElement.i18n('networkLinkSpeedLabel');
+      // TODO(ashleydp): Update test when Ethernet link speed data provided.
+      assertDataPointHasExpectedHeaderAndValue(
+          ethernetInfoElement, '#linkSpeed', expectedHeader, '');
+    });
+  });
 }

@@ -128,6 +128,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"networkAuthenticationLabel", IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION},
       {"networkIpAddressLabel", IDS_NETWORK_DIAGNOSTICS_IP_ADDRESS},
+      {"networkLinkSpeedLabel", IDS_NETWORK_DIAGNOSTICS_LINK_SPEED},
       {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
