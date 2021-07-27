@@ -32,6 +32,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -158,6 +159,7 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @FlakyTest(message = "https://crbug.com/1232692")
     public void testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems() throws IOException {
         Bitmap closeIcon = createVectorDrawableBitmap(R.drawable.btn_back, 24, 24);
         mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, closeIcon);
