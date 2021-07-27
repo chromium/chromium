@@ -229,9 +229,6 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         // next fetch.
         doing_key_rotation = true;
         DLOG(WARNING) << "Verification key rotation detected";
-        // TODO(atwilson): Add code to update |verification_key| to point to
-        // the correct key to validate the existing blob (can't do this until
-        // we've done our first key rotation).
       }
 
       Validate(std::move(cloud_policy), std::move(key), validate_in_background,

@@ -133,6 +133,11 @@ std::string GetPolicyVerificationKey() {
   return std::string(reinterpret_cast<const char*>(kPolicyVerificationKey),
                      sizeof(kPolicyVerificationKey));
 }
+// Notes from the past: When the key is rotated in the future, the old one may
+// still worth being kept to verified any existing policy cache so that browser
+// can load it one last time. However, it really depends on the reason of the
+// rotation. From a different angle, if a key is no longer trusted, so should
+// anything bound to it.
 
 const char kPolicyFCMInvalidationSenderID[] = "1013309121859";
 
