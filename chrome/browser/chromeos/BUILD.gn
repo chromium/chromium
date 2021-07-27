@@ -261,6 +261,7 @@ source_set("chromeos") {
     "//chromeos/resources:media_app_resources_grit",
     "//chromeos/resources:personalization_app_resources_grit",
     "//chromeos/resources:print_management_resources_grit",
+    "//chromeos/resources:projector_app_trusted_resources_grit",
     "//chromeos/resources:projector_app_untrusted_resources_grit",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/cros_healthd/public/cpp",

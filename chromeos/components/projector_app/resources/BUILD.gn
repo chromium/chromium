@@ -9,10 +9,22 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos_ash, "Projector is ChromeOS only")
 
 generate_grd("build_untrusted_grd") {
-  grd_prefix = "projector"
-  out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "annotator/annotator.html" ]
   input_files_base_dir = rebase_path(".", "//")
   grd_prefix = "chromeos_projector_app_untrusted"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+generate_grd("build_trusted_grd") {
+  input_files = [
+    "player_app/player_app.html",
+    "player_app/player_app.js",
+    "player_app/player_app.css",
+    "selfie_cam/selfie_cam.html",
+    "selfie_cam/selfie_cam.js",
+    "selfie_cam/selfie_cam.css",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  grd_prefix = "chromeos_projector_app_trusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }

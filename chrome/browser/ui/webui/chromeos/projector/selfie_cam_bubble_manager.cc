@@ -14,9 +14,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/webui/chromeos/projector/projector_ui.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/trusted_projector_ui.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -53,7 +53,7 @@ constexpr SkColor kExpandCollapseButtonBackground =
 // Margin of the bubble with respect to the context window.
 constexpr int kMinAnchorMarginDip = 15;
 
-constexpr char kSelfieCamResource[] = "selfie_cam.html";
+constexpr char kSelfieCamResource[] = "selfie_cam/selfie_cam.html";
 
 std::unique_ptr<views::MdTextButton> BuildButton(
     views::Button::PressedCallback callback,
@@ -252,7 +252,7 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
 // Renders the WebUI contents and asks for camera permission so that
 // we don't need to prompt the user.
 class SelfieCamBubbleContentsWrapper
-    : public BubbleContentsWrapperT<ProjectorUI> {
+    : public BubbleContentsWrapperT<TrustedProjectorUI> {
  public:
   SelfieCamBubbleContentsWrapper(const GURL& webui_url,
                                  content::BrowserContext* browser_context,
@@ -289,11 +289,8 @@ void SelfieCamBubbleManager::Show(Profile* profile,
     return;
 
   std::string selfie_cam_url =
-      std::string(chrome::kChromeUIProjectorURL) + kSelfieCamResource;
-  if (GURL(selfie_cam_url).ExtractFileName() != kSelfieCamResource) {
-    selfie_cam_url =
-        std::string(chrome::kChromeUIProjectorURL) + "/" + kSelfieCamResource;
-  }
+      std::string(chromeos::kChromeUITrustedProjectorAppUrl) +
+      kSelfieCamResource;
 
   auto contents_wrapper = std::make_unique<SelfieCamBubbleContentsWrapper>(
       GURL(selfie_cam_url), profile, IDS_SELFIE_CAM_TITLE);

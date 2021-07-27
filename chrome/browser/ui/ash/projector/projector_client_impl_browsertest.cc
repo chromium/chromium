@@ -14,11 +14,18 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -123,6 +130,18 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, ShowOrCloseSelfieCamTest) {
   EXPECT_TRUE(client_->IsSelfieCamVisible());
   client_->CloseSelfieCam();
   EXPECT_FALSE(client_->IsSelfieCamVisible());
+}
+
+// This test verifies that the selfie cam WebUI URL is valid.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SelfieCamUrlValid) {
+  GURL selfie_cam_url(std::string(chromeos::kChromeUITrustedProjectorAppUrl) +
+                      "selfie_cam/selfie_cam.html");
+  EXPECT_TRUE(selfie_cam_url.is_valid());
+  ui_test_utils::NavigateToURL(browser(), selfie_cam_url);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
 }
 
 // TODO(crbug/1199396): Add a test to verify the selfie cam turns off when the

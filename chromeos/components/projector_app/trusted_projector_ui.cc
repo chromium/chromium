@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/projector/projector_ui.h"
+#include "chromeos/components/projector_app/trusted_projector_ui.h"
 
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chromeos/projector/grit/projector_resources.h"
-#include "chromeos/projector/grit/projector_resources_map.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/grit/chromeos_projector_app_trusted_resources.h"
+#include "chromeos/grit/chromeos_projector_app_trusted_resources_map.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -21,11 +21,11 @@ namespace {
 
 content::WebUIDataSource* CreateProjectorHTMLSource() {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(chrome::kChromeUIProjectorHost);
+      content::WebUIDataSource::Create(chromeos::kChromeUIProjectorAppHost);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kProjectorResources, kProjectorResourcesSize),
-      IDR_PROJECTOR_PLAYER_APP_HTML);
+  source->AddResourcePaths(
+      base::make_span(kChromeosProjectorAppTrustedResources,
+                      kChromeosProjectorAppTrustedResourcesSize));
   return source;
 }
 
@@ -75,16 +75,16 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
 
 }  // namespace
 
-ProjectorUI::ProjectorUI(content::WebUI* web_ui)
+TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui)
     : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateProjectorHTMLSource());
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
 
   web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());
 }
 
-ProjectorUI::~ProjectorUI() = default;
+TrustedProjectorUI::~TrustedProjectorUI() = default;
 
-WEB_UI_CONTROLLER_TYPE_IMPL(ProjectorUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(TrustedProjectorUI)
 
 }  // namespace chromeos

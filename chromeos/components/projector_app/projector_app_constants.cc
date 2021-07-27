@@ -9,5 +9,6 @@ namespace chromeos {
 const char kChromeUIProjectorAppHost[] = "projector";
 const char kChromeUIUntrustedProjectorAppUrl[] =
     "chrome-untrusted://projector/";
+const char kChromeUITrustedProjectorAppUrl[] = "chrome://projector/";
 
 }  // namespace chromeos

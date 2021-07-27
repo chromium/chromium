@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +22,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
@@ -66,7 +68,8 @@ WebUIConfigList CreateConfigs() {
   register_config(std::make_unique<HelpAppUntrustedUIConfig>());
   register_config(
       std::make_unique<chromeos::HelpAppKidsMagazineUntrustedUIConfig>());
-  register_config(std::make_unique<chromeos::UntrustedProjectorUIConfig>());
+  if (base::FeatureList::IsEnabled(ash::features::kProjector))
+    register_config(std::make_unique<chromeos::UntrustedProjectorUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   register_config(
       std::make_unique<chromeos::TelemetryExtensionUntrustedUIConfig>());

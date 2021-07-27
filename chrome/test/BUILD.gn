@@ -2256,6 +2256,7 @@ if (!is_android) {
         "//chromeos/components/media_app_ui",
         "//chromeos/components/media_app_ui:browser_test_support",
         "//chromeos/components/print_management",
+        "//chromeos/components/projector_app",
         "//chromeos/components/smbfs",
         "//chromeos/components/web_applications/test:test_support",
         "//chromeos/cryptohome",

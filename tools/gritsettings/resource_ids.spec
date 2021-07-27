@@ -295,11 +295,7 @@
     "includes": [2050],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/network_ui/network_ui_resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
-    "includes": [2060],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/projector/resources.grd": {
-    "META": {"sizes": {"includes": [5]}},
+    "META": {"sizes": {"includes": [10]}},
     "includes": [2065],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/download_internals/resources.grd": {
@@ -503,6 +499,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/projector_app/resources/chromeos_projector_app_untrusted_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2705],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/projector_app/resources/chromeos_projector_app_trusted_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [2710],
   },
   # END chromeos/ section.
 

@@ -218,7 +218,6 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/power_ui.h"
-#include "chrome/browser/ui/webui/chromeos/projector/projector_ui.h"
 #include "chrome/browser/ui/webui/chromeos/set_time_ui.h"
 #include "chrome/browser/ui/webui/chromeos/slow_trace_ui.h"
 #include "chrome/browser/ui/webui/chromeos/slow_ui.h"
@@ -246,6 +245,8 @@
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/components/print_management/print_management_ui.h"
 #include "chromeos/components/print_management/url_constants.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chromeos/components/projector_app/trusted_projector_ui.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -852,8 +853,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIProjectorHost)
-    return &NewWebUI<chromeos::ProjectorUI>;
+  if (base::FeatureList::IsEnabled(ash::features::kProjector) &&
+      url.host_piece() == chromeos::kChromeUIProjectorAppHost) {
+    return &NewWebUI<chromeos::TrustedProjectorUI>;
+  }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
     return &NewWebUI<chromeos::SetTimeUI>;
   if (url.host_piece() == chrome::kChromeUISlowHost)

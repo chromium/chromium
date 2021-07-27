@@ -14,6 +14,7 @@ class WebUI;
 
 namespace chromeos {
 
+// TODO(b/193670945): Migrate to ash/components and ash/webui.
 class UntrustedProjectorUIConfig : public ui::WebUIConfig {
  public:
   UntrustedProjectorUIConfig();
