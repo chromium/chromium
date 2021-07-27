@@ -84,7 +84,6 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
   self = [super initWithFrame:frame];
   if (self) {
     self.userInteractionEnabled = NO;
-    self.clipsToBounds = YES;
     // Avatar view.
     _avatarView = [[UIImageView alloc] init];
     _avatarView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -95,30 +94,37 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     _title = [[UILabel alloc] init];
     _title.adjustsFontForContentSizeCategory = YES;
     _title.translatesAutoresizingMaskIntoConstraints = NO;
-    _title.numberOfLines = 0;
+    _title.numberOfLines = 1;
     _title.textColor = UIColor.cr_labelColor;
     _title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-    [self addSubview:_title];
+    _title.adjustsFontSizeToFitWidth = NO;
+    _title.lineBreakMode = NSLineBreakByTruncatingTail;
 
     // Subtitle.
     _subtitle = [[UILabel alloc] init];
     _subtitle.adjustsFontForContentSizeCategory = YES;
     _subtitle.translatesAutoresizingMaskIntoConstraints = NO;
-    _subtitle.numberOfLines = 0;
+    _subtitle.numberOfLines = 1;
     _subtitle.textColor = UIColor.cr_secondaryLabelColor;
     _subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-    [self addSubview:_subtitle];
+    _subtitle.adjustsFontSizeToFitWidth = NO;
+    _subtitle.lineBreakMode = NSLineBreakByTruncatingTail;
 
     // Text container.
-    UILayoutGuide* textContainerGuide = [[UILayoutGuide alloc] init];
-    [self addLayoutGuide:textContainerGuide];
+    UIStackView* contentView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ _title, _subtitle ]];
+    contentView.axis = UILayoutConstraintAxisVertical;
+    contentView.distribution = UIStackViewDistributionEqualSpacing;
+    contentView.alignment = UIStackViewAlignmentLeading;
+    contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:contentView];
 
     // Layout constraints.
     _avatarLeadingMarginConstraint = [_avatarView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
                        constant:kDefaultStyle.avatarLeadingMargin];
     [NSLayoutConstraint activateConstraints:@[
-      [textContainerGuide.leadingAnchor
+      [contentView.leadingAnchor
           constraintEqualToAnchor:_avatarView.trailingAnchor
                          constant:kHorizontalAvatarLeadingMargin],
       _avatarLeadingMarginConstraint,
@@ -136,23 +142,17 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     _titleConstraintForNameAndEmail =
         [_subtitle.topAnchor constraintEqualToAnchor:_title.bottomAnchor
                                             constant:kDefaultStyle.titleOffset];
-    _titleConstraintForEmailOnly = [textContainerGuide.bottomAnchor
-        constraintEqualToAnchor:_title.bottomAnchor];
+    _titleConstraintForEmailOnly =
+        [contentView.bottomAnchor constraintEqualToAnchor:_title.bottomAnchor];
 
     [NSLayoutConstraint activateConstraints:@[
-      [self.centerYAnchor
-          constraintEqualToAnchor:textContainerGuide.centerYAnchor],
-      [textContainerGuide.leadingAnchor
-          constraintEqualToAnchor:_title.leadingAnchor],
-      [textContainerGuide.leadingAnchor
+      [self.centerYAnchor constraintEqualToAnchor:contentView.centerYAnchor],
+      [contentView.leadingAnchor constraintEqualToAnchor:_title.leadingAnchor],
+      [contentView.leadingAnchor
           constraintEqualToAnchor:_subtitle.leadingAnchor],
-      [textContainerGuide.trailingAnchor
-          constraintEqualToAnchor:_title.trailingAnchor],
-      [textContainerGuide.trailingAnchor
-          constraintEqualToAnchor:_subtitle.trailingAnchor],
-      [textContainerGuide.topAnchor constraintEqualToAnchor:_title.topAnchor],
-      [textContainerGuide.bottomAnchor
-          constraintEqualToAnchor:_subtitle.bottomAnchor],
+      [contentView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+      [contentView.topAnchor constraintEqualToAnchor:_title.topAnchor],
+      [contentView.bottomAnchor constraintEqualToAnchor:_subtitle.bottomAnchor],
     ]];
 
     _topConstraints = @[
