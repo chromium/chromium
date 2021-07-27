@@ -12,10 +12,13 @@ USE_PYTHON3 = True
 
 
 def RunUnittests(input_api, output_api):
-  presubmit_path = input_api.PresubmitLocalPath()
-  return input_api.canned_checks.RunUnitTests(input_api, output_api, [
-      input_api.os_path.join(presubmit_path, 'metadata_extractor_unittests.py'),
-  ])
+  tests = input_api.canned_checks.GetUnitTestsInDirectory(
+      input_api,
+      output_api,
+      '.',
+      files_to_check=[r'.+_unittests\.py$'],
+      run_on_python2=False)
+  return input_api.RunTests(tests)
 
 
 def CheckChangeOnUpload(input_api, output_api):

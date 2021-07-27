@@ -50,10 +50,10 @@ class SymbolizeTraceTestCase(unittest.TestCase):
     # Check logs to see if a breakpad output directory was created.
     with self.assertLogs(level=logging.DEBUG) as logger:
       symbolize_trace.SymbolizeTrace(trace_file, self.options)
-    self.assertEqual(
-        logger.output[0],
-        'DEBUG:root:Created temporary directory to hold symbol files.')
-    self.assertEqual(logger.output[5], 'DEBUG:root:Cleaning up symbol files.')
+    self.assertIn(
+        'DEBUG:root:Created temporary directory to hold symbol files.',
+        logger.output)
+    self.assertIn('DEBUG:root:Cleaning up symbol files.', logger.output)
 
     metadata_extractor.MetadataExtractor.assert_called_once()
     symbol_fetcher.GetTraceBreakpadSymbols.assert_called_once()
@@ -83,8 +83,8 @@ class SymbolizeTraceTestCase(unittest.TestCase):
     # Check logs to see if a breakpad output directory was created.
     with self.assertLogs(level=logging.DEBUG) as logger:
       symbolize_trace.SymbolizeTrace(trace_file, self.options)
-    self.assertEqual(logger.output[0],
-                     'DEBUG:root:Created directory to hold symbol files.')
+    self.assertIn('DEBUG:root:Created directory to hold symbol files.',
+                  logger.output)
 
     metadata_extractor.MetadataExtractor.assert_called_once()
     symbol_fetcher.GetTraceBreakpadSymbols.assert_called_once()
