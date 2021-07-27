@@ -91,9 +91,6 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
       trigger_manager_(trigger_manager) {
-  if (!trigger_manager_)
-    return;
-
   if (unsafe_resources.size() == 1) {
     UMA_HISTOGRAM_ENUMERATION(
         "SafeBrowsing.BlockingPage.ResourceType",
@@ -102,6 +99,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
   }
+
+  if (!trigger_manager_)
+    return;
 
   // Start computing threat details. Trigger Manager will decide if it's safe to
   // begin collecting data at this time. The report will be sent only if the
