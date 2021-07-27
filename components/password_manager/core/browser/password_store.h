@@ -166,10 +166,6 @@ class PasswordStore : public PasswordStoreInterface {
 #endif
 
  protected:
-  using LoginsTask = base::OnceCallback<LoginsResult()>;
-  using LoginsResultProcessor =
-      base::OnceCallback<void(LoginsReply, LoginsResult)>;
-
   friend class base::RefCountedThreadSafe<PasswordStore>;
 
   // Status of PasswordStore::Init().
@@ -240,9 +236,6 @@ class PasswordStore : public PasswordStoreInterface {
   PasswordStoreBackend* backend_ = nullptr;
 
  private:
-  using StatsResult = std::vector<InteractionsStats>;
-  using StatsTask = base::OnceCallback<StatsResult()>;
-
   using InsecureCredentialsTask =
       base::OnceCallback<std::vector<InsecureCredential>()>;
 
@@ -254,20 +247,6 @@ class PasswordStore : public PasswordStoreInterface {
   // Notifies observers that password store data may have been changed.
   void NotifyLoginsChangedOnMainSequence(
       const PasswordStoreChangeList& changes);
-
-  // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
-  // Invokes |consumer|->OnGetPasswordStoreResults() on the caller's thread with
-  // the result.
-  void PostLoginsTaskAndReplyToConsumerWithResult(
-      PasswordStoreConsumer* consumer,
-      LoginsTask task);
-
-  // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
-  // Invokes |consumer|->OnGetSiteStatistics() on the caller's thread with the
-  // result.
-  void PostStatsTaskAndReplyToConsumerWithResult(
-      PasswordStoreConsumer* consumer,
-      StatsTask task);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   // Invokes |consumer|->OnGetInsecureCredentials() on the caller's thread
@@ -282,24 +261,6 @@ class PasswordStore : public PasswordStoreInterface {
   // data.
   void UnblocklistInternal(base::OnceClosure completion,
                            std::vector<std::unique_ptr<PasswordForm>> forms);
-
-  void RemoveStatisticsByOriginAndTimeInternal(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion);
-  PasswordStoreChangeList RemoveCompromisedCredentialsByUrlAndTimeInternal(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time remove_begin,
-      base::Time remove_end,
-      base::OnceClosure completion);
-
-  // Finds all PasswordForms with a signon_realm that is equal to, or is a
-  // PSL-match to that of |form|, and takes care of notifying the consumer with
-  // the results when done.
-  // Note: subclasses should implement FillMatchingLogins() instead.
-  std::vector<std::unique_ptr<PasswordForm>> GetLoginsImpl(
-      const PasswordFormDigest& form);
 
   // Extended version of GetMatchingInsecureCredentialsImpl that also returns
   // credentials stored for the specified affiliated Android applications or Web

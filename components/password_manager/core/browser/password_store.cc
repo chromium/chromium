@@ -494,24 +494,6 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   }
 }
 
-void PasswordStore::PostLoginsTaskAndReplyToConsumerWithResult(
-    PasswordStoreConsumer* consumer,
-    LoginsTask task) {
-  consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE, std::move(task),
-      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this)));
-}
-
-void PasswordStore::PostStatsTaskAndReplyToConsumerWithResult(
-    PasswordStoreConsumer* consumer,
-    StatsTask task) {
-  consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE, std::move(task),
-      base::BindOnce(&PasswordStoreConsumer::OnGetSiteStatistics,
-                     consumer->GetWeakPtr()));
-}
-
 void PasswordStore::PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
     InsecureCredentialsConsumer* consumer,
     InsecureCredentialsTask task) {

@@ -38,9 +38,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
 
   void ShutdownOnUIThread() override;
 
-  // To be used only for testing or in subclasses.
-  LoginDatabase* login_db() const { return login_db_.get(); }
-
  protected:
   ~PasswordStoreImpl() override;
 
