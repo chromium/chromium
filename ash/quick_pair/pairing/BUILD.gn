@@ -17,6 +17,8 @@ source_set("pairing") {
     "fast_pair/fast_pair_data_parser.h",
     "fast_pair/fast_pair_encryption.cc",
     "fast_pair/fast_pair_encryption.h",
+    "fast_pair/fast_pair_gatt_service_client.cc",
+    "fast_pair/fast_pair_gatt_service_client.h",
     "fast_pair/fast_pair_key_pair.cc",
     "fast_pair/fast_pair_key_pair.h",
     "fast_pair/fast_pair_pairer.cc",
@@ -56,13 +58,18 @@ source_set("unit_tests") {
 
   sources = [
     "fast_pair/fast_pair_data_parser_unittest.cc",
+    "fast_pair/fast_pair_gatt_service_client_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
   ]
 
   deps = [
     ":pairing",
+    ":test_support",
     "//ash/quick_pair/common",
+    "//base",
     "//base/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
 }
