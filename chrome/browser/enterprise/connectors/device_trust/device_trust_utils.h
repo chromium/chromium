@@ -13,28 +13,13 @@ namespace enterprise_connectors {
 // SignedData proto.
 // The expected format of the challenge is the following:
 // {
-//    "challenge": {
-//        object (SignedData)
-//    }
-// }
-// SignedData has the following scheme:
-// {
-//    "data": string (base64 encoded string),
-//    "signature": string (base64 encoded string),
-// }
+//    "challenge": base64 encoded SignedData
 std::string JsonChallengeToProtobufChallenge(const std::string& challenge);
 
 // Take a challenge_response proto and return the json version of it.
-// The format is the following:
+// The format follows Vaapi v2 definition:
 // {
-//    "challengeResponse": {
-//        object (SignedData)
-//    }
-// }
-// SignedData has the following scheme:
-// {
-//    "data": string (base64 encoded string),
-//    "signature": string (base64 encoded string),
+//    "challengeResponse": base64 encoded SignedData
 // }
 std::string ProtobufChallengeToJsonChallenge(
     const std::string& challenge_response);

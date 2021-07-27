@@ -21,34 +21,21 @@
 namespace enterprise_connectors {
 
 std::string JsonChallengeToProtobufChallenge(const std::string& challenge) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  attestation::SignedData signed_challenge;
-#else
-  SignedData signed_challenge;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  // Get challenge and decode it.
   absl::optional<base::Value> data = base::JSONReader::Read(
       challenge, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
-  // If json is malformed or it doesn't include the needed fields return
+  // If json is malformed or it doesn't include the needed field return
   // an empty string.
-  if (!data || !data.value().FindPath("challenge.data") ||
-      !data.value().FindPath("challenge.signature"))
+  if (!data || !data.value().FindPath("challenge"))
     return std::string();
-
-  if (!base::Base64Decode(data.value().FindPath("challenge.data")->GetString(),
-                          signed_challenge.mutable_data()))
-    LOG(ERROR) << "Error during decoding base64 challenge data.";
-  if (!base::Base64Decode(
-          data.value().FindPath("challenge.signature")->GetString(),
-          signed_challenge.mutable_signature()))
-    LOG(ERROR) << "Error during decoding base64 challenge signature.";
 
   std::string serialized_signed_challenge;
-  if (!signed_challenge.SerializeToString(&serialized_signed_challenge)) {
-    LOG(ERROR) << __func__ << ": Failed to serialize signed data.";
+  if (!base::Base64Decode(data.value().FindPath("challenge")->GetString(),
+                          &serialized_signed_challenge)) {
+    LOG(ERROR) << "Error during decoding base64 challenge.";
     return std::string();
   }
+
   return serialized_signed_challenge;
 }
 
@@ -56,21 +43,11 @@ std::string ProtobufChallengeToJsonChallenge(
     const std::string& challenge_response) {
   base::Value signed_data(base::Value::Type::DICTIONARY);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  attestation::SignedData signed_data_proto;
-#else
-  SignedData signed_data_proto;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  signed_data_proto.ParseFromString(challenge_response);
   std::string encoded;
-  base::Base64Encode(signed_data_proto.data(), &encoded);
-  signed_data.SetKey("data", base::Value(encoded));
-
-  base::Base64Encode(signed_data_proto.signature(), &encoded);
-  signed_data.SetKey("signature", base::Value(encoded));
+  base::Base64Encode(challenge_response, &encoded);
 
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("challengeResponse", std::move(signed_data));
+  dict.SetKey("challengeResponse", base::Value(encoded));
 
   std::string json;
   base::JSONWriter::Write(dict, &json);

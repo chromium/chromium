@@ -14,26 +14,22 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 constexpr char challenge[] =
     "{"
-    "\"challenge\": {"
-    " \"data\": "
-    "\"ChZFbnRlcnByaXNlS2V5Q2hhbGxlbmdlEiAXyp394cl5TtKo+yhlQPa+CQMPbFyIoY//"
-    "CXHxvDqVqhiBktSOgi8=\","
-    "  \"signature\": "
-    "\"BRRaR9cKJe6NRBAUtPLjRujd0BawaYaPpHXzaWxSqCbFZcB2ZnDwFskh4qPeO0EganhwrPBj"
-    "bD1yLXY1uiPM38TjYQgj2LFXyq0RjGehZ7qLDv2zebiIn6TIDvRi4rhEoXDg3bpKczBTDgp9im"
-    "BQ6QjJS7Pbj0kxPwHzkoVq5UnF9mUUecOAHgKV6ONs4rVjNSpZAPSD/"
-    "jC39wDlIXR5YDKSPCs46u66koDyjM7DNVig+S8nTdr14sXEGFSiHyeFaZC5kXQo103bB9j+"
-    "tcSpwa0MfuZJ5QFJlB1HipjpaGSImZbJPfkjtoK3F1rn9AiHz+nIjLWPrg3KnQt2eaTNSw==\""
-    "}"
+    "\"challenge\": "
+    "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
+    "rZJ2VIqwPXtPFrr653QdRrIzHFwqP+"
+    "b3L8GJTcufirLxKAAkindNwTfwYUcbCFDjiW3kXdmDPE0wC0J6b5ZI6X6vOVcSMXTpK7nxsAGK"
+    "zFV+i80LCnfwUZn7Ne1bHzloAqBdpLOu53vQ63hKRk6MRPhc9jYVDsvqXfQ7s+"
+    "FUA5r3lxdoluxwAUMFqcP4VgnMvKzKTPYbnnB+xj5h5BZqjQToXJYoP4VC3/"
+    "ID+YHNsCWy5o7+G5jnq0ak3zeqWfo1+lCibMPsCM+"
+    "2g7nCZIwvwWlfoKwv3aKvOVMBcJxPAIxH1w+hH+"
+    "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
+    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
     "}";
 
 }  // namespace
@@ -57,9 +53,7 @@ class AttestationServiceTest : public testing::Test {
   ScopedTestingLocalState local_state_;
   base::test::TaskEnvironment task_environment_;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_F(AttestationServiceTest, BuildChallengeResponse) {
@@ -77,18 +71,11 @@ TEST_F(AttestationServiceTest, BuildChallengeResponse) {
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(result.challenge_response(), std::string());
 
-  absl::optional<base::Value> challenge_response = base::JSONReader::Read(
-      ProtobufChallengeToJsonChallenge(result.challenge_response()),
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  SignedData signed_data;
+  EXPECT_TRUE(signed_data.ParseFromString(result.challenge_response()));
 
-  EXPECT_NE(challenge_response.value()
-                .FindPath("challengeResponse.data")
-                ->GetString(),
-            std::string());
-  EXPECT_NE(challenge_response.value()
-                .FindPath("challengeResponse.signature")
-                ->GetString(),
-            std::string());
+  EXPECT_NE(signed_data.data(), std::string());
+  EXPECT_NE(signed_data.signature(), std::string());
 }
 
 }  // namespace enterprise_connectors

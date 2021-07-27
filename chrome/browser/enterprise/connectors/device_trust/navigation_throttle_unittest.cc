@@ -29,18 +29,16 @@ const base::Value kOrigins[]{base::Value("https://www.example.com"),
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 constexpr char challenge[] =
     "{"
-    "\"challenge\": {"
-    " \"data\": "
-    "\"ChZFbnRlcnByaXNlS2V5Q2hhbGxlbmdlEiB+CPt6kzZVCmxIPc4K5NdVGsTLYVcA0ekaCVq+"
-    "8KbZEBif4oXClC8=\","
-    "  \"signature\": "
-    "\"TiR/Qd/f+V/XFnYPIqeLO6/AXI+SKOnKGJmqhJd06MjnHhRnCK5u/BdFkq2H5U/"
-    "qqAx4DS6SfcLfJ+6NEdsemn/5UTmarOOxWA8Fh2zc2a2Zr1+MGDdgRkckIzA5iw99/"
-    "EV+xIUXyVaqJjSuD9iPSFJzlJUtlhbijf8JT1w8PuuxNOERuhqIrJvpZFpb+"
-    "u99YLuGrpw7y64Bh6AhsXryGjowqXYojYWAOYeHX4b2axkHDsThybI+v+"
-    "ECtVHi3l6Z2TOwr7fkyhoy1Kz9swd30rw6/VDB92jzrJTQoy3rQ2+aY8KxycU/"
-    "nuJn3H6583SsiaTbKgyHKmObbGdt0GVWLQ==\""
-    "}"
+    "\"challenge\": "
+    "\"CkEKFkVudGVycHJpc2VLZXlDaGFsbGVuZ2USIELlPXqh8+"
+    "rZJ2VIqwPXtPFrr653QdRrIzHFwqP+"
+    "b3L8GJTcufirLxKAAkindNwTfwYUcbCFDjiW3kXdmDPE0wC0J6b5ZI6X6vOVcSMXTpK7nxsAGK"
+    "zFV+i80LCnfwUZn7Ne1bHzloAqBdpLOu53vQ63hKRk6MRPhc9jYVDsvqXfQ7s+"
+    "FUA5r3lxdoluxwAUMFqcP4VgnMvKzKTPYbnnB+xj5h5BZqjQToXJYoP4VC3/"
+    "ID+YHNsCWy5o7+G5jnq0ak3zeqWfo1+lCibMPsCM+"
+    "2g7nCZIwvwWlfoKwv3aKvOVMBcJxPAIxH1w+hH+"
+    "NWxqRi6qgZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/"
+    "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
     "}";
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
