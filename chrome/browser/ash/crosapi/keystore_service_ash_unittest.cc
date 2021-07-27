@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 
+#include <initializer_list>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
@@ -23,6 +25,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock-actions.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The tests in this file mostly focus on verifying that KeystoreService can
@@ -43,7 +46,9 @@ using crosapi::keystore_service_util::MakeEcKeystoreSigningAlgorithm;
 using crosapi::keystore_service_util::MakeRsaKeystoreSigningAlgorithm;
 using testing::_;
 using testing::DoAll;
+using testing::ElementsAre;
 using testing::StrictMock;
+using testing::UnorderedElementsAre;
 using testing::WithArg;
 
 constexpr char kData[] = "\1\2\3\4\5\6\7";
@@ -106,6 +111,11 @@ std::vector<uint8_t> CertToBlob(
       reinterpret_cast<const uint8_t*>(CRYPTO_BUFFER_data(cert->cert_buffer()));
   return std::vector<uint8_t>(
       cert_buffer, cert_buffer + CRYPTO_BUFFER_len(cert->cert_buffer()));
+}
+
+std::unique_ptr<std::vector<TokenId>> MakeTokenIds(
+    std::initializer_list<TokenId> init_list) {
+  return std::make_unique<std::vector<TokenId>>(init_list);
 }
 
 void AssertBlobEq(const mojom::KeystoreBinaryResultPtr& result,
@@ -174,6 +184,8 @@ struct StatusCallbackObserver {
   mojom::KeystoreError result_error = mojom::KeystoreError::kUnknown;
 };
 
+//------------------------------------------------------------------------------
+
 TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
   const unsigned int modulus_length = 2048;
 
@@ -214,6 +226,8 @@ TEST_F(KeystoreServiceAshTest, GenerateKeyFail) {
 
   AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
 }
+
+//------------------------------------------------------------------------------
 
 TEST_F(KeystoreServiceAshTest, SignRsaSuccess) {
   // Accepted and returned data are the same. This is not realistic, but doesn't
@@ -267,6 +281,8 @@ TEST_F(KeystoreServiceAshTest, SignFail) {
                 mojom::KeystoreError::kKeyNotAllowedForSigning);
 }
 
+//------------------------------------------------------------------------------
+
 TEST_F(KeystoreServiceAshTest, RemoveKeySuccess) {
   EXPECT_CALL(platform_keys_service_,
               RemoveKey(TokenId::kSystem, GetPublicKeyStr(), /*callback=*/_))
@@ -291,6 +307,8 @@ TEST_F(KeystoreServiceAshTest, RemoveKeyFail) {
   EXPECT_EQ(observer.result_is_error, true);
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kKeyNotFound);
 }
+
+//------------------------------------------------------------------------------
 
 TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
   std::vector<std::vector<uint8_t>> cert_authorities_bin = {
@@ -336,6 +354,8 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
   AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
 }
 
+//------------------------------------------------------------------------------
+
 TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
   EXPECT_CALL(key_permissions_service_,
               IsCorporateKey(GetPublicKeyStr(), /*callback=*/_))
@@ -360,6 +380,8 @@ TEST_F(KeystoreServiceAshTest, GetKeyTagsFail) {
 
   AssertErrorEq(observer.result, mojom::KeystoreError::kInternal);
 }
+
+//------------------------------------------------------------------------------
 
 TEST_F(KeystoreServiceAshTest, AddKeyTagsSuccess) {
   const uint64_t tags = static_cast<uint64_t>(mojom::KeyTag::kCorporate);
@@ -388,6 +410,8 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
   EXPECT_EQ(observer.result_error, mojom::KeystoreError::kInternal);
 }
 
+//------------------------------------------------------------------------------
+
 TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
   EXPECT_CALL(key_permissions_service_,
               CanUserGrantPermissionForKey(GetPublicKeyStr(), /*callback=*/_))
@@ -399,6 +423,8 @@ TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
 
   EXPECT_EQ(observer.result, false);
 }
+
+//------------------------------------------------------------------------------
 
 TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
   const std::vector<uint8_t> cert_bin =
@@ -434,6 +460,67 @@ TEST_F(KeystoreServiceAshTest, GetPublicKeyFail) {
   EXPECT_EQ(observer.result->get_error(),
             mojom::KeystoreError::kAlgorithmNotPermittedByCertificate);
 }
+
+//------------------------------------------------------------------------------
+
+TEST_F(KeystoreServiceAshTest, GetKeyStoresEmptySuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(MakeTokenIds({}), Status::kSuccess));
+
+  CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
+  keystore_service_.GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_TRUE(observer.result->get_key_stores().empty());
+}
+
+TEST_F(KeystoreServiceAshTest, GetKeyStoresUserSuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(
+          RunOnceCallback<0>(MakeTokenIds({TokenId::kUser}), Status::kSuccess));
+
+  CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
+  keystore_service_.GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_THAT(observer.result->get_key_stores(),
+              ElementsAre(crosapi::mojom::KeystoreType::kUser));
+}
+
+TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceSuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(MakeTokenIds({TokenId::kSystem}),
+                                   Status::kSuccess));
+
+  CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
+  keystore_service_.GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_THAT(observer.result->get_key_stores(),
+              ElementsAre(crosapi::mojom::KeystoreType::kDevice));
+}
+
+TEST_F(KeystoreServiceAshTest, GetKeyStoresDeviceUserSuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(
+          MakeTokenIds({TokenId::kUser, TokenId::kSystem}), Status::kSuccess));
+
+  CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
+  keystore_service_.GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_THAT(observer.result->get_key_stores(),
+              UnorderedElementsAre(crosapi::mojom::KeystoreType::kUser,
+                                   crosapi::mojom::KeystoreType::kDevice));
+}
+
+TEST_F(KeystoreServiceAshTest, GetKeyStoresFail) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(MakeTokenIds({}), Status::kErrorInternal));
+
+  CallbackObserver<mojom::GetKeyStoresResultPtr> observer;
+  keystore_service_.GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_error());
+  EXPECT_EQ(observer.result->get_error(), mojom::KeystoreError::kInternal);
+}
+
+//------------------------------------------------------------------------------
 
 // Tests for deprecated methods.
 
@@ -471,6 +558,67 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeyFail) {
   EXPECT_EQ(observer.result->get_error_message(),
             chromeos::platform_keys::KeystoreErrorToString(
                 mojom::KeystoreError::kAlgorithmNotPermittedByCertificate));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresEmptySuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(MakeTokenIds({}), Status::kSuccess));
+
+  CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
+  keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_TRUE(observer.result->get_key_stores().empty());
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresUserSuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(
+          RunOnceCallback<0>(MakeTokenIds({TokenId::kUser}), Status::kSuccess));
+
+  CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
+  keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_THAT(observer.result->get_key_stores(),
+              ElementsAre(crosapi::mojom::KeystoreType::kUser));
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresDeviceSuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(MakeTokenIds({TokenId::kSystem}),
+                                   Status::kSuccess));
+
+  CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
+  keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_THAT(observer.result->get_key_stores(),
+              ElementsAre(crosapi::mojom::KeystoreType::kDevice));
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresDeviceUserSuccess) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(
+          MakeTokenIds({TokenId::kUser, TokenId::kSystem}), Status::kSuccess));
+
+  CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
+  keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_key_stores());
+  EXPECT_THAT(observer.result->get_key_stores(),
+              UnorderedElementsAre(crosapi::mojom::KeystoreType::kUser,
+                                   crosapi::mojom::KeystoreType::kDevice));
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresFail) {
+  EXPECT_CALL(platform_keys_service_, GetTokens)
+      .WillOnce(RunOnceCallback<0>(MakeTokenIds({}), Status::kErrorInternal));
+
+  CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
+  keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_error_message());
+  EXPECT_EQ(observer.result->get_error_message(),
+            chromeos::platform_keys::KeystoreErrorToString(
+                mojom::KeystoreError::kInternal));
 }
 
 }  // namespace

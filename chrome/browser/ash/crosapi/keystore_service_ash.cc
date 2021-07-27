@@ -265,6 +265,44 @@ void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
 
 //------------------------------------------------------------------------------
 
+void KeystoreServiceAsh::GetKeyStores(GetKeyStoresCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  GetPlatformKeys()->GetTokens(base::BindOnce(
+      &KeystoreServiceAsh::DidGetKeyStores, std::move(callback)));
+}
+
+// static
+void KeystoreServiceAsh::DidGetKeyStores(
+    GetKeyStoresCallback callback,
+    std::unique_ptr<std::vector<TokenId>> platform_keys_token_ids,
+    chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  mojom::GetKeyStoresResultPtr result_ptr = mojom::GetKeyStoresResult::New();
+
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    std::vector<mojom::KeystoreType> key_stores;
+    for (auto token_id : *platform_keys_token_ids) {
+      switch (token_id) {
+        case TokenId::kUser:
+          key_stores.push_back(mojom::KeystoreType::kUser);
+          break;
+        case TokenId::kSystem:
+          key_stores.push_back(mojom::KeystoreType::kDevice);
+          break;
+      }
+    }
+    result_ptr->set_key_stores(std::move(key_stores));
+  } else {
+    result_ptr->set_error(
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+
+  std::move(callback).Run(std::move(result_ptr));
+}
+
+//------------------------------------------------------------------------------
+
 void KeystoreServiceAsh::DEPRECATED_GetKeyStores(
     DEPRECATED_GetKeyStoresCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

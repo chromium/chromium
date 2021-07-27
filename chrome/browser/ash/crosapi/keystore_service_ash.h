@@ -63,8 +63,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       mojom::KeystoreType type,
       bool migrate,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
-  void DEPRECATED_GetKeyStores(
-      DEPRECATED_GetKeyStoresCallback callback) override;
+  void GetKeyStores(GetKeyStoresCallback callback) override;
   void SelectClientCertificates(
       const std::vector<std::vector<uint8_t>>& certificate_authorities,
       SelectClientCertificatesCallback callback) override;
@@ -119,6 +118,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       const std::vector<uint8_t>& certificate,
       mojom::KeystoreSigningAlgorithmName algorithm_name,
       DEPRECATED_GetPublicKeyCallback callback) override;
+  // DEPRECATED, use `GetKeyStores` instead.
+  void DEPRECATED_GetKeyStores(
+      DEPRECATED_GetKeyStoresCallback callback) override;
 
  private:
   // Returns a correct instance of PlatformKeysService to use. If a specific
@@ -139,8 +141,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge,
       const ash::attestation::TpmChallengeKeyResult& result);
-  static void DEPRECATED_DidGetKeyStores(
-      DEPRECATED_GetKeyStoresCallback callback,
+  static void DidGetKeyStores(
+      GetKeyStoresCallback callback,
       std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
           platform_keys_token_ids,
       chromeos::platform_keys::Status status);
@@ -178,6 +180,11 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       DEPRECATED_ExtensionSignCallback callback,
       const std::string& signature,
       absl::optional<mojom::KeystoreError> error);
+  static void DEPRECATED_DidGetKeyStores(
+      DEPRECATED_GetKeyStoresCallback callback,
+      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
+          platform_keys_token_ids,
+      chromeos::platform_keys::Status status);
 
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
