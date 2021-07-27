@@ -44,7 +44,6 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
 
     DISALLOW_COPY_AND_ASSIGN(FamilyDataResult);
   };
-  static FontEnumerationCacheWin* GetInstance();
 
  protected:
   // FontEnumerationCache interface.
