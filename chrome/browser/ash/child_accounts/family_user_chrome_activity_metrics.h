@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
+#include "chrome/browser/ash/child_accounts/usage_time_state_notifier.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -25,6 +26,7 @@ namespace ash {
 // the beginning of the first active Chrome OS session on a subsequent day.
 class FamilyUserChromeActivityMetrics
     : public app_time::AppServiceWrapper::EventListener,
+      public UsageTimeStateNotifier::Observer,
       public FamilyUserMetricsService::Observer {
  public:
   static const char kChromeBrowserEngagementDurationHistogramName[];
@@ -45,12 +47,25 @@ class FamilyUserChromeActivityMetrics
 
  private:
   // AppServiceWrapper::EventListener:
+  // When the screen goes from off to on or device goes idle
+  // to active, this function does not get called. OnUsageTimeStateChange() gets
+  // called instead.
   void OnAppActive(const app_time::AppId& app_id,
                    aura::Window* window,
                    base::Time timestamp) override;
+  // When the screen goes from on to off or device goes active
+  // to idle, this function does not get called. OnUsageTimeStateChange() gets
+  // called instead.
   void OnAppInactive(const app_time::AppId& app_id,
                      aura::Window* window,
                      base::Time timestamp) override;
+
+  // UsageTimeStateNotifier::Observer:
+  // When the user signs out, this function doesn't get called and
+  // UsageTimeStateNotifier::UsageTimeState doesn't change to inactive.
+  // OnAppInactive will be called.
+  void OnUsageTimeStateChange(
+      UsageTimeStateNotifier::UsageTimeState state) override;
 
   // Called when user engagement of browser changes. Saves duration data to
   // prefs or report to UMA.

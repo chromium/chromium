@@ -5761,6 +5761,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FamilyUser.ChromeBrowserEngagement.Duration" units="ms"
     expires_after="2021-07-14">
+  <obsolete>
+    Replaced with FamilyUser.ChromeBrowserEngagement.Duration2 in M94. The new
+    version fixed http://crbug.com/1221242.
+  </obsolete>
   <owner>agawronska@chromium.org</owner>
   <owner>tobyhuang@chromium.org</owner>
   <owner>xiqiruan@chromium.org</owner>
@@ -5770,6 +5774,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     current daily duration at the first session start on next day. This is only
     logged for active foreground time of Chrome browser. Ignores the time when
     video or audio is playing in the background, or Chrome browser is invisible.
+  </summary>
+</histogram>
+
+<histogram name="FamilyUser.ChromeBrowserEngagement.Duration2" units="ms"
+    expires_after="2022-07-14">
+  <owner>agawronska@chromium.org</owner>
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>xiqiruan@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the Chrome OS user Chrome browser usage in milliseconds. Reports
+    current daily duration at the first session start on next day. Despite daily
+    reporting, the uploaded duration can still exceed 24 hours if the user
+    continuously stays active for that long. This is only logged for active
+    foreground time of Chrome browser. Ignores the time when video or audio is
+    playing in the background, or Chrome browser is invisible. Also ignores the
+    time when UsageTimeStateNotifier::UsageTimeState is inactive.
   </summary>
 </histogram>
 

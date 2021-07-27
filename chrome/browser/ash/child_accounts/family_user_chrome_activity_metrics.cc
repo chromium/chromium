@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/family_user_chrome_activity_metrics.h"
 
+#include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
@@ -20,8 +20,8 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kMinChromeDuration = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kMaxChromeDuration = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinChromeDuration = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMaxChromeDuration = base::TimeDelta::FromDays(7);
 constexpr int kChromeDurationBuckets = 100;
 
 }  // namespace
@@ -29,7 +29,7 @@ constexpr int kChromeDurationBuckets = 100;
 // static
 const char FamilyUserChromeActivityMetrics::
     kChromeBrowserEngagementDurationHistogramName[] =
-        "FamilyUser.ChromeBrowserEngagement.Duration";
+        "FamilyUser.ChromeBrowserEngagement.Duration2";
 
 // static
 void FamilyUserChromeActivityMetrics::RegisterProfilePrefs(
@@ -44,11 +44,13 @@ FamilyUserChromeActivityMetrics::FamilyUserChromeActivityMetrics(
     : pref_service_(profile->GetPrefs()), app_service_wrapper_(profile) {
   DCHECK(pref_service_);
   app_service_wrapper_.AddObserver(this);
+  UsageTimeStateNotifier::GetInstance()->AddObserver(this);
 }
 
 FamilyUserChromeActivityMetrics::~FamilyUserChromeActivityMetrics() {
   DCHECK_EQ(base::Time(), active_duration_start_);
   app_service_wrapper_.RemoveObserver(this);
+  UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }
 
 void FamilyUserChromeActivityMetrics::OnNewDay() {
@@ -97,13 +99,24 @@ void FamilyUserChromeActivityMetrics::OnAppInactive(
     UpdateUserEngagement(/*is_user_active=*/false);
 }
 
+void FamilyUserChromeActivityMetrics::OnUsageTimeStateChange(
+    UsageTimeStateNotifier::UsageTimeState state) {
+  if (active_browser_windows_.empty())
+    return;
+
+  // We should exclude the duration when UsageTimeState is not active and
+  // `active_browser_windows_` has instance. For example, when screen is off,
+  // the browser might still be active.
+  UpdateUserEngagement(state == UsageTimeStateNotifier::UsageTimeState::ACTIVE);
+}
+
 void FamilyUserChromeActivityMetrics::UpdateUserEngagement(
     bool is_user_active) {
   base::Time now = base::Time::Now();
   if (is_user_active) {
     active_duration_start_ = now;
   } else {
-    if (now > active_duration_start_) {
+    if (base::Time() < active_duration_start_ && active_duration_start_ < now) {
       base::TimeDelta unreported_duration = pref_service_->GetTimeDelta(
           prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
       pref_service_->SetTimeDelta(
