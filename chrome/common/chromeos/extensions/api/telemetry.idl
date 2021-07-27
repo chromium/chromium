@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.os.telemetry</code> API to get telemetry data.
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"]
+namespace os.telemetry {
+  dictionary VpdInfo {
+    // Device serial number.
+    DOMString? serialNumber;
+  };
+
+  callback VpdInfoCallback = void (VpdInfo vpdInfo);
+
+  interface Functions {
+    // Retrieves VPD info.
+    [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
+  };
+};
