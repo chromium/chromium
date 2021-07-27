@@ -735,16 +735,16 @@ void ExternalProviderImpl::CreateExternalProviders(
     return;
   }
 
+#if !defined(OS_WIN)
   // On Mac OS, items in /Library/... should be written by the superuser.
   // Check that all components of the path are writable by root only.
   ExternalPrefLoader::Options check_admin_permissions_on_mac;
 #if defined(OS_MAC)
   check_admin_permissions_on_mac =
-    ExternalPrefLoader::ENSURE_PATH_CONTROLLED_BY_ADMIN;
+      ExternalPrefLoader::ENSURE_PATH_CONTROLLED_BY_ADMIN;
 #else
   check_admin_permissions_on_mac = ExternalPrefLoader::NONE;
 #endif
-#if !defined(OS_WIN)
   int bundled_extension_creation_flags = Extension::NO_FLAGS;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)

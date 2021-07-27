@@ -191,19 +191,13 @@ TEST_F(AppSessionServiceTest, TwoApps) {
   ASSERT_EQ(1U, windows[0]->tabs.size());
   ASSERT_EQ(1U, windows[1]->tabs.size());
 
-  sessions::SessionTab* rt1 = nullptr;
-  sessions::SessionTab* rt2 = nullptr;
   if (windows[0]->window_id == app_window_id) {
     ASSERT_EQ(window2_id, windows[1]->window_id);
-    rt1 = windows[0]->tabs[0].get();
-    rt2 = windows[1]->tabs[0].get();
   } else {
     ASSERT_EQ(window2_id, windows[0]->window_id);
     ASSERT_EQ(window_id, windows[1]->window_id);
     ASSERT_EQ(ui::SHOW_STATE_MAXIMIZED, windows[0]->show_state);
     ASSERT_EQ(ui::SHOW_STATE_NORMAL, windows[1]->show_state);
-    rt1 = windows[1]->tabs[0].get();
-    rt2 = windows[0]->tabs[0].get();
   }
 }
 

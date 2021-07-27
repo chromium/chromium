@@ -303,15 +303,9 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
     network::mojom::URLResponseHeadPtr http_head =
         network::mojom::URLResponseHead::New();
     network::URLLoaderCompletionStatus net_status;
-    network::TestURLLoaderFactory::ResponseProduceFlags response_flags =
-        network::TestURLLoaderFactory::kResponseDefault;
-
-    if (response.http_response_code == kNoResponse) {
-      response_flags =
-          TestURLLoaderFactory::kResponseOnlyRedirectsNoDestination;
-    } else if (response.http_response_code == kNetError) {
+    if (response.http_response_code == kNetError) {
       net_status = network::URLLoaderCompletionStatus(net::ERR_FAILED);
-    } else {
+    } else if (response.http_response_code != kNoResponse) {
       net_status = network::URLLoaderCompletionStatus(net::OK);
       http_head = network::CreateURLResponseHead(
           static_cast<net::HttpStatusCode>(response.http_response_code));

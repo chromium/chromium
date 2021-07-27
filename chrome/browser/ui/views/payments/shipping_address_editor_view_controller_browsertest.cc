@@ -384,7 +384,6 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
     views::Combobox* region_combobox = static_cast<views::Combobox*>(
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::ADDRESS_HOME_STATE)));
-    autofill::RegionComboboxModel* region_model = nullptr;
     // Some countries don't have a state combobox.
     if (region_combobox) {
       autofill::RegionComboboxModel* region_model =
@@ -410,7 +409,6 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
     country_combobox = nullptr;
     country_model = nullptr;
     region_combobox = nullptr;
-    region_model = nullptr;
     WaitForObservedEvent();
 
     // Some types could have been lost in previous countries and may now

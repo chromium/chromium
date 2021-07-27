@@ -810,11 +810,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabLatestWindow) {
 // Tests that a disposition of SINGLETON_TAB cannot see outside its
 // window.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SingletonWindowLeak) {
-  Browser* browser1;
-
   // Navigate to a site.
-  browser1 = NavigateHelper(GURL("chrome://dino"), browser(),
-                            WindowOpenDisposition::CURRENT_TAB, true);
+  NavigateHelper(GURL("chrome://dino"), browser(),
+                 WindowOpenDisposition::CURRENT_TAB, true);
 
   // Navigate to a new window.
   Browser* browser2 = NavigateHelper(GURL("chrome://about"), browser(),

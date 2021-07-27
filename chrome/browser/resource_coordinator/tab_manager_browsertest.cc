@@ -162,7 +162,7 @@ class TabManagerTest : public InProcessBrowserTest {
     OpenURLParams open1(first_url, content::Referrer(),
                         WindowOpenDisposition::CURRENT_TAB,
                         ui::PAGE_TRANSITION_TYPED, false);
-    content::WebContents* web_contents = browser()->OpenURL(open1);
+    browser()->OpenURL(open1);
     load1.Wait();
 
     content::WindowedNotificationObserver load2(
@@ -171,7 +171,7 @@ class TabManagerTest : public InProcessBrowserTest {
     OpenURLParams open2(second_url, content::Referrer(),
                         WindowOpenDisposition::NEW_BACKGROUND_TAB,
                         ui::PAGE_TRANSITION_TYPED, false);
-    web_contents = browser()->OpenURL(open2);
+    browser()->OpenURL(open2);
     load2.Wait();
 
     ASSERT_EQ(2, tsm()->count());

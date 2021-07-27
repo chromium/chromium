@@ -1709,7 +1709,6 @@ Status ExecutePerformActions(Session* session,
               }
             }
           } else if (type == "pointer" || type == "wheel") {
-            OriginType origin = kViewPort;
             std::string element_id;
             if (action_type == "pointerMove" || action_type == "scroll") {
               double x = action->FindDoubleKey("x").value_or(0);
@@ -1717,7 +1716,6 @@ Status ExecutePerformActions(Session* session,
               const base::DictionaryValue* origin_dict;
               if (action->FindKey("origin")) {
                 if (action->GetDictionary("origin", &origin_dict)) {
-                  origin = kElement;
                   origin_dict->GetString(GetElementKey(), &element_id);
                   if (!element_id.empty()) {
                     int center_x = 0, center_y = 0;
@@ -1732,7 +1730,6 @@ Status ExecutePerformActions(Session* session,
                   std::string origin_str;
                   action->GetString("origin", &origin_str);
                   if (origin_str == "pointer") {
-                    origin = kPointer;
                     x += action_locations[id].x();
                     y += action_locations[id].y();
                   }

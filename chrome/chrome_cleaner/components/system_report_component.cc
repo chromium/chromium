@@ -635,22 +635,6 @@ void ReportProxySettingsInformation() {
   // Retrieve the default WinHTTP proxy configuration from the registry.
   WINHTTP_PROXY_INFO proxy_info;
   if (::WinHttpGetDefaultProxyConfiguration(&proxy_info)) {
-    const char* access_type = nullptr;
-    switch (proxy_info.dwAccessType) {
-      case WINHTTP_ACCESS_TYPE_NO_PROXY:
-        access_type = "no proxy";
-        break;
-      case WINHTTP_ACCESS_TYPE_DEFAULT_PROXY:
-        access_type = "default proxy";
-        break;
-      case WINHTTP_ACCESS_TYPE_NAMED_PROXY:
-        access_type = "named proxy";
-        break;
-      default:
-        access_type = "unknown";
-        break;
-    }
-
     // Report proxy information when it's not the default configuration.
     if (proxy_info.dwAccessType != WINHTTP_ACCESS_TYPE_NO_PROXY ||
         proxy_info.lpszProxy || proxy_info.lpszProxyBypass) {
