@@ -9,10 +9,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
-// namespace views {
-// class FocusSearch;
-// }
-
 namespace ash {
 
 class FeaturePodButton;
