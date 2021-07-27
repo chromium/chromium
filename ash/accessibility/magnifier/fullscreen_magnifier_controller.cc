@@ -34,6 +34,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_handler.h"
 #include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -116,7 +117,8 @@ FullscreenMagnifierController::FullscreenMagnifierController()
     : root_window_(Shell::GetPrimaryRootWindow()),
       scale_(kNonMagnifiedScale),
       original_scale_(kNonMagnifiedScale) {
-  Shell::Get()->AddPreTargetHandler(this);
+  Shell::Get()->AddPreTargetHandler(this,
+                                    ui::EventTarget::Priority::kAccessibility);
   root_window_->AddObserver(this);
   root_window_->GetHost()->GetEventSource()->AddEventRewriter(this);
   if (ui::IMEBridge::Get())
@@ -398,9 +400,6 @@ void FullscreenMagnifierController::OnInputMethodDestroyed(
 }
 
 void FullscreenMagnifierController::OnImplicitAnimationsCompleted() {
-  if (!is_on_animation_)
-    return;
-
   if (move_cursor_after_animation_) {
     MoveCursorTo(root_window_->GetHost(), position_after_animation_);
     move_cursor_after_animation_ = false;

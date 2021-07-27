@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_test_utils.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_util.h"
@@ -903,6 +906,35 @@ TEST_F(DockedMagnifierTest, FocusChangeEvents) {
   gfx::Point button_2_center(
       focus_test_helper.GetSecondButtonBoundsInRoot().CenterPoint());
   TestMagnifierLayerTransform(button_2_center, root_windows[0]);
+}
+
+TEST_F(DockedMagnifierTest, CaptureMode) {
+  UpdateDisplay("600x900");
+
+  controller()->SetEnabled(true);
+  controller()->SetScale(2.f);
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->Start(CaptureModeEntryType::kQuickSettings);
+
+  // Test that the magnifier viewport follows the cursor when it moves to
+  // various points even though capture mode consumes mouse events.
+  auto* event_generator = GetEventGenerator();
+  gfx::Point point_of_interest{10, 20};
+  event_generator->MoveMouseTo(point_of_interest);
+  auto* root = Shell::GetPrimaryRootWindow();
+  TestMagnifierLayerTransform(point_of_interest, root);
+  point_of_interest = gfx::Point{510, 820};
+  event_generator->MoveMouseTo(point_of_interest);
+  TestMagnifierLayerTransform(point_of_interest, root);
+
+  // And the magnifier viewport follows the cursor when it's above the capture
+  // mode bar.
+  auto* bar_widget = capture_mode_controller->capture_mode_session()
+                         ->capture_mode_bar_widget();
+  point_of_interest = bar_widget->GetWindowBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(point_of_interest);
+  TestMagnifierLayerTransform(point_of_interest, root);
 }
 
 // TODO(afakhry): Expand tests:
