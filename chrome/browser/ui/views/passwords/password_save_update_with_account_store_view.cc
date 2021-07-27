@@ -443,7 +443,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
   }
 
   {
-    using Controller = SaveUpdateWithAccountStoreBubbleController;
+    using Controller = SaveUpdateBubbleController;
     using ControllerNotifyFn = void (Controller::*)();
     auto button_clicked = [](PasswordSaveUpdateWithAccountStoreView* dialog,
                              ControllerNotifyFn func) {

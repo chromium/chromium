@@ -7,7 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "base/token.h"
-#include "chrome/browser/ui/passwords/bubble_controllers/save_update_with_account_store_bubble_controller.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -97,7 +97,7 @@ class PasswordSaveUpdateWithAccountStoreView
   // Used for both the username and password editable comboboxes.
   void OnContentChanged();
 
-  SaveUpdateWithAccountStoreBubbleController controller_;
+  SaveUpdateBubbleController controller_;
 
   // True iff it is an update password bubble on creation. False iff it is a
   // save bubble.

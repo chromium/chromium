@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/passwords/bubble_controllers/save_update_with_account_store_bubble_controller.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -21,7 +20,6 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -89,10 +87,9 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
 
 }  // namespace
 
-SaveUpdateWithAccountStoreBubbleController::
-    SaveUpdateWithAccountStoreBubbleController(
-        base::WeakPtr<PasswordsModelDelegate> delegate,
-        PasswordBubbleControllerBase::DisplayReason display_reason)
+SaveUpdateBubbleController::SaveUpdateBubbleController(
+    base::WeakPtr<PasswordsModelDelegate> delegate,
+    PasswordBubbleControllerBase::DisplayReason display_reason)
     : PasswordBubbleControllerBase(
           delegate,
           ComputeDisplayDisposition(display_reason, delegate->GetState())),
@@ -102,11 +99,6 @@ SaveUpdateWithAccountStoreBubbleController::
       enable_editing_(false),
       dismissal_reason_(metrics_util::NO_DIRECT_INTERACTION),
       clock_(base::DefaultClock::GetInstance()) {
-  // If kEnablePasswordsAccountStorage is disabled, then
-  // SaveUpdateBubbleController should be used instead of this class.
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   state_ = delegate_->GetState();
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
@@ -146,13 +138,12 @@ SaveUpdateWithAccountStoreBubbleController::
                         kCredentialManagementAPI;
 }
 
-SaveUpdateWithAccountStoreBubbleController::
-    ~SaveUpdateWithAccountStoreBubbleController() {
+SaveUpdateBubbleController::~SaveUpdateBubbleController() {
   if (!interaction_reported_)
     OnBubbleClosing();
 }
 
-void SaveUpdateWithAccountStoreBubbleController::OnSaveClicked() {
+void SaveUpdateBubbleController::OnSaveClicked() {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
@@ -168,14 +159,14 @@ void SaveUpdateWithAccountStoreBubbleController::OnSaveClicked() {
   }
 }
 
-void SaveUpdateWithAccountStoreBubbleController::OnNopeUpdateClicked() {
+void SaveUpdateBubbleController::OnNopeUpdateClicked() {
   DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE, state_);
   dismissal_reason_ = metrics_util::CLICKED_CANCEL;
   if (delegate_)
     delegate_->OnNopeUpdateClicked();
 }
 
-void SaveUpdateWithAccountStoreBubbleController::OnNeverForThisSiteClicked() {
+void SaveUpdateBubbleController::OnNeverForThisSiteClicked() {
   DCHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, state_);
   dismissal_reason_ = metrics_util::CLICKED_NEVER;
   if (delegate_) {
@@ -184,7 +175,7 @@ void SaveUpdateWithAccountStoreBubbleController::OnNeverForThisSiteClicked() {
   }
 }
 
-void SaveUpdateWithAccountStoreBubbleController::OnCredentialEdited(
+void SaveUpdateBubbleController::OnCredentialEdited(
     std::u16string new_username,
     std::u16string new_password) {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
@@ -193,7 +184,7 @@ void SaveUpdateWithAccountStoreBubbleController::OnCredentialEdited(
   pending_password_.password_value = std::move(new_password);
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::IsCurrentStateUpdate() const {
+bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
   return std::any_of(existing_credentials_.begin(), existing_credentials_.end(),
@@ -203,8 +194,7 @@ bool SaveUpdateWithAccountStoreBubbleController::IsCurrentStateUpdate() const {
                      });
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::
-    IsCurrentStateAffectingTheAccountStore() {
+bool SaveUpdateBubbleController::IsCurrentStateAffectingTheAccountStore() {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
   bool is_update = false;
@@ -223,7 +213,7 @@ bool SaveUpdateWithAccountStoreBubbleController::
   return is_update_in_account_store;
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::RevealPasswords() {
+bool SaveUpdateBubbleController::RevealPasswords() {
   bool reveal_immediately = !password_revealing_requires_reauth_ ||
                             (delegate_ && delegate_->AuthenticateUser());
   if (reveal_immediately)
@@ -231,25 +221,23 @@ bool SaveUpdateWithAccountStoreBubbleController::RevealPasswords() {
   return reveal_immediately;
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::ShouldShowPasswordStorePicker()
-    const {
+bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {
   return delegate_->GetPasswordFeatureManager()
       ->ShouldShowAccountStorageBubbleUi();
 }
 
-void SaveUpdateWithAccountStoreBubbleController::OnToggleAccountStore(
+void SaveUpdateBubbleController::OnToggleAccountStore(
     bool is_account_store_selected) {
   delegate_->GetPasswordFeatureManager()->SetDefaultPasswordStore(
       is_account_store_selected ? Store::kAccountStore : Store::kProfileStore);
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::IsUsingAccountStore() {
+bool SaveUpdateBubbleController::IsUsingAccountStore() {
   return delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
          Store::kAccountStore;
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::
-    IsAccountStorageOptInRequired() {
+bool SaveUpdateBubbleController::IsAccountStorageOptInRequired() {
   // If this is an update, either a) the password only exists in the profile
   // store, so the opt-in shouldn't be offered because the account storage won't
   // be used, or b) there is a copy in the account store, which means the user
@@ -264,8 +252,7 @@ bool SaveUpdateWithAccountStoreBubbleController::
   return true;
 }
 
-std::string
-SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountEmail() {
+std::string SaveUpdateBubbleController::GetPrimaryAccountEmail() {
   Profile* profile = GetProfile();
   if (!profile)
     return std::string();
@@ -277,8 +264,7 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountEmail() {
       .email;
 }
 
-ui::ImageModel
-SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountAvatar(
+ui::ImageModel SaveUpdateBubbleController::GetPrimaryAccountAvatar(
     int icon_size_dip) {
   Profile* profile = GetProfile();
   if (!profile)
@@ -301,12 +287,11 @@ SaveUpdateWithAccountStoreBubbleController::GetPrimaryAccountAvatar(
                                    icon_size_dip, profiles::SHAPE_CIRCLE));
 }
 
-bool SaveUpdateWithAccountStoreBubbleController::
-    DidAuthForAccountStoreOptInFail() const {
+bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {
   return delegate_->DidAuthForAccountStoreOptInFail();
 }
 
-std::u16string SaveUpdateWithAccountStoreBubbleController::GetTitle() const {
+std::u16string SaveUpdateBubbleController::GetTitle() const {
   PasswordTitleType type = IsCurrentStateUpdate()
                                ? PasswordTitleType::UPDATE_PASSWORD
                                : (pending_password_.federation_origin.opaque()
@@ -316,7 +301,7 @@ std::u16string SaveUpdateWithAccountStoreBubbleController::GetTitle() const {
                                         origin_, type);
 }
 
-void SaveUpdateWithAccountStoreBubbleController::ReportInteractions() {
+void SaveUpdateBubbleController::ReportInteractions() {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
   if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {

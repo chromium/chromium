@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_WITH_ACCOUNT_STORE_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_WITH_ACCOUNT_STORE_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
@@ -23,14 +23,12 @@ class ImageModel;
 
 // This controller provides data and actions for the
 // PasswordSaveUpdateWithAccountStoreView.
-// TODO(crbug.com/1108738): Rename to SaveUpdateBubbleController.
-class SaveUpdateWithAccountStoreBubbleController
-    : public PasswordBubbleControllerBase {
+class SaveUpdateBubbleController : public PasswordBubbleControllerBase {
  public:
-  explicit SaveUpdateWithAccountStoreBubbleController(
+  explicit SaveUpdateBubbleController(
       base::WeakPtr<PasswordsModelDelegate> delegate,
       DisplayReason display_reason);
-  ~SaveUpdateWithAccountStoreBubbleController() override;
+  ~SaveUpdateBubbleController() override;
 
   // Called by the view code when the save/update button is clicked by the user.
   void OnSaveClicked();
@@ -141,4 +139,4 @@ class SaveUpdateWithAccountStoreBubbleController
   base::Clock* clock_;
 };
 
-#endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_WITH_ACCOUNT_STORE_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_PASSWORDS_BUBBLE_CONTROLLERS_SAVE_UPDATE_BUBBLE_CONTROLLER_H_
