@@ -24,8 +24,10 @@ class TestSharesheetController : public sharesheet::SharesheetController {
   Profile* GetProfile() override { return nullptr; }
   void SetBubbleSize(int width, int height) override {}
   void CloseBubble(::sharesheet::SharesheetResult result) override {
-    if (result == ::sharesheet::SharesheetResult::kCancel)
-      close_called = true;
+    // The NearbyShareDialogUI can only invoke this method with a cancellation
+    // result.
+    EXPECT_EQ(::sharesheet::SharesheetResult::kCancel, result);
+    close_called = true;
   }
 
   bool close_called = false;
