@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
@@ -116,6 +117,11 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("isGuestSession", profile->IsGuestSession());
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
+
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
 
   source->AddBoolean("isHistoryClustersEnabled",
                      base::FeatureList::IsEnabled(history_clusters::kMemories));

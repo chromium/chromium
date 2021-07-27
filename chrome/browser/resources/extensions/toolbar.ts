@@ -98,10 +98,12 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   private showPackDialog_: boolean;
   private isUpdating_: boolean;
 
-
   ready() {
     super.ready();
     this.setAttribute('role', 'banner');
+    this.toggleAttribute(
+        'enable-branding-update',
+        document.documentElement.hasAttribute('enable-branding-update'));
   }
 
   private fire_(eventName: string, detail?: any) {

@@ -196,12 +196,22 @@
         margin: 0;
         padding: 0;
       }
+
+      #cr-container-shadow-top {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) #cr-container-shadow-top {
+        display: initial;
+      }
     </style>
 
     <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
         on-search-changed="onSearchChanged_" clear-label="$i18n{clearSearch}"
         search-prompt="$i18n{searchPrompt}">
     </cr-toolbar>
+    <div id="cr-container-shadow-top"
+        class="cr-container-shadow has-shadow"></div>
     <main id="mainContent">
       <div class="cr-centered-card-container">
         <div class="card">

@@ -11,6 +11,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -128,6 +129,11 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
   };
   for (const auto& str : kStrings)
     AddLocalizedString(source, str.name, str.id);
+
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
 
   return source;
 }

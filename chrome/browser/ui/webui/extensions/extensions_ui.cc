@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_browser_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -63,8 +64,8 @@ std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
 }
 
-content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
-                                                   bool in_dev_mode) {
+content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
+                                                 bool in_dev_mode) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIExtensionsHost);
   webui::SetupWebUIDataSource(
@@ -314,6 +315,11 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
                      base::CommandLine::ForCurrentProcess()->HasSwitch(
                          ::switches::kEnableExtensionActivityLogging));
 
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
+
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
   return source;
@@ -333,7 +339,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
                     base::BindRepeating(&ExtensionsUI::OnDevModeChanged,
                                         base::Unretained(this)));
 
-  source = CreateMdExtensionsSource(profile, *in_dev_mode_);
+  source = CreateExtensionsSource(profile, *in_dev_mode_);
   ManagedUIHandler::Initialize(web_ui, source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

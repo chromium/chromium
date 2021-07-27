@@ -9,7 +9,7 @@
 
   /* This toggle needs special styling because it's on blue background. */
   @media (prefers-color-scheme: light) {
-    cr-toolbar cr-toggle {
+    :host(:not([enable-branding-update])) cr-toolbar cr-toggle {
       --cr-toggle-checked-bar-color: var(--google-grey-refresh-100);
       --cr-toggle-checked-button-color: white;
       --cr-toggle-checked-ripple-color: rgba(255, 255, 255, .2);
