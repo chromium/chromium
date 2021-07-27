@@ -271,11 +271,11 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
 
-  UserInfo::Field field(card.ObfuscatedLastFourDigits(),
-                        /*text_to_fill=*/std::u16string(),
-                        card.ObfuscatedLastFourDigits(), card.guid(),
-                        /*is_obfuscated=*/false,
-                        /*selectable=*/true);
+  AccessorySheetField field(card.ObfuscatedLastFourDigits(),
+                            /*text_to_fill=*/std::u16string(),
+                            card.ObfuscatedLastFourDigits(), card.guid(),
+                            /*is_obfuscated=*/false,
+                            /*selectable=*/true);
 
   autofill::CreditCard card_to_unmask;
 

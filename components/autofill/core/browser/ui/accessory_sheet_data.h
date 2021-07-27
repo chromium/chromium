@@ -19,65 +19,67 @@ class IsPublicSuffixMatchTag;
 
 namespace autofill {
 
+// Represents a selectable item within a UserInfo or a PromoCodeInfo in the
+// manual fallback UI, such as the username or a credit card number or a promo
+// code.
+class AccessorySheetField {
+ public:
+  AccessorySheetField(std::u16string display_text,
+                      std::u16string a11y_description,
+                      bool is_obfuscated,
+                      bool selectable);
+  AccessorySheetField(std::u16string display_text,
+                      std::u16string text_to_fill,
+                      std::u16string a11y_description,
+                      std::string id,
+                      bool is_obfuscated,
+                      bool selectable);
+  AccessorySheetField(const AccessorySheetField& field);
+  AccessorySheetField(AccessorySheetField&& field);
+
+  ~AccessorySheetField();
+
+  AccessorySheetField& operator=(const AccessorySheetField& field);
+  AccessorySheetField& operator=(AccessorySheetField&& field);
+
+  const std::u16string& display_text() const { return display_text_; }
+
+  const std::u16string& text_to_fill() const { return text_to_fill_; }
+
+  const std::u16string& a11y_description() const { return a11y_description_; }
+
+  const std::string& id() const { return id_; }
+
+  bool is_obfuscated() const { return is_obfuscated_; }
+
+  bool selectable() const { return selectable_; }
+
+  bool operator==(const AccessorySheetField& field) const;
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
+ private:
+  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
+  // to the memory estimation member!
+  std::u16string display_text_;
+  // The string that would be used to fill in the form, for cases when it is
+  // different from |display_text_|. For example: For unmasked credit cards,
+  // the `display_text` contains spaces where as the `text_to_fill_` would
+  // contain the card number without any spaces.
+  std::u16string text_to_fill_;
+  std::u16string a11y_description_;
+  std::string id_;  // Optional, if needed to complete filling.
+  bool is_obfuscated_;
+  bool selectable_;
+  size_t estimated_memory_use_by_strings_ = 0;
+};
+
 // Represents user data to be shown on the manual fallback UI (e.g. a Profile,
 // or a Credit Card, or the credentials for a website).
 class UserInfo {
  public:
-  // Represents a selectable item, such as the username or a credit card
-  // number.
-  class Field {
-   public:
-    Field(std::u16string display_text,
-          std::u16string a11y_description,
-          bool is_obfuscated,
-          bool selectable);
-    Field(std::u16string display_text,
-          std::u16string text_to_fill,
-          std::u16string a11y_description,
-          std::string id,
-          bool is_obfuscated,
-          bool selectable);
-    Field(const Field& field);
-    Field(Field&& field);
-
-    ~Field();
-
-    Field& operator=(const Field& field);
-    Field& operator=(Field&& field);
-
-    const std::u16string& display_text() const { return display_text_; }
-
-    const std::u16string& text_to_fill() const { return text_to_fill_; }
-
-    const std::u16string& a11y_description() const { return a11y_description_; }
-
-    const std::string& id() const { return id_; }
-
-    bool is_obfuscated() const { return is_obfuscated_; }
-
-    bool selectable() const { return selectable_; }
-
-    bool operator==(const UserInfo::Field& field) const;
-
-    // Estimates dynamic memory usage.
-    // See base/trace_event/memory_usage_estimator.h for more info.
-    size_t EstimateMemoryUsage() const;
-
-   private:
-    // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
-    // to the memory estimation member!
-    std::u16string display_text_;
-    // The string that would be used to fill in the form, for cases when it is
-    // different from |display_text_|. For example: For unmasked credit cards,
-    // the `display_text` contains spaces where as the `text_to_fill_` would
-    // contain the card number without any spaces.
-    std::u16string text_to_fill_;
-    std::u16string a11y_description_;
-    std::string id_;  // Optional, if needed to complete filling.
-    bool is_obfuscated_;
-    bool selectable_;
-    size_t estimated_memory_use_by_strings_ = 0;
-  };
 
   using IsPslMatch =
       base::StrongAlias<password_manager::IsPublicSuffixMatchTag, bool>;
@@ -93,12 +95,12 @@ class UserInfo {
   UserInfo& operator=(const UserInfo& user_info);
   UserInfo& operator=(UserInfo&& user_info);
 
-  void add_field(Field field) {
+  void add_field(AccessorySheetField field) {
     estimated_dynamic_memory_use_ += field.EstimateMemoryUsage();
     fields_.push_back(std::move(field));
   }
 
-  const std::vector<Field>& fields() const { return fields_; }
+  const std::vector<AccessorySheetField>& fields() const { return fields_; }
   const std::string& origin() const { return origin_; }
   IsPslMatch is_psl_match() const { return is_psl_match_; }
 
@@ -113,11 +115,11 @@ class UserInfo {
   // to the memory estimation member!
   std::string origin_;
   IsPslMatch is_psl_match_{false};
-  std::vector<Field> fields_;
+  std::vector<AccessorySheetField> fields_;
   size_t estimated_dynamic_memory_use_ = 0;
 };
 
-std::ostream& operator<<(std::ostream& out, const UserInfo::Field& field);
+std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
 std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
 // Represents a command below the suggestions, such as "Manage password...".

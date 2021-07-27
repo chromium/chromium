@@ -50,8 +50,9 @@ class PasswordAccessoryControllerImpl
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
   absl::optional<autofill::AccessorySheetData> GetSheetData() const override;
-  void OnFillingTriggered(autofill::FieldGlobalId focused_field_id,
-                          const autofill::UserInfo::Field& selection) override;
+  void OnFillingTriggered(
+      autofill::FieldGlobalId focused_field_id,
+      const autofill::AccessorySheetField& selection) override;
   void OnOptionSelected(autofill::AccessoryAction selected_action) override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
                        bool enabled) override;
@@ -160,16 +161,16 @@ class PasswordAccessoryControllerImpl
   // Returns true if authentication should be triggered before filling
   // |selection| in to the field.
   bool ShouldTriggerBiometricReauth(
-      const autofill::UserInfo::Field& selection) const;
+      const autofill::AccessorySheetField& selection) const;
 
   // Called when the biometric authentication completes. If |auth_succeeded| is
   // true, |selection| will be passed on to be filled.
-  void OnReauthCompleted(autofill::UserInfo::Field selection,
+  void OnReauthCompleted(autofill::AccessorySheetField selection,
                          bool auth_succeeded);
 
   // Sends |selection| to the renderer to be filled, if it's a valid
   // entry for the origin of the frame that is currently focused.
-  void FillSelection(const autofill::UserInfo::Field& selection);
+  void FillSelection(const autofill::AccessorySheetField& selection);
 
   // Called From |AllPasswordsBottomSheetController| when
   // the Bottom Sheet view is destroyed.

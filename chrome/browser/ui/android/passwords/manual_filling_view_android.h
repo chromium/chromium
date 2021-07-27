@@ -77,7 +77,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       JNIEnv* env,
       const autofill::AccessorySheetData& tab_data);
 
-  autofill::UserInfo::Field ConvertJavaUserInfoField(
+  autofill::AccessorySheetField ConvertJavaUserInfoField(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_field_to_convert);
 

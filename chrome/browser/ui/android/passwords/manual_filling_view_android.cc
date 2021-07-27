@@ -33,6 +33,7 @@
 #include "ui/android/window_android.h"
 
 using autofill::AccessorySheetData;
+using autofill::AccessorySheetField;
 using autofill::FooterCommand;
 using autofill::UserInfo;
 using autofill::password_generation::PasswordGenerationUIData;
@@ -182,7 +183,7 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
             env, java_object_internal_, j_tab_data,
             ConvertUTF8ToJavaString(env, user_info.origin()),
             user_info.is_psl_match().value());
-    for (const UserInfo::Field& field : user_info.fields()) {
+    for (const AccessorySheetField& field : user_info.fields()) {
       Java_ManualFillingComponentBridge_addFieldToUserInfo(
           env, java_object_internal_, j_user_info,
           static_cast<int>(tab_data.get_sheet_type()),
@@ -203,7 +204,7 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
   return j_tab_data;
 }
 
-UserInfo::Field ManualFillingViewAndroid::ConvertJavaUserInfoField(
+AccessorySheetField ManualFillingViewAndroid::ConvertJavaUserInfoField(
     JNIEnv* env,
     const JavaRef<jobject>& j_field_to_convert) {
   std::u16string display_text = ConvertJavaStringToUTF16(
@@ -216,8 +217,8 @@ UserInfo::Field ManualFillingViewAndroid::ConvertJavaUserInfoField(
       env, Java_UserInfoField_getId(env, j_field_to_convert));
   bool is_obfuscated = Java_UserInfoField_isObfuscated(env, j_field_to_convert);
   bool selectable = Java_UserInfoField_isSelectable(env, j_field_to_convert);
-  return UserInfo::Field(display_text, text_to_fill, a11y_description, id,
-                         is_obfuscated, selectable);
+  return AccessorySheetField(display_text, text_to_fill, a11y_description, id,
+                             is_obfuscated, selectable);
 }
 
 base::android::ScopedJavaGlobalRef<jobject>

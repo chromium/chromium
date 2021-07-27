@@ -33,7 +33,7 @@ class AddressAccessoryControllerImpl
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
   absl::optional<AccessorySheetData> GetSheetData() const override;
   void OnFillingTriggered(FieldGlobalId focused_field_id,
-                          const UserInfo::Field& selection) override;
+                          const AccessorySheetField& selection) override;
   void OnOptionSelected(AccessoryAction selected_action) override;
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;
 

@@ -31,7 +31,7 @@ class MockCreditCardAccessoryController
               (const, override));
   MOCK_METHOD(void,
               OnFillingTriggered,
-              (autofill::FieldGlobalId, const autofill::UserInfo::Field&),
+              (autofill::FieldGlobalId, const autofill::AccessorySheetField&),
               (override));
   MOCK_METHOD(void, OnOptionSelected, (autofill::AccessoryAction), (override));
   MOCK_METHOD(void,

@@ -27,7 +27,7 @@ class MockManualFillingController
   MOCK_METHOD1(ShowAccessorySheetTab, void(const autofill::AccessoryTabType&));
   MOCK_METHOD2(OnFillingTriggered,
                void(autofill::AccessoryTabType type,
-                    const autofill::UserInfo::Field&));
+                    const autofill::AccessorySheetField&));
   MOCK_CONST_METHOD1(OnOptionSelected,
                      void(autofill::AccessoryAction selected_action));
   MOCK_CONST_METHOD2(OnToggleChanged,

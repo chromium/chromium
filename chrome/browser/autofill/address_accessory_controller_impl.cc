@@ -49,8 +49,8 @@ void AddProfileInfoAsSelectableField(UserInfo* info,
   if (type == ServerFieldType::NAME_MIDDLE && field.empty()) {
     field = profile->GetRawInfo(ServerFieldType::NAME_MIDDLE_INITIAL);
   }
-  info->add_field(UserInfo::Field(field, field, /*is_password=*/false,
-                                  /*selectable=*/true));
+  info->add_field(AccessorySheetField(field, field, /*is_password=*/false,
+                                      /*selectable=*/true));
 }
 
 UserInfo TranslateProfile(const AutofillProfile* profile) {
@@ -126,7 +126,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
 
 void AddressAccessoryControllerImpl::OnFillingTriggered(
     FieldGlobalId focused_field_id,
-    const UserInfo::Field& selection) {
+    const AccessorySheetField& selection) {
   // Since the data we fill is scoped to the profile and not to a frame, we can
   // fill the focused frame - we basically behave like a keyboard here.
   content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();

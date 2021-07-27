@@ -199,7 +199,7 @@ void ManualFillingControllerImpl::Hide() {
 
 void ManualFillingControllerImpl::OnFillingTriggered(
     AccessoryTabType type,
-    const autofill::UserInfo::Field& selection) {
+    const autofill::AccessorySheetField& selection) {
   AccessoryController* controller = GetControllerForTabType(type);
   if (!controller)
     return;  // Controller not available anymore.

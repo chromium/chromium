@@ -46,8 +46,9 @@ class ManualFillingControllerImpl
   void OnAutomaticGenerationStatusChanged(bool available) override;
   void ShowAccessorySheetTab(
       const autofill::AccessoryTabType& tab_type) override;
-  void OnFillingTriggered(autofill::AccessoryTabType type,
-                          const autofill::UserInfo::Field& selection) override;
+  void OnFillingTriggered(
+      autofill::AccessoryTabType type,
+      const autofill::AccessorySheetField& selection) override;
   void OnOptionSelected(
       autofill::AccessoryAction selected_action) const override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,

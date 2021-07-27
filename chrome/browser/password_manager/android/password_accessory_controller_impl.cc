@@ -54,6 +54,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using autofill::AccessorySheetData;
+using autofill::AccessorySheetField;
 using autofill::FooterCommand;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
@@ -76,11 +77,11 @@ autofill::UserInfo TranslateCredentials(bool current_field_is_password,
 
   std::u16string username = GetDisplayUsername(credential);
   user_info.add_field(
-      UserInfo::Field(username, username, /*is_password=*/false,
-                      /*selectable=*/!credential.username().empty() &&
-                          !current_field_is_password));
+      AccessorySheetField(username, username, /*is_password=*/false,
+                          /*selectable=*/!credential.username().empty() &&
+                              !current_field_is_password));
 
-  user_info.add_field(UserInfo::Field(
+  user_info.add_field(AccessorySheetField(
       credential.password(),
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, username),
@@ -210,7 +211,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
 
 void PasswordAccessoryControllerImpl::OnFillingTriggered(
     autofill::FieldGlobalId focused_field_id,
-    const autofill::UserInfo::Field& selection) {
+    const AccessorySheetField& selection) {
   if (!ShouldTriggerBiometricReauth(selection)) {
     FillSelection(selection);
     return;
@@ -519,7 +520,7 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
 }
 
 bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
-    const autofill::UserInfo::Field& selection) const {
+    const AccessorySheetField& selection) const {
   if (!selection.is_obfuscated())
     return false;
 
@@ -529,7 +530,7 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(
-    autofill::UserInfo::Field selection,
+    AccessorySheetField selection,
     bool auth_succeeded) {
   authenticator_.reset();
   if (!auth_succeeded)
@@ -538,7 +539,7 @@ void PasswordAccessoryControllerImpl::OnReauthCompleted(
 }
 
 void PasswordAccessoryControllerImpl::FillSelection(
-    const autofill::UserInfo::Field& selection) {
+    const AccessorySheetField& selection) {
   if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),
                             GetFocusedFrameOrigin())) {
     NOTREACHED() << "Tried to fill '" << selection.display_text() << "' into "

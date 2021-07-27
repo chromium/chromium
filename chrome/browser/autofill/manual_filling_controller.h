@@ -112,7 +112,7 @@ class ManualFillingController {
   // accessory controller.
   virtual void OnFillingTriggered(
       autofill::AccessoryTabType type,
-      const autofill::UserInfo::Field& selection) = 0;
+      const autofill::AccessorySheetField& selection) = 0;
 
   // Called by the UI code because a user triggered the |selected_action|,
   // such as "Manage passwords...".

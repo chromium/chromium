@@ -58,6 +58,7 @@
 namespace {
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
+using autofill::AccessorySheetField;
 using autofill::AccessoryTabType;
 using autofill::FooterCommand;
 using autofill::UserInfo;
@@ -897,7 +898,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  UserInfo::Field selected_field(u"Ben", u"Ben", false, true);
+  AccessorySheetField selected_field(u"Ben", u"Ben", false, true);
   EXPECT_CALL(*driver(),
               FillIntoFocusedField(selected_field.is_obfuscated(),
                                    Eq(selected_field.display_text())));
@@ -922,7 +923,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  AccessorySheetField selected_field(u"S3cur3", u"S3cur3", true, true);
   EXPECT_CALL(*password_client(), GetBiometricAuthenticator)
       .WillOnce(Return(mock_authenticator_));
   EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
@@ -951,7 +952,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  AccessorySheetField selected_field(u"S3cur3", u"S3cur3", true, true);
   ON_CALL(*password_client(), GetBiometricAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
   EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
@@ -984,7 +985,7 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  AccessorySheetField selected_field(u"S3cur3", u"S3cur3", true, true);
   ON_CALL(*password_client(), GetBiometricAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
   EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
@@ -1018,7 +1019,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
       FocusedFieldType::kFillableUsernameField,
       /*is_manual_generation_available=*/false);
 
-  UserInfo::Field selected_field(u"S3cur3", u"S3cur3", true, true);
+  AccessorySheetField selected_field(u"S3cur3", u"S3cur3", true, true);
   ON_CALL(*password_client(), GetBiometricAuthenticator)
       .WillByDefault(Return(mock_authenticator_));
   EXPECT_CALL(*mock_authenticator_.get(), CanAuthenticate)
