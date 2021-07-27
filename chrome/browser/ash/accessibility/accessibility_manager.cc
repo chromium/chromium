@@ -881,7 +881,13 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
     speech::SodaInstaller::GetInstance()->SetUninstallTimer(
         profile_->GetPrefs(), g_browser_process->local_state());
   }
-  // TODO(crbug.com/1173135): Initialize SODA download when enabled.
+
+  if (enabled) {
+    // TODO(crbug.com/1173135): Call MaybeInstallSoda when the dictation locale
+    // pref changes.
+    MaybeInstallSoda(
+        profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale));
+  }
 }
 
 void AccessibilityManager::SetFocusHighlightEnabled(bool enabled) {
@@ -1842,6 +1848,45 @@ void AccessibilityManager::ShowChromeVoxTutorial() {
 
   event_router->DispatchEventWithLazyListener(
       extension_misc::kChromeVoxExtensionId, std::move(event));
+}
+
+void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
+  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled())
+    return;
+
+  // TODO(crbug.com/1173135): Check whether SODA is available on this device by
+  // checking (IsEnabled(ash::features::kOnDeviceSpeechRecognition)).
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer->IsSodaInstalled(speech::GetLanguageCode(locale)) ||
+      soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale)))
+    return;
+
+  if (!soda_observation_.IsObservingSource(soda_installer))
+    soda_observation_.Observe(soda_installer);
+  soda_installer->Init(profile_->GetPrefs(), g_browser_process->local_state());
+}
+
+void OnSodaInstallUpdated() {
+  AccessibilityController::Get()->UpdateDictationButtonVisibility();
+}
+
+// SodaInstaller::Observer:
+void AccessibilityManager::OnSodaInstalled() {
+  OnSodaInstallUpdated();
+}
+
+void AccessibilityManager::OnSodaError() {
+  OnSodaInstallUpdated();
+}
+
+void AccessibilityManager::OnSodaLanguagePackInstalled(
+    speech::LanguageCode language_code) {
+  OnSodaInstallUpdated();
+}
+
+void AccessibilityManager::OnSodaLanguagePackError(
+    speech::LanguageCode language_code) {
+  OnSodaInstallUpdated();
 }
 
 }  // namespace ash

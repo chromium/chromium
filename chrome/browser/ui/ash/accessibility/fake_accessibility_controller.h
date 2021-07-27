@@ -55,6 +55,7 @@ class FakeAccessibilityController : ash::AccessibilityController {
   bool IsAccessibilityFeatureVisibleInTrayMenu(
       const std::string& path) override;
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
+  void UpdateDictationButtonVisibility() override;
 
  private:
   bool was_client_set_ = false;

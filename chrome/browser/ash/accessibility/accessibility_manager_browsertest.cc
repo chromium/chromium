@@ -262,6 +262,15 @@ bool IsBrailleImeCurrent() {
          extension_ime_util::kBrailleImeEngineId;
 }
 
+bool IsSodaDownloading() {
+  return speech::SodaInstaller::GetInstance()->IsSodaDownloading(
+      speech::LanguageCode::kEnUs);
+}
+
+void UninstallSodaForTesting() {
+  speech::SodaInstaller::GetInstance()->UninstallSodaForTesting();
+}
+
 }  // namespace
 
 // For user session accessibility manager tests.
@@ -609,6 +618,26 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_TRUE(ShouldShowAccessibilityMenu());
   SetSelectToSpeakEnabled(false);
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaDownload) {
+  UninstallSodaForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  SetDictationEnabled(true);
+  EXPECT_TRUE(IsSodaDownloading());
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  UninstallSodaForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, SodaError) {
+  UninstallSodaForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  SetDictationEnabled(true);
+  EXPECT_TRUE(IsSodaDownloading());
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
+  EXPECT_FALSE(IsSodaDownloading());
+  UninstallSodaForTesting();
 }
 
 // For signin screen to user session accessibility manager tests.

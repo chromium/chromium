@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/dictation_button_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -15,6 +16,9 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -110,8 +114,24 @@ void DictationButtonTray::UpdateIcon(bool dictation_active) {
 }
 
 void DictationButtonTray::UpdateVisibility() {
-  bool is_visible =
+  bool dictation_enabled =
       Shell::Get()->accessibility_controller()->dictation().enabled();
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled() ||
+      !pref_service || !soda_installer) {
+    // If we can't get the pref service or soda installer, then simply use
+    // Dictation's enabled state.
+    SetVisiblePreferred(dictation_enabled);
+    return;
+  }
+
+  const std::string locale =
+      pref_service->GetString(prefs::kAccessibilityDictationLocale);
+  bool soda_downloading =
+      soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale));
+  bool is_visible = dictation_enabled && !soda_downloading;
   SetVisiblePreferred(is_visible);
 }
 

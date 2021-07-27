@@ -129,6 +129,14 @@ void SodaInstaller::NotifySodaInstalledForTesting() {
   NotifyOnSodaInstalled();
 }
 
+void SodaInstaller::NotifySodaErrorForTesting() {
+  soda_binary_installed_ = false;
+  is_soda_downloading_ = false;
+  installed_languages_.clear();
+  language_pack_progress_.clear();
+  NotifyOnSodaError();
+}
+
 void SodaInstaller::UninstallSodaForTesting() {
   soda_binary_installed_ = false;
   is_soda_downloading_ = false;

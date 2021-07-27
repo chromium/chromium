@@ -112,6 +112,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   bool IsSodaDownloading(speech::LanguageCode language_code) const;
 
   void NotifySodaInstalledForTesting();
+  void NotifySodaErrorForTesting();
   void UninstallSodaForTesting();
 
  protected:

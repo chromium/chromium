@@ -161,6 +161,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
                                       base::OnceClosure on_cancel_callback,
                                       base::OnceClosure on_close_callback) {}
 
+  // Updates the visibility of the dictation button in the status tray.
+  virtual void UpdateDictationButtonVisibility() = 0;
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();

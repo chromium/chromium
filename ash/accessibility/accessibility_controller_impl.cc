@@ -34,10 +34,12 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/accessibility_feature_disable_dialog.h"
+#include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
 #include "ash/system/accessibility/switch_access/switch_access_menu_bubble_controller.h"
@@ -1988,6 +1990,14 @@ void AccessibilityControllerImpl::ShowConfirmationDialog(
   // Save the dialog so it doesn't go out of scope before it is
   // used and closed.
   confirmation_dialog_ = dialog->GetWeakPtr();
+}
+
+void AccessibilityControllerImpl::UpdateDictationButtonVisibility() {
+  Shell::Get()
+      ->GetPrimaryRootWindowController()
+      ->GetStatusAreaWidget()
+      ->dictation_button_tray()
+      ->UpdateVisibility();
 }
 
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {

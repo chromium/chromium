@@ -267,6 +267,15 @@ bool Dictation::OnToggleDictation() {
   base::UmaHistogramSparse("Accessibility.CrosDictation.Language",
                            base::HashMetricName(locale));
 
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (features::IsExperimentalAccessibilityDictationOfflineEnabled() &&
+      (soda_installer->IsSodaDownloading(speech::GetLanguageCode(locale)))) {
+    // Don't allow Dictation to be used while SODA is downloading.
+    audio::SoundsManager::Get()->Play(
+        static_cast<int>(Sound::kDictationCancel));
+    return false;
+  }
+
   if (features::IsExperimentalAccessibilityDictationOfflineEnabled() &&
       OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale)) {
     // On-device recognition is behind a flag and then only available if

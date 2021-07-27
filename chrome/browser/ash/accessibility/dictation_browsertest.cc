@@ -105,6 +105,13 @@ class DictationTest : public InProcessBrowserTest,
   }
 
   void SetUpOnMainThread() override {
+    // Fake that SODA is installed so Dictation uses OnDeviceSpeechRecognizer.
+    // Do this here, since SetUpOnMainThread is run after the browser process
+    // initializes (which is when the global SodaInstaller gets created).
+    // Lastly, do this before Dictation is enabled so that we don't initiate a
+    // SODA download when Dictation is enabled.
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
+
     ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
     generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::Get()->GetPrimaryRootWindow());
@@ -121,11 +128,6 @@ class DictationTest : public InProcessBrowserTest,
               base::BindRepeating(
                   &DictationTest::CreateTestSpeechRecognitionService,
                   base::Unretained(this)));
-
-      // Fake that SODA is installed so Dictation uses OnDeviceSpeechRecognizer.
-      // Do this here, since SetUpOnMainThread is run after the browser process
-      // initializes (which is when the global SodaInstaller gets created).
-      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     }
   }
 

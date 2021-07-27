@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/soda/soda_installer.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -108,7 +109,8 @@ class AccessibilityManager
       public user_manager::UserManager::UserSessionStateObserver,
       public chromeos::input_method::InputMethodManager::Observer,
       public CrasAudioHandler::AudioObserver,
-      public ProfileObserver {
+      public ProfileObserver,
+      public speech::SodaInstaller::Observer {
  public:
   // Creates an instance of AccessibilityManager, this should be called once,
   // because only one instance should exist at the same time.
@@ -350,6 +352,16 @@ class AccessibilityManager
   void OnSelectToSpeakPanelAction(SelectToSpeakPanelAction action,
                                   double value);
 
+  // SodaInstaller::Observer:
+  void OnSodaInstalled() override;
+  void OnSodaLanguagePackInstalled(speech::LanguageCode language_code) override;
+  void OnSodaError() override;
+  void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
+  void OnSodaProgress(int combined_progress) override {}
+  void OnSodaLanguagePackProgress(int language_progress,
+                                  speech::LanguageCode language_code) override {
+  }
+
   // Test helpers:
   void SetProfileForTest(Profile* profile);
   static void SetBrailleControllerForTest(
@@ -448,6 +460,8 @@ class AccessibilityManager
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  void MaybeInstallSoda(const std::string& locale);
+
   // Profile which has the current a11y context.
   Profile* profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
@@ -473,6 +487,10 @@ class AccessibilityManager
       extensions::api::braille_display_private::BrailleController,
       extensions::api::braille_display_private::BrailleObserver>
       scoped_braille_observation_{this};
+
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_observation_{this};
 
   bool braille_ime_current_ = false;
 
@@ -525,6 +543,7 @@ class AccessibilityManager
 
   friend class DictationTest;
   friend class SwitchAccessTest;
+  friend class AccessibilityManagerTest;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityManager);
 };

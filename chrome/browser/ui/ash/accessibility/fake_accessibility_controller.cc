@@ -91,3 +91,5 @@ bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(
 
 void FakeAccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {}
+
+void FakeAccessibilityController::UpdateDictationButtonVisibility() {}
