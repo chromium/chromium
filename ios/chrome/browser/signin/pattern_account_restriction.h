@@ -43,6 +43,7 @@ class Pattern {
 // Contains a list of patterns.
 class PatternAccountRestriction {
  public:
+  PatternAccountRestriction();
   explicit PatternAccountRestriction(std::vector<Pattern> patterns);
   ~PatternAccountRestriction();
   // Non-copyable

@@ -127,11 +127,9 @@ class FunctorGetFirstIdentity : public Functor<FunctorGetFirstIdentity> {
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* pref_service) {
-  const base::ListValue* patterns_pref =
-      pref_service ? pref_service->GetList(prefs::kRestrictAccountsToPatterns)
-                   : new base::ListValue();
-  auto maybe_restriction = PatternAccountRestrictionFromValue(patterns_pref);
-  CHECK(maybe_restriction);
+  auto maybe_restriction = PatternAccountRestrictionFromValue(
+      pref_service->GetList(prefs::kRestrictAccountsToPatterns));
+  CHECK(maybe_restriction.has_value());
   return *std::move(maybe_restriction);
 }
 
@@ -139,11 +137,10 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* pref_service)
-    : pref_service_(pref_service),
-      restriction_(PatternAccountRestrictionFromPreference(pref_service)) {
+    : pref_service_(pref_service) {
   // pref_service is null in test environment. In prod environment pref_service
   // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
-  if (pref_service) {
+  if (pref_service_) {
     registrar_.Init(pref_service_);
     registrar_.Add(
         prefs::kRestrictAccountsToPatterns,
