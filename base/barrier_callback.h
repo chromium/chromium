@@ -48,6 +48,11 @@ class BarrierCallbackInfo {
   OnceCallback<void(std::vector<T>)> done_callback_;
 };
 
+template <typename T>
+void ShouldNeverRun(T t) {
+  CHECK(false);
+}
+
 }  // namespace
 
 // BarrierCallback<T> is an analog of BarrierClosure for which each `Run()`
@@ -56,7 +61,7 @@ class BarrierCallbackInfo {
 // the vector of `T`s as an argument. (The ordering of the vector is
 // unspecified.)
 //
-// It is an error to call `BarrierCallback` with `num_callbacks` equal to 0.
+// If `num_callbacks` is 0, `done_callback` is executed immediately.
 //
 // BarrierCallback is thread-safe - the internals are protected by a
 // `base::Lock`. `done_callback` will be run on the thread that calls the final
@@ -69,7 +74,10 @@ template <typename T>
 RepeatingCallback<void(T)> BarrierCallback(
     size_t num_callbacks,
     OnceCallback<void(std::vector<T>)> done_callback) {
-  CHECK_GT(num_callbacks, 0U);
+  if (num_callbacks == 0) {
+    std::move(done_callback).Run({});
+    return BindRepeating(&ShouldNeverRun<T>);
+  }
 
   return BindRepeating(&BarrierCallbackInfo<T>::Run,
                        std::make_unique<BarrierCallbackInfo<T>>(

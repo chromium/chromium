@@ -14,8 +14,21 @@
 
 namespace {
 
-TEST(BarrierCallbackTest, ChecksImmediatelyForZeroCallbacks) {
-  EXPECT_CHECK_DEATH(base::BarrierCallback<bool>(0, base::DoNothing()));
+TEST(BarrierCallbackTest, RunsImmediatelyForZeroCallbacks) {
+  bool done = true;
+  auto barrier_callback = base::BarrierCallback<int>(
+      0, base::BindLambdaForTesting([&done](std::vector<int> results) {
+        EXPECT_THAT(results, testing::IsEmpty());
+        done = true;
+      }));
+  EXPECT_TRUE(done);
+}
+
+TEST(BarrierCallbackTest, ErrorToCallCallbackWithZeroCallbacks) {
+  auto barrier_callback = base::BarrierCallback<int>(0, base::DoNothing());
+  EXPECT_FALSE(barrier_callback.is_null());
+
+  EXPECT_CHECK_DEATH(barrier_callback.Run(3));
 }
 
 TEST(BarrierCallbackTest, RunAfterNumCallbacks) {
