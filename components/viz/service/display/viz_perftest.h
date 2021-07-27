@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERF_TEST_H_
-#define COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERF_TEST_H_
+#ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERFTEST_H_
+#define COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERFTEST_H_
 
 #include <string>
 #include <vector>
@@ -11,6 +11,10 @@
 #include "base/timer/lap_timer.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace viz {
 
@@ -25,11 +29,13 @@ bool CompositorRenderPassListFromJSON(
     size_t frame_index,
     CompositorRenderPassList* render_pass_list);
 
+// Unzips the frame data JSON files to a temp directory so they can be read.
+absl::optional<base::FilePath> UnzipFrameData(const std::string& group,
+                                              const std::string& name);
+
 // Reads the specified JSON file and stores the compositor frame data in the
 // output parameter `frame_data_list`.
-bool FrameDataFromJson(const std::string& group,
-                       const std::string& name,
-                       size_t frame_index,
+bool FrameDataFromJson(base::FilePath& json_path,
                        std::vector<FrameData>* frame_data_list);
 
 // Viz perf test base class that sets up a lap timer with a specified
@@ -45,4 +51,4 @@ class VizPerfTest : public testing::Test {
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERF_TEST_H_
+#endif  // COMPONENTS_VIZ_SERVICE_DISPLAY_VIZ_PERFTEST_H_

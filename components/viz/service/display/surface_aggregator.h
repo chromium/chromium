@@ -57,6 +57,14 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
                     bool needs_surface_damage_rect_list);
   ~SurfaceAggregator();
 
+  // These constants are used for all time related metrics recorded in
+  // SurfaceAggregator.
+  static constexpr base::TimeDelta kHistogramMinTime =
+      base::TimeDelta::FromMicroseconds(5);
+  static constexpr base::TimeDelta kHistogramMaxTime =
+      base::TimeDelta::FromMilliseconds(10);
+  static constexpr int kHistogramTimeBuckets = 50;
+
   // |target_damage| represents an area on the output surface that might have
   // been invalidated. It can be used in cases where we still want to support
   // partial damage but the target surface might need contents outside the

@@ -681,8 +681,8 @@ viz_source_set("perf_tests") {
     "display/gl_renderer_copier_perftest.cc",
     "display/renderer_perftest.cc",
     "display/surface_aggregator_perftest.cc",
-    "display/viz_perf_test.cc",
-    "display/viz_perf_test.h",
+    "display/viz_perftest.cc",
+    "display/viz_perftest.h",
   ]
 
   deps = [
@@ -696,6 +696,7 @@ viz_source_set("perf_tests") {
     "//components/viz/test:test_support",
     "//testing/gtest",
     "//testing/perf",
+    "//third_party/zlib/google:zip",
   ]
 }
 

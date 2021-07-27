@@ -7,6 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_samples.h"
+#include "base/metrics/statistics_recorder.h"
+#include "base/strings/stringprintf.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -19,7 +24,7 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/surface_aggregator.h"
-#include "components/viz/service/display/viz_perf_test.h"
+#include "components/viz/service/display/viz_perftest.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -34,11 +39,19 @@ namespace {
 
 constexpr char kMetricPrefixSurfaceAggregator[] = "SurfaceAggregator.";
 constexpr char kMetricSpeedRunsPerS[] = "speed";
+constexpr char kMetricAggregateUs[] = "aggregate";
+constexpr char kMetricPrewalkUs[] = "prewalk";
+constexpr char kMetricDeclareResourcesUs[] = "declare_resources";
+constexpr char kMetricCopyUs[] = "copy";
 
 perf_test::PerfResultReporter SetUpSurfaceAggregatorReporter(
     const std::string& story) {
   perf_test::PerfResultReporter reporter(kMetricPrefixSurfaceAggregator, story);
   reporter.RegisterImportantMetric(kMetricSpeedRunsPerS, "runs/s");
+  reporter.RegisterImportantMetric(kMetricAggregateUs, "μs");
+  reporter.RegisterImportantMetric(kMetricPrewalkUs, "μs");
+  reporter.RegisterImportantMetric(kMetricDeclareResourcesUs, "μs");
+  reporter.RegisterImportantMetric(kMetricCopyUs, "μs");
   return reporter;
 }
 
@@ -312,16 +325,23 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
   //   - One loop is complete when the root surface's CompositorFrame is
   //     submitted and aggregated.
   //   - Full damage is set for every CompositorFrame submitted.
-  void RunMultiSurfacePerfTestFromJson(const std::string& name,
-                                       size_t frame_start,
-                                       size_t frame_end) {
+  void RunPerfTestFromJson(const std::string& group,
+                           const std::string& name,
+                           size_t frame_start,
+                           size_t frame_end) {
     DCHECK_LE(frame_start, frame_end);
     bool single_frame = frame_start == frame_end;
+
+    absl::optional<base::FilePath> unzipped_folder =
+        UnzipFrameData(group, name);
+    ASSERT_TRUE(unzipped_folder);
 
     std::vector<std::vector<FrameData>> frames;
     for (size_t i = frame_start; i <= frame_end; ++i) {
       std::vector<FrameData> frame;
-      ASSERT_TRUE(FrameDataFromJson("multi_surface_test", name, i, &frame));
+      base::FilePath json_path = unzipped_folder->AppendASCII(
+          base::StringPrintf("%04d.json", static_cast<int>(i)));
+      ASSERT_TRUE(FrameDataFromJson(json_path, &frame));
       ASSERT_FALSE(frame.empty());
       frames.push_back(std::move(frame));
     }
@@ -368,10 +388,31 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
     aggregator_ = std::make_unique<SurfaceAggregator>(
         manager_.surface_manager(), resource_provider_.get(), true, true);
 
+    base::HistogramBase* aggregate_histogram =
+        base::Histogram::FactoryMicrosecondsTimeGet(
+            "AggregateUs", SurfaceAggregator::kHistogramMinTime,
+            SurfaceAggregator::kHistogramMaxTime,
+            SurfaceAggregator::kHistogramTimeBuckets,
+            base::Histogram::kNoFlags);
+
     base::TimeTicks next_fake_display_time =
         base::TimeTicks() + base::TimeDelta::FromSeconds(1);
     timer_.Reset();
+    int laps = 0;
     do {
+      // Reset the frame sinks between laps (not before the first lap).
+      if (laps++ > 0) {
+        for (auto& entry : frame_sinks) {
+          const FrameSinkId& frame_sink_id = entry.first;
+          auto& frame_sink = entry.second;
+          bool is_root = frame_sink->is_root();
+          frame_sink.reset();
+          manager_.InvalidateFrameSinkId(frame_sink_id);
+          frame_sink = std::make_unique<CompositorFrameSinkSupport>(
+              nullptr, &manager_, frame_sink_id, is_root);
+        }
+      }
+
       int frame_num = 0;
       for (auto& frame : frames) {
         size_t surface_index = 0;
@@ -395,10 +436,15 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
                                 referenced_surfaces, set_full_damage);
           surface_index++;
         }
+
+        base::ElapsedTimer aggregate_timer;
         // Always aggregate the root surface.
         auto aggregated = aggregator_->Aggregate(frames[0][0].surface_id,
                                                  next_fake_display_time,
                                                  gfx::OVERLAY_TRANSFORM_NONE);
+        aggregate_histogram->AddTimeMicrosecondsGranularity(
+            aggregate_timer.Elapsed());
+
         frame_num++;
       }
 
@@ -406,9 +452,41 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    auto reporter =
-        SetUpSurfaceAggregatorReporter(name + "_multi_surface_json");
+    auto reporter = SetUpSurfaceAggregatorReporter(name);
     reporter.AddResult(kMetricSpeedRunsPerS, timer_.LapsPerSecond());
+
+    reporter.AddResult(kMetricAggregateUs,
+                       GetHistogramStats(aggregate_histogram));
+    reporter.AddResult(kMetricPrewalkUs, GetHistogramStats("PrewalkUs"));
+    reporter.AddResult(kMetricDeclareResourcesUs,
+                       GetHistogramStats("DeclareResourcesUs"));
+    reporter.AddResult(kMetricCopyUs, GetHistogramStats("CopyUs"));
+  }
+
+ private:
+  std::string GetHistogramStats(std::string histogram_name) {
+    auto* histogram = base::StatisticsRecorder::FindHistogram(
+        "Compositing.SurfaceAggregator." + histogram_name);
+    CHECK(histogram);
+
+    // To separate histogram results from different test runs, we sample the
+    // delta between successive runs and import the sample into a new unique
+    // histogram that can be graphed.
+    auto samples = histogram->SnapshotDelta();
+    base::HistogramBase* temp_histogram =
+        base::Histogram::FactoryMicrosecondsTimeGet(
+            histogram_name, SurfaceAggregator::kHistogramMinTime,
+            SurfaceAggregator::kHistogramMaxTime,
+            SurfaceAggregator::kHistogramTimeBuckets,
+            base::Histogram::kNoFlags);
+    temp_histogram->AddSamples(*samples);
+    return GetHistogramStats(temp_histogram);
+  }
+
+  std::string GetHistogramStats(base::HistogramBase* histogram) {
+    base::Value graph_dict = histogram->ToGraphDict();
+    // The header contains the sample count and the mean.
+    return *graph_dict.FindStringKey("header");
   }
 
  protected:
@@ -507,16 +585,27 @@ TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(wordpress, 75)
 TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(yahoo_answers, 74)
 TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST(yahoo_sports, 269)
 
-#define MULTI_SURFACE_PERF_TEST(TESTNAME, NAME, FRAME_START, FRAME_END)   \
-  TEST_F(SurfaceAggregatorPerfTest, TESTNAME##_MultiSurfaceTest) {        \
-    this->RunMultiSurfacePerfTestFromJson(#NAME, FRAME_START, FRAME_END); \
+#define MULTI_SURFACE_PERF_TEST(TESTNAME, NAME, FRAME_START, FRAME_END) \
+  TEST_F(SurfaceAggregatorPerfTest, TESTNAME##_MultiSurfaceTest) {      \
+    this->RunPerfTestFromJson("multi_surface_test", #NAME, FRAME_START, \
+                              FRAME_END);                               \
   }
 
 MULTI_SURFACE_PERF_TEST(youtube_single_frame, youtube_tab_focused, 1641, 1641)
 MULTI_SURFACE_PERF_TEST(youtube_5_frames, youtube_tab_focused, 1641, 1645)
 
+#define TOP_REAL_WORLD_MOBILE_PERF_TEST(NAME, FRAME_START, FRAME_END)      \
+  TEST_F(SurfaceAggregatorPerfTest, NAME##_MultiSurfaceTest) {             \
+    this->RunPerfTestFromJson("top_real_world_mobile", #NAME, FRAME_START, \
+                              FRAME_END);                                  \
+  }
+
+TOP_REAL_WORLD_MOBILE_PERF_TEST(amazon_mobile_2018, 0, 224)
+TOP_REAL_WORLD_MOBILE_PERF_TEST(youtube_mobile_2018, 0, 122)
+
 #undef TOP_REAL_WORLD_DESKTOP_RENDERER_PERF_TEST
 #undef MULTI_SURFACE_PERF_TEST
+#undef TOP_REAL_WORLD_MOBILE_PERF_TEST
 
 }  // namespace
 }  // namespace viz

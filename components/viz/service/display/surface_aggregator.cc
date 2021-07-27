@@ -223,6 +223,9 @@ SharedQuadState* CopySharedQuadState(
 
 }  // namespace
 
+constexpr base::TimeDelta SurfaceAggregator::kHistogramMinTime;
+constexpr base::TimeDelta SurfaceAggregator::kHistogramMaxTime;
+
 struct SurfaceAggregator::PrewalkResult {
   // This is the set of Surfaces that were referenced by another Surface, but
   // not included in a SurfaceDrawQuad.
@@ -1956,18 +1959,16 @@ void SurfaceAggregator::RecordStatHistograms() {
       "Compositing.SurfaceAggregator.DeclareResourceCount",
       stats_->declare_resources_count);
 
-  constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);
-  constexpr auto kMaxTime = base::TimeDelta::FromMilliseconds(10);
-  constexpr int kTimeBuckets = 50;
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.SurfaceAggregator.PrewalkUs", stats_->prewalk_time, kMinTime,
-      kMaxTime, kTimeBuckets);
+      "Compositing.SurfaceAggregator.PrewalkUs", stats_->prewalk_time,
+      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.SurfaceAggregator.CopyUs", stats_->copy_time, kMinTime,
-      kMaxTime, kTimeBuckets);
+      "Compositing.SurfaceAggregator.CopyUs", stats_->copy_time,
+      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.SurfaceAggregator.DeclareResourcesUs",
-      stats_->declare_resources_time, kMinTime, kMaxTime, kTimeBuckets);
+      stats_->declare_resources_time, kHistogramMinTime, kHistogramMaxTime,
+      kHistogramTimeBuckets);
 
   stats_.reset();
 }

@@ -69,6 +69,7 @@ specific_include_rules = {
     "+media",
     "+third_party/libyuv",
     "+ui/gl/gl_implementation.h",
+    "+third_party/zlib/google",
   ],
   "delegated_ink_point_renderer\.*" : [
     "+mojo/public/cpp/bindings",
