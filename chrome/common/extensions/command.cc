@@ -32,13 +32,13 @@ static const char kMissing[] = "Missing";
 static const char kCommandKeyNotSupported[] =
     "Command key is not supported. Note: Ctrl means Command on Mac";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // ChromeOS supports an additional modifier 'Search', which can result in longer
 // sequences.
 static const int kMaxTokenSize = 4;
 #else
 static const int kMaxTokenSize = 3;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(devlin): Expose this on Command, since many places implicitly check
 // this.
@@ -292,9 +292,9 @@ std::string Command::CommandPlatform() {
   return values::kKeybindingPlatformWin;
 #elif defined(OS_MAC)
   return values::kKeybindingPlatformMac;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return values::kKeybindingPlatformChromeOs;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
   return values::kKeybindingPlatformLinux;
 #else
   return "";
@@ -324,7 +324,7 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
     shortcut += values::kKeySeparator;
 
   if (accelerator.IsCmdDown()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Chrome OS treats the Search key like the Command key.
     shortcut += values::kKeySearch;
 #else

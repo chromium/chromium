@@ -285,31 +285,6 @@ class CommandsApiTest : public ExtensionApiTest {
         ->session_id()
         .id();
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void RunChromeOSConversionTest(const char* extension_path) {
-    // Setup the environment.
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
-    ASSERT_TRUE(RunExtensionTest(extension_path)) << message_;
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
-
-    ResultCatcher catcher;
-
-    // Send all expected keys (Search+Shift+{Left, Up, Right, Down}).
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        browser(), ui::VKEY_LEFT, false, true, false, true));
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        browser(), ui::VKEY_UP, false, true, false, true));
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        browser(), ui::VKEY_RIGHT, false, true, false, true));
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        browser(), ui::VKEY_DOWN, false, true, false, true));
-
-    ASSERT_TRUE(catcher.GetNextResult());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 class IncognitoCommandsApiTest : public CommandsApiTest,
@@ -978,11 +953,29 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_ContinuePropagation) {
 }
 
 // Test is only applicable on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(CommandsApiTest, ChromeOSConversions) {
-  RunChromeOSConversionTest("keybinding/chromeos_conversions");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(RunExtensionTest("keybinding/chromeos_conversions")) << message_;
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+
+  ResultCatcher catcher;
+
+  // Send all expected keys (Search+Shift+{Left, Up, Right, Down}).
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
+                                              true, false, true));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
+                                              true, false, true));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RIGHT, false,
+                                              true, false, true));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
+                                              true, false, true));
+
+  ASSERT_TRUE(catcher.GetNextResult());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Make sure component extensions retain keybindings after removal then
 // re-adding.
