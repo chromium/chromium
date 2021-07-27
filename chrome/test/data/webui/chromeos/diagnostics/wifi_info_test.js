@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/wifi_info.js';
-import {Network} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {Network, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
+import {fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -40,6 +40,22 @@ export function wifiInfoTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * Helper function provides WiFi network with overridden typeProperties wifi
+   * value.
+   * @param {!WiFiStateProperties} stateProperties
+   * @return {!Network}
+   */
+  function getWifiNetworkWithWiFiStatePropertiesOf(stateProperties) {
+    const wifiTypeProperties =
+        Object.assign({}, fakeWiFiStateProperties, stateProperties);
+    return /** @type {!Network} */ (Object.assign({}, fakeWifiNetwork, {
+      typeProperties: {
+        wifi: wifiTypeProperties,
+      }
+    }));
+  }
+
   test('WifiInfoPopulated', () => {
     const expectedGhz = 5.745;
     return initializeWifiInfo().then(() => {
@@ -64,11 +80,12 @@ export function wifiInfoTestSuite() {
   });
 
   test('FrequencyConvertibleToChannel', () => {
-    const networkOverride =
-        /** @type {!Network} */ (Object.assign({}, fakeWifiNetwork));
-    networkOverride.typeProperties.wifi.frequency = 2412;
+    // 2412 is the minimum 2.4GHz frequency which can be converted into a valid
+    // channel.
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({frequency: 2412}));
     const expectedGhz = 2.412;
-    return initializeWifiInfo().then(() => {
+    return initializeWifiInfo(testNetwork).then(() => {
       assertTextContains(
           getDataPointValue(wifiInfoElement, '#channel'),
           `1 (${expectedGhz} GHz)`);
@@ -76,12 +93,12 @@ export function wifiInfoTestSuite() {
   });
 
   test('FrequencyNotConvertibleToChannel', () => {
-    const networkOverride =
-        /** @type {!Network} */ (Object.assign({}, fakeWifiNetwork));
-    // 2411 MHz is below 2.4 GHz frequency range.
-    networkOverride.typeProperties.wifi.frequency = 2411;
+    // 2411 is below the minimum 2.4GHz frequency and cannot be converted into
+    // a valid channel.
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({frequency: 2411}));
     const expectedGhz = 2.411;
-    return initializeWifiInfo().then(() => {
+    return initializeWifiInfo(testNetwork).then(() => {
       assertTextContains(
           getDataPointValue(wifiInfoElement, '#channel'),
           `? (${expectedGhz} GHz)`);

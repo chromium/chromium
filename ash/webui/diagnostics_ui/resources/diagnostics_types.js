@@ -346,6 +346,12 @@ export let NetworkStateObserverReceiver =
 export let NetworkGuidInfo;
 
 /**
+ * Type alias for WiFiStateProperties.
+ * @typedef {ash.diagnostics.mojom.WiFiStateProperties}
+ */
+export let WiFiStateProperties = ash.diagnostics.mojom.WiFiStateProperties;
+
+/**
  * Type alias for ConnectionType.
  * @typedef {ash.diagnostics.mojom.ConnectionType}
  */
