@@ -763,6 +763,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             Supplier<Boolean> showStartSurfaceSupplier = () -> {
                 if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageOnPhone(
                             this, isTablet())) {
+                    StartSurfaceUserData.setKeepTab(getActivityTab(), true);
                     showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
                     return true;
                 }
