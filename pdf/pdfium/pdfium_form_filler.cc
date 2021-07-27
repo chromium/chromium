@@ -155,7 +155,8 @@ void PDFiumFormFiller::Form_OutputSelectedRect(FPDF_FORMFILLINFO* param,
                                                double bottom) {
   PDFiumEngine* engine = GetEngine(param);
   int page_index = engine->GetVisiblePageIndex(page);
-  DCHECK_NE(page_index, -1);
+  if (page_index == -1)
+    return;
 
   gfx::Rect rect = engine->pages_[page_index]->PageToScreen(
       engine->GetVisibleRect().origin(), engine->current_zoom_, left, top,
@@ -229,9 +230,11 @@ FPDF_PAGE PDFiumFormFiller::Form_GetCurrentPage(FPDF_FORMFILLINFO* param,
   int index = engine->last_focused_page_;
   if (index == -1) {
     index = engine->GetMostVisiblePage();
-    DCHECK_NE(index, -1);
+    if (index == -1)
+      return nullptr;
   }
 
+  DCHECK_NE(index, -1);
   return engine->pages_[index]->GetPage();
 }
 
