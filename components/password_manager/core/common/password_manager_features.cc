@@ -200,19 +200,6 @@ const char kMaxMoveToAccountOffersForNonOptedInUser[] =
 
 const int kMaxMoveToAccountOffersForNonOptedInUserDefaultValue = 5;
 
-// If set to true, Chrome will default to saving to the profile store for users
-// who haven't made an explicit choice yet.
-const char kSaveToProfileStoreByDefault[] = "save_to_profile_store_by_default";
-
-const bool kSaveToProfileStoreByDefaultDefaultValue = false;
-
-// If set to true, Chrome will set the default store to the account store when
-// the user opts in. This is mostly meaningful together with
-// |kSaveToProfileStoreByDefault|.
-const char kSaveToAccountStoreOnOptIn[] = "save_to_account_store_on_optin";
-
-const bool kSaveToAccountStoreOnOptInDefaultValue = false;
-
 }  // namespace features
 
 }  // namespace password_manager

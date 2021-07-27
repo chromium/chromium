@@ -265,18 +265,6 @@ void OptInToAccountStorage(PrefService* pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .SetOptedIn();
 
-  // Potentially also set the default store to the account one, based on a
-  // feature param.
-  bool save_to_account_store = base::GetFieldTrialParamByFeatureAsBool(
-      features::kEnablePasswordsAccountStorage,
-      features::kSaveToAccountStoreOnOptIn,
-      features::kSaveToAccountStoreOnOptInDefaultValue);
-  if (save_to_account_store) {
-    ScopedAccountStorageSettingsUpdate(pref_service,
-                                       GaiaIdHash::FromGaiaId(gaia_id))
-        .SetDefaultStore(PasswordForm::Store::kAccountStore);
-  }
-
   // Record the total number of (now) opted-in accounts.
   base::UmaHistogramExactLinear(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn",
@@ -346,16 +334,9 @@ PasswordForm::Store GetDefaultPasswordStore(
   // If none of the early-outs above triggered, then we *can* save to the
   // account store in principle (though the user might not have opted in to that
   // yet).
-  if (default_store == PasswordForm::Store::kNotSet) {
-    // If the user hasn't made a choice about the default store yet, retrieve it
-    // from a feature param.
-    bool save_to_profile_store = base::GetFieldTrialParamByFeatureAsBool(
-        features::kEnablePasswordsAccountStorage,
-        features::kSaveToProfileStoreByDefault,
-        features::kSaveToProfileStoreByDefaultDefaultValue);
-    return save_to_profile_store ? PasswordForm::Store::kProfileStore
-                                 : PasswordForm::Store::kAccountStore;
-  }
+  if (default_store == PasswordForm::Store::kNotSet)
+    return PasswordForm::Store::kAccountStore;
+
   return default_store;
 }
 
