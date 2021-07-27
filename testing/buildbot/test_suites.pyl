@@ -7299,7 +7299,6 @@
       },
     },
 
-    # TODO(crbug.com/1195415): Add EVE variant once HW arrives and is deployed.
     'lacros_device_or_vm_tests': {
       'lacros_all_tast_tests': {
         'variants': [
@@ -7315,7 +7314,6 @@
       },
     },
 
-    # TODO(crbug.com/1195415): Add EVE variant once HW arrives and is deployed.
     'lacros_device_or_vm_tests_fyi': {
       'lacros_device_or_vm_gtests': {
         'variants': [
