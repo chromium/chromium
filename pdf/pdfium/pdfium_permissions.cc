@@ -4,8 +4,6 @@
 
 #include "pdf/pdfium/pdfium_permissions.h"
 
-#include "base/notreached.h"
-
 namespace chrome_pdf {
 
 // static
@@ -24,8 +22,7 @@ PDFiumPermissions::PDFiumPermissions(int permissions_handler_revision,
     : permissions_handler_revision_(permissions_handler_revision),
       permission_bits_(permission_bits) {}
 
-bool PDFiumPermissions::HasPermission(
-    PDFEngine::DocumentPermission permission) const {
+bool PDFiumPermissions::HasPermission(DocumentPermission permission) const {
   // PDF 1.7 spec, section 3.5.2 says: "If the revision number is 2 or greater,
   // the operations to which user access can be controlled are as follows: ..."
   //
@@ -37,12 +34,12 @@ bool PDFiumPermissions::HasPermission(
   if (permissions_handler_revision_ == 2) {
     // Security handler revision 2 rules are simple.
     switch (permission) {
-      case PDFEngine::PERMISSION_COPY:
-      case PDFEngine::PERMISSION_COPY_ACCESSIBLE:
+      case DocumentPermission::kCopy:
+      case DocumentPermission::kCopyAccessible:
         // Check the same copy bit for all copying permissions.
         return (permission_bits_ & kPDFPermissionCopyMask) != 0;
-      case PDFEngine::PERMISSION_PRINT_LOW_QUALITY:
-      case PDFEngine::PERMISSION_PRINT_HIGH_QUALITY:
+      case DocumentPermission::kPrintLowQuality:
+      case DocumentPermission::kPrintHighQuality:
         // Check the same printing bit for all printing permissions.
         return (permission_bits_ & kPDFPermissionPrintMask) != 0;
     }
@@ -50,19 +47,17 @@ bool PDFiumPermissions::HasPermission(
     // Security handler revision 3+ have different rules for interpreting the
     // bits in `permission_bits_`.
     switch (permission) {
-      case PDFEngine::PERMISSION_COPY:
+      case DocumentPermission::kCopy:
         return (permission_bits_ & kPDFPermissionCopyMask) != 0;
-      case PDFEngine::PERMISSION_COPY_ACCESSIBLE:
+      case DocumentPermission::kCopyAccessible:
         return (permission_bits_ & kPDFPermissionCopyAccessibleMask) != 0;
-      case PDFEngine::PERMISSION_PRINT_LOW_QUALITY:
+      case DocumentPermission::kPrintLowQuality:
         return (permission_bits_ & kPDFPermissionPrintMask) != 0;
-      case PDFEngine::PERMISSION_PRINT_HIGH_QUALITY:
+      case DocumentPermission::kPrintHighQuality:
         return (permission_bits_ & kPDFPermissionPrintMask) != 0 &&
                (permission_bits_ & kPDFPermissionPrintHighQualityMask) != 0;
     }
   }
-  NOTREACHED() << "Unknown permission " << permission;
-  return true;
 }
 
 }  // namespace chrome_pdf

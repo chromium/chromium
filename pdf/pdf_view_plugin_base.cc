@@ -290,8 +290,8 @@ void PdfViewPluginBase::Print() {
     return;
 
   const bool can_print =
-      engine_->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) ||
-      engine_->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY);
+      engine_->HasPermission(DocumentPermission::kPrintLowQuality) ||
+      engine_->HasPermission(DocumentPermission::kPrintHighQuality);
   if (!can_print)
     return;
 
@@ -638,11 +638,11 @@ void PdfViewPluginBase::HandleAccessibilityAction(
 
 int PdfViewPluginBase::GetContentRestrictions() const {
   int content_restrictions = kContentRestrictionCut | kContentRestrictionPaste;
-  if (!engine()->HasPermission(PDFEngine::PERMISSION_COPY))
+  if (!engine()->HasPermission(DocumentPermission::kCopy))
     content_restrictions |= kContentRestrictionCopy;
 
-  if (!engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY) &&
-      !engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY)) {
+  if (!engine()->HasPermission(DocumentPermission::kPrintLowQuality) &&
+      !engine()->HasPermission(DocumentPermission::kPrintHighQuality)) {
     content_restrictions |= kContentRestrictionPrint;
   }
 
@@ -653,8 +653,8 @@ AccessibilityDocInfo PdfViewPluginBase::GetAccessibilityDocInfo() const {
   AccessibilityDocInfo doc_info;
   doc_info.page_count = engine()->GetNumberOfPages();
   doc_info.text_accessible =
-      engine()->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE);
-  doc_info.text_copyable = engine()->HasPermission(PDFEngine::PERMISSION_COPY);
+      engine()->HasPermission(DocumentPermission::kCopyAccessible);
+  doc_info.text_copyable = engine()->HasPermission(DocumentPermission::kCopy);
   return doc_info;
 }
 
@@ -732,9 +732,9 @@ int PdfViewPluginBase::PrintBegin(const blink::WebPrintParams& print_params) {
     return 0;
 
   const bool can_print =
-      engine()->HasPermission(PDFEngine::PERMISSION_PRINT_HIGH_QUALITY) ||
+      engine()->HasPermission(DocumentPermission::kPrintHighQuality) ||
       (print_params.rasterize_pdf &&
-       engine()->HasPermission(PDFEngine::PERMISSION_PRINT_LOW_QUALITY));
+       engine()->HasPermission(DocumentPermission::kPrintLowQuality));
 
   if (!can_print)
     return 0;
@@ -1484,8 +1484,8 @@ void PdfViewPluginBase::LoadAccessibility() {
   SetAccessibilityDocInfo(GetAccessibilityDocInfo());
 
   // If the document contents isn't accessible, don't send anything more.
-  if (!(engine_->HasPermission(PDFEngine::PERMISSION_COPY) ||
-        engine_->HasPermission(PDFEngine::PERMISSION_COPY_ACCESSIBLE))) {
+  if (!(engine_->HasPermission(DocumentPermission::kCopy) ||
+        engine_->HasPermission(DocumentPermission::kCopyAccessible))) {
     return;
   }
 

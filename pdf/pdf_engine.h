@@ -82,6 +82,13 @@ enum class FontMappingMode {
   kPepper,
 };
 
+enum class DocumentPermission {
+  kCopy,
+  kCopyAccessible,
+  kPrintLowQuality,
+  kPrintHighQuality,
+};
+
 // Do one time initialization of the SDK.
 // If `enable_v8` is false, then the PDFEngine will not be able to run
 // JavaScript.
@@ -92,13 +99,6 @@ void ShutdownSDK();
 // This class encapsulates a PDF rendering engine.
 class PDFEngine {
  public:
-  enum DocumentPermission {
-    PERMISSION_COPY,
-    PERMISSION_COPY_ACCESSIBLE,
-    PERMISSION_PRINT_LOW_QUALITY,
-    PERMISSION_PRINT_HIGH_QUALITY,
-  };
-
   // Maximum number of parameters a nameddest view can contain.
   static constexpr size_t kMaxViewParams = 4;
 

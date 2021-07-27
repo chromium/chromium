@@ -986,7 +986,7 @@ std::vector<uint8_t> PDFiumEngine::PrintPages(
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
     const std::vector<int>& page_numbers,
     const blink::WebPrintParams& print_params) {
-  DCHECK(HasPermission(PERMISSION_PRINT_LOW_QUALITY));
+  DCHECK(HasPermission(DocumentPermission::kPrintLowQuality));
 
   // If document is not downloaded yet, disable printing.
   if (doc() && !doc_loader_->IsDocumentComplete())
@@ -1002,7 +1002,7 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsRasterPdf(
 std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
     const std::vector<int>& page_numbers,
     const blink::WebPrintParams& print_params) {
-  DCHECK(HasPermission(PERMISSION_PRINT_HIGH_QUALITY));
+  DCHECK(HasPermission(DocumentPermission::kPrintHighQuality));
   DCHECK(doc());
 
   KillFormFocus();
@@ -2158,7 +2158,7 @@ void PDFiumEngine::InvalidateAllPages() {
 }
 
 std::string PDFiumEngine::GetSelectedText() {
-  if (!HasPermission(PDFEngine::PERMISSION_COPY))
+  if (!HasPermission(DocumentPermission::kCopy))
     return std::string();
 
   std::u16string result;
