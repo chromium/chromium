@@ -1077,29 +1077,6 @@ void ExtensionPrefs::ModifyBitMapPrefBits(const std::string& extension_id,
   }
 }
 
-std::set<std::string> ExtensionPrefs::GetBlocklistedExtensions() const {
-  std::set<std::string> ids;
-
-  const base::DictionaryValue* extensions =
-      prefs_->GetDictionary(pref_names::kExtensions);
-  if (!extensions)
-    return ids;
-
-  for (base::DictionaryValue::Iterator it(*extensions);
-       !it.IsAtEnd(); it.Advance()) {
-    if (!it.value().is_dict()) {
-      NOTREACHED() << "Invalid pref for extension " << it.key();
-      continue;
-    }
-    if (IsBlocklistBitSet(
-            static_cast<const base::DictionaryValue*>(&it.value()))) {
-      ids.insert(it.key());
-    }
-  }
-
-  return ids;
-}
-
 base::StringPiece ExtensionPrefs::GetPrefBlocklistAcknowledgedKey() {
   return kPrefBlocklistAcknowledged;
 }
