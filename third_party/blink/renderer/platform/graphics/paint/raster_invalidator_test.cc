@@ -435,6 +435,38 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
   FinishCycle(chunks);
 }
 
+TEST_P(RasterInvalidatorTest, ClipChangeOnCachedSubsequence) {
+  FloatRoundedRect clip_rect(-1000, -1000, 2000, 2000);
+  auto c1 = CreateClip(c0(), t0(), clip_rect);
+
+  PropertyTreeState layer_state = PropertyTreeState::Root();
+  PaintChunkSubset chunks(TestPaintArtifact()
+                              .Chunk(0)
+                              .Properties(t0(), *c1, e0())
+                              .Bounds(EnclosingIntRect(clip_rect.Rect()))
+                              .IsMovedFromCachedSubsequence()
+                              .Build());
+
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, layer_state);
+  FinishCycle(chunks);
+
+  invalidator_.SetTracksRasterInvalidations(true);
+  FloatRoundedRect new_clip_rect(-500, -500, 1000, 1000);
+  c1->Update(*c1->Parent(), ClipPaintPropertyNode::State{&t0(), new_clip_rect});
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, layer_state);
+  EXPECT_THAT(
+      TrackedRasterInvalidations(),
+      ElementsAre(
+          IncrementalInvalidation(chunks, 0, IntRect(-1000, -1000, 2000, 500)),
+          IncrementalInvalidation(chunks, 0, IntRect(-1000, -500, 500, 1000)),
+          IncrementalInvalidation(chunks, 0, IntRect(500, -500, 500, 1000)),
+          IncrementalInvalidation(chunks, 0, IntRect(-1000, 500, 2000, 500))));
+  invalidator_.SetTracksRasterInvalidations(false);
+  FinishCycle(chunks);
+}
+
 // Tests the path detecting change of PaintChunkInfo::chunk_to_layer_clip.
 // The chunk bounds is bigger than the clip because of the outset for raster
 // effects, so incremental invalidation is not suitable.
@@ -854,6 +886,57 @@ TEST_P(RasterInvalidatorTest, EffectWithAliasTransformWhoseParentChanges) {
 
   // We expect to get invalidations since the effect unaliased effect is
   // actually different now.
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, layer_state);
+  EXPECT_THAT(TrackedRasterInvalidations(),
+              ElementsAre(ChunkInvalidation(
+                  chunks, 0, PaintInvalidationReason::kPaintProperty)));
+  FinishCycle(chunks);
+}
+
+TEST_P(RasterInvalidatorTest, EffectChangeSimple) {
+  PropertyTreeState layer_state = DefaultPropertyTreeState();
+  auto e1 = CreateOpacityEffect(e0(), t0(), &c0(), 0.5);
+  PropertyTreeState chunk_state(t0(), c0(), *e1);
+  PaintChunkSubset chunks(
+      TestPaintArtifact().Chunk(0).Properties(chunk_state).Build());
+
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, layer_state);
+  FinishCycle(chunks);
+
+  invalidator_.SetTracksRasterInvalidations(true);
+  EffectPaintPropertyNode::State state{&t0(), &c0()};
+  state.opacity = 0.9;
+  e1->Update(*e1->Parent(), std::move(state));
+
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, layer_state);
+  EXPECT_THAT(TrackedRasterInvalidations(),
+              ElementsAre(ChunkInvalidation(
+                  chunks, 0, PaintInvalidationReason::kPaintProperty)));
+  FinishCycle(chunks);
+}
+
+TEST_P(RasterInvalidatorTest, EffectChangeOnCachedSubsequence) {
+  PropertyTreeState layer_state = DefaultPropertyTreeState();
+  auto e1 = CreateOpacityEffect(e0(), t0(), &c0(), 0.5);
+  PropertyTreeState chunk_state(t0(), c0(), *e1);
+  PaintChunkSubset chunks(TestPaintArtifact()
+                              .Chunk(0)
+                              .Properties(chunk_state)
+                              .IsMovedFromCachedSubsequence()
+                              .Build());
+
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, layer_state);
+  FinishCycle(chunks);
+
+  invalidator_.SetTracksRasterInvalidations(true);
+  EffectPaintPropertyNode::State state{&t0(), &c0()};
+  state.opacity = 0.9;
+  e1->Update(*e1->Parent(), std::move(state));
+
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
   EXPECT_THAT(TrackedRasterInvalidations(),

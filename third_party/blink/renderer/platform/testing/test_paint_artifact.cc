@@ -158,6 +158,12 @@ TestPaintArtifact& TestPaintArtifact::Uncacheable() {
   return *this;
 }
 
+TestPaintArtifact& TestPaintArtifact::IsMovedFromCachedSubsequence() {
+  paint_artifact_->PaintChunks().back().is_moved_from_cached_subsequence =
+      false;
+  return *this;
+}
+
 scoped_refptr<PaintArtifact> TestPaintArtifact::Build() {
   return std::move(paint_artifact_);
 }

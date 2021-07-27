@@ -107,15 +107,18 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   // the chunk state.
   const auto& new_chunk_state = new_chunk.properties;
   bool clip_node_is_different = false;
+  bool effect_node_is_different = false;
   if (!new_chunk.is_moved_from_cached_subsequence) {
-    const auto& old_chunk_state = old_chunk.properties;
-    if (&new_chunk_state.Effect() != &old_chunk_state.Effect() ||
-        new_chunk_state.Effect().Changed(
-            PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
-            &new_chunk_state.Transform()))
-      return PaintInvalidationReason::kPaintProperty;
-
-    clip_node_is_different = &new_chunk_state.Clip() != &old_chunk_state.Clip();
+    clip_node_is_different =
+        &new_chunk_state.Clip() != &old_chunk.properties.Clip();
+    effect_node_is_different =
+        &new_chunk_state.Effect() != &old_chunk.properties.Effect();
+  }
+  if (effect_node_is_different ||
+      new_chunk_state.Effect().Changed(
+          PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state,
+          &new_chunk_state.Transform())) {
+    return PaintInvalidationReason::kPaintProperty;
   }
 
   // Check for accumulated clip rect change, if the clip rects are tight.
