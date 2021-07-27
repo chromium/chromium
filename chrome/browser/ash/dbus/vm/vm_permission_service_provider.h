@@ -104,7 +104,7 @@ class VmPermissionServiceProvider
 
  private:
   struct VmInfo {
-    enum VmType { CrostiniVm = 0, PluginVm = 1 };
+    enum VmType { CrostiniVm = 0, PluginVm = 1, Borealis = 2 };
     enum PermissionType { PermissionCamera = 0, PermissionMicrophone = 1 };
 
     const std::string owner_id;
@@ -141,6 +141,7 @@ class VmPermissionServiceProvider
 
   void UpdateVmPermissions(VmInfo* vm);
   void UpdatePluginVmPermissions(VmInfo* vm);
+  void UpdateBorealisPermissions(VmInfo* vm);
 
   // Returns an iterator to a vm with given |owner_id| and |name|).
   VmMap::iterator FindVm(const std::string& owner_id, const std::string& name);
