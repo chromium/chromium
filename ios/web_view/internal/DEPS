@@ -49,6 +49,7 @@ include_rules = [
   "+ios/web/common",
   "+ios/web/public",
   "+ios/web/webui",
+  "+ios/web/web_state",
   "+ios/web_view",
   "+net",
   "+services/network/network_change_manager.h",

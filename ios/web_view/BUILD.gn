@@ -436,6 +436,7 @@ test("ios_web_view_unittests") {
     "internal/translate/cwv_translation_controller_unittest.mm",
     "internal/translate/cwv_translation_language_unittest.mm",
     "internal/translate/cwv_translation_policy_unittest.mm",
+    "internal/web_view_early_page_script_provider_unittest.mm",
     "internal/web_view_global_state_util_stub.mm",
     "internal/web_view_web_client_unittest.mm",
   ]

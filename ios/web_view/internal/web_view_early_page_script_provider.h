@@ -35,7 +35,10 @@ class WebViewEarlyPageScriptProvider : public base::SupportsUserData::Data {
   void SetScript(NSString* _Nonnull script);
 
  private:
-  WebViewEarlyPageScriptProvider();
+  WebViewEarlyPageScriptProvider(web::BrowserState* _Nonnull browser_state);
+
+  // The associated browser state.
+  web::BrowserState* _Nonnull browser_state_;
 
   // The JavaScript source code.
   NSString* _Nonnull script_;
