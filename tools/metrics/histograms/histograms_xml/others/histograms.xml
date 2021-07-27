@@ -9342,7 +9342,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Linux.WindowManager" enum="LinuxWindowManagerName"
-    expires_after="2021-08-01">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>pkotwicz@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
