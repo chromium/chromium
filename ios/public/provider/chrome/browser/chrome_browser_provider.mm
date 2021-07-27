@@ -10,7 +10,6 @@
 #include "components/metrics/metrics_provider.h"
 #import "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,8 +37,7 @@ ChromeBrowserProvider& GetChromeBrowserProvider() {
 // A dummy implementation of ChromeBrowserProvider.
 
 ChromeBrowserProvider::ChromeBrowserProvider()
-    : mailto_handler_provider_(std::make_unique<MailtoHandlerProvider>()),
-      text_zoom_provider_(std::make_unique<TextZoomProvider>()) {}
+    : mailto_handler_provider_(std::make_unique<MailtoHandlerProvider>()) {}
 
 ChromeBrowserProvider::~ChromeBrowserProvider() {
   for (auto& observer : observer_list_)
@@ -132,10 +130,6 @@ MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
 
 BrandedImageProvider* ChromeBrowserProvider::GetBrandedImageProvider() const {
   return nullptr;
-}
-
-TextZoomProvider* ChromeBrowserProvider::GetTextZoomProvider() const {
-  return text_zoom_provider_.get();
 }
 
 void ChromeBrowserProvider::HideModalViewStack() const {}

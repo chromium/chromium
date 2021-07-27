@@ -8,7 +8,6 @@
 
 #import "ios/chrome/browser/providers/chromium_logo_controller.h"
 #import "ios/chrome/browser/providers/chromium_spotlight_provider.h"
-#import "ios/chrome/browser/providers/chromium_text_zoom_provider.h"
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
 #import "ios/chrome/browser/providers/images/chromium_branded_image_provider.h"
 #include "ios/chrome/browser/providers/signin/chromium_signin_resources_provider.h"
@@ -35,8 +34,7 @@ ChromiumBrowserProvider::ChromiumBrowserProvider()
       spotlight_provider_(std::make_unique<ChromiumSpotlightProvider>()),
       fullscreen_provider_(std::make_unique<FullscreenProvider>()),
       overrides_provider_(std::make_unique<OverridesProvider>()),
-      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()),
-      text_zoom_provider_(std::make_unique<ChromiumTextZoomProvider>()) {}
+      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
 
@@ -103,8 +101,4 @@ OverridesProvider* ChromiumBrowserProvider::GetOverridesProvider() const {
 
 DiscoverFeedProvider* ChromiumBrowserProvider::GetDiscoverFeedProvider() const {
   return discover_feed_provider_.get();
-}
-
-TextZoomProvider* ChromiumBrowserProvider::GetTextZoomProvider() const {
-  return text_zoom_provider_.get();
 }

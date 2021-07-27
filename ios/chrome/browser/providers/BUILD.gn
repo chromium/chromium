@@ -12,8 +12,6 @@ source_set("providers") {
     "chromium_logo_controller.mm",
     "chromium_spotlight_provider.h",
     "chromium_spotlight_provider.mm",
-    "chromium_text_zoom_provider.h",
-    "chromium_text_zoom_provider.mm",
     "chromium_voice_search_provider.h",
     "chromium_voice_search_provider.mm",
   ]

@@ -17,7 +17,6 @@
 #include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
 #include "ios/public/provider/chrome/browser/signin/test_signin_resources_provider.h"
 #import "ios/public/provider/chrome/browser/spotlight/test_spotlight_provider.h"
-#import "ios/public/provider/chrome/browser/test_text_zoom_provider.h"
 #import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/public/provider/chrome/browser/voice/test_voice_search_provider.h"
@@ -41,8 +40,7 @@ TestChromeBrowserProvider::TestChromeBrowserProvider()
       spotlight_provider_(std::make_unique<TestSpotlightProvider>()),
       mailto_handler_provider_(std::make_unique<TestMailtoHandlerProvider>()),
       fullscreen_provider_(std::make_unique<FullscreenProvider>()),
-      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()),
-      text_zoom_provider_(std::make_unique<TestTextZoomProvider>()) {}
+      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
 TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
 
@@ -126,10 +124,6 @@ MailtoHandlerProvider* TestChromeBrowserProvider::GetMailtoHandlerProvider()
 DiscoverFeedProvider* TestChromeBrowserProvider::GetDiscoverFeedProvider()
     const {
   return discover_feed_provider_.get();
-}
-
-TextZoomProvider* TestChromeBrowserProvider::GetTextZoomProvider() const {
-  return text_zoom_provider_.get();
 }
 
 }  // namespace ios

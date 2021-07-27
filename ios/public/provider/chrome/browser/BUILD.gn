@@ -13,8 +13,6 @@ source_set("browser") {
     "chrome_browser_provider.mm",
     "overrides_provider.h",
     "overrides_provider.mm",
-    "text_zoom_provider.h",
-    "text_zoom_provider.mm",
   ]
   deps = [
     ":font_size_java_script_feature",
@@ -56,8 +54,6 @@ source_set("test_support") {
   sources = [
     "test_chrome_browser_provider.h",
     "test_chrome_browser_provider.mm",
-    "test_text_zoom_provider.h",
-    "test_text_zoom_provider.mm",
   ]
   deps = [
     ":browser",
