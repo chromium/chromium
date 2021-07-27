@@ -487,9 +487,10 @@ void KeystoreServiceAsh::DEPRECATED_DidGetCertificates(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::AddCertificate(mojom::KeystoreType keystore,
-                                        const std::vector<uint8_t>& certificate,
-                                        AddCertificateCallback callback) {
+void KeystoreServiceAsh::DEPRECATED_AddCertificate(
+    mojom::KeystoreType keystore,
+    const std::vector<uint8_t>& certificate,
+    DEPRECATED_AddCertificateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
@@ -505,12 +506,12 @@ void KeystoreServiceAsh::AddCertificate(mojom::KeystoreType keystore,
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->ImportCertificate(
       token_id.value(), cert_x509,
-      base::BindOnce(&KeystoreServiceAsh::DidImportCertificate,
+      base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidImportCertificate,
                      std::move(callback)));
 }
 
-void KeystoreServiceAsh::DidImportCertificate(
-    AddCertificateCallback callback,
+void KeystoreServiceAsh::DEPRECATED_DidImportCertificate(
+    DEPRECATED_AddCertificateCallback callback,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess)
@@ -521,10 +522,10 @@ void KeystoreServiceAsh::DidImportCertificate(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::RemoveCertificate(
+void KeystoreServiceAsh::DEPRECATED_RemoveCertificate(
     mojom::KeystoreType keystore,
     const std::vector<uint8_t>& certificate,
-    RemoveCertificateCallback callback) {
+    DEPRECATED_RemoveCertificateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<net::X509Certificate> cert_x509 = ParseCertificate(certificate);
   if (!cert_x509.get()) {
@@ -540,12 +541,12 @@ void KeystoreServiceAsh::RemoveCertificate(
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   platform_keys_service->RemoveCertificate(
       token_id.value(), cert_x509,
-      base::BindOnce(&KeystoreServiceAsh::DidRemoveCertificate,
+      base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidRemoveCertificate,
                      std::move(callback)));
 }
 
-void KeystoreServiceAsh::DidRemoveCertificate(
-    RemoveCertificateCallback callback,
+void KeystoreServiceAsh::DEPRECATED_DidRemoveCertificate(
+    DEPRECATED_RemoveCertificateCallback callback,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (status == chromeos::platform_keys::Status::kSuccess)

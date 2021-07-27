@@ -142,12 +142,13 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, CertificateBadFormat) {
   dummy_certificate.push_back(15);
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.AddCertificate(crosapi::mojom::KeystoreType::kUser,
-                              std::move(dummy_certificate), &result);
+  async_waiter.DEPRECATED_AddCertificate(crosapi::mojom::KeystoreType::kUser,
+                                         std::move(dummy_certificate), &result);
   EXPECT_EQ(result, expected_error);
 
   result = "";
-  async_waiter.RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
-                                 std::move(dummy_certificate), &result);
+  async_waiter.DEPRECATED_RemoveCertificate(crosapi::mojom::KeystoreType::kUser,
+                                            std::move(dummy_certificate),
+                                            &result);
   EXPECT_EQ(result, expected_error);
 }

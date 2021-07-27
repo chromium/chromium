@@ -260,7 +260,7 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string error = ValidateCrosapi(
-      KeystoreService::kAddCertificateMinVersion, browser_context());
+      KeystoreService::kDEPRECATED_AddCertificateMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -272,7 +272,7 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
   auto c = base::BindOnce(
       &EnterprisePlatformKeysImportCertificateFunction::OnAddCertificate, this);
   GetKeystoreService(browser_context())
-      ->AddCertificate(keystore, params->certificate, std::move(c));
+      ->DEPRECATED_AddCertificate(keystore, params->certificate, std::move(c));
   return RespondLater();
 }
 
@@ -293,8 +293,9 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
       api_epk::RemoveCertificate::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(
-      KeystoreService::kRemoveCertificateMinVersion, browser_context());
+  std::string error =
+      ValidateCrosapi(KeystoreService::kDEPRECATED_RemoveCertificateMinVersion,
+                      browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -307,7 +308,8 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
       &EnterprisePlatformKeysRemoveCertificateFunction::OnRemoveCertificate,
       this);
   GetKeystoreService(browser_context())
-      ->RemoveCertificate(keystore, params->certificate, std::move(c));
+      ->DEPRECATED_RemoveCertificate(keystore, params->certificate,
+                                     std::move(c));
   return RespondLater();
 }
 
