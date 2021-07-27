@@ -123,7 +123,7 @@ const base::Feature kBlockCredentialedSubresources{
 //  - https://wicg.github.io/cors-rfc1918/#integration-fetch
 //  - kBlockInsecurePrivateNetworkRequestsForNavigations
 const base::Feature kBlockInsecurePrivateNetworkRequests{
-    "BlockInsecurePrivateNetworkRequests", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BlockInsecurePrivateNetworkRequests", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation
 // trial. This is a necessary yet insufficient condition: documents that wish to

@@ -331,7 +331,13 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
 class PrivateNetworkAccessBrowserTestNoBlocking : public PrivateNetworkAccessBrowserTestBase {
  public:
   PrivateNetworkAccessBrowserTestNoBlocking()
-      : PrivateNetworkAccessBrowserTestBase({}, {}) {}
+      : PrivateNetworkAccessBrowserTestBase(
+            {},
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kWarnAboutSecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+            }) {}
 };
 
 // ===========================
