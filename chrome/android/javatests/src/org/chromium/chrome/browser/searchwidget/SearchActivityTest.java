@@ -12,6 +12,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -768,8 +769,11 @@ public class SearchActivityTest {
                 mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Fire the Intent to start up the SearchActivity.
-        Intent intent = new Intent();
-        SearchWidgetProvider.startSearchActivity(intent, isVoiceSearch);
+        try {
+            SearchWidgetProvider.createIntent(instrumentation.getContext(), isVoiceSearch).send();
+        } catch (PendingIntent.CanceledException e) {
+            Assert.assertTrue("Intent canceled", false);
+        }
         Activity searchActivity = instrumentation.waitForMonitorWithTimeout(
                 searchMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);

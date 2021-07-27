@@ -120,8 +120,7 @@ public class SearchWidgetProviderTest {
     @Test
     @SmallTest
     public void testUpdateAll() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
+        SearchWidgetProvider.performUpdate(null);
 
         // Without any idea of what the default search engine is, widgets should default to saying
         // just "Search".
@@ -168,8 +167,8 @@ public class SearchWidgetProviderTest {
                 return SearchWidgetProvider.shouldShowFullString();
             }
         }));
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
+
+        SearchWidgetProvider.performUpdate(null);
 
         // Without any idea of what the default search engine is, widgets should default to saying
         // just "Search".
@@ -231,8 +230,6 @@ public class SearchWidgetProviderTest {
     @Test
     @SmallTest
     public void testMicrophoneClick() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
         for (int i = 0; i < mDelegate.mViews.size(); i++) {
             RemoteViews views = mDelegate.mViews.get(i).second;
             clickOnWidget(views, R.id.microphone_icon, true);
@@ -242,8 +239,6 @@ public class SearchWidgetProviderTest {
     @Test
     @SmallTest
     public void testTextClick() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
         for (int i = 0; i < mDelegate.mViews.size(); i++) {
             RemoteViews views = mDelegate.mViews.get(i).second;
             clickOnWidget(views, R.id.text_container, true);
@@ -254,8 +249,6 @@ public class SearchWidgetProviderTest {
     @SmallTest
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testOnboardingRequired() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
         for (int i = 0; i < mDelegate.mViews.size(); i++) {
             RemoteViews views = mDelegate.mViews.get(i).second;
             clickOnWidget(views, R.id.text_container, false);

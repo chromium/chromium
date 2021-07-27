@@ -11,7 +11,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -27,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -108,12 +106,13 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    static final String ACTION_START_TEXT_QUERY =
+    // The following actions are used to uniquely tag intents so that installing a new PendingIntent
+    // does not override previously installed ones.
+    // These strings serve no other purpose.
+    private static final String ACTION_START_TEXT_QUERY =
             "org.chromium.chrome.browser.searchwidget.START_TEXT_QUERY";
-    static final String ACTION_START_VOICE_QUERY =
+    private static final String ACTION_START_VOICE_QUERY =
             "org.chromium.chrome.browser.searchwidget.START_VOICE_QUERY";
-    static final String ACTION_UPDATE_ALL_WIDGETS =
-            "org.chromium.chrome.browser.searchwidget.UPDATE_ALL_WIDGETS";
 
     public static final String EXTRA_FROM_SEARCH_WIDGET =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
@@ -165,20 +164,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     @Override
-    public void onReceive(final Context context, final Intent intent) {
-        run(new Runnable() {
-            @Override
-            public void run() {
-                if (IntentHandler.wasIntentSenderChrome(intent)) {
-                    handleAction(intent);
-                } else {
-                    SearchWidgetProvider.super.onReceive(context, intent);
-                }
-            }
-        });
-    }
-
-    @Override
     public void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
         run(new Runnable() {
             @Override
@@ -188,49 +173,30 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         });
     }
 
-    /** Handles the intent actions to the widget. */
-    @VisibleForTesting
-    static void handleAction(Intent intent) {
-        String action = intent.getAction();
-        if (ACTION_START_TEXT_QUERY.equals(action)) {
-            startSearchActivity(intent, /*shouldStartVoiceSearch=*/false);
-        } else if (ACTION_START_VOICE_QUERY.equals(action)) {
-            startSearchActivity(intent, /*shouldStartVoiceSearch=*/true);
-        } else if (ACTION_UPDATE_ALL_WIDGETS.equals(action)) {
-            performUpdate(null);
-        } else {
-            assert false;
-        }
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static void startSearchActivity(Intent intent, boolean shouldStartVoiceSearch) {
-        Log.d(SearchActivity.TAG, "Launching SearchActivity: VOICE=" + shouldStartVoiceSearch);
-        Context context = getDelegate().getContext();
-
-        // Abort if the user needs to go through First Run.
-        if (FirstRunFlowSequencer.launch(context, intent, true /* requiresBroadcast */,
-                    false /* preferLightweightFre */)) {
-            return;
-        }
-
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static PendingIntent createIntent(Context context, boolean startVoiceSearch) {
         // Launch the SearchActivity.
-        Intent searchIntent = new Intent();
+        Intent searchIntent =
+                new Intent(startVoiceSearch ? ACTION_START_VOICE_QUERY : ACTION_START_TEXT_QUERY);
         searchIntent.setClass(context, SearchActivity.class);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         searchIntent.putExtra(
-                SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, shouldStartVoiceSearch);
+                SearchActivityConstants.EXTRA_SHOULD_START_VOICE_SEARCH, startVoiceSearch);
 
         searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 
         Bundle optionsBundle =
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
                         .toBundle();
-        IntentUtils.safeStartActivity(context, searchIntent, optionsBundle);
+        return PendingIntent.getActivity(context, 0, searchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false),
+                optionsBundle);
     }
 
-    private static void performUpdate(int[] ids) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void performUpdate(int[] ids) {
         SearchWidgetProviderDelegate delegate = getDelegate();
 
         if (ids == null) ids = delegate.getAllSearchWidgetIds();
@@ -252,25 +218,10 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         RemoteViews views =
                 new RemoteViews(context.getPackageName(), R.layout.search_widget_template);
 
-        // Clicking on the widget fires an Intent back at this BroadcastReceiver, allowing control
-        // over how the Activity is animated when it starts up.
-        Intent textIntent = createStartQueryIntent(context, ACTION_START_TEXT_QUERY, id);
-        views.setOnClickPendingIntent(R.id.text_container,
-                PendingIntent.getBroadcast(context, 0, textIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                                | IntentUtils.getPendingIntentMutabilityFlag(false)));
-
-        // If voice search is available, clicking on the microphone triggers a voice query.
-        if (isVoiceSearchAvailable) {
-            Intent voiceIntent = createStartQueryIntent(context, ACTION_START_VOICE_QUERY, id);
-            views.setOnClickPendingIntent(R.id.microphone_icon,
-                    PendingIntent.getBroadcast(context, 0, voiceIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                                    | IntentUtils.getPendingIntentMutabilityFlag(false)));
-            views.setViewVisibility(R.id.microphone_icon, View.VISIBLE);
-        } else {
-            views.setViewVisibility(R.id.microphone_icon, View.GONE);
-        }
+        views.setOnClickPendingIntent(R.id.text_container, createIntent(context, false));
+        views.setOnClickPendingIntent(R.id.microphone_icon, createIntent(context, true));
+        views.setViewVisibility(
+                R.id.microphone_icon, isVoiceSearchAvailable ? View.VISIBLE : View.GONE);
 
         // Update what string is displayed by the widget.
         String text = TextUtils.isEmpty(engineName) || !shouldShowFullString()
@@ -279,15 +230,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         views.setCharSequence(R.id.title, "setHint", text);
 
         return views;
-    }
-
-    /** Creates a trusted Intent that lets the user begin performing queries. */
-    private static Intent createStartQueryIntent(Context context, String action, int widgetId) {
-        Intent intent = new Intent(action, Uri.parse(String.valueOf(widgetId)));
-        intent.setClass(context, SearchWidgetProvider.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        IntentUtils.addTrustedIntentExtras(intent);
-        return intent;
     }
 
     /** Caches whether or not a voice search is possible. */

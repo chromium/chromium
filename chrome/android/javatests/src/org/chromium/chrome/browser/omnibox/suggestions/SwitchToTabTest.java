@@ -11,7 +11,8 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.wait
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
-import android.content.Intent;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
@@ -240,13 +241,19 @@ public class SwitchToTabTest {
      */
     private SearchActivity startSearchActivity() {
         final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        final Context context = instrumentation.getContext();
+
         ActivityMonitor searchMonitor =
                 new ActivityMonitor(SearchActivity.class.getName(), null, false);
         instrumentation.addMonitor(searchMonitor);
 
         // Fire the Intent to start up the SearchActivity.
-        Intent intent = new Intent();
-        SearchWidgetProvider.startSearchActivity(intent, /* isVoiceSearch = */ false);
+        try {
+            SearchWidgetProvider.createIntent(context, false).send();
+        } catch (PendingIntent.CanceledException e) {
+            Assert.assertTrue("Intent canceled", false);
+        }
+
         Activity searchActivity = instrumentation.waitForMonitorWithTimeout(
                 searchMonitor, SEARCH_ACTIVITY_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);
