@@ -217,13 +217,22 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
   if (response.success) {
     DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
     const std::string* enterprise_id =
-        user_info.FindStringPath("enterprise.id");
+        user_info.FindStringPath(kBoxEnterpriseIdFieldName);
+    DLOG(ERROR) << settings_.enterprise_id;
+    DLOG(ERROR) << *enterprise_id;
     DCHECK(enterprise_id);
     if (settings_.enterprise_id.compare(*enterprise_id) != 0) {
       // User is logged in to wrong account which doesn't match enterprise_id.
       // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
       // This is handled as case 1c (other errors) by FileSystemRenameHandler.
       state = GoogleServiceAuthError::USER_NOT_SIGNED_UP;
+    } else {
+      // Enterprise IDs match, save the info to prefs.
+      PrefService* prefs =
+          Profile::FromBrowserContext(web_view_->GetBrowserContext())
+              ->GetPrefs();
+      SetFileSystemAccountInfo(prefs, kFileSystemServiceProviderPrefNameBox,
+                               std::move(user_info));
     }
   } else {
     // Request for Box user's enterprise_id failed.

@@ -12,6 +12,10 @@
 
 namespace enterprise_connectors {
 
+extern const char kBoxEnterpriseIdFieldName[];
+extern const char kBoxLoginFieldName[];
+extern const char kBoxNameFieldName[];
+
 struct BoxApiCallResponse;
 
 // Helper for making Box API calls.

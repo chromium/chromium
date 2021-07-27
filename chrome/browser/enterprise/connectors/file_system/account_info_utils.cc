@@ -202,7 +202,7 @@ std::string GetDefaultFolderName(PrefService* prefs,
 
 void SetFileSystemAccountInfo(PrefService* prefs,
                               const std::string& service_provider,
-                              base::DictionaryValue account_info) {
+                              base::Value account_info) {
   prefs->Set(GetPrefPath(kAccountInfoPrefPathTemplate, service_provider),
              account_info);
 }

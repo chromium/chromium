@@ -174,6 +174,10 @@ void ProcessUploadSuccessResponse(
 
 namespace enterprise_connectors {
 
+const char kBoxEnterpriseIdFieldName[] = "enterprise.id";
+const char kBoxLoginFieldName[] = "login";
+const char kBoxNameFieldName[] = "name";
+
 // File size limit according to https://developer.box.com/guides/uploads/:
 // - Chucked upload APIs is only supported for file size >= 20 MB;
 // - Whole file upload API is only supported for file size <= 50 MB.
@@ -456,7 +460,7 @@ BoxGetCurrentUserApiCallFlow::~BoxGetCurrentUserApiCallFlow() = default;
 
 GURL BoxGetCurrentUserApiCallFlow::CreateApiCallUrl() {
   return BoxApiCallFlow::CreateApiCallUrl().Resolve(
-      "2.0/users/me?fields=enterprise");
+      "2.0/users/me?fields=enterprise,login,name");
 }
 
 bool BoxGetCurrentUserApiCallFlow::IsExpectedSuccessCode(int code) const {
@@ -479,13 +483,14 @@ void BoxGetCurrentUserApiCallFlow::OnJsonParsed(ParseResult result) {
     std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
     return;
   }
-
-  // TODO(https://crbug.com/1230049): Extract into a struct instead of returning
-  //  a json blob to the callback.
-  if (!result.value->FindStringPath("enterprise.id")) {
-    LOG(ERROR) << "[BoxApiCallFlow] GetCurrentUser succeeded but "
-                  "response does not include enterprise_id: "
-               << *result.value;
+  if (!result.value->is_dict() ||
+      !result.value->FindStringPath(kBoxEnterpriseIdFieldName) ||
+      !result.value->FindStringPath(kBoxLoginFieldName) ||
+      !result.value->FindStringPath(kBoxNameFieldName)) {
+    LOG(ERROR)
+        << "[BoxApiCallFlow] GetCurrentUser succeeded but "
+           "response does not include all of enterprise_id, login, and name: "
+        << *result.value;
     std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
     return;
   }

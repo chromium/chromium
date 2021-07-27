@@ -41,6 +41,10 @@ class FileSystemSigninDialogDelegate
   FileSystemSigninDialogDelegate(content::BrowserContext* browser_context,
                                  const FileSystemSettings& settings,
                                  AuthorizationCompletedCallback callback);
+  // Visible for testing.
+ protected:
+  void OnGetCurrentUserResponse(BoxApiCallResponse response,
+                                base::Value user_info);
 
  private:
   // ChromeWebModalDialogManagerDelegate:
@@ -68,8 +72,6 @@ class FileSystemSigninDialogDelegate
   void OnGotOAuthTokens(const GoogleServiceAuthError& status,
                         const std::string& access_token,
                         const std::string& refresh_token);
-  void OnGetCurrentUserResponse(BoxApiCallResponse response,
-                                base::Value user_info);
 
   // Invoke the callback with the status of the auth flow and tokens if
   // obtained.

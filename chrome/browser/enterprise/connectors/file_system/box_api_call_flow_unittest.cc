@@ -1239,6 +1239,8 @@ TEST_F(BoxGetCurrentUserApiCallFlowTest, ProcessApiCallSuccess) {
   std::string body(R"({
     "type": "user",
     "id": "9876",
+    "login": "wile.e.coyote@acme.com",
+    "name": "Wile E. Coyote",
     "enterprise": {
       "type": "enterprise",
       "id": "31415926",
