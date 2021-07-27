@@ -5050,6 +5050,42 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Commerce.PriceAlertsMessageCard.Dismissed">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the user taps the close button on PriceAlertsMessageCard.
+    Recorded only on Android.
+  </description>
+</action>
+
+<action name="Commerce.PriceAlertsMessageCard.Reviewed">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the user taps the action button on PriceAlertsMessageCard.
+    Recorded only on Android.
+  </description>
+</action>
+
+<action name="Commerce.PriceWelcomeMessageCard.Dismissed">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the user taps the close button on PriceWelcomeMessageCard.
+    Recorded only on Android.
+  </description>
+</action>
+
+<action name="Commerce.PriceWelcomeMessageCard.Reviewed">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when the user taps the action button on PriceWelcomeMessageCard.
+    Recorded only on Android.
+  </description>
+</action>
+
 <action name="Commerce.TabGridSwitched.HasPriceDrop">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
