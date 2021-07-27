@@ -271,9 +271,7 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
     // because in both cases we rely on GetLastCommittedURL().GetOrigin().
     if (web_contents->GetOrCreateWebPreferences()
             .allow_universal_access_from_file_urls &&
-        render_frame_host->GetLastCommittedOrigin()
-            .GetURL()
-            .SchemeIsFileSystem()) {
+        render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
       return render_frame_host->GetLastCommittedURL().GetOrigin();
     }
 
