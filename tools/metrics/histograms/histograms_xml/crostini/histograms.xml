@@ -463,7 +463,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
         summary="in the background, where failures aren't visible to users
                  (e.g. when premounting at launch to reduce latency if the
                  user accesses their Linux files)"/>
-    <variant name="UserVisibile"
+    <variant name="UserVisible"
         summary="where success is required to complete the user action e.g.
                  viewing Linux files"/>
   </token>
