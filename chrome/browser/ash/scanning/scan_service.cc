@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chromeos/utils/pdf_conversion.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -230,7 +232,9 @@ void ScanService::StartScan(
   base::Time::Now().LocalExplode(&start_time_);
   ClearScanState();
   lorgnette_scanner_manager_->Scan(
-      scanner_name, mojo::ConvertTo<lorgnette::ScanSettings>(settings),
+      scanner_name,
+      mojo::StructTraits<lorgnette::ScanSettings,
+                         mojo_ipc::ScanSettingsPtr>::ToMojom(settings),
       base::BindRepeating(&ScanService::OnProgressPercentReceived,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ScanService::OnPageReceived,
@@ -297,7 +301,9 @@ void ScanService::OnScannerCapabilitiesReceived(
   }
 
   std::move(callback).Run(
-      mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(capabilities.value()));
+      mojo::StructTraits<
+          ash::scanning::mojom::ScannerCapabilitiesPtr,
+          lorgnette::ScannerCapabilities>::ToMojom(capabilities.value()));
 }
 
 void ScanService::OnProgressPercentReceived(uint32_t progress_percent,
@@ -397,8 +403,8 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
   }
 
   scan_job_observer_->OnScanComplete(
-      mojo::ConvertTo<mojo_ipc::ScanResult>(
-          static_cast<lorgnette::ScanFailureMode>(failure_mode)),
+      mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                       lorgnette::ScanFailureMode>::ToMojom(failure_mode),
       scanned_file_paths_);
   HoldingSpaceKeyedService* holding_space_keyed_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(context_);

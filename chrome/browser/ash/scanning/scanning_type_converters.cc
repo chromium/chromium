@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 
 #include "base/notreached.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
@@ -154,8 +156,8 @@ struct TypeConverter<lorgnette::ImageFormat, mojo_ipc::FileType> {
 
 // static
 mojo_ipc::ScanResult
-TypeConverter<mojo_ipc::ScanResult, lorgnette::ScanFailureMode>::Convert(
-    const lorgnette::ScanFailureMode lorgnette_failure_mode) {
+EnumTraits<ash::scanning::mojom::ScanResult, lorgnette::ScanFailureMode>::
+    ToMojom(const lorgnette::ScanFailureMode lorgnette_failure_mode) {
   switch (lorgnette_failure_mode) {
     case lorgnette::SCAN_FAILURE_MODE_NO_FAILURE:
       return mojo_ipc::ScanResult::kSuccess;
@@ -181,9 +183,10 @@ TypeConverter<mojo_ipc::ScanResult, lorgnette::ScanFailureMode>::Convert(
 }
 
 // static
-mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
-                                               lorgnette::ScannerCapabilities>::
-    Convert(const lorgnette::ScannerCapabilities& lorgnette_caps) {
+mojo_ipc::ScannerCapabilitiesPtr
+StructTraits<ash::scanning::mojom::ScannerCapabilitiesPtr,
+             lorgnette::ScannerCapabilities>::
+    ToMojom(const lorgnette::ScannerCapabilities& lorgnette_caps) {
   mojo_ipc::ScannerCapabilities mojo_caps;
   mojo_caps.sources.reserve(lorgnette_caps.sources().size());
   for (const auto& source : lorgnette_caps.sources()) {
@@ -207,7 +210,7 @@ mojo_ipc::ScannerCapabilitiesPtr TypeConverter<mojo_ipc::ScannerCapabilitiesPtr,
 
 // static
 lorgnette::ScanSettings
-TypeConverter<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::Convert(
+StructTraits<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::ToMojom(
     const mojo_ipc::ScanSettingsPtr& mojo_settings) {
   lorgnette::ScanSettings lorgnette_settings;
   lorgnette_settings.set_source_name(mojo_settings->source_name);

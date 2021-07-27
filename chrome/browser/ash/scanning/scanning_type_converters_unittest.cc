@@ -6,6 +6,8 @@
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,9 +112,10 @@ class ScannerCapabilitiesTest
 // mojo_ipc::ScannerCapabilitiesPtr.
 TEST_P(ScannerCapabilitiesTest, LorgnetteCapsToMojom) {
   mojo_ipc::ScannerCapabilitiesPtr mojo_caps =
-      mojo::ConvertTo<mojo_ipc::ScannerCapabilitiesPtr>(
-          CreateLorgnetteScannerCapabilities(params().lorgnette_source_type,
-                                             params().lorgnette_color_mode));
+      mojo::StructTraits<ash::scanning::mojom::ScannerCapabilitiesPtr,
+                         lorgnette::ScannerCapabilities>::
+          ToMojom(CreateLorgnetteScannerCapabilities(
+              params().lorgnette_source_type, params().lorgnette_color_mode));
   ASSERT_EQ(mojo_caps->sources.size(), 1u);
   EXPECT_EQ(mojo_caps->sources[0]->type, params().mojom_source_type);
   EXPECT_EQ(mojo_caps->sources[0]->name, kDocumentSourceName);
@@ -169,9 +172,10 @@ class ScanSettingsTest
 // lorgnette::ScanSettings proto.
 TEST_P(ScanSettingsTest, MojomSettingsToLorgnette) {
   lorgnette::ScanSettings lorgnette_settings =
-      mojo::ConvertTo<lorgnette::ScanSettings>(CreateMojomScanSettings(
-          params().mojom_color_mode, params().mojom_page_size,
-          params().mojom_file_type));
+      mojo::StructTraits<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::
+          ToMojom(CreateMojomScanSettings(params().mojom_color_mode,
+                                          params().mojom_page_size,
+                                          params().mojom_file_type));
   EXPECT_EQ(lorgnette_settings.source_name(), kDocumentSourceName);
   EXPECT_EQ(lorgnette_settings.color_mode(), params().lorgnette_color_mode);
   EXPECT_EQ(lorgnette_settings.image_format(), params().lorgnete_image_format);
@@ -214,26 +218,33 @@ INSTANTIATE_TEST_SUITE_P(
 // Test that each lorgnette::ScanFailureMode is converted into the correct
 // mojo_ipc::ScanResult.
 TEST(ScanResultTest, Convert) {
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_NO_FAILURE),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE)),
             mojo_ipc::ScanResult::kSuccess);
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_UNKNOWN),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_UNKNOWN)),
             mojo_ipc::ScanResult::kUnknownError);
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_DEVICE_BUSY)),
             mojo_ipc::ScanResult::kDeviceBusy);
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_ADF_JAMMED)),
             mojo_ipc::ScanResult::kAdfJammed);
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_ADF_EMPTY)),
             mojo_ipc::ScanResult::kAdfEmpty);
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN)),
             mojo_ipc::ScanResult::kFlatbedOpen);
-  EXPECT_EQ(mojo::ConvertTo<mojo_ipc::ScanResult>(
-                lorgnette::SCAN_FAILURE_MODE_IO_ERROR),
+  EXPECT_EQ((mojo::EnumTraits<ash::scanning::mojom::ScanResult,
+                              lorgnette::ScanFailureMode>::
+                 ToMojom(lorgnette::SCAN_FAILURE_MODE_IO_ERROR)),
             mojo_ipc::ScanResult::kIoError);
 }
 
