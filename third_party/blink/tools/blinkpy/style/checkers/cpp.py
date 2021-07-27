@@ -46,6 +46,8 @@ import unicodedata
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 
+from functools import total_ordering
+
 xrange = six.moves.xrange
 
 # Headers that we consider STL headers.
@@ -360,6 +362,7 @@ class _IncludeState(dict):
         return self._visited_primary_section
 
 
+@total_ordering
 class Position(object):
     """Holds the position of something."""
 
@@ -373,11 +376,11 @@ class Position(object):
     def __cmp__(self, other):
         return self.row.__cmp__(other.row) or self.column.__cmp__(other.column)
 
-    if six.PY3:
+    def __eq__(self, other):
+        return (self.row, self.column) == (other.row, other.column)
 
-        def __gt__(self, other):
-            return self.row.__gt__(other.row) or self.column.__gt__(
-                other.column)
+    def __gt__(self, other):
+        return (self.row, self.column) > (other.row, other.column)
 
 
 class SingleLineView(object):
@@ -1572,7 +1575,7 @@ def get_line_width(line):
       The width of the line in column positions, accounting for Unicode
       combining characters and wide characters.
     """
-    if isinstance(line, unicode):
+    if isinstance(line, six.text_type):
         width = 0
         for c in unicodedata.normalize('NFC', line):
             if unicodedata.east_asian_width(c) in ('W', 'F'):
@@ -2602,7 +2605,7 @@ def check_for_include_what_you_use(filename, clean_lines, include_state,
 
     # include_state is modified during iteration, so we iterate over a copy of
     # the keys.
-    for header in include_state.keys():  # NOLINT
+    for header in list(include_state):  # NOLINT
         (same_module, common_path) = files_belong_to_same_module(
             abs_filename, header)
         fullpath = common_path + header
