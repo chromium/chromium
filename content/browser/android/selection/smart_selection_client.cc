@@ -42,6 +42,10 @@ jlong JNI_SmartSelectionClient_Init(
   CHECK(web_contents)
       << "A SmartSelectionClient should be created with a valid WebContents.";
 
+  if (web_contents->GetUserData(kSmartSelectionClientUDKey))
+    return reinterpret_cast<intptr_t>(
+        web_contents->GetUserData(kSmartSelectionClientUDKey));
+
   return reinterpret_cast<intptr_t>(
       new SmartSelectionClient(env, obj, web_contents));
 }

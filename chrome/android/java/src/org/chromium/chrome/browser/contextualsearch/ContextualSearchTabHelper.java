@@ -191,13 +191,17 @@ public class ContextualSearchTabHelper
      */
     private void updateHooksForTab(Tab tab) {
         WebContents currentWebContents = tab.getWebContents();
-        if (currentWebContents != mWebContents
-                || mContextualSearchManager != getContextualSearchManager(tab)) {
-            mWebContents = currentWebContents;
+        boolean webContentsChanged = currentWebContents != mWebContents;
+        if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
             mContextualSearchManager = getContextualSearchManager(tab);
-            if (mWebContents != null && mSelectionClientManager == null) {
-                mSelectionClientManager = new SelectionClientManager(mWebContents);
+            if (webContentsChanged && currentWebContents != null) {
+                // Ensure the hooks are cleared on the old web contents before proceeding. All of
+                // the objects associated with the web content need to be recreated in order for
+                // selection to continue working. See https://crbug.com/1076326 for more details.
+                removeContextualSearchHooks(mWebContents);
+                mSelectionClientManager = new SelectionClientManager(currentWebContents);
             }
+            mWebContents = currentWebContents;
             updateContextualSearchHooks(mWebContents);
         }
     }
@@ -242,7 +246,7 @@ public class ContextualSearchTabHelper
      * Removes Contextual Search hooks for its client and listener from the given WebContents.
      * @param webContents The WebContents to detach the gesture state listener from.
      */
-    private void removeContextualSearchHooks(WebContents webContents) {
+    private void removeContextualSearchHooks(@Nullable WebContents webContents) {
         if (webContents == null) return;
 
         if (mGestureStateListener != null) {
