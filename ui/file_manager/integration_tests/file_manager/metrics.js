@@ -18,6 +18,9 @@ testcase.metricsRecordEnum = async () => {
   const validValues = ['a', 'b', 'c'];
   const reports = [];
 
+  // Open Files SWA.
+  await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
   // Record each enumerator once.
   for (const value of validValues) {
     reports.push(remoteCall.callRemoteTestUtil(

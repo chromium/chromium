@@ -2585,6 +2585,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "getVolumesCount") {
+    file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
+    *output = base::NumberToString(volume_manager->GetVolumeList().size());
+    return;
+  }
+
   if (name == "countAppWindows") {
     std::string app_id;
     ASSERT_TRUE(value.GetString("appId", &app_id));

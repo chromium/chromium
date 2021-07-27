@@ -730,4 +730,23 @@ export class RemoteCallFilesApp extends RemoteCall {
     return this.waitUntilCurrentDirectoryIsChanged(
         appId, `/${rootLabel}${path}`);
   }
+
+  /**
+   * Wait until the expected number of volumes is mounted.
+   * @param {number} expectedVolumesCount Expected number of mounted volumes.
+   * @return {Promise} promise Promise to be fulfilled.
+   */
+  async waitForVolumesCount(expectedVolumesCount) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const volumesCount = await sendTestMessage({name: 'getVolumesCount'});
+      if (volumesCount === expectedVolumesCount.toString()) {
+        return;
+      }
+      const msg =
+          'Expected number of mounted volumes: ' + expectedVolumesCount +
+          '. Actual: ' + volumesCount;
+      return pending(caller, msg);
+    });
+  }
 }

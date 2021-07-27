@@ -289,13 +289,27 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayPartitionFileTable"),
         TestCase("fileSearch"),
         TestCase("fileDisplayWithoutDownloadsVolume").DontMountVolumes(),
+        TestCase("fileDisplayWithoutDownloadsVolume")
+            .DontMountVolumes()
+            .FilesSwa(),
         TestCase("fileDisplayWithoutVolumes").DontMountVolumes(),
+        TestCase("fileDisplayWithoutVolumes").DontMountVolumes().FilesSwa(),
         TestCase("fileDisplayWithoutVolumesThenMountDownloads")
             .DontMountVolumes(),
+        TestCase("fileDisplayWithoutVolumesThenMountDownloads")
+            .DontMountVolumes()
+            .FilesSwa(),
         TestCase("fileDisplayWithoutVolumesThenMountDrive").DontMountVolumes(),
+        TestCase("fileDisplayWithoutVolumesThenMountDrive")
+            .DontMountVolumes()
+            .FilesSwa(),
         TestCase("fileDisplayWithoutDrive").DontMountVolumes(),
+        TestCase("fileDisplayWithoutDrive").DontMountVolumes().FilesSwa(),
         // Test is failing (crbug.com/1097013)
         // TestCase("fileDisplayWithoutDriveThenDisable").DontMountVolumes(),
+        // TestCase("fileDisplayWithoutDriveThenDisable")
+        //     .DontMountVolumes()
+        //     .FilesSwa(),
         TestCase("fileDisplayMountWithFakeItemSelected"),
         TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected"),
         TestCase("fileDisplayUnmountRemovableRoot"),
@@ -679,6 +693,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveClickFirstSearchResult"),
         TestCase("drivePressEnterToSearch"),
         TestCase("drivePressClearSearch"),
+        TestCase("drivePressClearSearch").FilesSwa(),
         TestCase("drivePressCtrlAFromSearch"),
         TestCase("driveBackupPhotos"),
         TestCase("driveBackupPhotos").EnableSinglePartitionFormat(),
@@ -936,8 +951,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("showGridViewDownloads"),
                       TestCase("showGridViewDrive"),
                       TestCase("showGridViewButtonSwitches"),
+                      TestCase("showGridViewButtonSwitches").FilesSwa(),
                       TestCase("showGridViewKeyboardSelectionA11y"),
                       TestCase("showGridViewTitles"),
+                      TestCase("showGridViewTitles").FilesSwa(),
                       TestCase("showGridViewMouseSelectionA11y"),
                       TestCase("showGridViewDocumentsProvider")
                           .EnableGenericDocumentsProvider(),
@@ -1028,6 +1045,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("myFilesDisplaysAndOpensEntries"),
         TestCase("myFilesFolderRename"),
         TestCase("myFilesUpdatesWhenAndroidVolumeMounts").DontMountVolumes(),
+        TestCase("myFilesUpdatesWhenAndroidVolumeMounts")
+            .DontMountVolumes()
+            .FilesSwa(),
         TestCase("myFilesUpdatesChildren"),
         TestCase("myFilesAutoExpandOnce"),
         TestCase("myFilesToolbarDelete")));
@@ -1073,7 +1093,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("searchDownloadsWithResults"),
                       TestCase("searchDownloadsWithNoResults"),
                       TestCase("searchDownloadsClearSearchKeyDown"),
+                      TestCase("searchDownloadsClearSearchKeyDown").FilesSwa(),
                       TestCase("searchDownloadsClearSearch"),
+                      TestCase("searchDownloadsClearSearch").FilesSwa(),
                       TestCase("searchHidingViaTab"),
                       TestCase("searchHidingTextEntryField"),
                       TestCase("searchButtonToggles"),
@@ -1083,6 +1105,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("metricsRecordEnum"),
+                      TestCase("metricsRecordEnum").FilesSwa(),
                       TestCase("metricsOpenSwa").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

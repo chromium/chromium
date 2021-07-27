@@ -456,13 +456,12 @@ testcase.fileSearchNotFound = async () => {
  */
 testcase.fileDisplayWithoutDownloadsVolume = async () => {
   // Ensure no volumes are mounted.
-  chrome.test.assertEq(
-      0, await remoteCall.callRemoteTestUtil('getVolumesCount', null, []));
+  chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Mount Drive.
   await sendTestMessage({name: 'mountDrive'});
 
-  await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
+  await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
   const appId = await openNewWindow(null, null);
@@ -477,8 +476,7 @@ testcase.fileDisplayWithoutDownloadsVolume = async () => {
  */
 testcase.fileDisplayWithoutVolumes = async () => {
   // Ensure no volumes are mounted.
-  chrome.test.assertEq(
-      0, await remoteCall.callRemoteTestUtil('getVolumesCount', null, []));
+  chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Open Files app without specifying the initial directory/root.
   const appId = await openNewWindow(null, null);
@@ -495,8 +493,7 @@ testcase.fileDisplayWithoutVolumes = async () => {
  */
 testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
   // Ensure no volumes are mounted.
-  chrome.test.assertEq(
-      0, await remoteCall.callRemoteTestUtil('getVolumesCount', null, []));
+  chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Open Files app without specifying the initial directory/root.
   const appId = await openNewWindow(null, null);
@@ -532,8 +529,7 @@ testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
  */
 testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
   // Ensure no volumes are mounted.
-  chrome.test.assertEq(
-      0, await remoteCall.callRemoteTestUtil('getVolumesCount', null, []));
+  chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Open Files app without specifying the initial directory/root.
   const appId = await openNewWindow(null, null);
@@ -568,14 +564,13 @@ testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
  */
 testcase.fileDisplayWithoutDrive = async () => {
   // Ensure no volumes are mounted.
-  chrome.test.assertEq(
-      0, await remoteCall.callRemoteTestUtil('getVolumesCount', null, []));
+  chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Mount Downloads.
   await sendTestMessage({name: 'mountDownloads'});
 
   // Wait until downloads is re-added
-  await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
+  await remoteCall.waitForVolumesCount(1);
 
   // Open the files app.
   const appId = await setupAndWaitUntilReady(
@@ -604,8 +599,7 @@ testcase.fileDisplayWithoutDrive = async () => {
  */
 testcase.fileDisplayWithoutDriveThenDisable = async () => {
   // Ensure no volumes are mounted.
-  chrome.test.assertEq(
-      0, await remoteCall.callRemoteTestUtil('getVolumesCount', null, []));
+  chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
   // Mount Downloads.
   await sendTestMessage({name: 'mountDownloads'});
@@ -614,7 +608,7 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
   await addEntries(['local'], [ENTRIES.newlyAdded]);
 
   // Wait until it mounts.
-  await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
+  await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
   const appId = await openNewWindow(null, null);
