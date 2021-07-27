@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/cookie_utils.h"
 
+#include "base/ranges/algorithm.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -55,20 +56,39 @@ void SplitCookiesIntoAllowedAndBlocked(
                            cookie_details->site_for_cookies.RepresentativeUrl(),
                            {},
                            /* blocked_by_policy=*/false});
+  int allowed_count = base::ranges::count_if(
+      cookie_details->cookie_list,
+      [](const network::mojom::CookieOrLineWithAccessResultPtr&
+             cookie_and_access_result) {
+        // "Included" cookies have no exclusion reasons so we don't also have to
+        // check for !(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES).
+        return cookie_and_access_result->access_result.status.IsInclude();
+      });
+  allowed->cookie_list.reserve(allowed_count);
+
   *blocked =
       CookieAccessDetails({cookie_details->type,
                            cookie_details->url,
                            cookie_details->site_for_cookies.RepresentativeUrl(),
                            {},
                            /* blocked_by_policy=*/true});
+  int blocked_count = base::ranges::count_if(
+      cookie_details->cookie_list,
+      [](const network::mojom::CookieOrLineWithAccessResultPtr&
+             cookie_and_access_result) {
+        return cookie_and_access_result->access_result.status
+            .HasOnlyExclusionReason(
+                net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      });
+  blocked->cookie_list.reserve(blocked_count);
 
-  for (auto& cookie_and_access_result : cookie_details->cookie_list) {
+  for (const auto& cookie_and_access_result : cookie_details->cookie_list) {
     if (cookie_and_access_result->access_result.status.HasOnlyExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
-      blocked->cookie_list.push_back(
+      blocked->cookie_list.emplace_back(
           std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
     } else if (cookie_and_access_result->access_result.status.IsInclude()) {
-      allowed->cookie_list.push_back(
+      allowed->cookie_list.emplace_back(
           std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
     }
   }

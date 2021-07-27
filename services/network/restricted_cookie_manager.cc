@@ -371,7 +371,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
             mojom::CookieOrLine::NewCookie(cookie), access_result));
   }
 
-  if (cookie_observer_) {
+  if (cookie_observer_ && !on_cookies_accessed_result.empty()) {
     cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kRead, url, site_for_cookies,
         std::move(on_cookies_accessed_result), absl::nullopt));

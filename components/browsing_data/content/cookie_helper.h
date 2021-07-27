@@ -107,12 +107,6 @@ class CannedCookieHelper : public CookieHelper {
   }
 
  private:
-  // Check if the cookie set contains a cookie with the same name,
-  // domain, and path as the newly created cookie. Delete the old cookie
-  // if does.
-  bool DeleteMatchingCookie(const net::CanonicalCookie& add_cookie,
-                            canonical_cookie::CookieHashSet* cookie_set);
-
   ~CannedCookieHelper() override;
 
   // Returns the |CookieSet| for the given |origin|.

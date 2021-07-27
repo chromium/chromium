@@ -97,7 +97,7 @@ void CannedCookieHelper::StartFetching(FetchCallback callback) {
 
 void CannedCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
   for (const auto& pair : origin_cookie_set_map_)
-    DeleteMatchingCookie(cookie, pair.second.get());
+    pair.second.get()->erase(cookie);
   CookieHelper::DeleteCookie(cookie);
 }
 
@@ -108,12 +108,6 @@ net::CookieList CannedCookieHelper::GetCookieList() {
                        pair.second->end());
   }
   return cookie_list;
-}
-
-bool CannedCookieHelper::DeleteMatchingCookie(
-    const net::CanonicalCookie& add_cookie,
-    canonical_cookie::CookieHashSet* cookie_set) {
-  return cookie_set->erase(add_cookie) > 0;
 }
 
 canonical_cookie::CookieHashSet* CannedCookieHelper::GetCookiesFor(
@@ -147,8 +141,20 @@ void CannedCookieHelper::AddCookie(const GURL& frame_url,
   static const base::NoDestructor<GURL> origin_cookie_url(kGlobalCookieSetURL);
   canonical_cookie::CookieHashSet* cookie_set =
       GetCookiesFor(*origin_cookie_url);
-  DeleteMatchingCookie(cookie, cookie_set);
-  cookie_set->insert(cookie);
+  auto existing_slot = cookie_set->find(cookie);
+  if (existing_slot != cookie_set->end()) {
+    // |cookie| already exists in the set. We need to remove the old instance
+    // and add this new one. Perform the equivalent of deleting
+    // the old instance from the set and inserting the new one by copying
+    // |cookie| into the instance it would replace in the set.
+    // Note that the set is keyed off of cookie name, domain, and path, but
+    // those properties are the same between the old and new cookies (which
+    // is the reason they matched in the first place). Other cookies properties
+    // are the only ones that may change.
+    const_cast<net::CanonicalCookie&>(*existing_slot) = cookie;
+  } else {
+    cookie_set->insert(cookie);
+  }
 }
 
 }  // namespace browsing_data
