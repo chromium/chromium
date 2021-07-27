@@ -21,6 +21,10 @@
 ] Promise<unsigned long long> getSize();
 
 [
+  CallWith = ScriptState, RaisesException
+] Promise<void> truncate([EnforceRange] unsigned long long size);
+
+[
   RaisesException
 ] unsigned long long read([AllowShared] ArrayBufferView buffer,
                            FileSystemReadWriteOptions options);

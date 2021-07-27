@@ -44,6 +44,8 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
 
   ScriptPromise getSize(ScriptState*, ExceptionState&);
 
+  ScriptPromise truncate(ScriptState*, uint64_t size, ExceptionState&);
+
   uint64_t read(MaybeShared<DOMArrayBufferView> buffer,
                 FileSystemReadWriteOptions* options,
                 ExceptionState&);
@@ -83,6 +85,16 @@ class FileSystemSyncAccessHandle final : public ScriptWrappable {
   // Performs the post file-I/O part of getSize(), on the foreground thread.
   void DidGetSize(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                   FileErrorOr<int64_t> size);
+
+  // Performs the file I/O part of truncate().
+  static void DoTruncate(
+      CrossThreadPersistent<FileSystemSyncAccessHandle> access_handle,
+      CrossThreadPersistent<ScriptPromiseResolver> resolver,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+      uint64_t size);
+
+  // Performs the post file-I/O part of truncate(), on the foreground thread.
+  void DidTruncate(CrossThreadPersistent<ScriptPromiseResolver> resolver);
 
   bool EnterOperation() {
     if (io_pending_)
