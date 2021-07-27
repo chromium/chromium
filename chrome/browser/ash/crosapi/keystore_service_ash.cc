@@ -392,6 +392,52 @@ void KeystoreServiceAsh::DidSelectClientCertificates(
 
 //------------------------------------------------------------------------------
 
+void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
+                                         GetCertificatesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  PlatformKeysService* platform_keys_service = GetPlatformKeys();
+  absl::optional<TokenId> token_id = KeystoreToToken(keystore);
+  if (!token_id) {
+    std::move(callback).Run(mojom::GetCertificatesResult::NewError(
+        mojom::KeystoreError::kUnsupportedKeystoreType));
+    return;
+  }
+
+  platform_keys_service->GetCertificates(
+      token_id.value(), base::BindOnce(&KeystoreServiceAsh::DidGetCertificates,
+                                       std::move(callback)));
+}
+
+// static
+void KeystoreServiceAsh::DidGetCertificates(
+    GetCertificatesCallback callback,
+    std::unique_ptr<net::CertificateList> certs,
+    chromeos::platform_keys::Status status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  mojom::GetCertificatesResultPtr result_ptr =
+      mojom::GetCertificatesResult::New();
+
+  if (status == chromeos::platform_keys::Status::kSuccess) {
+    std::vector<std::vector<uint8_t>> output;
+    for (scoped_refptr<net::X509Certificate> cert : *certs) {
+      CRYPTO_BUFFER* der_buffer = cert->cert_buffer();
+      const uint8_t* data = CRYPTO_BUFFER_data(der_buffer);
+      std::vector<uint8_t> der_x509_certificate(
+          data, data + CRYPTO_BUFFER_len(der_buffer));
+      output.push_back(std::move(der_x509_certificate));
+    }
+    result_ptr->set_certificates(std::move(output));
+  } else {
+    result_ptr->set_error(
+        chromeos::platform_keys::StatusToKeystoreError(status));
+  }
+
+  std::move(callback).Run(std::move(result_ptr));
+}
+
+//------------------------------------------------------------------------------
+
 void KeystoreServiceAsh::DEPRECATED_GetCertificates(
     mojom::KeystoreType keystore,
     DEPRECATED_GetCertificatesCallback callback) {

@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/asn1_util.h"
@@ -60,7 +61,7 @@ std::string Base64Decode(const char* input) {
 }
 
 std::string GetSubjectPublicKeyInfo(
-    const scoped_refptr<net::X509Certificate> certificate) {
+    const scoped_refptr<net::X509Certificate>& certificate) {
   base::StringPiece spki_der_piece;
   bool ok = net::asn1::ExtractSPKIFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
@@ -123,6 +124,23 @@ void AssertBlobEq(const mojom::KeystoreBinaryResultPtr& result,
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_blob());
   EXPECT_EQ(result->get_blob(), expected_blob);
+}
+
+void AssertCertListEq(
+    const std::vector<std::vector<uint8_t>>& received_cert_list,
+    std::unique_ptr<net::CertificateList> expected_cert_list) {
+  ASSERT_EQ(received_cert_list.size(), expected_cert_list->size());
+  for (size_t i = 0; i < received_cert_list.size(); ++i) {
+    const scoped_refptr<net::X509Certificate>& expected_cert =
+        (*expected_cert_list)[i];
+
+    const std::vector<uint8_t>& received_binary_cert = received_cert_list[i];
+    scoped_refptr<net::X509Certificate> received_cert =
+        net::X509Certificate::CreateFromBytes(received_binary_cert);
+    ASSERT_TRUE(received_cert);
+
+    EXPECT_TRUE(expected_cert->EqualsIncludingChain(received_cert.get()));
+  }
 }
 
 template <typename T>
@@ -328,18 +346,8 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesSuccess) {
                                              observer.GetCallback());
 
   ASSERT_TRUE(observer.result);
-  EXPECT_EQ(observer.result->which(),
-            mojom::KeystoreSelectClientCertificatesResult::Tag::kCertificates);
-  EXPECT_EQ(observer.result->get_certificates().size(), 1);
-
-  // Check that the cert can be converted back to the original one.
-  auto orig_cert_list = GetCertificateList();
-  const std::vector<uint8_t>& received_binary_cert =
-      observer.result->get_certificates()[0];
-  scoped_refptr<net::X509Certificate> received_cert =
-      net::X509Certificate::CreateFromBytes(received_binary_cert);
-  EXPECT_TRUE(
-      orig_cert_list->front()->EqualsIncludingChain(received_cert.get()));
+  ASSERT_TRUE(observer.result->is_certificates());
+  AssertCertListEq(observer.result->get_certificates(), GetCertificateList());
 }
 
 TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
@@ -522,6 +530,33 @@ TEST_F(KeystoreServiceAshTest, GetKeyStoresFail) {
 
 //------------------------------------------------------------------------------
 
+TEST_F(KeystoreServiceAshTest, GetCertificatesSuccess) {
+  EXPECT_CALL(platform_keys_service_,
+              GetCertificates(TokenId::kUser, /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(GetCertificateList(), Status::kSuccess));
+
+  CallbackObserver<mojom::GetCertificatesResultPtr> observer;
+  keystore_service_.GetCertificates(mojom::KeystoreType::kUser,
+                                    observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_certificates());
+  AssertCertListEq(observer.result->get_certificates(), GetCertificateList());
+}
+
+TEST_F(KeystoreServiceAshTest, GetCertificatesFail) {
+  EXPECT_CALL(platform_keys_service_,
+              GetCertificates(TokenId::kUser, /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(std::make_unique<net::CertificateList>(),
+                                   Status::kErrorInternal));
+
+  CallbackObserver<mojom::GetCertificatesResultPtr> observer;
+  keystore_service_.GetCertificates(mojom::KeystoreType::kUser,
+                                    observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_error());
+  EXPECT_EQ(observer.result->get_error(), mojom::KeystoreError::kInternal);
+}
+
+//------------------------------------------------------------------------------
+
 // Tests for deprecated methods.
 
 TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeySuccess) {
@@ -615,6 +650,35 @@ TEST_F(KeystoreServiceAshTest, DeprecatedGetKeyStoresFail) {
 
   CallbackObserver<mojom::DEPRECATED_GetKeyStoresResultPtr> observer;
   keystore_service_.DEPRECATED_GetKeyStores(observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_error_message());
+  EXPECT_EQ(observer.result->get_error_message(),
+            chromeos::platform_keys::KeystoreErrorToString(
+                mojom::KeystoreError::kInternal));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetCertificatesSuccess) {
+  EXPECT_CALL(platform_keys_service_,
+              GetCertificates(TokenId::kUser, /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(GetCertificateList(), Status::kSuccess));
+
+  CallbackObserver<mojom::DEPRECATED_GetCertificatesResultPtr> observer;
+  keystore_service_.DEPRECATED_GetCertificates(mojom::KeystoreType::kUser,
+                                               observer.GetCallback());
+  ASSERT_TRUE(observer.result->is_certificates());
+  AssertCertListEq(observer.result->get_certificates(), GetCertificateList());
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetCertificatesFail) {
+  EXPECT_CALL(platform_keys_service_,
+              GetCertificates(TokenId::kUser, /*callback=*/_))
+      .WillOnce(RunOnceCallback<1>(std::make_unique<net::CertificateList>(),
+                                   Status::kErrorInternal));
+
+  CallbackObserver<mojom::DEPRECATED_GetCertificatesResultPtr> observer;
+  keystore_service_.DEPRECATED_GetCertificates(mojom::KeystoreType::kUser,
+                                               observer.GetCallback());
   ASSERT_TRUE(observer.result->is_error_message());
   EXPECT_EQ(observer.result->get_error_message(),
             chromeos::platform_keys::KeystoreErrorToString(
