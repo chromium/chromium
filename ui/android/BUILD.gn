@@ -151,6 +151,7 @@ android_resources("ui_java_resources") {
     "java/res/color/default_text_color_inverse_list.xml",
     "java/res/color/default_text_color_light_list.xml",
     "java/res/color/default_text_color_list.xml",
+    "java/res/color/default_text_color_on_accent1_list.xml",
     "java/res/color/default_text_color_secondary_light_list.xml",
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/filled_button_bg.xml",
