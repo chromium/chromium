@@ -72,8 +72,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
         }
     }
 
-    private static final int WIDTH_DELTA = 50;
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -104,8 +102,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         ShadowChromeFeatureList.reset();
 
-        mConfiguration.screenWidthDp =
-                VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
+        mConfiguration.screenWidthDp = VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP;
         doReturn(mConfiguration).when(mResources).getConfiguration();
         doReturn(mResources).when(mContext).getResources();
 
@@ -138,15 +135,13 @@ public final class VoiceToolbarButtonControllerUnitTest {
         assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
 
         // Screen width shrinks below the threshold (e.g. screen rotated).
-        mConfiguration.screenWidthDp =
-                VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP - WIDTH_DELTA;
+        mConfiguration.screenWidthDp = VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP - 1;
         mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
 
         assertFalse(mVoiceToolbarButtonController.get(mTab).canShow());
 
         // Make sure the opposite works as well.
-        mConfiguration.screenWidthDp =
-                VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
+        mConfiguration.screenWidthDp = VoiceToolbarButtonController.DEFAULT_MIN_WIDTH_DP;
         mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
 
         assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());

@@ -195,8 +195,7 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
                     ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR, "minimum_width", MIN_WIDTH_DP);
         }
 
-        boolean isDeviceWideEnough = mScreenWidthDp > mMinimumWidthDp;
-
+        final boolean isDeviceWideEnough = mScreenWidthDp >= mMinimumWidthDp;
         if (mShareDelegateSupplier.get() == null || !isDeviceWideEnough) {
             mButtonData.setCanShow(false);
             return;

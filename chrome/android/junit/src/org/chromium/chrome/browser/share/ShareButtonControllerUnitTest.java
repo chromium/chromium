@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.share;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -23,7 +26,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.test.util.browser.Features;
@@ -40,6 +43,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -82,13 +86,15 @@ public final class ShareButtonControllerUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        doReturn(mTab).when(mTabProvider).get();
         doReturn(mContext).when(mTab).getContext();
         doReturn(mResources).when(mContext).getResources();
-
         mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP + WIDTH_DELTA;
         doReturn(mConfiguration).when(mResources).getConfiguration();
 
-        doReturn(mTab).when(mTabProvider).get();
+        doReturn(mock(WebContents.class)).when(mTab).getWebContents();
+        doReturn(true).when(mShareUtils).shouldEnableShare(mTab);
+
         doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
 
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
@@ -124,10 +130,32 @@ public final class ShareButtonControllerUnitTest {
         doReturn(true).when(mTracker).shouldTriggerHelpUI(
                 FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE);
 
-        View view = Mockito.mock(View.class);
+        View view = mock(View.class);
         mShareButtonController.get(mTab).getButtonSpec().getOnClickListener().onClick(view);
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    public void testDoNotShowWhenTooNarrow() {
+        mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP - 1;
+        mShareButtonController.onConfigurationChanged(mConfiguration);
+
+        ButtonData buttonData = mShareButtonController.get(mTab);
+
+        assertFalse(buttonData.canShow());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
+    public void testDoShowWhenWideEnough() {
+        mConfiguration.screenWidthDp = ShareButtonController.MIN_WIDTH_DP;
+        mShareButtonController.onConfigurationChanged(mConfiguration);
+
+        ButtonData buttonData = mShareButtonController.get(mTab);
+
+        assertTrue(buttonData.canShow());
     }
 }
