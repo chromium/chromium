@@ -39,6 +39,7 @@ if (is_chromeos_ash) {
       "input_method_manager.mojom",
       "intent_common.mojom",
       "intent_helper.mojom",
+      "keyboard_shortcut.mojom",
       "keymaster.mojom",
       "kiosk.mojom",
       "lock_screen.mojom",

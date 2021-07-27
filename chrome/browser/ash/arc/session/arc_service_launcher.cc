@@ -70,6 +70,7 @@
 #include "components/arc/disk_quota/arc_disk_quota_bridge.h"
 #include "components/arc/ime/arc_ime_service.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "components/arc/lock_screen/arc_lock_screen_bridge.h"
 #include "components/arc/media_session/arc_media_session_bridge.h"
 #include "components/arc/metrics/arc_metrics_service.h"
@@ -208,6 +209,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcInstanceThrottle::GetForBrowserContext(profile);
   ArcIntentHelperBridge::GetForBrowserContext(profile)->SetDelegate(
       std::make_unique<FactoryResetDelegate>());
+  ArcKeyboardShortcutBridge::GetForBrowserContext(profile);
   ArcKeymasterBridge::GetForBrowserContext(profile);
   ArcKioskBridge::GetForBrowserContext(profile);
   ArcLockScreenBridge::GetForBrowserContext(profile);

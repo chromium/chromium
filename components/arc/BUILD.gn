@@ -67,6 +67,8 @@ static_library("arc") {
     "intent_helper/link_handler_model.cc",
     "intent_helper/link_handler_model.h",
     "intent_helper/open_url_delegate.h",
+    "keyboard_shortcut/arc_keyboard_shortcut_bridge.cc",
+    "keyboard_shortcut/arc_keyboard_shortcut_bridge.h",
     "lock_screen/arc_lock_screen_bridge.cc",
     "lock_screen/arc_lock_screen_bridge.h",
     "memory/arc_memory_bridge.cc",

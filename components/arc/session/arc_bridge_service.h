@@ -59,6 +59,8 @@ class InputMethodManagerHost;
 class InputMethodManagerInstance;
 class IntentHelperHost;
 class IntentHelperInstance;
+class KeyboardShortcutHost;
+class KeyboardShortcutInstance;
 class KeymasterHost;
 class KeymasterInstance;
 class KioskHost;
@@ -233,6 +235,11 @@ class ArcBridgeService {
   intent_helper() {
     return &intent_helper_;
   }
+  ConnectionHolder<mojom::KeyboardShortcutInstance,
+                   mojom::KeyboardShortcutHost>*
+  keyboard_shortcut() {
+    return &keyboard_shortcut_;
+  }
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost>*
   keymaster() {
     return &keymaster_;
@@ -368,6 +375,8 @@ class ArcBridgeService {
       input_method_manager_;
   ConnectionHolder<mojom::IntentHelperInstance, mojom::IntentHelperHost>
       intent_helper_;
+  ConnectionHolder<mojom::KeyboardShortcutInstance, mojom::KeyboardShortcutHost>
+      keyboard_shortcut_;
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost> keymaster_;
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost> kiosk_;
   ConnectionHolder<mojom::LockScreenInstance> lock_screen_;
