@@ -430,6 +430,9 @@ TEST_F(ScanServiceTest, ScanWithBadScannerId) {
 // Specifically, use a file path with directory navigation (e.g. "..") to verify
 // it can't be used to save scanned images to an unsupported path.
 TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
+  const base::FilePath my_files_path(kMyFilesPath);
+  SetupScanService(my_files_path, base::FilePath("/google/drive"));
+
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
   const std::vector<std::string> scan_data = {"TestData"};
@@ -437,10 +440,8 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
-  const base::FilePath my_files_path(kMyFilesPath);
   const mojo_ipc::ScanSettings settings = CreateScanSettings(
       my_files_path.Append("../../../var/log"), mojo_ipc::FileType::kPng);
-  SetupScanService(my_files_path, base::FilePath("/google/drive"));
   EXPECT_FALSE(StartScan(scanners[0]->id, settings.Clone()));
 }
 

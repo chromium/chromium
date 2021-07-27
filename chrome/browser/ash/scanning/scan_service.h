@@ -108,6 +108,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Called once the task runner finishes saving a page of a scan.
   void OnPageSaved(const base::FilePath& saved_file_path);
 
+  // Sends the scan request to the scanner.
+  bool SendScanRequest(const base::UnguessableToken& scanner_id,
+                       scanning::mojom::ScanSettingsPtr settings);
+
   // Called once the task runner finishes saving the last page of a scan.
   void OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode);
 

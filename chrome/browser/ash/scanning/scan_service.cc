@@ -202,26 +202,7 @@ void ScanService::StartScan(
     mojo_ipc::ScanSettingsPtr settings,
     mojo::PendingRemote<mojo_ipc::ScanJobObserver> observer,
     StartScanCallback callback) {
-  const std::string scanner_name = GetScannerName(scanner_id);
-  if (scanner_name.empty()) {
-    std::move(callback).Run(false);
-    RecordScanJobResult(false, scanning::ScanJobFailureReason::kScannerNotFound,
-                        /*not used*/ 0, /*not used*/ 0);
-    return;
-  }
-
-  // Determine if an ADF scanner that flips alternate pages was selected.
-  rotate_alternate_pages_ = lorgnette_scanner_manager_->IsRotateAlternate(
-      scanner_name, settings->source_name);
-
-  if (!file_path_helper_.IsFilePathSupported(settings->scan_to_path)) {
-    std::move(callback).Run(false);
-    RecordScanJobResult(false,
-                        scanning::ScanJobFailureReason::kUnsupportedScanToPath,
-                        /*not used*/ 0, /*not used*/ 0);
-    return;
-  }
-
+  ClearScanState();
   scan_job_observer_.reset();
   scan_job_observer_.Bind(std::move(observer));
   // Unretained is safe here, because `this` owns `scan_job_observer_`, and no
@@ -229,8 +210,30 @@ void ScanService::StartScan(
   scan_job_observer_.set_disconnect_handler(
       base::BindOnce(&ScanService::CancelScan, base::Unretained(this)));
 
+  std::move(callback).Run(SendScanRequest(scanner_id, std::move(settings)));
+}
+
+bool ScanService::SendScanRequest(const base::UnguessableToken& scanner_id,
+                                  mojo_ipc::ScanSettingsPtr settings) {
+  const std::string scanner_name = GetScannerName(scanner_id);
+  if (scanner_name.empty()) {
+    RecordScanJobResult(false, scanning::ScanJobFailureReason::kScannerNotFound,
+                        /*not used*/ 0, /*not used*/ 0);
+    return false;
+  }
+
+  if (!file_path_helper_.IsFilePathSupported(settings->scan_to_path)) {
+    RecordScanJobResult(false,
+                        scanning::ScanJobFailureReason::kUnsupportedScanToPath,
+                        /*not used*/ 0, /*not used*/ 0);
+    return false;
+  }
+
+  // Determine if an ADF scanner that flips alternate pages was selected.
+  rotate_alternate_pages_ = lorgnette_scanner_manager_->IsRotateAlternate(
+      scanner_name, settings->source_name);
+
   base::Time::Now().LocalExplode(&start_time_);
-  ClearScanState();
   lorgnette_scanner_manager_->Scan(
       scanner_name,
       mojo::StructTraits<lorgnette::ScanSettings,
@@ -242,7 +245,7 @@ void ScanService::StartScan(
                           settings->scan_to_path, settings->file_type),
       base::BindOnce(&ScanService::OnScanCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
-  std::move(callback).Run(true);
+  return true;
 }
 
 void ScanService::CancelScan() {
