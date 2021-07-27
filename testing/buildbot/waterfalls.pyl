@@ -1196,9 +1196,12 @@
       'mac-angle-amd-exp': {
         'os_type': 'mac',
         'mixins': [
+          'limited_capacity_bot',
           'mac_retina_amd_gpu_experimental',
         ],
-        'test_suites': {},
+        'test_suites': {
+          'gtest_tests': 'gpu_angle_mac_amd_and_intel_gtests',
+        },
       },
       'mac-angle-builder': {},
       'mac-angle-chromium-amd': {
@@ -2097,9 +2100,13 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
+          'limited_capacity_bot',
           'mac_retina_amd_gpu_experimental',
         ],
-        'test_suites': {},
+        'test_suites': {
+          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+        },
       },
       'Dawn Mac x64 Release (AMD)': {
         'os_type': 'mac',
