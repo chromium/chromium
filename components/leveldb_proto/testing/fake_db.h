@@ -97,6 +97,13 @@ class FakeDB : public ProtoDatabaseImpl<P, T> {
 
   static base::FilePath DirectoryForTestDB();
 
+  // These methods allow enqueueing the results for upcoming Get* or Update*
+  // calls in advance. When a Get* or Update* call is issued, if there is a
+  // queued result available, the receiving FakeDB instance will immediately
+  // post an async task to complete that call with the next queued result.
+  void QueueGetResult(bool result) { queued_get_results_.push(result); }
+  void QueueUpdateResult(bool result) { queued_update_results_.push(result); }
+
  private:
   void InvokingInvalidCallback(const std::string& callback_name);
   static void RunLoadCallback(
@@ -128,6 +135,9 @@ class FakeDB : public ProtoDatabaseImpl<P, T> {
   Callback get_callback_;
   Callback update_callback_;
   Callback destroy_callback_;
+
+  std::queue<bool> queued_get_results_;
+  std::queue<bool> queued_update_results_;
 };
 
 namespace {
@@ -200,6 +210,14 @@ void FakeDB<P, T>::UpdateEntries(
     db_->erase(key);
 
   update_callback_ = std::move(callback);
+
+  if (!queued_update_results_.empty()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeDB<P, T>::UpdateCallback, base::Unretained(this),
+                       queued_update_results_.front()));
+    queued_update_results_.pop();
+  }
 }
 
 template <typename P, typename T>
@@ -219,6 +237,14 @@ void FakeDB<P, T>::UpdateEntriesWithRemoveFilter(
     DataToProtoWrap(&pair.second, &(*db_)[pair.first]);
 
   update_callback_ = std::move(callback);
+
+  if (!queued_update_results_.empty()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeDB<P, T>::UpdateCallback, base::Unretained(this),
+                       queued_update_results_.front()));
+    queued_update_results_.pop();
+  }
 }
 
 template <typename P, typename T>
@@ -326,6 +352,14 @@ void FakeDB<P, T>::GetEntry(
 
   get_callback_ =
       base::BindOnce(RunGetCallback, std::move(callback), std::move(entry));
+
+  if (!queued_get_results_.empty()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeDB<P, T>::GetCallback, base::Unretained(this),
+                       queued_get_results_.front()));
+    queued_get_results_.pop();
+  }
 }
 
 template <typename P, typename T>

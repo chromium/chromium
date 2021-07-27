@@ -193,28 +193,7 @@ TEST_F(ShareRankingTest, InitialStateNoHistory) {
         loop.Quit();
       });
 
-  // TODO(https://crbug.com/1232529): Stop doing this.
-  // This is currently required because internally, Rank() makes three async
-  // calls - two to ShareHistory::GetFlatShareHistory(), and one to
-  // ShareRanking::GetRanking(). The two calls to GetFlatShareHistory()
-  // automatically post their results (since we use FakeShareHistory here, which
-  // has that behavior), but the call to ShareRanking::GetRanking() turns into a
-  // call to leveldb_proto::test::FakeDB::LoadEntries(), which won't run its
-  // completion callback until leveldb_proto::test::FakeDB::GetCallback() is
-  // invoked - that is, test code has to manually complete the get.
-  //
-  // However, we can't simply post a normal task to complete that call, because
-  // that will happen "too early" (before LoadEntries is called). In lieu of
-  // that, we post a delayed task with a long time delay. Since these tests run
-  // under TimeSource::MOCK_TIME, this delayed task will actually run instantly
-  // as soon as the run loop becomes idle, because the mock clock advances only
-  // under those conditions, so this serves as a "run once we are blocked"
-  // primitive. This doesn't actually delay the test by 10 seconds.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindLambdaForTesting([&]() { backing_db()->GetCallback(true); }),
-      base::TimeDelta::FromSeconds(10));
-
+  backing_db()->QueueGetResult(true);
   db()->Rank(&history, "type", {"aaa", "ccc", "eee", "ggg", "iii"}, 4, true,
              std::move(callback));
   loop.Run();
