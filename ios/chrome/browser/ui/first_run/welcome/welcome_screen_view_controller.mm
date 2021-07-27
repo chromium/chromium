@@ -201,7 +201,7 @@ NSString* const kEnterpriseIconImageName = @"enterprise_icon";
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1],
     NSParagraphStyleAttributeName : paragraphStyle
   };
   NSDictionary* linkAttributes =

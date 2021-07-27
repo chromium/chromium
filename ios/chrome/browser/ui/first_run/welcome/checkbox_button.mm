@@ -48,7 +48,7 @@ const CGFloat kAnimationDuration = 0.25;
     // Custom button label.
     _label = [[UILabel alloc] init];
     _label.numberOfLines = 0;
-    _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
     _label.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _label.translatesAutoresizingMaskIntoConstraints = NO;
     _label.adjustsFontForContentSizeCategory = YES;
