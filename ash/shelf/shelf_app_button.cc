@@ -427,8 +427,9 @@ gfx::Rect ShelfAppButton::GetIconBounds() const {
   return icon_view_->bounds();
 }
 
-gfx::Rect ShelfAppButton::GetIconBoundsInScreen() const {
-  return icon_view_->GetBoundsInScreen();
+gfx::Rect ShelfAppButton::GetIdealIconBounds(const gfx::Size& button_size,
+                                             float icon_scale) const {
+  return GetIconViewBounds(gfx::Rect(button_size), icon_scale);
 }
 
 views::InkDrop* ShelfAppButton::GetInkDropForTesting() {
@@ -634,11 +635,11 @@ bool ShelfAppButton::OnMouseDragged(const ui::MouseEvent& event) {
   return true;
 }
 
-gfx::Rect ShelfAppButton::GetIconViewBounds(float icon_scale) {
+gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
+                                            float icon_scale) const {
   const float icon_size = shelf_view_->GetButtonIconSize() * icon_scale;
   const float icon_padding = (shelf_view_->GetButtonSize() - icon_size) / 2;
 
-  const gfx::Rect button_bounds(GetContentsBounds());
   const Shelf* shelf = shelf_view_->shelf();
   const bool is_horizontal_shelf = shelf->IsHorizontalAlignment();
   float x_offset = is_horizontal_shelf ? 0 : icon_padding;
@@ -676,7 +677,8 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(float icon_scale) {
 }
 
 gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
-  gfx::Rect scaled_icon_view_bounds = GetIconViewBounds(icon_scale);
+  gfx::Rect scaled_icon_view_bounds =
+      GetIconViewBounds(GetContentsBounds(), icon_scale);
   float diameter =
       std::floor(kNotificationIndicatorRadiusDip * icon_scale * 2.0f);
   return gfx::Rect(scaled_icon_view_bounds.right() - diameter -
@@ -687,7 +689,8 @@ gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
 
 void ShelfAppButton::Layout() {
   Shelf* shelf = shelf_view_->shelf();
-  gfx::Rect icon_view_bounds = GetIconViewBounds(icon_scale_);
+  gfx::Rect icon_view_bounds =
+      GetIconViewBounds(GetContentsBounds(), icon_scale_);
   const gfx::Rect button_bounds(GetContentsBounds());
   const int status_indicator_offet_from_shelf_edge =
       ShelfConfig::Get()->status_indicator_offset_from_shelf_edge();
@@ -702,7 +705,8 @@ void ShelfAppButton::Layout() {
   // The indicators should be aligned with the icon, not the icon + shadow.
   // Use 1.0 as icon scale for |indicator_midpoint|, otherwise integer rounding
   // can incorrectly move the midpoint.
-  gfx::Point indicator_midpoint = GetIconViewBounds(1.0).CenterPoint();
+  gfx::Point indicator_midpoint =
+      GetIconViewBounds(GetContentsBounds(), 1.0).CenterPoint();
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
@@ -887,8 +891,10 @@ void ShelfAppButton::OnRippleTimer() {
 }
 
 gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
-  gfx::RectF pre_scaling_bounds(GetMirroredRect(GetIconViewBounds(1.0f)));
-  gfx::RectF target_bounds(GetMirroredRect(GetIconViewBounds(icon_scale)));
+  gfx::RectF pre_scaling_bounds(
+      GetMirroredRect(GetIconViewBounds(GetContentsBounds(), 1.0f)));
+  gfx::RectF target_bounds(
+      GetMirroredRect(GetIconViewBounds(GetContentsBounds(), icon_scale)));
   return gfx::TransformBetweenRects(target_bounds, pre_scaling_bounds);
 }
 

@@ -83,8 +83,10 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Returns the bounds of the icon.
   gfx::Rect GetIconBounds() const;
 
-  // Returns the bounds of the icon in screen coordinates.
-  gfx::Rect GetIconBoundsInScreen() const;
+  // Returns the ideal icon bounds within the button view of the provided size,
+  // and with the provided icon scale.
+  gfx::Rect GetIdealIconBounds(const gfx::Size& button_size,
+                               float icon_scale) const;
 
   views::InkDrop* GetInkDropForTesting();
 
@@ -159,7 +161,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   void ScaleAppIcon(bool scale_up);
 
   // Calculates the icon bounds for an icon scaled by |icon_scale|.
-  gfx::Rect GetIconViewBounds(float icon_scale);
+  gfx::Rect GetIconViewBounds(const gfx::Rect& button_bounds,
+                              float icon_scale) const;
 
   // Calculates the notification indicator bounds when scaled by |scale|.
   gfx::Rect GetNotificationIndicatorBounds(float scale);

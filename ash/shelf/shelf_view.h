@@ -55,7 +55,6 @@ class Separator;
 }  // namespace views
 
 namespace ash {
-class DragImageView;
 class ShelfAppButton;
 class ShelfButton;
 class ShelfModel;
@@ -84,10 +83,30 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfTooltipDelegate,
                              public TabletModeObserver {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called on each shelf item drag update to update the parent view scroll
+    // offset if needed.
+    virtual void ScheduleScrollForItemDragIfNeeded(
+        const gfx::Rect& item_bounds_in_screen) = 0;
+
+    // Called when a shelf item drag ends to cancel any parent view scroll
+    // offset updates previously scheduled by
+    // `ScheduleDcrollForItemDragIfNeeded()`.
+    virtual void CancelScrollForItemDrag() = 0;
+
+    // Returns whether the provided `bounds_in_screen` are within visible
+    // portion of the shelf.
+    virtual bool AreBoundsWithinVisibleSpace(
+        const gfx::Rect& bounds_in_screen) const = 0;
+  };
+
   ShelfView(ShelfModel* model,
             Shelf* shelf,
-            ApplicationDragAndDropHost* drag_and_drop_host,
-            ShelfButtonDelegate* delegate);
+            Delegate* delegate,
+            ShelfButtonDelegate* button_delegate);
   ~ShelfView() override;
 
   Shelf* shelf() const { return shelf_; }
@@ -177,32 +196,15 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool ShouldEventActivateButton(views::View* view, const ui::Event& event);
 
   // ApplicationDragAndDropHost:
-  void CreateDragIconProxyByLocationWithNoAnimation(
-      const gfx::Point& origin_in_screen_coordinates,
-      const gfx::ImageSkia& icon,
-      views::View* replaced_view,
-      float scale_factor,
-      int blur_radius) override;
-
-  void UpdateDragIconProxy(
-      const gfx::Point& location_in_screen_coordinates) override;
-
-  void UpdateDragIconProxyByLocation(
-      const gfx::Point& origin_in_screen_coordinates) override;
-
-  void DestroyDragIconProxy() override;
-
-  // Transfers ownership of |drag_image_widget_|, and cleans up DragIconProxy
-  // state.
-  views::UniqueWidgetPtr RetrieveDragIconProxyAndClearDragProxyState();
-
-  bool ShouldStartDrag(
-      const std::string& app_id,
-      const gfx::Point& location_in_screen_coordinates) const override;
+  bool ShouldStartDrag(const std::string& app_id,
+                       const gfx::Point& location_in_screen) const override;
   bool StartDrag(const std::string& app_id,
-                 const gfx::Point& location_in_screen_coordinates) override;
-  bool Drag(const gfx::Point& location_in_screen_coordinates) override;
-  void EndDrag(bool cancel) override;
+                 const gfx::Point& location_in_screen,
+                 const gfx::Rect& drag_icon_bounds_in_screen) override;
+  bool Drag(const gfx::Point& location_in_screen,
+            const gfx::Rect& drag_icon_bounds_in_screen) override;
+  void EndDrag(bool cancel,
+               std::unique_ptr<AppDragIconProxy> icon_proxy) override;
 
   // Swaps the given button with the next one if |with_next| is true, or with
   // the previous one if |with_next| is false.
@@ -257,9 +259,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // stops the animation.
   void StopAnimatingViewIfAny(views::View* view);
 
-  // Whether ShelfView is handling a drag and drop.
-  bool IsShelfViewHandlingDragAndDrop() const;
-
   // Returns the the shelf button size.
   int GetButtonSize() const;
 
@@ -284,10 +283,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Returns whether `bounds_animator_` is animating any view.
   bool IsAnimating() const;
 
+  // If a shelf icon is being dragged (and drag icon proxy is created), returns
+  // the drag icon bounds in screen coordinate. Otherwise, returns empty bounds.
+  gfx::Rect GetDragIconBoundsInScreenForTest() const;
+
   // Return the view model for test purposes.
-  const views::ViewModel* view_model_for_test() const {
-    return view_model_.get();
-  }
+  views::ViewModel* view_model_for_test() { return view_model_.get(); }
 
   void set_default_last_focusable_child(bool default_last_focusable_child) {
     default_last_focusable_child_ = default_last_focusable_child;
@@ -300,9 +301,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   }
   int number_of_visible_apps() const { return visible_views_indices_.size(); }
   ShelfWidget* shelf_widget() const { return shelf_->shelf_widget(); }
-  views::ViewModel* view_model() { return view_model_.get(); }
   const views::ViewModel* view_model() const { return view_model_.get(); }
-  bool dragged_off_shelf() const { return dragged_off_shelf_; }
   ShelfID drag_and_drop_shelf_id() const { return drag_and_drop_shelf_id_; }
 
   views::View* first_visible_button_for_testing() {
@@ -320,6 +319,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   class FadeInAnimationDelegate;
   class FadeOutAnimationDelegate;
   class StartFadeAnimationDelegate;
+  class ViewOpacityResetter;
 
   enum RemovableState {
     REMOVABLE,      // Item can be removed when dragged away.
@@ -386,20 +386,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Reorder |drag_view_| according to the latest dragging coordinate.
   void MoveDragViewTo(int primary_axis_coordinate);
 
-  // Creates a drag proxy icon which can escape the given view.
-  // The proxy should get created using the |icon| with a magnification of
-  // |scale_factor| at a center location of |location_in_screen_coordinates.
-  // Use |replaced_view| to find the screen which is used.
-  // The |cursor_offset_from_center| is the offset from the mouse cursor to
-  // the center of the item.
-  // |animate_visibility| indicates whether the icon visibility changes should
-  // be animated.
-  void CreateDragIconProxy(const gfx::Point& location_in_screen_coordinates,
-                           const gfx::ImageSkia& icon,
-                           views::View* replaced_view,
-                           const gfx::Vector2d& cursor_offset_from_center,
-                           float scale_factor,
-                           bool animate_visibility);
+  // Called when drag icon proxy closure animation completes.
+  // Runs `opacity_resetter` which is expected to reset the drag view opacity to
+  // visible state (as drag view may get hidden while shelf item drag is in
+  // progress).
+  void OnDragIconProxyAnimatedOut(
+      std::unique_ptr<ViewOpacityResetter> opacity_resetter);
 
   // Handles ripping off an item from the shelf.
   void HandleRipOffDrag(const ui::LocatedEvent& event);
@@ -527,9 +519,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   bool CanPrepareForDrag(Pointer pointer, const ui::LocatedEvent& event);
 
-  // Set background blur to the dragged image. |size| is the image size.
-  void SetDragImageBlur(const gfx::Size& size, int blur_radius);
-
   bool ShouldHandleGestures(const ui::GestureEvent& event) const;
 
   void DestroyScopedDisplay();
@@ -538,9 +527,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   std::u16string GetTitleForChildView(const views::View* view) const;
 
   int CalculateAppIconsLayoutOffset() const;
-
-  // Get the |drag_image_widget_| content view as DragImageView.
-  DragImageView* GetDragImage();
 
   // Returns the bounds of the given |child| view taken into account RTL layouts
   // and on-going bounds animations on |child|.
@@ -639,18 +625,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The ShelfItem currently used for drag and drop; empty if none.
   ShelfID drag_and_drop_shelf_id_;
 
+  // Last received drag icon bounds during drag and drop received using
+  // `ApplicationDragAndDropHost` interface.
+  gfx::Rect drag_icon_bounds_in_screen_;
+
   // The original launcher item's size before the dragging operation.
   gfx::Size pre_drag_and_drop_size_;
-
-  // The image proxy for drag operations when a drag and drop host exists and
-  // the item can be dragged outside the app grid.
-  views::UniqueWidgetPtr drag_image_widget_;
-
-  // The cursor offset to the middle of the dragged item.
-  gfx::Vector2d drag_image_offset_;
-
-  // The view which gets replaced by our drag icon proxy.
-  views::View* drag_replaced_view_ = nullptr;
 
   // True when the icon was dragged off the shelf.
   bool dragged_off_shelf_ = false;
@@ -696,9 +676,17 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // becomes y-axis)
   int app_icons_layout_offset_ = 0;
 
-  // When the scrollable shelf is enabled, |drag_and_drop_host_| should be
-  // ScrollableShelfView.
-  ApplicationDragAndDropHost* drag_and_drop_host_ = nullptr;
+  Delegate* const delegate_;
+
+  // Whether the shelf view is actively acting as an application drag and drop
+  // host. Note that shelf view is not expected to create its own
+  // `AppDragIconProxy` for item drag operation, but a `drag_icon_proxy_` may
+  // get passed to the shelf view using `ApplicationDragAndDropHost::EndDrag()`
+  // interface.
+  bool is_active_drag_and_drop_host_ = false;
+
+  // The app item icon proxy created for drag operation.
+  std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.

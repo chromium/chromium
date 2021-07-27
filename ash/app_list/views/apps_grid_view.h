@@ -42,6 +42,7 @@ class AppsGridViewTest;
 class AppsGridViewTestApi;
 }  // namespace test
 
+class AppDragIconProxy;
 class AppListA11yAnnouncer;
 class ApplicationDragAndDropHost;
 class AppListConfig;
@@ -410,6 +411,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Subclasses need non-const access.
   AppListItemView* drag_view_ = nullptr;
 
+  // If app item drag is in progress, the icon proxy created for the app list
+  // item.
+  std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
+
   // The location of |drag_view_| when the drag started.
   gfx::Point drag_view_start_;
 
@@ -504,16 +509,20 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns true if the current drag is occurring within a certain range of the
   // nearest item.
-  bool DragIsCloseToItem();
+  // `point` is the drag location in the apps grid's coordinates.
+  bool DragIsCloseToItem(const gfx::Point& point);
 
+  // Whether the current drag position is over an item.
+  // `point` is the drag location in the apps grid's coordinates.
   bool DragPointIsOverItem(const gfx::Point& point);
 
-  void TryStartDragAndDropHostDrag(Pointer pointer,
-                                   const gfx::Point& grid_location);
+  // Initiates drag and drop host drag as needed.
+  // `pointer` - The pointer that's used for dragging.
+  void TryStartDragAndDropHostDrag(Pointer pointer);
 
   // Prepares |drag_and_drop_host_| for dragging. |grid_location| contains
   // the drag point in this grid view's coordinates.
-  void StartDragAndDropHostDrag(const gfx::Point& grid_location);
+  void StartDragAndDropHostDrag();
 
   // Dispatch the drag and drop update event to the dnd host (if needed).
   void DispatchDragEventToDragAndDropHost(

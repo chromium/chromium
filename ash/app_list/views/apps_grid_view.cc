@@ -16,6 +16,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/app_list/views/app_list_folder_view.h"
@@ -450,12 +451,10 @@ void AppsGridView::InitiateDrag(AppListItemView* view,
 }
 
 void AppsGridView::StartDragAndDropHostDragAfterLongPress() {
-  TryStartDragAndDropHostDrag(TOUCH, drag_start_grid_view_);
+  TryStartDragAndDropHostDrag(TOUCH);
 }
 
-void AppsGridView::TryStartDragAndDropHostDrag(
-    Pointer pointer,
-    const gfx::Point& grid_location) {
+void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
   // Stopping the animation may have invalidated our drag view due to the
   // view hierarchy changing.
   if (!drag_view_)
@@ -467,7 +466,7 @@ void AppsGridView::TryStartDragAndDropHostDrag(
   bounds_animator_->StopAnimatingView(drag_view_);
 
   if (!dragging_for_reparent_item_)
-    StartDragAndDropHostDrag(grid_location);
+    StartDragAndDropHostDrag();
 }
 
 bool AppsGridView::UpdateDragFromItem(bool is_touch,
@@ -489,11 +488,10 @@ bool AppsGridView::UpdateDragFromItem(bool is_touch,
   gfx::Point drag_point_in_screen = event.root_location();
   ::wm::ConvertPointToScreen(GetWidget()->GetNativeWindow()->GetRootWindow(),
                              &drag_point_in_screen);
+
   DispatchDragEventToDragAndDropHost(drag_point_in_screen);
-  if (drag_and_drop_host_) {
-    drag_and_drop_host_->UpdateDragIconProxyByLocation(
-        drag_view_->GetIconBoundsInScreen().origin());
-  }
+  if (drag_icon_proxy_)
+    drag_icon_proxy_->UpdatePosition(drag_point_in_screen);
   return true;
 }
 
@@ -504,9 +502,10 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
   if (!drag_view_)
     return;  // Drag canceled.
 
-  const gfx::Vector2d drag_vector(point - drag_start_grid_view_);
+  gfx::Vector2d drag_vector(point - drag_start_grid_view_);
+
   if (!IsDragging() && ExceededDragThreshold(drag_vector))
-    TryStartDragAndDropHostDrag(pointer, point);
+    TryStartDragAndDropHostDrag(pointer);
 
   if (drag_pointer_ != pointer)
     return;
@@ -579,7 +578,10 @@ void AppsGridView::EndDrag(bool cancel) {
   if (forward_events_to_drag_and_drop_host_) {
     DCHECK(!IsDraggingForReparentInRootLevelGridView());
     forward_events_to_drag_and_drop_host_ = false;
-    drag_and_drop_host_->EndDrag(cancel);
+    // Pass the drag icon proxy on to the drag and drop host, so the drag and
+    // drop host handles the animation to drop the icon proxy into correct spot.
+    drag_and_drop_host_->EndDrag(cancel, std::move(drag_icon_proxy_));
+
     if (IsDraggingForReparentInHiddenGridView()) {
       folder_delegate_->DispatchEndDragEventForReparent(
           true /* events_forwarded_to_drag_drop_host */,
@@ -633,7 +635,8 @@ void AppsGridView::EndDrag(bool cancel) {
   if (drag_and_drop_host_) {
     // If we had a drag and drop proxy icon, we delete it and make the real
     // item visible again.
-    drag_and_drop_host_->DestroyDragIconProxy();
+    drag_icon_proxy_.reset();
+
     // Issue 439055: MoveItemToFolder() can sometimes delete |drag_view_|
     if (drag_view_) {
       if (landed_in_drag_and_drop_host) {
@@ -1237,7 +1240,7 @@ void AppsGridView::UpdateDropTargetRegion() {
     }
 
     UpdateDropTargetForReorder(point);
-    drop_target_region_ = DragIsCloseToItem() ? NEAR_ITEM : BETWEEN_ITEMS;
+    drop_target_region_ = DragIsCloseToItem(point) ? NEAR_ITEM : BETWEEN_ITEMS;
     return;
   }
 
@@ -1250,7 +1253,7 @@ void AppsGridView::UpdateDropTargetRegion() {
   }
 
   drop_target_ = drag_view_init_index_;
-  drop_target_region_ = DragIsCloseToItem() ? NEAR_ITEM : BETWEEN_ITEMS;
+  drop_target_region_ = DragIsCloseToItem(point) ? NEAR_ITEM : BETWEEN_ITEMS;
 }
 
 bool AppsGridView::DropTargetIsValidFolder() {
@@ -1349,16 +1352,10 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   DCHECK(IsValidReorderTargetIndex(drop_target_));
 }
 
-bool AppsGridView::DragIsCloseToItem() {
+bool AppsGridView::DragIsCloseToItem(const gfx::Point& point) {
   DCHECK(drag_view_);
 
-  gfx::Point point = drag_view_->GetIconBounds().CenterPoint();
-  views::View::ConvertPointToTarget(drag_view_, this, &point);
-  // Ensure that the drop target location is correct if RTL.
-  point.set_x(GetMirroredXInView(point.x()));
-
   GridIndex nearest_tile_index = GetNearestTileIndexForPoint(point);
-
   if (nearest_tile_index == reorder_placeholder_)
     return false;
 
@@ -1714,7 +1711,7 @@ void AppsGridView::EndDragForReparentInHiddenFolderGridView() {
   if (drag_and_drop_host_) {
     // If we had a drag and drop proxy icon, we delete it and make the real
     // item visible again.
-    drag_and_drop_host_->DestroyDragIconProxy();
+    drag_icon_proxy_.reset();
   }
 
   SetAsFolderDroppingTarget(drop_target_, false);
@@ -1837,7 +1834,7 @@ bool AppsGridView::FireDragToShelfTimerForTest() {
   return true;
 }
 
-void AppsGridView::StartDragAndDropHostDrag(const gfx::Point& grid_location) {
+void AppsGridView::StartDragAndDropHostDrag() {
   // When a drag and drop host is given, the item can be dragged out of the app
   // list window. In that case a proxy widget needs to be used.
   if (!drag_view_ || !drag_and_drop_host_)
@@ -1847,14 +1844,22 @@ void AppsGridView::StartDragAndDropHostDrag(const gfx::Point& grid_location) {
   // the OS dependent code to "lift off the dragged item". Apply the scale
   // factor of this view's transform to the dragged view as well.
   DCHECK(!IsDraggingForReparentInRootLevelGridView());
-  drag_and_drop_host_->CreateDragIconProxyByLocationWithNoAnimation(
-      drag_view_->GetIconBoundsInScreen().origin(), drag_view_->GetIconImage(),
-      drag_view_,
+
+  gfx::Point location_in_screen = drag_start_grid_view_;
+  location_in_screen.set_x(GetMirroredXInView(location_in_screen.x()));
+  views::View::ConvertPointToScreen(this, &location_in_screen);
+
+  const gfx::Point icon_location_in_screen =
+      drag_view_->GetIconBoundsInScreen().CenterPoint();
+  drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
+      GetWidget()->GetNativeWindow()->GetRootWindow(),
+
+      drag_view_->GetIconImage(), location_in_screen,
+      location_in_screen - icon_location_in_screen,
       drag_view_->item()->is_folder() ? kDragAndDropProxyScale : 1.0f,
       drag_view_->item()->is_folder() && IsTabletMode()
           ? GetAppListConfig().blur_radius()
           : 0);
-
   SetViewHidden(drag_view_, true /* hide */, true /* no animation */);
 }
 
@@ -1874,7 +1879,10 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
       // The DnD host was previously called and needs to be informed that the
       // session returns to the owner.
       forward_events_to_drag_and_drop_host_ = false;
-      drag_and_drop_host_->EndDrag(true);
+      // NOTE: Not passing the drag icon proxy to the drag and drop host because
+      // the drag operation is still in progress, and remains being handled by
+      // the apps grid view.
+      drag_and_drop_host_->EndDrag(true, /*drag_icon_proxy=*/nullptr);
     }
     return;
   }
@@ -1885,10 +1893,14 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
   // The event happened outside our app menu and we might need to dispatch.
   if (forward_events_to_drag_and_drop_host_) {
     // Dispatch since we have already started.
-    if (!drag_and_drop_host_->Drag(location_in_screen_coordinates)) {
+    if (!drag_and_drop_host_->Drag(location_in_screen_coordinates,
+                                   drag_icon_proxy_->GetBoundsInScreen())) {
       // The host is not active any longer and we cancel the operation.
       forward_events_to_drag_and_drop_host_ = false;
-      drag_and_drop_host_->EndDrag(true);
+      // NOTE: Not passing the drag icon proxy to the drag and drop host because
+      // the drag operation is still in progress, and remains being handled by
+      // the apps grid view.
+      drag_and_drop_host_->EndDrag(true, /*drag_icon_proxy=*/nullptr);
     }
     return;
   }
@@ -2902,9 +2914,12 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
 
 void AppsGridView::OnHostDragStartTimerFired() {
   gfx::Point last_drag_point_in_screen = last_drag_point_;
+  last_drag_point_in_screen.set_x(
+      GetMirroredXInView(last_drag_point_in_screen.x()));
   views::View::ConvertPointToScreen(this, &last_drag_point_in_screen);
   if (drag_and_drop_host_->StartDrag(drag_view_->item()->id(),
-                                     last_drag_point_in_screen)) {
+                                     last_drag_point_in_screen,
+                                     drag_icon_proxy_->GetBoundsInScreen())) {
     // From now on we forward the drag events.
     forward_events_to_drag_and_drop_host_ = true;
   }

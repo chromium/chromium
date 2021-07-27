@@ -181,7 +181,7 @@ class ScrollableShelfViewTest : public AshTestBase {
   }
 
   void CheckFirstAndLastTappableIconsBounds() {
-    views::ViewModel* view_model = shelf_view_->view_model();
+    views::ViewModel* view_model = shelf_view_->view_model_for_test();
 
     gfx::Rect visible_space_in_screen = scrollable_shelf_view_->visible_space();
     views::View::ConvertRectToScreen(scrollable_shelf_view_,
@@ -309,7 +309,7 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterDisplayRotationShortToLong) {
   // (3) The scrollable shelf does not need further adjustment.
   EXPECT_EQ(ScrollableShelfView::kShowLeftArrowButton,
             scrollable_shelf_view_->layout_strategy_for_test());
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
   const views::View* last_visible_icon =
       view_model->view_at(scrollable_shelf_view_->last_tappable_app_index());
   const gfx::Rect icon_bounds = last_visible_icon->GetBoundsInScreen();
@@ -380,7 +380,7 @@ TEST_P(ScrollableShelfViewRTLTest, NotShowTooltipForHiddenIcons) {
             scrollable_shelf_view_->layout_strategy_for_test());
   scrollable_shelf_view_->first_tappable_app_index();
 
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
 
   // Check the initial state of |tooltip_manager|.
   ShelfTooltipManager* tooltip_manager = test_api_->tooltip_manager();
@@ -464,7 +464,7 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyTappableAppIndices) {
   // Pins enough apps to Shelf to ensure that layout strategy will be
   // kShowButtons after pressing the right arrow button.
   const int view_size =
-      scrollable_shelf_view_->shelf_view()->view_model()->view_size();
+      scrollable_shelf_view_->shelf_view()->view_model_for_test()->view_size();
   PopulateAppShortcut(view_size + 1);
   GetEventGenerator()->GestureTapAt(
       scrollable_shelf_view_->right_arrow()->GetBoundsInScreen().CenterPoint());
@@ -529,7 +529,7 @@ TEST_P(ScrollableShelfViewRTLTest, DragIconToNewPage) {
   ASSERT_EQ(ScrollableShelfView::kShowLeftArrowButton,
             scrollable_shelf_view_->layout_strategy_for_test());
 
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
   views::View* dragged_view =
       view_model->view_at(scrollable_shelf_view_->last_tappable_app_index());
   const gfx::Point drag_start_point =
@@ -556,7 +556,7 @@ TEST_P(ScrollableShelfViewRTLTest, DragIconToNewPage) {
 
   // Expects that the drag icon moves with drag pointer before mouse release.
   const gfx::Rect intermediate_bounds =
-      scrollable_shelf_view_->drag_icon_for_test()->GetBoundsInScreen();
+      shelf_view_->GetDragIconBoundsInScreenForTest();
   EXPECT_EQ(drag_end_point, intermediate_bounds.CenterPoint());
 
   GetEventGenerator()->ReleaseLeftButton();
@@ -564,7 +564,7 @@ TEST_P(ScrollableShelfViewRTLTest, DragIconToNewPage) {
             dragged_view->GetBoundsInScreen().CenterPoint());
 
   // Expects that the proxy icon is deleted after mouse release.
-  EXPECT_EQ(nullptr, scrollable_shelf_view_->drag_icon_for_test());
+  EXPECT_EQ(gfx::Rect(), shelf_view_->GetDragIconBoundsInScreenForTest());
 
   // Verifies that:
   // (1) Scrollable shelf view has the expected layout strategy.
@@ -634,7 +634,7 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIAfterSwitchingToTablet) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
 
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
   views::View* first_tappable_view =
       view_model->view_at(scrollable_shelf_view_->first_tappable_app_index());
 
@@ -675,7 +675,7 @@ TEST_P(ScrollableShelfViewRTLTest, CorrectUIInTabletWithoutOverflow) {
       scrollable_shelf_view_->GetHotseatBackgroundBounds();
   views::View::ConvertRectToScreen(scrollable_shelf_view_, &hotseat_background);
 
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
   const gfx::Rect first_tappable_icon_bounds =
       view_model->view_at(scrollable_shelf_view_->first_tappable_app_index())
           ->GetBoundsInScreen();
@@ -947,7 +947,7 @@ TEST_P(ScrollableShelfViewRTLTest, RipOffShelfItem) {
   ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,
             scrollable_shelf_view_->layout_strategy_for_test());
 
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
   const gfx::Rect first_tappable_view_bounds =
       view_model->view_at(scrollable_shelf_view_->first_tappable_app_index())
           ->GetBoundsInScreen();
@@ -1216,7 +1216,7 @@ TEST_P(ScrollableShelfViewRTLTest, ClickAtLastIcon) {
             scrollable_shelf_view_->layout_strategy_for_test());
 
   // Right-click on the edge of the last icon.
-  const views::View* last_icon = shelf_view_->view_model()->view_at(
+  const views::View* last_icon = shelf_view_->view_model_for_test()->view_at(
       scrollable_shelf_view_->last_tappable_app_index());
   gfx::Point click_point = last_icon->GetBoundsInScreen().right_center();
   click_point.Offset(-1, 0);
@@ -1240,7 +1240,7 @@ TEST_F(ScrollableShelfViewTest, PresentationTimeMetricsForGestureScroll) {
   ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,
             scrollable_shelf_view_->layout_strategy_for_test());
 
-  views::ViewModel* view_model = shelf_view_->view_model();
+  views::ViewModel* view_model = shelf_view_->view_model_for_test();
   ASSERT_GT(view_model->view_size(), 2);
 
   // |gesture_start_point| is between the first and the second shelf icon. It
@@ -1321,7 +1321,7 @@ TEST_P(ScrollableShelfViewRTLTest, FeedbackForAppPinning) {
             scrollable_shelf_view_->layout_strategy_for_test());
 
   // |num| is the minimum of app icons to enter overflow mode.
-  const int num = shelf_view_->view_model()->view_size();
+  const int num = shelf_view_->view_model_for_test()->view_size();
 
   ShelfModel::ScopedUserTriggeredMutation user_triggered(
       scrollable_shelf_view_->shelf_view()->model());
