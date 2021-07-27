@@ -423,7 +423,7 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
       MakeGarbageCollected<VideoFrame>(std::move(non_monitored_handle));
   verify_expectations(1u, 2);
 
-  auto* clone = frame1->clone(scope.GetExceptionState());
+  frame1->clone(scope.GetExceptionState());
   verify_expectations(1u, 3);
 
   auto* non_monitored_clone = non_monitored1->clone(scope.GetExceptionState());
@@ -442,7 +442,6 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
 
   // Garbage-collecting a non-closed monitored frame should reclaim it and
   // update the monitor.
-  clone = nullptr;
   blink::WebHeap::CollectAllGarbageForTesting();
   EXPECT_TRUE(monitor.IsEmpty());
 }

@@ -5561,10 +5561,6 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     possible_direct_copy = Extensions3DUtil::CanUseCopyTextureCHROMIUM(target);
   }
 
-  GLint copy_x_offset = xoffset;
-  GLint copy_y_offset = yoffset;
-  GLenum copy_target = target;
-
   // if direct copy is not possible, create a temporary texture and then copy
   // from canvas to temporary texture to target texture.
   if (!possible_direct_copy) {
@@ -5580,9 +5576,6 @@ void WebGLRenderingContextBase::TexImageViaGPU(
                                GL_CLAMP_TO_EDGE);
     ContextGL()->TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
                             GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    copy_x_offset = 0;
-    copy_y_offset = 0;
-    copy_target = GL_TEXTURE_2D;
   }
 
   {
@@ -5956,12 +5949,6 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     texture->UpdateLastUploadedFrame(metadata);
     return;
   }
-
-  TexImageFunctionType function_type;
-  if (function_id == kTexImage2D || function_id == kTexImage3D)
-    function_type = kTexImage;
-  else
-    function_type = kTexSubImage;
 
   // The CopyTexImage fast paths can't handle orientation, so if a non-default
   // orientation is provided, we must disable them.

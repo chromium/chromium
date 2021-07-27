@@ -195,10 +195,6 @@ SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
     sk_alpha_type = kUnpremul_SkAlphaType;
   }
 
-  blink::OpacityMode opacity_mode = blink::kNonOpaque;
-  if (opacity_mode_ == SerializedOpacityMode::kOpaque)
-    opacity_mode = blink::kOpaque;
-
   return SkImageInfo::Make(width, height, sk_color_type, sk_alpha_type,
                            std::move(sk_color_space));
 }

@@ -1491,18 +1491,9 @@ void EventHandler::ReleasePointerCapture(PointerId pointer_id,
     // approach for removing mouse subframe capture. It must be re-write
     // before enable the flag.
     if (RuntimeEnabledFeatures::MouseSubframeNoImplicitCaptureEnabled()) {
-      LocalFrame* frame = frame_;
       LocalFrame* parent = DynamicTo<LocalFrame>(frame_->Tree().Parent());
       while (parent) {
-        Element* subframe_element = nullptr;
-        if (frame->OwnerLayoutObject() &&
-            frame->OwnerLayoutObject()->GetNode()) {
-          subframe_element =
-              DynamicTo<Element>(frame->OwnerLayoutObject()->GetNode());
-        }
-
         parent->GetEventHandler().capturing_subframe_element_ = nullptr;
-        frame = parent;
         parent = DynamicTo<LocalFrame>(parent->Tree().Parent());
       }
     }

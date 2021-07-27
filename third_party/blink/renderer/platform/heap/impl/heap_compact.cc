@@ -360,21 +360,21 @@ bool HeapCompact::ShouldRegisterMovingAddress() {
 }
 
 void HeapCompact::UpdateHeapResidency() {
-  size_t total_arena_size = 0;
   size_t total_free_list_size = 0;
 
   compactable_arenas_ = 0;
 #if DEBUG_HEAP_FREELIST
   std::stringstream stream;
+  size_t total_arena_size = 0;
 #endif
   for (int i = BlinkGC::kVectorArenaIndex; i <= BlinkGC::kHashTableArenaIndex;
        ++i) {
     NormalPageArena* arena = static_cast<NormalPageArena*>(heap_->Arena(i));
     size_t arena_size = arena->ArenaSize();
     size_t free_list_size = arena->FreeListSize();
-    total_arena_size += arena_size;
     total_free_list_size += free_list_size;
 #if DEBUG_HEAP_FREELIST
+    total_arena_size += arena_size;
     stream << i << ": [" << arena_size << ", " << free_list_size << "], ";
 #endif
     // TODO: be more discriminating and consider arena

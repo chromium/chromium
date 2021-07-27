@@ -433,14 +433,10 @@ void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
     return;
 
   const base::Time limit = clock_->Now() - base::TimeDelta::FromSeconds(60);
-  ThrottleOption target_option;
-  if (pending_queue_update_times_[ThrottleOption::kThrottleable] < limit &&
-      !IsPendingRequestEffectivelyEmpty(ThrottleOption::kThrottleable)) {
-    target_option = ThrottleOption::kThrottleable;
-  } else if (pending_queue_update_times_[ThrottleOption::kStoppable] < limit &&
-             !IsPendingRequestEffectivelyEmpty(ThrottleOption::kStoppable)) {
-    target_option = ThrottleOption::kStoppable;
-  } else {
+  if ((pending_queue_update_times_[ThrottleOption::kThrottleable] >= limit ||
+       IsPendingRequestEffectivelyEmpty(ThrottleOption::kThrottleable)) &&
+      (pending_queue_update_times_[ThrottleOption::kStoppable] >= limit ||
+       IsPendingRequestEffectivelyEmpty(ThrottleOption::kStoppable))) {
     // At least, one of the top requests in pending queues was handled in the
     // last 1 minutes, or there is no pending requests in the inactive queue.
     return;

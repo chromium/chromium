@@ -272,10 +272,6 @@ void ParkableStringManager::ParkAll(ParkableStringImpl::ParkingMode mode) {
   DCHECK(IsMainThread());
   DCHECK(CompressionEnabled());
 
-  size_t total_size = 0;
-  for (const auto& kv : parked_strings_)
-    total_size += kv.value->CharactersSizeInBytes();
-
   // Parking may be synchronous, need to copy values first.
   // In case of synchronous parking, |ParkableStringImpl::Park()| calls
   // |OnParked()|, which moves the string from |unparked_strings_|
@@ -289,7 +285,6 @@ void ParkableStringManager::ParkAll(ParkableStringImpl::ParkingMode mode) {
 
   for (ParkableStringImpl* str : unparked) {
     str->Park(mode);
-    total_size += str->CharactersSizeInBytes();
   }
 }
 

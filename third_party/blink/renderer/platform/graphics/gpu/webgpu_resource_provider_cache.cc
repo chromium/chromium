@@ -168,9 +168,6 @@ void WebGPURecyclableResourceCache::ReleaseStaleResources() {
   int stale_resource_count = 0;
   for (auto it = unused_providers_.rbegin(); it != unused_providers_.rend();
        ++it) {
-    auto timer_id_ = it->timer_id_;
-    int delta;
-    delta = current_timer_id_ - timer_id_;
     if ((current_timer_id_ - it->timer_id_) < kTimerIdDeltaForDeletion) {
       // These are the resources which are recycled and stay in the cache for
       // less than kCleanUpDelayInSeconds. They are not to be deleted this time.
