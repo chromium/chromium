@@ -2375,9 +2375,18 @@ if (!is_android) {
 
     if (!is_chromeos_ash) {
       sources += [
+        "../browser/external_protocol/external_protocol_handler_browsertest.cc",
         "../browser/policy/test/hardware_acceleration_mode_enabled_browsertest.cc",
         "../browser/policy/test/variation_restrict_parameter_policy_browsertest.cc",
+        "../browser/profiles/profile_window_browsertest.cc",
+        "../browser/ui/signin_reauth_view_controller_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
+        "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
+      ]
+      sources -= [
+        "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
+        "../browser/net/nss_context_chromeos_browsertest.cc",
+        "data/webui/certificate_viewer_ui_test-inl.h",
       ]
     }
 
@@ -2437,13 +2446,6 @@ if (!is_android) {
     if (enable_captive_portal_detection) {
       sources +=
           [ "../browser/ssl/captive_portal_blocking_page_browsertest.cc" ]
-    }
-
-    if (!is_chromeos_ash) {
-      sources += [
-        "../browser/external_protocol/external_protocol_handler_browsertest.cc",
-        "../browser/ui/signin_reauth_view_controller_browsertest.cc",
-      ]
     }
 
     if (!is_chromeos) {
@@ -2974,7 +2976,6 @@ if (!is_android) {
         "../browser/ui/views/qrcode_generator/qrcode_generator_bubble_browsertest.cc",
         "../browser/ui/views/read_later/read_later_button_browsertest.cc",
         "../browser/ui/views/safe_browsing/password_reuse_modal_warning_dialog_browsertest.cc",
-        "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
         "../browser/ui/views/status_bubble_views_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
@@ -2999,6 +3000,11 @@ if (!is_android) {
         sources += [
           "../browser/ui/views/status_bubble_views_browsertest_mac.h",
           "../browser/ui/views/status_bubble_views_browsertest_mac.mm",
+        ]
+      }
+      if (is_chromeos_ash) {
+        sources += [
+          "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
       }
       if (!is_chromeos_ash && !is_chromeos_lacros) {
@@ -3586,18 +3592,6 @@ if (!is_android) {
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/reporting/storage:test_support",
       ]
-    } else {  # !is_chromeos_ash
-      sources -= [
-        "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
-        "../browser/net/nss_context_chromeos_browsertest.cc",
-        "data/webui/certificate_viewer_ui_test-inl.h",
-      ]
-      sources += [ "../browser/profiles/profile_window_browsertest.cc" ]
-      if (toolkit_views) {
-        sources -= [
-          "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
-        ]
-      }
     }
     if (safe_browsing_mode == 1) {
       sources += [

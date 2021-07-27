@@ -157,6 +157,8 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
                            ErrorDialogDefaultFocus);
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            EnterpriseConfirmationDefaultFocus);
+  FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
+                           CloseImmediately);
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninReauthViewControllerBrowserTest;
 

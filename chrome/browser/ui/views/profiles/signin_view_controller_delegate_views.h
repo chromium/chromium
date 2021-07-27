@@ -103,6 +103,7 @@ class SigninViewControllerDelegateViews
 
  private:
   friend SigninViewControllerDelegate;
+  friend class SigninViewControllerDelegateViewsBrowserTest;
 
   // Creates and displays a constrained window containing |web_contents|. If
   // |wait_for_size| is true, the delegate will wait for ResizeNativeView() to
@@ -125,12 +126,18 @@ class SigninViewControllerDelegateViews
   // Displays the modal dialog.
   void DisplayModal();
 
-  Browser* browser() { return browser_; }
+  // This instance of `SigninViewControllerDelegateViews` is initially
+  // self-owned and then passes ownership of itself and the content view to
+  // `modal_signin_widget_` and becomes owned by the view hierarchy.
+  std::unique_ptr<views::WebView> owned_content_view_;
 
-  content::WebContents* web_contents_;  // Not owned.
-  Browser* const browser_;              // Not owned.
+  // If the widget is non-null, then it owns the
+  // `SigninViewControllerDelegateViews` and the content view.
+  views::Widget* modal_signin_widget_ = nullptr;
+
+  content::WebContents* web_contents_;
+  Browser* const browser_;
   views::WebView* content_view_;
-  views::Widget* modal_signin_widget_;  // Not owned.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
 };
