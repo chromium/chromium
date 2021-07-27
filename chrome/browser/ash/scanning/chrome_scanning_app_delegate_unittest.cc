@@ -72,8 +72,7 @@ class ChromeScanningAppDelegateTest : public testing::Test {
 
     chrome_scanning_app_delegate_ =
         std::make_unique<ChromeScanningAppDelegate>(web_ui_.get());
-    chrome_scanning_app_delegate_->SetGoogleDrivePathForTesting(drive_path_);
-    chrome_scanning_app_delegate_->SetMyFilesPathForTesting(my_files_path_);
+    chrome_scanning_app_delegate_->SetValidPaths(drive_path_, my_files_path_);
   }
 
  protected:
@@ -89,6 +88,11 @@ class ChromeScanningAppDelegateTest : public testing::Test {
   TestingProfileManager profile_manager_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
+
+// Validates that the correct My Files path is returned.
+TEST_F(ChromeScanningAppDelegateTest, GetMyFilesPath) {
+  EXPECT_EQ(my_files_path_, chrome_scanning_app_delegate_->GetMyFilesPath());
+}
 
 // Validates that the correct base name is returned from a generic filepath.
 TEST_F(ChromeScanningAppDelegateTest, BaseNameFromGenericPath) {

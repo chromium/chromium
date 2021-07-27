@@ -26,6 +26,7 @@
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -160,12 +161,12 @@ ScanService::ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
                          base::FilePath google_drive_path,
                          content::BrowserContext* context)
     : lorgnette_scanner_manager_(lorgnette_scanner_manager),
-      my_files_path_(std::move(my_files_path)),
-      google_drive_path_(std::move(google_drive_path)),
       context_(context),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      file_path_helper_(std::move(google_drive_path),
+                        std::move(my_files_path)) {
   DCHECK(lorgnette_scanner_manager_);
   DCHECK(context_);
 }
@@ -211,7 +212,7 @@ void ScanService::StartScan(
   rotate_alternate_pages_ = lorgnette_scanner_manager_->IsRotateAlternate(
       scanner_name, settings->source_name);
 
-  if (!FilePathSupported(settings->scan_to_path)) {
+  if (!file_path_helper_.IsFilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
     RecordScanJobResult(false,
                         scanning::ScanJobFailureReason::kUnsupportedScanToPath,
@@ -248,16 +249,6 @@ void ScanService::CancelScan() {
 void ScanService::BindInterface(
     mojo::PendingReceiver<mojo_ipc::ScanService> pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
-}
-
-void ScanService::SetGoogleDrivePathForTesting(
-    const base::FilePath& google_drive_path) {
-  google_drive_path_ = google_drive_path;
-}
-
-void ScanService::SetMyFilesPathForTesting(
-    const base::FilePath& my_files_path) {
-  my_files_path_ = my_files_path;
 }
 
 void ScanService::Shutdown() {
@@ -427,17 +418,6 @@ void ScanService::ClearScanState() {
   scanned_file_paths_.clear();
   scanned_images_.clear();
   num_pages_scanned_ = 0;
-}
-
-bool ScanService::FilePathSupported(const base::FilePath& file_path) {
-  if (file_path == my_files_path_ ||
-      (!file_path.ReferencesParent() &&
-       (my_files_path_.IsParent(file_path) ||
-        google_drive_path_.IsParent(file_path)))) {
-    return true;
-  }
-
-  return false;
 }
 
 std::string ScanService::GetScannerName(
