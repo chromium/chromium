@@ -230,6 +230,21 @@ mojom("url_loader_base") {
     {
       types = [
         {
+          mojom = "network.mojom.RequestPriority"
+          cpp = "::net::RequestPriority"
+        },
+        {
+          mojom = "network.mojom.URLRequestReferrerPolicy"
+          cpp = "::net::ReferrerPolicy"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/url_request_param_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
           mojom = "network.mojom.CrossOriginEmbedderPolicy"
           cpp = "::network::CrossOriginEmbedderPolicy"
         },
@@ -279,16 +294,8 @@ mojom("url_loader_base") {
           copyable_pass_by_value = true
         },
         {
-          mojom = "network.mojom.URLRequestReferrerPolicy"
-          cpp = "::net::ReferrerPolicy"
-        },
-        {
           mojom = "network.mojom.SourceType"
           cpp = "::net::SourceStream::SourceType"
-        },
-        {
-          mojom = "network.mojom.RequestPriority"
-          cpp = "::net::RequestPriority"
         },
         {
           mojom = "network.mojom.DataElementBytes"

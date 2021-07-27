@@ -297,6 +297,8 @@ component("cpp_base") {
     "url_loader_completion_status.h",
     "url_request_mojom_traits.cc",
     "url_request_mojom_traits.h",
+    "url_request_param_mojom_traits.cc",
+    "url_request_param_mojom_traits.h",
     "web_transport_error_mojom_traits.cc",
     "web_transport_error_mojom_traits.h",
   ]

@@ -42,23 +42,6 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::RequestPriority, net::RequestPriority> {
-  static network::mojom::RequestPriority ToMojom(net::RequestPriority priority);
-  static bool FromMojom(network::mojom::RequestPriority in,
-                        net::RequestPriority* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy> {
-  static network::mojom::URLRequestReferrerPolicy ToMojom(
-      net::ReferrerPolicy policy);
-  static bool FromMojom(network::mojom::URLRequestReferrerPolicy in,
-                        net::ReferrerPolicy* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType> {
   static network::mojom::SourceType ToMojom(net::SourceStream::SourceType type);
   static bool FromMojom(network::mojom::SourceType in,

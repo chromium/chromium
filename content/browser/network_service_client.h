@@ -21,6 +21,7 @@
 #include "net/cert/cert_database.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)

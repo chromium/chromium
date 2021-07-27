@@ -5,7 +5,7 @@
 #include "services/network/public/cpp/load_info_util.h"
 
 #include "net/base/load_states.h"
-#include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 
 namespace network {
 
