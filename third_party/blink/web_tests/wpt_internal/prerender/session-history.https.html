@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <title>Test history.length</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-  <script>
+<script>
     async function runTestInPrerender(testName) {
       const prerender = "session-history-prerender.https.html";
       const testChannel = new BroadcastChannel(`test-channel-${testName}`);
