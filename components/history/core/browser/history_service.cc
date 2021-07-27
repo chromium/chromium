@@ -830,7 +830,7 @@ void HistoryService::GetDomainDiversity(
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToHost(
-    const GURL& host,
+    const std::string& host,
     base::Time begin_time,
     base::Time end_time,
     GetLastVisitCallback callback,
@@ -842,6 +842,22 @@ base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToHost(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetLastVisitToHost, history_backend_,
                      host, begin_time, end_time),
+      std::move(callback));
+}
+
+base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToOrigin(
+    const url::Origin& origin,
+    base::Time begin_time,
+    base::Time end_time,
+    GetLastVisitCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetLastVisitToOrigin, history_backend_,
+                     origin, begin_time, end_time),
       std::move(callback));
 }
 

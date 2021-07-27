@@ -38,6 +38,7 @@
 #include "components/history/core/browser/visit_tracker.h"
 #include "sql/init_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 class SkBitmap;
 
@@ -319,10 +320,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Gets the last time any webpage on the given host was visited within the
   // time range [`begin_time`, `end_time`). If the given host has not been
   // visited in the given time range, the result will have a null base::Time,
-  // but still report success.
-  HistoryLastVisitResult GetLastVisitToHost(const GURL& host,
+  // but still report success. Only queries http and https hosts.
+  HistoryLastVisitResult GetLastVisitToHost(const std::string& host,
                                             base::Time begin_time,
                                             base::Time end_time);
+
+  // Same as the above, but for the given origin instead of host.
+  HistoryLastVisitResult GetLastVisitToOrigin(const url::Origin& origin,
+                                              base::Time begin_time,
+                                              base::Time end_time);
 
   // Gets the last time `url` was visited before `end_time`. If the given URL
   // has not been visited in the past, the result will have a null base::Time,

@@ -1302,13 +1302,24 @@ DomainDiversityResults HistoryBackend::GetDomainDiversity(
   return result;
 }
 
-HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(const GURL& host,
-                                                          base::Time begin_time,
-                                                          base::Time end_time) {
+HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
+    const std::string& host,
+    base::Time begin_time,
+    base::Time end_time) {
   base::Time last_visit;
   return {
       db_ && db_->GetLastVisitToHost(host, begin_time, end_time, &last_visit),
       last_visit};
+}
+
+HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
+    const url::Origin& origin,
+    base::Time begin_time,
+    base::Time end_time) {
+  base::Time last_visit;
+  return {db_ && db_->GetLastVisitToOrigin(origin, begin_time, end_time,
+                                           &last_visit),
+          last_visit};
 }
 
 HistoryLastVisitResult HistoryBackend::GetLastVisitToURL(const GURL& url,
