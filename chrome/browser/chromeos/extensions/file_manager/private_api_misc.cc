@@ -151,7 +151,7 @@ bool ConvertURLsToProvidedInfo(
   *file_system = nullptr;
   for (const auto& url : urls) {
     const storage::FileSystemURL file_system_url(
-        file_system_context->CrackURL(GURL(url)));
+        file_system_context->CrackURLInFirstPartyContext(GURL(url)));
 
     ash::file_system_provider::util::FileSystemURLParser parser(
         file_system_url);
@@ -588,7 +588,7 @@ FileManagerPrivateInternalGetMimeTypeFunction::Run() {
           profile, render_frame_host());
 
   storage::FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(params->url)));
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url)));
 
   app_file_handler_util::GetMimeTypeForLocalPath(
       profile, file_system_url.path(),
@@ -793,7 +793,9 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  base::FilePath path = file_system_context->CrackURL(GURL(params->url)).path();
+  base::FilePath path =
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url))
+          .path();
 
   crostini::CrostiniExportImport::GetForProfile(profile)->ImportContainer(
       crostini::ContainerId::GetDefault(), path,
@@ -822,7 +824,7 @@ FileManagerPrivateInternalSharePathsWithCrostiniFunction::Run() {
   std::vector<base::FilePath> paths;
   for (size_t i = 0; i < params->urls.size(); ++i) {
     storage::FileSystemURL cracked =
-        file_system_context->CrackURL(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
     paths.emplace_back(cracked.path());
   }
 
@@ -852,7 +854,7 @@ FileManagerPrivateInternalUnsharePathWithCrostiniFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
   storage::FileSystemURL cracked =
-      file_system_context->CrackURL(GURL(params->url));
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url));
   guest_os::GuestOsSharePath::GetForProfile(profile)->UnsharePath(
       params->vm_name, cracked.path(), /*unpersist=*/true,
       base::BindOnce(
@@ -929,7 +931,7 @@ FileManagerPrivateInternalGetLinuxPackageInfoFunction::Run() {
 
   crostini::CrostiniPackageService::GetForProfile(profile)->GetLinuxPackageInfo(
       crostini::ContainerId::GetDefault(),
-      file_system_context->CrackURL(GURL(params->url)),
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
       base::BindOnce(&FileManagerPrivateInternalGetLinuxPackageInfoFunction::
                          OnGetLinuxPackageInfo,
                      this));
@@ -970,7 +972,7 @@ FileManagerPrivateInternalInstallLinuxPackageFunction::Run() {
   crostini::CrostiniPackageService::GetForProfile(profile)
       ->QueueInstallLinuxPackage(
           crostini::ContainerId::GetDefault(),
-          file_system_context->CrackURL(GURL(params->url)),
+          file_system_context->CrackURLInFirstPartyContext(GURL(params->url)),
           base::BindOnce(
               &FileManagerPrivateInternalInstallLinuxPackageFunction::
                   OnInstallLinuxPackage,

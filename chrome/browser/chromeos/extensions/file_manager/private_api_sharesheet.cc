@@ -72,7 +72,8 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
   // file paths.
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
       contains_hosted_document_ = true;
     }
@@ -200,7 +201,8 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   // file paths.
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (drive::util::HasHostedDocumentExtension(file_system_url.path()))
       contains_hosted_document_ = true;
     if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))

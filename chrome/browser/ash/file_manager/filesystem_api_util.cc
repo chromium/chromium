@@ -151,7 +151,7 @@ bool IsUnderNonNativeLocalPath(Profile* profile,
 
   storage::FileSystemURL filesystem_url =
       GetFileSystemContextForSourceURL(profile, GetFileManagerURL())
-          ->CrackURL(url);
+          ->CrackURLInFirstPartyContext(url);
   if (!filesystem_url.is_valid())
     return false;
 

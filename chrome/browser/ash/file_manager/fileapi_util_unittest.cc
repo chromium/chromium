@@ -255,7 +255,7 @@ TEST_F(FileManagerFileAPIUtilTest,
   EXPECT_TRUE(result[2]->is_file_system());
   EXPECT_TRUE(result[2]->get_file_system()->url.is_valid());
   const storage::FileSystemURL url =
-      context->CrackURL(result[2]->get_file_system()->url);
+      context->CrackURLInFirstPartyContext(result[2]->get_file_system()->url);
   EXPECT_EQ(GURL("http://example.com"), url.origin().GetURL());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(storage::kFileSystemTypeProvided, url.type());

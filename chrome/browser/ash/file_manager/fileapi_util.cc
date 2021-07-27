@@ -197,7 +197,8 @@ void FileDefinitionListConverter::OnResolvedURL(
 
   // Construct a target Entry.fullPath value from the virtual path and the
   // root URL. Eg. Downloads/A/b.txt -> A/b.txt.
-  storage::FileSystemURL fs_url = file_system_context_->CrackURL(info.root_url);
+  storage::FileSystemURL fs_url =
+      file_system_context_->CrackURLInFirstPartyContext(info.root_url);
   if (!fs_url.is_valid()) {
     OnIteratorConverted(
         std::move(self_deleter), iterator,
@@ -337,7 +338,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     for (const auto& info : chooser_info_list_) {
       if (info && info->is_file_system()) {
         storage::IsolatedContext::GetInstance()->RevokeFileSystem(
-            context_->CrackURL(info->get_file_system()->url)
+            context_->CrackURLInFirstPartyContext(info->get_file_system()->url)
                 .mount_filesystem_id());
       }
     }
@@ -365,7 +366,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
     }
 
     context_->operation_runner()->GetMetadata(
-        context_->CrackURL((*it)->get_file_system()->url),
+        context_->CrackURLInFirstPartyContext((*it)->get_file_system()->url),
         storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
             storage::FileSystemOperation::GET_METADATA_FIELD_SIZE |
             storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,

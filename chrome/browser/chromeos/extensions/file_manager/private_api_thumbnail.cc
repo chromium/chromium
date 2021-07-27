@@ -141,7 +141,7 @@ FileManagerPrivateInternalGetDriveThumbnailFunction::Run() {
           profile, render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   if (file_system_url.type() != storage::kFileSystemTypeDriveFs) {
     return RespondNow(Error("Expected a Drivefs URL"));
@@ -207,7 +207,7 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
           profile, render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   if (file_system_url.type() != storage::kFileSystemTypeLocal) {
     return RespondNow(Error("Expected a native local URL"));
@@ -296,7 +296,7 @@ FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   auto* root_map =
       arc::ArcDocumentsProviderRootMap::GetForBrowserContext(browser_context());

@@ -78,7 +78,7 @@ void GetFileSystemUrlsFromPickle(
 
   for (const auto& file_system_file : file_system_files) {
     const storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
+        file_system_context->CrackURLInFirstPartyContext(file_system_file.url);
     if (file_system_url.is_valid())
       file_system_urls->push_back(std::move(file_system_url));
   }

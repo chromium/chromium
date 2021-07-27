@@ -475,7 +475,8 @@ const base::FilePath SharesheetHeaderView::GetFilePathFromFileSystemUrl(
     const GURL& file_system_url) {
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile_);
-  storage::FileSystemURL fs_url = fs_context->CrackURL(file_system_url);
+  storage::FileSystemURL fs_url =
+      fs_context->CrackURLInFirstPartyContext(file_system_url);
   return fs_url.path();
 }
 

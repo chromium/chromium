@@ -106,8 +106,9 @@ TEST(BrowserFileSystemHelperTest,
   // proper access patterns that are verified below).
 
   // Verify that the URL didn't change *too* much.
+  const GURL crack_url = drop_data.file_system_files[0].url;
   storage::FileSystemURL dropped_file =
-      test_file_system_context->CrackURL(drop_data.file_system_files[0].url);
+      test_file_system_context->CrackURLInFirstPartyContext(crack_url);
   EXPECT_TRUE(dropped_file.is_valid());
   EXPECT_EQ(original_file.origin(), dropped_file.origin());
   EXPECT_EQ(original_file.path().BaseName(), dropped_file.path().BaseName());

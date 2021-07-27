@@ -116,8 +116,9 @@ TEST_F(FileSystemContextTest, NullExternalMountPoints) {
       "system", kFileSystemTypeLocal, FileSystemMountOption(),
       base::FilePath(DRIVE FPL("/test/sys/"))));
 
-  FileSystemURL cracked_isolated = file_system_context->CrackURL(
-      CreateRawFileSystemURL("isolated", isolated_id));
+  FileSystemURL cracked_isolated =
+      file_system_context->CrackURLInFirstPartyContext(
+          CreateRawFileSystemURL("isolated", isolated_id));
 
   ExpectFileSystemURLMatches(
       cracked_isolated, GURL(kTestOrigin), kFileSystemTypeIsolated,
@@ -129,8 +130,9 @@ TEST_F(FileSystemContextTest, NullExternalMountPoints) {
           .NormalizePathSeparators(),
       isolated_id);
 
-  FileSystemURL cracked_external = file_system_context->CrackURL(
-      CreateRawFileSystemURL("external", "system"));
+  FileSystemURL cracked_external =
+      file_system_context->CrackURLInFirstPartyContext(
+          CreateRawFileSystemURL("external", "system"));
 
   ExpectFileSystemURLMatches(
       cracked_external, GURL(kTestOrigin), kFileSystemTypeExternal,
@@ -159,8 +161,9 @@ TEST_F(FileSystemContextTest, FileSystemContextKeepsMountPointsAlive) {
 
   // FileSystemContext should keep a reference to the |mount_points|, so it
   // should be able to resolve the URL.
-  FileSystemURL cracked_external = file_system_context->CrackURL(
-      CreateRawFileSystemURL("external", "system"));
+  FileSystemURL cracked_external =
+      file_system_context->CrackURLInFirstPartyContext(
+          CreateRawFileSystemURL("external", "system"));
 
   ExpectFileSystemURLMatches(
       cracked_external, GURL(kTestOrigin), kFileSystemTypeExternal,
@@ -266,7 +269,8 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
 
     GURL raw_url =
         CreateRawFileSystemURL(kTestCases[i].type_str, kTestCases[i].root);
-    FileSystemURL cracked_url = file_system_context->CrackURL(raw_url);
+    FileSystemURL cracked_url =
+        file_system_context->CrackURLInFirstPartyContext(raw_url);
 
     SCOPED_TRACE(testing::Message() << "Test case " << i << ": "
                                     << "Cracking URL: " << raw_url);
@@ -298,8 +302,8 @@ TEST_F(FileSystemContextTest, CanServeURLRequest) {
       CreateFileSystemContextForTest(std::move(external_mount_points));
 
   // A request for a sandbox mount point should be served.
-  FileSystemURL cracked_url =
-      context->CrackURL(CreateRawFileSystemURL("persistent", "pers_mount"));
+  FileSystemURL cracked_url = context->CrackURLInFirstPartyContext(
+      CreateRawFileSystemURL("persistent", "pers_mount"));
   EXPECT_EQ(kFileSystemTypePersistent, cracked_url.mount_type());
   EXPECT_TRUE(context->CanServeURLRequest(cracked_url));
 
@@ -310,8 +314,8 @@ TEST_F(FileSystemContextTest, CanServeURLRequest) {
           kFileSystemTypeLocal, std::string(),
           base::FilePath(DRIVE FPL("/test/isolated/root")), &isolated_fs_name);
   std::string isolated_fs_id = isolated_fs.id();
-  cracked_url =
-      context->CrackURL(CreateRawFileSystemURL("isolated", isolated_fs_id));
+  cracked_url = context->CrackURLInFirstPartyContext(
+      CreateRawFileSystemURL("isolated", isolated_fs_id));
   EXPECT_EQ(kFileSystemTypeIsolated, cracked_url.mount_type());
   EXPECT_FALSE(context->CanServeURLRequest(cracked_url));
 
@@ -320,8 +324,8 @@ TEST_F(FileSystemContextTest, CanServeURLRequest) {
   ASSERT_TRUE(ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       kExternalMountName, kFileSystemTypeLocal, FileSystemMountOption(),
       base::FilePath()));
-  cracked_url =
-      context->CrackURL(CreateRawFileSystemURL("external", kExternalMountName));
+  cracked_url = context->CrackURLInFirstPartyContext(
+      CreateRawFileSystemURL("external", kExternalMountName));
   EXPECT_EQ(kFileSystemTypeExternal, cracked_url.mount_type());
   EXPECT_TRUE(context->CanServeURLRequest(cracked_url));
 

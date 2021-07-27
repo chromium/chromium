@@ -309,7 +309,8 @@ void ArcSelectFilesHandler::FilesSelectedInternal(
     GURL gurl;
     file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
         profile_, file_path, file_manager::util::GetFileManagerURL(), &gurl);
-    file_system_urls.push_back(file_system_context->CrackURL(gurl));
+    file_system_urls.push_back(
+        file_system_context->CrackURLInFirstPartyContext(gurl));
   }
 
   arc::ConvertToContentUrlsAndShare(

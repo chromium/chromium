@@ -69,7 +69,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
-        file_system_context->CrackURL(GURL(params->source));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->source));
     urls.push_back(url);
 
     notifier->NotifyFileTasks(urls);

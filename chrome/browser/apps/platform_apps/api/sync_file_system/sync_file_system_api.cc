@@ -102,7 +102,7 @@ SyncFileSystemDeleteFileSystemFunction::Run() {
           ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
   storage::FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(url)));
+      file_system_context->CrackURLInFirstPartyContext(GURL(url)));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -204,7 +204,7 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusFunction::Run() {
           ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
   storage::FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(url)));
+      file_system_context->CrackURLInFirstPartyContext(GURL(url)));
 
   ::sync_file_system::SyncFileSystemService* sync_file_system_service =
       GetSyncFileSystemService(browser_context());
@@ -263,7 +263,7 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
     if (file_entry_urls[i].is_string())
       url = file_entry_urls[i].GetString();
     storage::FileSystemURL file_system_url(
-        file_system_context->CrackURL(GURL(url)));
+        file_system_context->CrackURLInFirstPartyContext(GURL(url)));
 
     sync_file_system_service->GetFileSyncStatus(
         file_system_url,
@@ -329,7 +329,7 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
           ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
   storage::FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(url)));
+      file_system_context->CrackURLInFirstPartyContext(GURL(url)));
 
   scoped_refptr<storage::QuotaManager> quota_manager =
       browser_context()

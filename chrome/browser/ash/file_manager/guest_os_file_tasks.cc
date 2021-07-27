@@ -158,7 +158,8 @@ void FindGuestOsApps(
   base::FilePath not_used;
   for (const GURL& file_url : file_urls) {
     if (!file_manager::util::ConvertFileSystemURLToPathInsideVM(
-            profile, file_system_context->CrackURL(file_url), dummy_vm_mount,
+            profile, file_system_context->CrackURLInFirstPartyContext(file_url),
+            dummy_vm_mount,
             /*map_crostini_home=*/false, &not_used)) {
       return;
     }

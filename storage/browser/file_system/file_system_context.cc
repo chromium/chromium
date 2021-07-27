@@ -455,7 +455,11 @@ void FileSystemContext::ResolveURL(const FileSystemURL& url,
 void FileSystemContext::AttemptAutoMountForURLRequest(
     const FileSystemRequestInfo& request_info,
     StatusCallback callback) {
-  const FileSystemURL filesystem_url(request_info.url);
+  // TODO(https://crbug.com/1221308): function will use StorageKey for the
+  // receiver frame/worker in future CL
+  const FileSystemURL filesystem_url(
+      request_info.url,
+      blink::StorageKey(url::Origin::Create(request_info.url)));
   if (filesystem_url.type() == kFileSystemTypeExternal) {
     for (auto& handler : auto_mount_handlers_) {
       auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -536,8 +540,16 @@ FileSystemContext::CreateSequenceBoundFileSystemOperationRunner() {
       base::WrapRefCounted(this));
 }
 
-FileSystemURL FileSystemContext::CrackURL(const GURL& url) const {
-  return CrackFileSystemURL(FileSystemURL(url));
+FileSystemURL FileSystemContext::CrackURL(
+    const GURL& url,
+    const blink::StorageKey& storage_key) const {
+  return CrackFileSystemURL(FileSystemURL(url, storage_key));
+}
+
+FileSystemURL FileSystemContext::CrackURLInFirstPartyContext(
+    const GURL& url) const {
+  return CrackFileSystemURL(
+      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url))));
 }
 
 FileSystemURL FileSystemContext::CreateCrackedFileSystemURL(
@@ -699,7 +711,8 @@ void FileSystemContext::DidOpenFileSystemForResolveURL(
   FileSystemInfo info(filesystem_name, filesystem_root, url.mount_type());
 
   // Extract the virtual path not containing a filesystem type part from |url|.
-  base::FilePath parent = CrackURL(filesystem_root).virtual_path();
+  base::FilePath parent =
+      CrackURLInFirstPartyContext(filesystem_root).virtual_path();
   base::FilePath child = url.virtual_path();
   base::FilePath path;
 

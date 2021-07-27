@@ -156,7 +156,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   friend class ExternalMountPoints;
   friend class IsolatedContext;
 
-  explicit FileSystemURL(const GURL& filesystem_url);
+  FileSystemURL(const GURL& filesystem_url,
+                const blink::StorageKey& storage_key);
   FileSystemURL(const blink::StorageKey& storage_key,
                 FileSystemType mount_type,
                 const base::FilePath& virtual_path);

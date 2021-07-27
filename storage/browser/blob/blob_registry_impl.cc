@@ -15,6 +15,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_transport_strategy.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 
@@ -553,8 +554,13 @@ void BlobRegistryImpl::Register(
         return;
       }
     } else if (entry.element->is_file_filesystem()) {
-      entry.filesystem_url = file_system_context_->CrackURL(
-          entry.element->get_file_filesystem()->url);
+      const GURL crack_url = entry.element->get_file_filesystem()->url;
+      // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+      // replaced with a more meaningful value
+      const blink::StorageKey crack_storage_key =
+          blink::StorageKey(url::Origin::Create(crack_url));
+      entry.filesystem_url =
+          file_system_context_->CrackURL(crack_url, crack_storage_key);
       if (!entry.filesystem_url.is_valid() ||
           !file_system_context_->GetFileSystemBackend(
               entry.filesystem_url.type()) ||

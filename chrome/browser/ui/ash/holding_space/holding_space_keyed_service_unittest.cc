@@ -405,7 +405,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
       const std::string& expected_mount_point) {
     storage::FileSystemContext* fs_context =
         file_manager::util::GetFileManagerFileSystemContext(GetProfile());
-    storage::FileSystemURL fs_url = fs_context->CrackURL(url);
+    storage::FileSystemURL fs_url =
+        fs_context->CrackURLInFirstPartyContext(url);
 
     base::RunLoop run_loop;
     base::FilePath result;
@@ -816,8 +817,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     GURL file_path_url = GetFileSystemUrl(GetProfile(), file_path);
     GURL new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
     ASSERT_EQ(storage::AsyncFileTestHelper::Move(
-                  context, context->CrackURL(file_path_url),
-                  context->CrackURL(new_file_path_url)),
+                  context, context->CrackURLInFirstPartyContext(file_path_url),
+                  context->CrackURLInFirstPartyContext(new_file_path_url)),
               base::File::FILE_OK);
 
     // File changes must be posted to the UI thread, wait for the update to
@@ -847,8 +848,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorageAfterMove) {
     file_path_url = GetFileSystemUrl(GetProfile(), file_path);
     new_file_path_url = GetFileSystemUrl(GetProfile(), new_file_path);
     ASSERT_EQ(storage::AsyncFileTestHelper::Move(
-                  context, context->CrackURL(file_path_url),
-                  context->CrackURL(new_file_path_url)),
+                  context, context->CrackURLInFirstPartyContext(file_path_url),
+                  context->CrackURLInFirstPartyContext(new_file_path_url)),
               base::File::FILE_OK);
 
     // File changes must be posted to the UI thread, wait for the update to
@@ -965,12 +966,13 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
             /*content=*/std::string());
 
     ItemImageUpdateWaiter image_update_waiter(src_item);
-    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
-                  context,
-                  context->CrackURL(GetFileSystemUrl(
-                      GetProfile(), path_not_in_holding_space)),
-                  context->CrackURL(src_item->file_system_url())),
-              base::File::FILE_OK);
+    ASSERT_EQ(
+        storage::AsyncFileTestHelper::Move(
+            context,
+            context->CrackURLInFirstPartyContext(
+                GetFileSystemUrl(GetProfile(), path_not_in_holding_space)),
+            context->CrackURLInFirstPartyContext(src_item->file_system_url())),
+        base::File::FILE_OK);
 
     image_update_waiter.Wait();
 
@@ -985,10 +987,13 @@ TEST_F(HoldingSpaceKeyedServiceTest, DISABLED_UpdateItemsOverwrittenByMove) {
     // Verify that, given that both paths are represented in the holding space,
     // the item initially associated with the destination path is removed from
     // the holding space (to avoid two items with the same backing file).
-    ASSERT_EQ(storage::AsyncFileTestHelper::Move(
-                  context, context->CrackURL(test_case.src.file_system_url),
-                  context->CrackURL(test_case.dst.file_system_url)),
-              base::File::FILE_OK);
+    ASSERT_EQ(
+        storage::AsyncFileTestHelper::Move(
+            context,
+            context->CrackURLInFirstPartyContext(test_case.src.file_system_url),
+            context->CrackURLInFirstPartyContext(
+                test_case.dst.file_system_url)),
+        base::File::FILE_OK);
 
     // File changes must be posted to the UI thread, wait for the update to
     // reach the holding space model.
@@ -1963,8 +1968,9 @@ class HoldingSpaceKeyedServiceAddItemTest
       case HoldingSpaceItem::Type::kPinnedFile:
         holding_space_service->AddPinnedFiles(
             {file_manager::util::GetFileManagerFileSystemContext(profile)
-                 ->CrackURL(holding_space_util::ResolveFileSystemUrl(
-                     profile, file_path))});
+                 ->CrackURLInFirstPartyContext(
+                     holding_space_util::ResolveFileSystemUrl(profile,
+                                                              file_path))});
         break;
       case HoldingSpaceItem::Type::kPrintedPdf:
         holding_space_service->AddPrintedPdf(file_path,

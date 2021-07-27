@@ -36,7 +36,7 @@ FileSystemURL::~FileSystemURL() = default;
 
 // static
 FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {
-  return FileSystemURL(url);
+  return FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
 }
 
 FileSystemURL FileSystemURL::CreateForTest(const blink::StorageKey& storage_key,
@@ -59,7 +59,8 @@ FileSystemURL FileSystemURL::CreateForTest(
                        filesystem_id, mount_option);
 }
 
-FileSystemURL::FileSystemURL(const GURL& url)
+FileSystemURL::FileSystemURL(const GURL& url,
+                             const blink::StorageKey& storage_key)
     : is_null_(false),
       mount_type_(kFileSystemTypeUnknown),
       type_(kFileSystemTypeUnknown),
@@ -67,9 +68,11 @@ FileSystemURL::FileSystemURL(const GURL& url)
   GURL origin_url;
   is_valid_ =
       ParseFileSystemSchemeURL(url, &origin_url, &mount_type_, &virtual_path_);
-  // TODO(https://crbug.com/1221308): function will have StorageKey param in
-  // future CL; conversion from url::Origin is temporary
-  storage_key_ = blink::StorageKey(url::Origin::Create(origin_url));
+  if (is_valid_) {
+    DCHECK(
+        storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url)));
+  }
+  storage_key_ = storage_key;
   path_ = virtual_path_;
   type_ = mount_type_;
 }

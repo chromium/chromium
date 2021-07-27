@@ -48,6 +48,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
@@ -1054,10 +1055,14 @@ void FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem(
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           PermissionStatus::GRANTED, base::FilePath());
 
+  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+  // replaced with a more meaningful value
   std::move(callback).Run(
       file_system_access_error::Ok(),
       CreateDirectoryHandle(
-          binding_context, context()->CrackURL(root),
+          binding_context,
+          context()->CrackURL(root,
+                              blink::StorageKey(url::Origin::Create(root))),
           SharedHandleState(permission_grant, permission_grant,
                             /*file_system=*/{})));
 }

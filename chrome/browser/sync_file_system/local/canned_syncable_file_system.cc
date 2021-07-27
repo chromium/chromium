@@ -288,7 +288,7 @@ FileSystemURL CannedSyncableFileSystem::URL(const std::string& path) const {
   EXPECT_FALSE(root_url_.is_empty());
 
   GURL url(root_url_.spec() + path);
-  return file_system_context_->CrackURL(url);
+  return file_system_context_->CrackURLInFirstPartyContext(url);
 }
 
 File::Error CannedSyncableFileSystem::OpenFileSystem() {

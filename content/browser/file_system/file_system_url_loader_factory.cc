@@ -48,6 +48,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using filesystem::mojom::DirectoryEntry;
 using storage::FileStreamReader;
@@ -198,8 +199,10 @@ class FileSystemEntryURLLoader
         }
       }
     }
-
-    url_ = params_.file_system_context->CrackURL(request.url);
+    // TODO(https://crbug.com/1221308): function will use StorageKey for the
+    // receiver frame/worker in future CL
+    url_ = params_.file_system_context->CrackURL(
+        request.url, blink::StorageKey(url::Origin::Create(request.url)));
     if (!url_.is_valid()) {
       const FileSystemRequestInfo request_info = {
           request.url, params_.storage_domain, params_.frame_tree_node_id};
@@ -218,7 +221,10 @@ class FileSystemEntryURLLoader
       OnClientComplete(result);
       return;
     }
-    url_ = params_.file_system_context->CrackURL(request.url);
+    // TODO(https://crbug.com/1221308): function will use StorageKey for the
+    // receiver frame/worker in future CL
+    url_ = params_.file_system_context->CrackURL(
+        request.url, blink::StorageKey(url::Origin::Create(request.url)));
     if (!url_.is_valid()) {
       OnClientComplete(net::ERR_FILE_NOT_FOUND);
       return;

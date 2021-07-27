@@ -115,6 +115,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
@@ -2812,9 +2813,12 @@ void RenderWidgetHostImpl::StartDragging(
   storage::FileSystemContext* file_system_context =
       GetProcess()->GetStoragePartition()->GetFileSystemContext();
   filtered_data.file_system_files.clear();
+  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+  // replaced with a non-first-party value
   for (const auto& file_system_file : drop_data.file_system_files) {
-    storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
+    storage::FileSystemURL file_system_url = file_system_context->CrackURL(
+        file_system_file.url,
+        blink::StorageKey(url::Origin::Create(file_system_file.url)));
     if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url))
       filtered_data.file_system_files.push_back(file_system_file);
   }

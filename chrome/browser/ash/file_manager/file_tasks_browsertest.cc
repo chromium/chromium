@@ -390,7 +390,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
   // either side of `:test-image-provider-fs:` become escaped as `%3A`.
 
   storage::FileSystemURL filesystem_url =
-      util::GetFileManagerFileSystemContext(profile)->CrackURL(url);
+      util::GetFileManagerFileSystemContext(profile)
+          ->CrackURLInFirstPartyContext(url);
 
   std::vector<GURL> urls = {filesystem_url.ToGURL()};
   std::vector<extensions::EntryInfo> entries;

@@ -326,7 +326,8 @@ void FindArcTasks(Profile* profile,
 
   std::vector<storage::FileSystemURL> file_system_urls;
   for (const GURL& file_url : file_urls) {
-    file_system_urls.push_back(file_system_context->CrackURL(file_url));
+    file_system_urls.push_back(
+        file_system_context->CrackURLInFirstPartyContext(file_url));
   }
 
   // Using base::Unretained(profile) is safe because callback will be invoked on

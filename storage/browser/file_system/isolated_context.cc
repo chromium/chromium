@@ -389,8 +389,11 @@ bool IsolatedContext::CrackVirtualPath(
   return true;
 }
 
+// TODO(https://crbug.com/1221308): creating StorageKey from url is
+// temporary; StorageKey will be added in future CL
 FileSystemURL IsolatedContext::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url = FileSystemURL(url);
+  FileSystemURL filesystem_url =
+      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);

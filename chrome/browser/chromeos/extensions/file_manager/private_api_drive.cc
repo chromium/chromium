@@ -451,7 +451,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
   for (size_t i = 0; i < params->urls.size(); i++) {
     const GURL url = GURL(params->urls[i]);
     const storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(url);
+        file_system_context->CrackURLInFirstPartyContext(url);
     switch (file_system_url.type()) {
       case storage::kFileSystemTypeProvided:
         SingleEntryPropertiesGetterForFileSystemProvider::Start(
@@ -532,7 +532,7 @@ FileManagerPrivateInternalPinDriveFileFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   switch (file_system_url.type()) {
     case storage::kFileSystemTypeDriveFs:
@@ -835,7 +835,7 @@ FileManagerPrivateInternalGetDownloadUrlFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
-      file_system_context->CrackURL(url);
+      file_system_context->CrackURLInFirstPartyContext(url);
 
   switch (file_system_url.type()) {
     case storage::kFileSystemTypeDriveFs:

@@ -40,6 +40,7 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -160,7 +161,10 @@ void SyncGetPlatformPath(storage::FileSystemContext* context,
                          const GURL& path,
                          SyncGetPlatformPathCB callback) {
   DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
-  storage::FileSystemURL url(context->CrackURL(path));
+  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+  // replaced with a more meaningful value
+  storage::FileSystemURL url(
+      context->CrackURL(path, blink::StorageKey(url::Origin::Create(path))));
   if (!FileSystemURLIsValid(context, url)) {
     // Note: Posting a task here so this function always returns
     // before the callback is called no matter which path is taken.
@@ -205,8 +209,11 @@ void PrepareDropDataForChildProcess(
   DCHECK(isolated_context);
 
   for (auto& file_system_file : drop_data->file_system_files) {
-    storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
+    // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+    // replaced with a more meaningful value
+    storage::FileSystemURL file_system_url = file_system_context->CrackURL(
+        file_system_file.url,
+        blink::StorageKey(url::Origin::Create(file_system_file.url)));
 
     std::string register_name;
     storage::IsolatedContext::ScopedFSHandle filesystem =

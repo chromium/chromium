@@ -160,8 +160,8 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
     std::string extension = filename.substr(extension_index);
     std::string dest_root_fs_url = storage::GetIsolatedFileSystemRootURIString(
         GURL(kOrigin), dest_fs_.id(), "dest_fs/");
-    move_dest_ = file_system_context_->CrackURL(GURL(
-          dest_root_fs_url + "move_dest" + extension));
+    const GURL crack_url = GURL(dest_root_fs_url + "move_dest" + extension);
+    move_dest_ = file_system_context_->CrackURLInFirstPartyContext(crack_url);
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,

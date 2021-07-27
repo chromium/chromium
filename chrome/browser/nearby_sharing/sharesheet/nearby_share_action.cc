@@ -42,7 +42,8 @@ std::vector<base::FilePath> ResolveFileUrls(
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
   for (const auto& file : files) {
-    storage::FileSystemURL fs_url = fs_context->CrackURL(file->url);
+    storage::FileSystemURL fs_url =
+        fs_context->CrackURLInFirstPartyContext(file->url);
     file_paths.push_back(fs_url.path());
   }
   return file_paths;

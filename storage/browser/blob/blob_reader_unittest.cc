@@ -357,8 +357,9 @@ TEST_F(BlobReaderTest, BasicFileSystem) {
   const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
-                          kTime, file_system_context_);
+  b->AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(kURL), 0, kData.size(),
+      kTime, file_system_context_);
   this->InitializeReader(std::move(b));
   // Non-async reader.
   ExpectFileSystemCall(kURL, 0, kData.size(), kTime,
@@ -620,8 +621,9 @@ TEST_F(BlobReaderTest, FileSystemAsync) {
   const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
-                          kTime, file_system_context_);
+  b->AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(kURL), 0, kData.size(),
+      kTime, file_system_context_);
   this->InitializeReader(std::move(b));
 
   std::unique_ptr<FakeFileStreamReader> reader(new FakeFileStreamReader(kData));

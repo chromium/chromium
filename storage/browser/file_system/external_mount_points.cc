@@ -187,8 +187,11 @@ bool ExternalMountPoints::CrackVirtualPath(
   return true;
 }
 
+// TODO(https://crbug.com/1221308): conversion of the URL to origin is
+// temporary; function will have StorageKey parameter in future CL
 FileSystemURL ExternalMountPoints::CrackURL(const GURL& url) const {
-  FileSystemURL filesystem_url = FileSystemURL(url);
+  FileSystemURL filesystem_url =
+      FileSystemURL(url, blink::StorageKey(url::Origin::Create(url)));
   if (!filesystem_url.is_valid())
     return FileSystemURL();
   return CrackFileSystemURL(filesystem_url);

@@ -50,7 +50,8 @@ std::set<std::string> GetUniqueSuffixes(
     const storage::FileSystemContext* context) {
   std::set<std::string> suffixes;
   for (size_t i = 0; i < url_list.size(); ++i) {
-    const FileSystemURL url = context->CrackURL(GURL(url_list[i]));
+    const FileSystemURL url =
+        context->CrackURLInFirstPartyContext(GURL(url_list[i]));
     if (!url.is_valid() || url.path().empty())
       return std::set<std::string>();
     // We'll skip empty suffixes.
@@ -107,7 +108,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
   std::vector<FileSystemURL> urls;
   for (size_t i = 0; i < params->urls.size(); i++) {
     const FileSystemURL url =
-        file_system_context->CrackURL(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
     if (!chromeos::FileSystemBackend::CanHandleURL(url)) {
       return RespondNow(Error(kInvalidFileUrl));
     }
@@ -161,7 +162,8 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
   // file paths.
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
       continue;
     urls_.push_back(url);

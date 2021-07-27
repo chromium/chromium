@@ -409,7 +409,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
                                                              source_url());
     for (const auto& url : params->entry_urls) {
       const storage::FileSystemURL file_system_url =
-          context->CrackURL(GURL(url));
+          context->CrackURLInFirstPartyContext(GURL(url));
       // Grant permissions only to valid urls backed by the external file system
       // backend.
       if (!file_system_url.is_valid() ||
@@ -474,7 +474,7 @@ ExtensionFunction::ResponseAction FileWatchFunctionBase::Run() {
           profile, render_frame_host());
 
   const FileSystemURL file_system_url =
-      file_system_context->CrackURL(GURL(url));
+      file_system_context->CrackURLInFirstPartyContext(GURL(url));
   if (file_system_url.path().empty()) {
     auto result_list = std::make_unique<base::ListValue>();
     result_list->Append(std::make_unique<base::Value>(false));
@@ -701,7 +701,8 @@ FileManagerPrivateInternalValidatePathNameLengthFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   const storage::FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(params->parent_url)));
+      file_system_context->CrackURLInFirstPartyContext(
+          GURL(params->parent_url)));
   if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
     return RespondNow(Error("Invalid URL"));
 
@@ -862,9 +863,10 @@ FileManagerPrivateInternalStartCopyFunction::Run() {
     destination_url_string += '/';
   destination_url_string += net::EscapePath(params->new_name);
 
-  source_url_ = file_system_context->CrackURL(GURL(params->url));
-  destination_url_ =
-      file_system_context->CrackURL(GURL(destination_url_string));
+  source_url_ =
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url));
+  destination_url_ = file_system_context->CrackURLInFirstPartyContext(
+      GURL(destination_url_string));
 
   if (!source_url_.is_valid() || !destination_url_.is_valid()) {
     // Error code in format of DOMError.name.
@@ -1019,7 +1021,7 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   file_manager::util::FileDefinitionList file_definition_list;
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const FileSystemURL file_system_url =
-        file_system_context->CrackURL(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
     DCHECK(external_backend->CanHandleType(file_system_url.type()))
         << "GURL: " << file_system_url.ToGURL()
         << "type: " << file_system_url.type();
@@ -1093,7 +1095,7 @@ FileManagerPrivateInternalComputeChecksumFunction::Run() {
           Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(params->url)));
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url)));
   if (!file_system_url.is_valid()) {
     return RespondNow(Error("File URL was invalid"));
   }
@@ -1309,7 +1311,7 @@ FileManagerPrivateInternalGetDirectorySizeFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
   const storage::FileSystemURL file_system_url(
-      file_system_context->CrackURL(GURL(params->url)));
+      file_system_context->CrackURLInFirstPartyContext(GURL(params->url)));
   if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url)) {
     return RespondNow(
         Error("FileSystemBackend failed to handle the entry's url."));

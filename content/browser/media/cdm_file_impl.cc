@@ -25,6 +25,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -706,8 +707,12 @@ void CdmFileImpl::OnFileDeleted(base::File::Error result) {
 
 storage::FileSystemURL CdmFileImpl::CreateFileSystemURL(
     const std::string& file_name) {
-  return file_system_context_->CrackURL(
-      GURL(file_system_root_uri_ + file_name));
+  const GURL crack_url = GURL(file_system_root_uri_ + file_name);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin
+  // private file system will be partitioned and use the appropriate StorageKey
+  const blink::StorageKey crack_storage_key =
+      blink::StorageKey(url::Origin::Create(crack_url));
+  return file_system_context_->CrackURL(crack_url, crack_storage_key);
 }
 
 bool CdmFileImpl::AcquireFileLock(const std::string& file_name) {

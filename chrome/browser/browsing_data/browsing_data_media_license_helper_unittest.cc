@@ -206,7 +206,8 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
     std::string root = storage::GetIsolatedFileSystemRootURIString(
         origin, fsid, ppapi::kPluginPrivateRootName);
     storage::FileSystemURL file_url =
-        filesystem_context_->CrackURL(GURL(root + file_name));
+        filesystem_context_->CrackURLInFirstPartyContext(
+            GURL(root + file_name));
     storage::AsyncFileUtil* file_util = filesystem_context_->GetAsyncFileUtil(
         storage::kFileSystemTypePluginPrivate);
     std::unique_ptr<storage::FileSystemOperationContext> operation_context(

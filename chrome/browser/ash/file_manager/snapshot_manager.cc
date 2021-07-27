@@ -200,7 +200,8 @@ void SnapshotManager::CreateManagedSnapshot(
     std::move(callback).Run(base::FilePath());
     return;
   }
-  storage::FileSystemURL filesystem_url = context->CrackURL(url);
+  storage::FileSystemURL filesystem_url =
+      context->CrackURLInFirstPartyContext(url);
 
   ComputeSpaceNeedToBeFreed(
       profile_, context, filesystem_url,

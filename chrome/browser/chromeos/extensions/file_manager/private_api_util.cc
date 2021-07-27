@@ -574,7 +574,7 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
       util::GetFileSystemContextForRenderFrameHost(profile, render_frame_host);
 
   const storage::FileSystemURL filesystem_url(
-      file_system_context->CrackURL(url));
+      file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
   if (!chromeos::FileSystemBackend::CanHandleURL(filesystem_url))
     return base::FilePath();

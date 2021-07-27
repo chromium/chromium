@@ -43,6 +43,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using ppapi::host::PpapiHost;
 using ppapi::host::ResourceHost;
@@ -138,7 +139,8 @@ storage::FileSystemURL PepperInternalFileRefBackend::GetFileSystemURL() const {
     scoped_refptr<storage::FileSystemContext> fs_context =
         GetFileSystemContext();
     if (fs_context.get())
-      fs_url_ = fs_context->CrackURL(fs_path);
+      fs_url_ = fs_context->CrackURL(
+          fs_path, blink::StorageKey(url::Origin::Create(fs_path)));
   }
   return fs_url_;
 }

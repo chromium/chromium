@@ -108,7 +108,7 @@ NavigateParams NavigateParamsForShareTarget(
             file_manager::util::GetFileManagerFileSystemContext(
                 browser->profile());
         storage::FileSystemURL file_system_url =
-            file_system_context->CrackURL(file->url);
+            file_system_context->CrackURLInFirstPartyContext(file->url);
         if (!file_system_url.is_valid()) {
           VLOG(1) << "Received unexpected file URL: " << file->url.spec();
           continue;

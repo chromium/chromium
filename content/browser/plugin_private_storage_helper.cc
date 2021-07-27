@@ -31,6 +31,7 @@
 #include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -153,8 +154,12 @@ void PluginPrivateDataByOriginChecker::OnFileSystemOpened(
   std::unique_ptr<storage::FileSystemOperationContext> operation_context =
       std::make_unique<storage::FileSystemOperationContext>(
           filesystem_context_);
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned and use the appropriate StorageKey
   file_util->ReadDirectory(
-      std::move(operation_context), filesystem_context_->CrackURL(GURL(root)),
+      std::move(operation_context),
+      filesystem_context_->CrackURL(
+          GURL(root), blink::StorageKey(url::Origin::Create(GURL(root)))),
       base::BindRepeating(&PluginPrivateDataByOriginChecker::OnDirectoryRead,
                           base::Unretained(this), root));
 }
@@ -193,8 +198,9 @@ void PluginPrivateDataByOriginChecker::OnDirectoryRead(
       std::unique_ptr<storage::FileSystemOperationContext> operation_context =
           std::make_unique<storage::FileSystemOperationContext>(
               filesystem_context_);
-      storage::FileSystemURL file_url = filesystem_context_->CrackURL(
-          GURL(root + StringTypeToString(file.name.value())));
+      const GURL crack_url = GURL(root + StringTypeToString(file.name.value()));
+      storage::FileSystemURL file_url =
+          filesystem_context_->CrackURLInFirstPartyContext(crack_url);
       IncrementTaskCount();
       file_util->GetFileInfo(
           std::move(operation_context), file_url,

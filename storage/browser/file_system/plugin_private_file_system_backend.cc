@@ -30,6 +30,7 @@
 #include "storage/browser/file_system/sandbox_file_stream_writer.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -346,9 +347,14 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
       continue;
     }
 
+    // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+    // file system will be partitioned and use the appropriate StorageKey
     std::unique_ptr<FileSystemFileUtil::AbstractFileEnumerator> enumerator(
         obfuscated_file_util()->CreateFileEnumerator(
-            operation_context.get(), context->CrackURL(GURL(root)), true));
+            operation_context.get(),
+            context->CrackURL(
+                GURL(root), blink::StorageKey(url::Origin::Create(GURL(root)))),
+            true));
 
     while (!enumerator->Next().empty()) {
       *total_size += enumerator->Size();

@@ -19,6 +19,7 @@
 #include "storage/browser/test/test_file_system_options.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using url::Origin;
@@ -43,8 +44,11 @@ class PluginPrivateFileSystemBackendTest : public testing::Test {
         /*quota_manager_proxy=*/nullptr, data_dir_.GetPath());
   }
 
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned and use the appropriate StorageKey
   FileSystemURL CreateURL(const GURL& root_url, const std::string& relative) {
-    FileSystemURL root = context_->CrackURL(root_url);
+    FileSystemURL root = context_->CrackURL(
+        root_url, blink::StorageKey(url::Origin::Create(root_url)));
     return context_->CreateCrackedFileSystemURL(
         root.origin(), root.mount_type(),
         root.virtual_path().AppendASCII(relative));

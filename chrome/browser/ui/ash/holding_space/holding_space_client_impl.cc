@@ -122,7 +122,7 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
 base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(
     const GURL& file_system_url) const {
   return file_manager::util::GetFileManagerFileSystemContext(profile_)
-      ->CrackURL(file_system_url)
+      ->CrackURLInFirstPartyContext(file_system_url)
       .path();
 }
 
@@ -253,9 +253,11 @@ void HoldingSpaceClientImpl::PinFiles(
 
   HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
   for (const base::FilePath& file_path : file_paths) {
+    const GURL crack_url =
+        holding_space_util::ResolveFileSystemUrl(profile_, file_path);
     const storage::FileSystemURL& file_system_url =
-        file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
-            holding_space_util::ResolveFileSystemUrl(profile_, file_path));
+        file_manager::util::GetFileManagerFileSystemContext(profile_)
+            ->CrackURLInFirstPartyContext(crack_url);
     if (!service->ContainsPinnedFile(file_system_url))
       file_system_urls.push_back(file_system_url);
   }
@@ -273,9 +275,10 @@ void HoldingSpaceClientImpl::PinItems(
   for (const HoldingSpaceItem* item : items) {
     if (!item->progress().IsComplete())
       continue;
+    const GURL& crack_url = item->file_system_url();
     const storage::FileSystemURL& file_system_url =
-        file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
-            item->file_system_url());
+        file_manager::util::GetFileManagerFileSystemContext(profile_)
+            ->CrackURLInFirstPartyContext(crack_url);
     if (!service->ContainsPinnedFile(file_system_url))
       file_system_urls.push_back(file_system_url);
   }
@@ -321,9 +324,10 @@ void HoldingSpaceClientImpl::UnpinItems(
   for (const HoldingSpaceItem* item : items) {
     if (!item->progress().IsComplete())
       continue;
+    const GURL& crack_url = item->file_system_url();
     const storage::FileSystemURL& file_system_url =
-        file_manager::util::GetFileManagerFileSystemContext(profile_)->CrackURL(
-            item->file_system_url());
+        file_manager::util::GetFileManagerFileSystemContext(profile_)
+            ->CrackURLInFirstPartyContext(crack_url);
     if (service->ContainsPinnedFile(file_system_url))
       file_system_urls.push_back(file_system_url);
   }
