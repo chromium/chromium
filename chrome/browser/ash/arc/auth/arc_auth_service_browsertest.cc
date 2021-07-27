@@ -879,7 +879,7 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
   void SetUpPolicyClient() {
     policy::BrowserPolicyConnectorChromeOS* const connector =
         g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    policy::DeviceCloudPolicyManagerChromeOS* const cloud_policy_manager =
+    policy::DeviceCloudPolicyManagerAsh* const cloud_policy_manager =
         connector->GetDeviceCloudPolicyManager();
 
     cloud_policy_manager->StartConnection(

@@ -67,7 +67,7 @@ constexpr double kJitterFactor = 0.1;           // +/- 10% jitter
 constexpr int64_t kMaxDelayMS = 8 * 60 * 1000;  // 8 minutes
 
 bool ShouldAttemptRestart() {
-  // Restart browser to switch from DeviceCloudPolicyManagerChromeOS to
+  // Restart browser to switch from DeviceCloudPolicyManagerAsh to
   // DeviceActiveDirectoryPolicyManager.
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
@@ -501,7 +501,7 @@ void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
 void EnrollmentScreen::ShowAttributePromptScreen() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
 
   std::string asset_id;

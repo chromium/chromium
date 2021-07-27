@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_ASH_H_
 
 #include <memory>
 #include <string>
@@ -56,8 +56,8 @@ class LookupKeyUploader;
 
 enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED, HANDS_OFF };
 
-// CloudPolicyManager specialization for device policy on Chrome OS.
-class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
+// CloudPolicyManager specialization for device policy in Ash.
+class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
  public:
   class Observer {
    public:
@@ -71,12 +71,12 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
 
   // |task_runner| is the runner for policy refresh, heartbeat, and status
   // upload tasks.
-  DeviceCloudPolicyManagerChromeOS(
+  DeviceCloudPolicyManagerAsh(
       std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ServerBackedStateKeysBroker* state_keys_broker);
-  ~DeviceCloudPolicyManagerChromeOS() override;
+  ~DeviceCloudPolicyManagerAsh() override;
 
   // Initializes state keys.
   void Initialize(PrefService* local_state);
@@ -208,9 +208,9 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_CLOUD_POLICY_MANAGER_ASH_H_

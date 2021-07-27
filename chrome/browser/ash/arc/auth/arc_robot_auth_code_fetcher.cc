@@ -35,7 +35,7 @@ policy::DeviceManagementService* GetDeviceManagementService() {
 const policy::CloudPolicyClient* GetCloudPolicyClient() {
   const policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  const policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  const policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   return policy_manager->core()->client();
 }

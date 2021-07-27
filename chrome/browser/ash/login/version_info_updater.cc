@@ -63,7 +63,7 @@ VersionInfoUpdater::VersionInfoUpdater(Delegate* delegate)
 VersionInfoUpdater::~VersionInfoUpdater() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   if (policy_manager)
     policy_manager->core()->store()->RemoveObserver(this);
@@ -85,7 +85,7 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
 
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   if (policy_manager) {
     policy_manager->core()->store()->AddObserver(this);

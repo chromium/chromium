@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
@@ -65,7 +65,7 @@ class DeviceScheduledRebootHandler;
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
 class BrowserPolicyConnectorChromeOS
     : public ChromeBrowserPolicyConnector,
-      public DeviceCloudPolicyManagerChromeOS::Observer {
+      public DeviceCloudPolicyManagerAsh::Observer {
  public:
   BrowserPolicyConnectorChromeOS();
 
@@ -147,7 +147,7 @@ class BrowserPolicyConnectorChromeOS
   EnrollmentConfig GetPrescribedEnrollmentConfig() const;
 
   // May be nullptr, e.g. for devices managed by Active Directory.
-  DeviceCloudPolicyManagerChromeOS* GetDeviceCloudPolicyManager() const {
+  DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() const {
     return device_cloud_policy_manager_;
   }
 
@@ -233,7 +233,7 @@ class BrowserPolicyConnectorChromeOS
   // Registers device refresh rate pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // DeviceCloudPolicyManagerChromeOS::Observer:
+  // DeviceCloudPolicyManagerAsh::Observer:
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerDisconnected() override;
 
@@ -271,7 +271,7 @@ class BrowserPolicyConnectorChromeOS
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
   std::unique_ptr<AffiliatedInvalidationServiceProvider>
       affiliated_invalidation_service_provider_;
-  DeviceCloudPolicyManagerChromeOS* device_cloud_policy_manager_ = nullptr;
+  DeviceCloudPolicyManagerAsh* device_cloud_policy_manager_ = nullptr;
   DeviceActiveDirectoryPolicyManager* device_active_directory_policy_manager_ =
       nullptr;
   std::unique_ptr<DeviceCloudStateKeysUploader>

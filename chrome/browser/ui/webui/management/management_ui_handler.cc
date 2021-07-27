@@ -45,7 +45,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -525,7 +525,7 @@ void ManagementUIHandler::AddReportingInfo(base::Value* report_sources) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const policy::DeviceCloudPolicyManagerChromeOS*
+const policy::DeviceCloudPolicyManagerAsh*
 ManagementUIHandler::GetDeviceCloudPolicyManager() const {
   // Only check for report status in managed environment.
   if (!device_managed_)
@@ -1001,7 +1001,7 @@ void ManagementUIHandler::HandleGetDeviceReportingInfo(
   base::Value report_sources(base::Value::Type::LIST);
   AllowJavascript();
 
-  const policy::DeviceCloudPolicyManagerChromeOS* manager =
+  const policy::DeviceCloudPolicyManagerAsh* manager =
       GetDeviceCloudPolicyManager();
   policy::StatusUploader* uploader = nullptr;
   policy::SystemLogUploader* syslog_uploader = nullptr;

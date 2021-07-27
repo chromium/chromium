@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 
 #include <stddef.h>
 
@@ -81,7 +81,7 @@ bool IsForcedReEnrollmentEnabled() {
 
 }  // namespace
 
-DeviceCloudPolicyManagerChromeOS::DeviceCloudPolicyManagerChromeOS(
+DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
     std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -98,30 +98,30 @@ DeviceCloudPolicyManagerChromeOS::DeviceCloudPolicyManagerChromeOS(
       task_runner_(task_runner),
       local_state_(nullptr) {}
 
-DeviceCloudPolicyManagerChromeOS::~DeviceCloudPolicyManagerChromeOS() {}
+DeviceCloudPolicyManagerAsh::~DeviceCloudPolicyManagerAsh() {}
 
-void DeviceCloudPolicyManagerChromeOS::Initialize(PrefService* local_state) {
+void DeviceCloudPolicyManagerAsh::Initialize(PrefService* local_state) {
   CHECK(local_state);
 
   local_state_ = local_state;
 
   state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::BindRepeating(&DeviceCloudPolicyManagerChromeOS::OnStateKeysUpdated,
+      base::BindRepeating(&DeviceCloudPolicyManagerAsh::OnStateKeysUpdated,
                           base::Unretained(this)));
 }
 
-void DeviceCloudPolicyManagerChromeOS::AddDeviceCloudPolicyManagerObserver(
+void DeviceCloudPolicyManagerAsh::AddDeviceCloudPolicyManagerObserver(
     Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void DeviceCloudPolicyManagerChromeOS::RemoveDeviceCloudPolicyManagerObserver(
+void DeviceCloudPolicyManagerAsh::RemoveDeviceCloudPolicyManagerObserver(
     Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
 // Keep clean up order as the reversed creation order.
-void DeviceCloudPolicyManagerChromeOS::Shutdown() {
+void DeviceCloudPolicyManagerAsh::Shutdown() {
   login_logout_reporter_.reset();
 
   heartbeat_scheduler_.reset();
@@ -134,8 +134,7 @@ void DeviceCloudPolicyManagerChromeOS::Shutdown() {
 }
 
 // static
-void DeviceCloudPolicyManagerChromeOS::RegisterPrefs(
-    PrefRegistrySimple* registry) {
+void DeviceCloudPolicyManagerAsh::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(::prefs::kServerBackedDeviceState);
   registry->RegisterBooleanPref(::prefs::kRemoveUsersRemoteCommand, false);
   registry->RegisterStringPref(::prefs::kLastRsuDeviceIdUploaded,
@@ -145,7 +144,7 @@ void DeviceCloudPolicyManagerChromeOS::RegisterPrefs(
 
 // static
 ZeroTouchEnrollmentMode
-DeviceCloudPolicyManagerChromeOS::GetZeroTouchEnrollmentMode() {
+DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(
           chromeos::switches::kEnterpriseEnableZeroTouchEnrollment)) {
@@ -169,7 +168,7 @@ DeviceCloudPolicyManagerChromeOS::GetZeroTouchEnrollmentMode() {
   return ZeroTouchEnrollmentMode::DISABLED;
 }
 
-void DeviceCloudPolicyManagerChromeOS::StartConnection(
+void DeviceCloudPolicyManagerAsh::StartConnection(
     std::unique_ptr<CloudPolicyClient> client_to_connect,
     chromeos::InstallAttributes* install_attributes) {
   CHECK(!service());
@@ -247,9 +246,9 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   NotifyConnected();
 }
 
-void DeviceCloudPolicyManagerChromeOS::Unregister(UnregisterCallback callback) {
+void DeviceCloudPolicyManagerAsh::Unregister(UnregisterCallback callback) {
   if (!service()) {
-    LOG(ERROR) << "Tried to unregister but DeviceCloudPolicyManagerChromeOS is "
+    LOG(ERROR) << "Tried to unregister but DeviceCloudPolicyManagerAsh is "
                << "not connected.";
     std::move(callback).Run(false);
     return;
@@ -258,7 +257,7 @@ void DeviceCloudPolicyManagerChromeOS::Unregister(UnregisterCallback callback) {
   service()->Unregister(std::move(callback));
 }
 
-void DeviceCloudPolicyManagerChromeOS::Disconnect() {
+void DeviceCloudPolicyManagerAsh::Disconnect() {
   status_uploader_.reset();
   syslog_uploader_.reset();
   heartbeat_scheduler_.reset();
@@ -267,31 +266,31 @@ void DeviceCloudPolicyManagerChromeOS::Disconnect() {
   NotifyDisconnected();
 }
 
-void DeviceCloudPolicyManagerChromeOS::SetSigninProfileSchemaRegistry(
+void DeviceCloudPolicyManagerAsh::SetSigninProfileSchemaRegistry(
     SchemaRegistry* schema_registry) {
   DCHECK(!signin_profile_forwarding_schema_registry_);
   signin_profile_forwarding_schema_registry_ =
       std::make_unique<ForwardingSchemaRegistry>(schema_registry);
 }
 
-void DeviceCloudPolicyManagerChromeOS::OnStateKeysUpdated() {
+void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we should call it here.
   if (client() && IsForcedReEnrollmentEnabled())
     client()->SetStateKeysToUpload(state_keys_broker_->state_keys());
 }
 
-void DeviceCloudPolicyManagerChromeOS::NotifyConnected() {
+void DeviceCloudPolicyManagerAsh::NotifyConnected() {
   for (auto& observer : observers_)
     observer.OnDeviceCloudPolicyManagerConnected();
 }
 
-void DeviceCloudPolicyManagerChromeOS::NotifyDisconnected() {
+void DeviceCloudPolicyManagerAsh::NotifyDisconnected() {
   for (auto& observer : observers_)
     observer.OnDeviceCloudPolicyManagerDisconnected();
 }
 
-void DeviceCloudPolicyManagerChromeOS::CreateStatusUploader() {
+void DeviceCloudPolicyManagerAsh::CreateStatusUploader() {
   status_uploader_ = std::make_unique<StatusUploader>(
       client(),
       std::make_unique<DeviceStatusCollector>(

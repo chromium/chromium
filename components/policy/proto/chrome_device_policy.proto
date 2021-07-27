@@ -154,7 +154,7 @@ message DeviceReportingProto {
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in
-  // chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.cc.
+  // chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.cc.
   optional int64 device_status_frequency = 9 [default = 10800000];
 }
 

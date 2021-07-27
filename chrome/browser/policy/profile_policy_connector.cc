@@ -36,7 +36,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_provider.h"
 #include "chrome/browser/ash/policy/login/login_profile_policy_provider.h"
@@ -325,7 +325,7 @@ const CloudPolicyStore* ProfilePolicyConnector::GetActualPolicyStore() const {
   if (special_user_policy_provider_) {
     // |special_user_policy_provider_| is non-null for device-local accounts,
     // for the login profile, and the lock screen app profile.
-    const DeviceCloudPolicyManagerChromeOS* const device_cloud_policy_manager =
+    const DeviceCloudPolicyManagerAsh* const device_cloud_policy_manager =
         g_browser_process->platform_part()
             ->browser_policy_connector_chromeos()
             ->GetDeviceCloudPolicyManager();

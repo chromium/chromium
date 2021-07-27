@@ -28,7 +28,7 @@ namespace ash {
 // Child user should be registered with DMServer and periodically upload the
 // information about the device usage. The reports are only sent during user's
 // session and they do not interfere with enterprise reporting that is
-// controlled by DeviceCloudPolicyManagerChromeOS.
+// controlled by DeviceCloudPolicyManagerAsh.
 class ChildStatusReportingService : public KeyedService {
  public:
   explicit ChildStatusReportingService(content::BrowserContext* context);

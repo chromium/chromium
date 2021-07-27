@@ -43,7 +43,7 @@ class StatisticsProvider;
 
 namespace policy {
 class ActiveDirectoryJoinDelegate;
-class DeviceCloudPolicyManagerChromeOS;
+class DeviceCloudPolicyManagerAsh;
 class DeviceCloudPolicyStoreAsh;
 class DeviceManagementService;
 struct EnrollmentConfig;
@@ -82,7 +82,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
       chromeos::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
       DeviceCloudPolicyStoreAsh* policy_store,
-      DeviceCloudPolicyManagerChromeOS* policy_manager,
+      DeviceCloudPolicyManagerAsh* policy_manager,
       std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow,
       chromeos::system::StatisticsProvider* statistics_provider);
 
@@ -195,7 +195,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   chromeos::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
   DeviceCloudPolicyStoreAsh* policy_store_;
-  DeviceCloudPolicyManagerChromeOS* policy_manager_;
+  DeviceCloudPolicyManagerAsh* policy_manager_;
   std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow_;
   chromeos::system::StatisticsProvider* statistics_provider_;
   bool is_initialized_ = false;

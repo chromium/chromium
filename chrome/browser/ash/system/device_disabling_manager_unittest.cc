@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -155,8 +155,7 @@ DeviceDisablingManagerOOBETest::DeviceDisablingManagerOOBETest()
 
 void DeviceDisablingManagerOOBETest::SetUp() {
   TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-  policy::DeviceCloudPolicyManagerChromeOS::RegisterPrefs(
-      local_state_.registry());
+  policy::DeviceCloudPolicyManagerAsh::RegisterPrefs(local_state_.registry());
   CreateDeviceDisablingManager();
   chromeos::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 }

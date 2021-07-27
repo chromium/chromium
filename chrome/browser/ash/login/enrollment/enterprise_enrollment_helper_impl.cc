@@ -229,7 +229,7 @@ void EnterpriseEnrollmentHelperImpl::GetDeviceAttributeUpdatePermission() {
     OnDeviceAttributeUpdatePermission(false);
     return;
   }
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 
@@ -246,7 +246,7 @@ void EnterpriseEnrollmentHelperImpl::UpdateDeviceAttributes(
   DCHECK(!auth_data_.empty());
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  policy::DeviceCloudPolicyManagerChromeOS* policy_manager =
+  policy::DeviceCloudPolicyManagerAsh* policy_manager =
       connector->GetDeviceCloudPolicyManager();
   policy::CloudPolicyClient* client = policy_manager->core()->client();
 

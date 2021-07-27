@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 
 #include <stdint.h>
 
@@ -106,29 +106,28 @@ void CertCallbackSuccess(
                      chromeos::attestation::ATTESTATION_SUCCESS, "fake_cert"));
 }
 
-class TestingDeviceCloudPolicyManagerChromeOS
-    : public DeviceCloudPolicyManagerChromeOS {
+class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
  public:
-  TestingDeviceCloudPolicyManagerChromeOS(
+  TestingDeviceCloudPolicyManagerAsh(
       std::unique_ptr<DeviceCloudPolicyStoreAsh> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ServerBackedStateKeysBroker* state_keys_broker)
-      : DeviceCloudPolicyManagerChromeOS(std::move(store),
-                                         std::move(external_data_manager),
-                                         task_runner,
-                                         state_keys_broker) {
+      : DeviceCloudPolicyManagerAsh(std::move(store),
+                                    std::move(external_data_manager),
+                                    task_runner,
+                                    state_keys_broker) {
     set_component_policy_disabled_for_testing(true);
   }
 
-  ~TestingDeviceCloudPolicyManagerChromeOS() override {}
+  ~TestingDeviceCloudPolicyManagerAsh() override {}
 };
 
-class DeviceCloudPolicyManagerChromeOSTest
+class DeviceCloudPolicyManagerAshTest
     : public ash::DeviceSettingsTestBase,
       public chromeos::SessionManagerClient::Observer {
  protected:
-  DeviceCloudPolicyManagerChromeOSTest()
+  DeviceCloudPolicyManagerAshTest()
       : state_keys_broker_(&session_manager_client_), store_(nullptr) {
     fake_statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "test_sn");
@@ -142,7 +141,7 @@ class DeviceCloudPolicyManagerChromeOSTest
     session_manager_client_.AddObserver(this);
   }
 
-  ~DeviceCloudPolicyManagerChromeOSTest() override {
+  ~DeviceCloudPolicyManagerAshTest() override {
     session_manager_client_.RemoveObserver(this);
     chromeos::system::StatisticsProvider::SetTestProvider(NULL);
   }
@@ -169,7 +168,7 @@ class DeviceCloudPolicyManagerChromeOSTest
     auto external_data_manager =
         std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_ = external_data_manager.get();
-    manager_ = std::make_unique<TestingDeviceCloudPolicyManagerChromeOS>(
+    manager_ = std::make_unique<TestingDeviceCloudPolicyManagerAsh>(
         base::WrapUnique(store_), std::move(external_data_manager),
         base::ThreadTaskRunnerHandle::Get(), &state_keys_broker_);
 
@@ -314,7 +313,7 @@ class DeviceCloudPolicyManagerChromeOSTest
   DeviceCloudPolicyStoreAsh* store_;
   SchemaRegistry schema_registry_;
   MockCloudExternalDataManager* external_data_manager_;
-  std::unique_ptr<TestingDeviceCloudPolicyManagerChromeOS> manager_;
+  std::unique_ptr<TestingDeviceCloudPolicyManagerAsh> manager_;
   std::unique_ptr<DeviceCloudPolicyInitializer> initializer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
@@ -323,10 +322,10 @@ class DeviceCloudPolicyManagerChromeOSTest
   // which is used by the device status collector.
   session_manager::SessionManager session_manager_;
 
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerChromeOSTest);
+  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerAshTest);
 };
 
-TEST_F(DeviceCloudPolicyManagerChromeOSTest, FreshDevice) {
+TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
   owner_key_util_->Clear();
   FlushDeviceSettings();
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -337,7 +336,7 @@ TEST_F(DeviceCloudPolicyManagerChromeOSTest, FreshDevice) {
   EXPECT_TRUE(manager_->policies().Equals(bundle));
 }
 
-TEST_F(DeviceCloudPolicyManagerChromeOSTest, EnrolledDevice) {
+TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDevice) {
   LockDevice();
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
@@ -367,7 +366,7 @@ TEST_F(DeviceCloudPolicyManagerChromeOSTest, EnrolledDevice) {
             PolicyBuilder::kFakeServiceAccountIdentity);
 }
 
-TEST_F(DeviceCloudPolicyManagerChromeOSTest, UnmanagedDevice) {
+TEST_F(DeviceCloudPolicyManagerAshTest, UnmanagedDevice) {
   device_policy_->policy_data().set_state(em::PolicyData::UNMANAGED);
   device_policy_->Build();
   session_manager_client_.set_device_policy(device_policy_->GetBlob());
@@ -415,7 +414,7 @@ TEST_F(DeviceCloudPolicyManagerChromeOSTest, UnmanagedDevice) {
   VerifyPolicyPopulated();
 }
 
-TEST_F(DeviceCloudPolicyManagerChromeOSTest, ConsumerDevice) {
+TEST_F(DeviceCloudPolicyManagerAshTest, ConsumerDevice) {
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_BAD_STATE, store_->status());
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -432,28 +431,28 @@ TEST_F(DeviceCloudPolicyManagerChromeOSTest, ConsumerDevice) {
   EXPECT_TRUE(manager_->policies().Equals(bundle));
 }
 
-class DeviceCloudPolicyManagerChromeOSObserverTest
-    : public DeviceCloudPolicyManagerChromeOSTest,
-      public DeviceCloudPolicyManagerChromeOS::Observer {
+class DeviceCloudPolicyManagerAshObserverTest
+    : public DeviceCloudPolicyManagerAshTest,
+      public DeviceCloudPolicyManagerAsh::Observer {
  protected:
-  DeviceCloudPolicyManagerChromeOSObserverTest() {}
+  DeviceCloudPolicyManagerAshObserverTest() {}
 
   void SetUp() override {
-    DeviceCloudPolicyManagerChromeOSTest::SetUp();
+    DeviceCloudPolicyManagerAshTest::SetUp();
     manager_->AddDeviceCloudPolicyManagerObserver(this);
   }
 
   void TearDown() override {
     manager_->RemoveDeviceCloudPolicyManagerObserver(this);
-    DeviceCloudPolicyManagerChromeOSTest::TearDown();
+    DeviceCloudPolicyManagerAshTest::TearDown();
   }
 
-  // DeviceCloudPolicyManagerChromeOS::Observer:
+  // DeviceCloudPolicyManagerAsh::Observer:
   MOCK_METHOD0(OnDeviceCloudPolicyManagerConnected, void());
   MOCK_METHOD0(OnDeviceCloudPolicyManagerDisconnected, void());
 };
 
-TEST_F(DeviceCloudPolicyManagerChromeOSObserverTest, ConnectAndDisconnect) {
+TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
   LockDevice();
   FlushDeviceSettings();
   EXPECT_FALSE(manager_->core()->service());  // Not connected.
@@ -475,8 +474,8 @@ TEST_F(DeviceCloudPolicyManagerChromeOSObserverTest, ConnectAndDisconnect) {
   EXPECT_FALSE(manager_->core()->service());  // Not connnected.
 }
 
-class DeviceCloudPolicyManagerChromeOSEnrollmentTest
-    : public DeviceCloudPolicyManagerChromeOSTest,
+class DeviceCloudPolicyManagerAshEnrollmentTest
+    : public DeviceCloudPolicyManagerAshTest,
       public testing::WithParamInterface<bool> {
  public:
   void Done(EnrollmentStatus status) {
@@ -487,7 +486,7 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
   MOCK_METHOD1(OnUnregistered, void(bool));
 
  protected:
-  DeviceCloudPolicyManagerChromeOSEnrollmentTest()
+  DeviceCloudPolicyManagerAshEnrollmentTest()
       : register_status_(DM_STATUS_SUCCESS),
         policy_fetch_status_(DM_STATUS_SUCCESS),
         robot_auth_fetch_status_(DM_STATUS_SUCCESS),
@@ -496,7 +495,7 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
         done_(false) {}
 
   void SetUp() override {
-    DeviceCloudPolicyManagerChromeOSTest::SetUp();
+    DeviceCloudPolicyManagerAshTest::SetUp();
 
     // Set up test data.
     device_policy_->SetDefaultNewSigningKey();
@@ -570,7 +569,7 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
     initializer_->PrepareEnrollment(
         &device_management_service_, nullptr, enrollment_config,
         std::move(auth),
-        base::BindOnce(&DeviceCloudPolicyManagerChromeOSEnrollmentTest::Done,
+        base::BindOnce(&DeviceCloudPolicyManagerAshEnrollmentTest::Done,
                        base::Unretained(this)));
     initializer_->StartEnrollment();
     base::RunLoop().RunUntilIdle();
@@ -764,15 +763,15 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
   bool done_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerChromeOSEnrollmentTest);
+  DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyManagerAshEnrollmentTest);
 };
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, Success) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Success) {
   RunTest();
   ExpectSuccessfulEnrollment();
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, Reenrollment) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Reenrollment) {
   LockDevice();
   RunTest();
   ExpectSuccessfulEnrollment();
@@ -781,7 +780,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, Reenrollment) {
             query_params_[dm_protocol::kParamDeviceID]);
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, RegistrationFailed) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, RegistrationFailed) {
   register_status_ = DM_STATUS_REQUEST_FAILED;
   expect_robot_auth_fetch_failure_ = true;
   RunTest();
@@ -789,14 +788,13 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, RegistrationFailed) {
   EXPECT_EQ(DM_STATUS_REQUEST_FAILED, status_.client_status());
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
-       RobotAuthCodeFetchFailed) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, RobotAuthCodeFetchFailed) {
   robot_auth_fetch_status_ = DM_STATUS_REQUEST_FAILED;
   RunTest();
   ExpectFailedEnrollment(EnrollmentStatus::ROBOT_AUTH_FETCH_FAILED);
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
        RobotRefreshTokenFetchResponseCodeFailed) {
   url_fetcher_response_code_ = net::HTTP_BAD_REQUEST;
   expect_robot_auth_fetch_failure_ = true;
@@ -805,7 +803,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
   EXPECT_EQ(net::HTTP_BAD_REQUEST, status_.http_status());
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
        RobotRefreshTokenFetchResponseStringFailed) {
   url_fetcher_response_string_ = "invalid response json";
   expect_robot_auth_fetch_failure_ = true;
@@ -813,7 +811,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
   ExpectFailedEnrollment(EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED);
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest,
        RobotRefreshEncryptionFailed) {
   // The encryption lib is a noop for tests, but empty results from encryption
   // is an error, so we simulate an encryption error by returning an empty
@@ -827,14 +825,14 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest,
   ExpectFailedEnrollment(EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED);
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, PolicyFetchFailed) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, PolicyFetchFailed) {
   policy_fetch_status_ = DM_STATUS_REQUEST_FAILED;
   RunTest();
   ExpectFailedEnrollment(EnrollmentStatus::POLICY_FETCH_FAILED);
   EXPECT_EQ(DM_STATUS_REQUEST_FAILED, status_.client_status());
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, ValidationFailed) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, ValidationFailed) {
   device_policy_->policy().set_policy_data_signature("bad");
   policy_fetch_response_.clear_policy_response();
   policy_fetch_response_.mutable_policy_response()->add_responses()->CopyFrom(
@@ -845,7 +843,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, ValidationFailed) {
             status_.validation_status());
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, StoreError) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, StoreError) {
   session_manager_client_.ForceStorePolicyFailure(true);
   expect_robot_auth_fetch_failure_ = true;
   RunTest();
@@ -853,7 +851,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, StoreError) {
   EXPECT_EQ(CloudPolicyStore::STATUS_STORE_ERROR, status_.store_status());
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, LoadError) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, LoadError) {
   session_manager_client_.ForceRetrievePolicyLoadError(true);
   expect_robot_auth_fetch_failure_ = true;
   RunTest();
@@ -861,7 +859,7 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, LoadError) {
   EXPECT_EQ(CloudPolicyStore::STATUS_LOAD_ERROR, status_.store_status());
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, UnregisterSucceeds) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, UnregisterSucceeds) {
   // Enroll first.
   RunTest();
   ExpectSuccessfulEnrollment();
@@ -877,16 +875,16 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, UnregisterSucceeds) {
   EXPECT_CALL(*this, OnUnregistered(true));
 
   // Start unregistering.
-  manager_->Unregister(base::BindOnce(
-      &DeviceCloudPolicyManagerChromeOSEnrollmentTest::OnUnregistered,
-      base::Unretained(this)));
+  manager_->Unregister(
+      base::BindOnce(&DeviceCloudPolicyManagerAshEnrollmentTest::OnUnregistered,
+                     base::Unretained(this)));
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
             job_type);
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, UnregisterFails) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, UnregisterFails) {
   // Enroll first.
   RunTest();
   ExpectSuccessfulEnrollment();
@@ -901,16 +899,16 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, UnregisterFails) {
   EXPECT_CALL(*this, OnUnregistered(false));
 
   // Start unregistering.
-  manager_->Unregister(base::BindOnce(
-      &DeviceCloudPolicyManagerChromeOSEnrollmentTest::OnUnregistered,
-      base::Unretained(this)));
+  manager_->Unregister(
+      base::BindOnce(&DeviceCloudPolicyManagerAshEnrollmentTest::OnUnregistered,
+                     base::Unretained(this)));
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(DeviceManagementService::JobConfiguration::TYPE_UNREGISTRATION,
             job_type);
 }
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, DisableMachineCertReq) {
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
   // Simulate the flag --disable-machine-cert-request being provided to Chrome.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       chromeos::switches::kDisableMachineCertRequest);
@@ -927,15 +925,15 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentTest, DisableMachineCertReq) {
 }
 
 // A subclass that runs with a blank system salt.
-class DeviceCloudPolicyManagerChromeOSEnrollmentBlankSystemSaltTest
-    : public DeviceCloudPolicyManagerChromeOSEnrollmentTest {
+class DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest
+    : public DeviceCloudPolicyManagerAshEnrollmentTest {
  protected:
-  DeviceCloudPolicyManagerChromeOSEnrollmentBlankSystemSaltTest() {
+  DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest() {
     set_empty_system_salt_ = true;
   }
 };
 
-TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentBlankSystemSaltTest,
+TEST_P(DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest,
        RobotRefreshSaveFailed) {
   // Without the system salt, the robot token can't be stored.
   expect_robot_auth_fetch_failure_ = true;
@@ -944,12 +942,12 @@ TEST_P(DeviceCloudPolicyManagerChromeOSEnrollmentBlankSystemSaltTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(Cert,
-                         DeviceCloudPolicyManagerChromeOSEnrollmentTest,
+                         DeviceCloudPolicyManagerAshEnrollmentTest,
                          ::testing::Values(false, true));
 
 INSTANTIATE_TEST_SUITE_P(
     Cert,
-    DeviceCloudPolicyManagerChromeOSEnrollmentBlankSystemSaltTest,
+    DeviceCloudPolicyManagerAshEnrollmentBlankSystemSaltTest,
     ::testing::Values(false, true));
 
 }  // namespace

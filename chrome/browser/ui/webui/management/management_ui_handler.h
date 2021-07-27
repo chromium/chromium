@@ -95,7 +95,7 @@ class Extension;
 }  // namespace extensions
 
 namespace policy {
-class DeviceCloudPolicyManagerChromeOS;
+class DeviceCloudPolicyManagerAsh;
 class DlpRulesManager;
 class PolicyService;
 class StatusCollector;
@@ -149,7 +149,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Protected for testing.
   virtual const std::string GetDeviceManager() const;
-  virtual const policy::DeviceCloudPolicyManagerChromeOS*
+  virtual const policy::DeviceCloudPolicyManagerAsh*
   GetDeviceCloudPolicyManager() const;
   virtual const policy::DlpRulesManager* GetDlpRulesManager() const;
   void AddDeviceReportingInfo(base::Value* report_sources,

@@ -164,7 +164,7 @@ BrowserPolicyConnectorChromeOS::BrowserPolicyConnectorChromeOS() {
               GetBackgroundTaskRunner(), device_policy_external_data_path,
               device_cloud_policy_store.get());
 
-      device_cloud_policy_manager_ = new DeviceCloudPolicyManagerChromeOS(
+      device_cloud_policy_manager_ = new DeviceCloudPolicyManagerAsh(
           std::move(device_cloud_policy_store),
           std::move(external_data_manager), base::ThreadTaskRunnerHandle::Get(),
           state_keys_broker_.get());

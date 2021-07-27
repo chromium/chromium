@@ -17,7 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_handler_chromeos.h"
@@ -61,7 +61,7 @@ DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     chromeos::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
     DeviceCloudPolicyStoreAsh* policy_store,
-    DeviceCloudPolicyManagerChromeOS* policy_manager,
+    DeviceCloudPolicyManagerAsh* policy_manager,
     std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow,
     chromeos::system::StatisticsProvider* statistics_provider)
     : local_state_(local_state),
@@ -151,7 +151,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   // Authentication through the attestation mechanism is controlled by a
   // command line switch that either enables it or forces it (meaning that
   // interactive authentication is disabled).
-  switch (DeviceCloudPolicyManagerChromeOS::GetZeroTouchEnrollmentMode()) {
+  switch (DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode()) {
     case ZeroTouchEnrollmentMode::DISABLED:
       // Only use interactive authentication.
       config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
