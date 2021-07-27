@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="WebAudio.AudioBuffer.Length" units="frames"
-    expires_after="2021-08-22">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The length (in frames) requested by createBuffer(). Recorded for every call
@@ -59,7 +59,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.HardwareSampleRate" units="Hz"
-    expires_after="2021-09-05">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The hardware sample rate (in Hz) used by an AudioContext. Recorded for every
@@ -100,7 +100,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRate" units="Hz"
-    expires_after="2021-08-09">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The sample rate requested by developer to be used as the sample rate when
@@ -110,7 +110,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRateRatio" units="units"
-    expires_after="2021-08-09">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The ratio of the user-selected sample rate to the hardware sample rate of an
@@ -120,7 +120,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioDestination.CallbackBufferSize" units="units"
-    expires_after="2021-09-05">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The callback buffer size (in audio frames) for WebAudio rendering between
@@ -140,9 +140,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.Autoplay" enum="WebAudioAutoplayStatus"
-    expires_after="2021-08-09">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
   <summary>
     The autoplay status of an AudioContext when destroyed. This include all
     types of frames. In order to know the value only for main frames, the
@@ -161,9 +160,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.Autoplay.UnlockType"
-    enum="WebAudioAutoplayUnlockType" expires_after="2021-06-01">
+    enum="WebAudioAutoplayUnlockType" expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
   <summary>
     Records how an AudioContext was unlocked (if it was). This is recorded when
     the AudioContext is destroyed.
