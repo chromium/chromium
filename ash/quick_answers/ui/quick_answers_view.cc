@@ -138,6 +138,53 @@ View* AddHorizontalUiElements(
   return labels_container;
 }
 
+class MainView : public views::Button {
+ public:
+  METADATA_HEADER(MainView);
+
+  MainView(PressedCallback callback) : Button(std::move(callback)) {
+    SetInstallFocusRingOnFocus(false);
+
+    // This is because waiting for mouse-release to fire buttons would be too
+    // late, since mouse-press dismisses the menu.
+    button_controller()->set_notify_action(
+        views::ButtonController::NotifyAction::kOnPress);
+  }
+
+  // Disallow copy and assign.
+  MainView(const MainView&) = delete;
+  MainView& operator=(const MainView&) = delete;
+
+  ~MainView() override = default;
+
+ private:
+  // views::View:
+  void OnFocus() override { SetBackgroundState(true); }
+  void OnBlur() override { SetBackgroundState(false); }
+
+  // views::Button:
+  void StateChanged(views::Button::ButtonState old_state) override {
+    Button::StateChanged(old_state);
+    const bool hovered = GetState() == Button::STATE_HOVERED;
+    if (hovered || (GetState() == Button::STATE_NORMAL))
+      SetBackgroundState(hovered);
+  }
+
+  void SetBackgroundState(bool highlight) {
+    if (highlight) {
+      SetBackground(views::CreateBackgroundFromPainter(
+          views::Painter::CreateSolidRoundRectPainter(
+              SkColorSetA(SK_ColorBLACK, kHoverStateAlpha * 0xFF),
+              /*radius=*/0, kMainViewInsets)));
+    } else {
+      SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+    }
+  }
+};
+
+BEGIN_METADATA(MainView, views::Button)
+END_METADATA
+
 class ReportQueryView : public views::Button {
  public:
   METADATA_HEADER(ReportQueryView);
@@ -199,9 +246,7 @@ QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                                    const std::string& title,
                                    bool is_internal,
                                    QuickAnswersUiController* controller)
-    : Button(base::BindRepeating(&QuickAnswersView::SendQuickAnswersQuery,
-                                 base::Unretained(this))),
-      anchor_view_bounds_(anchor_view_bounds),
+    : anchor_view_bounds_(anchor_view_bounds),
       controller_(controller),
       title_(title),
       is_internal_(is_internal),
@@ -216,11 +261,6 @@ QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
 
   // Focus.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-  SetInstallFocusRingOnFocus(false);
-
-  // This is because waiting for mouse-release to fire buttons would be too
-  // late, since mouse-press dismisses the menu.
-  SetButtonNotifyActionToOnPress(this);
 
   // Allow tooltips to be shown despite menu-controller owning capture.
   GetWidget()->SetNativeWindowProperty(
@@ -235,7 +275,6 @@ const char* QuickAnswersView::GetClassName() const {
 }
 
 void QuickAnswersView::OnFocus() {
-  SetBackgroundState(true);
   View* wants_focus = focus_search_->FindNextFocusableView(
       nullptr, views::FocusSearch::SearchDirection::kForwards,
       views::FocusSearch::TraversalDirection::kDown,
@@ -246,10 +285,6 @@ void QuickAnswersView::OnFocus() {
     wants_focus->RequestFocus();
   else
     NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
-}
-
-void QuickAnswersView::OnBlur() {
-  SetBackgroundState(false);
 }
 
 views::FocusTraversable* QuickAnswersView::GetPaneFocusTraversable() {
@@ -269,13 +304,6 @@ void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(
       l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
-}
-
-void QuickAnswersView::StateChanged(views::Button::ButtonState old_state) {
-  Button::StateChanged(old_state);
-  const bool hovered = GetState() == Button::STATE_HOVERED;
-  if (hovered || (GetState() == Button::STATE_NORMAL))
-    SetBackgroundState(hovered);
 }
 
 void QuickAnswersView::SendQuickAnswersQuery() {
@@ -324,7 +352,8 @@ void QuickAnswersView::ShowRetryView() {
           l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_RETRY)));
   retry_label_->SetEnabledTextColors(gfx::kGoogleBlue600);
   retry_label_->SetRequestFocusOnPress(true);
-  SetButtonNotifyActionToOnPress(retry_label_);
+  retry_label_->button_controller()->set_notify_action(
+      views::ButtonController::NotifyAction::kOnPress);
   retry_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE,
       l10n_util::GetStringUTF16(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT)));
@@ -343,7 +372,9 @@ void QuickAnswersView::InitLayout() {
   base_layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  main_view_ = base_view_->AddChildView(std::make_unique<View>());
+  main_view_ =
+      base_view_->AddChildView(std::make_unique<MainView>(base::BindRepeating(
+          &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this))));
   auto* layout =
       main_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -429,7 +460,8 @@ void QuickAnswersView::AddDogfoodButton() {
                             kDogfoodButtonColor));
   dogfood_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_ANSWERS_DOGFOOD_BUTTON_TOOLTIP_TEXT));
-  SetButtonNotifyActionToOnPress(dogfood_button_);
+  dogfood_button_->button_controller()->set_notify_action(
+      views::ButtonController::NotifyAction::kOnPress);
 }
 
 void QuickAnswersView::AddSettingsButton() {
@@ -478,17 +510,6 @@ void QuickAnswersView::AddGoogleIcon() {
 void QuickAnswersView::ResetContentView() {
   content_view_->RemoveAllChildViews(true);
   first_answer_label_ = nullptr;
-}
-
-void QuickAnswersView::SetBackgroundState(bool highlight) {
-  if (highlight && !retry_label_) {
-    main_view_->SetBackground(views::CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainter(
-            SkColorSetA(SK_ColorBLACK, kHoverStateAlpha * 0xFF),
-            /*radius=*/0, kMainViewInsets)));
-  } else if (!highlight) {
-    main_view_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-  }
 }
 
 void QuickAnswersView::UpdateBounds() {
@@ -573,12 +594,6 @@ void QuickAnswersView::UpdateQuickAnswerResult(
     GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
         IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
   }
-}
-
-void QuickAnswersView::SetButtonNotifyActionToOnPress(views::Button* button) {
-  DCHECK(button);
-  button->button_controller()->set_notify_action(
-      views::ButtonController::NotifyAction::kOnPress);
 }
 
 std::vector<views::View*> QuickAnswersView::GetFocusableViews() {

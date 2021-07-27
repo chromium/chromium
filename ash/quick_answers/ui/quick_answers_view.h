@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/quick_answers/ui/quick_answers_focus_search.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace chromeos {
@@ -31,26 +30,23 @@ class QuickAnswersUiController;
 class QuickAnswersPreTargetHandler;
 
 // A bubble style view to show QuickAnswer.
-class ASH_EXPORT QuickAnswersView : public views::Button {
+class ASH_EXPORT QuickAnswersView : public views::View {
  public:
   QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                    const std::string& title,
                    bool is_internal,
                    QuickAnswersUiController* controller);
-  ~QuickAnswersView() override;
 
   QuickAnswersView(const QuickAnswersView&) = delete;
   QuickAnswersView& operator=(const QuickAnswersView&) = delete;
 
+  ~QuickAnswersView() override;
+
   // views::View:
   const char* GetClassName() const override;
   void OnFocus() override;
-  void OnBlur() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // views::Button:
-  void StateChanged(views::Button::ButtonState old_state) override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
@@ -72,14 +68,9 @@ class ASH_EXPORT QuickAnswersView : public views::Button {
   void AddAssistantIcon();
   void AddGoogleIcon();
   void ResetContentView();
-  void SetBackgroundState(bool highlight);
   void UpdateBounds();
   void UpdateQuickAnswerResult(
       const chromeos::quick_answers::QuickAnswer& quick_answer);
-
-  // Buttons should fire on mouse-press instead of default behavior (waiting for
-  // mouse-release), since events of former type dismiss the accompanying menu.
-  void SetButtonNotifyActionToOnPress(views::Button* button);
 
   // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently
   // focusable views.
