@@ -2,7 +2,6 @@
 <!-- Copyright 2018 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<!-- TODO(b/146412594): Replace the chipColor with default_bg_color once available. -->
 <org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -10,9 +9,8 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/min_touch_target_size"
     style="@style/AssistiveChip"
-    app:chipColor="@color/default_bg_color_elev_3"
+    app:chipColor="@color/default_bg_color"
     app:cornerRadius="@dimen/autofill_assistant_button_corner_radius"
     app:iconWidth="24dp"
     app:iconHeight="24dp"
     app:verticalInset="@dimen/autofill_assistant_button_bg_vertical_inset" />
-
