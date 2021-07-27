@@ -83,10 +83,9 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   struct Item;
   std::vector<Item> items_;
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  bookmarks::BookmarkModel* const bookmark_model_;
 
-  // The index of the original parent folder.
-  int node_parent_index_;
+  const bookmarks::BookmarkNode* const parent_node_;
 
   base::ObserverList<ui::ComboboxModelObserver> observers_;
 
