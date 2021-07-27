@@ -113,6 +113,7 @@
 <translation id="17513872634828108">کھلے ٹیبز</translation>
 <translation id="1754404134430936718">ٹیکسٹ کاپی ہو گیا</translation>
 <translation id="1772137089884020309">بُک مارک فولڈرز کی فہرست بند ہے</translation>
+<translation id="1779766957982586368">ونڈو بند کریں</translation>
 <translation id="1782483593938241562">تاریخ اختتام <ph name="DATE" /></translation>
 <translation id="1791662854739702043">انسٹال ہو گیا</translation>
 <translation id="1792959175193046959">ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
@@ -191,6 +192,7 @@
 <translation id="2276696007612801991">‏اپنے پاس ورڈز چیک کرنے کے لئے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
 <translation id="2286841657746966508">بلنگ پتہ</translation>
+<translation id="2294030144029925122">‏Chrome کی رازداری کی پالیسی</translation>
 <translation id="230115972905494466">کوئی مطابقت پذیر آلہ نہیں ملا</translation>
 <translation id="230155349749732438">اس ترتیب کو استعمال کرنے کیلئے <ph name="BEGIN_LINK" />تلاشوں اور براؤزنگ کو بہتر بنائیں<ph name="END_LINK" /> آن کرنا ضروری ہے</translation>
 <translation id="2318045970523081853">کال کرنے کے لیے تھپتھپائیں</translation>
@@ -224,6 +226,7 @@
 
 تلاش کرنے کے لیے کسی بھی نفظ کو ٹچ کریں اور دبائے رکھیں۔ اپنی تلاش کو بہتر بنانے کے لیے، مزید یا بعض الفاظ کو منتخب کریں۔ اپنی تلاش میں ترمیم کرنے کے لیے، پینل کھولیں، ایک نیا ٹیب کھولنے کے لیے آئیکن پر تھپتھپائیں اور تلاش کے خانے میں اپنی تبدیلیاں کریں۔</translation>
 <translation id="2459390580524506445">صوتی تلاش کو بہتر بنایا گیا</translation>
+<translation id="2461822463642141190">حالیہ</translation>
 <translation id="247737702124049222">تصویر کی تفصیلات آن ہیں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2485422356828889247">ان انسٹال کریں</translation>
@@ -451,6 +454,7 @@
 <translation id="3928666092801078803">میرا ڈیٹا ملائیں</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">کوئی فعال صوتی تلاش دستیاب نہیں ہے</translation>
+<translation id="395377504920307820">اکاؤنٹ کے بغیر استعمال کریں</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏آپ کا صفحہ تیار ہونے پر Chrome اسے لوڈ کرے گا}other{‏آپ کے صفحات تیار ہونے پر Chrome انہیں لوڈ کرے گا}}</translation>
 <translation id="3962957115499249330">‏Wi-Fi پر جب یہ ڈاؤن لوڈ شروع ہوگا تو آپ کو ایک اطلاع دکھائی دے گی۔</translation>
 <translation id="3963007978381181125">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائيگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔ آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا ہے اور نہ ہی Google اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری کو دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -747,6 +751,7 @@
 <translation id="5833984609253377421">لنک کا اشتراک کریں</translation>
 <translation id="5834764604050996579">‏QR کوڈ اسکین کرنے کیلئے Chrome کو اپنا کیمرا استعمال کرنے دیں</translation>
 <translation id="5836192821815272682">‏Chrome اپ ڈیٹ ڈاؤن لوڈ ہو رہا ہے…</translation>
+<translation id="5839058148541733625">‏Chrome ڈائنوسار گیم</translation>
 <translation id="5853623416121554550">موقوف ہو گیا</translation>
 <translation id="5854512288214985237">‏Google کو اعداد و شمار یا کریش کی کوئی رپورٹ نہیں بھیجی گئی</translation>
 <translation id="5855546874025048181">بہتر بنائیں: <ph name="REFINE_TEXT" /></translation>
@@ -1014,6 +1019,7 @@
 <translation id="7481864133709957613">اس صفحے سے تلاش کرنے کیلئے، الفاظ پر تھپتھپانے کی بجائے انہیں ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="7482656565088326534">پیش منظر ٹیب</translation>
 <translation id="7484997419527351112">‏Discover - آف ہے</translation>
+<translation id="7485033510383818941">فیڈ کے مواد کو ریفریش کرنے کے لیے، صفحے کو نیچے کی طرف کھینچیں</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (اپ ڈیٹ کا وقت <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">بچت کردہ ڈیٹا</translation>
 <translation id="7498271377022651285">براہ کرم انتظار کریں…</translation>

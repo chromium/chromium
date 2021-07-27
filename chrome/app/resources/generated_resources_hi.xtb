@@ -12,7 +12,7 @@
 <translation id="1006873397406093306">यह एक्सटेंशन साइटों पर आपका डेटा पढ़ सकता है और बदल सकता है. आप यह नियंत्रित कर सकते हैं कि एक्सटेंशन किन साइटों को ऐक्सेस करे.</translation>
 <translation id="1008186147501209563">बुकमार्क निर्यात करें</translation>
 <translation id="1008557486741366299">अभी नहीं</translation>
-<translation id="1009476156254802388"><ph name="WEB_DRIVE" /> लोकेशन</translation>
+<translation id="1009476156254802388"><ph name="WEB_DRIVE" /> की लोकेशन</translation>
 <translation id="1010498023906173788">यह टैब किसी सीरियल पोर्ट से कनेक्ट है.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{पेज प्रतिसाद नहीं दे रहा है}one{पेज प्रतिसाद नहीं दे रहे हैं}other{पेज प्रतिसाद नहीं दे रहे हैं}}</translation>
 <translation id="1011355516189274711">लिखाई को बोली में बदलने की आवाज़ का लेवल</translation>
@@ -532,6 +532,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' को पहले ही '<ph name="ACTION" />' कार्रवाई के लिए असाइन किया जा चुका है. <ph name="RESPONSE" /> के लिए कोई भी बटन दबाएं.</translation>
 <translation id="1567993339577891801">JavaScript पैनल</translation>
 <translation id="1568323446248056064">डिसप्ले डिवाइस सेटिंग खोलें</translation>
+<translation id="1571738973904005196">टैब देखें: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (मेहमान)</translation>
 <translation id="1572266655485775982">वाई-फ़ाई चालू करें</translation>
 <translation id="1572876035008611720">अपना ईमेल डालें</translation>
@@ -2200,7 +2201,6 @@
 <translation id="3308852433423051161">Google Assistant को लोड किया जा रहा है...</translation>
 <translation id="3309330461362844500">प्रमाणपत्र वाली प्रोफ़ाइल का आईडी</translation>
 <translation id="3311445899360743395">इस ऐप्लिकेशन के डेटा को इस डिवाइस से हटाया जा सकता है.</translation>
-<translation id="3312424061798279731">सक्षम भाषाएं</translation>
 <translation id="3313622045786997898">प्रमाणपत्र हस्ताक्षर मान</translation>
 <translation id="3313950410573257029">कनेक्शन की जांच करें</translation>
 <translation id="3315158641124845231">छुपाएं<ph name="PRODUCT_NAME" /></translation>
@@ -3589,7 +3589,7 @@
 <translation id="4827904420700932487">इस इमेज के लिए क्यूआर कोड बनाएं</translation>
 <translation id="482952334869563894"><ph name="VENDOR_ID" /> वेंडर के यूएसबी डिवाइस</translation>
 <translation id="4829768588131278040">पिन सेट करें</translation>
-<translation id="4830026649400230050">सभी शर्तों को पूरा करने वाले डाउनलोड, आपके संगठन के <ph name="WEB_DRIVE" /> खाते पर भेज दिए गए हैं.</translation>
+<translation id="4830026649400230050">शर्तों को पूरा करने वाले सभी डाउनलोड, आपके संगठन के <ph name="WEB_DRIVE" /> खाते में सेव कर दिए गए हैं.</translation>
 <translation id="4830121310592638841">जब कोई साइट, विंडो को खोलकर आपकी स्क्रीन पर लगाना चाहे, तो इसके लिए पूछें</translation>
 <translation id="4830502475412647084">OS अपडेट इंस्टॉल किया जा रहा है</translation>
 <translation id="4830573902900904548">आपका <ph name="DEVICE_TYPE" /> <ph name="NETWORK_NAME" /> का उपयोग करके इंटरनेट से कनेक्ट करने में असमर्थ है. कृपया कोई अन्य नेटवर्क चुनें. <ph name="LEARN_MORE_LINK_START" />और जानें<ph name="LEARN_MORE_LINK_END" /></translation>
@@ -5118,6 +5118,7 @@
 <translation id="6521214596282732365">आम तौर पर, साइटें आपके फ़ॉन्ट इसलिए इस्तेमाल करती हैं, ताकि आप ऑनलाइन डिज़ाइन और ग्राफ़िक टूल से हाई-फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="652492607360843641">आप <ph name="NETWORK_TYPE" /> नेटवर्क से जुड़े हुए हैं.</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
+<translation id="6528179044667508675">परेशान न करें</translation>
 <translation id="652948702951888897">Chrome इतिहास</translation>
 <translation id="6530186581263215931">ये सेटिंग आपके एडमिन ने लागू की हैं</translation>
 <translation id="6531282281159901044">खतरनाक फ़ाइल रखें</translation>
@@ -5392,7 +5393,6 @@
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ग्रुप में मौजूद टैब हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">किसी स्मार्ट और सुरक्षित ब्राउज़र पर जाएं</translation>
 <translation id="6834652994408928492">सूर्यास्त होने पर, 'गहरे रंग वाला मोड' अपने-आप चालू हो जाएगा</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> फ़ाइलें खोलें</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>
 <translation id="6838034009068684089">जब कोई साइट, विंडो को खोलकर आपकी स्क्रीन पर लगाना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6839225236531462745">प्रमाणपत्र हटाने की गड़बड़ी</translation>
@@ -5658,6 +5658,7 @@
 <translation id="7117247127439884114">फिर से साइन इन करें...</translation>
 <translation id="711840821796638741">प्रबंधित बुकमार्क दिखाएं</translation>
 <translation id="711902386174337313">अपने प्रवेश किए गए डिवाइस की सूची ऐक्‍सेस करें</translation>
+<translation id="711985611146095797">इस पेज पर, आप अपने साइन इन किए गए Google खाते मैनेज कर सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">वीपीएन कनेक्ट नहीं होने तक, Chrome ब्राउज़र और Android ट्रैफ़िक ब्लॉक रहेगा</translation>
 <translation id="7120865473764644444">सिंक सर्वर से कनेक्ट नहीं किया जा सका. पुनः प्रयास किया जा रहा है...</translation>
 <translation id="7121438501124788993">डेवलपर मोड</translation>
@@ -6132,6 +6133,7 @@
 <translation id="7639914187072011620">एसएएमएल के दूसरे वेबलिंक को सर्वर से फ़ेच नहीं किया जा सका</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />   सहेजे गए पासवर्ड से आपको योग्य साइट में अपने आप प्रवेश करा देता है.</translation>
 <translation id="7641513591566880111">नई प्रोफ़ाइल का नाम</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> को जोड़ा गया</translation>
 <translation id="7642778300616172920">संवेदनशील सामग्री छिपाएं</translation>
 <translation id="7643842463591647490">{0,plural, =1{# खुली विंडो}one{# खुली विंडो}other{# खुली विंडो}}</translation>
 <translation id="7643932971554933646">साइट को फ़ाइलें देखने की अनुमति देना चाहते हैं?</translation>
@@ -6185,7 +6187,6 @@
 <translation id="7684718995427157417">ऐप्लिकेशन बनाने और उसकी जांच करने के लिए, Android डीबग ब्रिज (ADB) चालू करें. ध्यान दें कि इस कार्रवाई के लिए ऐसे Android ऐप्लिकेशन इंस्टॉल करने की अनुमति दी जाती है जिनकी पुष्टि Google ने नहीं की है. साथ ही, फ़ैक्ट्री रीसेट को बंद करना ज़रूरी है.</translation>
 <translation id="7685049629764448582">JavaScript मेमोरी</translation>
 <translation id="7685087414635069102">पिन की ज़रूरत है</translation>
-<translation id="768549422429443215">भाषाएं जोड़ें या सूची का क्रम बदलें.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
 <translation id="7690378713476594306">सूची में से चुनें</translation>
@@ -6856,7 +6857,7 @@
 <translation id="8373652277231415614">Crostini से Chromebook के साथ शेयर की गई डायरेक्ट्री</translation>
 <translation id="8376137163494131156">हमें बताएं कि Google Cast में क्या हो रहा है.</translation>
 <translation id="8376384591331888629">इस साइट पर मौजूद तीसरे पक्ष की कुकी शामिल करें</translation>
-<translation id="8376451933628734023">अगर यह वेब ऐप्लिकेशन आपको गुमराह करने की कोशिश कर रहा है कि यह अलग ऐप्लिकेशन है, तो इसे अनइंस्टॉल करें.</translation>
+<translation id="8376451933628734023">अगर यह वेब ऐप्लिकेशन आपको गुमराह करने की कोशिश कर रहा है कि यह एक अलग ऐप्लिकेशन है, तो इसे अनइंस्टॉल करें.</translation>
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>
 <translation id="8379156816349755485">साइन इन करने पर, पुष्टि करने वाला खास टोकन सेव किया जाएगा. इस टोकन का इस्तेमाल, आने वाले समय में ऐसे डाउनलोड के लिए किया जाएगा जो सभी शर्तों को पूरा करते हैं.</translation>
 <translation id="8379878387931047019">इस डिवाइस पर इस तरह की 'सुरक्षा चाबी' काम नहीं करती है जिसका इस वेबसाइट में अनुरोध किया गया है</translation>
@@ -7195,6 +7196,7 @@
 <translation id="8756969031206844760">पासवर्ड अपडेट करें?</translation>
 <translation id="8757090071857742562">डेस्कटॉप कास्ट नहीं हो सका.  यह देखने के लिए जाँचें कि आपने अपनी स्क्रीन शेयर करना शुरू करने के लिए संकेत की पुष्टि की है या नहीं.</translation>
 <translation id="8757203080302669031">यह टैब, ब्लूटूथ डिवाइस के लिए लगातार स्कैन कर रहा है.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> को हटा दिया गया</translation>
 <translation id="8758418656925882523">सुनकर लिखना चालू करें (टाइप करने के लिए बोलें)</translation>
 <translation id="8759408218731716181">एक से ज़्यादा साइन-इन सेट अप नहीं किया जा सका</translation>
 <translation id="8759753423332885148">ज़्यादा जानें.</translation>

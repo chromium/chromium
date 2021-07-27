@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Åpne faner</translation>
 <translation id="1754404134430936718">Teksten er kopiert</translation>
 <translation id="1772137089884020309">Listen over bokmerkemapper er lukket</translation>
+<translation id="1779766957982586368">Lukk vindu</translation>
 <translation id="1782483593938241562">Sluttdato <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installert</translation>
 <translation id="1792959175193046959">Endre standard nedlastingssted når som helst</translation>
@@ -225,6 +226,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 
 Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere eller færre ord. For å redigere søket, åpne panelet, trykk på ikonet for å åpne i en ny fane, og gjør endringer i søkefeltet.</translation>
 <translation id="2459390580524506445">Forbedret talesøk</translation>
+<translation id="2461822463642141190">Nåværende</translation>
 <translation id="247737702124049222">Bildebeskrivelser er på</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4256782883801055595">Lisenser for åpen kildekode</translation>
 <translation id="4263656433980196874">UI for samtykke til talesøk med assistenten er åpnet i full høyde</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
-<translation id="4281359692687148179">Trekk ned for å laste inn på nytt</translation>
 <translation id="4290281343757112331">Vil du laste den ned senere i stedet?</translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
 <translation id="4298388696830689168">Tilknyttede nettsteder</translation>
@@ -750,6 +751,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5833984609253377421">Del en link</translation>
 <translation id="5834764604050996579">For å skanne QR-koder, la Chrome bruke kameraet</translation>
 <translation id="5836192821815272682">Laster ned en Chrome-oppdatering …</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">på pause</translation>
 <translation id="5854512288214985237">Ingen statistikk eller programstopprapporter blir sendt til Google</translation>
 <translation id="5855546874025048181">Juster: <ph name="REFINE_TEXT" /></translation>

@@ -2182,7 +2182,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3308852433423051161">Po ngarkon "Asistentin e Google"...</translation>
 <translation id="3309330461362844500">ID-ja e profilit të certifikatës</translation>
 <translation id="3311445899360743395">Të dhënat e lidhura me këtë aplikacion mund të hiqen nga kjo pajisje.</translation>
-<translation id="3312424061798279731">Gjuhët e aktivizuara</translation>
 <translation id="3313622045786997898">Vlera e nënshkrimit të certifikatës</translation>
 <translation id="3313950410573257029">Kontrollo lidhjen</translation>
 <translation id="3315158641124845231">Fshih <ph name="PRODUCT_NAME" /></translation>
@@ -5100,6 +5099,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6521214596282732365">Sajtet zakonisht përdorin fonte në mënyrë që të mund të krijosh përmbajtje në saktësi të lartë me vegla grafike dhe dizajni në linjë</translation>
 <translation id="652492607360843641">Je lidhur me një rrjet <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Ndaj</translation>
+<translation id="6528179044667508675">Mos shqetëso</translation>
 <translation id="652948702951888897">Historiku i Chrome</translation>
 <translation id="6530186581263215931">Këto cilësime janë të detyruara nga administratori</translation>
 <translation id="6531282281159901044">Mbaje skedarin e rrezikshëm</translation>
@@ -5374,7 +5374,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Kalo te një shfletues inteligjent dhe i sigurt</translation>
 <translation id="6834652994408928492">"Modaliteti i errët" do të aktivizohet automatikisht në perëndim</translation>
-<translation id="683540480453879381">Hap skedarët <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Lidhu në internet për të përditësuar pajisjen <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Pyet kur një sajt kërkon që të hapë dhe vendosë dritare në ekranet e tua (rekomandohet)</translation>
 <translation id="6839225236531462745">Gabim në fshirjen e certifikatës</translation>
@@ -6167,7 +6166,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7684718995427157417">Për të krijuar dhe testuar aplikacionet e tua, aktivizo "Urën e korrigjimit të Android" (ADB). Ki parasysh se ky veprim lejon instalimin e aplikacioneve të Android që nuk janë verifikuar nga Google dhe për çaktivizimin kërkohet rivendosja e cilësimeve të fabrikës.</translation>
 <translation id="7685049629764448582">Memoria e JavaScript</translation>
 <translation id="7685087414635069102">Kërkohet kodi PIN</translation>
-<translation id="768549422429443215">Shto gjuhën ose rendit përsëri listën.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7690378713476594306">Zgjidh nga lista</translation>

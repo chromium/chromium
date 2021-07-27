@@ -531,6 +531,7 @@
 <translation id="156793199942386351">'<ph name="ACTION" />' చర్యకు '<ph name="CURRENTKEY" />' ఇప్పటికే కేటాయించబడింది. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
 <translation id="1567993339577891801">JavaScript కన్సోల్</translation>
 <translation id="1568323446248056064">ప్రదర్శన పరికరం సెట్టింగ్‌లను తెరవండి</translation>
+<translation id="1571738973904005196">ట్యాబ్‌ను చూడండి: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (అతిథి)</translation>
 <translation id="1572266655485775982">Wi-Fiని ప్రారంభించు</translation>
 <translation id="1572876035008611720">మీ ఇమెయిల్‌ను నమోదు చేయండి</translation>
@@ -2199,7 +2200,6 @@
 <translation id="3308852433423051161">Google సహాయకం లోడ్ అవుతోంది...</translation>
 <translation id="3309330461362844500">సర్టిఫికెట్ ప్రొఫైల్ ID</translation>
 <translation id="3311445899360743395">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు.</translation>
-<translation id="3312424061798279731">ప్రారంభించబడిన భాషలు</translation>
 <translation id="3313622045786997898">సర్టిఫికెట్ సంతకం విలువ</translation>
 <translation id="3313950410573257029">కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" />ను దాచిపెట్టు</translation>
@@ -5118,6 +5118,7 @@
 <translation id="6521214596282732365">సైట్‌లు సాధారణంగా మీ ఫాంట్‌లను ఉపయోగించుకుంటాయి, తద్వారా ఆన్‌లైన్ డిజైన్, గ్రాఫిక్స్ టూల్స్‌తో మీరు అధిక నాణ్యత గల కంటెంట్‌ను క్రియేట్ చేయవచ్చు</translation>
 <translation id="652492607360843641">మీరు <ph name="NETWORK_TYPE" /> నెట్‌వర్క్‌కు కనెక్ట్ చేయబడ్డారు.</translation>
 <translation id="6527303717912515753">భాగస్వామ్యం చేయి</translation>
+<translation id="6528179044667508675">అంతరాయం వద్దు</translation>
 <translation id="652948702951888897">Chrome చరిత్ర</translation>
 <translation id="6530186581263215931">ఈ సెట్టింగ్‌లు మీ నిర్వాహకుడి ద్వారా అమలు చేయబడ్డాయి</translation>
 <translation id="6531282281159901044">అపాయకరమైన ఫైల్‌ను అలాగే ఉంచు</translation>
@@ -5392,7 +5393,6 @@
 <translation id="6833479554815567477">గ్రూప్ నుండి ట్యాబ్ తొలగించబడింది <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">స్మార్ట్ మరియు సురక్షిత బ్రౌజర్‌కు మారండి</translation>
 <translation id="6834652994408928492">సూర్యాస్తమయ సమయానికి డార్క్ మోడ్ ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> ఫైల్‌లను తెరవాలి</translation>
 <translation id="6835762382653651563">దయచేసి మీ <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయడానికి ఇంటర్నెట్‌కి కనెక్ట్ చేయండి.</translation>
 <translation id="6838034009068684089">సైట్ మీ స్క్రీన్‌లలో విండోలను తెరిచి, ఉంచాలనుకున్నప్పుడు అనుమతి అడగాలి (సిఫార్సు చేయబడినది)</translation>
 <translation id="6839225236531462745">ప్రమాణపత్రం తొలగింపు లోపం</translation>
@@ -5658,6 +5658,7 @@
 <translation id="7117247127439884114">మళ్ళీ సైన్ ఇన్ చేయండి...</translation>
 <translation id="711840821796638741">నిర్వహించబడే బుక్‌మార్క్‌లను చూపు</translation>
 <translation id="711902386174337313">మీ సైన్-ఇన్ చేసిన పరికరాల యొక్క జాబితాను చదవడం</translation>
+<translation id="711985611146095797">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మేనేజ్ చేయడానికి ఈ పేజీ మిమ్మల్ని అనుమతిస్తుంది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN కనెక్ట్ చేయకపోతే Chrome బ్రౌజర్, Android ట్రాఫిక్ బ్లాక్ చేయబడతాయి</translation>
 <translation id="7120865473764644444">సింక్ సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు. మళ్లీ ప్రయత్నిస్తోంది...</translation>
 <translation id="7121438501124788993">డెవలపర్ మోడ్</translation>
@@ -6132,6 +6133,7 @@
 <translation id="7639914187072011620">సర్వర్ నుండి SAML మళ్లింపు URLను పొందడంలో విఫలమైంది</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లతో అర్హత ఉన్న సైట్‌లకు మిమ్మల్ని స్వయంచాలకంగా సైన్ ఇన్ చేస్తుంది.</translation>
 <translation id="7641513591566880111">కొత్త ప్రొఫైల్ పేరు</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> జోడించబడింది</translation>
 <translation id="7642778300616172920">సున్నితమైన కంటెంట్‌ను దాచు</translation>
 <translation id="7643842463591647490">{0,plural, =1{# తెరిచిన విండో ఉంది}other{# తెరిచిన విండోలు ఉన్నాయి}}</translation>
 <translation id="7643932971554933646">ఫైల్‌లను చూడటానికి సైట్‌ను అనుమతించాలా?</translation>
@@ -6185,7 +6187,6 @@
 <translation id="7684718995427157417">మీ యాప్‌లను సృష్టించి, పరీక్షించడానికి Android డీబగ్ బ్రిడ్జ్ (ADB)ను ప్రారంభించండి. ఈ చర్య వలన Google ద్వారా ధృవీకరించబడని Android యాప్‌ల ఇన్‌స్టాలేషన్ అనుమతించబడుతుందని, దీనిని నిలిపివేయడానికి ఫ్యాక్టరీ రీసెట్ చేయాల్సి ఉంటుందని గుర్తుంచుకోండి.</translation>
 <translation id="7685049629764448582">JavaScript మెమరీ</translation>
 <translation id="7685087414635069102">పిన్ అవసరం</translation>
-<translation id="768549422429443215">భాషలను జోడించండి లేదా జాబితా క్రమాన్ని మళ్లీ మార్చండి.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">కొత్త పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7690378713476594306">జాబితా నుండి ఎంచుకోండి</translation>
@@ -7192,6 +7193,7 @@
 <translation id="8756969031206844760">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="8757090071857742562">డెస్క్‌టాప్‌ను ప్రసారం చేయడం సాధ్యపడలేదు.  మీ స్క్రీన్‌ను షేర్‌ చేయడం ప్రారంభించడానికి మీరు ప్రాంప్ట్‌ను నిర్ధారించారో లేదో సరిచూసుకోవడానికి తనిఖీ చేయండి.</translation>
 <translation id="8757203080302669031">ఈ ట్యాబ్ బ్లూటూత్ పరికరాల కోసం యాక్టివ్‌గా స్కానింగ్ చేస్తోంది.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> తీసివేయబడ్డారు</translation>
 <translation id="8758418656925882523">డిక్టేషన్‌ను ప్రారంభించండి (టైప్ చేయడానికి మాట్లాడండి)</translation>
 <translation id="8759408218731716181">బహుళ సైన్-ఇన్‌ను సెటప్ చేయలేరు</translation>
 <translation id="8759753423332885148">మరింత తెలుసుకోండి.</translation>

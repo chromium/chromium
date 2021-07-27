@@ -113,6 +113,7 @@
 <translation id="17513872634828108">खुले टॅब</translation>
 <translation id="1754404134430936718">मजकूर कॉपी केला</translation>
 <translation id="1772137089884020309">बुकमार्क फोल्डरची सूची बंद आहे</translation>
+<translation id="1779766957982586368">विंडो बंद करा</translation>
 <translation id="1782483593938241562">संपण्याची तारीख <ph name="DATE" /></translation>
 <translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792959175193046959">डीफॉल्ट डाउनलोडचे स्थान केव्हाही बदला</translation>
@@ -191,6 +192,7 @@
 <translation id="2276696007612801991">तुमचे पासवर्ड तपासण्यासाठी तुमच्या Google खात्यामध्ये साइन इन करा</translation>
 <translation id="2278052315791335171">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही</translation>
 <translation id="2286841657746966508">बिलिंग पत्ता</translation>
+<translation id="2294030144029925122">Chrome गोपनीयता धोरण</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
 <translation id="230155349749732438">हे सेटिंग वापरण्यासाठी <ph name="BEGIN_LINK" />शोध आणि ब्राउझिंगमध्ये सुधारणा करा<ph name="END_LINK" /> सुरू असणे आवश्यक आहे</translation>
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
@@ -224,6 +226,7 @@
 
 शोधण्यासाठी कोणत्याही शब्दाला स्पर्श करा आणि धरून ठेवा. तुमचा शोध रिफाइन करण्यासाठी, जास्त किंवा कमी शब्द निवडा. तुमचा शोध संपादित करण्यासाठी, पॅनल उघडा, नवीन टॅबमध्ये उघडण्यासाठी आयकनवर टॅप करा आणि सर्च बॉक्समध्ये तुमचे बदल करा.</translation>
 <translation id="2459390580524506445">वर्धित व्हॉइस शोध</translation>
+<translation id="2461822463642141190">सद्य</translation>
 <translation id="247737702124049222">इमेजची वर्णने सुरू आहेत</translation>
 <translation id="2482878487686419369">सूचना</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
@@ -451,6 +454,7 @@
 <translation id="3928666092801078803">माझा डेटा एकत्र करा</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">सक्षम केलेला कोणताही व्हॉइस शोध उपलब्ध नाही</translation>
+<translation id="395377504920307820">खात्याशिवाय वापरा</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{तयार झाल्यावर, Chrome तुमचे पेज लोड करेल}other{तयार झाल्यावर, Chrome तुमची पेज लोड करेल}}</translation>
 <translation id="3962957115499249330">हा डाउनलोड वाय-फाय वर सुरू होईल तेव्हा तुम्हाला सूचना दिसेल.</translation>
 <translation id="3963007978381181125">पासफ्रेज एंक्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो. फक्त तुमचा पासफ्रेज असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेज Google कडे पाठवला किंवा त्याद्वारे स्टोअर केला जात नाही. तुम्ही तुमचा पासफ्रेज विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, तुम्हाला सिंक रीसेट करण्याची आवश्यकता असेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
@@ -747,6 +751,7 @@
 <translation id="5833984609253377421">लिंक शेअर करा</translation>
 <translation id="5834764604050996579">QR कोड स्कॅन करण्यासाठी, Chrome ला तुमचा कॅमेरा वापरू द्या</translation>
 <translation id="5836192821815272682">Chrome अपडेट डाउनलोड करत आहे…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">थांबवले</translation>
 <translation id="5854512288214985237">Google कडे कोणतीही आकडेवारी किंवा क्रॅश अहवाल पाठवले जात नाहीत</translation>
 <translation id="5855546874025048181">सुधारित करा: <ph name="REFINE_TEXT" /></translation>
@@ -1014,6 +1019,7 @@
 <translation id="7481864133709957613">या पेजमधून शोधण्यासाठी, शब्दांवर टॅप करण्याऐवजी त्यांना स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="7482656565088326534">पूर्वावलोकन टॅब</translation>
 <translation id="7484997419527351112">Discover - बंद आहे</translation>
+<translation id="7485033510383818941">फीडमधील आशय रिफ्रेश करण्यासाठी पेज खाली ओढा</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> वाजता अपडेट केले)</translation>
 <translation id="7494974237137038751">डेटा वाचवला</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करा...</translation>

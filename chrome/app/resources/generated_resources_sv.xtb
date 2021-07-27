@@ -531,6 +531,7 @@
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> har redan tilldelats åtgärden <ph name="ACTION" />. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
 <translation id="1568323446248056064">Öppna enhetsinställningarna för skärm</translation>
+<translation id="1571738973904005196">Visa fliken <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gäst)</translation>
 <translation id="1572266655485775982">Aktivera wifi</translation>
 <translation id="1572876035008611720">Ange din e-postadress</translation>
@@ -2200,7 +2201,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3308852433423051161">Google Assistent läses in …</translation>
 <translation id="3309330461362844500">Id för certifikatprofil</translation>
 <translation id="3311445899360743395">Data kopplad till den här appen kanske tas bort från enheten.</translation>
-<translation id="3312424061798279731">Aktiverade språk</translation>
 <translation id="3313622045786997898">Certifikatets signaturvärde</translation>
 <translation id="3313950410573257029">Kontrollera anslutningen</translation>
 <translation id="3315158641124845231">Dölj <ph name="PRODUCT_NAME" /></translation>
@@ -5119,6 +5119,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6521214596282732365">Webbplatser använder normalt dina teckensnitt så att du kan skapa innehåll av hög kvalitet med onlineverktyg för design och grafik</translation>
 <translation id="652492607360843641">Du är ansluten till ett <ph name="NETWORK_TYPE" />-nätverk.</translation>
 <translation id="6527303717912515753">Dela</translation>
+<translation id="6528179044667508675">Stör ej</translation>
 <translation id="652948702951888897">Chrome-historik</translation>
 <translation id="6530186581263215931">Administratören har låst inställningarna</translation>
 <translation id="6531282281159901044">Behåll den farliga filen</translation>
@@ -5393,7 +5394,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Byt till en smart och säker webbläsare</translation>
 <translation id="6834652994408928492">Mörkt läge aktiveras automatiskt vid solnedgången</translation>
-<translation id="683540480453879381">Öppna filer av typen <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Fråga när en webbplats vill öppna fönster och placera ut dem på skärmen (rekommenderas)</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
@@ -5659,6 +5659,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7117247127439884114">Logga in igen ...</translation>
 <translation id="711840821796638741">Visa hanterade bokmärken</translation>
 <translation id="711902386174337313">Läsa listan med dina inloggade enheter</translation>
+<translation id="711985611146095797">På den här sidan kan du hantera alla Google-konton som du är inloggad på. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Trafik till webbläsaren Chrome och Android blockeras om det inte finns någon VPN-anslutning</translation>
 <translation id="7120865473764644444">Det gick inte att ansluta till synkroniseringsservern. Försöker igen …</translation>
 <translation id="7121438501124788993">Utvecklarläge</translation>
@@ -6133,6 +6134,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7639914187072011620">Det gick inte att hämta SAML-omdirigeringsadressen från servern</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> loggar automatiskt in på godkända webbplatser med de lösenord du sparat.</translation>
 <translation id="7641513591566880111">Nytt profilnamn</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> har lagts till</translation>
 <translation id="7642778300616172920">Dölj känsligt innehåll</translation>
 <translation id="7643842463591647490">{0,plural, =1{# öppet fönster}other{# öppna fönster}}</translation>
 <translation id="7643932971554933646">Vill du ge webbplatsen läsbehörighet till filer?</translation>
@@ -6186,7 +6188,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7684718995427157417">Aktivera Androids felsökningsbrygga (ADB) om du vill skapa och testa appar. Observera att den här åtgärden tillåter att Android-appar som inte har verifierats av Google installeras. Du måste återställa enheten till standardinställningarna för att inaktivera detta.</translation>
 <translation id="7685049629764448582">JavaScript-minne</translation>
 <translation id="7685087414635069102">Pinkod krävs</translation>
-<translation id="768549422429443215">Lägg till språk eller ändra ordning på listan.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7690378713476594306">Välj i lista</translation>
@@ -7197,6 +7198,7 @@ Tryck på en brytare som redan tilldelats en åtgärd om du vill ta bort tilldel
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
 <translation id="8757090071857742562">Det gick inte att casta skrivbordet. Kontrollera att du har svarat på frågan om att dela skärmen.</translation>
 <translation id="8757203080302669031">Aktiv sökning efter Bluetooth-enheter på fliken.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> har tagits bort</translation>
 <translation id="8758418656925882523">Aktivera diktering (skriv genom att tala)</translation>
 <translation id="8759408218731716181">Det går inte att starta multiinloggning</translation>
 <translation id="8759753423332885148">Läs mer.</translation>

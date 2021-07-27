@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Otwarte karty</translation>
 <translation id="1754404134430936718">Tekst został skopiowany</translation>
 <translation id="1772137089884020309">Lista folderów zakładek jest zamknięta</translation>
+<translation id="1779766957982586368">Zamknij okno</translation>
 <translation id="1782483593938241562">Data zakończenia: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792959175193046959">W dowolnej chwili możesz zmienić domyślną lokalizację pobierania</translation>
@@ -225,6 +226,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 
 Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować wyszukiwanie, wybierz więcej lub mniej słów. Aby edytować wyszukiwanie, otwórz panel i kliknij ikonę, by przejść do nowej karty, i wprowadź zmiany w polu wyszukiwania.</translation>
 <translation id="2459390580524506445">Ulepszone wyszukiwanie głosowe</translation>
+<translation id="2461822463642141190">Aktualnie</translation>
 <translation id="247737702124049222">Opisy do obrazów są włączone</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -500,7 +502,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4256782883801055595">Licencje open source</translation>
 <translation id="4263656433980196874">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta został otwarty na pełną wysokość</translation>
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
-<translation id="4281359692687148179">Pociągnij w dół, aby odświeżyć</translation>
 <translation id="4290281343757112331">Pobrać później?</translation>
 <translation id="4296252229500326964">Nowa karta incognito</translation>
 <translation id="4298388696830689168">Połączone strony</translation>
@@ -750,6 +751,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5833984609253377421">Udostępnij link</translation>
 <translation id="5834764604050996579">Aby zeskanować kod QR, zezwól Chrome na używanie aparatu</translation>
 <translation id="5836192821815272682">Pobieram aktualizację Chrome…</translation>
+<translation id="5839058148541733625">Dinozaur w Chrome</translation>
 <translation id="5853623416121554550">Wstrzymano</translation>
 <translation id="5854512288214985237">Statystyki ani raporty o awariach nie są przesyłane do Google</translation>
 <translation id="5855546874025048181">Sprecyzuj: <ph name="REFINE_TEXT" /></translation>

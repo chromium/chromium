@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Mga bukas na tab</translation>
 <translation id="1754404134430936718">Kinopya ang Text</translation>
 <translation id="1772137089884020309">Nakasara ang listahan ng mga folder ng bookmark</translation>
+<translation id="1779766957982586368">Isara ang window</translation>
 <translation id="1782483593938241562">Petsa ng pagtatapos <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Na-install</translation>
 <translation id="1792959175193046959">Baguhin ang default na lokasyon ng pag-download anumang oras</translation>
@@ -225,6 +226,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 
 Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pumili ng mas marami o mas kaunting salita. Para i-edit ang iyong paghahanap, buksan ang panel, i-tap ang icon para buksan sa bagong tab, at gawin ang iyong mga pagbabago sa box para sa paghahanap.</translation>
 <translation id="2459390580524506445">Pinahusay na paghahanap gamit ang boses</translation>
+<translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="247737702124049222">Naka-on ang mga paglalarawan ng larawan</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
@@ -500,7 +502,6 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4256782883801055595">Mga lisensya ng open source</translation>
 <translation id="4263656433980196874">Nakabukas ang ui ng pahintulot ng paghahanap gamit ang boses ng Assistant nang buo ang taas</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
-<translation id="4281359692687148179">Hilahin pababa para i-refresh</translation>
 <translation id="4290281343757112331">I-download na lang sa ibang pagkakataon?</translation>
 <translation id="4296252229500326964">Bagong tab na Incognito</translation>
 <translation id="4298388696830689168">Mga naka-link na site</translation>
@@ -750,6 +751,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5833984609253377421">Ibahagi ang link</translation>
 <translation id="5834764604050996579">Para mag-scan ng QR Code, payagang gamitin ng Chrome ang iyong camera</translation>
 <translation id="5836192821815272682">Dina-download ang Update sa Chrome…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">naka-pause</translation>
 <translation id="5854512288214985237">Walang naipadalang istatistika o ulat ng pag-crash sa Google</translation>
 <translation id="5855546874025048181">Pinuhin: <ph name="REFINE_TEXT" /></translation>

@@ -528,6 +528,7 @@
 <translation id="156793199942386351">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Apri le impostazioni dello schermo</translation>
+<translation id="1571738973904005196">Visualizza la scheda <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Ospite)</translation>
 <translation id="1572266655485775982">Attiva Wi-Fi</translation>
 <translation id="1572876035008611720">Inserisci il tuo indirizzo email</translation>
@@ -2185,7 +2186,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3308852433423051161">Caricamento dell'Assistente Google...</translation>
 <translation id="3309330461362844500">ID profilo di certificato</translation>
 <translation id="3311445899360743395">I dati associati a questa app potrebbero essere rimossi dal dispositivo.</translation>
-<translation id="3312424061798279731">Lingue attive</translation>
 <translation id="3313622045786997898">Valore firma certificato</translation>
 <translation id="3313950410573257029">Controlla la connessione</translation>
 <translation id="3315158641124845231">Nascondi <ph name="PRODUCT_NAME" /></translation>
@@ -5103,6 +5103,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6521214596282732365">In genere i siti utilizzano i tuoi caratteri, così puoi creare contenuti ad alta fedeltà con strumenti di grafica e design online</translation>
 <translation id="652492607360843641">È attiva la connessione a una rete <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Condividi</translation>
+<translation id="6528179044667508675">Non disturbare</translation>
 <translation id="652948702951888897">Cronologia di Chrome</translation>
 <translation id="6530186581263215931">Queste impostazioni sono applicate dall'amministratore</translation>
 <translation id="6531282281159901044">Conserva il file pericoloso</translation>
@@ -5377,7 +5378,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="6833479554815567477">Scheda spostata dal gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passa a un browser intelligente e sicuro</translation>
 <translation id="6834652994408928492">La modalità Buio verrà attivata automaticamente al tramonto</translation>
-<translation id="683540480453879381">Apri file <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Chiedi conferma quando un sito vuole aprire e posizionare finestre sugli schermi (opzione consigliata)</translation>
 <translation id="6839225236531462745">Errore di eliminazione del certificato</translation>
@@ -5643,6 +5643,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7117247127439884114">Esegui di nuovo l'accesso...</translation>
 <translation id="711840821796638741">Mostra Preferiti gestiti</translation>
 <translation id="711902386174337313">Lettura dell'elenco di dispositivi su cui è stato eseguito l'accesso</translation>
+<translation id="711985611146095797">Questa pagina ti consente di gestire gli Account Google a cui hai eseguito l'accesso. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Il browser Chrome e il traffico Android verranno bloccati a meno che non venga effettuata la connessiona e una VPN</translation>
 <translation id="7120865473764644444">Impossibile collegarsi al server di sincronizzazione. Nuovo tentativo...</translation>
 <translation id="7121438501124788993">Modalità sviluppatore</translation>
@@ -6117,6 +6118,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7639914187072011620">Impossibile recuperare l'URL di reindirizzamento SAML dal server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ti consente di accedere automaticamente ai siti idonei con le password salvate.</translation>
 <translation id="7641513591566880111">Nuovo nome del profilo</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> aggiunto</translation>
 <translation id="7642778300616172920">Nascondi contenuti sensibili</translation>
 <translation id="7643842463591647490">{0,plural, =1{# finestra aperta}other{# finestre aperte}}</translation>
 <translation id="7643932971554933646">Vuoi consentire al sito di visualizzare i file?</translation>
@@ -6170,7 +6172,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7684718995427157417">Per creare e testare le tue app, attiva Android Debug Bridge (ADB). Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>
 <translation id="7685087414635069102">PIN obbligatorio</translation>
-<translation id="768549422429443215">Aggiungi lingue o cambia l'ordine dell'elenco.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
 <translation id="7690378713476594306">Scegli dall'elenco</translation>
@@ -7181,6 +7182,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8757090071857742562">Impossibile trasmettere il desktop. Verifica di avere confermato la richiesta di avvio della condivisione dello schermo.</translation>
 <translation id="8757203080302669031">Questa scheda sta eseguendo attivamente la ricerca dei dispositivi Bluetooth.</translation>
+<translation id="8757368836647541092">Dispositivo <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
 <translation id="8758418656925882523">Attiva dettatura (parla per digitare)</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
 <translation id="8759753423332885148">Ulteriori informazioni.</translation>

@@ -2201,7 +2201,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3308852433423051161">Loading Google Assistant...</translation>
 <translation id="3309330461362844500">Certificate profile ID</translation>
 <translation id="3311445899360743395">Data associated with this app may be removed from this device.</translation>
-<translation id="3312424061798279731">Enabled languages</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Check connection</translation>
 <translation id="3315158641124845231">Hide <ph name="PRODUCT_NAME" /></translation>
@@ -5120,6 +5119,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6521214596282732365">Sites usually use your fonts so that you can create high-fidelity content with online design and graphics tools</translation>
 <translation id="652492607360843641">You're connected to a <ph name="NETWORK_TYPE" /> network.</translation>
 <translation id="6527303717912515753">Share</translation>
+<translation id="6528179044667508675">Do not disturb</translation>
 <translation id="652948702951888897">Chrome history</translation>
 <translation id="6530186581263215931">These settings are enforced by your administrator</translation>
 <translation id="6531282281159901044">Keep dangerous file</translation>
@@ -5394,7 +5394,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6833479554815567477">Tab removed from group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6834652994408928492">Dark mode will turn on automatically at sunset</translation>
-<translation id="683540480453879381">Open <ph name="FILE_EXTENSIONS" /> files</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Ask when a site wants to open and place windows on your screens (recommended)</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
@@ -6189,7 +6188,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7684718995427157417">To create and test your apps, enable the Android Debug Bridge (ADB). Note that this action allows installation of Android apps that haven't been verified by Google, and requires a factory reset to disable.</translation>
 <translation id="7685049629764448582">JavaScript memory</translation>
 <translation id="7685087414635069102">PIN required</translation>
-<translation id="768549422429443215">Add languages or reorder list.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7690378713476594306">Choose from list</translation>

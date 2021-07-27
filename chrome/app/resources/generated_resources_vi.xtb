@@ -1691,7 +1691,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2749881179542288782">Kiểm tra Ngữ pháp và Chính tả</translation>
 <translation id="2753677631968972007">Kiểm soát các quyền của trang web theo cách thủ công.</translation>
 <translation id="2755349111255270002">Đặt lại <ph name="DEVICE_TYPE" /> này</translation>
-<translation id="2755367719610958252">Quản lý tính năng hỗ trợ tiếp cận</translation>
+<translation id="2755367719610958252">Quản lý bộ tính năng hỗ trợ tiếp cận</translation>
 <translation id="275662540872599901">màn hình tắt</translation>
 <translation id="2757161511365746634">Xem máy in</translation>
 <translation id="2757338480560142065">Đảm bảo mật khẩu bạn đang lưu khớp với mật khẩu cho <ph name="WEBSITE" /></translation>
@@ -2200,7 +2200,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3308852433423051161">Đang tải Trợ lý Google...</translation>
 <translation id="3309330461362844500">Mã hồ sơ chứng chỉ</translation>
 <translation id="3311445899360743395">Dữ liệu liên quan đến ứng dụng này có thể bị xóa khỏi thiết bị.</translation>
-<translation id="3312424061798279731">Ngôn ngữ đã bật</translation>
 <translation id="3313622045786997898">Giá trị Chữ ký Chứng chỉ</translation>
 <translation id="3313950410573257029">Kiểm tra kết nối</translation>
 <translation id="3315158641124845231">Ẩn <ph name="PRODUCT_NAME" /></translation>
@@ -5119,6 +5118,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6521214596282732365">Trang web thường sử dụng phông chữ của bạn để hỗ trợ bạn tạo nội dung có độ chân thực cao bằng những công cụ đồ họa và thiết kế trực tuyến</translation>
 <translation id="652492607360843641">Bạn đang kết nối mạng <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
+<translation id="6528179044667508675">Ko làm phiền</translation>
 <translation id="652948702951888897">Lịch sử Chrome</translation>
 <translation id="6530186581263215931">Các tùy chọn cài đặt này được quản trị viên của bạn yêu cầu buộc phải tuân theo</translation>
 <translation id="6531282281159901044">Giữ tệp nguy hiểm</translation>
@@ -5393,7 +5393,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Chuyển sang trình duyệt an toàn và thông minh</translation>
 <translation id="6834652994408928492">Chế độ tối sẽ tự động bật vào buổi tối</translation>
-<translation id="683540480453879381">Mở các tệp <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Vui lòng kết nối Internet để cập nhật <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="6838034009068684089">Hỏi khi có một trang web muốn mở và đặt các cửa sổ trên màn hình của bạn (khuyên dùng)</translation>
 <translation id="6839225236531462745">Lỗi xóa chứng chỉ</translation>
@@ -6186,7 +6185,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7684718995427157417">Để tạo và thử nghiệm ứng dụng của bạn, hãy bật Cầu gỡ lỗi Android (Android Debug Bridge – ADB). Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
 <translation id="7685049629764448582">Bộ nhớ cho JavaScript</translation>
 <translation id="7685087414635069102">Cần có mã PIN</translation>
-<translation id="768549422429443215">Thêm ngôn ngữ hoặc sắp xếp lại danh sách.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7690378713476594306">Chọn từ danh sách</translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="1754404134430936718">已複製文字</translation>
 <translation id="1772137089884020309">書籤資料夾清單閂咗</translation>
+<translation id="1779766957982586368">關閉視窗</translation>
 <translation id="1782483593938241562">結束日期：<ph name="DATE" /></translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
@@ -225,6 +226,7 @@
 
 輕觸並按住字詞即可搜尋。如要修正搜尋，請調整選取的字詞長度。如要編輯搜尋，請開啟面板、輕按圖示以在新分頁中開啟，然後在搜尋框中進行變更。</translation>
 <translation id="2459390580524506445">加強版語音搜尋</translation>
+<translation id="2461822463642141190">電流</translation>
 <translation id="247737702124049222">圖片描述功能已開啟</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4256782883801055595">開放原始碼授權</translation>
 <translation id="4263656433980196874">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示於整個畫面</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
-<translation id="4281359692687148179">向下拉動即可重新整理</translation>
 <translation id="4290281343757112331">要稍後再下載嗎？</translation>
 <translation id="4296252229500326964">新無痕式分頁</translation>
 <translation id="4298388696830689168">已連結的網站</translation>
@@ -750,6 +751,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5834764604050996579">如要掃瞄 QR 碼，請允許 Chrome 使用攝錄機</translation>
 <translation id="5836192821815272682">正在下載 Chrome 更新…</translation>
+<translation id="5839058148541733625">Chrome 恐龍</translation>
 <translation id="5853623416121554550">已暫停</translation>
 <translation id="5854512288214985237">不向 Google 傳送任何統計資料或當機報告</translation>
 <translation id="5855546874025048181">修正搜尋：<ph name="REFINE_TEXT" /></translation>

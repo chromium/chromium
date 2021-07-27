@@ -2183,7 +2183,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3308852433423051161">Google Assistent Yüklənir...</translation>
 <translation id="3309330461362844500">Sertifikat Profilinin ID'si</translation>
 <translation id="3311445899360743395">Bu tətbiqlə bağlı data bu cihazdan silinəcək.</translation>
-<translation id="3312424061798279731">Aktiv dillər</translation>
 <translation id="3313622045786997898">Sertifikat İmzası Dəyəri</translation>
 <translation id="3313950410573257029">Bağlantını yoxlayın</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> gizlədin</translation>
@@ -5097,6 +5096,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6521214596282732365">Onlayn dizayn və qrafik alətləri ilə yüksək dəqiqliyi olan məzmun yarada bilməniz üçün saytlar adətən şriftlərinizi istifadə edir</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> şəbəkəsinə qoşulmusunuz.</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
+<translation id="6528179044667508675">Narahat etməyin</translation>
 <translation id="652948702951888897">Chrome tarixçəsi</translation>
 <translation id="6530186581263215931">Bu ayarlar administratorunuz tərəfindən tətbiq olunur</translation>
 <translation id="6531282281159901044">Təhlükəli faylları saxlayın</translation>
@@ -5371,7 +5371,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6833479554815567477">Tab bu qrupdan silindi: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ağıllı və təhlükəsiz brauzerə keçin</translation>
 <translation id="6834652994408928492">Qaranlıq rejim qürub vaxtı avtomatik aktiv ediləcək</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> fayllarını açın</translation>
 <translation id="6835762382653651563">Yeniləmə İnternetə qoşulmaq edin sizin <ph name="DEVICE_TYPE" /> .</translation>
 <translation id="6838034009068684089">Sayt ekranlarınızda pəncərələri açmaq və yerləşdirmək istədikdə soruşun (tövsiyə edilir)</translation>
 <translation id="6839225236531462745">Sertifikatın Silinməsi Xətası</translation>
@@ -6164,7 +6163,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7684718995427157417">Yaratmaq və tətbiqlərinizi sınamaq üçün Android Debug Bridge'i (ADB) aktiv edin. Nəzərə alın ki, bu əməliyyat Google tərəfindən doğrulanmamış Android tətbiqlərinin quraşdırılmasına icazə verir və deaktiv etmək üçün zavod ayarlarının bərpasını tələb edir.</translation>
 <translation id="7685049629764448582">JavaScript yaddaşı</translation>
 <translation id="7685087414635069102">PIN tələb olunur</translation>
-<translation id="768549422429443215">Dillər əlavə edin və ya siyahını yenidən sıralayın.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
 <translation id="7690378713476594306">Siyahıdan seçin</translation>

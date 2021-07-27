@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Separadores abertos</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
 <translation id="1772137089884020309">A lista de pastas de marcadores está fechada.</translation>
+<translation id="1779766957982586368">Fechar janela</translation>
 <translation id="1782483593938241562">Data de conclusão: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Altere a localização de transferência predefinida em qualquer altura.</translation>
@@ -225,6 +226,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a sua pesquisa, tocar sem
 
 Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa, selecione mais ou menos palavras. Para editar a sua pesquisa, abra o painel, toque no ícone para abrir num novo separador e efetue as suas alterações na caixa de pesquisa.</translation>
 <translation id="2459390580524506445">Pesquisa por voz otimizada</translation>
+<translation id="2461822463642141190">Atual</translation>
 <translation id="247737702124049222">As descrições de imagens estão ativadas.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -500,7 +502,6 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4263656433980196874">IU de consentimento da pesquisa por voz do Assistente aberta à altura total</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
-<translation id="4281359692687148179">Puxe para baixo para atualizar.</translation>
 <translation id="4290281343757112331">Pretende transferir mais tarde?</translation>
 <translation id="4296252229500326964">Novo sep. de nav. anónima</translation>
 <translation id="4298388696830689168">Sites associados</translation>
@@ -750,6 +751,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5833984609253377421">Partilhar link</translation>
 <translation id="5834764604050996579">Para ler um código QR, permita que o Chrome utilize a sua câmara</translation>
 <translation id="5836192821815272682">A transferir a atualização do Chrome…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">em pausa</translation>
 <translation id="5854512288214985237">Não são enviados relatórios de falhas ou estatísticas para a Google.</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>

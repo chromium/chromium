@@ -532,6 +532,7 @@
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола за JavaScript</translation>
 <translation id="1568323446248056064">Отворете ги поставките на уредот за екранот</translation>
+<translation id="1571738973904005196">Прикажи ја картичката: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Гостин)</translation>
 <translation id="1572266655485775982">Овозможи Wi-Fi</translation>
 <translation id="1572876035008611720">Внесете ја вашата е-пошта</translation>
@@ -2201,7 +2202,6 @@
 <translation id="3308852433423051161">Се вчитува „Помошникот на Google“…</translation>
 <translation id="3309330461362844500">ID за профилот на сертификатот</translation>
 <translation id="3311445899360743395">Податоците поврзани со апликацијава можеби ќе се отстранат од уредов.</translation>
-<translation id="3312424061798279731">Овозможени јазици</translation>
 <translation id="3313622045786997898">Вредност на потпис на сертификат</translation>
 <translation id="3313950410573257029">Проверете ја врската</translation>
 <translation id="3315158641124845231">Сокриј <ph name="PRODUCT_NAME" /></translation>
@@ -5120,6 +5120,7 @@
 <translation id="6521214596282732365">Сајтовите обично ги користат вашите фонтови за да може да создавате содржини со висока верност со алатки за онлајн дизајн и графика</translation>
 <translation id="652492607360843641">Поврзани сте на <ph name="NETWORK_TYPE" /> мрежа.</translation>
 <translation id="6527303717912515753">Сподели</translation>
+<translation id="6528179044667508675">Не вознем.</translation>
 <translation id="652948702951888897">Историја на Chrome</translation>
 <translation id="6530186581263215931">Овие поставки ги наметнува вашиот администратор</translation>
 <translation id="6531282281159901044">Задржи ја опасната датотека</translation>
@@ -5394,7 +5395,6 @@
 <translation id="6833479554815567477">Картичката е отстранета од групата <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Префрлете се на паметен и безбеден прелистувач</translation>
 <translation id="6834652994408928492">Темниот режим ќе се вклучи автоматски на зајдисонце</translation>
-<translation id="683540480453879381">да отвора датотеки во следниве формати: <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Прашувај кога некој сајт сака да отвора и поставува прозорци на екраните (препорачано)</translation>
 <translation id="6839225236531462745">Грешка при бришење сертификат</translation>
@@ -5660,6 +5660,7 @@
 <translation id="7117247127439884114">Најави се повторно...</translation>
 <translation id="711840821796638741">Покажи управувани обележувачи</translation>
 <translation id="711902386174337313">Пристапете до листата на најавени уреди</translation>
+<translation id="711985611146095797">Страницава ви овозможува да управувате со вашите најавени сметки на Google. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Прелистувачот Chrome и сообраќајот на Android ќе бидат блокирани освен ако не се поврзе VPN</translation>
 <translation id="7120865473764644444">Не може да се поврзе на серверот за синхронизација. Се обидува повторно…</translation>
 <translation id="7121438501124788993">Режим на програмер</translation>
@@ -6134,6 +6135,7 @@
 <translation id="7639914187072011620">Не можеше да се вчита URL за пренасочување на SAML од серверот</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> автоматски ве најавува на соодветни страници со лозинките што сте ги зачувале.</translation>
 <translation id="7641513591566880111">Ново име на профил</translation>
+<translation id="764178579712141045">Контактот <ph name="USER_EMAIL" /> е додаден</translation>
 <translation id="7642778300616172920">Сокривај ги чувствителните содржини</translation>
 <translation id="7643842463591647490">{0,plural, =1{# oтворен прозорец}one{# отворен прозорец}other{# отворени прозорци}}</translation>
 <translation id="7643932971554933646">Дали да му се дозволи на сајтот да ги прикажува датотеките?</translation>
@@ -6187,7 +6189,6 @@
 <translation id="7684718995427157417">За создавање и тестирање на вашите апликации, овозможете ја Android Debug Bridge (ADB). Имајте предвид дека дејствово овозможува инсталирање апликации за Android што не се потврдени од Google, а за оневозможувањето е потребно фабричко ресетирање.</translation>
 <translation id="7685049629764448582">Меморија на JavaScript</translation>
 <translation id="7685087414635069102">Потребен е PIN</translation>
-<translation id="768549422429443215">Додајте јазици или прередете го списокот.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7690378713476594306">Изберете од списокот</translation>
@@ -7200,6 +7201,7 @@
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8757090071857742562">Не може да се емитува работната површина. Проверете дали сте го потврдиле известувањето да започнете со споделување на екранот.</translation>
 <translation id="8757203080302669031">Картичкава активно бара уреди со Bluetooth.</translation>
+<translation id="8757368836647541092">Контактот <ph name="USER_NAME_OR_EMAIL" /> е отстранет</translation>
 <translation id="8758418656925882523">Овозможи диктирање (зборувајте за да напишете)</translation>
 <translation id="8759408218731716181">Не може да се постават повеќе најави</translation>
 <translation id="8759753423332885148">Дознајте повеќе.</translation>

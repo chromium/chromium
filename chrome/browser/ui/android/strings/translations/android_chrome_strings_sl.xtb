@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Odprti zavihki</translation>
 <translation id="1754404134430936718">Besedilo je bilo kopirano</translation>
 <translation id="1772137089884020309">Seznam map z zaznamki je zaprt.</translation>
+<translation id="1779766957982586368">Zapre okno</translation>
 <translation id="1782483593938241562">Končni datum: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Nameščeno</translation>
 <translation id="1792959175193046959">Kadar koli lahko spremenite privzeto mesto za prenose</translation>
@@ -225,6 +226,7 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 
 Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite izboljšati iskanje, izberite več ali manj besed. Če želite urediti iskanje, odprite podokno, dotaknite se ikone, da odprete na novem zavihku, in v iskalnem polju naredite spremembe.</translation>
 <translation id="2459390580524506445">Izboljšano glasovno iskanje</translation>
+<translation id="2461822463642141190">Trenutno</translation>
 <translation id="247737702124049222">Opisi slik so vklopljeni</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2485422356828889247">Odmeščanje</translation>
@@ -500,7 +502,6 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="4256782883801055595">Odprtokodne licence</translation>
 <translation id="4263656433980196874">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku, odprt pri polni višini.</translation>
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
-<translation id="4281359692687148179">Za osvežitev povlecite navzdol</translation>
 <translation id="4290281343757112331">Želite prenesti pozneje?</translation>
 <translation id="4296252229500326964">Nov anonimni zavihek</translation>
 <translation id="4298388696830689168">Povezana spletna mesta</translation>
@@ -750,6 +751,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5833984609253377421">Deli povezavo z drugimi</translation>
 <translation id="5834764604050996579">Če želite optično prebrati kodo QR, Chromu omogočite uporabo fotoaparata.</translation>
 <translation id="5836192821815272682">Prenašanje posodobitve za Chrome …</translation>
+<translation id="5839058148541733625">Dino za Chrome</translation>
 <translation id="5853623416121554550">začasno ustavljeno</translation>
 <translation id="5854512288214985237">Googlu ne bodo poslani statistični podatki ali poročila o zrušitvah.</translation>
 <translation id="5855546874025048181">Spremeni: <ph name="REFINE_TEXT" /></translation>

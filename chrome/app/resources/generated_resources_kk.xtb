@@ -556,11 +556,11 @@
 <translation id="1596286373007273895">Қолжетімді</translation>
 <translation id="1597224195604051602">Voice Match функциясы Google Assistant-ке <ph name="DEVICE_TYPE" /> құрылғысында <ph name="SUPERVISED_USER_NAME" /> дауысын анықтауға және басқалардікінен ажыратуға көмектеседі.
     <ph name="BR" />
-    Assistant бірегей үлгі ретінде балаңыздың дауысының жазбасын жасап, оны тек оның құрылғыларында сақтайды. Балаңыздың дауысы нақтырақ анықталу үшін, оның үлгісі Google-ға уақытша жіберілуі мүмкін.
+    Assistant бірегей үлгі ретінде балаңыздың дауысының жазбасын жасап, оны тек оның құрылғыларында сақтайды. Нақтырақ анықтау үшін баланың дауысы уақытша Google-ға жіберілуі мүмкін.
     <ph name="BR" />
-    Егер Voice Match функциясы балаңызға керек емес болса, оны Assistant параметрлерінен өшіре салыңыз. Voice Match реттеген кезде жазылған балаңыздың жазбаларын көру немесе жою үшін балаңыздың есептік жазбасынан g.co/assistant/match бетіне өтіңіз.
+    Егер Voice Match функциясы балаңызға керек емес болса, оны Assistant параметрлерінен өшіре салыңыз. Voice Match реттеген кезде жазылған жазбаларды көру немесе жою үшін баланың есептік жазбасынан g.co/assistant/match бетіне өтіңіз.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> Ұқсас дауыс немесе жазба <ph name="SUPERVISED_USER_NAME" /> жеке нәтижелерін пайдалана алуы мүмкін. Батарея зарядын үнемдеу үшін, "Ok Google" осы құрылғы қуат көзіне жалғанғанда ғана қосулы болады.</translation>
+    <ph name="BEGIN_BOLD" />Ескертпе:<ph name="END_BOLD" /> ұқсас дауыс немесе жазба <ph name="SUPERVISED_USER_NAME" /> жеке нәтижелерін пайдалана алуы мүмкін. Батарея зарядын үнемдеу үшін, "Ok Google" осы құрылғы қуат көзіне жалғанғанда ғана қосулы болады.</translation>
 <translation id="1598233202702788831">Әкімшіңіз жаңартуларды сөндірген.</translation>
 <translation id="1600857548979126453">Бет түзетуші серверіне кіру</translation>
 <translation id="1601560923496285236">Қолдану</translation>
@@ -1138,7 +1138,7 @@
 <translation id="2177950615300672361">Инкогнито қойындысы: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA келісімі</translation>
 <translation id="2179416702468739594">Қолжетімді профильдер ізделуде. Осыған байланысты мобильдік желі бірнеше минут өшуі мүмкін.</translation>
-<translation id="2180620921879609685">Барлық беттегі мазмұнды блоктау</translation>
+<translation id="2180620921879609685">Барлық беттегі мазмұнды бөгеу</translation>
 <translation id="2182058453334755893">Буферге көшірілді</translation>
 <translation id="2184515124301515068">Chrome браузерінде сайттардың дыбысты автоматты ойнатуына тыйым салу (ұсынылады)</translation>
 <translation id="2186711480981247270">Басқа құрылғыдан бөлісілген бет</translation>
@@ -2181,7 +2181,6 @@
 <translation id="3308852433423051161">Google Assistant жүктелуде…</translation>
 <translation id="3309330461362844500">Сертификат профилінің идентификаторы</translation>
 <translation id="3311445899360743395">Бұл қолданбамен байланыстырылған деректер бұл құрылғыдан өшірілуі мүмкін.</translation>
-<translation id="3312424061798279731">Қосылған тілдер</translation>
 <translation id="3313622045786997898">Сертификат қолтаңбасы мәні</translation>
 <translation id="3313950410573257029">Байланысты тексеру</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> жасыру</translation>
@@ -3570,7 +3569,7 @@
 <translation id="4827904420700932487">Осы суретке QR кодын жасау</translation>
 <translation id="482952334869563894"><ph name="VENDOR_ID" /> ұсынған USB құрылғылары</translation>
 <translation id="4829768588131278040">PIN кодын орнату</translation>
-<translation id="4830026649400230050">Барлық жарамды жүктеп алынған файл ұйымның <ph name="WEB_DRIVE" /> есептік жазбасына бағытталады.</translation>
+<translation id="4830026649400230050">Барлық жүктеп алынған файл ұйымның <ph name="WEB_DRIVE" /> есептік жазбасына бағытталады.</translation>
 <translation id="4830121310592638841">Сайт терезелерді ашып, экрандарға орналастырғысы келгенде сұрау</translation>
 <translation id="4830502475412647084">ОЖ жаңартылған нұсқасы орнатылуда</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> <ph name="NETWORK_NAME" /> көмегімен интернетке қосыла алмайды. Басқа желіні іздеңіз. <ph name="LEARN_MORE_LINK_START" />Толығырақ<ph name="LEARN_MORE_LINK_END" /></translation>
@@ -5099,6 +5098,7 @@
 <translation id="6521214596282732365">Сайттар әдетте сіздің қаріптеріңізді пайдаланады, сондықтан дизайн мен графикаға арналған онлайн құралдардың көмегімен жоғары сапалы мазмұн құруыңызға болады.</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> желісіне жалғандыңыз.</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
+<translation id="6528179044667508675">Мазаламау</translation>
 <translation id="652948702951888897">Chrome тарихы</translation>
 <translation id="6530186581263215931">Бұл параметрлерді әкімші орнатқан.</translation>
 <translation id="6531282281159901044">Қауіпті файлды сақтау</translation>
@@ -5373,7 +5373,6 @@
 <translation id="6833479554815567477">Қойынды "<ph name="GROUP_NAME" />" тобынан (<ph name="GROUP_CONTENTS" />) өшірілді.</translation>
 <translation id="683373380308365518">Зерделі және қауіпсіз браузерге ауысыңыз</translation>
 <translation id="6834652994408928492">Күн батқанда, қараңғы режим автоматты түрде қосылады.</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> файлдарын ашу</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
 <translation id="6838034009068684089">Сайт терезелерді ашып, экрандарға орналастырғысы келгенде сұрау (ұсынылады)</translation>
 <translation id="6839225236531462745">Сертификат жою қатесі</translation>
@@ -5616,7 +5615,7 @@
 <translation id="7088434364990739311">Жаңарту тексеруін іске қосу сәтсіз аяқталды (<ph name="ERROR" /> қате коды).</translation>
 <translation id="7088561041432335295">Zip Archiver - "Файлдар" қолдабасында ZIP файлдарын ашу және бумалау.</translation>
 <translation id="7088674813905715446">Бұл құрылғыны әкімші "жойылған" күйіне қойды. Тіркеу үшін оны қайта қосу мақсатында әкімшіңізден құрылғыңызды күту күйіне қоюын сұраңыз.</translation>
-<translation id="7093416310351037609">Деректің қауіпсіздігі үшін ұйым барлық сәйкес жүктеп алынған файлдың оның <ph name="WEB_DRIVE" /> есептік жазбасына сақталуын талап етеді.</translation>
+<translation id="7093416310351037609">Деректің қауіпсіздігі үшін ұйым барлық жүктеп алынған файлдың өзінің <ph name="WEB_DRIVE" /> есептік жазбасына сақталуын талап етеді.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Деректерді мына құрылғылармен ауыстыру: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
@@ -6166,7 +6165,6 @@
 <translation id="7684718995427157417">Қолданбалар жасау және тексеру үшін Android Debug Bridge (ADB) құралын іске қосу керек. Бұл — Google растамаған Android қолданбаларының орнатылуына мүмкіндік беретінін ескеріңіз. Құралды өшіру үшін зауыттық параметрлерге қайтару қажет болады.</translation>
 <translation id="7685049629764448582">JavaScript жады</translation>
 <translation id="7685087414635069102">PIN коды қажет</translation>
-<translation id="768549422429443215">Тілдерді енгізіңіз немесе тізімнің ретін өзгертіңіз.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7690378713476594306">Тізімнен таңдау</translation>
@@ -6586,7 +6584,7 @@
 <translation id="810068641062493918"><ph name="LANGUAGE" /> таңдалды. Құсбелгісін алып тастау үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="810185532889603849">Арнаулы түс</translation>
 <translation id="8101987792947961127">Келесі қайта жүктеу кезінде Powerwash қажет</translation>
-<translation id="81020759409809034">Жүктелетін орны</translation>
+<translation id="81020759409809034">Құрылғыдағы орны</translation>
 <translation id="8102139037507939978">Жеке тұлғаны анықтау ақпаратын system_logs.txt файлынан өшіру.</translation>
 <translation id="8104088837833760645">eSIM профилін жүктеп алу</translation>
 <translation id="8107015733319732394">Google Play Store дүкені <ph name="DEVICE_TYPE" /> құрылғысына орнатылуда. Бұл бірнеше минут алады.</translation>

@@ -346,7 +346,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3702846122927433391">Íbúafjöldi í Nígeríu</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="370665806235115550">Hleður...</translation>
-<translation id="3712407551474845318">Taka mynd af svæði</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
 <translation id="3742055079367172538">Skjámynd tekin</translation>
@@ -485,6 +484,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
 <translation id="4705716602320768426">Skrá ábendingu</translation>
+<translation id="4730258224256997107">Hjálpaðu okkur að bæta þetta!</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="4734965478015604180">Lárétt</translation>
 <translation id="4735498845456076464">Flýtilyklinum „<ph name="LAUNCHER_KEY_NAME" /> + tölustafur“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + lykil í efstu röð til að nota aðgerðalyklana.</translation>
@@ -674,7 +674,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6284232397434400372">Upplausn breytt</translation>
 <translation id="6288235558961782912">Hægt er að bæta <ph name="USER_EMAIL_ADDRESS" /> við aftur síðar með leyfi foreldris.</translation>
 <translation id="6291221004442998378">Ekki í hleðslu</translation>
-<translation id="6297287540776456956">Notaðu pennann til að velja svæði</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> var snúið í <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Tal</translation>
 <translation id="6330012934079202188">Sýnir glugga allra skrifborða, ýttu á ör upp til að sýna glugga núverandi skrifborðs</translation>
@@ -699,7 +698,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="652139407789908527">Það mun slokkna á skjánum lengur en vanalega (í allt að mínútu) meðan á þessari uppfærslu stendur. Ekki ýta á aflrofann meðan á uppfærslunni stendur.</translation>
 <translation id="6528179044667508675">Ónáðið ekki</translation>
 <translation id="65320610082834431">Emoji-tákn</translation>
-<translation id="6537270692134705506">Taka mynd af skjá</translation>
 <translation id="6537924328260219877"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
 <translation id="6542521951477560771">Sendir út til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Spyrja kerfisstjóra</translation>

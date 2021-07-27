@@ -2187,7 +2187,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3308852433423051161">Chargement de l'Assistant Google en cours…</translation>
 <translation id="3309330461362844500">Identifiant de profil du certificat</translation>
 <translation id="3311445899360743395">Les données associées à cette application pourraient être supprimées de cet appareil.</translation>
-<translation id="3312424061798279731">Langues activées</translation>
 <translation id="3313622045786997898">Valeur de la signature du certificat</translation>
 <translation id="3313950410573257029">Vérifier la connexion</translation>
 <translation id="3315158641124845231">Masquer <ph name="PRODUCT_NAME" /></translation>
@@ -5105,6 +5104,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6521214596282732365">Les sites utilisent généralement vos polices pour que vous puissiez créer du contenu haute fidélité grâce à des outils de conception et de graphisme en ligne</translation>
 <translation id="652492607360843641">Vous êtes connecté à un réseau <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Partager</translation>
+<translation id="6528179044667508675">Ne pas déranger</translation>
 <translation id="652948702951888897">Historique de Google Chrome</translation>
 <translation id="6530186581263215931">Ces paramètres sont imposés par votre administrateur</translation>
 <translation id="6531282281159901044">Conserver le fichier dangereux</translation>
@@ -5379,7 +5379,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passer à un navigateur intelligent et sécurisé</translation>
 <translation id="6834652994408928492">Le mode sombre s'activera automatiquement au coucher du soleil</translation>
-<translation id="683540480453879381">Ouvrir les fichiers <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Veuillez vous connecter à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Demander la permission lorsqu'un site souhaite ouvrir et placer des fenêtres sur vos écrans (recommandé)</translation>
 <translation id="6839225236531462745">Erreur de suppression de certificat</translation>
@@ -6172,7 +6171,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez le pont de débogage Android (PDA). Prenez note que cette action permet d'installer des applications Android qui n'ont pas été vérifiées par Google. Pour désactiver cette fonctionnalité, vous devrez réinitialiser l'appareil.</translation>
 <translation id="7685049629764448582">Mémoire pour JavaScript</translation>
 <translation id="7685087414635069102">NIP requis</translation>
-<translation id="768549422429443215">Ajoutez des langues ou triez la liste de nouveau.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmez le nouveau mot de passe</translation>
 <translation id="7690378713476594306">Choisir dans la liste</translation>

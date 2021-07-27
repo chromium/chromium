@@ -530,6 +530,7 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Բացել էկրանի կարգավորումները</translation>
+<translation id="1571738973904005196">Դիտել ներդիրը՝ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (հյուր)</translation>
 <translation id="1572266655485775982">Միացնել Wi-Fi-ը</translation>
 <translation id="1572876035008611720">Մուտքագրեք հասցեն</translation>
@@ -2186,7 +2187,6 @@
 <translation id="3308852433423051161">Google Օգնականի բեռնում...</translation>
 <translation id="3309330461362844500">Հավաստագրման պրոֆիլի ID-ն</translation>
 <translation id="3311445899360743395">Այս հավելվածին առնչվող տվյալները կարող են հեռացվել այս սարքից:</translation>
-<translation id="3312424061798279731">Միացված լեզուները</translation>
 <translation id="3313622045786997898">Վկայագրի ստորագրության արժեքը</translation>
 <translation id="3313950410573257029">Ստուգել կապը</translation>
 <translation id="3315158641124845231">Hide <ph name="PRODUCT_NAME" /></translation>
@@ -5107,6 +5107,7 @@
 <translation id="6521214596282732365">Կայքերը սովորաբար օգտագործում են ձեր տառատեսակները, որպեսզի դուք կարողանաք դիզայնի և գրաֆիկայի առցանց գործիքների միջոցով բարձր որակի բովանդակություն ստեղծել։</translation>
 <translation id="652492607360843641">Դուք միացած եք <ph name="NETWORK_TYPE" /> ցանցին:</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
+<translation id="6528179044667508675">Չանհանգստացնել</translation>
 <translation id="652948702951888897">Chrome-ի պատմություն</translation>
 <translation id="6530186581263215931">Այս կարգավորումները պարտադրված են ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6531282281159901044">Պահել վտանգավոր ֆայլը</translation>
@@ -5381,7 +5382,6 @@
 <translation id="6833479554815567477">Ներդիրը հեռացվեց «<ph name="GROUP_NAME" />» խմբից – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ընտրեք խելացի ու անվտանգ դիտարկիչ</translation>
 <translation id="6834652994408928492">Մութն ընկնելուն պես մուգ ռեժիմը ավտոմատ կմիանա</translation>
-<translation id="683540480453879381">Բացել <ph name="FILE_EXTENSIONS" /> ֆայլերը</translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>
 <translation id="6838034009068684089">Հարցնել, երբ կայքն ուզում է բացել և տեղակայել պատուհաններ ձեր էկրաններին (խորհուրդ է տրվում)</translation>
 <translation id="6839225236531462745">Վկայագիրը ջնջելիս սխալ առաջացավ</translation>
@@ -5647,6 +5647,7 @@
 <translation id="7117247127439884114">Նորից մուտք գործել…</translation>
 <translation id="711840821796638741">Ցուցադրել կառավարվող էջանիշները</translation>
 <translation id="711902386174337313">Տեսնել ձեր մուտք գործած սարքերի ցանկը</translation>
+<translation id="711985611146095797">Այս էջում կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome դիտարկիչի և Android սարքի թրաֆիկը կարգելահանվեն, երբ VPN-ի հետ կապը վերականգնվի</translation>
 <translation id="7120865473764644444">Չհաջողվեց միանալ համաժամացման սերվերին: Նորից ենք փորձում…</translation>
 <translation id="7121438501124788993">Մշակողի ռեժիմ</translation>
@@ -6121,6 +6122,7 @@
 <translation id="7639914187072011620">Չհաջողվեց URL-ի SAML վերաուղղորդումները բեռնել սերվերից</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />-ը թույլ է տալիս ավտոմատ կերպով մուտք գործել աջակցվող կայքեր ձեր պահած գաղտնաբառերով:</translation>
 <translation id="7641513591566880111">Նոր պրոֆիլի անունը</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> օգտատերն ավելացվեց</translation>
 <translation id="7642778300616172920">Թաքցնել գաղտնի տվյալները</translation>
 <translation id="7643842463591647490">{0,plural, =1{# բաց պատուհան}one{# բաց պատուհան}other{# բաց պատուհան}}</translation>
 <translation id="7643932971554933646">Թույլ տա՞լ կայքին ֆայլեր դիտել</translation>
@@ -6174,7 +6176,6 @@
 <translation id="7684718995427157417">Հավելվածներ ստեղծելու և փորձարկելու համար միացրեք Android Debug Bridge-ը (ADB)։ Նկատի ունեցեք, որ այս գործողությունը թույլ է տալիս այն Android հավելվածների տեղադրումը, որոնք չեն ստուգվել Google-ի կողմից։ Դրա համար անհրաժեշտ է վերականգնել սարքի գործարանային կարգավորումները։</translation>
 <translation id="7685049629764448582">JavaScript հիշողություն</translation>
 <translation id="7685087414635069102">Պահանջվում է PIN կոդ</translation>
-<translation id="768549422429443215">Ավելացրեք լեզուներ կամ վերադասավորեք ցանկը։</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7690378713476594306">Ընտրել ցանկից</translation>
@@ -7182,6 +7183,7 @@
 <translation id="8756969031206844760">Թարմացնե՞լ գաղտնաբառը</translation>
 <translation id="8757090071857742562">Չհաջողվեց հեռարձակել աշխատասեղանը: Համոզվեք, որ հաստատել եք ձեր էկրանով կիսվելու հրավերը:</translation>
 <translation id="8757203080302669031">Այս ներդիրն ակտիվորեն որոնում է Bluetooth սարքեր։</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> օգտատերը հեռացվեց</translation>
 <translation id="8758418656925882523">Միացնել ձայնային ներածումը (խոսքից տեքստ արտածում)</translation>
 <translation id="8759408218731716181">Հնարավոր չէ կարգավորել բազմակի մուտքը</translation>
 <translation id="8759753423332885148">Մանրամասն:</translation>

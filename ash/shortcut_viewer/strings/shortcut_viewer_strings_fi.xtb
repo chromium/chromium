@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">Vieritä sivun alareunaan</translation>
 <translation id="2530896289327917474">Laita näppäimistöselaaminen päälle tai pois päältä</translation>
 <translation id="2574014812750545982">Nollaa sivun zoomaustaso</translation>
-<translation id="2596078834055697711">Ota kuvakaappaus</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sitten <ph name="TAB" /> tai <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Päivitä nykyinen sivu</translation>
 <translation id="2764005613199379871">Aktivoi osoite- ja hakupalkki</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Pikanäppäimet</translation>
 <translation id="3084301071537457911">Korosta hyllyn seuraava kohde</translation>
 <translation id="309173601632226815">Korosta hyllyn käynnistyspainike</translation>
-<translation id="3105917916468784889">Ota kuvakaappaus</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Keskitä osoitepalkkiin</translation>
 <translation id="3256109297135787951">Poista korostus hyllyssä olevasta kohteesta</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Avaa pikanäppäinapuri</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> tai <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Avaa tila-alue, jossa tilikuvasi näkyy</translation>
-<translation id="4642092649622328492">Ota osittainen kuvakaappaus</translation>
 <translation id="4698850295812410683">Näyttää näyttökynän työkalut</translation>
 <translation id="4801989101741319327">Siirry seuraavan sanan loppuun</translation>
 <translation id="4866066940972151697">Aktivoi oikealla oleva työpöytä</translation>

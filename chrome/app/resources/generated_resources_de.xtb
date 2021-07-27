@@ -12,6 +12,7 @@
 <translation id="1006873397406093306">Diese Erweiterung kann Ihre Daten auf Websites lesen und ändern. Sie können festlegen, auf welche Websites die Erweiterung Zugriff hat.</translation>
 <translation id="1008186147501209563">Lesezeichen exportieren</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
+<translation id="1009476156254802388"><ph name="WEB_DRIVE" />-Speicherort</translation>
 <translation id="1010498023906173788">Dieser Tab ist mit einer seriellen Schnittstelle verbunden.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Seite reagiert nicht}other{Seiten reagieren nicht}}</translation>
 <translation id="1011355516189274711">Lautstärke der Sprachausgabe</translation>
@@ -157,6 +158,7 @@
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1165039591588034296">Fehler</translation>
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
+<translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
 <translation id="1170288591054440704">Nachfragen, wenn eine Website Schriftarten verwenden möchte, die auf meinem Gerät installiert sind</translation>
 <translation id="1171135284592304528">Objekt mit Tastaturfokus bei Änderung hervorheben</translation>
@@ -235,6 +237,7 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> konnte nicht installiert werden: Die Image-URL hat einen <ph name="HTTP_ERROR" />-Fehlercode zurückgegeben. Bitte wenden Sie sich an Ihren Administrator.</translation>
 <translation id="1251366534849411931">Erwartete öffnende geschweifte Klammer: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites oder installierten Apps gespeicherten Daten gelöscht</translation>
+<translation id="1251578593170406502">Mobile Datennetzwerke werden gesucht…</translation>
 <translation id="125220115284141797">Standard</translation>
 <translation id="1252987234827889034">Profilfehler aufgetreten</translation>
 <translation id="1254593899333212300">Direkte Internetverbindung</translation>
@@ -422,6 +425,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="146000042969587795">Dieser Frame wurde gesperrt, weil er unsicheren Inhalt enthält.</translation>
 <translation id="146219525117638703">ONC-Status</translation>
 <translation id="146220085323579959">Die Internetverbindung wurde getrennt. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.</translation>
+<translation id="1462850958694534228">Symbolaktualisierung prüfen</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> wurde vom Erweiterten Sicherheitsprogramm blockiert.</translation>
 <translation id="1464044141348608623">Websites dürfen keine Informationen zu meiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="1464258312790801189">Meine Konten</translation>
@@ -550,6 +554,13 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1593926297800505364">Zahlungsmethode speichern</translation>
 <translation id="1595492813686795610">Linux wird aktualisiert</translation>
 <translation id="1596286373007273895">Verfügbar</translation>
+<translation id="1597224195604051602">Mit „Voice Match“ kann Google Assistant die Stimme von <ph name="SUPERVISED_USER_NAME" /> auf dem Gerät (<ph name="DEVICE_TYPE" />) erkennen und das Kind so von anderen unterscheiden.
+    <ph name="BR" />
+    Assistant nimmt Audioclips der Stimme Ihres Kindes auf, um ein eindeutiges Sprachmodell zu erstellen, das nur auf seinen Geräten gespeichert ist. Das Sprachmodell Ihres Kindes wird eventuell vorübergehend an Google gesendet, um seine Stimme besser identifizieren zu können.
+    <ph name="BR" />
+    Wenn Sie sich später gegen „Voice Match“ entscheiden, entfernen Sie die Funktion einfach in den Assistant-Einstellungen Ihres Kindes. Unter g.co/assistant/match können Sie die Audioclips im Konto Ihres Kindes aufrufen oder löschen, die es während der „Voice Match“-Einrichtung aufgenommen hat.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse Ihres Kindes zugreifen. Zur Schonung des Akkus ist „Hey Google“ nur dann aktiv, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="1598233202702788831">Updates sind durch Ihren Administrator deaktiviert.</translation>
 <translation id="1600857548979126453">Auf das Back-End für Seiten-Debugger zugreifen</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
@@ -901,6 +912,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1937774647013465102">Der Containerarchitekturtyp <ph name="ARCHITECTURE_CONTAINER" /> kann bei diesem Gerät nicht importiert werden, weil es sich um ein <ph name="ARCHITECTURE_DEVICE" />-Gerät handelt. Sie können probieren, diesen Container auf einem anderen Gerät wiederherzustellen oder das Containerimage in der App "Dateien" öffnen und dort auf die enthaltenen Dateien zugreifen.</translation>
 <translation id="1938351510777341717">Externer Befehl</translation>
 <translation id="1940546824932169984">Verbundene Geräte</translation>
+<translation id="1942128823046546853">Alle Ihre Daten auf allen Websites lesen und ändern</translation>
 <translation id="1942600407708803723">Beim Zuklappen herunterfahren</translation>
 <translation id="1944528062465413897">Bluetooth-Kopplungscode:</translation>
 <translation id="1944921356641260203">Update gefunden</translation>
@@ -934,6 +946,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1979095679518582070">Wenn Sie diese Funktion deaktivieren, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
 <translation id="1979280758666859181">Sie möchten zu einem Kanal mit einer älteren Version von <ph name="PRODUCT_NAME" /> wechseln. Die Änderung erfolgt, sobald die Kanalversion der aktuell auf Ihrem Gerät installierten Version entspricht.</translation>
 <translation id="197989455406964291">KDC unterstützt den Verschlüsselungstyp nicht</translation>
+<translation id="1981434377190976112">Alle Ihre Daten auf allen Websites lesen</translation>
 <translation id="1983497378699148207">Aktualisieren Sie Chrome OS und versuchen Sie es noch einmal, um die Einrichtung von Linux abzuschließen.</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
 <translation id="1987317783729300807">Konten</translation>
@@ -1125,6 +1138,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2177950615300672361">Inkognitotab: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Kompromittierung der Zertifizierungsstelle</translation>
 <translation id="2179416702468739594">Es wird nach verfügbaren Profilen gesucht. Das kann dazu führen, dass Ihre Mobilfunkverbindung einige Minuten getrennt wird.</translation>
+<translation id="2180620921879609685">Inhalte auf jeder Seite blockieren</translation>
 <translation id="2182058453334755893">In die Zwischenablage kopiert</translation>
 <translation id="2184515124301515068">Chrome die Entscheidung überlassen, wann Audioinhalte auf Websites abgespielt werden (empfohlen)</translation>
 <translation id="2186711480981247270">Von einem anderen Gerät geteilte Seite</translation>
@@ -2132,6 +2146,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3274763671541996799">Sie befinden sich im Vollbildmodus.</translation>
 <translation id="3275778809241512831">Ihr interner Sicherheitsschlüssel ist momentan nicht sicher. Bitte entfernen Sie den Schlüssel aus allen Diensten, für die Sie ihn verwendet haben, und setzen Sie ihn zurück, um das Problem zu beheben.</translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
+<translation id="3276572954285630448">Unbenannte Tabgruppe</translation>
 <translation id="3277691515294482687">Meine Apps und Dateien vor dem Upgrade von Linux im Ordner "Meine Dateien" sichern.</translation>
 <translation id="3278001907972365362">Ihre Google-Konten erfordern Aufmerksamkeit</translation>
 <translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
@@ -2167,7 +2182,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Google Assistant wird geladen...</translation>
 <translation id="3309330461362844500">Zertifikatsprofil-ID</translation>
 <translation id="3311445899360743395">Daten, die dieser App zugewiesen sind, werden möglicherweise von diesem Gerät entfernt.</translation>
-<translation id="3312424061798279731">Aktivierte Sprachen</translation>
 <translation id="3313622045786997898">Wert für Zertifikatsignatur</translation>
 <translation id="3313950410573257029">Verbindung prüfen</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> ausblenden</translation>
@@ -2553,6 +2567,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Google und ich</translation>
 <translation id="3722108462506185496">Fehler beim Starten des Dienstes für die virtuelle Maschine. Bitte versuchen Sie es noch einmal.</translation>
+<translation id="3727144509609414201">Verfügbare WLANs</translation>
 <translation id="3727187387656390258">Pop-up prüfen</translation>
 <translation id="372722114124766626">Nur einmal</translation>
 <translation id="3727473233247516571">Subframe im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2719,6 +2734,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates werden von Ihrem Administrator verwaltet</translation>
 <translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
+<translation id="3888053818972567950"><ph name="WEB_DRIVE" />-Verbindung</translation>
 <translation id="3888550877729210209">Notizerstellung mit <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Diese Informationen helfen uns, Ihr Problem mit Assistant besser zu verstehen. Sie werden bis zu 90 Tage gespeichert und der Zugriff ist auf die zuständigen Entwickler- und Feedbackteams beschränkt.</translation>
 <translation id="3890064827463908288">Chrome-Synchronisierung aktivieren, um WLAN-Synchronisation zu verwenden</translation>
@@ -3095,6 +3111,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-Konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-Konten}}</translation>
 <translation id="4312866146174492540">Blockieren (Standard)</translation>
 <translation id="4314815835985389558">Synchronisierung verwalten</translation>
+<translation id="4315933848520197627">Kontoverknüpfung aufheben</translation>
 <translation id="4316850752623536204">Website des Entwicklers</translation>
 <translation id="4317820549299924617">Bestätigung fehlgeschlagen</translation>
 <translation id="4320177379694898372">Keine Internetverbindung</translation>
@@ -3361,6 +3378,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4596295440756783523">In Ihren gespeicherten Zertifikaten sind folgende Server angegeben</translation>
 <translation id="4598556348158889687">Speicherplatzverwaltung</translation>
 <translation id="4598776695426288251">WLAN über mehrere Geräte verfügbar</translation>
+<translation id="4601426376352205922">Als ungelesen markieren</translation>
 <translation id="4602466770786743961"><ph name="HOST" /> immer Zugriff auf Kamera und Mikrofon gestatten</translation>
 <translation id="4606551464649945562">Websites nicht erlauben, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen</translation>
 <translation id="4608500690299898628">&amp;Suchen...</translation>
@@ -3552,6 +3570,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4827904420700932487">QR-Code für dieses Bild erstellen</translation>
 <translation id="482952334869563894">USB-Geräte vom Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">PIN erstellen</translation>
+<translation id="4830026649400230050">Alle berechtigten Downloads werden im <ph name="WEB_DRIVE" />-Konto Ihrer Organisation gespeichert.</translation>
 <translation id="4830121310592638841">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte</translation>
 <translation id="4830502475412647084">Betriebssystem-Update wird installiert</translation>
 <translation id="4830573902900904548">Ihr Gerät (<ph name="DEVICE_TYPE" />) kann über <ph name="NETWORK_NAME" /> keine Internetverbindung herstellen. Bitte wählen Sie ein anderes Netzwerk aus. <ph name="LEARN_MORE_LINK_START" />Weitere Informationen<ph name="LEARN_MORE_LINK_END" /></translation>
@@ -5078,6 +5097,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6521214596282732365">Websites verwenden Ihre Schriftarten normalerweise, damit Sie mit Onlinetools für Design und Grafik High-Fidelity-Inhalte erstellen können</translation>
 <translation id="652492607360843641">Sie sind mit einem <ph name="NETWORK_TYPE" />-Netzwerk verbunden.</translation>
 <translation id="6527303717912515753">Teilen</translation>
+<translation id="6528179044667508675">Nicht stören</translation>
 <translation id="652948702951888897">Chrome-Verlauf</translation>
 <translation id="6530186581263215931">Diese Einstellungen werden von Ihrem Administrator erzwungen</translation>
 <translation id="6531282281159901044">Schädliche Datei beibehalten</translation>
@@ -5352,7 +5372,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6833479554815567477">Tab wurde aus folgender Gruppe entfernt: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Steigen Sie auf einen intelligenten und sicheren Browser um</translation>
 <translation id="6834652994408928492">Dunkler Modus wird bei Sonnenuntergang automatisch aktiviert</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" />-Dateien öffnen</translation>
 <translation id="6835762382653651563">Stellen Sie eine Internetverbindung her, um Ihr Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6838034009068684089">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte (empfohlen)</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
@@ -5595,6 +5614,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7088434364990739311">Update-Prüfung konnte nicht gestartet werden. Fehlercode: <ph name="ERROR" /></translation>
 <translation id="7088561041432335295">Zip Archiver: Öffnen und packen Sie ZIP-Dateien in der App "Dateien".</translation>
 <translation id="7088674813905715446">Die Bereitstellung dieses Geräts wurde vom Administrator aufgehoben. Bitten Sie Ihren Administrator, es als ausstehend zu kennzeichnen, um es für die Registrierung zu aktivieren.</translation>
+<translation id="7093416310351037609">Für den Schutz Ihrer Daten und die Sicherheit verlangt Ihre Organisation, dass alle berechtigten Downloads im <ph name="WEB_DRIVE" />-Konto Ihrer Organisation gespeichert werden.</translation>
 <translation id="7093434536568905704">GTK+</translation>
 <translation id="7093866338626856921">Daten mit den Geräten mit folgenden Namen austauschen: <ph name="HOSTNAMES" /></translation>
 <translation id="7098389117866926363">USB-C-Gerät (linker Port hinten)</translation>
@@ -5963,6 +5983,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7507930499305566459">Zertifikat für Statusantwortdienst</translation>
 <translation id="7509097596023256288">Verwaltung wird eingerichtet</translation>
 <translation id="7509246181739783082">Identität bestätigen</translation>
+<translation id="7509539379068593709">App deinstallieren</translation>
 <translation id="7511415964832680006">Wenn diese Option aktiviert ist, können Websites die hier aufgeführten Technologien, die zu einem besseren Datenschutz beitragen, zur Bereitstellung ihrer Inhalte und Dienste verwenden. Hierzu zählen unter anderem Alternativen zum websiteübergreifenden Tracking. Mit der Zeit können weitere Testfunktionen hinzukommen.</translation>
 <translation id="7513029293694390567">Sie werden mithilfe gespeicherter Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion deaktiviert ist, werden Sie bei jeder Anmeldung auf einer Website nach einer Bestätigung gefragt.</translation>
 <translation id="7514236770834963598">Prüfen Sie Ihre Einstellungen, um die wichtigsten Datenschutz- und Sicherheitseinstellungen zu konfigurieren</translation>
@@ -6143,7 +6164,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7684718995427157417">Aktivieren Sie zum Erstellen und Testen Ihrer Apps Android Debug Bridge (ADB). Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
 <translation id="7685049629764448582">JavaScript-Speicher</translation>
 <translation id="7685087414635069102">PIN erforderlich</translation>
-<translation id="768549422429443215">Sie können Sprachen hinzufügen oder die Liste neu anordnen.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Neues Passwort bestätigen</translation>
 <translation id="7690378713476594306">Aus Liste auswählen</translation>
@@ -6311,6 +6331,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7841134249932030522">Dunklen Modus aktivieren</translation>
 <translation id="7842692330619197998">Rufen Sie g.co/ChromeEnterpriseAccount auf, wenn Sie ein neues Konto erstellen müssen.</translation>
 <translation id="784273751836026224">Linux deinstallieren</translation>
+<translation id="7843786652787044762">In <ph name="WEB_DRIVE" /> anmelden</translation>
 <translation id="7844992432319478437">DIFF-Datei wird aktualisiert.</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7847212883280406910">Drücken Sie Strg + Alt + S, um zu <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> zu wechseln.</translation>
@@ -6563,6 +6584,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ausgewählt. Drücken Sie zum Aufheben der Auswahl die Suchtaste + Leertaste.</translation>
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>
+<translation id="81020759409809034">Lokaler Speicherort</translation>
 <translation id="8102139037507939978">Personenidentifizierbare Informationen aus system_logs.txt entfernen.</translation>
 <translation id="8104088837833760645">eSIM-Profil herunterladen</translation>
 <translation id="8107015733319732394">Google Play Store wird auf Ihrem <ph name="DEVICE_TYPE" /> installiert. Dies kann ein paar Minuten dauern.</translation>
@@ -6771,6 +6793,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="8321837372750396788">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird nun von <ph name="MANAGER" /> verwaltet.</translation>
 <translation id="8322814362483282060">Diese Seite darf nicht auf Ihr Mikrofon zugreifen.</translation>
 <translation id="8323167517179506834">URL eingeben</translation>
+<translation id="8323317289166663449">Alle Ihre Daten auf Ihrem Computer und allen Websites lesen und ändern</translation>
 <translation id="8324784016256120271">Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
@@ -6811,6 +6834,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="8373652277231415614">Freigegebene Crostini-Verzeichnisse</translation>
 <translation id="8376137163494131156">Sagen Sie uns, was das Problem mit Google Cast ist.</translation>
 <translation id="8376384591331888629">Einschließlich Cookies von Drittanbietern auf dieser Website</translation>
+<translation id="8376451933628734023">Wenn diese Web-App vorzutäuschen versucht, eine andere App zu sein, deinstallieren Sie sie.</translation>
 <translation id="8378714024927312812">Von Ihrer Organisation verwaltet</translation>
 <translation id="8379156816349755485">Bei der Anmeldung wird ein eindeutiges Authentifizierungs-Token gespeichert, das für alle zukünftigen berechtigten Downloads verwendet wird.</translation>
 <translation id="8379878387931047019">Das Gerät ist nicht mit dem Sicherheitsschlüssel kompatibel, der von dieser Website angefordert wird</translation>

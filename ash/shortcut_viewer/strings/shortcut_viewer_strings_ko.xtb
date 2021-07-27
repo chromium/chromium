@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">웹페이지를 아래로 스크롤</translation>
 <translation id="2530896289327917474">캐럿 브라우징 사용 설정 또는 중지</translation>
 <translation id="2574014812750545982">페이지 확대/축소 레벨 재설정</translation>
-<translation id="2596078834055697711">창 스크린샷 찍기</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />을 누르고 <ph name="TAB" /> 또는 <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">현재 페이지를 새로고침</translation>
 <translation id="2764005613199379871">검색주소창에 포커스를 둡니다.</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">바로가기</translation>
 <translation id="3084301071537457911">실행기의 다음 항목 강조표시</translation>
 <translation id="309173601632226815">실행기의 런처 버튼 강조표시</translation>
-<translation id="3105917916468784889">스크린샷 찍기</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">주소 표시줄로 이동</translation>
 <translation id="3256109297135787951">실행기에 있는 항목에서 강조표시를 삭제합니다.</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">단축키 도우미 보기</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> 또는 <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">상태 영역(계정 사진이 표시되는 위치) 열기</translation>
-<translation id="4642092649622328492">부분 스크린샷 찍기</translation>
 <translation id="4698850295812410683">스타일러스 도구 표시</translation>
 <translation id="4801989101741319327">다음 단어의 끝으로 이동</translation>
 <translation id="4866066940972151697">오른쪽 데스크 활성화</translation>

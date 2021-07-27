@@ -296,6 +296,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="65587193855025101">Planshetli</translation>
 <translation id="6564646048574748301">Bajarilmadi - Printer ulanmagan</translation>
 <translation id="6574762126505704998">Toʻldirish</translation>
+<translation id="6596816719288285829">IP manzil</translation>
 <translation id="6603230386432466813">Ulanishda muammo bormi?</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
@@ -318,6 +319,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7059230779847288458">Quvvat olmoqda (<ph name="TIME_VALUE" /> qoldi)</translation>
 <translation id="708426984172631313">TOʻXTATILDI</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>

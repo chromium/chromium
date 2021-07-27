@@ -1,6 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="1000202298241288854">Hinweis: Diese Richtlinie wurde in M94 entfernt.  Sie war nur zur kurzfristigen Überbrückung vorgesehen.
+
+      Wenn sie aktiviert ist, sendet die Funktion „<ph name="PRODUCT_NAME" />“ detaillierte Anfrageheader mit Informationen über den Browser und die Umgebung des Nutzers.
+      Dies ist eine Zusatzfunktion, aber die neuen Header funktionieren auf manchen Websites, die die Anzahl der Zeichen in Anfragen einschränken, nicht.
+      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Funktion „<ph name="PRODUCT_NAME" />“ aktiviert. Wenn sie deaktiviert ist, ist die Funktion nicht verfügbar.</translation>
 <translation id="1002439864875515590">Wenn diese Richtlinie auf einen leeren String festgelegt oder nicht konfiguriert ist, zeigt <ph name="PRODUCT_OS_NAME" /> beim Nutzeranmeldeprozess keine Option zur automatischen Vervollständigung an.
       Ist diese Richtlinie auf einen String festgelegt, der einen Domainnamen darstellt, dann zeigt <ph name="PRODUCT_OS_NAME" /> beim Nutzeranmeldeprozess eine Option zum automatischen Vervollständigen an. In diesem Fall muss der Nutzer nur einen Nutzernamen eingeben und kann die Domainnamenserweiterung weglassen.  Der Nutzer kann diese Domainnamenserweiterung überschreiben.
       Ist der Wert der Richtlinie keine gültige Domain, dann wird die Richtlinie nicht angewendet.</translation>
@@ -1283,6 +1288,20 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle installierten nativen Nachrichtenhosts von <ph name="PRODUCT_NAME" /> geladen.</translation>
 <translation id="2568488785376704318">Diese Richtlinie ist veraltet. Bitte verwenden Sie stattdessen die Richtlinie <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
+<translation id="2570216126125490811">Diese Richtlinie bestimmt, ob unsichere Websites Anfragen an eher private Netzwerk-Endpunkte senden dürfen.
+
+          Diese Richtlinie bezieht sich auf die Private-Network-Access-Spezifikation. Weitere Informationen finden Sie unter https://wicg.github.io/private-network-access/.
+
+          Ein Netzwerk-Endpunkt ist eher privat als ein anderer, wenn:
+          1) Seine IP-Adresse „localhost“ ist und die des anderen nicht.
+          2) Seine IP-Adresse privat ist und die des anderen öffentlich.
+          In Zukunft wird diese Richtlinie möglicherweise abhängig von der Weiterentwicklung der Spezifikationen auf alle ursprungsübergreifenden Anfragen angewendet, die an private IP-Adressen oder „localhost“ gesendet werden.
+
+          Eine Website gilt als sicher, wenn sie die Definition eines sicheren Kontextes unter https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts erfüllt. Andernfalls gilt sie als unsicherer Kontext.
+
+          Wenn diese Richtlinie entweder nicht konfiguriert oder auf „false“ gesetzt wird, hängt das Standardverhalten bei Anfragen aus unsicheren Kontexten an eher private Netzwerk-Endpunkte von der persönlichen Konfiguration der Funktion „<ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />“ durch den Nutzer ab. Diese kann im Rahmen einer Testphase oder in der Befehlszeile festgelegt werden.
+
+          Wenn die Richtlinie auf „true“ gesetzt ist, dürfen unsichere Websites vorbehaltlich anderer ursprungsübergreifender Prüfungen Anfragen an alle Netzwerk-Endpunkte senden.</translation>
 <translation id="257788512393330403">Passworteingabe alle sechs Stunden erforderlich</translation>
 <translation id="2580757713966614760">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="DEVICE_PRINTERS_POLICY_NAME" /> für Nutzer verfügbar sind.
 
@@ -1746,6 +1765,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn diese Richtlinie nicht konfiguriert ist, ist die Einstellung für vom Unternehmen verwaltete Nutzer und für nicht verwaltete Nutzer standardmäßig aktiviert.</translation>
 <translation id="3177802893484440532">OCSP/CRL-Online-Prüfungen für lokale Vertrauensanker als erforderlich festlegen</translation>
+<translation id="3180671894201217988">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-Software keinen ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.
+
+      Ist sie deaktiviert, kann diese Software ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.</translation>
 <translation id="3184161739683646075">Steuert den DoH-Modus (DNS over HTTPS)</translation>
 <translation id="3185009703220253572">Ab Version <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Konfiguriert die Einstellungen für die Lebensdauer von Browserdaten für <ph name="PRODUCT_NAME" />. Mit dieser Richtlinie können Administratoren (nach Datentyp) festlegen, wann Daten durch den Browser gelöscht werden. Das bietet Vorteile für Kunden, die mit sensiblen Kundendaten arbeiten. Die Richtlinie ist nur wirksam, wenn <ph name="SYNC_DISABLED_POLICY_NAME" /> auf „true“ gesetzt ist.
@@ -4712,7 +4734,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 
       Wenn die Richtlinie nicht konfiguriert ist, wird der Standardakkulademodus verwendet.</translation>
 <translation id="7030407698292813622">DNS-Abfragen für zusätzliche DNS-Eintragstypen erlauben</translation>
-<translation id="7032813174556919004">DoH (DNS over HTTPS) deaktivieren</translation>
+<translation id="7032813174556919004">DoH deaktivieren</translation>
 <translation id="7033778618670823541">Mit dieser Richtlinie wird eine Liste von Ursprüngen (URLs) oder Hostnamenmustern wie "*.example.com" festgelegt, für die keine Sicherheitsbeschränkungen für unsichere Ursprünge gelten. Organisationen können Ursprünge für ältere Anwendungen, die kein TLS bereitstellen können, angeben oder einen Testserver für die interne Webentwicklung einrichten, damit die Entwickler Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie verhindert, dass der Ursprung in der Adressleiste als "Nicht sicher" gekennzeichnet wird.
 
       Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags "--unsafely-treat-insecure-origin-as-secure" für eine durch Kommas getrennte Liste mit denselben URLs. Die Richtlinie überschreibt das Befehlszeilen-Flag und "UnsafelyTreatInsecureOriginAsSecure", sofern vorhanden.

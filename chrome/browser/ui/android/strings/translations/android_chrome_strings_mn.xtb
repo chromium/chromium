@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome онцлогийн товчлол</translation>
 <translation id="1344653310988386453">Тодруулсан текстийн холбоосыг багтаах</translation>
 <translation id="1347468774581902829">Үйл ажиллагааг удирдах</translation>
+<translation id="1352771733366526411">Бүх цонхыг удирдах (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Гараад синк хийхийг унтраах уу?</translation>
 <translation id="1373696734384179344">Сонгосон агуулгыг татаж авахад таны багтаамж хүрэлцэхгүй байна.</translation>
 <translation id="1376578503827013741">Тооцоолж байна...</translation>
@@ -113,6 +114,7 @@
 <translation id="17513872634828108">Нээлттэй цонх</translation>
 <translation id="1754404134430936718">Текстийг хуулсан</translation>
 <translation id="1772137089884020309">Хавчуурганы фолдерын жагсаалтыг хаасан</translation>
+<translation id="1779766957982586368">Цонхыг хаах</translation>
 <translation id="1782483593938241562">Дуусах огноо <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792959175193046959">Таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
@@ -126,6 +128,7 @@
 <translation id="1868024384445905608">Chrome одоо файлыг хурдан татдаг боллоо</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1883903952484604915">Миний файл</translation>
+<translation id="1888378517829496315">Бүх цонхыг удирдах</translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
 <translation id="1918175104945982129">Туслахын дуут хайлтын зөвшөөрлийн ui-г хагас өндрөөр нээсэн</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
@@ -225,6 +228,7 @@
 
 Хайлт үүсгэхийн тулд дурын үгийг удаан дарна уу. Хайлтаа боловсронгуй болгохын тулд илүү олон эсвэл цөөн үг сонгоно уу. Хайлтаа засахын тулд түр зуурын самбарыг нээж, дүрс тэмдгийг товшин шинэ табд нээгээд хайх хэсэгт өөрчлөлтөө хийнэ үү.</translation>
 <translation id="2459390580524506445">Сайжруулсан дуут хайлт</translation>
+<translation id="2461822463642141190">Одоогийн</translation>
 <translation id="247737702124049222">Зургийн тайлбар асаалттай байна</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2485422356828889247">Устгах</translation>
@@ -500,7 +504,6 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="4256782883801055595">Source licenses-г нээх</translation>
 <translation id="4263656433980196874">Туслахын дуут хайлтын зөвшөөрлийн ui-г бүтэн өндрөөр нээсэн</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
-<translation id="4281359692687148179">Сэргээхийн тулд доош татна уу</translation>
 <translation id="4290281343757112331">Оронд нь дараа татаж авах уу?</translation>
 <translation id="4296252229500326964">Шинэ Нууцлалтай таб</translation>
 <translation id="4298388696830689168">Холбоотой сайтууд</translation>
@@ -637,6 +640,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
 <translation id="5139940364318403933">Google Драйв хэрхэн ашиглах талаар үзнэ үү</translation>
+<translation id="5142281402488957685">Шинэ стори авахын тулд доош татаж сэргээнэ үү</translation>
 <translation id="5152843274749979095">Дэмжсэн аппыг суулгаагүй байна</translation>
 <translation id="5161254044473106830">Гарчиг шаардлагатай</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 таталт амжилтгүй боллоо.}other{# таталт амжилтгүй боллоо.}}</translation>
@@ -677,6 +681,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5403644198645076998">Зөвхөн тодорхой сайтыг зөвшөөрөх</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> дээр <ph name="ONE_TIME_CODE" />-г илгээх үү?</translation>
 <translation id="5414836363063783498">Баталгаажуулж байна ...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> таб}other{<ph name="TAB_COUNT_MANY" /> таб}}</translation>
 <translation id="5423934151118863508">Таны хамгийн их зочилсон хуудас энд гарч ирэх болно</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ГБ боломжтой</translation>
 <translation id="543338862236136125">Нууц үг засах</translation>
@@ -749,6 +754,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5833984609253377421">Холбоосыг хуваалцах</translation>
 <translation id="5834764604050996579">QR кодыг скан хийхийн тулд Chrome-д таны камерыг ашиглахыг зөвшөөрнө үү</translation>
 <translation id="5836192821815272682">Chrome-н шинэчлэлтийг татаж байна…</translation>
+<translation id="5839058148541733625">Chrome-н Дино</translation>
 <translation id="5853623416121554550">түр зогсоосон</translation>
 <translation id="5854512288214985237">Google-д илгээсэн статистик эсвэл гэмтлийн тайлан алга</translation>
 <translation id="5855546874025048181">Боловсронгуй болгох: <ph name="REFINE_TEXT" /></translation>
@@ -943,6 +949,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6979737339423435258">Бүх цаг</translation>
 <translation id="6981982820502123353">Хандалт</translation>
 <translation id="6989267951144302301">Татаж чадсангүй</translation>
+<translation id="6992232929048168262">Бүтэн дэлгэцэд нээх</translation>
 <translation id="6995899638241819463">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулах</translation>
 <translation id="7001056293070445572">Энэ файл том байна (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Хөтчид нээх</translation>
@@ -1227,6 +1234,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8683081248374354009">Бүлгийг шинэчлэх</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8699120352855309748">Эдгээр хэлийг орчуулахыг бүү санал болго</translation>
+<translation id="8701921397542715895">Зэргэлдээ цонхонд ажиллуулж байна</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8730621377337864115">хийсэн</translation>

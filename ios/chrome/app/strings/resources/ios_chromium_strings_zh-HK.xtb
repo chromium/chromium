@@ -38,7 +38,6 @@
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="3946918322491238254">您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
-<translation id="4166206055865952171">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
 <translation id="4681781466797808448">開啟 Chromium 掃瞄器</translation>
@@ -55,7 +54,6 @@
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5715349567881822785">Chromium 讓您事半功倍</translation>
-<translation id="5742135483959137648">使用 Chromium 開啟連結</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5945387852661427312">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chromium 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chromium，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>

@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">Faire défiler la page Web vers le bas</translation>
 <translation id="2530896289327917474">Activer ou désactiver la navigation au clavier</translation>
 <translation id="2574014812750545982">Réinitialiser le niveau de zoom sur la page</translation>
-<translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, puis <ph name="TAB" /> ou <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Actualiser la page actuelle</translation>
 <translation id="2764005613199379871">Mettre en évidence la barre d'adresse de recherche</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Raccourcis</translation>
 <translation id="3084301071537457911">Sélectionner l'élément suivant de votre étagère</translation>
 <translation id="309173601632226815">Mettre en évidence le bouton du lanceur d'applications sur votre étagère</translation>
-<translation id="3105917916468784889">Faire une capture d'écran</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Activer la barre d'adresse</translation>
 <translation id="3256109297135787951">Supprimer la mise en évidence d'un élément sur votre étagère</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Afficher l'aide relative aux raccourcis-clavier</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ou <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Ouvrir la zone de notifications (où s'affiche l'image de votre compte)</translation>
-<translation id="4642092649622328492">Effectuer une capture d'écran partielle</translation>
 <translation id="4698850295812410683">Afficher les outils de stylet</translation>
 <translation id="4801989101741319327">Aller à la fin du mot suivant</translation>
 <translation id="4866066940972151697">Activer le bureau à droite</translation>

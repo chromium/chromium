@@ -346,7 +346,6 @@
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">लोड गर्दै...</translation>
-<translation id="3712407551474845318">क्षेत्र कैद गर्नुहोस्</translation>
 <translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
 <translation id="3713734891607377840">डाउनलोड भएपछि खुल्ने छ</translation>
 <translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
@@ -674,7 +673,6 @@
 <translation id="6284232397434400372">रिजोल्युसन परिवर्तन गरियो</translation>
 <translation id="6288235558961782912">अभिभावकको अनुमति लिएर <ph name="USER_EMAIL_ADDRESS" /> पछि पुनः थप्न सकिन्छ।</translation>
 <translation id="6291221004442998378">चार्ज भइरहेको छैन</translation>
-<translation id="6297287540776456956">कुनै क्षेत्रलाई चयन गर्न स्टाइलसको प्रयोग गर्नुहोस्</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> लाई <ph name="ROTATION" /> मा घुमाइएको थियो</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
 <translation id="6330012934079202188">सबै डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, हालको डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
@@ -699,7 +697,6 @@
 <translation id="652139407789908527">यो अद्यावधिक गर्दै गर्दा तपाईंको डिभाइसको स्क्रिन सामान्यभन्दा बढी समय (एक मिनेटसम्म) खाली हुन सक्छ। अद्यावधिक हुँदै गर्दा कृपया पावर बटन नथिच्नुहोस्।</translation>
 <translation id="6528179044667508675">बाधा नगर्नुहोस्</translation>
 <translation id="65320610082834431">इमोजीहरू</translation>
-<translation id="6537270692134705506">स्क्रिन कैद गर्नुहोस्</translation>
 <translation id="6537924328260219877">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, <ph name="BATTERY_STATUS" /> फोनको ब्याट्री</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6559976592393364813">प्रशासकलाई सोध्नुहोस्</translation>

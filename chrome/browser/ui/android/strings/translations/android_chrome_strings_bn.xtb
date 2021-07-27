@@ -113,6 +113,7 @@
 <translation id="17513872634828108">খোলা ট্যাব</translation>
 <translation id="1754404134430936718">টেক্সট কপি করা হয়েছে</translation>
 <translation id="1772137089884020309">বন্ধ করে দেওয়া বুকমার্ক ফোল্ডারের তালিকা</translation>
+<translation id="1779766957982586368">উইন্ডো বন্ধ করুন</translation>
 <translation id="1782483593938241562">শেষ হওয়ার তারিখ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">ইনস্টল হয়েছে</translation>
 <translation id="1792959175193046959">যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
@@ -191,6 +192,7 @@
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
+<translation id="2294030144029925122">Chrome-এর গোপনীয়তা নীতি</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="230155349749732438">এই সেটিং ব্যবহার করতে <ph name="BEGIN_LINK" />সার্চ ও ব্রাউজিং আরও উন্নত করুন<ph name="END_LINK" /> বিকল্পটি চালু করা আবশ্যক</translation>
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
@@ -224,6 +226,7 @@
 
 সার্চ করার জন্য যেকোনও শব্দ টাচ করে ধরে থাকুন। সার্চ রিফাইন করতে, বেশি বা কম সংখ্যক শব্দ বেছে নিন। আপনার সার্চ এডিট করতে, প্যানেলটি খুলুন। তারপরে, আইকনে ট্যাপ করে একটি নতুন ট্যাবে এটি খুলুন এবং সার্চ বক্সে যা যা পরিবর্তন করতে চান সেগুলি করুন।</translation>
 <translation id="2459390580524506445">উন্নত ভয়েস সার্চ</translation>
+<translation id="2461822463642141190">বর্তমান</translation>
 <translation id="247737702124049222">ছবির বিবরণ চালু করা আছে</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
@@ -451,6 +454,7 @@
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">কোনো সক্ষম ভয়েস সার্চ উপলব্ধ নেই</translation>
+<translation id="395377504920307820">কোনও অ্যাকাউন্টে লগ-ইন না করেই ব্যবহার করুন</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}one{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}other{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}}</translation>
 <translation id="3962957115499249330">ওয়াই-ফাই ব্যবহার করে এই ডাউনলোড শুরু হলে আপনাকে একটি বিজ্ঞপ্তি পাঠানো হবে।</translation>
 <translation id="3963007978381181125">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না। 
@@ -749,6 +753,7 @@
 <translation id="5833984609253377421">লিঙ্ক শেয়ার করুন</translation>
 <translation id="5834764604050996579">QR কোড স্ক্যান করতে Chrome-এ আপনার ক্যামেরা ব্যবহার করার অনুমতি দিন</translation>
 <translation id="5836192821815272682">Chrome-এর আপডেট ডাউনলোড করা হচ্ছে…</translation>
+<translation id="5839058148541733625">Chrome ডাইনো গেম</translation>
 <translation id="5853623416121554550">পজ করা হয়েছে</translation>
 <translation id="5854512288214985237">Google-এর কাছে কোনও পরিসংখ্যান বা ক্র্যাশ রিপোর্ট পাঠানো হয়নি</translation>
 <translation id="5855546874025048181">রিফাইন করুন: <ph name="REFINE_TEXT" /></translation>
@@ -1016,6 +1021,7 @@
 <translation id="7481864133709957613">এই পৃষ্ঠা থেকে সার্চ করার জন্য, শব্দগুলির উপর ট্যাপ না করে বরং সেগুলিকে টাচ করে ধরে থাকুন</translation>
 <translation id="7482656565088326534">প্রিভিউ ট্যাব</translation>
 <translation id="7484997419527351112">ডিসকভার - বন্ধ</translation>
+<translation id="7485033510383818941">ফিডের কন্টেন্ট রিফ্রেশ করতে, পৃষ্ঠা নিচের দিকে সোয়াইপ করুন</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (আপডেট করা হয়েছে <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">সেভ করা ডেটা</translation>
 <translation id="7498271377022651285">দয়া করে অপেক্ষা করুন...</translation>

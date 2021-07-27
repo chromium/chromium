@@ -530,6 +530,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="156793199942386351">Klawisz „<ph name="CURRENTKEY" />” jest już przypisany do czynności „<ph name="ACTION" />”. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konsola JavaScript</translation>
 <translation id="1568323446248056064">Otwórz ustawienia wyświetlacza</translation>
+<translation id="1571738973904005196">Wyświetl kartę: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gość)</translation>
 <translation id="1572266655485775982">Włączanie Wi-Fi</translation>
 <translation id="1572876035008611720">Wpisz swój adres e-mail</translation>
@@ -2179,7 +2180,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3308852433423051161">Ładuję Asystenta Google...</translation>
 <translation id="3309330461362844500">Identyfikator certyfikowanego profilu</translation>
 <translation id="3311445899360743395">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia.</translation>
-<translation id="3312424061798279731">Włączone języki</translation>
 <translation id="3313622045786997898">Wartość podpisu certyfikatu</translation>
 <translation id="3313950410573257029">Sprawdź połączenie</translation>
 <translation id="3315158641124845231">Ukryj <ph name="PRODUCT_NAME" /></translation>
@@ -5097,6 +5097,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6521214596282732365">Witryny zwykle używają Twoich czcionek, aby umożliwić Ci tworzenie treści wysokiej jakości za pomocą narzędzi online służących do tworzenia grafiki i projektowania</translation>
 <translation id="652492607360843641">Masz połączenie z siecią <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
+<translation id="6528179044667508675">Nie przeszkadzać</translation>
 <translation id="652948702951888897">Historia Chrome</translation>
 <translation id="6530186581263215931">Te ustawienia są wymuszone przez administratora</translation>
 <translation id="6531282281159901044">Zachowaj niebezpieczny plik</translation>
@@ -5371,7 +5372,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6833479554815567477">Karta została usunięta z grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Przejdź na inteligentną i bezpieczną przeglądarkę</translation>
 <translation id="6834652994408928492">Tryb ciemny włączy się automatycznie o zachodzie słońca</translation>
-<translation id="683540480453879381">Otwierać pliki <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
 <translation id="6838034009068684089">Pytaj, gdy strona chce otwierać i umieszczać okna na Twoich ekranach (zalecane)</translation>
 <translation id="6839225236531462745">Błąd usuwania certyfikatu</translation>
@@ -5637,6 +5637,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7117247127439884114">Zaloguj się ponownie</translation>
 <translation id="711840821796638741">Pokaż zakładki zarządzane</translation>
 <translation id="711902386174337313">Odczyt listy zalogowanych urządzeń</translation>
+<translation id="711985611146095797">Na tej stronie możesz zarządzać kontami Google, na które się logujesz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Ruch w przeglądarce Chrome i na Androidzie będzie blokowany, dopóki nie połączysz się z siecią VPN</translation>
 <translation id="7120865473764644444">Nie udało się połączyć z serwerem synchronizacji. Próbuję ponownie…</translation>
 <translation id="7121438501124788993">Tryb programisty</translation>
@@ -6111,6 +6112,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7639914187072011620">Nie udało się pobrać przekierowania SAML z serwera</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatycznie loguje Cię w odpowiednich witrynach przy użyciu zapisanych wcześniej haseł.</translation>
 <translation id="7641513591566880111">Nowa nazwa profilu</translation>
+<translation id="764178579712141045">Dodano użytkownika <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ukryj informacje poufne</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otwarte okno}few{# otwarte okna}many{# otwartych okien}other{# otwartego okna}}</translation>
 <translation id="7643932971554933646">Zezwolić witrynie na wyświetlanie plików?</translation>
@@ -6164,7 +6166,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7684718995427157417">Aby utworzyć i przetestować swoje aplikacje, włącz Android Debug Bridge (ADB). Pamiętaj, że to działanie wiąże się z zezwoleniem na instalowanie aplikacji na Androida, które nie zostały zweryfikowane przez Google, a do wyłączenia tej funkcji konieczne jest przywrócenie ustawień fabrycznych.</translation>
 <translation id="7685049629764448582">Pamięć JavaScript</translation>
 <translation id="7685087414635069102">Wymagany kod PIN</translation>
-<translation id="768549422429443215">Dodaj języki lub zmień kolejność na liście.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Potwierdź nowe hasło</translation>
 <translation id="7690378713476594306">Wybierz z listy</translation>
@@ -7175,6 +7176,7 @@ Naciśnij przypisany przełącznik, aby usunąć przypisanie</translation>
 <translation id="8756969031206844760">Zaktualizować hasło?</translation>
 <translation id="8757090071857742562">Nie udało się przesłać pulpitu. Sprawdź, czy potwierdzono prośbę o rozpoczęcie udostępniania ekranu.</translation>
 <translation id="8757203080302669031">Tak karta wykonuje teraz skanowanie w poszukiwaniu urządzeń Bluetooth.</translation>
+<translation id="8757368836647541092">Usunięto użytkownika <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Włącz dyktowanie (mów, by pisać)</translation>
 <translation id="8759408218731716181">Nie można skonfigurować wielokrotnego logowania</translation>
 <translation id="8759753423332885148">Więcej informacji.</translation>

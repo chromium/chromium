@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1754404134430936718">Text copied</translation>
 <translation id="1772137089884020309">List of bookmark folders is closed</translation>
+<translation id="1779766957982586368">Close window</translation>
 <translation id="1782483593938241562">End date <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
@@ -225,6 +226,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
 <translation id="2459390580524506445">Enhanced voice search</translation>
+<translation id="2461822463642141190">Current</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4256782883801055595">Open-source licences</translation>
 <translation id="4263656433980196874">Assistant voice search consent UI opened at full height</translation>
 <translation id="4269820728363426813">Copy link address</translation>
-<translation id="4281359692687148179">Pull down to refresh</translation>
 <translation id="4290281343757112331">Download later instead?</translation>
 <translation id="4296252229500326964">New Incognito tab</translation>
 <translation id="4298388696830689168">Linked sites</translation>
@@ -750,6 +751,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5833984609253377421">Share link</translation>
 <translation id="5834764604050996579">To scan a QR code, let Chrome use your camera</translation>
 <translation id="5836192821815272682">Downloading Chrome update…</translation>
+<translation id="5839058148541733625">Chrome dino</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854512288214985237">No statistics or crash reports are sent to Google</translation>
 <translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>

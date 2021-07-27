@@ -1690,6 +1690,7 @@ en 3 optionele leden:
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
+<translation id="3031796805169553856">Toestaan dat WebAssembly-modules cross-origin worden verstuurd</translation>
 <translation id="3032322294267258117">Bepaalt instellingen voor gebruikers die zijn geverifieerd via GAIA zonder SAML.</translation>
 <translation id="3038323923255997294">Doorgaan met uitvoeren van achtergrondapps als <ph name="PRODUCT_NAME" /> is gesloten</translation>
 <translation id="3041707370546071653">Of het Kerberos-wachtwoord moet worden onthouden. Als je dit niet instelt of instelt op False, wordt het wachtwoord niet onthouden. Dit wordt genegeerd als het wachtwoord niet is opgegeven.</translation>
@@ -2053,6 +2054,12 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 
       Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, maakt <ph name="PRODUCT_OS_NAME" /> automatisch verbinding met de Quirks Server en worden configuratiebestanden (indien beschikbaar) gedownload en opslagen op het apparaat.  Dergelijke bestanden kunnen bijvoorbeeld worden gebruikt om de weergavekwaliteit van aangesloten beeldschermen te verbeteren.</translation>
 <translation id="3524204464536655762">Niet toestaan dat sites via de WebUSB API toegang tot USB-apparaten vragen</translation>
+<translation id="3526111349971346870">
+      Geeft aan of WebAssembly-modules cross-origin kunnen worden verstuurd naar een ander venster of een andere werkrol. Het cross-origin delen van WebAssembly-modules wordt beëindigd als onderdeel van de activiteiten om document.domain te beëindigen, zie https://github.com/mikewest/deprecating-document-domain. Dit beleid staat toe dat het cross-origin delen van WebAssembly-modules opnieuw mogelijk wordt gemaakt om een langere overgangsperiode te bieden voor het beëindigingsproces.
+
+      Als je dit beleid instelt op True, kunnen sites zonder beperkingen WebAssembly-modules cross-origin versturen.
+
+      Als je dit beleid instelt op False, kunnen sites alleen WebAssembly-modules versturen naar vensters en werkrollen van dezelfde oorsprong.</translation>
 <translation id="3526752951628474302">Alleen monochroom afdrukken</translation>
 <translation id="3528000905991875314">Alternatieve foutpagina's gebruiken</translation>
 <translation id="3531084733660068324">Instellingen voor ouderlijk toezicht</translation>
@@ -2105,6 +2112,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie 'Selecteer om uitgesproken te worden' in eerste instantie uit. De gebruiker kan de functie echter op elk gewenst moment aanzetten.</translation>
+<translation id="3589193811812796052">Voorkomen dat WebAssembly-modules cross-origin worden verstuurd</translation>
 <translation id="3591527072193107424">Zet de functie Ondersteuning voor oudere browsers aan.</translation>
 <translation id="3591584750136265240">Het verificatiegedrag voor inloggen configureren</translation>
 <translation id="3603469950773500315">Zet <ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aan, waardoor extensies geschikt gedrag kunnen behouden en <ph name="PRODUCT_NAME" /> toestemming heeft om opgegeven headers te sturen zonder <ph name="CORS" />-controle.
@@ -2172,6 +2180,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3733014427925403568">Dag van de week voor het interval.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' aanzetten in gebruikersbeheer</translation>
+<translation id="3749259744154402564">Niet ondersteund</translation>
 <translation id="3750220015372671395">Het genereren van sleutels op deze sites blokkeren</translation>
 <translation id="3755237588083934849">Met dit beleid bepaal je hoe vaak (in milliseconden) apparaatstatusuploads moeten worden gestuurd. Het toegestane minimum is 60 seconden.
 
@@ -4042,6 +4051,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als je het beleid instelt op 0, wordt het wachtwoord van het computeraccount niet gewijzigd.
 
       Opmerking: Wachtwoorden kunnen ouder zijn dan de ingestelde periode als de client langere tijd offline is.</translation>
+<translation id="628084107912717806">Geeft aan of WebAssembly-modules cross-origin kunnen worden verstuurd.</translation>
 <translation id="6280973140313576289">Profielkiezer afgedwongen bij opstarten</translation>
 <translation id="6282524907402492171">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> tonen</translation>
 <translation id="6282799760374509080">Het opnemen van audio toestaan of weigeren</translation>
@@ -4315,6 +4325,13 @@ Als je ervoor kiest het volgende te gebruiken:
 
       Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden...' geactiveerd zijn. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt weergegeven of voor de afdrukoptie 'Opslaan als pdf'. Bekijk meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitzetten</translation>
+<translation id="6642682198621199507">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toestemming krijgen voor toegang tot alle beschikbare seriële poorten.
+
+      De URL's moeten geldig zijn, anders wordt het beleid genegeerd. Er wordt alleen gekeken naar de oorsprong (schema, host en poort) van de URL.
+
+      Voor Chrome OS geldt dit beleid alleen voor aangesloten gebruikers.
+
+      Dit beleid overschrijft <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.</translation>
 <translation id="6646912445796087001">Zet verschillende functies op het schermtoetsenbord aan of uit. Dit beleid geldt alleen als het beleid VirtualKeyboardEnabled is toegepast.
 
       Als een functie in dit beleid is ingesteld op True, wordt de functie op het schermtoetsenbord aangezet.
@@ -4507,6 +4524,15 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als het beleid niet is ingesteld, is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> de standaard voor gebruikers die op ondernemingsniveau worden beheerd en <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> voor niet-beheerde gebruikers.
 
       In de toekomst kun je van <ph name="LACROS_NAME" /> de enige beschikbare browser in <ph name="PRODUCT_OS_NAME" /> maken met de waarde <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="6865392932254477045">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toegang krijgen tot seriële USB-apparaten met leveranciers- en product-ID's die overeenkomen met de velden <ph name="VENDOR_ID_FIELD_NAME" /> en <ph name="PRODUCT_ID_FIELD_NAME" />. Als je het veld <ph name="PRODUCT_ID_FIELD_NAME" /> weglaat, krijgen de opgegeven sites toestemming voor toegang tot apparaten met een leveranciers-ID die overeenkomt met het veld <ph name="VENDOR_ID_FIELD_NAME" /> en elke willekeurige product-ID.
+
+      De URL's moeten geldig zijn, anders wordt het beleid genegeerd. Er wordt alleen gekeken naar de oorsprong (schema, host en poort) van de URL.
+
+      Voor Chrome OS geldt dit beleid alleen voor aangesloten gebruikers.
+
+      Dit beleid overschrijft <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.
+
+      Dit beleid heeft alleen effect op USB-apparaten via de Web Serial API. Zie het beleid <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de WebUSB API.</translation>
 <translation id="68818134518270542">Als je het beleid instelt, geef je de apps op die gebruikers beschikbaar kunnen maken als notitie-app op het vergrendelscherm van <ph name="PRODUCT_OS_NAME" />.
 
       Als de voorkeurs-app op het vergrendelscherm staat, wordt er een UI-element voor het starten van de gewenste notitie-app op het scherm weergegeven. Als de app wordt gestart, kan deze een venster bovenop het vergrendelscherm maken en notities maken in deze context. De app kan gemaakte notities importeren naar de primaire gebruikerssessie als de sessie ontgrendeld is. Alleen notitie-apps voor <ph name="PRODUCT_NAME" /> worden ondersteund op het vergrendelscherm.
@@ -5753,6 +5779,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8455529558077979314">Instellingen voor privacyscherm</translation>
 <translation id="8455551509936646199">Dag van de week waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op WEEKLY.</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463569949213141467">De camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas en Ontdekken instellen en bekijken welke functies moeten worden uitgezet</translation>
 <translation id="8465065632133292531">Parameters voor instant-URL die POST gebruikt</translation>
 <translation id="847472800012384958">Niet toestaan dat sites pop-ups tonen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">Веб-баракчаны ылдый сыдыруу</translation>
 <translation id="2530896289327917474">Caret серептөөсүн күйгүзүү же өчүрүү</translation>
 <translation id="2574014812750545982">Барактын масштабын баштапкы абалга келтирүү</translation>
-<translation id="2596078834055697711">Терезенин скриншотун тартып алуу</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, андан кийин <ph name="TAB" /> же <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Учурдагы баракты кайра жүктөө</translation>
 <translation id="2764005613199379871">Курсорду Издөөнүн дарек тилкесине коюу</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Кыска жолдор</translation>
 <translation id="3084301071537457911">Текчедеги кийинки элементти бөлүп көрсөтүү</translation>
 <translation id="309173601632226815">Текчедеги жүргүзгүч баскычын бөлүп көрсөтүү</translation>
-<translation id="3105917916468784889">Скриншот тартып алуу</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Дарек тилкесин мээлөө</translation>
 <translation id="3256109297135787951">Текчедеги нерсени бөлүп көрсөтүүнү алып салуу</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Тез баскыч жардамчысын көрүү</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> же <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Статус аймагын ачуу (профилиңиздин сүрөтү көрүнгөн жерде)</translation>
-<translation id="4642092649622328492">Экрандын бир бөлүгүн тартып алуу</translation>
 <translation id="4698850295812410683">Стилус куралдарын көрсөтүү</translation>
 <translation id="4801989101741319327">Кийинки сөздүн аягына жылуу</translation>
 <translation id="4866066940972151697">Оң жактагы иш тактаны иштетүү</translation>

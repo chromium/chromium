@@ -1701,6 +1701,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Questo criterio è deprecato. Usa il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Attiva rapporti sulle metriche</translation>
+<translation id="3031796805169553856">Consenti che i moduli WebAssembly vengano inviati tra origini</translation>
 <translation id="3032322294267258117">Consente di gestire le impostazioni degli utenti autenticati tramite GAIA senza SAML.</translation>
 <translation id="3038323923255997294">Continua a eseguire applicazioni in background dopo la chiusura di <ph name="PRODUCT_NAME" /></translation>
 <translation id="3041707370546071653">Consente di stabilire se memorizzare o meno la password Kerberos. Se il criterio non viene impostato o se viene impostato su falso, la password non viene memorizzata. Il criterio viene ignorato se la password non viene specificata.</translation>
@@ -2068,6 +2069,19 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se questa norma è impostata su true o non è configurata, allora <ph name="PRODUCT_OS_NAME" /> contatterà automaticamente Quirks Server e scaricherà i file di configurazione, se disponibili, e li archivierà sul dispositivo.  Questi file potrebbero essere usati, ad esempio, per migliorare la qualità del display dei monitor collegati.</translation>
 <translation id="3524204464536655762">Non consentire ai siti di richiedere l'accesso ai dispositivi USB tramite l'API WebUSB</translation>
+<translation id="3526111349971346870">
+      Consente di specificare se i moduli WebAssembly possono essere inviati a un'altra finestra o
+      un altro worker tra origini. La condivisione di moduli WebAssembly tra origini sarà
+      deprecata come parte dell'impegno per il ritiro di document.domain, vedi
+      https://github.com/mikewest/deprecating-document-domain. Questo criterio
+      consente di riattivare la condivisione di moduli di WebAssembly tra origini per offrire
+      un periodo di transizione più lungo nel contesto del processo di ritiro.
+
+      Se questo criterio viene impostato su Vero, i siti possono inviare i moduli WebAssembly anche tra origini
+      senza restrizioni.
+
+      Se questo criterio viene impostato su Falso, i siti possono inviare i moduli WebAssembly solo a finestre
+      e worker nella stessa origine.</translation>
 <translation id="3526752951628474302">Solo stampa monocromatica</translation>
 <translation id="3528000905991875314">Attiva pagine di errore sostitutive</translation>
 <translation id="3531084733660068324">Impostazioni della supervisione dei genitori</translation>
@@ -2120,6 +2134,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente la funzione Seleziona per ascoltare è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
+<translation id="3589193811812796052">Impedisci che i moduli WebAssembly vengano inviati tra origini</translation>
 <translation id="3591527072193107424">Attiva la funzionalità Supporto dei browser precedenti.</translation>
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
@@ -2187,6 +2202,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3733014427925403568">Giorno della settimana dell'intervallo.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
+<translation id="3749259744154402564">Opzione non supportata</translation>
 <translation id="3750220015372671395">Blocca la generazione di chiavi su questi siti</translation>
 <translation id="3755237588083934849">Questo criterio consente di stabilire la frequenza di invio, in millisecondi, dei caricamenti dello stato del dispositivo. Il valore minimo consentito è 60 secondi.
 
@@ -4067,6 +4083,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se viene impostato su 0, la password dell'account della macchina non viene mai modificata.
 
       Nota: se il client è stato offline per un periodo di tempo maggiore del numero di giorni specificato, le password potrebbero durare più a lungo.</translation>
+<translation id="628084107912717806">Consente di specificare se i moduli WebAssembly possono essere inviati tra origini</translation>
 <translation id="6280973140313576289">Selettore profilo forzato all'avvio</translation>
 <translation id="6282524907402492171">Mostra avvisi ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Consenti o nega acquisizione audio</translation>
@@ -4341,6 +4358,13 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu "Link di download…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Leggi ulteriori informazioni sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
+<translation id="6642682198621199507">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere a tutte le porte seriali disponibili.
+
+      Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
+
+      Su Chrome OS, questo criterio viene applicato solo agli utenti affiliati.
+
+      Questo criterio sostituisce i criteri <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.</translation>
 <translation id="6646912445796087001">Consente di attivare o disattivare diverse funzionalità per la tastiera sullo schermo. Questo criterio viene applicato soltanto se è attivato il criterio "VirtualKeyboardEnabled".
 
       Se una funzionalità in questo criterio viene impostata su True, questa viene attivata per la tastiera sullo schermo.
@@ -4534,6 +4558,15 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
 
       In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="6865392932254477045">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere ai dispositivi seriali USB con ID fornitore e prodotto corrispondenti ai valori dei campi <ph name="VENDOR_ID_FIELD_NAME" /> e <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, i siti indicati sono autorizzati ad accedere ai dispositivi con ID fornitore corrispondente al valore del campo <ph name="VENDOR_ID_FIELD_NAME" /> e con qualsiasi ID prodotto.
+
+      Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
+
+      Su Chrome OS, questo criterio viene applicato solo agli utenti affiliati.
+
+      Questo criterio sostituisce i criteri <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.
+
+      Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API Web Serial. Per concedere l'accesso ai dispositivi USB tramite l'API WebUSB, vedi il criterio <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
       Se l'app preferita si trova nella schermata di blocco, sullo schermo viene visualizzato un elemento UI per l'avvio di tale app. Quando viene avviata, l'app può creare una finestra sopra la schermata di blocco e creare note in questo contesto. L'app può importare le note create nella sessione dell'utente principale quando la sessione è sbloccata. Nella schermata di blocco sono supportate solo le app per scrivere note di <ph name="PRODUCT_NAME" />.
@@ -5779,6 +5812,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8455529558077979314">Impostazioni Schermata sulla privacy</translation>
 <translation id="8455551509936646199">Il giorno della settimana in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "WEEKLY".</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463569949213141467">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas ed Esplora da disattivare</translation>
 <translation id="8465065632133292531">Parametri per l'URL istantaneo che utilizza POST</translation>
 <translation id="847472800012384958">Non consentire la visualizzazione di popup nei siti</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

@@ -528,6 +528,7 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsoll</translation>
 <translation id="1568323446248056064">Åpne skjerminnstillingene på enheten</translation>
+<translation id="1571738973904005196">Vis fanen <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gjest)</translation>
 <translation id="1572266655485775982">Slå på Wi-Fi</translation>
 <translation id="1572876035008611720">Skriv inn e-postadressen din</translation>
@@ -2194,7 +2195,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3308852433423051161">Laster inn Google-assistenten …</translation>
 <translation id="3309330461362844500">Sertifikatprofil-ID</translation>
 <translation id="3311445899360743395">Data som er tilknyttet denne appen, kan bli fjernet fra denne enheten.</translation>
-<translation id="3312424061798279731">Språk som er slått på</translation>
 <translation id="3313622045786997898">Sertifikatets signaturverdi</translation>
 <translation id="3313950410573257029">Kontrollér tilkoblingen</translation>
 <translation id="3315158641124845231">Skjul <ph name="PRODUCT_NAME" /></translation>
@@ -5110,6 +5110,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6521214596282732365">Nettsteder bruker vanligvis skrifttypene dine slik at du kan lage innhold av høy kvalitet med nettbaserte design- og grafikkverktøy</translation>
 <translation id="652492607360843641">Du er koblet til et <ph name="NETWORK_TYPE" />-nettverk.</translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6528179044667508675">Ikke forstyrr</translation>
 <translation id="652948702951888897">Chrome-logg</translation>
 <translation id="6530186581263215931">Disse innstillingene håndheves av administratoren din</translation>
 <translation id="6531282281159901044">Behold den farlige filen</translation>
@@ -5384,7 +5385,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6833479554815567477">Fanen er fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Bytt til en smart og sikker nettleser</translation>
 <translation id="6834652994408928492">Mørk modus blir slått på automatisk ved solnedgang</translation>
-<translation id="683540480453879381">åpne <ph name="FILE_EXTENSIONS" />-filer</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spør når nettsteder vil åpne og plassere vinduer på skjermene dine (anbefales)</translation>
 <translation id="6839225236531462745">Feil ved sletting av sertifikat</translation>
@@ -5650,6 +5650,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7117247127439884114">Logg på igjen</translation>
 <translation id="711840821796638741">Vis administrerte bokmerker</translation>
 <translation id="711902386174337313">lese listen over de påloggede enhetene dine</translation>
+<translation id="711985611146095797">På denne siden kan du administrere de påloggede Google-kontoene dine. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-nettleseren og Android-trafikk blokkeres med mindre en VPN-tjeneste kobles til</translation>
 <translation id="7120865473764644444">Kunne ikke koble til synkroniseringstjeneren. Prøver på nytt …</translation>
 <translation id="7121438501124788993">Utviklermodus</translation>
@@ -6124,6 +6125,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7639914187072011620">Kunne ikke hente SAML-viderekoblingsadressen fra tjeneren</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> logger deg på kvalifiserte nettsteder automatisk med passord du har lagret.</translation>
 <translation id="7641513591566880111">Nytt profilnavn</translation>
+<translation id="764178579712141045">La til <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Skjul sensitivt innhold</translation>
 <translation id="7643842463591647490">{0,plural, =1{# åpent vindu}other{# åpne vinduer}}</translation>
 <translation id="7643932971554933646">Vil du la nettstedet se filene?</translation>
@@ -6177,7 +6179,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7684718995427157417">For å lage og teste apper, slå på Android Debug Bridge (ADB). Merk at dette gjør det mulig å installere Android-apper som ikke er verifisert av Google, og enheten må tilbakestilles til fabrikkinnstillingene hvis du vil slå av ADB igjen.</translation>
 <translation id="7685049629764448582">JavaScript-minne</translation>
 <translation id="7685087414635069102">PIN-kode kreves</translation>
-<translation id="768549422429443215">Legg til språk eller endre rekkefølgen på listen.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Bekreft det nye passordet</translation>
 <translation id="7690378713476594306">Velg fra listen</translation>
@@ -7187,6 +7188,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8756969031206844760">Vil du oppdatere passordet?</translation>
 <translation id="8757090071857742562">Skrivebordet kunne ikke castes. Sjekk om du bekreftet forespørselen om å begynne å dele skjermen din.</translation>
 <translation id="8757203080302669031">Denne fanen søker aktivt etter Bluetooth-enheter.</translation>
+<translation id="8757368836647541092">Fjernet <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Slå på diktering (snakk for å skrive)</translation>
 <translation id="8759408218731716181">Kan ikke konfigurere multipålogging</translation>
 <translation id="8759753423332885148">Finn ut mer</translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Otvorene kartice</translation>
 <translation id="1754404134430936718">Tekst je kopiran</translation>
 <translation id="1772137089884020309">Lista foldera s oznakama je zatvorena</translation>
+<translation id="1779766957982586368">Zatvori prozor</translation>
 <translation id="1782483593938241562">Datum završetka <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792959175193046959">Promijenite zadanu lokaciju za preuzimanje bilo kada</translation>
@@ -225,6 +226,7 @@ Dodirnite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanj
 
 Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanja, odaberite više ili manje riječi. Da uredite pretraživanje, otvorite ploču, dodirnite ikonu da otvorite novu karticu, a zatim izvršite izmjene u okviru za pretraživanje.</translation>
 <translation id="2459390580524506445">Poboljšano glasovno pretraživanje</translation>
+<translation id="2461822463642141190">Trenutno</translation>
 <translation id="247737702124049222">Opisi slika su uključeni</translation>
 <translation id="2482878487686419369">Obavještenja</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -500,7 +502,6 @@ Okruženje zaštićene privatnosti i dalje je u fazi aktivnog razvoja i dostupno
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
 <translation id="4263656433980196874">Korisnički interfejs za pristanak na glasovno pretraživanje putem Asistenta je otvoren na cijelom ekranu</translation>
 <translation id="4269820728363426813">Kopiraj adresu linka</translation>
-<translation id="4281359692687148179">Povucite prema dolje da osvježite</translation>
 <translation id="4290281343757112331">Preuzeti kasnije?</translation>
 <translation id="4296252229500326964">Nova anonimna kartica</translation>
 <translation id="4298388696830689168">Povezane web lokacije</translation>
@@ -750,6 +751,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5833984609253377421">Dijeli link</translation>
 <translation id="5834764604050996579">Da skenirate QR kôd, dozvolite Chromeu da koristi kameru</translation>
 <translation id="5836192821815272682">Preuzimanje ažuriranja Chromea…</translation>
+<translation id="5839058148541733625">Dinosaur na Chromeu</translation>
 <translation id="5853623416121554550">pauzirano</translation>
 <translation id="5854512288214985237">Statistika i izvještaji o padovima aplikacije se ne šalju Googleu</translation>
 <translation id="5855546874025048181">Preciziranje: <ph name="REFINE_TEXT" /></translation>

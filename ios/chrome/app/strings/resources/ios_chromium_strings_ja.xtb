@@ -38,7 +38,6 @@
 <translation id="3805899903892079518">Chromium で写真または動画にアクセスできません。iOS の [設定] &gt; [プライバシー] &gt; [写真] でアクセスを有効にしてください。</translation>
 <translation id="3946918322491238254">このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
 <translation id="4099085513035183040">Chromium ベータ版ではサポートされていません</translation>
-<translation id="4166206055865952171">Chromium を既定のブラウザにする</translation>
 <translation id="4555020257205549924">この機能を有効にすると、外国語のページを開いたときに翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chromium で開かれるようになります。</translation>
 <translation id="4681781466797808448">Chromium のスキャナをオンにしてください</translation>
@@ -55,7 +54,6 @@
 <translation id="5573014823074921752">Chromium の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
 <translation id="5700709190537129682">Chromium でパスワードを確認できません</translation>
 <translation id="5715349567881822785">Chromium でもっと便利に</translation>
-<translation id="5742135483959137648">Chromium でリンクを開く</translation>
 <translation id="5777187867430702742">Chromium ページ</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> で管理されているアカウントでログインして、Chromium データの管理を管理者に委ねようとしています。この操作を行うと、データはこのアカウントに恒久的に関連付けられます。Chromium からログアウトすると、データはこのデバイスから削除されますが、Google アカウントには残ります。</translation>

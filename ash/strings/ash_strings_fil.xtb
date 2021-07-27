@@ -346,7 +346,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3702846122927433391">Populasyon sa Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Naglo-load...</translation>
-<translation id="3712407551474845318">I-capture ang rehiyon</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
@@ -485,6 +484,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4696813013609194136">I-unlock ang device gamit ang parent code</translation>
 <translation id="4702647871202761252">Naka-off ang privacy screen</translation>
 <translation id="4705716602320768426">Magbigay ng feedback</translation>
+<translation id="4730258224256997107">Tulungan kaming pahusayin ito!</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Nagbago ang keyboard shortcut na <ph name="LAUNCHER_KEY_NAME" /> + Numero. Para magamit ang mga function key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + isang key sa itaas na row.</translation>
@@ -674,7 +674,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6284232397434400372">Binago ang resolution</translation>
 <translation id="6288235558961782912">Puwedeng idagdag ulit ang <ph name="USER_EMAIL_ADDRESS" /> kung may pahintulot ng magulang.</translation>
 <translation id="6291221004442998378">Hindi nagcha-charge</translation>
-<translation id="6297287540776456956">Gamitin ang stylus upang pumili ng rehiyon</translation>
 <translation id="6310121235600822547">Na-rotate ang <ph name="DISPLAY_NAME" /> sa <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6330012934079202188">Ipinapakita ang mga window mula sa lahat ng desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa kasalukuyang desk</translation>
@@ -699,7 +698,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="652139407789908527">Magiging blangko ang iyong screen nang mas matagal kaysa karaniwan (hanggang isang minuto) sa panahon ng pag-update na ito Huwag pindutin ang power button habang isinasagawa ang pag-update.</translation>
 <translation id="6528179044667508675">Wag istorbohin</translation>
 <translation id="65320610082834431">Mga Emoji</translation>
-<translation id="6537270692134705506">I-capture ang screen</translation>
 <translation id="6537924328260219877">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Magtanong sa Administrator</translation>

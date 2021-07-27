@@ -531,6 +531,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' telah ditetapkan untuk tindakan '<ph name="ACTION" />'. Tekan sembarang kunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konsol JavaScript</translation>
 <translation id="1568323446248056064">Buka setelan perangkat layar</translation>
+<translation id="1571738973904005196">Lihat tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Tamu)</translation>
 <translation id="1572266655485775982">Wi-Fi aktif</translation>
 <translation id="1572876035008611720">Masukkan email Anda</translation>
@@ -2200,7 +2201,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3308852433423051161">Memuat Asisten Google...</translation>
 <translation id="3309330461362844500">ID Profil Sertifikat</translation>
 <translation id="3311445899360743395">Data yang terkait dengan aplikasi ini dapat dihapus dari perangkat ini.</translation>
-<translation id="3312424061798279731">Bahasa yang diaktifkan</translation>
 <translation id="3313622045786997898">Nilai Tanda Tangan Sertifikat</translation>
 <translation id="3313950410573257029">Periksa koneksi</translation>
 <translation id="3315158641124845231">Sembunyikan <ph name="PRODUCT_NAME" /></translation>
@@ -5119,6 +5119,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6521214596282732365">Situs biasanya menggunakan font Anda agar Anda dapat membuat konten berkualitas tinggi dengan alat desain dan grafis online</translation>
 <translation id="652492607360843641">Anda tersambung ke jaringan <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Bagikan</translation>
+<translation id="6528179044667508675">Jangan ganggu</translation>
 <translation id="652948702951888897">Histori Chrome</translation>
 <translation id="6530186581263215931">Setelan ini diberlakukan oleh administrator</translation>
 <translation id="6531282281159901044">Simpan file berbahaya</translation>
@@ -5393,7 +5394,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6833479554815567477">Tab dihapus dari grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Beralih ke browser cerdas dan aman</translation>
 <translation id="6834652994408928492">Mode gelap akan otomatis diaktifkan saat matahari terbenam</translation>
-<translation id="683540480453879381">Membuka file <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="6838034009068684089">Tanyakan saat situs ingin membuka dan menempatkan jendela di layar Anda (direkomendasikan)</translation>
 <translation id="6839225236531462745">Kesalahan Penghapusan Sertifikat</translation>
@@ -5659,6 +5659,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7117247127439884114">Login Lagi...</translation>
 <translation id="711840821796638741">Tampilkan Bookmark yang Dikelola</translation>
 <translation id="711902386174337313">Membaca daftar perangkat tempat Anda telah masuk</translation>
+<translation id="711985611146095797">Halaman ini memungkinkan Anda mengelola Akun Google yang Anda gunakan untuk login. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Browser Chrome dan traffic Android akan diblokir kecuali jika VPN terhubung</translation>
 <translation id="7120865473764644444">Tidak dapat terhubung ke server sinkronisasi. Mencoba lagi...</translation>
 <translation id="7121438501124788993">Mode Developer</translation>
@@ -6133,6 +6134,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7639914187072011620">Gagal mengambil URL alihan SAML dari server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> otomatis memasukkan Anda ke situs yang memenuhi syarat menggunakan sandi tersimpan.</translation>
 <translation id="7641513591566880111">Nama profil baru</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> ditambahkan</translation>
 <translation id="7642778300616172920">Sembunyikan konten sensitif</translation>
 <translation id="7643842463591647490">{0,plural, =1{# jendela dibuka}other{# jendela dibuka}}</translation>
 <translation id="7643932971554933646">Izinkan situs melihat file?</translation>
@@ -6186,7 +6188,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7684718995427157417">Untuk membuat dan menguji aplikasi, aktifkan Android Debug Bridge (ADB). Perhatikan bahwa tindakan ini dapat menginstal aplikasi Android yang belum diverifikasi oleh Google, dan perlu peresetan ke setelan pabrik untuk menonaktifkannya.</translation>
 <translation id="7685049629764448582">Memori JavaScript</translation>
 <translation id="7685087414635069102">Perlu PIN</translation>
-<translation id="768549422429443215">Tambahkan bahasa atau urutkan ulang daftar.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
 <translation id="7690378713476594306">Pilih dari daftar</translation>
@@ -7197,6 +7198,7 @@ Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>
 <translation id="8757090071857742562">Tidak dapat mentransmisi dekstop.  Periksa apakah Anda telah mengonfirmasi permintaan untuk mulai berbagi layar.</translation>
 <translation id="8757203080302669031">Tab ini memindai perangkat Bluetooth secara aktif.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> dihapus</translation>
 <translation id="8758418656925882523">Aktifkan dikte (ucapkan untuk mengetik)</translation>
 <translation id="8759408218731716181">Tidak dapat menyiapkan fitur masuk banyak akun</translation>
 <translation id="8759753423332885148">Pelajari lebih lanjut.</translation>

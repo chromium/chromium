@@ -528,6 +528,7 @@
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен клавиш, за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола на JavaScript</translation>
 <translation id="1568323446248056064">Отваряне на настройките за дисплея</translation>
+<translation id="1571738973904005196">Преглед на раздела <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
 <translation id="1572266655485775982">Активиране на Wi-Fi</translation>
 <translation id="1572876035008611720">Въведете имейл адреса си</translation>
@@ -2196,7 +2197,6 @@
 <translation id="3308852433423051161">Google Асистент се зарежда...</translation>
 <translation id="3309330461362844500">Идент. № на профила на сертификата</translation>
 <translation id="3311445899360743395">Данните, свързани с това приложение, може да бъдат премахнати от устройството.</translation>
-<translation id="3312424061798279731">Активирани езици</translation>
 <translation id="3313622045786997898">Стойност на подписа на сертификата</translation>
 <translation id="3313950410573257029">Проверка на връзката</translation>
 <translation id="3315158641124845231">Скриване на <ph name="PRODUCT_NAME" /></translation>
@@ -5117,6 +5117,7 @@
 <translation id="6521214596282732365">Сайтовете обикновено използват шрифтовете ви, така че да можете да създавате съдържание с висока прецизност посредством онлайн инструменти за дизайн и работа с графика</translation>
 <translation id="652492607360843641">Свързани сте с(ъс) <ph name="NETWORK_TYPE" /> мрежа.</translation>
 <translation id="6527303717912515753">Споделяне</translation>
+<translation id="6528179044667508675">Не безпокойте</translation>
 <translation id="652948702951888897">История в Chrome</translation>
 <translation id="6530186581263215931">Тези настройки са наложени от администратора ви</translation>
 <translation id="6531282281159901044">Запазване на опасния файл</translation>
@@ -5391,7 +5392,6 @@
 <translation id="6833479554815567477">Разделът бе премахнат от групата „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Преминете към интелигентен и сигурен браузър</translation>
 <translation id="6834652994408928492">Тъмният режим ще се включи автоматично при залез</translation>
-<translation id="683540480453879381">Отваря файловете във формат <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Извеждане на запитване, когато сайт иска да отваря и разполага прозорци на екраните ви (препоръчително)</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
@@ -5657,6 +5657,7 @@
 <translation id="7117247127439884114">Влизане отново...</translation>
 <translation id="711840821796638741">Показване на управляваните отметки</translation>
 <translation id="711902386174337313">Четене на списъка с устройства, на които сте влезли в профила си</translation>
+<translation id="711985611146095797">От тази страница можете да управлявате профилите си в Google, в които сте влезли. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Трафикът в браузъра Chrome и Android ще бъде блокиран, освен ако не е свързана VPN</translation>
 <translation id="7120865473764644444">Не можа да се установи връзка със синхронизиращия сървър. Извършва се нов опит...</translation>
 <translation id="7121438501124788993">Режим за програмисти</translation>
@@ -6131,6 +6132,7 @@
 <translation id="7639914187072011620">Извличането от сървъра на URL адреса за пренасочване на SAML не бе успешно</translation>
 <translation id="764017888128728">С помощта на <ph name="PASSWORD_MANAGER_BRAND" /> автоматично влизате в отговарящи на условията сайтове с паролите, които сте запазили.</translation>
 <translation id="7641513591566880111">Име на новия профил</translation>
+<translation id="764178579712141045">Добавихте <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Скриване на поверителното съдържание</translation>
 <translation id="7643842463591647490">{0,plural, =1{# отворен прозорец}other{# отворени прозореца}}</translation>
 <translation id="7643932971554933646">Да се разреши ли на сайта да преглежда файловете?</translation>
@@ -6184,7 +6186,6 @@
 <translation id="7684718995427157417">За да създавате и тествате приложения, активирайте моста на Android за отстраняване на грешки (ADB). Обърнете внимание, че това действие позволява инсталирането на приложения за Android, които не са удостоверени от Google. За деактивирането на ADB е необходимо да бъдат възстановени фабричните настройки.</translation>
 <translation id="7685049629764448582">Памет за JavaScript</translation>
 <translation id="7685087414635069102">Изисква се ПИН код</translation>
-<translation id="768549422429443215">Добавяне на езици или пренареждане на списъка.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7690378713476594306">Избиране от списъка</translation>
@@ -7195,6 +7196,7 @@
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
 <translation id="8757090071857742562">Предаването на работния плот не е възможно. Проверете дали сте потвърдили подканата за стартиране на споделянето на екрана.</translation>
 <translation id="8757203080302669031">Този раздел активно сканира за устройства с Bluetooth.</translation>
+<translation id="8757368836647541092">Премахнахте <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Активиране на режима на диктуване (въвеждане чрез говор)</translation>
 <translation id="8759408218731716181">Централизираният вход не може да се настрои</translation>
 <translation id="8759753423332885148">Научете повече.</translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Բաց ներդիրներ</translation>
 <translation id="1754404134430936718">Տեքստը պատճենվեց</translation>
 <translation id="1772137089884020309">Էջանիշներով պանակների ցանկը փակված է</translation>
+<translation id="1779766957982586368">Փակել պատուհանը</translation>
 <translation id="1782483593938241562">Ավարտի ամսաթիվը՝ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Տեղադրվեց</translation>
 <translation id="1792959175193046959">Դուք ցանկացած ժամանակ կարող եք փոխել ներբեռնումների կանխադրված պանակը</translation>
@@ -225,6 +226,7 @@
 
 Որոնելու համար հպեք որևէ բառի և պահեք։ Հարցումը հստակեցնելու համար ընտրեք ավելի շատ կամ քիչ բառեր։ Որոնումը փոփոխելու համար բացեք վահանակը, բացեք հավելվածը նոր ներդիրում՝ սեղմելով պատկերակին, այնուհետև կատարեք ձեր փոփոխությունները որոնման դաշտում։</translation>
 <translation id="2459390580524506445">Բարելավված ձայնային որոնում</translation>
+<translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="247737702124049222">Պատկերների նկարագրությունները միացված են</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2485422356828889247">Ապատեղադրել</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="4263656433980196874">Օգնականի միջոցով ձայնային որոնման միջերեսը բացվում է ամբողջ բարձրությամբ</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
-<translation id="4281359692687148179">Թարմացնելու համար քաշեք ներքև</translation>
 <translation id="4290281343757112331">Ներբեռնե՞լ ավելի ուշ</translation>
 <translation id="4296252229500326964">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="4298388696830689168">Կապված կայքեր</translation>
@@ -750,6 +751,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5833984609253377421">Կիսվել հղումով</translation>
 <translation id="5834764604050996579">QR կոդը սկանավորելու համար թույլ տվեք Chrome-ին օգտագործել ձեր տեսախցիկը</translation>
 <translation id="5836192821815272682">Ներբեռնվում է Chrome-ի նոր տարբերակը…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">դադարեցված է</translation>
 <translation id="5854512288214985237">Google-ին վիճակագրություն կամ խափանման մասին հաշվետվություններ չեն ուղարկվում</translation>
 <translation id="5855546874025048181">Ճշտել՝ <ph name="REFINE_TEXT" /></translation>

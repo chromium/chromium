@@ -1,6 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1000202298241288854">请注意，此政策已在 M94 中移除。此政策只是短期内可用的适应性措施。
+
+      启用后，“<ph name="PRODUCT_NAME" />”功能会发送精细的请求标头，在其中提供关于用户浏览器和环境的信息。
+      这是一项附加功能，但如果某些网站限制了请求中可包含的字符，新标头可能会导致这些网站无法正常响应。
+      如果此政策已启用或未设置，“<ph name="PRODUCT_NAME" />”功能会处于启用状态。如果此政策已停用，该功能将不可用。</translation>
 <translation id="1002439864875515590">如果此政策设为一个空字符串或未配置，<ph name="PRODUCT_OS_NAME" />将不会在用户登录期间显示自动填充选项。
       如果此政策设为一个表示域名的字符串，<ph name="PRODUCT_OS_NAME" />将在用户登录期间显示自动填充选项，让用户可以只输入自己的用户名，而不必输入域名扩展名。用户可以覆盖此域名扩展名。
       如果此政策的值不是一个有效的域名，系统便不会应用此政策。</translation>
@@ -1285,6 +1290,20 @@
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
 <translation id="2568488785376704318">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />。</translation>
+<translation id="2570216126125490811">此政策旨在控制是否允许不安全网站向更专用网络端点发送请求。
+
+          此政策与专用网络访问规范相关。如需了解详情，请访问 https://wicg.github.io/private-network-access/。
+
+          在以下情况下，某个网络端点会比另一个端点更专用：
+          1) 该端点的 IP 地址是 localhost，另一个端点的 IP 地址不是 localhost。
+          2) 该端点的 IP 地址是专用的，另一个端点的 IP 地址是公开的。
+          日后，此政策可能会适用于针对专用 IP 或 localhost 发出的所有跨源请求，具体取决于相关规范的演变情况。
+
+          如果某个网站符合 https://developer.mozilla.org/zh-CN/docs/Web/Security/Secure_Contexts 中所述的安全情境的定义，即会被视为安全网站。否则，便会被视为不安全情境。
+
+          如果此政策未设置或设为 false，对于从不安全情境向更专用网络端点发送的请求，其默认行为将取决于用户针对 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" /> 功能（此功能可通过现场试验来设置，也可在命令行中设置）指定的个人配置。
+
+          如果此政策设为 true，系统将允许不安全网站向任意网络端点发送请求，但这些网站会受到其他跨源检查机制的约束。</translation>
 <translation id="257788512393330403">必须每 6 小时输入一次密码</translation>
 <translation id="2580757713966614760">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 中的哪些打印机。
 
@@ -1742,6 +1761,9 @@
 
       如果您未设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用 Phone Hub 功能。</translation>
 <translation id="3177802893484440532">要求为本地信任锚执行在线 OCSP/CRL 检查</translation>
+<translation id="3180671894201217988">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
+
+      如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
 <translation id="3185895671618336039">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。

@@ -2183,7 +2183,6 @@
 <translation id="3308852433423051161">Google सहायक लोड गर्दै...</translation>
 <translation id="3309330461362844500">सर्टिफिकेट प्रोफाइलको ID</translation>
 <translation id="3311445899360743395">यो यन्त्रबाट यस अनुप्रयोगसँग सम्बन्धित डेटा हटाइन सक्छ।</translation>
-<translation id="3312424061798279731">सक्रिय गरिएका भाषाहरू</translation>
 <translation id="3313622045786997898">प्रमाणपत्र हस्ताक्षर मूल्य</translation>
 <translation id="3313950410573257029">इन्टरनेट जाँच्नुहोस्</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> लाई लुकाउनुहोस्</translation>
@@ -5099,6 +5098,7 @@
 <translation id="6521214596282732365">तपाईं डिजाइन र ग्राफिक्ससम्बन्धी अनलाइन टुलहरू प्रयोग गरी उच्च गुणस्तरको सामग्री बनाउन सक्नुहोस् भन्नाका खातिर साइटहरूले सामान्यतया तपाईंका फन्ट प्रयोग गर्छन्</translation>
 <translation id="652492607360843641">तपाईं <ph name="NETWORK_TYPE" /> नेटवर्कमा जोडिनुभएको छ।</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
+<translation id="6528179044667508675">बाधा नगर्नुहोस्</translation>
 <translation id="652948702951888897">Chrome को इतिहास</translation>
 <translation id="6530186581263215931">यी सेटिङहरू तपाईंका प्रशासकले लागू गर्नुहुन्छ</translation>
 <translation id="6531282281159901044">खतरनाक फाइल राख्नुहोस्</translation>
@@ -5373,7 +5373,6 @@
 <translation id="6833479554815567477">यो ट्याब <ph name="GROUP_NAME" /> समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">कुनै स्मार्ट तथा सुरक्षित ब्राउजरमा बदल्नुहोस्</translation>
 <translation id="6834652994408928492">अँध्यारो मोड सूर्यास्तको बेला स्वतः अफ हुने छ</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> फाइलहरू खोल्नुहोस्</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा कनेक्ट गर्नुहोस्।</translation>
 <translation id="6838034009068684089">कुनै साइटले मेरा स्क्रिनहरूमा विन्डो राख्न र त्यहाँ भएका विन्डो खोल्न खोज्दा त्यसो गर्न दिने कि नदिने भनी सोधियोस् (सिफारिस गरिएको)</translation>
 <translation id="6839225236531462745">प्रमाणपत्र मेटाइमा त्रुटी</translation>
@@ -6166,7 +6165,6 @@
 <translation id="7684718995427157417">आफ्ना एपहरू बनाउन तथा परीक्षण गर्न Android Debug Bridge (ADB) सक्षम पार्नुहोस्। यस कारबाहीले Google ले प्रमाणीकरण नगरेका Android एपहरू इन्स्टल गर्ने अनुमति दिन्छ र यसलाई असक्षम पार्न फ्याक्ट्री रिसेट गर्नु पर्ने हुन्छ भन्ने कुरामा ध्यान दिनुहोस्।</translation>
 <translation id="7685049629764448582">जाभास्क्रिप्ट स्मृ</translation>
 <translation id="7685087414635069102">पिन चाहिन्छ</translation>
-<translation id="768549422429443215">भाषाहरू थप्नुहोस् वा सूचीको क्रम मिलाउनुहोस्।</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">नयाँ पासवर्ड पुष्टि गर्नुहोस्</translation>
 <translation id="7690378713476594306">सूचीबाट छान्नुहोस्</translation>

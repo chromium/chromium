@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Ачык өтмөктөр</translation>
 <translation id="1754404134430936718">Текст көчүрүлдү</translation>
 <translation id="1772137089884020309">Кыстарма папкаларынын тизмеси жабык</translation>
+<translation id="1779766957982586368">Терезени жабуу</translation>
 <translation id="1782483593938241562">Аяктоо күнү: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Орнотулду</translation>
 <translation id="1792959175193046959">Жүктөлүп алынгандар үчүн демейки папканы каалаган убакта өзгөртүңүз</translation>
@@ -225,6 +226,7 @@
 
 Издөө үчүн бир сөздү коё бербей басып туруңуз. Издөөнү тактоо үчүн көбүрөөк же азыраак сөздөрдү тандаңыз. Издөөнү түзөтүү үчүн панелди ачып, жаңы өтмөктү ачуу сүрөтчөсүн таптап, издөө кутучасына өзгөртүүлөрдү киргизиңиз.</translation>
 <translation id="2459390580524506445">Жакшыртылган оозеки издөө</translation>
+<translation id="2461822463642141190">Учурда</translation>
 <translation id="247737702124049222">Сүрөттөмөлөр күйүк</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox дагы эле иштелип жатат, андыктан ай
 <translation id="4256782883801055595">Ачык программа уруксаттамалары</translation>
 <translation id="4263656433980196874">Жардамчыга айтып издөөгө уруксат берүү интерфейси толук ачылды</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
-<translation id="4281359692687148179">Жаңыртуу үчүн ылдый тартып коюңуз</translation>
 <translation id="4290281343757112331">Анын ордуна кийинчерээк жүктөлүп алынсынбы?</translation>
 <translation id="4296252229500326964">Жаңы жашыруун өтмөк</translation>
 <translation id="4298388696830689168">Байланышкан сайттар</translation>
@@ -750,6 +751,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5833984609253377421">Шилтеме менен бөлүшүү</translation>
 <translation id="5834764604050996579">QR кодун скандоо үчүн Chrome'го камераңызды колдонууга уруксат бериңиз</translation>
 <translation id="5836192821815272682">Chrome жаңыртуусу жүктөлүп алынууда…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">тындырылды</translation>
 <translation id="5854512288214985237">Google'га бир да статистика же ката жөнүндө кабар жөнөтүлгөн жок</translation>
 <translation id="5855546874025048181">Өркүндөтүү: <ph name="REFINE_TEXT" /></translation>

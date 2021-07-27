@@ -113,6 +113,7 @@
 <translation id="17513872634828108">ትሮችን ክፈት</translation>
 <translation id="1754404134430936718">ጽሑፍ ተገልብጧል</translation>
 <translation id="1772137089884020309">የዕልባት አቃፊዎች ዝርዝር ተዘግቷል</translation>
+<translation id="1779766957982586368">መስኮት ዝጋ</translation>
 <translation id="1782483593938241562">ማብቂያ ቀን <ph name="DATE" /></translation>
 <translation id="1791662854739702043">የተጫነ</translation>
 <translation id="1792959175193046959">በማንኛውም ጊዜ ነባሪውን የማውረጃ ቦታ ይቀይሩ</translation>
@@ -225,6 +226,7 @@
 
 ለመፈለግ ማናቸውንም ቃል ይንኩ እና ይያዙ። የእርስዎን ፍለጋ ለማጥራት፣ ተጨማሪ ወይም ያነሱ ቃላትን ይምረጡ። የእርስዎን ፍለጋ ለማርትዕ ፓነሉን ይክፈቱ፣ በአዲስ ትር ለመክፈት አዶውን መታ ያድርጉ፣ እና በፍለጋ ሳጥኑ ውስጥ የእርስዎን ለውጦች ያከናውኑ።</translation>
 <translation id="2459390580524506445">የተሻሻለ የድምጽ ፍለጋ</translation>
+<translation id="2461822463642141190">የአሁኑ ጊዜ</translation>
 <translation id="247737702124049222">የምስል መግለጫዎች በርተዋል</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">የክፍት ምንጭ ፍቃዶች</translation>
 <translation id="4263656433980196874">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
-<translation id="4281359692687148179">ለማደስ ወደ ታች ይጎትቱ</translation>
 <translation id="4290281343757112331">በምትኩ በኋላ ያውርዱ?</translation>
 <translation id="4296252229500326964">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4298388696830689168">የተገናኙ ጣቢያዎች</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">አገናኝ አጋራ</translation>
 <translation id="5834764604050996579">አንድ QR ኮድ ለመቃኘት Chrome ካሜራዎን እንዲጠቀም ይፍቀዱለት።</translation>
 <translation id="5836192821815272682">Chrome ዝማኔን በማውረድ ላይ…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">ባለበት ቆሟል</translation>
 <translation id="5854512288214985237">ወደ Google ምንም ስታትስቲክስ ወይም የብልሽት ሪፖርቶች አይላኩም</translation>
 <translation id="5855546874025048181">አጣራ፦ <ph name="REFINE_TEXT" /></translation>

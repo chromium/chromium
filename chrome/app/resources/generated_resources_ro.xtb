@@ -529,6 +529,7 @@
 <translation id="156793199942386351">Tasta <ph name="CURRENTKEY" /> a fost deja asociată acțiunii „<ph name="ACTION" />”. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consolă JavaScript</translation>
 <translation id="1568323446248056064">Deschide setările dispozitivului privind afișajul</translation>
+<translation id="1571738973904005196">Vezi fila: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitat)</translation>
 <translation id="1572266655485775982">Activează Wi-Fi</translation>
 <translation id="1572876035008611720">Introdu adresa de e-mail</translation>
@@ -2186,7 +2187,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Se încarcă Asistentul Google...</translation>
 <translation id="3309330461362844500">Codul profilului cu certificat</translation>
 <translation id="3311445899360743395">Datele asociate acestei aplicații pot fi eliminate de pe dispozitiv.</translation>
-<translation id="3312424061798279731">Limbi activate</translation>
 <translation id="3313622045786997898">Valoare a semnăturii certificatului</translation>
 <translation id="3313950410573257029">Verifică starea conexiunii</translation>
 <translation id="3315158641124845231">Ascunde <ph name="PRODUCT_NAME" /></translation>
@@ -5104,6 +5104,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6521214596282732365">Site-urile folosesc de obicei fonturile tale ca să poți crea conținut de înaltă fidelitate cu instrumente online de design și grafică</translation>
 <translation id="652492607360843641">Te-ai conectat la o rețea <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Trimite</translation>
+<translation id="6528179044667508675">Nu deranja</translation>
 <translation id="652948702951888897">Istoricul Chrome</translation>
 <translation id="6530186581263215931">Aceste setări sunt impuse de administrator</translation>
 <translation id="6531282281159901044">Păstrează fișierul periculos</translation>
@@ -5378,7 +5379,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6833479554815567477">Fila a fost eliminată din grupul <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Comută la un browser inteligent și securizat</translation>
 <translation id="6834652994408928492">Modul întunecat se va activa automat la apus</translation>
-<translation id="683540480453879381">Să deschidă fișiere <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Accesează internetul pentru a actualiza dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Anunță-mă dacă un site vrea să deschidă și să plaseze ferestre în ecrane (recomandat)</translation>
 <translation id="6839225236531462745">Eroare de ștergere a certificatului</translation>
@@ -5644,6 +5644,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7117247127439884114">Conectați-vă din nou...</translation>
 <translation id="711840821796638741">Vezi marcajele gestionate</translation>
 <translation id="711902386174337313">Citește lista dispozitivelor conectate</translation>
+<translation id="711985611146095797">În această pagină poți să gestionezi Conturile Google la care te-ai conectat. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Traficul în browserul Chrome și pe Android va fi blocat până când te conectezi la o rețea VPN</translation>
 <translation id="7120865473764644444">Nu s-a putut stabili conexiunea cu serverul de sincronizare. Se încearcă din nou…</translation>
 <translation id="7121438501124788993">Modul pentru dezvoltatori</translation>
@@ -6118,6 +6119,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7639914187072011620">Eroare la preluarea redirecționării SAML de la server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> te conectează automat pe site-urile eligibile cu parolele pe care le-ai salvat.</translation>
 <translation id="7641513591566880111">Numele noului profil</translation>
+<translation id="764178579712141045">S-a adăugat <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ascunde conținutul sensibil</translation>
 <translation id="7643842463591647490">{0,plural, =1{# fereastră deschisă}few{# ferestre deschise}other{# de ferestre deschise}}</translation>
 <translation id="7643932971554933646">Permiți ca site-ul să vadă fișierele?</translation>
@@ -6171,7 +6173,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7684718995427157417">Pentru a crea și testa aplicații, activează Android Debug Bridge (ADB). Reține că această acțiune permite instalarea aplicațiilor Android care nu au fost verificate de Google și pentru dezactivarea instrumentului este necesară revenirea la setările din fabrică.</translation>
 <translation id="7685049629764448582">Memorie JavaScript</translation>
 <translation id="7685087414635069102">PIN necesar</translation>
-<translation id="768549422429443215">Adaugă limbi sau reordonează lista.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7690378713476594306">Alege din listă</translation>
@@ -7181,6 +7182,7 @@ Apasă un comutator atribuit pentru a elimina atribuirea</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>
 <translation id="8757090071857742562">Desktopul nu poate fi proiectat. Verifică dacă ai confirmat solicitarea de a începe permiterea accesului la ecran.</translation>
 <translation id="8757203080302669031">Această filă caută activ dispozitive Bluetooth.</translation>
+<translation id="8757368836647541092">S-a șters <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Activează introducerea textului prin dictare</translation>
 <translation id="8759408218731716181">Nu se poate configura conectarea multiplă</translation>
 <translation id="8759753423332885148">Află mai multe.</translation>

@@ -528,6 +528,7 @@
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já está atribuída à ação "<ph name="ACTION" />". Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir definições do dispositivo de visualização</translation>
+<translation id="1571738973904005196">Ver o separador: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidado)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduza o seu email</translation>
@@ -2186,7 +2187,6 @@ Pretende pará-lo?</translation>
 <translation id="3308852433423051161">A carregar o Assistente Google...</translation>
 <translation id="3309330461362844500">ID do perfil do certificado</translation>
 <translation id="3311445899360743395">Os dados associados a esta app serão removidos deste dispositivo.</translation>
-<translation id="3312424061798279731">Idiomas ativados</translation>
 <translation id="3313622045786997898">Valor de assinatura do certificado</translation>
 <translation id="3313950410573257029">Verificar ligação</translation>
 <translation id="3315158641124845231">Ocultar o <ph name="PRODUCT_NAME" /></translation>
@@ -5105,6 +5105,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6521214596282732365">Normalmente, os sites utilizam os seus tipos de letra para que possa criar conteúdo de alta fidelidade com ferramentas gráficas e de design online</translation>
 <translation id="652492607360843641">Está ligado a uma rede <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Partilhar</translation>
+<translation id="6528179044667508675">Não incomodar</translation>
 <translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6530186581263215931">Estas definições são aplicadas pelo seu administrador</translation>
 <translation id="6531282281159901044">Manter ficheiro perigoso</translation>
@@ -5379,7 +5380,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6833479554815567477">Separador removido do grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Mude para um navegador inteligente e seguro</translation>
 <translation id="6834652994408928492">O modo escuro ativa-se automaticamente ao pôr do sol</translation>
-<translation id="683540480453879381">Abrir ficheiros <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Ligue-se à Internet para atualizar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Perguntar quando um site pretender abrir e colocar janelas nos seus ecrãs (recomendado)</translation>
 <translation id="6839225236531462745">Erro ao eliminar o certificado</translation>
@@ -5645,6 +5645,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7117247127439884114">Iniciar Sessão Novamente...</translation>
 <translation id="711840821796638741">Mostrar marcadores geridos</translation>
 <translation id="711902386174337313">Ler a lista dos dispositivos com sessão iniciada</translation>
+<translation id="711985611146095797">Esta página permite-lhe gerir Contas Google com sessão iniciada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">O navegador Chrome e o tráfego do Android serão bloqueados, exceto se tiver ligação a uma VPN</translation>
 <translation id="7120865473764644444">Não foi possível estabelecer ligação ao servidor de sincronização. A tentar novamente…</translation>
 <translation id="7121438501124788993">Modo de programador</translation>
@@ -6119,6 +6120,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7639914187072011620">Falha ao obter o URL de redirecionamento SAML do servidor</translation>
 <translation id="764017888128728">O <ph name="PASSWORD_MANAGER_BRAND" /> inicia automaticamente sessão em sites elegíveis com as palavras-passe que guardou.</translation>
 <translation id="7641513591566880111">Novo nome de perfil</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> adicionado</translation>
 <translation id="7642778300616172920">Ocultar conteúdo sensível</translation>
 <translation id="7643842463591647490">{0,plural, =1{# janela aberta}other{# janelas abertas}}</translation>
 <translation id="7643932971554933646">Permite que o site veja ficheiros?</translation>
@@ -6172,7 +6174,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7684718995427157417">Para criar e testar aplicações, ative o Bridge de depuração do Android (adb). Tenha em atenção que esta ação permite a instalação de aplicações para Android que não foram validadas pela Google. Além disso, se pretender desativar o adb, terá de efetuar uma reposição de dados de fábrica.</translation>
 <translation id="7685049629764448582">Memória JavaScript</translation>
 <translation id="7685087414635069102">PIN necessário</translation>
-<translation id="768549422429443215">Adicione idiomas ou reordene a lista.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7690378713476594306">Escolher na lista</translation>
@@ -7183,6 +7184,7 @@ Prima um comutador atribuído para remover a atribuição</translation>
 <translation id="8756969031206844760">Pretende atualizar a palavra-passe?</translation>
 <translation id="8757090071857742562">Não é possível transmitir o ambiente de trabalho. Verifique se confirmou a mensagem para começar a partilhar o seu ecrã.</translation>
 <translation id="8757203080302669031">Este separador está ativamente a procurar dispositivos Bluetooth.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> removido</translation>
 <translation id="8758418656925882523">Ativar o ditado (falar para escrever)</translation>
 <translation id="8759408218731716181">Não é possível configurar o início de sessão integrado</translation>
 <translation id="8759753423332885148">Saiba mais.</translation>

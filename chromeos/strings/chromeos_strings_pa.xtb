@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">ਅੰਸ਼ਕ ਤੌਰ ਤੇ ਸਕਿਰਿਆ ਕੀਤਾ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
+<translation id="3540383942695635079">MAC ਪਤਾ</translation>
 <translation id="357889014807611375">ਮੀਟਰਡ ਵਾਈ-ਫਾਈ</translation>
 <translation id="3595596368722241419">ਬੈਟਰੀ ਪੂਰੀ</translation>
 <translation id="360565022852130722">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਕਮਜ਼ੋਰ ਪ੍ਰੋਟੋਕੋਲ WEP 802.1x ਨਾਲ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4511264077854731334">ਪੋਰਟਲ</translation>
+<translation id="4536864596629708641">IP ਸੰਰੂਪਣ</translation>
 <translation id="4548483925627140043">ਸਿਗਨਲ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ਬੈਟਰੀ</translation>
 <translation id="4562494484721939086">ਕੋਈ ਸੇਵਾ ਨਹੀਂ</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ਵਿੱਚੋਂ <ph name="PRINTED_PAGE_NUMBER" />। ਪ੍ਰਿੰਟ ਜੌਬ ਨੂੰ ਰੱਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="4646949265910132906">ਸੁਰੱਖਿਅਤ ਵਾਈ-ਫਾਈ ਕਨੈਕਸ਼ਨ</translation>
 <translation id="4652335678334611408">ਸੈਸ਼ਨ ਲੌਗ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="4654549501020883054">ਰੋਜ਼ਾਨਾ ਬਦਲੋ</translation>
 <translation id="4665014895760275686">ਨਿਰਮਾਤਾ</translation>
 <translation id="467510802200863975">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="467715984478005772">ਫ਼ਾਇਰਵਾਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
@@ -292,6 +295,7 @@
 <translation id="65587193855025101">ਫਲੈਟਬੈੱਡ</translation>
 <translation id="6564646048574748301">ਅਸਫਲ ਰਹੀ - ਪ੍ਰਿੰਟਰ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
 <translation id="6574762126505704998">ਭਰੋ</translation>
+<translation id="6596816719288285829">IP ਪਤਾ</translation>
 <translation id="6603230386432466813">ਕੀ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਸਮੱਸਿਆ ਆ ਰਹੀ ਹੈ?</translation>
 <translation id="6618744767048954150">ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6620487321149975369">ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਉਦੋਂ ਤੱਕ ਇਤਿਹਾਸ ਵਿੱਚ ਦਿਸਣਗੀਆਂ, ਜਦੋਂ ਤੱਕ ਉਹਨਾਂ ਨੂੰ ਹੱਥੀਂ ਨਹੀਂ ਹਟਾਇਆ ਜਾਂਦਾ</translation>
@@ -388,6 +392,7 @@
 <translation id="8498220429738806196">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8503836310948963452">ਬਸ ਕੁਝ ਮਿੰਟ ਹੋਰ…</translation>
+<translation id="8521021929829989041">ਨਿੱਜੀ ਡੀਵਾਈਸ ਵਜੋਂ ਵਰਤੋ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਨੂੰ ਆਪਣੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇਸ ਵਿਕਲਪ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ। ਵੇਰਵਿਆਂ ਲਈ ਆਪਣੇ ਕੈਰੀਅਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="8576249514688522074">ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>

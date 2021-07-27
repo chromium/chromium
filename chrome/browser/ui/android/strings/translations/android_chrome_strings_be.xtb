@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Адкрытыя ўкладкі</translation>
 <translation id="1754404134430936718">Тэкст скапіраваны</translation>
 <translation id="1772137089884020309">Спіс папак з закладкамі закрыты</translation>
+<translation id="1779766957982586368">Закрыць акно</translation>
 <translation id="1782483593938241562">Дата заканчэння: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Усталявана</translation>
 <translation id="1792959175193046959">Стандартнае размяшчэнне спамповак можна змяніць у любы час</translation>
@@ -225,6 +226,7 @@
 
 Каб запусціць пошук па слове, дакраніцеся да яго і ўтрымлівайце. Каб удакладніць пошук, вылучыце больш або менш слоў. Калі вы хочаце змяніць запыт, адкрыйце панэль, націсніце значок, каб адкрыць новую ўкладку, а затым унясіце змены ў полі пошуку.</translation>
 <translation id="2459390580524506445">Палепшаны галасавы пошук</translation>
+<translation id="2461822463642141190">Цяпер</translation>
 <translation id="247737702124049222">Апісанні відарысаў уключаны</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2485422356828889247">Выдаліць</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4256782883801055595">Ліцэнзіі на ПЗ з адкрытым зыходным кодам</translation>
 <translation id="4263656433980196874">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку адкрыта на ўвесь экран</translation>
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
-<translation id="4281359692687148179">Каб абнавіць, пацягніце ўніз</translation>
 <translation id="4290281343757112331">Спампаваць пазней?</translation>
 <translation id="4296252229500326964">Новая ўкладка інкогніта</translation>
 <translation id="4298388696830689168">Звязаныя сайты</translation>
@@ -750,6 +751,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5834764604050996579">Каб сканіраваць QR-код, дазвольце браўзеру Chrome выкарыстоўваць камеру</translation>
 <translation id="5836192821815272682">Спампоўваецца абнаўленне Chrome…</translation>
+<translation id="5839058148541733625">Дыназаўр у Chrome</translation>
 <translation id="5853623416121554550">прыпынена</translation>
 <translation id="5854512288214985237">Статыстыка і справаздачы аб збоях не адпраўляюцца ў Google</translation>
 <translation id="5855546874025048181">Удакладніць: <ph name="REFINE_TEXT" /></translation>

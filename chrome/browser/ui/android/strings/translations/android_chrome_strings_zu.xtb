@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Vula amathebhu</translation>
 <translation id="1754404134430936718">Umbhalo ukopishiwe</translation>
 <translation id="1772137089884020309">Uhlu lwamafolda webhukhimakhi luvaliwe</translation>
+<translation id="1779766957982586368">Vala iwindi</translation>
 <translation id="1782483593938241562">Idethi yokugcina ngumhla ka-<ph name="DATE" /></translation>
 <translation id="1791662854739702043">Kufakiwe</translation>
 <translation id="1792959175193046959">Shintsha indawo yokulandwa ezenzakalelayo noma kunini</translation>
@@ -225,6 +226,7 @@ Thepha noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho lwakho, thinta 
 
 Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho lwakho, khetha amagama amaningi noma ambalwa. Ukuze uhlele usesho lwakho, vula iphaneli, thepha isithonjana ukuze uvule kuthebhu elisha, uphinde wenze ushintsho kubhokisi losesho.</translation>
 <translation id="2459390580524506445">Usesho lwezwi oluthuthukisiwe</translation>
+<translation id="2461822463642141190">Okwamanje</translation>
 <translation id="247737702124049222">Izincazelo zezithombe zivuliwe</translation>
 <translation id="2482878487686419369">Izaziso</translation>
 <translation id="2485422356828889247">Khipha</translation>
@@ -500,7 +502,6 @@ I-Privacy Sandbox isasungulwa futhi itholakala ezifundeni ezithile. Okwamanje, a
 <translation id="4256782883801055595">Amalayisensi womthombo ovulekile</translation>
 <translation id="4263656433980196874">Imvume ye-ui yomsizi wokusesha ngezwi ivulwe ngokuphakama okuphelele</translation>
 <translation id="4269820728363426813">Kopisha ikheli lesixhumanisi</translation>
-<translation id="4281359692687148179">Donsela phansi ukuze uvuselele</translation>
 <translation id="4290281343757112331">Dawuniloda kamuva kunalokho?</translation>
 <translation id="4296252229500326964">Ithebhu entsha ye-incognito</translation>
 <translation id="4298388696830689168">Amasayithi axhunyiwe</translation>
@@ -750,6 +751,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5833984609253377421">Yabelana ngesixhumanisi</translation>
 <translation id="5834764604050996579">Ukuskena ikhodi ye-QR, vumela i-Chrome ukusebenzisa ikhamera yakho</translation>
 <translation id="5836192821815272682">Ilanda isibuyekezo se-Chrome…</translation>
+<translation id="5839058148541733625">I-Chrome Dino</translation>
 <translation id="5853623416121554550">kuphunyuziwe</translation>
 <translation id="5854512288214985237">Azikho izibalo noma imibiko yokusaphazeka ethunyelwe ku-Google</translation>
 <translation id="5855546874025048181">Yenza ngcono: <ph name="REFINE_TEXT" /></translation>

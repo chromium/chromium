@@ -2204,7 +2204,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3308852433423051161">Nalaganje Pomočnika Google ...</translation>
 <translation id="3309330461362844500">ID profila potrdila</translation>
 <translation id="3311445899360743395">Podatki, povezani s to aplikacijo, bodo morda odstranjeni iz te naprave.</translation>
-<translation id="3312424061798279731">Omogočeni jeziki</translation>
 <translation id="3313622045786997898">Vrednost podpisa potrdila</translation>
 <translation id="3313950410573257029">Preveri povezavo</translation>
 <translation id="3315158641124845231">Skrij <ph name="PRODUCT_NAME" /></translation>
@@ -5125,6 +5124,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6521214596282732365">Spletna mesta običajno uporabljajo pisavo, da lahko ustvarjate vsebino visoke kakovosti s spletnimi orodji za oblikovanje in grafiko.</translation>
 <translation id="652492607360843641">Povezani ste v omrežje vrste <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
+<translation id="6528179044667508675">Ne moti</translation>
 <translation id="652948702951888897">Zgodovina v Chromu</translation>
 <translation id="6530186581263215931">Te nastavitve je uveljavil skrbnik</translation>
 <translation id="6531282281159901044">Obdrži nevarno datoteko</translation>
@@ -5399,7 +5399,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6833479554815567477">Zavihek je odstranjen iz skupine <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="683373380308365518">Preklop na pametni in varni brskalnik</translation>
 <translation id="6834652994408928492">Temni način se bo samodejno vklopil ob sončnem zahodu.</translation>
-<translation id="683540480453879381">odpirati datoteke <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Če želite posodobiti napravo <ph name="DEVICE_TYPE" />, vzpostavite internetno povezavo.</translation>
 <translation id="6838034009068684089">Vprašaj, ko želi spletno mesto odpreti okna in jih postaviti na zaslone (priporočljivo)</translation>
 <translation id="6839225236531462745">Napaka pri brisanju potrdila</translation>
@@ -6194,7 +6193,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7684718995427157417">Če želite ustvarjati in preizkušati aplikacije, omogočite most za odpravljanje težav s sistemom Android (ADB). Upoštevajte, da to dejanje omogoča namestitev aplikacij za Android, ki jih ni preveril Google, če želite orodje onemogočiti, pa je potrebna tovarniško ponastavitev.</translation>
 <translation id="7685049629764448582">Pomnilnik za JavaScript</translation>
 <translation id="7685087414635069102">Zahtevana je koda PIN</translation>
-<translation id="768549422429443215">Dodajte jezike ali preuredite seznam.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7690378713476594306">Izbira s seznama</translation>

@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">ウェブページを下にスクロールする</translation>
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2574014812750545982">ページのズームレベルをリセット</translation>
-<translation id="2596078834055697711">ウィンドウのスクリーンショットを撮影する</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> キーを押した状態で <ph name="TAB" /> キーまたは<ph name="RIGHT" />キーを押す</translation>
 <translation id="2750942583782703988">現在のページを再読み込みする</translation>
 <translation id="2764005613199379871">検索アドレスバーにフォーカスする</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">ショートカット</translation>
 <translation id="3084301071537457911">シェルフの次のアイテムをハイライト表示する</translation>
 <translation id="309173601632226815">シェルフのランチャー ボタンをハイライト表示する</translation>
-<translation id="3105917916468784889">スクリーンショットを撮る</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">アドレスバーにフォーカスを移す</translation>
 <translation id="3256109297135787951">シェルフのアイテムのハイライト表示を解除する</translation>
@@ -111,7 +109,6 @@
 <translation id="4556221320735744018">キーボード ショートカットのヘルプを表示する</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> キーまたは <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /> キー</translation>
 <translation id="4628718545549558538">ステータス領域（アカウント画像が表示されている部分）を開く</translation>
-<translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4698850295812410683">タッチペン ツールを表示する</translation>
 <translation id="4801989101741319327">次の単語の末尾に移動する</translation>
 <translation id="4866066940972151697">右のデスクを有効にする</translation>

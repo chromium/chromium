@@ -296,6 +296,7 @@
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
 <translation id="6574762126505704998">Дүүргэх</translation>
+<translation id="6596816719288285829">IP хаяг</translation>
 <translation id="6603230386432466813">Холбогдоход асуудал гарсан уу?</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6620487321149975369">Хэвлэлийн ажлыг гараар хасахгүй бол түүхэнд харагдана</translation>
@@ -318,6 +319,7 @@
 <translation id="7059230779847288458">Цэнэглэж байна. Дүүрэх хүртэл <ph name="TIME_VALUE" /> үлдсэн байна</translation>
 <translation id="708426984172631313">ЗОГСООСОН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>

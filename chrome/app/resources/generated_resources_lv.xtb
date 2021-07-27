@@ -2187,7 +2187,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3308852433423051161">Notiek Google asistenta ielāde…</translation>
 <translation id="3309330461362844500">Sertifikāta profila ID</translation>
 <translation id="3311445899360743395">Ar šo lietotni saistītie dati var tikt noņemti no šīs ierīces.</translation>
-<translation id="3312424061798279731">Iespējotās valodas</translation>
 <translation id="3313622045786997898">Sertifikāta paraksta vērtība</translation>
 <translation id="3313950410573257029">Pārbaudīt savienojumu</translation>
 <translation id="3315158641124845231">Paslēpt programmu <ph name="PRODUCT_NAME" /></translation>
@@ -5105,6 +5104,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6521214596282732365">Vietnēs parasti tiek izmantoti jūsu fonti, lai jūs varētu veidot saturu ar augstu precizitāti, izmantojot tiešsaistes noformējuma un grafikas rīkus.</translation>
 <translation id="652492607360843641">Jūs esat izveidojis savienojumu ar šāda veida tīklu: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
+<translation id="6528179044667508675">Netraucēt</translation>
 <translation id="652948702951888897">Chrome vēsture</translation>
 <translation id="6530186581263215931">Šos iestatījumus ir noteicis administrators</translation>
 <translation id="6531282281159901044">Paturēt bīstamo failu</translation>
@@ -5379,7 +5379,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6833479554815567477">Cilne tika noņemta no grupas “<ph name="GROUP_NAME" />” — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Pāreja uz viedu un drošu pārlūku</translation>
 <translation id="6834652994408928492">Tumšais režīms tiks automātiski ieslēgts saulrietā</translation>
-<translation id="683540480453879381">Atvērt <ph name="FILE_EXTENSIONS" /> failus</translation>
 <translation id="6835762382653651563">Lai atjauninātu savu <ph name="DEVICE_TYPE" /> ierīci, lūdzu, izveidojiet savienojumu ar internetu.</translation>
 <translation id="6838034009068684089">Vaicāt, ja vietne pieprasa atvērt un izvietot logus jūsu ekrānos (ieteicams)</translation>
 <translation id="6839225236531462745">Sertifikāta dzēšanas kļūda</translation>
@@ -6172,7 +6171,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7684718995427157417">Lai veidotu un testētu lietotnes, iespējojiet Android atkļūdošanas tiltu (ADB). Ņemiet vērā, ka šī darbība ļauj instalēt Android lietotnes, ko uzņēmums Google nav verificējis, un rīka atspējošanai ir nepieciešams atjaunot rūpnīcas iestatījumus.</translation>
 <translation id="7685049629764448582">JavaScript atmiņa</translation>
 <translation id="7685087414635069102">Jāievada PIN</translation>
-<translation id="768549422429443215">Pievienojiet valodas vai pārkārtojiet sarakstu.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7690378713476594306">Izvēlēties no saraksta</translation>

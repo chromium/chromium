@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Открытые вкладки</translation>
 <translation id="1754404134430936718">Текст скопирован.</translation>
 <translation id="1772137089884020309">Список папок с закладками закрыт</translation>
+<translation id="1779766957982586368">Закрыть окно</translation>
 <translation id="1782483593938241562">Дата окончания: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792959175193046959">Вы можете в любой момент изменить расположение скачиваемых файлов по умолчанию.</translation>
@@ -225,6 +226,7 @@
 
 Чтобы начать поиск, нажмите и удерживайте любое слово. Чтобы уточнить поиск, выделите нужное слово или фразу. Для изменения запроса откройте панель и нажмите на значок приложения, чтобы открыть его в новой вкладке. Затем внесите изменения в окне поиска.</translation>
 <translation id="2459390580524506445">Улучшенный голосовой поиск</translation>
+<translation id="2461822463642141190">Расход энергии</translation>
 <translation id="247737702124049222">Описания изображений включены.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">Лицензии на ПО с открытым кодом</translation>
 <translation id="4263656433980196874">Окно, где требуется разрешить использование Ассистента для голосового поиска, открыто на весь экран</translation>
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
-<translation id="4281359692687148179">Чтобы обновить, потяните вниз</translation>
 <translation id="4290281343757112331">Скачать позже?</translation>
 <translation id="4296252229500326964">Новая вкладка инкогнито</translation>
 <translation id="4298388696830689168">Связанные сайты</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">Отправить ссылку</translation>
 <translation id="5834764604050996579">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере.</translation>
 <translation id="5836192821815272682">Скачивание обновлений для Chrome…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">пауза</translation>
 <translation id="5854512288214985237">Не отправлять статистику и отчеты о сбоях в Google</translation>
 <translation id="5855546874025048181">Уточнить: "<ph name="REFINE_TEXT" />"</translation>

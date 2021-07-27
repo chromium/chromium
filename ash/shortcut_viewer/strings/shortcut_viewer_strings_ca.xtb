@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">Desplaça la pàgina web cap avall</translation>
 <translation id="2530896289327917474">Activa o desactiva la navegació amb cursor de text</translation>
 <translation id="2574014812750545982">Restableix el nivell de zoom de la pàgina</translation>
-<translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> i després <ph name="TAB" /> o <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Torna a carregar la pàgina actual</translation>
 <translation id="2764005613199379871">Situa el focus a la barra d'adreces</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Dreceres</translation>
 <translation id="3084301071537457911">Destaca l'element següent del prestatge</translation>
 <translation id="309173601632226815">Destaca el botó del menú d'aplicacions al prestatge</translation>
-<translation id="3105917916468784889">Fes una captura de pantalla</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Mou el focus a la barra d'adreces</translation>
 <translation id="3256109297135787951">Deixa de destacar un element del prestatge</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Consulta l'aplicació d'ajuda de les tecles de drecera</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> o <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Obre l'àrea d'estat (on es mostra la imatge del compte)</translation>
-<translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
 <translation id="4698850295812410683">Mostra les eines del llapis òptic</translation>
 <translation id="4801989101741319327">Mou el cursor al final de la paraula següent</translation>
 <translation id="4866066940972151697">Activa l'escriptori de la dreta</translation>

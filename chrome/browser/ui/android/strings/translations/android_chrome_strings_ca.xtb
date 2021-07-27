@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Pestanyes obertes</translation>
 <translation id="1754404134430936718">Text copiat</translation>
 <translation id="1772137089884020309">La llista de carpetes d'adreces d'interès està tancada</translation>
+<translation id="1779766957982586368">Tanca la finestra</translation>
 <translation id="1782483593938241562">Data de finalització: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792959175193046959">Canvia la ubicació predeterminada de baixada en qualsevol moment</translation>
@@ -225,6 +226,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 
 Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, selecciona més paraules o menys. Per editar la cerca, obre el tauler, toca la icona per obrir-la en una pestanya nova i fes els canvis al quadre de cerca.</translation>
 <translation id="2459390580524506445">Cerca per veu millorada</translation>
+<translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">Les descripcions de les imatges estan activades</translation>
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="4256782883801055595">Llicències de programari lliure</translation>
 <translation id="4263656433980196874">La IU de consentiment de la cerca per veu de l'Assistent s'ha obert a alçada completa</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
-<translation id="4281359692687148179">Arrossega cap avall per actualitzar</translation>
 <translation id="4290281343757112331">Vols posposar la baixada?</translation>
 <translation id="4296252229500326964">Pestanya d'incògnit nova</translation>
 <translation id="4298388696830689168">Llocs web enllaçats</translation>
@@ -750,6 +751,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5833984609253377421">Comparteix l'enllaç</translation>
 <translation id="5834764604050996579">Per escanejar un codi QR, permet que Chrome utilitzi la càmera</translation>
 <translation id="5836192821815272682">S'està baixant l'actualització de Chrome…</translation>
+<translation id="5839058148541733625">El dinosaure de Chrome</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854512288214985237">No s'envien informes d'error ni estadístiques a Google</translation>
 <translation id="5855546874025048181">Defineix millor: "<ph name="REFINE_TEXT" />"</translation>

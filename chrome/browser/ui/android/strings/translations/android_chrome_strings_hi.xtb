@@ -113,6 +113,7 @@
 <translation id="17513872634828108">टैब खोलें</translation>
 <translation id="1754404134430936718">टेक्स्ट कॉपी किया गया</translation>
 <translation id="1772137089884020309">बुकमार्क फ़ोल्डर वाली सूची बंद की गई</translation>
+<translation id="1779766957982586368">विंडो बंद करें</translation>
 <translation id="1782483593938241562">खत्म होने की तारीख: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">इंस्‍टॉल किया गया</translation>
 <translation id="1792959175193046959">डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
@@ -225,6 +226,7 @@
 
 खाेजने के लिए किसी भी शब्द को दबाकर रखें. अपनी खोज को फ़िल्टर करने के लिए, ज़्यादा या कम शब्दों काे चुनें. अपनी खाेज में बदलाव करने के लिए, पैनल को खोलें. आइकॉन पर टैप करके, उसे नए टैब में खाेलें. इसके बाद, खोज बॉक्स में शब्द को बदलें.</translation>
 <translation id="2459390580524506445">वॉइस सर्च की बेहतर सुविधा</translation>
+<translation id="2461822463642141190">मौजूदा</translation>
 <translation id="247737702124049222">इमेज की जानकारी जोड़ने की सुविधा चालू कर दी गई है</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2485422356828889247">विस्थापित करें</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">ओपन सोर्स लाइसेंस</translation>
 <translation id="4263656433980196874">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति पूरी स्क्रीन में खुली हुई है.</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
-<translation id="4281359692687148179">रीफ़्रेश करने के लिए नीचे खींचें</translation>
 <translation id="4290281343757112331">क्या आप बाद में डाउनलोड करना चाहते हैं?</translation>
 <translation id="4296252229500326964">नया गुप्त टैब</translation>
 <translation id="4298388696830689168">लिंक की हुई साइटें</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">लिंक शेयर करें</translation>
 <translation id="5834764604050996579">क्यूआर कोड स्कैन करने के लिए, Chrome को कैमरा इस्तेमाल करने दें</translation>
 <translation id="5836192821815272682">Chrome का अपडेट डाउनलोड हो रहा है…</translation>
+<translation id="5839058148541733625">Chrome डायनो</translation>
 <translation id="5853623416121554550">रोका गया</translation>
 <translation id="5854512288214985237">Google को आंकड़े या क्रैश रिपोर्ट नहीं भेजी जातीं</translation>
 <translation id="5855546874025048181">बेहतर बनाएं: <ph name="REFINE_TEXT" /></translation>

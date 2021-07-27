@@ -136,6 +136,7 @@
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2339560363438331454">同步功能和 Google 服务</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
+<translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359043044084662842">翻译</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360196772093551345">请求切换到移动版网站</translation>
@@ -474,6 +475,7 @@
 <translation id="5846482154967366008">搜索引擎</translation>
 <translation id="5854790677617711513">30 天之前的</translation>
 <translation id="5857090052475505287">新文件夹</translation>
+<translation id="5857675236236529683">准备就绪后，您可在此处找到自己的阅读清单</translation>
 <translation id="5857770089550859117">必须输入密码才能开始同步。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="5869029295770560994">知道了</translation>
@@ -594,6 +596,7 @@
 <translation id="6730682669179532099">无法导出密码</translation>
 <translation id="6748108480210050150">发件人</translation>
 <translation id="6760509555861141183">返回到最近用过的标签页</translation>
+<translation id="6762812039470893796">取消全选</translation>
 <translation id="6780034285637185932">邮编</translation>
 <translation id="6785453220513215166">正在发送崩溃报告…</translation>
 <translation id="6797885426782475225">语音搜索</translation>
@@ -747,7 +750,6 @@
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
-<translation id="83100941411593607">登录功能已被停用</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8323906514956095947">轻触并按住可查看更多的标签页选项</translation>
 <translation id="8328777765163860529">全部关闭</translation>

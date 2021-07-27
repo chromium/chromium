@@ -475,6 +475,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5846482154967366008">Search Engine</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5857090052475505287">New Folder</translation>
+<translation id="5857675236236529683">When you're ready, find your reading list here</translation>
 <translation id="5857770089550859117">Passphrase required to start sync.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5869029295770560994">OK, got it</translation>
@@ -749,7 +750,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
-<translation id="83100941411593607">Sign-in Is Disabled</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8323906514956095947">Touch and hold for more tab options</translation>
 <translation id="8328777765163860529">Close All</translation>

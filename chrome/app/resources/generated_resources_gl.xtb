@@ -2183,7 +2183,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3308852433423051161">Estase cargando o Asistente de Google...</translation>
 <translation id="3309330461362844500">Identificador do perfil do certificado</translation>
 <translation id="3311445899360743395">Os datos asociados a esta aplicación pódense quitar deste dispositivo.</translation>
-<translation id="3312424061798279731">Idiomas activados</translation>
 <translation id="3313622045786997898">Valor da sinatura do certificado</translation>
 <translation id="3313950410573257029">Comprobar conexión</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
@@ -5101,6 +5100,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="6521214596282732365">Os sitios adoitan utilizar os teus tipos de letra para que poidas crear contido de alta fidelidade con ferramentas gráficas e de deseño en liña</translation>
 <translation id="652492607360843641">Estás utilizando unha rede <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="6528179044667508675">Non molestar</translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6530186581263215931">O teu administrador aplica estas opcións de configuración</translation>
 <translation id="6531282281159901044">Conservar ficheiro perigoso</translation>
@@ -5375,7 +5375,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6833479554815567477">A pestana quitouse automaticamente do grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Cambiar a un navegador intelixente e seguro</translation>
 <translation id="6834652994408928492">O modo escuro activarase automaticamente ao anoitecer</translation>
-<translation id="683540480453879381">Abrir ficheiros coa extensión <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Preguntar cando un sitio queira abrir e colocar ventás nas túas pantallas (recomendado)</translation>
 <translation id="6839225236531462745">Erro de eliminación do certificado</translation>
@@ -6168,7 +6167,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="7684718995427157417">Activa Android Debug Bridge (ADB) para poder crear e probar as túas aplicacións. Ten en conta que esta acción permite a instalación de aplicacións de Android non verificadas por Google e que require un restablecemento dos valores de fábrica para desactivarse.</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>
 <translation id="7685087414635069102">PIN obrigatorio</translation>
-<translation id="768549422429443215">Engade idiomas ou reordena a lista.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7690378713476594306">Escoller unha opción da lista</translation>

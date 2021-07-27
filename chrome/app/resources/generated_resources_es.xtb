@@ -528,6 +528,7 @@
 <translation id="156793199942386351">La tecla <ph name="CURRENTKEY" /> ya está asignada a la acción <ph name="ACTION" />. Pulsa cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola JavaScript</translation>
 <translation id="1568323446248056064">Abrir la configuración de la pantalla</translation>
+<translation id="1571738973904005196">Ver pestaña: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitado)</translation>
 <translation id="1572266655485775982">Habilitar Wi-Fi</translation>
 <translation id="1572876035008611720">Introduce tu correo electrónico</translation>
@@ -2185,7 +2186,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3308852433423051161">Cargando el Asistente de Google...</translation>
 <translation id="3309330461362844500">ID de perfil del certificado</translation>
 <translation id="3311445899360743395">Los datos asociados a la aplicación se eliminarán de este dispositivo.</translation>
-<translation id="3312424061798279731">Idiomas habilitados</translation>
 <translation id="3313622045786997898">Valor de firma de certificados</translation>
 <translation id="3313950410573257029">Comprobar conexión</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
@@ -5102,6 +5102,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6521214596282732365">Los sitios suelen usar tus fuentes para que puedas crear contenido de alta fidelidad con herramientas de diseño y gráficos online</translation>
 <translation id="652492607360843641">Estás conectado a una red <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="6528179044667508675">No molestar</translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6530186581263215931">El administrador aplica estas opciones</translation>
 <translation id="6531282281159901044">Conservar archivo peligroso</translation>
@@ -5376,7 +5377,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6833479554815567477">Pestaña quitada del grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Cambia a un navegador seguro e inteligente</translation>
 <translation id="6834652994408928492">El modo oscuro se activará automáticamente cuando anochezca.</translation>
-<translation id="683540480453879381">Abrir archivos <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Preguntar cuando un sitio web quiera abrir y colocar ventanas en tus pantallas (recomendado)</translation>
 <translation id="6839225236531462745">Error de eliminación de certificado</translation>
@@ -5642,6 +5642,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7117247127439884114">Volver a iniciar sesión...</translation>
 <translation id="711840821796638741">Mostrar marcadores administrados</translation>
 <translation id="711902386174337313">Leer la lista de los dispositivos en los que has iniciado sesión</translation>
+<translation id="711985611146095797">Esta página te permite gestionar las cuentas de Google en las que hayas iniciado sesión. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">El tráfico de Android y del navegador Chrome se bloqueará a menos que se conecte una VPN</translation>
 <translation id="7120865473764644444">No se ha podido conectar con el servidor de sincronización. Reintentando...</translation>
 <translation id="7121438501124788993">Modo desarrollador</translation>
@@ -6116,6 +6117,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7639914187072011620">No se ha podido obtener del servidor la URL de redirección basada en SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automáticamente en los sitios en los que se pueda iniciar sesión con las contraseñas que hayas guardado.</translation>
 <translation id="7641513591566880111">Nombre de perfil nuevo</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> añadido</translation>
 <translation id="7642778300616172920">Ocultar contenido sensible</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventana abierta}other{# ventanas abiertas}}</translation>
 <translation id="7643932971554933646">¿Quieres permitir que el sitio web vea los archivos?</translation>
@@ -6169,7 +6171,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7684718995427157417">Para crear y probar tus aplicaciones, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permitirá la instalación de aplicaciones Android que no han sido verificadas por Google y para inhabilitarlas es necesario restablecer la configuración de fábrica.</translation>
 <translation id="7685049629764448582">Memoria de JavaScript</translation>
 <translation id="7685087414635069102">PIN necesario</translation>
-<translation id="768549422429443215">Añadir o reordenar idiomas</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirma la nueva contraseña</translation>
 <translation id="7690378713476594306">Elegir una opción de la lista</translation>
@@ -7180,6 +7181,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8757090071857742562">No se ha podido enviar el escritorio. Comprueba si has confirmado que se comparta en el mensaje correspondiente.</translation>
 <translation id="8757203080302669031">En esta pestaña se están buscando dispositivos Bluetooth de forma activa.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> quitado</translation>
 <translation id="8758418656925882523">Habilitar dictado (hablar para escribir)</translation>
 <translation id="8759408218731716181">No se puede configurar el inicio de sesión múltiple</translation>
 <translation id="8759753423332885148">Más información</translation>

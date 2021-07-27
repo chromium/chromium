@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
 <translation id="1772137089884020309">A lista de pastas de favoritos está fechada</translation>
+<translation id="1779766957982586368">Fechar janela</translation>
 <translation id="1782483593938241562">Data de término: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Altere o local padrão de download a qualquer momento</translation>
@@ -225,6 +226,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 
 Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar a pesquisa, selecione mais ou menos palavras. Para editar a pesquisa, abra o painel, toque no ícone que abre uma nova guia e faça mudanças na caixa de pesquisa.</translation>
 <translation id="2459390580524506445">Pesquisa por voz aprimorada</translation>
+<translation id="2461822463642141190">Atual</translation>
 <translation id="247737702124049222">As descrições de imagens estão ativadas</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -500,7 +502,6 @@ Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas 
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4263656433980196874">IU de consentimento para a pesquisa por voz do Assistente aberta no tamanho máximo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
-<translation id="4281359692687148179">Arraste para baixo para atualizar</translation>
 <translation id="4290281343757112331">Fazer o download mais tarde?</translation>
 <translation id="4296252229500326964">Nova guia anônima</translation>
 <translation id="4298388696830689168">Sites vinculados</translation>
@@ -751,6 +752,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5833984609253377421">Compartilhar link</translation>
 <translation id="5834764604050996579">Para ler um código QR, permita que o Chrome use sua câmera</translation>
 <translation id="5836192821815272682">Fazendo o download da atualização do Chrome…</translation>
+<translation id="5839058148541733625">Dinossauro do Chrome</translation>
 <translation id="5853623416121554550">pausado</translation>
 <translation id="5854512288214985237">Os relatórios de erros e as estatísticas não serão enviados ao Google</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>

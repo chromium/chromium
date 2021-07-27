@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">向下滚动网页</translation>
 <translation id="2530896289327917474">开启或关闭光标浏览模式</translation>
 <translation id="2574014812750545982">重置网页的缩放级别</translation>
-<translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />，然后按 <ph name="TAB" /> 键或<ph name="RIGHT" />键</translation>
 <translation id="2750942583782703988">重新加载当前网页</translation>
 <translation id="2764005613199379871">将焦点置于搜索地址栏中</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">快捷键</translation>
 <translation id="3084301071537457911">突出显示任务栏中的下一项</translation>
 <translation id="309173601632226815">突出显示任务栏中的启动器按钮</translation>
-<translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">将地址栏设为焦点</translation>
 <translation id="3256109297135787951">取消任务栏中某项内容的突出显示状态</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">查看键盘快捷键助手</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> 或 <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">打开状态区（其中显示了您的帐号头像）</translation>
-<translation id="4642092649622328492">截取局部屏幕截图</translation>
 <translation id="4698850295812410683">显示触控笔工具</translation>
 <translation id="4801989101741319327">移到下一个字词的末尾</translation>
 <translation id="4866066940972151697">启用右侧桌面</translation>

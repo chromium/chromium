@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
+<translation id="3540383942695635079">‏MAC پتہ</translation>
 <translation id="357889014807611375">‏میٹرڈ Wi-Fi</translation>
 <translation id="3595596368722241419">بیٹری پوری چارج ہے</translation>
 <translation id="360565022852130722">‏WiFi نیٹ ورک کمزور پروٹوکول WEP 802.1x کے ساتھ محفوظ ہے</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="4511264077854731334">پورٹل</translation>
+<translation id="4536864596629708641">‏IP کنفیگریشن</translation>
 <translation id="4548483925627140043">سگنل نہیں ملا</translation>
 <translation id="455835558791489930">‏mAh<ph name="CHARGE_VALUE" /> بیٹری</translation>
 <translation id="4562494484721939086">کوئی سروس نہیں</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
 <translation id="4652335678334611408">سیشن لاگ محفوظ کریں</translation>
+<translation id="4654549501020883054">روزانہ تبدیل کریں</translation>
 <translation id="4665014895760275686">مینوفیکچرر</translation>
 <translation id="467510802200863975">پاس ورڈز مماثل نہیں ہیں</translation>
 <translation id="467715984478005772">فائروال مشکوک ہے</translation>
@@ -292,6 +295,7 @@
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
 <translation id="6574762126505704998">بھریں</translation>
+<translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6603230386432466813">منسلک کرنے میں دشواری ہو رہی ہے؟</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
@@ -388,6 +392,7 @@
 <translation id="8498220429738806196">ٹریفک کاؤنٹرز</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8503836310948963452">صرف چند مزید منٹ...</translation>
+<translation id="8521021929829989041">ذاتی آلے کے طور پر استعمال کریں</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>

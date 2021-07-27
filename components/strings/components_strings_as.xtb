@@ -696,6 +696,7 @@
 <translation id="3432601291244612633">পৃষ্ঠাখন বন্ধ কৰক</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3438829137925142401">আপোনাৰ Google একাউণ্টত ছেভ কৰা পাছৱৰ্ডসমূহ ব্যৱহাৰ কৰক</translation>
+<translation id="3440783957068352691">বৰ্গক্ষেত্ৰ</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">এই ডিভাইচৰ গৰাকীয়ে ডাইন’ছৰ গে’মটো অফ কৰিছে।</translation>
 <translation id="3447884698081792621">প্ৰমাণপত্ৰ দেখুৱাওক (<ph name="ISSUER" />এ প্ৰদান কৰা)</translation>
@@ -863,6 +864,7 @@
 <translation id="4067263367174615723">C1 (লেফাফা)</translation>
 <translation id="4067947977115446013">মান্য ঠিকনা দিয়ক</translation>
 <translation id="4072193657607981494">নীতি ল’ড হৈ আছে</translation>
+<translation id="4073797364926776829">কাৰ্ড চাওক</translation>
 <translation id="4075732493274867456">ক্লায়েণ্ট আৰু ছাৰ্ভাৰত এটা উমৈহতীয়া SSL প্ৰট’কল সংস্কৰণ বা চাইফাৰ ছুট সমৰ্থন নকৰে।</translation>
 <translation id="4075941231477579656">স্পৰ্শ আইডি</translation>
 <translation id="4079302484614802869">প্ৰক্সি কনফিগাৰেশ্বন এটা .pac স্ক্রিপ্ট URL ব্যৱহাৰ কৰিবলৈহে ছেট কৰা হয়, স্থিৰ প্ৰক্সি ছাৰ্ভাৰ ব্যৱহাৰ কৰিবলৈ নহয়।</translation>
@@ -1362,6 +1364,7 @@
 <translation id="5759751709240058861">আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰা</translation>
 <translation id="5763042198335101085">এটা মান্য ইমেইল ঠিকনা দিয়ক</translation>
 <translation id="5765072501007116331">ডেলিভাৰীৰ পদ্ধতি আৰু আৱশ্যকতা সম্পর্কে চাবলৈ কোনো ঠিকনা বাছনি কৰক</translation>
+<translation id="57689295674415555">ভাৰ্চুৱেল কাৰ্ডৰ নম্বৰটো পূৰ কৰা নাই নেকি?</translation>
 <translation id="5776313857861697733">অগ্ৰাধিকাৰ</translation>
 <translation id="5778550464785688721">MIDI ডিভাইচৰ সম্পূর্ণ নিয়ন্ত্ৰণ</translation>
 <translation id="5781136890105823427">পৰীক্ষণ সক্ষম কৰা হৈছে</translation>

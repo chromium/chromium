@@ -528,6 +528,7 @@
 <translation id="156793199942386351">กำหนด "<ph name="CURRENTKEY" />" ให้กับการดำเนินการ "<ph name="ACTION" />" แล้ว กดแป้นใดก็ได้เพื่อ<ph name="RESPONSE" /></translation>
 <translation id="1567993339577891801">คอนโซล JavaScript</translation>
 <translation id="1568323446248056064">เปิดการตั้งค่าอุปกรณ์แสดงผล</translation>
+<translation id="1571738973904005196">ดูแท็บ <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ผู้มาเยือน)</translation>
 <translation id="1572266655485775982">เปิดใช้ Wi-Fi</translation>
 <translation id="1572876035008611720">ป้อนอีเมล</translation>
@@ -2184,7 +2185,6 @@
 <translation id="3308852433423051161">กำลังโหลด Google Assistant...</translation>
 <translation id="3309330461362844500">รหัสโปรไฟล์ใบรับรอง</translation>
 <translation id="3311445899360743395">ระบบอาจนำข้อมูลที่เชื่อมโยงกับแอปนี้ออกจากอุปกรณ์เครื่องนี้</translation>
-<translation id="3312424061798279731">ภาษาที่เปิดใช้</translation>
 <translation id="3313622045786997898">ค่าลายเซ็นใบรับรอง</translation>
 <translation id="3313950410573257029">ตรวจสอบการเชื่อมต่อ</translation>
 <translation id="3315158641124845231">ซ่อน <ph name="PRODUCT_NAME" /></translation>
@@ -5102,6 +5102,7 @@
 <translation id="6521214596282732365">โดยปกติแล้วเว็บไซต์จะใช้แบบอักษรของคุณเพื่อให้สร้างเนื้อหาความแม่นยำสูงได้ด้วยเครื่องมือการออกแบบและกราฟิกออนไลน์</translation>
 <translation id="652492607360843641">คุณเชื่อมต่ออยู่กับเครือข่าย <ph name="NETWORK_TYPE" /></translation>
 <translation id="6527303717912515753">แชร์</translation>
+<translation id="6528179044667508675">ห้ามรบกวน</translation>
 <translation id="652948702951888897">ประวัติการเข้าชมใน Chrome</translation>
 <translation id="6530186581263215931">ผู้ดูแลระบบกำหนดให้ใช้การตั้งค่าเหล่านี้</translation>
 <translation id="6531282281159901044">เก็บไฟล์อันตรายไว้</translation>
@@ -5376,7 +5377,6 @@
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">เปลี่ยนเป็นเบราว์เซอร์ที่มีประสิทธิภาพและปลอดภัย</translation>
 <translation id="6834652994408928492">โหมดมืดจะเปิดโดยอัตโนมัติเมื่อพระอาทิตย์ตก</translation>
-<translation id="683540480453879381">เปิดไฟล์ <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่ออัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="6838034009068684089">ถามเมื่อเว็บไซต์ต้องการเปิดและวางหน้าต่างบนหน้าจอ (แนะนำ)</translation>
 <translation id="6839225236531462745">ข้อผิดพลาดในการนำออกใบรับรอง</translation>
@@ -5642,6 +5642,7 @@
 <translation id="7117247127439884114">ลงชื่อเข้าใช้อีกครั้ง...</translation>
 <translation id="711840821796638741">แสดงบุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="711902386174337313">อ่านรายการอุปกรณ์ที่คุณลงชื่อเข้าใช้</translation>
+<translation id="711985611146095797">หน้านี้ช่วยให้คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">การเข้าชมจากเบราว์เซอร์ Chrome และ Android จะถูกบล็อกหากไม่ได้เชื่อมต่อ VPN</translation>
 <translation id="7120865473764644444">ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์การซิงค์ได้ กำลังลองใหม่...</translation>
 <translation id="7121438501124788993">โหมดของนักพัฒนาซอฟต์แวร์</translation>
@@ -6115,6 +6116,7 @@
 <translation id="7639914187072011620">ดึงข้อมูล URL เปลี่ยนเส้นทาง SAML จากเซิร์ฟเวอร์ไม่สำเร็จ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ลงชื่อเข้าใช้ให้คุณในเว็บไซต์ที่มีสิทธิ์โดยอัตโนมัติด้วยรหัสผ่านที่คุณบันทึกไว้</translation>
 <translation id="7641513591566880111">ชื่อโปรไฟล์ใหม่</translation>
+<translation id="764178579712141045">เพิ่ม <ph name="USER_EMAIL" /> แล้ว</translation>
 <translation id="7642778300616172920">ซ่อนเนื้อหาที่ละเอียดอ่อน</translation>
 <translation id="7643842463591647490">{0,plural, =1{หน้าต่างเปิดอยู่ # หน้า}other{หน้าต่างเปิดอยู่ # หน้า}}</translation>
 <translation id="7643932971554933646">อนุญาตให้เว็บไซต์ดูไฟล์ใช่ไหม</translation>
@@ -6168,7 +6170,6 @@
 <translation id="7684718995427157417">หากต้องการสร้างและทดสอบแอป ให้เปิดใช้ Android Debug Bridge (ADB) โปรดทราบว่าการดำเนินการนี้จะอนุญาตให้ติดตั้งแอป Android ที่ยังไม่ได้รับการยืนยันจาก Google และต้องรีเซ็ตเป็นค่าเริ่มต้นเพื่อปิดใช้</translation>
 <translation id="7685049629764448582">หน่วยความจำ JavaScript</translation>
 <translation id="7685087414635069102">ต้องระบุ PIN</translation>
-<translation id="768549422429443215">เพิ่มภาษาหรือจัดเรียงรายการใหม่</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
 <translation id="7690378713476594306">เลือกจากรายการ</translation>
@@ -7178,6 +7179,7 @@
 <translation id="8756969031206844760">อัปเดตรหัสผ่านไหม</translation>
 <translation id="8757090071857742562">ไม่สามารถแคสต์เดสก์ท็อป ตรวจสอบว่าคุณได้ยืนยันในข้อความเตือนแล้วเพื่อเริ่มแชร์หน้าจอ</translation>
 <translation id="8757203080302669031">แท็บนี้กำลังสแกนหาอุปกรณ์บลูทูธ</translation>
+<translation id="8757368836647541092">นำ <ph name="USER_NAME_OR_EMAIL" /> ออกแล้ว</translation>
 <translation id="8758418656925882523">เปิดใช้การพิมพ์ตามคำบอก (พูดเพื่อพิมพ์)</translation>
 <translation id="8759408218731716181">ไม่สามารถตั้งค่าการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีได้</translation>
 <translation id="8759753423332885148">ดูข้อมูลเพิ่มเติม</translation>

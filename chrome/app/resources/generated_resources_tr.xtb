@@ -528,6 +528,7 @@
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" tuşu zaten "<ph name="ACTION" />" işlemine atanmış durumda. <ph name="RESPONSE" /> için herhangi bir tuşa basın.</translation>
 <translation id="1567993339577891801">JavaScript Konsolu</translation>
 <translation id="1568323446248056064">Ekran cihaz ayarlarını aç</translation>
+<translation id="1571738973904005196"><ph name="TAB_ORIGIN" /> sekmesini göster</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Misafir)</translation>
 <translation id="1572266655485775982">Kablosuz bağlantıyı etkinleştir</translation>
 <translation id="1572876035008611720">E-postanızı girin</translation>
@@ -2183,7 +2184,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Google Asistan yükleniyor...</translation>
 <translation id="3309330461362844500">Sertifika Profil Kimliği</translation>
 <translation id="3311445899360743395">Bu uygulamayla ilişkili veriler bu cihazdan kaldırılacak.</translation>
-<translation id="3312424061798279731">Etkin diller</translation>
 <translation id="3313622045786997898">Sertifika İmza Değeri</translation>
 <translation id="3313950410573257029">Bağlantıyı kontrol et</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> uygulamasını gizle</translation>
@@ -5102,6 +5102,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6521214596282732365">Online tasarım ve grafik araçlarıyla yüksek kaliteli içerikler oluşturabilmeniz için siteler genellikle sizin yazı tiplerinizi kullanır</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> bir ağa bağlısınız.</translation>
 <translation id="6527303717912515753">Paylaş</translation>
+<translation id="6528179044667508675">Rahatsız etme</translation>
 <translation id="652948702951888897">Chrome geçmişi</translation>
 <translation id="6530186581263215931">Bu ayarlar yöneticiniz tarafınızdan uygulanıyor</translation>
 <translation id="6531282281159901044">Tehlikeli dosyayı tut</translation>
@@ -5376,7 +5377,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Akıllı ve güvenli bir tarayıcıya geç</translation>
 <translation id="6834652994408928492">Koyu mod, güneş battığında otomatik olarak açılır</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> dosyalarını açmak</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="6838034009068684089">Bir site ekranlarımda pencereler açıp yerleştirmek istediğinde sor (önerilir)</translation>
 <translation id="6839225236531462745">Sertifika Silme Hatası</translation>
@@ -5642,6 +5642,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7117247127439884114">Tekrar Oturum Açın...</translation>
 <translation id="711840821796638741">Yönetilen Yer İşaretlerini Göster</translation>
 <translation id="711902386174337313">Oturum açmış cihazlarınızın listesini okuma</translation>
+<translation id="711985611146095797">Bu sayfa, oturum açtığınız Google Hesaplarınızı yönetmenize olanak sağlar. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN bağlantısı olmadığı sürece Chrome tarayıcı ve Android trafiği engellenir</translation>
 <translation id="7120865473764644444">Senkronizasyon sunucusuna bağlanılamadı. Yeniden deneniyor…</translation>
 <translation id="7121438501124788993">Geliştirici Modu</translation>
@@ -6116,6 +6117,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7639914187072011620">Sunucudan SAML yönlendirme URL'si alınamadı</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />, kaydettiğiniz şifrelerle uygun sitelerde otomatik olarak oturum açmanızı sağlar.</translation>
 <translation id="7641513591566880111">Yeni profil adı</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> eklendi</translation>
 <translation id="7642778300616172920">Hassas içeriği gizle</translation>
 <translation id="7643842463591647490">{0,plural, =1{# açık pencere}other{# açık pencere}}</translation>
 <translation id="7643932971554933646">Sitenin dosyaları görüntülemesine izin verilsin mi?</translation>
@@ -6169,7 +6171,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7684718995427157417">Uygulama oluşturup test etmek için Android Debug Bridge'i (ADB) etkinleştirin. Bu işlemin Google tarafından doğrulanmamış Android uygulamasının yüklenmesine izin verdiğini ve devre dışı bırakmak için fabrika ayarlarına sıfırlama işlemi yapılması gerektirdiğini unutmayın.</translation>
 <translation id="7685049629764448582">JavaScript belleği</translation>
 <translation id="7685087414635069102">PIN gerekli</translation>
-<translation id="768549422429443215">Dil ekleyin veya listeyi yeniden sıralayın</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
 <translation id="7690378713476594306">Listeden seç</translation>
@@ -7178,6 +7179,7 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8756969031206844760">Şifre güncellensin mi?</translation>
 <translation id="8757090071857742562">Masaüstü yayınlanamıyor. Ekranınızı paylaşmaya başlama istemini onaylayıp onaylamadığınızı kontrol edin.</translation>
 <translation id="8757203080302669031">Bu sekme, aktif olarak Bluetooth cihazlarını tarıyor.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> kaldırıldı</translation>
 <translation id="8758418656925882523">Dikte özelliğini (konuşarak yazma) etkinleştir</translation>
 <translation id="8759408218731716181">Çoklu oturum açma kurulamıyor</translation>
 <translation id="8759753423332885148">Daha fazla bilgi edinin.</translation>

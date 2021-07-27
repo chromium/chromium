@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Geopende tabbladen</translation>
 <translation id="1754404134430936718">Tekst gekopieerd</translation>
 <translation id="1772137089884020309">Lijst met bookmarkmappen is gesloten</translation>
+<translation id="1779766957982586368">Venster sluiten</translation>
 <translation id="1782483593938241562">Einddatum: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
 <translation id="1792959175193046959">Je kunt op elk gewenst moment de standaard downloadlocatie wijzigen</translation>
@@ -225,6 +226,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 
 Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden om je zoekopdracht te verfijnen. Als je je zoekopdracht wilt bewerken, open je het deelvenster. Tik dan op het icoon voor openen in een nieuw tabblad en breng je wijzigingen aan in het zoekvak.</translation>
 <translation id="2459390580524506445">Geavanceerde gesproken zoekopdrachten</translation>
+<translation id="2461822463642141190">Huidig</translation>
 <translation id="247737702124049222">Afbeeldingsbeschrijvingen staan aan</translation>
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox is nog actief in ontwikkeling en is beschikbaar in bepaalde regi
 <translation id="4256782883801055595">Opensource-licenties</translation>
 <translation id="4263656433980196874">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op volledige hoogte geopend</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
-<translation id="4281359692687148179">Omlaag swipen om te vernieuwen</translation>
 <translation id="4290281343757112331">Later downloaden?</translation>
 <translation id="4296252229500326964">Nieuw incognitotabblad</translation>
 <translation id="4298388696830689168">Gekoppelde sites</translation>
@@ -750,6 +751,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5833984609253377421">Link delen</translation>
 <translation id="5834764604050996579">Als je een QR-code wilt scannen, moet je Chrome toestemming geven om je camera te gebruiken</translation>
 <translation id="5836192821815272682">Chrome-update downloaden…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">onderbroken</translation>
 <translation id="5854512288214985237">Er worden geen statistieken of crashrapporten naar Google gestuurd</translation>
 <translation id="5855546874025048181">Verfijnen: <ph name="REFINE_TEXT" /></translation>

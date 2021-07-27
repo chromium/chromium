@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
+<translation id="3540383942695635079">MAC ॲड्रेस</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
+<translation id="4536864596629708641">आयपी कॉंफिगरेशन</translation>
 <translation id="4548483925627140043">सिग्नल मिळाला नाही</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh बॅटरी</translation>
 <translation id="4562494484721939086">सेवा नाही</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर दाबा.</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
 <translation id="4652335678334611408">सेशन लॉग सेव्ह करा</translation>
+<translation id="4654549501020883054">दररोज बदला</translation>
 <translation id="4665014895760275686">निर्माता</translation>
 <translation id="467510802200863975">पासवर्ड जुळत नाहीत</translation>
 <translation id="467715984478005772">फायरवॉल असू शकते</translation>
@@ -293,6 +296,7 @@
 <translation id="65587193855025101">फ्लॅटबेड</translation>
 <translation id="6564646048574748301">अयशस्वी झाले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
 <translation id="6574762126505704998">भरा</translation>
+<translation id="6596816719288285829">IP पत्ता</translation>
 <translation id="6603230386432466813">कनेक्ट करताना समस्या येत आहे का?</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
@@ -389,6 +393,7 @@
 <translation id="8498220429738806196">ट्रॅफिक काउंटर</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
+<translation id="8521021929829989041">वैयक्तिक डिव्हाइस म्हणून वापरा</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">तुमच्या वाहकाला त्यांच्या नेटवर्कशी कनेक्ट करण्यासाठी या पर्यायाची आवश्यकता असू शकते. तपशिलांसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>

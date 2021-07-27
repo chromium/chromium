@@ -527,6 +527,7 @@
 <translation id="156793199942386351">Тастер <ph name="CURRENTKEY" /> је већ додељен радњи <ph name="ACTION" />. Притисните било који тастер да бисте <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript конзола</translation>
 <translation id="1568323446248056064">Отвори подешавања уређаја за екран</translation>
+<translation id="1571738973904005196">Прикажи картицу: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гост)</translation>
 <translation id="1572266655485775982">Омогући WiFi</translation>
 <translation id="1572876035008611720">Унесите имејл</translation>
@@ -2184,7 +2185,6 @@
 <translation id="3308852433423051161">Google помоћник се учитава...</translation>
 <translation id="3309330461362844500">ИД профила сертификата</translation>
 <translation id="3311445899360743395">Подаци повезани са овом апликацијом ће се можда уклонити са овог уређаја.</translation>
-<translation id="3312424061798279731">Омогућени језици</translation>
 <translation id="3313622045786997898">Вредност потписа сертификата</translation>
 <translation id="3313950410573257029">Провери везу</translation>
 <translation id="3315158641124845231">Сакриј <ph name="PRODUCT_NAME" /></translation>
@@ -5103,6 +5103,7 @@
 <translation id="6521214596282732365">Сајтови обично користе ваше фонтове да бисте могли да правите квалитетан садржај помоћу онлајн алатки за дизајн и графику</translation>
 <translation id="652492607360843641">Повезани сте на <ph name="NETWORK_TYPE" /> мрежу.</translation>
 <translation id="6527303717912515753">Дели</translation>
+<translation id="6528179044667508675">Не узнемиравај</translation>
 <translation id="652948702951888897">Историја Chrome-а</translation>
 <translation id="6530186581263215931">Администратор примењује ова подешавања</translation>
 <translation id="6531282281159901044">Задржи опасну датотеку</translation>
@@ -5377,7 +5378,6 @@
 <translation id="6833479554815567477">Картица је уклоњена из групе <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Пређите на паметан и безбедан прегледач</translation>
 <translation id="6834652994408928492">Тамни режим се аутоматски укључује када сунце зађе</translation>
-<translation id="683540480453879381">отвара <ph name="FILE_EXTENSIONS" /> датотеке</translation>
 <translation id="6835762382653651563">Повежите се на интернет да бисте ажурирали <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Питај када сајт жели да отвара и поставља прозоре на екране (препоручено)</translation>
 <translation id="6839225236531462745">Грешка при брисању сертификата</translation>
@@ -5643,6 +5643,7 @@
 <translation id="7117247127439884114">Пријави ме поново...</translation>
 <translation id="711840821796638741">Прикажи управљане обележиваче</translation>
 <translation id="711902386174337313">Читање листе уређаја на којима сте пријављени</translation>
+<translation id="711985611146095797">Ова страница вам омогућава да управљате Google налозима на које сте пријављени. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Садржај преко Chrome прегледача и Android-а биће блокиран ако VPN није повезан</translation>
 <translation id="7120865473764644444">Успостављање везе са сервером за синхронизацију није успело. Покушава се поново…</translation>
 <translation id="7121438501124788993">Режим програмера</translation>
@@ -6117,6 +6118,7 @@
 <translation id="7639914187072011620">Преузимање SAML URL-а за преусмеравање са сервера није успело</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> вас аутоматски пријављује на сајтове који испуњавају услове помоћу лозинки које сте сачували.</translation>
 <translation id="7641513591566880111">Нов назив профила</translation>
+<translation id="764178579712141045">Додато: <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Сакриј осетљив садржај</translation>
 <translation id="7643842463591647490">{0,plural, =1{# отворен прозор}one{# отворен прозор}few{# отворена прозора}other{# отворених прозора}}</translation>
 <translation id="7643932971554933646">Желите ли да дозволите да сајт прегледа датотеке?</translation>
@@ -6170,7 +6172,6 @@
 <translation id="7684718995427157417">Да бисте правили и тестирали апликације, омогућите Android Debug Bridge (ADB). Имајте на уму да ова радња омогућава инсталирање Android апликација које Google није верификовао и захтева ресетовање на фабричка подешавања да би се онемогућила.</translation>
 <translation id="7685049629764448582">JavaScript меморија</translation>
 <translation id="7685087414635069102">PIN је обавезан</translation>
-<translation id="768549422429443215">Додајте језике или промените редослед ставки на листи.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Потврдите нову лозинку</translation>
 <translation id="7690378713476594306">Одаберите са листе</translation>
@@ -7180,6 +7181,7 @@
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>
 <translation id="8757090071857742562">Није успело пребацивање радне површине. Проверите да ли сте потврдили упит за почетак дељења екрана.</translation>
 <translation id="8757203080302669031">Картица активно тражи Bluetooth уређаје.</translation>
+<translation id="8757368836647541092">Уклонили сте: <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Омогући диктирање (говорите за куцање)</translation>
 <translation id="8759408218731716181">Није могуће подесити вишеструко пријављивање</translation>
 <translation id="8759753423332885148">Сазнајте више.</translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1754404134430936718">Teks Disalin</translation>
 <translation id="1772137089884020309">Daftar folder bookmark ditutup</translation>
+<translation id="1779766957982586368">Tutup jendela</translation>
 <translation id="1782483593938241562">Tanggal akhir <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Terinstal</translation>
 <translation id="1792959175193046959">Ubah lokasi download default kapan saja</translation>
@@ -225,6 +226,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 
 Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih lebih banyak atau lebih sedikit kata. Untuk mengedit penelusuran, buka panel, ketuk ikon untuk membuka di tab baru, lalu lakukan perubahan di kotak penelusuran.</translation>
 <translation id="2459390580524506445">Penelusuran suara yang disempurnakan</translation>
+<translation id="2461822463642141190">Arus</translation>
 <translation id="247737702124049222">Deskripsi gambar aktif</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2485422356828889247">Uninstal</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="4256782883801055595">Lisensi open source</translation>
 <translation id="4263656433980196874">UI izin penelusuran suara Asisten terbuka penuh</translation>
 <translation id="4269820728363426813">Salin URL</translation>
-<translation id="4281359692687148179">Tarik ke bawah untuk memuat ulang</translation>
 <translation id="4290281343757112331">Download nanti?</translation>
 <translation id="4296252229500326964">Tab Samaran baru</translation>
 <translation id="4298388696830689168">Situs tertaut</translation>
@@ -750,6 +751,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5833984609253377421">Bagikan link</translation>
 <translation id="5834764604050996579">Untuk memindai Kode QR, izinkan Chrome menggunakan kamera Anda</translation>
 <translation id="5836192821815272682">Mendownload Update Chrome…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">dijeda</translation>
 <translation id="5854512288214985237">Tidak ada statistik atau laporan kerusakan yang dikirim ke Google</translation>
 <translation id="5855546874025048181">Saring: <ph name="REFINE_TEXT" /></translation>

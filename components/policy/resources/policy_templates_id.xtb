@@ -1720,6 +1720,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Aktifkan pelaporan metrik</translation>
+<translation id="3031796805169553856">Izinkan modul WebAssembly dikirim lintas asal</translation>
 <translation id="3032322294267258117">Mengontrol setelan untuk pengguna yang diautentikasi terhadap GAIA tanpa SAML.</translation>
 <translation id="3038323923255997294">Terus jalankan aplikasi latar belakang saat <ph name="PRODUCT_NAME" /> ditutup</translation>
 <translation id="3041707370546071653">Apakah ingin mengingat sandi Kerberos. Jika tidak disetel atau disetel ke salah (false), sandi tidak diingat. Abaikan jika sandi tidak ditentukan.</translation>
@@ -2090,6 +2091,19 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan ini ditetapkan ke True atau tidak dikonfigurasi, maka <ph name="PRODUCT_OS_NAME" /> akan otomatis menghubungi Quirks Server dan mendownload file konfigurasi, jika tersedia, dan menyimpannya di perangkat. File tersebut dapat digunakan, misalnya, untuk meningkatkan kualitas tampilan monitor yang ditambahkan.</translation>
 <translation id="3524204464536655762">Jangan izinkan situs apa pun meminta akses ke perangkat USB melalui WebUSB API</translation>
+<translation id="3526111349971346870">
+      Menentukan apakah modul WebAssembly dapat dikirim ke jendela atau
+      pekerja lain lintas asal. Berbagi modul WebAssembly lintas asal
+      tidak akan digunakan lagi sebagai bagian dari upaya penghentian penggunaan document.domain, lihat
+      https://github.com/mikewest/deprecating-document-domain. Kebijakan ini
+      memungkinkan pengaktifan kembali berbagi modul WebAssembly lintas asal untuk menawarkan
+      periode transisi yang lebih lama dalam proses penghentian penggunaan.
+
+      Jika disetel ke Benar (True), situs dapat mengirim modul WebAssembly serta lintas asal
+      tanpa batasan.
+
+      Jika disetel ke Salah (False), situs hanya dapat mengirim modul WebAssembly ke jendela
+      dan pekerja di asal yang sama.</translation>
 <translation id="3526752951628474302">Khusus pencetakan monokrom</translation>
 <translation id="3528000905991875314">Mengaktifkan halaman kesalahan alternatif</translation>
 <translation id="3531084733660068324">Setelan pengawasan orang tua</translation>
@@ -2142,6 +2156,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, fitur klik untuk diucapkan mula-mula dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="3589193811812796052">Cegah modul WebAssembly dikirim lintas asal</translation>
 <translation id="3591527072193107424">Mengaktifkan fitur Dukungan Browser Lama.</translation>
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
@@ -2209,6 +2224,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="3733014427925403568">Hari dalam seminggu sebagai interval.</translation>
 <translation id="3736879847913515635">Mengaktifkan penambahan orang di pengelola pengguna</translation>
+<translation id="3749259744154402564">Tidak didukung</translation>
 <translation id="3750220015372671395">Blokir pembuatan kunci di situs ini</translation>
 <translation id="3755237588083934849">Menyetel kebijakan akan menentukan frekuensi pengiriman upload status perangkat, dalam milidetik. Batas minimum yang diizinkan adalah 60 detik.
 
@@ -2344,7 +2360,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika ditentukan, akan menambahkan parameter kueri yang disebut 'membatasi' ke URL yang digunakan untuk mengambil sumber Variasi. Nilai parameter akan menjadi nilai yang ditentukan dalam kebijakan ini.
 
       Jika tidak ditentukan, tidak akan memodifikasi URL sumber Variasi.</translation>
-<translation id="3863409707075047163">Versi SSL minimum diaktifkan</translation>
+<translation id="3863409707075047163">Versi SSL minimum yang diaktifkan</translation>
 <translation id="3864129983143201415">Konfigurasi bahasa yang diizinkan dalam sesi pengguna</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="386723261607812952">Menetapkan jenis kaca pembesar layar di layar login</translation>
@@ -4119,6 +4135,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Menyetel kebijakan ke 0 akan menonaktifkan perubahan sandi akun perangkat.
 
       Catatan: Sandi mungkin menjadi lebih lama dari jumlah hari yang ditentukan jika klien offline selama jangka waktu yang lebih lama.</translation>
+<translation id="628084107912717806">Menentukan apakah modul WebAssembly dapat dikirim lintas asal</translation>
 <translation id="6280973140313576289">Alat pilih profil dipaksa saat browser dimulai</translation>
 <translation id="6282524907402492171">Tampilkan peringatan <ph name="CLOUD_PRINT_NAME" /> tidak digunakan lagi</translation>
 <translation id="6282799760374509080">Izinkan atau tolak penangkapan audio</translation>
@@ -4321,7 +4338,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
        Menyetel kebijakan ke Aktif memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy. Chrome dan aplikasi ARC akan mengabaikan semua opsi terkait proxy yang ditentukan dari command line. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan.
 
        Opsi lain akan diabaikan jika Anda memilih:
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Jangan pernah menggunakan server proxy dan selalu hubungkan secara langsung 
+         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Jangan pernah gunakan server proxy dan selalu hubungkan secara langsung 
          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Gunakan setelan proxy sistem
          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = Deteksi otomatis server proxy
 
@@ -4393,6 +4410,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link .... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Nonaktifkan dukungan untuk API grafis 3D</translation>
+<translation id="6642682198621199507">Menyetel kebijakan memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses semua port serial yang tersedia.
+
+      URL harus valid. Jika tidak, kebijakan akan diabaikan. Hanya asal (skema, host, dan port) URL yang dipertimbangkan.
+
+      Di Chrome OS, kebijakan ini hanya berlaku untuk pengguna terafiliasi.
+
+      Kebijakan ini menggantikan <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.</translation>
 <translation id="6646912445796087001">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual. Kebijakan ini hanya berlaku jika kebijakan "VirtualKeyboardEnabled" diaktifkan.
 
       Jika satu fitur dalam kebijakan ini disetel ke Benar (True), fitur tersebut akan diaktifkan di keyboard virtual.
@@ -4586,6 +4610,15 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan tidak disetel, setelan default adalah <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> untuk pengguna yang dikelola perusahaan dan <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> untuk pengguna yang tidak dikelola perusahaan.
 
       Di masa mendatang, <ph name="LACROS_NAME" /> mungkin bisa menjadi satu-satunya browser yang tersedia di <ph name="PRODUCT_OS_NAME" /> dengan nilai <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="6865392932254477045">Menyetel kebijakan ini memungkinkan Anda menetapkan daftar situs yang otomatis diizinkan untuk mengakses perangkat serial USB dengan ID vendor dan produk yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, situs tertentu akan diizinkan untuk mengakses perangkat dengan ID vendor yang cocok dengan kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan ID produk apa pun.
+
+      URL harus valid. Jika tidak, kebijakan akan diabaikan. Hanya asal (skema, host, dan port) URL yang dipertimbangkan.
+
+      Di Chrome OS, kebijakan ini hanya berlaku untuk pengguna terafiliasi.
+
+      Kebijakan ini menggantikan <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, dan preferensi pengguna.
+
+      Kebijakan ini hanya memengaruhi akses ke perangkat USB melalui Web Serial API. Untuk memberikan akses ke perangkat USB melalui WebUSB API, lihat kebijakan <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">Menyetel kebijakan akan menentukan aplikasi yang dapat diaktifkan pengguna sebagai aplikasi pencatat di layar kunci <ph name="PRODUCT_OS_NAME" />.
 
       Jika aplikasi pilihan berada di layar kunci, elemen UI untuk meluncurkan aplikasi pencatat pilihan akan muncul di layar. Saat diluncurkan, aplikasi dapat membuat jendela di atas layar kunci dan membuat catatan dalam konteks ini. Saat sesi dibuka, aplikasi dapat mengimpor catatan yang dibuat ke sesi pengguna utama. Hanya aplikasi pencatat <ph name="PRODUCT_NAME" /> yang didukung di layar kunci.
@@ -5828,6 +5861,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8455529558077979314">Setelan layar privasi</translation>
 <translation id="8455551509936646199">Hari dalam seminggu saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'WEEKLY'.</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463569949213141467">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, Web Store, Canvas, dan fitur-fitur Jelajahi untuk dinonaktifkan</translation>
 <translation id="8465065632133292531">Parameter untuk URL instan yang menggunakan POST</translation>
 <translation id="847472800012384958">Jangan izinkan situs mana pun menampilkan pop-up</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

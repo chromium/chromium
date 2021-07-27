@@ -531,6 +531,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1568323446248056064">디스플레이 기기 설정 열기</translation>
+<translation id="1571738973904005196">탭 보기: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />(게스트)</translation>
 <translation id="1572266655485775982">Wi-Fi 사용</translation>
 <translation id="1572876035008611720">이메일을 입력하세요.</translation>
@@ -2200,7 +2201,6 @@
 <translation id="3308852433423051161">Google 어시스턴트 로드 중...</translation>
 <translation id="3309330461362844500">인증서 프로필 ID</translation>
 <translation id="3311445899360743395">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
-<translation id="3312424061798279731">사용 설정된 언어</translation>
 <translation id="3313622045786997898">인증서 서명 값</translation>
 <translation id="3313950410573257029">연결 확인</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> 숨기기</translation>
@@ -5116,6 +5116,7 @@
 <translation id="6521214596282732365">온라인 디자인 및 그래픽 도구를 사용하여 고품질 콘텐츠를 만들 수 있도록 사이트에서 일반적으로 기기에 설치된 글꼴을 사용합니다.</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> 네트워크에 연결되어 있습니다.</translation>
 <translation id="6527303717912515753">공유</translation>
+<translation id="6528179044667508675">방해 금지 모드</translation>
 <translation id="652948702951888897">Chrome 방문 기록</translation>
 <translation id="6530186581263215931">이 설정은 관리자가 시행합니다.</translation>
 <translation id="6531282281159901044">위험한 파일 보관</translation>
@@ -5390,7 +5391,6 @@
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> 그룹에서 탭이 삭제됨 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">편리하고 안전한 브라우저로 전환</translation>
 <translation id="6834652994408928492">일몰 시 어두운 모드가 자동으로 켜짐</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> 파일 열기</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
 <translation id="6838034009068684089">사이트에서 창을 열 때 확인하고 화면에 창 배치(권장)</translation>
 <translation id="6839225236531462745">인증서 삭제 오류</translation>
@@ -5656,6 +5656,7 @@
 <translation id="7117247127439884114">다시 로그인...</translation>
 <translation id="711840821796638741">관리 북마크 표시</translation>
 <translation id="711902386174337313">로그인한 기기 목록 조회</translation>
+<translation id="711985611146095797">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN이 연결되지 않으면 Chrome 브라우저 및 Android 트래픽이 차단됩니다</translation>
 <translation id="7120865473764644444">동기화 서버에 연결하지 못했습니다. 다시 시도 중...</translation>
 <translation id="7121438501124788993">개발자 모드</translation>
@@ -6130,6 +6131,7 @@
 <translation id="7639914187072011620">SAML 리디렉션 URL을 서버에서 가져올 수 없습니다.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />에서 저장한 비밀번호를 사용하여 적합한 사이트에 자동 로그인합니다.</translation>
 <translation id="7641513591566880111">새 프로필 이름</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> 추가됨</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
 <translation id="7643842463591647490">{0,plural, =1{열린 창 #개}other{열린 창 #개}}</translation>
 <translation id="7643932971554933646">사이트가 파일을 보도록 허용하시겠습니까?</translation>
@@ -6183,7 +6185,6 @@
 <translation id="7684718995427157417">앱을 만들고 테스트하려면 Android 디버그 브리지(ADB)를 사용 설정하세요. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
 <translation id="7685049629764448582">자바스크립트 메모리</translation>
 <translation id="7685087414635069102">PIN 필요</translation>
-<translation id="768549422429443215">언어 추가 또는 목록 재정렬</translation>
 <translation id="7686938547853266130"><ph name="DEVICE_PATH" /> <ph name="FRIENDLY_NAME" /></translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7690378713476594306">목록에서 선택</translation>
@@ -7194,6 +7195,7 @@
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="8757090071857742562">데스크톱을 전송할 수 없습니다. 화면 공유 시작 메시지를 확인했는지 알아보세요.</translation>
 <translation id="8757203080302669031">이 탭은 현재 블루투스 기기를 검사하고 있습니다.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> 삭제됨</translation>
 <translation id="8758418656925882523">음성기록 사용(말하여 입력)</translation>
 <translation id="8759408218731716181">멀티 로그인을 설정할 수 없음</translation>
 <translation id="8759753423332885148">자세히 알아보기</translation>

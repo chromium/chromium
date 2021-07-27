@@ -530,6 +530,7 @@
 <translation id="156793199942386351">Kláves <ph name="CURRENTKEY" /> je už pridelený k akcii <ph name="ACTION" />. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
 <translation id="1567993339577891801">Konzola JavaScript</translation>
 <translation id="1568323446248056064">Otvoriť nastavenia obrazovky</translation>
+<translation id="1571738973904005196">Zobraziť kartu <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (hosť)</translation>
 <translation id="1572266655485775982">Povolenie Wi‑Fi</translation>
 <translation id="1572876035008611720">Zadajte svoj e-mail</translation>
@@ -2187,7 +2188,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3308852433423051161">Načítava sa Asistent Google…</translation>
 <translation id="3309330461362844500">Identifikátor profilu certifikátu</translation>
 <translation id="3311445899360743395">Dáta spojené s touto aplikáciou budú odstránené zo zariadenia.</translation>
-<translation id="3312424061798279731">Povolené jazyky</translation>
 <translation id="3313622045786997898">Hodnota podpisu certifikátu</translation>
 <translation id="3313950410573257029">Skontrolovať pripojenie</translation>
 <translation id="3315158641124845231">Skryť <ph name="PRODUCT_NAME" /></translation>
@@ -5105,6 +5105,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6521214596282732365">Weby zvyčajne používajú vaše písma, takže môžete online návrhárskymi a grafickými nástrojmi vytvoriť obsah s vysokou presnosťou</translation>
 <translation id="652492607360843641">Máte aktívne pripojenie k sieti <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
+<translation id="6528179044667508675">Nerušiť</translation>
 <translation id="652948702951888897">História Chromu</translation>
 <translation id="6530186581263215931">Tieto nastavenia sú vynútené správcom</translation>
 <translation id="6531282281159901044">Ponechať nebezpečný súbor</translation>
@@ -5379,7 +5380,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6833479554815567477">Karta bola odstránená zo skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Prepnite na inteligentný a bezpečný prehliadač</translation>
 <translation id="6834652994408928492">Tmavý režim sa automaticky zapne pri západe slnka</translation>
-<translation id="683540480453879381">Otvárať súbory s príponami <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Ak chcete aktualizovať zariadenie <ph name="DEVICE_TYPE" />, pripojte sa k internetu.</translation>
 <translation id="6838034009068684089">Opýtať sa, keď chce web otvárať a umiestňovať okná na vaše obrazovky (odporúčané)</translation>
 <translation id="6839225236531462745">Chyba odstránenia certifikátu</translation>
@@ -5645,6 +5645,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7117247127439884114">Znova prihlásiť...</translation>
 <translation id="711840821796638741">Zobraziť spravované záložky</translation>
 <translation id="711902386174337313">Čítať zoznam zariadení, v ktorých ste prihlásení</translation>
+<translation id="711985611146095797">Táto stránka vám umožňuje spravovať svoje prihlásené účty Google. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Pokiaľ nebude pripojená sieť VPN, dátové prenosy prehliadača Chrome a Androidu budú blokované</translation>
 <translation id="7120865473764644444">K serveru synchronizácie sa nepodarilo pripojiť. Prebieha ďalší pokus…</translation>
 <translation id="7121438501124788993">Režim vývojára</translation>
@@ -6119,6 +6120,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7639914187072011620">Presmerovanie SAML sa nepodarilo načítať zo servera</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vás automaticky prihlási na vhodných weboch pomocou hesiel, ktoré ste si uložili.</translation>
 <translation id="7641513591566880111">Názov nového profilu</translation>
+<translation id="764178579712141045">Bol pridaný používateľ <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Skryť citlivý obsah</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvorené okno}few{# otvorené okná}many{# open windows}other{# otvorených okien}}</translation>
 <translation id="7643932971554933646">Chcete povoliť webu zobrazovať si súbory?</translation>
@@ -6172,7 +6174,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7684718995427157417">Ak chcete vytvárať a testovať aplikácie, aktivujte Android Debug Bridge (ADB). Upozorňujeme, že touto akciou umožníte inštalácie aplikácií pre Android, ktoré Google neoveril, a deaktivácia vyžaduje obnovenie výrobných nastavení.</translation>
 <translation id="7685049629764448582">Pamäť jazyka JavaScript</translation>
 <translation id="7685087414635069102">Vyžaduje sa kód PIN</translation>
-<translation id="768549422429443215">Pridajte jazyky alebo upravte poradie zoznamu.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7690378713476594306">Vybrať v zozname</translation>
@@ -7182,6 +7183,7 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>
 <translation id="8757090071857742562">Plochu sa nepodarilo prenášať. Skontrolujte, či ste potvrdili výzvu na zdieľanie obrazovky.</translation>
 <translation id="8757203080302669031">Táto karta aktívne vyhľadáva zariadenia s rozhraním Bluetooth.</translation>
+<translation id="8757368836647541092">Používateľ <ph name="USER_NAME_OR_EMAIL" /> bol odobraný</translation>
 <translation id="8758418656925882523">Povoliť diktovanie (písanie hlasom)</translation>
 <translation id="8759408218731716181">Nie je možné nastaviť viacnásobné prihlásenie</translation>
 <translation id="8759753423332885148">Prečítajte si viac informácií.</translation>

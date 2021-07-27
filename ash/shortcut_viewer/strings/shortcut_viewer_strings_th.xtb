@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">เลื่อนหน้าเว็บลง</translation>
 <translation id="2530896289327917474">เปิดหรือปิดการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="2574014812750545982">รีเซ็ตระดับการซูมในหน้าเว็บ</translation>
-<translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="TAB" /> หรือ <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">โหลดหน้าเว็บปัจจุบันซ้ำ</translation>
 <translation id="2764005613199379871">วางโฟกัสบนแถบที่อยู่การค้นหา</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3084301071537457911">ไฮไลต์รายการถัดไปบนชั้นวาง</translation>
 <translation id="309173601632226815">ไฮไลต์ปุ่ม Launcher บนชั้นวาง</translation>
-<translation id="3105917916468784889">จับภาพหน้าจอ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">โฟกัสแถบที่อยู่</translation>
 <translation id="3256109297135787951">นำไฮไลต์ออกจากรายการบนชั้นวาง</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">ดูตัวช่วยเหลือสำหรับแป้นพิมพ์ลัด</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> หรือ <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">เปิดพื้นที่แสดงสถานะ (ตรงตำแหน่งที่รูปสำหรับบัญชีของคุณปรากฏ)</translation>
-<translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4698850295812410683">แสดงเครื่องมือสไตลัส</translation>
 <translation id="4801989101741319327">ย้ายไปท้ายคำถัดไป</translation>
 <translation id="4866066940972151697">เปิดใช้งานพื้นที่ทำงานด้านขวา</translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Pestañas abiertas</translation>
 <translation id="1754404134430936718">Se copió el texto</translation>
 <translation id="1772137089884020309">La lista de carpetas de favoritos está cerrada</translation>
+<translation id="1779766957982586368">Cerrar ventana</translation>
 <translation id="1782483593938241562">Fecha de finalización: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Cambia la ubicación predeterminada de las descargas en cualquier momento</translation>
@@ -225,6 +226,7 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 
 Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqueda, selecciona más o menos palabras. Si quieres editar la búsqueda, abre el panel, presiona el ícono para abrir una pestaña nueva y realiza los cambios que quieras en el cuadro de búsqueda.</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
+<translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">Las descripciones de imágenes están activadas.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="4256782883801055595">Licencias de código abierto</translation>
 <translation id="4263656433980196874">La IU de consentimiento de la búsqueda por voz de Asistente está totalmente abierta</translation>
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
-<translation id="4281359692687148179">Desliza el dedo hacia abajo para actualizar</translation>
 <translation id="4290281343757112331">¿Quieres descargarlo más tarde?</translation>
 <translation id="4296252229500326964">Nueva pestaña de incógnito</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
@@ -750,6 +751,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5833984609253377421">Compartir vínculo</translation>
 <translation id="5834764604050996579">Si quieres escanear un código QR, permite que Chrome use la cámara</translation>
 <translation id="5836192821815272682">Descargando la actualización de Chrome…</translation>
+<translation id="5839058148541733625">Dinosaurio de Chrome</translation>
 <translation id="5853623416121554550">pausado</translation>
 <translation id="5854512288214985237">No se envían informes de fallas ni estadísticas a Google</translation>
 <translation id="5855546874025048181">Definir mejor: <ph name="REFINE_TEXT" /></translation>

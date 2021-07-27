@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Otvorené karty</translation>
 <translation id="1754404134430936718">Text bol skopírovaný</translation>
 <translation id="1772137089884020309">Zoznam priečinkov so záložkami je zatvorený</translation>
+<translation id="1779766957982586368">Zavrieť okno</translation>
 <translation id="1782483593938241562">Dátum ukončenia: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Nainštalovaný</translation>
 <translation id="1792959175193046959">Kedykoľvek zmeniť predvolené umiestnenie stiahnutých súborov</translation>
@@ -225,6 +226,7 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 
 Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výberom väčšieho alebo menšieho počtu slov. Ak chcete vyhľadávania upraviť, otvorte panel, klepnutím na príslušnú ikonu otvorte novú kartu a vykonajte zmeny vo vyhľadávacom poli.</translation>
 <translation id="2459390580524506445">Zlepšené hlasové vyhľadávanie</translation>
+<translation id="2461822463642141190">Aktuálna</translation>
 <translation id="247737702124049222">Popisy obrázkov sú zapnuté</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2485422356828889247">Odinštalovať</translation>
@@ -500,7 +502,6 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="4256782883801055595">Licencie open source</translation>
 <translation id="4263656433980196874">Používateľské rozhranie na udelenie súhlasu s hlasovým vyhľadávaním Asistentom je otvorené na celú výšku</translation>
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
-<translation id="4281359692687148179">Obnovte potiahnutím nadol</translation>
 <translation id="4290281343757112331">Chcete radšej stiahnuť neskôr?</translation>
 <translation id="4296252229500326964">Nová karta inkognito</translation>
 <translation id="4298388696830689168">Prepojené weby</translation>
@@ -750,6 +751,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5833984609253377421">Zdieľať odkaz</translation>
 <translation id="5834764604050996579">Ak chcete nasnímať QR kód, povoľte Chromu používať kameru</translation>
 <translation id="5836192821815272682">Sťahuje sa aktualizácia Chromu…</translation>
+<translation id="5839058148541733625">Dinosaurus v Chrome</translation>
 <translation id="5853623416121554550">pozastavené</translation>
 <translation id="5854512288214985237">Googlu sa neodosielajú žiadne štatistiky ani prehľady zrútení</translation>
 <translation id="5855546874025048181">Spresniť: <ph name="REFINE_TEXT" /></translation>

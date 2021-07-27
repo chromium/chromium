@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Pestanas abertas</translation>
 <translation id="1754404134430936718">Texto copiado</translation>
 <translation id="1772137089884020309">A lista de cartafoles de marcadores está pechada</translation>
+<translation id="1779766957982586368">Pechar ventá</translation>
 <translation id="1782483593938241562">Data de finalización: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Completouse a instalación</translation>
 <translation id="1792959175193046959">Cambia a localización de descarga predeterminada en calquera momento</translation>
@@ -225,6 +226,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 
 Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecciona máis ou menos palabras. Para editar a busca, abre o panel, toca a icona para abrilo nunha pestana nova e modifica o contido da caixa de busca.</translation>
 <translation id="2459390580524506445">Busca por voz mellorada</translation>
+<translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">As descricións das imaxes están activadas</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -500,7 +502,6 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4256782883801055595">Licenzas de código aberto</translation>
 <translation id="4263656433980196874">A interface de consentimento para a busca por voz a través do Asistente está aberta a pantalla completa</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
-<translation id="4281359692687148179">Arrastra cara abaixo para actualizar</translation>
 <translation id="4290281343757112331">Prefires realizar a descarga máis tarde?</translation>
 <translation id="4296252229500326964">Nova pestana de incógnito</translation>
 <translation id="4298388696830689168">Sitios vinculados</translation>
@@ -750,6 +751,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5833984609253377421">Compartir ligazón</translation>
 <translation id="5834764604050996579">Para escanear un código QR, permite que Chrome utilice a cámara</translation>
 <translation id="5836192821815272682">Descargando actualización de Chrome…</translation>
+<translation id="5839058148541733625">O dinosauro de Chrome</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854512288214985237">Non se envían estatísticas nin informes de fallos a Google</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>

@@ -323,10 +323,12 @@
 <translation id="1347512539447549782">Linux-н хадгалах сан</translation>
 <translation id="1347975661240122359">Батерейны түвшин <ph name="BATTERY_LEVEL" />% болох үед шинэчлэлтийг эхлүүлнэ.</translation>
 <translation id="1353275871123211385">Аппын зөвшөөрөл болон дэлгэцийн цагийн хязгаар зэрэг эцэг эхийн хяналтыг ашиглахын тулд хүүхэд эцэг эхийн удирддаг Google Бүртгэлтэй байх ёстой. Google Анги зэрэг хэрэгсэлд зориулж сургуулийн бүртгэлийг дараа нь нэмэх боломжтой.</translation>
+<translation id="135389172849514421">Офлайн үед ажиллана</translation>
 <translation id="1353980523955420967">PPD-г олж чадсангүй. Chromebook-ээ онлайн эсэхийг шалгаад дахин оролдоно уу.</translation>
 <translation id="1354045473509304750"><ph name="HOST" />-д таны камерыг ашиглах болон хөдөлгөхийг үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="1355088139103479645">Бүх өгөгдлийг устгах уу?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />-г блоклосон</translation>
+<translation id="1356178530321889280">Та веб дээр үзэх болон дэлгүүр хэсэх үедээ харах визуал контентынхоо талаар нэмэлт мэдээлэл авахын тулд сайтын дурын хэсгийг хайх бол баруун талыг товшиж, “Google Дурангаар хуудасны хэсгийг хайх”-ыг сонгоно уу.</translation>
 <translation id="1358741672408003399">Үг, үсэг болон дүрмийн алдаа</translation>
 <translation id="1359923111303110318">Таны төхөөрөмжийн түгжээг Ухаалаг түгжээгээр тайлах боломжтой. Түгжээг тайлахын тулд Enter дээр дарна уу.</translation>
 <translation id="1361164813881551742">Гараар нэмэх</translation>
@@ -1466,6 +1468,7 @@
 <translation id="2509495747794740764">Хэмжээний дугаар 10-с 200-н хоорондох тоо байх ёстой.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Bluetooth төхөөрөмжийг мартах</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (сонгосон)</translation>
 <translation id="2513396635448525189">Нэвтрэх зураг</translation>
 <translation id="2514326558286966059">Хурууны хээгээрээ түгжээг илүү хурдан тайлаарай</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2197,7 +2200,6 @@
 <translation id="3308852433423051161">Google туслахыг ачаалж байна...</translation>
 <translation id="3309330461362844500">Гэрчилгээний профайлын ID</translation>
 <translation id="3311445899360743395">Энэ апптай холбоотой өгөгдлийг энэ төхөөрөмжөөс устгаж болзошгүй.</translation>
-<translation id="3312424061798279731">Идэвхжсэн хэл</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
 <translation id="3313950410573257029">Холболт шалгах</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" />-ийг нуух</translation>
@@ -2377,6 +2379,7 @@
 <translation id="3495496470825196617">Цэнэглэх үед тэжээл идэвхгүй болно</translation>
 <translation id="3495660573538963482">Google туслахын тохиргоо</translation>
 <translation id="3496213124478423963">Багасгаж харах</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (сонгоогүй)</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> (бүтээгдэхүүн <ph name="PRODUCT_ID" />)-н USB төхөөрөмж</translation>
 <translation id="3497560059572256875">Doodle-г хуваалцах</translation>
 <translation id="3498215018399854026">Бид таны эцэг, эхтэй холбоо тогтоох боломжгүй байна. Та дахин хандаж үзнэ үү.</translation>
@@ -4142,6 +4145,7 @@
 <translation id="5449551289610225147">Буруу нууц үг</translation>
 <translation id="5449588825071916739">Бүх цонхнуудыг хадгалах</translation>
 <translation id="5449716055534515760">Цонхыг хаах</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (офлайн үед ажиллана)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-тэй</translation>
 <translation id="5457113250005438886">Хүчингүй</translation>
 <translation id="5457459357461771897">Компьютероосоо зураг, хөгжим болон бусад медиаг уншуулах эсвэл устгах</translation>
@@ -4603,6 +4607,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> ( <ph name="NUM_KILOBYTES_LIVE" /> оргил)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Бүгдийг &amp;шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;шинэ цонхонд нээх}}</translation>
 <translation id="5965661248935608907">Энэ нь таныг Home Товчийг дарах эсвэл өмнө нь хайж байсан линкүүд дотроос айлт хийж байх үед гарч ирэх хуудсыг мөн хянадаг.</translation>
+<translation id="5968022600320704045">Хайлтын илэрц байхгүй</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> нь <ph name="FOLDERNAME" />-н файлыг харах боломжтой</translation>
 <translation id="5969728632630673489">Товчлуурын шууд холбоосны мэдэгдлийг хаасан</translation>
 <translation id="5971037678316050792">Bluetooth адаптерийн статус болон хослолийг хянах</translation>
@@ -5115,6 +5120,7 @@
 <translation id="6521214596282732365">Сайтууд ихэвчлэн таны фонтыг ашигладаг бөгөөд ингэснээр та онлайн дизайн болон диаграммын хэрэгслээр өндөр нарийвчлалтай контент үүсгэх боломжтой</translation>
 <translation id="652492607360843641">Та <ph name="NETWORK_TYPE" /> сүлжээнд холбогдсон байна.</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
+<translation id="6528179044667508675">Бүү саад бол</translation>
 <translation id="652948702951888897">Chrome-н түүх</translation>
 <translation id="6530186581263215931">Эдгээр тохиргоог таны админ идэвхжүүлсэн байна</translation>
 <translation id="6531282281159901044">Аюултай файлыг хадгалах</translation>
@@ -5389,7 +5395,6 @@
 <translation id="6833479554815567477">Табыг <ph name="GROUP_NAME" /> бүлгээс хассан - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Ухаалаг, аюулгүй хөтөч рүү сэлгэх</translation>
 <translation id="6834652994408928492">Нар жаргах үед бараан горим автоматаар асна</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> файлыг нээх</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="6838034009068684089">Сайтыг таны дэлгэц дээр цонх нээх болон байрлуулахыг хүсэх үед асуух (санал болгосон)</translation>
 <translation id="6839225236531462745">Гэрчилгээг арчих алдаа</translation>
@@ -5415,6 +5420,7 @@
 <translation id="6855892664589459354">Crostini-н нөөцлөлт болон сэргээлт</translation>
 <translation id="6856348640027512653">Виртуал бодит байдлын төхөөрөмжүүд эсвэл өгөгдөл ашиглахыг зөвшөөрөхгүй</translation>
 <translation id="6856623341093082836">Мэдрэмтгий дэлгэцийнхээ нарийвчлалыг тохируулах</translation>
+<translation id="6856850379840757744">Асаасан үед бүх мэдэгдлийг чимээгүй болгоно</translation>
 <translation id="6857145580237920905">Powerwash хийхээс өмнө eSIM профайлуудыг хасна уу</translation>
 <translation id="6857699260879628349">Тохируулгын мэдээлэл авах</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
@@ -6184,7 +6190,6 @@
 <translation id="7684718995427157417">Апликейшн үүсгэж, шалгахын тулд Android Debug Bridge (ADB)-г идэвхжүүлнэ үү. Энэ үйлдэл нь Google-н баталгаажуулаагүй Андройд аппыг суулгахыг зөвшөөрөх бөгөөд идэвхгүй болгоход үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай.</translation>
 <translation id="7685049629764448582">JavaScript санах ой</translation>
 <translation id="7685087414635069102">ПИН шаардлагатай</translation>
-<translation id="768549422429443215">Хэл нэмэх эсвэл жагсаалтыг дахин эрэмбэлнэ үү.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7690378713476594306">Жагсаалтаас сонгох</translation>
@@ -6395,6 +6400,7 @@
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Хувилах</translation>
 <translation id="7887864092952184874">Bluetooth хулганыг тохирууллаа</translation>
+<translation id="7889371445710865055">Дуу хоолойгоор бичих хэлийг өөрчлөх</translation>
 <translation id="7890147169288018054">Өөрийн IP эсвэл MAC хаяг зэрэг сүлжээний мэдээллийг харах</translation>
 <translation id="7893008570150657497">Компьютероосоо зураг, хөгжим болон бусад медиа рүү нэвтрэх</translation>
 <translation id="7893153962594818789">Bluetooth энэ <ph name="DEVICE_TYPE" />-д унтраалттай байна. Нууц үгээ оруулаад Bluetooth-г асаана уу.</translation>

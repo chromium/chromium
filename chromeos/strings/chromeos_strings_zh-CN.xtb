@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">部分激活</translation>
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
+<translation id="3540383942695635079">MAC 地址</translation>
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
 <translation id="4511264077854731334">门户网站</translation>
+<translation id="4536864596629708641">IP 配置</translation>
 <translation id="4548483925627140043">找不到信号</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 电池</translation>
 <translation id="4562494484721939086">无服务</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已打印 <ph name="PRINTED_PAGE_NUMBER" /> 页，共 <ph name="TOTAL_PAGE_NUMBER" /> 页。按 Enter 键即可取消这项打印任务。</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="4652335678334611408">保存会话日志</translation>
+<translation id="4654549501020883054">每日更换一次</translation>
 <translation id="4665014895760275686">制造商</translation>
 <translation id="467510802200863975">输入的两个密码不相同</translation>
 <translation id="467715984478005772">疑似存在防火墙</translation>
@@ -293,6 +296,7 @@
 <translation id="65587193855025101">平台式</translation>
 <translation id="6564646048574748301">失败 - 无法连接到打印机</translation>
 <translation id="6574762126505704998">填充</translation>
+<translation id="6596816719288285829">IP 地址</translation>
 <translation id="6603230386432466813">连接时遇到了问题？</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6620487321149975369">打印任务如未被手动移除，将会显示在历史记录中，</translation>
@@ -389,6 +393,7 @@
 <translation id="8498220429738806196">流量计数器</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8503836310948963452">只需再等几分钟…</translation>
+<translation id="8521021929829989041">用作个人设备</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
 <translation id="8576249514688522074">未初始化</translation>

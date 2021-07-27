@@ -136,6 +136,7 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
 <translation id="2339560363438331454">Synchronisierung und Google-Dienste</translation>
 <translation id="2351097562818989364">Übersetzungseinstellungen zurückgesetzt</translation>
+<translation id="235789365079050412">Datenschutzerklärung von Google</translation>
 <translation id="2359043044084662842">Übersetzen</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2360196772093551345">Mobile Version anfordern</translation>
@@ -474,6 +475,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5846482154967366008">Suchmaschine</translation>
 <translation id="5854790677617711513">Älter als 30 Tage</translation>
 <translation id="5857090052475505287">Neuer Ordner</translation>
+<translation id="5857675236236529683">Wenn Sie bereit sind, finden Sie hier Ihre Leseliste</translation>
 <translation id="5857770089550859117">Geben Sie Ihre Passphrase ein, um die Synchronisierung zu starten.</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5869029295770560994">Ok</translation>
@@ -594,6 +596,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6730682669179532099">Passwörter können nicht exportiert werden</translation>
 <translation id="6748108480210050150">Von</translation>
 <translation id="6760509555861141183">Zurück zum Tab „Zuletzt geöffnet“</translation>
+<translation id="6762812039470893796">Auswahl für alle aufheben</translation>
 <translation id="6780034285637185932">Postleitzahl</translation>
 <translation id="6785453220513215166">Absturzbericht wird gesendet…</translation>
 <translation id="6797885426782475225">Sprachsuche</translation>
@@ -747,7 +750,6 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8283172974887967105">Festlegen…</translation>
 <translation id="8299417921174340354">Sie müssen zuerst einen Sicherheitscode auf Ihrem Gerät einrichten, um Passwörter zu verwenden.</translation>
 <translation id="8299613349954694191">Öffnet einen Inkognitotab zum anonymen Surfen im Web.</translation>
-<translation id="83100941411593607">Anmeldung ist deaktiviert</translation>
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8323906514956095947">Für weitere Tab-Optionen berühren und halten</translation>
 <translation id="8328777765163860529">Alle schließen</translation>

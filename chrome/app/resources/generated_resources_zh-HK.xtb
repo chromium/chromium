@@ -531,6 +531,7 @@
 <translation id="156793199942386351">「<ph name="CURRENTKEY" />」鍵已指派給「<ph name="ACTION" />」動作。按下任意鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制器</translation>
 <translation id="1568323446248056064">開啟裝置顯示設定</translation>
+<translation id="1571738973904005196">查看分頁：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (訪客)</translation>
 <translation id="1572266655485775982">啟用 Wi-Fi</translation>
 <translation id="1572876035008611720">輸入您的電郵</translation>
@@ -2199,7 +2200,6 @@
 <translation id="3308852433423051161">正在載入「Google 助理」…</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
 <translation id="3311445899360743395">系統可能會從裝置中移除與此應用程式相關的資料。</translation>
-<translation id="3312424061798279731">已啟用的語言</translation>
 <translation id="3313622045786997898">憑證簽署值</translation>
 <translation id="3313950410573257029">檢查連線狀態</translation>
 <translation id="3315158641124845231">隱藏 <ph name="PRODUCT_NAME" /></translation>
@@ -5118,6 +5118,7 @@
 <translation id="6521214596282732365">為了讓您透過網上的設計及圖像工具建立高傳真度的內容，網站通常會使用您的字型</translation>
 <translation id="652492607360843641">您已連接<ph name="NETWORK_TYPE" />網絡。</translation>
 <translation id="6527303717912515753">分享</translation>
+<translation id="6528179044667508675">請勿騷擾</translation>
 <translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6530186581263215931">這些設定由管理員執行</translation>
 <translation id="6531282281159901044">保留不安全的檔案</translation>
@@ -5392,7 +5393,6 @@
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
 <translation id="6834652994408928492">「暗光模式」將會在日落時自動開啟</translation>
-<translation id="683540480453879381">開啟 <ph name="FILE_EXTENSIONS" /> 檔案</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
@@ -5658,6 +5658,7 @@
 <translation id="7117247127439884114">重新登入…</translation>
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711902386174337313">讀取已登入裝置清單</translation>
+<translation id="711985611146095797">你可以在這個頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非連線至 VPN，否則系統將封鎖 Chrome 瀏覽器和 Android 流量</translation>
 <translation id="7120865473764644444">無法連線至同步處理伺服器，正在重試…</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
@@ -6132,6 +6133,7 @@
 <translation id="7639914187072011620">無法由伺服器擷取 SAML 重新導向網址</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 會使用您已儲存的密碼，自動登入符合資格的網站。</translation>
 <translation id="7641513591566880111">新的設定檔名稱</translation>
+<translation id="764178579712141045">已新增 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要讓網站查看檔案嗎？</translation>
@@ -6185,7 +6187,6 @@
 <translation id="7684718995427157417">如要建立並測試您的應用程式，請啟用「Android 偵錯橋接器」(ADB)。請注意，此操作允許安裝未經 Google 驗證的 Android 應用程式，並且需要恢復原廠設定才能停用。</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">必須提供 PIN</translation>
-<translation id="768549422429443215">新增語言或重新排列清單。</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7690378713476594306">從清單中選擇</translation>
@@ -7196,6 +7197,7 @@
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8757090071857742562">無法投放桌面。請檢查您是否已確認提示，以開始共用您的螢幕。</translation>
 <translation id="8757203080302669031">此分頁正在持續掃瞄藍牙裝置。</translation>
+<translation id="8757368836647541092">已移除「<ph name="USER_NAME_OR_EMAIL" />」</translation>
 <translation id="8758418656925882523">啟用語音輸入 (說話即可輸入)</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>
 <translation id="8759753423332885148">瞭解詳情</translation>

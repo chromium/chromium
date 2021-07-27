@@ -346,7 +346,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Caricamento in corso...</translation>
-<translation id="3712407551474845318">Acquisisci area</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3742055079367172538">Screenshot acquisito</translation>
@@ -486,6 +485,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
 <translation id="4705716602320768426">Invia feedback</translation>
+<translation id="4730258224256997107">Aiutaci a migliorare.</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4734965478015604180">Orizzontale</translation>
 <translation id="4735498845456076464">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Numero è cambiata. Per usare i tasti funzione, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + un tasto nella fila superiore.</translation>
@@ -675,7 +675,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6284232397434400372">Risoluzione modificata</translation>
 <translation id="6288235558961782912">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> potrà essere aggiunto di nuovo in un secondo momento con l'autorizzazione di un genitore.</translation>
 <translation id="6291221004442998378">Non in carica</translation>
-<translation id="6297287540776456956">Utilizza lo stilo per selezionare un'area</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> è stato ruotato a <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voce</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
@@ -700,7 +699,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="652139407789908527">Lo schermo sarà oscurato per più tempo del solito (fino a un minuto) durante questo aggiornamento. Non premere il tasto di accensione mentre è in corso l'aggiornamento.</translation>
 <translation id="6528179044667508675">Non disturbare</translation>
 <translation id="65320610082834431">Emoji</translation>
-<translation id="6537270692134705506">Acquisisci schermata</translation>
 <translation id="6537924328260219877">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
 <translation id="6559976592393364813">Rivolgiti all'amministratore</translation>

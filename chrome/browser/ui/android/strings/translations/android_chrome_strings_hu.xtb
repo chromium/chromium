@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Megnyitott lapok</translation>
 <translation id="1754404134430936718">Szöveg vágólapra másolva</translation>
 <translation id="1772137089884020309">A könyvjelzőmappák bezárt listája</translation>
+<translation id="1779766957982586368">Ablak bezárása</translation>
 <translation id="1782483593938241562">Befejezés dátuma: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792959175193046959">Az alapértelmezett letöltési helyet bármikor módosíthatja</translation>
@@ -225,6 +226,7 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 
 A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válasszon ki több vagy kevesebb szót. A keresés módosításához nyissa meg a panelt, koppintson az új lapon való megnyitás ikonjára, majd végezze el a módosításokat a keresőmezőben.</translation>
 <translation id="2459390580524506445">Hangalapú keresés javítása</translation>
+<translation id="2461822463642141190">Jelenlegi</translation>
 <translation id="247737702124049222">A képleírások be vannak kapcsolva</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
@@ -500,7 +502,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4256782883801055595">Nyílt forráskódú licencek</translation>
 <translation id="4263656433980196874">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete teljes magasságban megnyitva</translation>
 <translation id="4269820728363426813">Link másolása</translation>
-<translation id="4281359692687148179">Húzza le a frissítéshez</translation>
 <translation id="4290281343757112331">Inkább később töltené le?</translation>
 <translation id="4296252229500326964">Új inkognitó lap</translation>
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
@@ -750,6 +751,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5833984609253377421">Link megosztása</translation>
 <translation id="5834764604050996579">QR-kód beolvasásához engedélyezze a kamera használatát a Chrome számára</translation>
 <translation id="5836192821815272682">A Chrome frissítésének letöltése…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">szüneteltetve</translation>
 <translation id="5854512288214985237">A rendszer nem küld statisztikákat és hibajelentéseket a Google-nak</translation>
 <translation id="5855546874025048181">Pontosítás: <ph name="REFINE_TEXT" /></translation>

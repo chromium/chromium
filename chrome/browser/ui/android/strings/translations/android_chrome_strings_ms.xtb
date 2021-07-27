@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Buka tab</translation>
 <translation id="1754404134430936718">Teks Disalin</translation>
 <translation id="1772137089884020309">Senarai folder penanda halaman ditutup</translation>
+<translation id="1779766957982586368">Tutup tetingkap</translation>
 <translation id="1782483593938241562">Tarikh tamat <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Dipasang</translation>
 <translation id="1792959175193046959">Tukar lokasi muat turun lalai pada bila-bila masa</translation>
@@ -225,6 +226,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 
 Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, pilih lebih banyak atau lebih sedikit perkataan. Untuk mengedit carian anda, buka panel, ketik ikon untuk membuka dalam tab baharu dan buat perubahan dalam kotak carian.</translation>
 <translation id="2459390580524506445">Carian suara dipertingkatkan</translation>
+<translation id="2461822463642141190">Semasa</translation>
 <translation id="247737702124049222">Perihalan imej dihidupkan</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
@@ -500,7 +502,6 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4256782883801055595">Lesen sumber terbuka</translation>
 <translation id="4263656433980196874">UI persetujuan carian suara Assistant dibuka pada ketinggian penuh</translation>
 <translation id="4269820728363426813">Salin alamat pautan</translation>
-<translation id="4281359692687148179">Tarik ke bawah untuk memuat semula</translation>
 <translation id="4290281343757112331">Muat turun kemudian?</translation>
 <translation id="4296252229500326964">Tab Inkognito baharu</translation>
 <translation id="4298388696830689168">Tapak terpaut</translation>
@@ -750,6 +751,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5833984609253377421">Kongsi pautan</translation>
 <translation id="5834764604050996579">Untuk mengimbas Kod QR, benarkan Chrome menggunakan kamera anda</translation>
 <translation id="5836192821815272682">Memuat Turun Kemas Kini Chrome…</translation>
+<translation id="5839058148541733625">Dino Chrome</translation>
 <translation id="5853623416121554550">dijeda</translation>
 <translation id="5854512288214985237">Laporan statistik atau ranap sistem tidak akan dihantar kepada Google</translation>
 <translation id="5855546874025048181">Perhalusi: <ph name="REFINE_TEXT" /></translation>

@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">ಭಾಗಶಃ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
+<translation id="3540383942695635079">MAC ವಿಳಾಸ</translation>
 <translation id="357889014807611375">ಮಾಪನ ಮಾಡಿದ ವೈ-ಫೈ</translation>
 <translation id="3595596368722241419">ಬ್ಯಾಟರಿ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4511264077854731334">ಪೋರ್ಟಲ್</translation>
+<translation id="4536864596629708641">IP ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="4548483925627140043">ಸಿಗ್ನಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ಬ್ಯಾಟರಿ</translation>
 <translation id="4562494484721939086">ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> ರಲ್ಲಿ <ph name="PRINTED_PAGE_NUMBER" /> ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
 <translation id="4646949265910132906">ಸುರಕ್ಷಿತ Wi-Fi ಸಂಪರ್ಕ</translation>
 <translation id="4652335678334611408">ಸೆಶನ್ ಲಾಗ್ ಉಳಿಸಿ</translation>
+<translation id="4654549501020883054">ಪ್ರತಿದಿನ ಬದಲಾಯಿಸಿ</translation>
 <translation id="4665014895760275686">ತಯಾರಕರು</translation>
 <translation id="467510802200863975">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="467715984478005772">ಫೈರ್‌ವಾಲ್ ಇದೆ ಎಂಬ ಅನುಮಾನವಿದೆ</translation>
@@ -292,6 +295,7 @@
 <translation id="65587193855025101">ಫ್ಲಾಟ್‌ಬೆಡ್</translation>
 <translation id="6564646048574748301">ವಿಫಲವಾಗಿದೆ - ಪ್ರಿಂಟರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="6574762126505704998">ತುಂಬುವಿಕೆ</translation>
+<translation id="6596816719288285829">IP ವಿಳಾಸ</translation>
 <translation id="6603230386432466813">ಕನೆಕ್ಟ್ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗುತ್ತಿದೆಯೇ?</translation>
 <translation id="6618744767048954150">ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="6620487321149975369">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕದ ಹೊರತು, ಅವು ಇತಿಹಾಸದಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
@@ -388,6 +392,7 @@
 <translation id="8498220429738806196">ಟ್ರಾಫಿಕ್ ಕೌಂಟರ್‌ಗಳು</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="8503836310948963452">ಕೇವಲ ಕೆಲವೇ ನಿಮಿಷಗಳು…</translation>
+<translation id="8521021929829989041">ವೈಯಕ್ತಿಕ ಸಾಧನವಾಗಿ ಬಳಸಿ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ನಿಮ್ಮ ವಾಹಕವು ತಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಈ ಆಯ್ಕೆಯ ಅಗತ್ಯವಿರಬಹುದು. ವಿವರಗಳಿಗಾಗಿ ನಿಮ್ಮ ವಾಹಕವನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8576249514688522074">ಪ್ರಾರಂಭಿಸಲಾಗಿಲ್ಲ</translation>

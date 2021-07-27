@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Avatud vahelehed</translation>
 <translation id="1754404134430936718">Tekst on kopeeritud</translation>
 <translation id="1772137089884020309">Järjehoidjakaustade loend on suletud</translation>
+<translation id="1779766957982586368">Sulgeb akna</translation>
 <translation id="1782483593938241562">Lõppkuupäev: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installitud</translation>
 <translation id="1792959175193046959">Allalaadimise vaikeasukohta saab alati muuta</translation>
@@ -225,6 +226,7 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 
 Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige rohkem või vähem sõnu. Otsingu muutmiseks avage paneel, puudutage uuel vahelehel avamiseks ikooni ja tehke otsingukastis muudatused.</translation>
 <translation id="2459390580524506445">Täiustatud häälotsing</translation>
+<translation id="2461822463642141190">Praegune</translation>
 <translation id="247737702124049222">Pildikirjeldused on sisse lülitatud</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -500,7 +502,6 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="4263656433980196874">Assistendi häälotsingu sisu kasutajaliides on avatud täiskõrgusel</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
-<translation id="4281359692687148179">Värskendamiseks tõmmake alla</translation>
 <translation id="4290281343757112331">Kas laadida alla hiljem?</translation>
 <translation id="4296252229500326964">Uus inkognito vaheleht</translation>
 <translation id="4298388696830689168">Lingitud saidid</translation>
@@ -750,6 +751,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5833984609253377421">Jaga linki</translation>
 <translation id="5834764604050996579">QR-koodi skannimiseks lubage Chrome'il oma kaamerat kasutada</translation>
 <translation id="5836192821815272682">Chrome'i värskenduse allalaadimine …</translation>
+<translation id="5839058148541733625">Chrome'i dinosaurusemäng</translation>
 <translation id="5853623416121554550">peatatud</translation>
 <translation id="5854512288214985237">Statistikat ega krahhiaruandeid Google'ile ei saadeta</translation>
 <translation id="5855546874025048181">Täpsustamine: <ph name="REFINE_TEXT" /></translation>

@@ -530,6 +530,7 @@
 <translation id="156793199942386351">Klávesa <ph name="CURRENTKEY" /> je už přiřazena k akci <ph name="ACTION" />. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
 <translation id="1567993339577891801">Konzole JavaScriptu</translation>
 <translation id="1568323446248056064">Otevřít nastavení displeje</translation>
+<translation id="1571738973904005196">Zobrazit kartu: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (host)</translation>
 <translation id="1572266655485775982">Aktivovat Wi-Fi</translation>
 <translation id="1572876035008611720">Zadejte svůj e-mail</translation>
@@ -2185,7 +2186,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Načítání Asistenta Google...</translation>
 <translation id="3309330461362844500">ID profilu certifikátu</translation>
 <translation id="3311445899360743395">Je možné, že z tohoto zařízení budou odstraněna data přidružená k této aplikaci.</translation>
-<translation id="3312424061798279731">Povolené jazyky</translation>
 <translation id="3313622045786997898">Hodnota podpisu certifikátu</translation>
 <translation id="3313950410573257029">Zkontrolovat připojení</translation>
 <translation id="3315158641124845231">Skrýt <ph name="PRODUCT_NAME" /></translation>
@@ -5102,6 +5102,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6521214596282732365">Weby obvykle používají vaše písma, takže můžete vytvářet vysoce kvalitní obsah pomocí online designérských a grafických nástrojů</translation>
 <translation id="652492607360843641">Jste připojení k tomuto typu sítě: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Sdílet</translation>
+<translation id="6528179044667508675">Nerušit</translation>
 <translation id="652948702951888897">Historie Chromu</translation>
 <translation id="6530186581263215931">Tato nastavení jsou vynucena administrátorem</translation>
 <translation id="6531282281159901044">Ponechat nebezpečný soubor</translation>
@@ -5376,7 +5377,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6833479554815567477">Karta byla odstraněna ze skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Přejděte na chytrý a zabezpečený prohlížeč</translation>
 <translation id="6834652994408928492">Tmavý režim se zapne automaticky za soumraku</translation>
-<translation id="683540480453879381">Otevírat soubory <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Chcete-li zařízení <ph name="DEVICE_TYPE" /> aktualizovat, připojte se k internetu.</translation>
 <translation id="6838034009068684089">Zeptat se, když chce web otevřít okna a umístit je na obrazovky (doporučeno)</translation>
 <translation id="6839225236531462745">Chyba při mazání certifikátu</translation>
@@ -5642,6 +5642,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7117247127439884114">Znovu přihlásit...</translation>
 <translation id="711840821796638741">Zobrazit spravované záložky</translation>
 <translation id="711902386174337313">Číst seznam zařízení, ve kterých jste přihlášeni</translation>
+<translation id="711985611146095797">Na této stránce můžete spravovat účty Google, ke kterým jste přihlášeni. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Pokud nebude připojená síť VPN, bude provoz prohlížeče Chrome a systému Android blokován</translation>
 <translation id="7120865473764644444">K synchronizačnímu serveru se nelze připojit. Další pokus...</translation>
 <translation id="7121438501124788993">Vývojářský režim</translation>
@@ -6116,6 +6117,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7639914187072011620">Přesměrování SAML se ze serveru nepodařilo načíst</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vás automaticky přihlásí na vhodných webech, ke kterým máte uložená hesla.</translation>
 <translation id="7641513591566880111">Název nového profilu</translation>
+<translation id="764178579712141045">Uživatel <ph name="USER_EMAIL" /> byl přidán</translation>
 <translation id="7642778300616172920">Skrýt citlivý obsah</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otevřené okno}few{# otevřená okna}many{# otevřeného okna}other{# otevřených oken}}</translation>
 <translation id="7643932971554933646">Povolit webu zobrazení souborů?</translation>
@@ -6169,7 +6171,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7684718995427157417">Chcete-li vytvořit a otestovat aplikace, zapněte Android Debug Bridge (ADB). Upozorňujeme, že tato akce povoluje instalaci aplikací pro Android, které Google neověřil, a že je k její deaktivaci potřeba obnovení továrního nastavení.</translation>
 <translation id="7685049629764448582">Paměť JavaScriptu</translation>
 <translation id="7685087414635069102">Je vyžadován kód PIN</translation>
-<translation id="768549422429443215">Přidejte jazyky nebo přeuspořádejte seznam.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
 <translation id="7690378713476594306">Vybrat ze seznamu</translation>
@@ -7178,6 +7179,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8756969031206844760">Aktualizovat heslo?</translation>
 <translation id="8757090071857742562">Plochu nelze odeslat. Zkontrolujte, zda jste potvrdili výzvu k zahájení sdílení obrazovky.</translation>
 <translation id="8757203080302669031">Tato karta aktivně hledá zařízení Bluetooth.</translation>
+<translation id="8757368836647541092">Uživatel <ph name="USER_NAME_OR_EMAIL" /> byl odstraněn</translation>
 <translation id="8758418656925882523">Povolit diktování (hlasové zadávání textu)</translation>
 <translation id="8759408218731716181">Vícenásobné přihlášení nelze nastavit</translation>
 <translation id="8759753423332885148">Další informace</translation>

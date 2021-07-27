@@ -346,7 +346,6 @@
 <translation id="3702846122927433391">ປະຊາກອນໃນໄນຈີເຣຍ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
-<translation id="3712407551474845318">ຖ່າຍຮູບໜ້າຈໍບາງສ່ວນ</translation>
 <translation id="371370241367527062">ໄມໂຄຣໂຟນໜ້າ</translation>
 <translation id="3713734891607377840">ເປີດເມື່ອສຳເລັດ</translation>
 <translation id="3742055079367172538">ຖ່າຍຮູບໜ້າຈໍແລ້ວ</translation>
@@ -485,6 +484,7 @@
 <translation id="4696813013609194136">ປົດລັອກອຸປະກອນດ້ວຍລະຫັດພໍ່ແມ່</translation>
 <translation id="4702647871202761252">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວປິດຢູ່</translation>
 <translation id="4705716602320768426">ຄຳຕິຊົມໄຟລ໌</translation>
+<translation id="4730258224256997107">ຊ່ວຍພວກເຮົາປັບປຸງສິ່ງນີ້ໃຫ້ດີຂຶ້ນ!</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
 <translation id="4734965478015604180">ລວງນອນ</translation>
 <translation id="4735498845456076464">ມີການປ່ຽນຄີລັດ <ph name="LAUNCHER_KEY_NAME" /> + ຕົວເລກ. ເພື່ອໃຊ້ປຸ່ມຟັງຊັນ, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ປຸ່ມໃດໜຶ່ງຢູ່ແຖວເທິງສຸດ.</translation>
@@ -674,7 +674,6 @@
 <translation id="6284232397434400372">ປ່ຽນຄວາມລະອຽດແລ້ວ</translation>
 <translation id="6288235558961782912">ສາມາດເພີ່ມ <ph name="USER_EMAIL_ADDRESS" /> ຄືນໃໝ່ໃນພາຍຫຼັງໄດ້ໂດຍມີການອະນຸຍາດຂອງພໍ່ແມ່.</translation>
 <translation id="6291221004442998378">ບໍ່ໄດ້ສາກໄຟ</translation>
-<translation id="6297287540776456956">ໃຊ້ປາຍປາກກາເພື່ອເລືອກພື້ນທີ່</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />ຖືກໝຸນໄປທີ່<ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">ສຽງ</translation>
 <translation id="6330012934079202188">ກຳລັງສະແດງໜ້າຈໍຈາກໂຕະທັງໝົດ, ກົດປຸ່ມລູກສອນຂຶ້ນເພື່ອສະແດງໜ້າຈໍຈາກໂຕະປັດຈຸບັນ</translation>
@@ -699,7 +698,6 @@
 <translation id="652139407789908527">ໜ້າຈໍຂອງທ່ານຈະບໍ່ສະແດງຜົນເປັນເວລາດົນກວ່າປົກກະຕິ (ສູງສຸດໜຶ່ງນາທີ) ໃນລະຫວ່າງການອັບເດດນີ້. ກະລຸນາຢ່າກົດປຸ່ມເປີດປິດໃນຂະນະທີ່ການອັບເດດພວມດຳເນີນຢູ່.</translation>
 <translation id="6528179044667508675">ຢ່າລົບ​ກວນ</translation>
 <translation id="65320610082834431">ອີໂມຈິ</translation>
-<translation id="6537270692134705506">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="6537924328260219877">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">ກໍາລັງສົ່ງສັນຍານຫາ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">ສອບຖາມຜູ້ເບິ່ງແຍງລະບົບ</translation>

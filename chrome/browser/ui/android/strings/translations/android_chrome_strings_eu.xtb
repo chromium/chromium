@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Fitxa irekiak</translation>
 <translation id="1754404134430936718">Kopiatu da testua</translation>
 <translation id="1772137089884020309">Itxi da laster-marken karpeten zerrenda</translation>
+<translation id="1779766957982586368">Itxi leihoa</translation>
 <translation id="1782483593938241562">Amaiera-data: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalatu da</translation>
 <translation id="1792959175193046959">Deskargen kokapen lehenetsia aldatzeko aukera duzu</translation>
@@ -225,6 +226,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 
 Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago edo gutxiago. Bilaketa editatzeko, ireki panela, sakatu fitxa berri batean irekitzeko ikonoa eta aldatu bilaketa-koadroko testua.</translation>
 <translation id="2459390580524506445">Ahozko bilaketa doitua</translation>
+<translation id="2461822463642141190">Oraingo kontsumoa</translation>
 <translation id="247737702124049222">Aktibatu dira irudien azalpenak</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4256782883801055595">Kode irekiko lizentziak</translation>
 <translation id="4263656433980196874">Altuera osoan ireki da ahozko bilaketa egite aldera Laguntzailea eginbideari baimena emateko erabiltzaile-interfazea</translation>
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
-<translation id="4281359692687148179">Tiratu beherantz freskatzeko</translation>
 <translation id="4290281343757112331">Nahiago duzu geroago deskargatu?</translation>
 <translation id="4296252229500326964">Sortu ezkutuko moduko fitxa bat</translation>
 <translation id="4298388696830689168">Estekatutako webguneak</translation>
@@ -750,6 +751,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5833984609253377421">Partekatu esteka</translation>
 <translation id="5834764604050996579">QR kode bat eskaneatzeko, eman kamera erabiltzeko baimena Chrome-ri</translation>
 <translation id="5836192821815272682">Chrome-ren eguneratzea deskargatzen…</translation>
+<translation id="5839058148541733625">Chrome-ko Dino</translation>
 <translation id="5853623416121554550">pausatuta</translation>
 <translation id="5854512288214985237">Ez zaio bidaltzen estatistikarik edo hutsegite-txostenik Google-ri</translation>
 <translation id="5855546874025048181">Mugatu honela: <ph name="REFINE_TEXT" /></translation>

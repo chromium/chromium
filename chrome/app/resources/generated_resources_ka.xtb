@@ -528,6 +528,7 @@
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“-ის მიერ უკვე სრულდება „<ph name="ACTION" />“. <ph name="RESPONSE" /> რომ შესრულდეს, დააჭირეთ ნებისმიერ კლავიშს.</translation>
 <translation id="1567993339577891801">JavaScript კონსოლი</translation>
 <translation id="1568323446248056064">ჩვენების მოწყობილობის პარამეტრების გახსნა</translation>
+<translation id="1571738973904005196">ჩანართის ნახვა: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (სტუმარი)</translation>
 <translation id="1572266655485775982">Wi-Fi-ს ჩართვა</translation>
 <translation id="1572876035008611720">შეიყვანეთ თქვენი ელფოსტა</translation>
@@ -2185,7 +2186,6 @@
 <translation id="3308852433423051161">იტვირთება Google ასისტენტი...</translation>
 <translation id="3309330461362844500">სერტიფიკატის პროფილის ID</translation>
 <translation id="3311445899360743395">ამ მოწყობილობიდან შეიძლება ამოიშალოს ამ აპთან დაკავშირებული მონაცემები.</translation>
-<translation id="3312424061798279731">ჩართული ენები</translation>
 <translation id="3313622045786997898">სერტიფიკატის ხელმოწერის მნიშვენლობა</translation>
 <translation id="3313950410573257029">კავშირის შემოწმება</translation>
 <translation id="3315158641124845231">დამალეთ <ph name="PRODUCT_NAME" /></translation>
@@ -5103,6 +5103,7 @@
 <translation id="6521214596282732365">როგორც წესი, საიტები იყენებს შრიფტებს, რომ დიზაინისა და გრაფიკისთვის განკუთვნილი ონლაინ-ხელსაწყოების მეშვეობით მაღალი სიზუსტის კონტენტი შექმნათ</translation>
 <translation id="652492607360843641">თქვენ დაკავშირებული ხართ <ph name="NETWORK_TYPE" /> ქსელთან.</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
+<translation id="6528179044667508675">არ შემაწუხოთ</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6530186581263215931">ეს პარამეტრები იძულებით არის გააქტიურებული თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6531282281159901044">სახიფათო ფაილის შენარჩუნება</translation>
@@ -5377,7 +5378,6 @@
 <translation id="6833479554815567477">ჩანართი ამოიშალა ჯგუფიდან <ph name="GROUP_NAME" /> — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">გადადით გონიერ და უსაფრთხო ბრაუზერზე</translation>
 <translation id="6834652994408928492">მუქი რეჟიმი ავტომატურად ჩაირთვება მზის ჩასვლისას</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> ფაილების გახსნა</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ის განსაახლებლად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="6838034009068684089">შეკითხვა საიტის მიერ თქვენს ეკრანებზე ფანჯრების გახსნისა და განლაგების მოთხოვნისას (რეკომენდებული)</translation>
 <translation id="6839225236531462745">სერტიფიკატის წაშლის შეცდომა</translation>
@@ -5643,6 +5643,7 @@
 <translation id="7117247127439884114">ხელახლა შედით…</translation>
 <translation id="711840821796638741">მართული სანიშნეების ჩვენება</translation>
 <translation id="711902386174337313">თქვენი ავტორიზებული მოწყობილობების სიის წაკითხვა</translation>
+<translation id="711985611146095797">ეს გვერდი საშუალებას გაძლევთ, მართოთ თქვენი სისტემაში შესული Google ანგარიშები. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome ბრაუზერისა და Android-ის ტრაფიკი დაიბლოკება, როცა VPN დაკავშირებული არ იქნება</translation>
 <translation id="7120865473764644444">სინქრონიზაციის სერვერთან დაკავშირება ვერ მოხერხდა. მიმდინარეობს ხელახლა ცდა…</translation>
 <translation id="7121438501124788993">შემმუშავებლის რეჟიმი</translation>
@@ -6117,6 +6118,7 @@
 <translation id="7639914187072011620">სერვერიდან SAML გადამისამართების URL-ის მიღება ვერ მოხერხდა</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> თქვენ მიერ შენახული პაროლების მეშვეობით შესაბამის საიტებში ავტომატურად შესვლაში გეხმარებათ.</translation>
 <translation id="7641513591566880111">ახალი პროფილის სახელი</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> დამატებულია</translation>
 <translation id="7642778300616172920">სენსიტიური კონტენტის დამალვა</translation>
 <translation id="7643842463591647490">{0,plural, =1{# გახსნილი ფანჯარა}other{# გახსნილი ფანჯარა}}</translation>
 <translation id="7643932971554933646">გსურთ, მიანიჭოთ უფლება საიტს, ნახოს ფაილები?</translation>
@@ -6170,7 +6172,6 @@
 <translation id="7684718995427157417">აპების შესაქმნელად და ტესტირებისთვის ჩართეთ Android Debug Bridge (ADB). გაითვალისწინეთ, რომ აღნიშნულის შემდეგ შესაძლებელი იქნება Google-ის მიერ შეუმოწმებელი Android აპების ინსტალაცია, ხოლო მის გამოსართავად საჭირო იქნება ქარხნული პარამეტრების დაბრუნება.</translation>
 <translation id="7685049629764448582">JavaScript მეხსიერება</translation>
 <translation id="7685087414635069102">საჭიროა PIN-კოდი</translation>
-<translation id="768549422429443215">დაამატეთ ენები, ან შეცვალეთ სიის მიმდევრობა.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">დაადასტურეთ ახალი პაროლი</translation>
 <translation id="7690378713476594306">სიიდან არჩევა</translation>
@@ -7179,6 +7180,7 @@
 <translation id="8756969031206844760">გსურთ პაროლის განახლება?</translation>
 <translation id="8757090071857742562">დესკტოპის ტრანსლირება შეუძლებელია. შეამოწმეთ, დადასტურებული გაქვთ თუ არა თქვენი ეკრანის გაზიარების დაწყების შესახებ მოთხოვნა.</translation>
 <translation id="8757203080302669031">ეს ჩანართი აქტიურად ასკანირებს Bluetooth მოწყობილობებს.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> წაიშალა</translation>
 <translation id="8758418656925882523">კარნახის (ტექსტის წარმოთქმით აკრეფის) ჩართვა</translation>
 <translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>
 <translation id="8759753423332885148">დეტალური ინფორმაცია.</translation>

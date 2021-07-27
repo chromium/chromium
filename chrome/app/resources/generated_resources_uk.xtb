@@ -534,6 +534,7 @@
 <translation id="156793199942386351">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Відкрити налаштування дисплея</translation>
+<translation id="1571738973904005196">Переглянути вкладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гість)</translation>
 <translation id="1572266655485775982">Увімкнути Wi-Fi</translation>
 <translation id="1572876035008611720">Електронна адреса</translation>
@@ -2203,7 +2204,6 @@
 <translation id="3308852433423051161">Завантажується Google Асистент…</translation>
 <translation id="3309330461362844500">Ідентифікатор профілю сертифіката</translation>
 <translation id="3311445899360743395">Дані, пов'язані з цим додатком, може бути видалено з пристрою.</translation>
-<translation id="3312424061798279731">Активні мови</translation>
 <translation id="3313622045786997898">Значення підпису сертифіката</translation>
 <translation id="3313950410573257029">Перевірити з’єднання</translation>
 <translation id="3315158641124845231">Сховати <ph name="PRODUCT_NAME" /></translation>
@@ -5122,6 +5122,7 @@
 <translation id="6521214596282732365">Сайти зазвичай використовують шрифти, щоб ви могли створювати контент високої якості за допомогою онлайн-інструментів для дизайну та графіки</translation>
 <translation id="652492607360843641">Пристрій під'єднано до такої мережі: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Надіслати</translation>
+<translation id="6528179044667508675">Не турбувати</translation>
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>
@@ -5396,7 +5397,6 @@
 <translation id="6833479554815567477">Вкладку видалено з групи "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Виберіть розумний і безпечний веб-переглядач</translation>
 <translation id="6834652994408928492">Темний режим увімкнеться автоматично після заходу сонця</translation>
-<translation id="683540480453879381">Відкрити файли <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Щоб оновити свій <ph name="DEVICE_TYPE" />, під’єднайтеся до Інтернету.</translation>
 <translation id="6838034009068684089">Запитувати, коли сайт хоче відкрити й розмістити вікна на ваших екранах (рекомендовано)</translation>
 <translation id="6839225236531462745">Помилка видалення сертифіката</translation>
@@ -5662,6 +5662,7 @@
 <translation id="7117247127439884114">Увійти знову...</translation>
 <translation id="711840821796638741">Показати закладки, якими керує адміністратор</translation>
 <translation id="711902386174337313">Читати список пристроїв, на яких ви ввійшли</translation>
+<translation id="711985611146095797">На цій сторінці можна керувати обліковими записами Google, у які ви ввійшли. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Без підключення до VPN веб-переглядач Chrome і трафік Android буде заблоковано</translation>
 <translation id="7120865473764644444">Не вдалося з’єднатись із сервером синхронізації. Повторна спроба…</translation>
 <translation id="7121438501124788993">Режим розробника</translation>
@@ -6136,6 +6137,7 @@
 <translation id="7639914187072011620">Не вдалось отримати із сервера переспрямування SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> зберігає ваші паролі й автоматично входить в облікові записи на сайтах.</translation>
 <translation id="7641513591566880111">Нова назва профілю</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> додано</translation>
 <translation id="7642778300616172920">Ховати конфіденційний вміст</translation>
 <translation id="7643842463591647490">{0,plural, =1{# відкрите вікно}one{# відкрите вікно}few{# відкриті вікна}many{# відкритих вікон}other{# відкритого вікна}}</translation>
 <translation id="7643932971554933646">Дозволити сайту переглядати файли?</translation>
@@ -6189,7 +6191,6 @@
 <translation id="7684718995427157417">Щоб створювати й перевіряти додатки, увімкніть Android Debug Bridge (ADB). Зауважте, що цією дією ви дозволяєте встановлювати додатки для Android, які не були перевірені Google. Щоб вимкнути інструмент, доведеться відновити заводські налаштування.</translation>
 <translation id="7685049629764448582">Пам'ять JavaScript</translation>
 <translation id="7685087414635069102">Потрібен PIN-код</translation>
-<translation id="768549422429443215">Додайте мови або змініть порядок у списку.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7690378713476594306">Вибрати зі списку</translation>
@@ -7200,6 +7201,7 @@
 <translation id="8756969031206844760">Оновити пароль?</translation>
 <translation id="8757090071857742562">Не вдається транслювати робочий стіл. Перевірте, чи ви підтвердили запит на трансляцію екрана.</translation>
 <translation id="8757203080302669031">Ця вкладка активно шукає пристрої з Bluetooth.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" />: видалено</translation>
 <translation id="8758418656925882523">Увімкнути диктування (голосовий набір тексту)</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>
 <translation id="8759753423332885148">Докладніше.</translation>

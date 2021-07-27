@@ -346,7 +346,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">A carregar...</translation>
-<translation id="3712407551474845318">Capturar área</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir ao concluir</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
@@ -485,6 +484,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4705716602320768426">Envie comentários</translation>
+<translation id="4730258224256997107">Ajude-nos a melhorar isto!</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + número foi alterado. Para utilizar teclas de função, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
@@ -674,7 +674,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6284232397434400372">Resolução alterada</translation>
 <translation id="6288235558961782912">É possível adicionar <ph name="USER_EMAIL_ADDRESS" /> novamente mais tarde com a autorização dos pais.</translation>
 <translation id="6291221004442998378">Não está a carregar.</translation>
-<translation id="6297287540776456956">Utilizar a canela stylus para selecionar uma área</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> foi rodado para <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Voz</translation>
 <translation id="6330012934079202188">Ao mostrar as janelas de todos os espaços de trabalho, prima a tecla da seta para cima para mostrar janelas do espaço de trabalho atual</translation>
@@ -699,7 +698,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="652139407789908527">O ecrã vai ficar em branco durante mais tempo do que o habitual (até um minuto) durante esta atualização. Não prima o botão ligar/desligar enquanto a atualização estiver em curso.</translation>
 <translation id="6528179044667508675">Não incomodar</translation>
 <translation id="65320610082834431">Emojis</translation>
-<translation id="6537270692134705506">Capturar ecrã</translation>
 <translation id="6537924328260219877">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">A transmitir para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Peça ao administrador.</translation>

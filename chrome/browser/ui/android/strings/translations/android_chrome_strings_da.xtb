@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Åbne faner</translation>
 <translation id="1754404134430936718">Teksten blev kopieret</translation>
 <translation id="1772137089884020309">Listen over bogmærkemapper er lukket</translation>
+<translation id="1779766957982586368">Luk vindue</translation>
 <translation id="1782483593938241562">Slutdato <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installeret</translation>
 <translation id="1792959175193046959">Du kan til enhver tid skifte standardplaceringen for downloads</translation>
@@ -225,6 +226,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 
 Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge flere eller færre ord. Hvis du vil redigere din søgning, skal du åbne panelet, trykke på ikonet Ny fane og så foretage dine ændringer i søgefeltet.</translation>
 <translation id="2459390580524506445">Forbedret stemmesøgning</translation>
+<translation id="2461822463642141190">Aktuel</translation>
 <translation id="247737702124049222">Billedbeskrivelser er slået til</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="4256782883801055595">Open source-licenser</translation>
 <translation id="4263656433980196874">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er åbnet i fuld højde</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
-<translation id="4281359692687148179">Træk ned for at opdatere</translation>
 <translation id="4290281343757112331">Vil du downloade senere i stedet?</translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
 <translation id="4298388696830689168">Tilknyttede websites</translation>
@@ -750,6 +751,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5833984609253377421">Del link</translation>
 <translation id="5834764604050996579">Hvis du vil scanne en QR-kode, skal du give Chrome tilladelse til at bruge dit kamera</translation>
 <translation id="5836192821815272682">Downloader Chrome-opdateringen…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">sat på pause</translation>
 <translation id="5854512288214985237">Der sendes hverken statistik eller nedbrudsrapporter til Google</translation>
 <translation id="5855546874025048181">Juster: <ph name="REFINE_TEXT" /></translation>

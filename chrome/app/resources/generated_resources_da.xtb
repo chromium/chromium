@@ -532,6 +532,7 @@
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" er allerede tildelt handlingen "<ph name="ACTION" />". Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
 <translation id="1568323446248056064">Åbn enhedens skærmindstillinger</translation>
+<translation id="1571738973904005196">Se fanen: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gæst)</translation>
 <translation id="1572266655485775982">Aktivér Wi-Fi</translation>
 <translation id="1572876035008611720">Angiv din mailadresse</translation>
@@ -2201,7 +2202,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3308852433423051161">Indlæser Google Assistent...</translation>
 <translation id="3309330461362844500">Certifikatprofilens id</translation>
 <translation id="3311445899360743395">Data, der er knyttet til denne app, bliver fjernet fra enheden.</translation>
-<translation id="3312424061798279731">Aktiverede sprog</translation>
 <translation id="3313622045786997898">Signaturværdi for certifikat</translation>
 <translation id="3313950410573257029">Tjek forbindelse</translation>
 <translation id="3315158641124845231">Skjul <ph name="PRODUCT_NAME" /></translation>
@@ -3959,7 +3959,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5228579091201413441">Aktivér synkronisering</translation>
 <translation id="5230516054153933099">Vindue</translation>
 <translation id="5233019165164992427">NaCl-fejlretningsport</translation>
-<translation id="5233231016133573565">Behandling af ID</translation>
+<translation id="5233231016133573565">Proces-id</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5233736638227740678">&amp;Indsæt</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -5120,6 +5120,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6521214596282732365">Websites bruger som regel dine skrifttyper, så du kan oprette indhold i høj kvalitet med design- og grafikværktøjer online</translation>
 <translation id="652492607360843641">Du har oprettet forbindelse til et <ph name="NETWORK_TYPE" />-netværk.</translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6528179044667508675">Forstyr ikke</translation>
 <translation id="652948702951888897">Chrome-historik</translation>
 <translation id="6530186581263215931">Disse indstillinger håndhæves af din administrator</translation>
 <translation id="6531282281159901044">Behold farlig fil</translation>
@@ -5394,7 +5395,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6833479554815567477">Fanen blev fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skift til en smart og sikker browser</translation>
 <translation id="6834652994408928492">Mørk tilstand aktiveres automatisk ved solnedgang</translation>
-<translation id="683540480453879381">Åbne <ph name="FILE_EXTENSIONS" />-filer</translation>
 <translation id="6835762382653651563">Opret forbindelse til internettet for at opdatere din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spørg, når et website vil åbne og placere vinduer på dine skærme (anbefales)</translation>
 <translation id="6839225236531462745">Fejl under sletning af certifikat</translation>
@@ -5660,6 +5660,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7117247127439884114">Log ind igen...</translation>
 <translation id="711840821796638741">Vis administrerede bogmærker</translation>
 <translation id="711902386174337313">Læs listen over de enheder, hvor du er logget ind</translation>
+<translation id="711985611146095797">Denne side giver dig mulighed for at administrere de Google-konti, du er logget ind på. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-browseren og Android-trafik blokeres, medmindre der oprettes forbindelse til et VPN-netværk</translation>
 <translation id="7120865473764644444">Der kunne ikke oprettes forbindelse til synkroniseringsserveren. Prøver igen…</translation>
 <translation id="7121438501124788993">Udviklertilstand</translation>
@@ -6134,6 +6135,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7639914187072011620">SAML-omdirigeringen kunne ikke hentes fra serveren</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> logger dig automatisk ind på kvalificerede websites med adgangskoder, du har gemt.</translation>
 <translation id="7641513591566880111">Nyt profilnavn</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> er tilføjet</translation>
 <translation id="7642778300616172920">Skjul følsomt indhold</translation>
 <translation id="7643842463591647490">{0,plural, =1{# åbent vindue}one{# åbent vindue}other{# åbne vinduer}}</translation>
 <translation id="7643932971554933646">Skal websitet kunne se filer?</translation>
@@ -6187,7 +6189,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7684718995427157417">Hvis du vil oprette og teste dine apps, skal du aktivere Android Debug Bridge (ADB). Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet bekræftet af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
 <translation id="7685049629764448582">JavaScript-hukommelse</translation>
 <translation id="7685087414635069102">Der skal angives en pinkode</translation>
-<translation id="768549422429443215">Tilføj sprog, eller omorganiser listen.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
 <translation id="7690378713476594306">Vælg på listen</translation>
@@ -7198,6 +7199,7 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>
 <translation id="8757090071857742562">Skrivebordet kunne ikke castes. Kontrollér, om du har bekræftet meddelelsen om at starte delingen af din skærm.</translation>
 <translation id="8757203080302669031">Denne fane søger aktivt efter Bluetooth-enheder.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> er fjernet</translation>
 <translation id="8758418656925882523">Aktivér diktering (tal for at skrive)</translation>
 <translation id="8759408218731716181">Samlet login fra flere konti kan ikke konfigureres</translation>
 <translation id="8759753423332885148">Få flere oplysninger.</translation>

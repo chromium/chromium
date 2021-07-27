@@ -113,6 +113,7 @@
 <translation id="17513872634828108">খুলি ৰখা টেবসমূহ</translation>
 <translation id="1754404134430936718">পাঠৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="1772137089884020309">বুকমাৰ্ক ফ'ল্ডাৰৰ সূচীখন বন্ধ কৰা হ'ল</translation>
+<translation id="1779766957982586368">ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="1782483593938241562">সমাপ্ত হোৱাৰ দিন <ph name="DATE" /></translation>
 <translation id="1791662854739702043">ইনষ্টল কৰা হ’ল</translation>
 <translation id="1792959175193046959">ডাউনল'ডৰ ডিফ'ল্ট অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
@@ -191,6 +192,7 @@
 <translation id="2276696007612801991">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ আপোনাৰ Google একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="2278052315791335171">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব</translation>
 <translation id="2286841657746966508">বিলিঙৰ ঠিকনা</translation>
+<translation id="2294030144029925122">Chromeৰ গোপনীয়তা নীতি</translation>
 <translation id="230115972905494466">খাপ খোৱা কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="230155349749732438">এই ছেটিংটো ব্যৱহাৰ কৰিবলৈ <ph name="BEGIN_LINK" />সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক<ph name="END_LINK" /> অন কৰিবই লাগিব</translation>
 <translation id="2318045970523081853">কল কৰিবলৈ টিপক</translation>
@@ -224,6 +226,7 @@
 
 সন্ধান কৰিবলৈ যিকোনো শব্দ স্পৰ্শ কৰি ধৰি ৰাখক। আপোনাৰ সন্ধানটো শুদ্ধ কৰিবলৈ অধিক অথবা কম শব্দ বাছনি কৰক। আপোনাৰ সন্ধানটো সম্পাদনা কৰিবলৈ পেনেলটো খোলক, এটা নতুন টেবত খুলিবলৈ আইকনটোত টিপক আৰু সন্ধান বাকচটোত আপোনাৰ কৰিবলগীয়া সালসলনিবোৰ কৰক।</translation>
 <translation id="2459390580524506445">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান কৰাৰ উচ্চখাপৰ সুবিধা</translation>
+<translation id="2461822463642141190">বৰ্তমান</translation>
 <translation id="247737702124049222">প্ৰতিচ্ছবিৰ বিৱৰণ অন আছে</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2485422356828889247">আনইনষ্টল কৰক</translation>
@@ -451,6 +454,7 @@
 <translation id="3928666092801078803">মোৰ ডেটা সংযুক্ত কৰক</translation>
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">সক্ষম কণ্ঠধ্বনিৰে সন্ধানৰ সুবিধা নাই</translation>
+<translation id="395377504920307820">একাউণ্টৰ অবিহনে ব্যৱহাৰ কৰক</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{আপোনাৰ পৃষ্ঠাটো সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}one{আপোনাৰ পৃষ্ঠাসমূহ সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}other{আপোনাৰ পৃষ্ঠাসমূহ সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}}</translation>
 <translation id="3962957115499249330">ৱাই-ফাইত এই ডাউনল'ডটো আৰম্ভ হ'লে আপুনি এটা জাননী দেখা পাব।</translation>
 <translation id="3963007978381181125">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়। আপোনাৰ পাছফ্ৰেজ জনা কোনোবাইহে আপুনি এনক্ৰিপ্ট কৰি থোৱা ডেটা পঢ়িব পাৰে। পাছফ্ৰেজটো ক’লৈকো পঠিওৱা নহয় আৰু সেইটো Googleত ষ্ট'ৰ কৰা নাথাকে। আপুনি যদি নিজৰ পাছফ্ৰেজটো পাহৰে বা এই ছেটিংটো সলাব বিচাৰে, ছিংক ৰিছেট কৰিব লাগিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -747,6 +751,7 @@
 <translation id="5833984609253377421">লিংক শ্বেয়াৰ কৰক</translation>
 <translation id="5834764604050996579">কোনো কিউআৰ ক’ড স্কেন কৰিবলৈ, Chromeক আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
 <translation id="5836192821815272682">Chromeৰ আপডে’ট ডাউনল’ড কৰি থকা হৈছে…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">পজ কৰা হ’ল</translation>
 <translation id="5854512288214985237">কোনো পৰিসংখ্যা অথবা ক্ৰেশ্ব ৰিপ’ৰ্ট Googleলৈ পঠিওৱা নহয়</translation>
 <translation id="5855546874025048181">পৰিষ্কৰণ: <ph name="REFINE_TEXT" /></translation>
@@ -1013,6 +1018,7 @@
 <translation id="7481864133709957613">এই পৃষ্ঠাখনৰ পৰা সন্ধান কৰিবলৈ শব্দসমূহত টিপাৰ পৰিৱৰ্তে তাত স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="7482656565088326534">টেবটো পূৰ্বদৰ্শন কৰক</translation>
 <translation id="7484997419527351112">Discover- অফ আছে</translation>
+<translation id="7485033510383818941">ফীডৰ সমলটো ৰিফ্ৰেশ্ব কৰিবলৈ, পৃষ্ঠাখন তললৈ টানক</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> ( <ph name="TIME_SINCE_UPDATE" />ত আপডে'ট কৰা হৈছিল)</translation>
 <translation id="7494974237137038751">ডেটা ৰাহি কৰা হৈছে</translation>
 <translation id="7498271377022651285">অনুগ্ৰহ কৰি অপেক্ষা কৰক…</translation>

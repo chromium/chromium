@@ -113,6 +113,7 @@
 <translation id="17513872634828108">بازکردن برگه‌ها</translation>
 <translation id="1754404134430936718">نوشتار کپی شد</translation>
 <translation id="1772137089884020309">فهرست پوشه‌های نشانک بسته شد</translation>
+<translation id="1779766957982586368">بستن پنجره</translation>
 <translation id="1782483593938241562">تاریخ پایان: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">نصب‌شده</translation>
 <translation id="1792959175193046959">هرزمان بخواهید می‌توانید محل پیش‌فرض بارگیری را تغییر دهید</translation>
@@ -225,6 +226,7 @@
 
 برای جستجو، کافی است کلمه‌ای را لمس کنید و نگه دارید. برای پالایش جستجو، کلمات بیشتر یا کمتری را انتخاب کنید. برای ویرایش جستجو، پانل را باز کنید، روی نماد ضربه بزنید تا در برگه جدیدی باز شود و تغییرات را در جعبه جستجو وارد کنید.</translation>
 <translation id="2459390580524506445">جستجوی گفتاری بهبودیافته</translation>
+<translation id="2461822463642141190">فعلی</translation>
 <translation id="247737702124049222">توضیحات تصویر روشن است</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">مجوزهای متن‌باز</translation>
 <translation id="4263656433980196874">میانای کاربر رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
-<translation id="4281359692687148179">برای بازخوانی به پایین بکشید</translation>
 <translation id="4290281343757112331">بعداً بارگیری شود؟</translation>
 <translation id="4296252229500326964">برگه ناشناس جدید</translation>
 <translation id="4298388696830689168">سایت‌های مرتبط</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">هم‌رسانی پیوند</translation>
 <translation id="5834764604050996579">‏برای اسکن کردن رمزینه پاسخ‌سریع، به Chrome اجازه دهید از دوربین استفاده کند</translation>
 <translation id="5836192821815272682">‏درحال بارگیری به‌روزرسانی Chrome…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">مکث</translation>
 <translation id="5854512288214985237">‏هیچ گزارش خرابی یا آماری به Google ارسال نمی‌شود</translation>
 <translation id="5855546874025048181">پالایش: <ph name="REFINE_TEXT" /></translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">علامات التبويب المفتوحة</translation>
 <translation id="1754404134430936718">تم نسخ النص</translation>
 <translation id="1772137089884020309">تم إغلاق قائمة مجلدات الإشارات المرجعية.</translation>
+<translation id="1779766957982586368">إغلاق النافذة</translation>
 <translation id="1782483593938241562">تاريخ الانتهاء: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">تم التثبيت</translation>
 <translation id="1792959175193046959">تغيير موقع التنزيل التلقائي في أي وقت</translation>
@@ -225,6 +226,7 @@
 
 ما عليك سوى النقر مع الاستمرار على أي كلمة للبحث عنها. ولتحسين البحث، اختَر كلمات أكثر أو أقل. لتعديل البحث، افتح اللوحة، وانقر على الرمز لفتح علامة تبويب جديدة، وأدخِل تغييراتك في مربّع البحث.</translation>
 <translation id="2459390580524506445">البحث الصوتي المحسَّن</translation>
+<translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="247737702124049222">ميزة أوصاف الصور مفعَّلة.</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
@@ -499,7 +501,6 @@
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
 <translation id="4263656433980196874">‏تم فتح واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google" بطول الشاشة.</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
-<translation id="4281359692687148179">اسحب للأسفل لإعادة تحميل المحتوى</translation>
 <translation id="4290281343757112331">هل تريد تأجيل عمليّة التنزيل؟</translation>
 <translation id="4296252229500326964">علامة تبويب للتصفّح المتخفي</translation>
 <translation id="4298388696830689168">المواقع المرتبطة</translation>
@@ -746,6 +747,7 @@
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5833984609253377421">مشاركة الرابط</translation>
 <translation id="5836192821815272682">‏جارٍ تنزيل تحديث Chrome…</translation>
+<translation id="5839058148541733625">‏لعبة الديناصور في Chrome</translation>
 <translation id="5853623416121554550">متوقف مؤقتًا</translation>
 <translation id="5854512288214985237">‏لا يتم إرسال تقارير الأعطال أو الإحصاءات إلى Google.</translation>
 <translation id="5855546874025048181">تحسين: <ph name="REFINE_TEXT" /></translation>

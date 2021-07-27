@@ -2185,7 +2185,6 @@
 <translation id="3308852433423051161">Google アシスタントを読み込んでいます...</translation>
 <translation id="3309330461362844500">証明書プロファイル ID</translation>
 <translation id="3311445899360743395">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
-<translation id="3312424061798279731">有効な言語</translation>
 <translation id="3313622045786997898">証明書の署名値</translation>
 <translation id="3313950410573257029">接続を確認</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> を隠す</translation>
@@ -5103,6 +5102,7 @@
 <translation id="6521214596282732365">多くのサイトはデバイスのフォントを使用して、オンラインのデザインツールや画像編集ツールで高品質のコンテンツを作成できるようにしています</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> ネットワークに接続しています。</translation>
 <translation id="6527303717912515753">共有</translation>
+<translation id="6528179044667508675">サイレント</translation>
 <translation id="652948702951888897">Chrome 履歴</translation>
 <translation id="6530186581263215931">管理者が行った設定です</translation>
 <translation id="6531282281159901044">危険なファイルを保存</translation>
@@ -5377,7 +5377,6 @@
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">スマートで安全なブラウザをぜひご利用ください</translation>
 <translation id="6834652994408928492">ダークモードは日の入り時刻に自動的にオンになります</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> ファイルを開く</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6838034009068684089">サイトから画面上にウィンドウを開いて配置することを求められたときに確認する（推奨）</translation>
 <translation id="6839225236531462745">証明書削除エラー</translation>
@@ -6170,7 +6169,6 @@
 <translation id="7684718995427157417">アプリを作成してテストするには、Android Debug Bridge（ADB）を有効にします。この操作を行うと、Google が確認していない Android アプリのインストールが許可されます。無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
 <translation id="7685049629764448582">JavaScript メモリ</translation>
 <translation id="7685087414635069102">PIN が必要です</translation>
-<translation id="768549422429443215">言語を追加するか、リストを並べ替えます。</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" />（<ph name="DEVICE_PATH" />）</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7690378713476594306">リストから選択</translation>

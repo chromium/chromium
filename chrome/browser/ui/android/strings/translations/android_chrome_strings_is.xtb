@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Opnir flipar</translation>
 <translation id="1754404134430936718">Texti afritaður</translation>
 <translation id="1772137089884020309">Listi yfir bókamerkjamöppur er lokaður</translation>
+<translation id="1779766957982586368">Loka glugga</translation>
 <translation id="1782483593938241562">Lokadagur er <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Uppsett</translation>
 <translation id="1792959175193046959">Þú getur breytt staðsetningu niðurhals hvenær sem er</translation>
@@ -225,6 +226,7 @@
 
 Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða færri orð til að fínstilla leitina. Þú getur breytt leitinni með því að opna svæðið, ýta á táknið til að opna í nýjum flipa og gera breytingar í leitarreitnum.</translation>
 <translation id="2459390580524506445">Betri raddleit</translation>
+<translation id="2461822463642141190">Núna</translation>
 <translation id="247737702124049222">Kveikt er á lýsingum mynda</translation>
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="4256782883801055595">Leyfi opins kóða</translation>
 <translation id="4263656433980196874">Samþykkisviðmót raddleitar Hjálpara opið á öllum skjánum</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
-<translation id="4281359692687148179">Dragðu niður til að endurnýja</translation>
 <translation id="4290281343757112331">Hlaða niður síðar?</translation>
 <translation id="4296252229500326964">Nýr huliðsflipi</translation>
 <translation id="4298388696830689168">Tengd vefsvæði</translation>
@@ -750,6 +751,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5833984609253377421">Deila tengli</translation>
 <translation id="5834764604050996579">Leyfðu Chrome að nota myndavélina til að skanna inn QR-kóða</translation>
 <translation id="5836192821815272682">Sækir Chrome uppfærslu…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">hlé</translation>
 <translation id="5854512288214985237">Engin mæligildi eða hrunskýrslur eru sendar til Google</translation>
 <translation id="5855546874025048181">Þrengja: <ph name="REFINE_TEXT" /></translation>

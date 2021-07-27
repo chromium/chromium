@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">Веб хуудсыг доош гүйлгэх</translation>
 <translation id="2530896289327917474">Caret browsing-г асаах эсвэл унтраах</translation>
 <translation id="2574014812750545982">Хуудас дахь томруулалтын түвшинг шинэчлэх</translation>
-<translation id="2596078834055697711">Цонхны дэлгэцийн зургийг дарах</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> дараа нь <ph name="TAB" /> эсвэл <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Одоогийн хуудсаа дахин ачааллах</translation>
 <translation id="2764005613199379871">Фокусыг хайлтын хаяг оруулах хэсэгт байршуулах</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Товчлол</translation>
 <translation id="3084301071537457911">Тавиур дээрх дараагийн зүйлийг тодруулах</translation>
 <translation id="309173601632226815">Тавиур дээрх эхлүүлэх товчлуурыг тодруулах</translation>
-<translation id="3105917916468784889">Дэлгэцийн зураг авах</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Хаягийн мөрөнд төвлөрөх</translation>
 <translation id="3256109297135787951">Тавиур дээрх зүйлээсээ тодруулгыг устгах</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Товчлуурын шууд холбоосны туслагчийг харах</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> эсвэл <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Төлөв байдал илэрхийлэгчийг нээх (таны бүртгэлийн зураг харагдаж буй хэсэг)</translation>
-<translation id="4642092649622328492">Дэлгэцийн зургийг хэсэгчлэн дарах</translation>
 <translation id="4698850295812410683">Мэдрэгч үзэгний хэрэгслийг харуулах</translation>
 <translation id="4801989101741319327">Дараагийн үгийн төгсгөл рүү шилжих</translation>
 <translation id="4866066940972151697">Баруун талын дэлгэцийг идэвхжүүлэх</translation>

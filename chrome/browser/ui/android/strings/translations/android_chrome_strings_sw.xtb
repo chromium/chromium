@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Vichupo vilivyo wazi</translation>
 <translation id="1754404134430936718">Maandishi Yamenakiliwa</translation>
 <translation id="1772137089884020309">Orodha ya folda za alamisho imefungwa</translation>
+<translation id="1779766957982586368">Funga dirisha</translation>
 <translation id="1782483593938241562">Tarehe ya mwisho <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Imesakinishwa</translation>
 <translation id="1792959175193046959">Badilisha sehemu chaguomsingi ya kupakua wakati wowote</translation>
@@ -225,6 +226,7 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 
 Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua maneno mengi au machache. Ili ubadilishe utafutaji wako, fungua kidirisha, gusa aikoni ili ufungue katika kichupo kipya na ufanye mabadiliko ambayo ungependa kwenye kisanduku cha kutafutia.</translation>
 <translation id="2459390580524506445">Kipengele kilichoboreshwa cha kutafuta kwa kutamka</translation>
+<translation id="2461822463642141190">Ya sasa</translation>
 <translation id="247737702124049222">Kipengele cha maelezo ya picha kimewashwa</translation>
 <translation id="2482878487686419369">Arifa</translation>
 <translation id="2485422356828889247">Ondoa</translation>
@@ -500,7 +502,6 @@ Teknolojia ya Utaratibu wa kuwekea vikwazo vya faragha bado inaendelea kutengene
 <translation id="4256782883801055595">Leseni za programu huria</translation>
 <translation id="4263656433980196874">Kiolesura cha idhini ya kutafuta kwa kutamka kupitia programu ya Mratibu kimefunguliwa kwenye skrini nzima</translation>
 <translation id="4269820728363426813">Nakili anwani ya kiungo</translation>
-<translation id="4281359692687148179">Vuta kuelekea chini ili uonyeshe upya</translation>
 <translation id="4290281343757112331">Ungependa kupakua baadaye?</translation>
 <translation id="4296252229500326964">Kichupo fiche kipya</translation>
 <translation id="4298388696830689168">Tovuti ambazo zimeunganishwa</translation>
@@ -750,6 +751,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5833984609253377421">Shiriki kiungo</translation>
 <translation id="5834764604050996579">Ili uchanganue Msimbo wa QR, iruhusu Chrome itumie kamera yako</translation>
 <translation id="5836192821815272682">Inapakua Sasisho la Chrome…</translation>
+<translation id="5839058148541733625">Mchezo wa Dinosau wa Chrome</translation>
 <translation id="5853623416121554550">imesitishwa</translation>
 <translation id="5854512288214985237">Hakuna takwimu wala ripoti za kuacha kufanya kazi zinazotumwa kwa Google</translation>
 <translation id="5855546874025048181">Chuja: <ph name="REFINE_TEXT" /></translation>

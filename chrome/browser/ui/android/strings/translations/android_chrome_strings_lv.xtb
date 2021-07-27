@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Atvērt cilnes</translation>
 <translation id="1754404134430936718">Teksts ir nokopēts</translation>
 <translation id="1772137089884020309">Grāmatzīmju mapju saraksts ir aizvērts</translation>
+<translation id="1779766957982586368">Aizvērt logu</translation>
 <translation id="1782483593938241562">Beigu datums: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalēts</translation>
 <translation id="1792959175193046959">Noklusējuma lejupielādes vietu var mainīt jebkurā laikā.</translation>
@@ -225,6 +226,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 
 Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu, atlasiet mazāk vai vairāk vārdu. Ja vēlaties rediģēt meklēšanas vaicājumu, atveriet paneli, pieskarieties ikonai, lai atvērtu meklēšanas vaicājumu jaunā cilnē, un veiciet izmaiņas meklēšanas lodziņā.</translation>
 <translation id="2459390580524506445">Uzlabota meklēšana ar balsi</translation>
+<translation id="2461822463642141190">Šobrīd</translation>
 <translation id="247737702124049222">Attēlu aprakstu pievienošana ir ieslēgta</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4256782883801055595">Atklātā pirmkoda licences</translation>
 <translation id="4263656433980196874">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi (atvērta pilna ekrāna augstumā)</translation>
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
-<translation id="4281359692687148179">Lai atsvaidzinātu, velciet uz leju</translation>
 <translation id="4290281343757112331">Vai lejupielādēt vēlāk?</translation>
 <translation id="4296252229500326964">Jauna inkognito cilne</translation>
 <translation id="4298388696830689168">Saistītās vietnes</translation>
@@ -750,6 +751,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5833984609253377421">Kopīgot saiti</translation>
 <translation id="5834764604050996579">Lai skenētu QR kodu, atļaujiet pārlūkprogrammai Chrome izmantot jūsu kameru</translation>
 <translation id="5836192821815272682">Lejupielādē Chrome atjauninājumu…</translation>
+<translation id="5839058148541733625">Chrome dinozaurs</translation>
 <translation id="5853623416121554550">apturēta</translation>
 <translation id="5854512288214985237">Uzņēmumam Google netiek sūtīta statistika un avāriju pārskati</translation>
 <translation id="5855546874025048181">Precizēt: <ph name="REFINE_TEXT" /></translation>

@@ -1694,6 +1694,7 @@
 
       這項政策已遭淘汰，請改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="3030000825273123558">啟用計量回報功能</translation>
+<translation id="3031796805169553856">允許跨來源傳送 WebAssembly 模組</translation>
 <translation id="3032322294267258117">控管透過 GAIA 進行驗證 (未使用 SAML) 的使用者設定。</translation>
 <translation id="3038323923255997294">在 <ph name="PRODUCT_NAME" /> 關閉時繼續執行背景應用程式 </translation>
 <translation id="3041707370546071653">是否要記住 Kerberos 密碼。如果不設定或者設為 False，系統就不會記住密碼。如未指定密碼，則可忽略這項設定。</translation>
@@ -2050,6 +2051,12 @@
 
       如果將這項政策設為 True 或不設定，<ph name="PRODUCT_OS_NAME" />會自動連線至 Quirks Server，並下載可用的設定檔，然後儲存到裝置上。這類檔案的用途可能包括改善外接螢幕的顯示品質。</translation>
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
+<translation id="3526111349971346870">
+      指定是否可以跨來源傳送 WebAssembly 模組至其他視窗或工作站。跨來源 WebAssembly 模組分享功能將隨著 document.domain 一併淘汰，詳情請參閱 https://github.com/mikewest/deprecating-document-domain。這項政策可重新啟用跨來源 WebAssembly 模組分享功能，以便延長淘汰程序中的過渡期。
+
+      如果將這項政策設為 True，網站即可不受限制地跨來源傳送 WebAssembly 模組。
+
+      如果將這項政策設為 False，網站只能將 WebAssembly 模組傳送至來源相同的視窗和工作站。</translation>
 <translation id="3526752951628474302">僅限單色列印</translation>
 <translation id="3528000905991875314">啟用替代的錯誤網頁</translation>
 <translation id="3531084733660068324">家長監督設定</translation>
@@ -2102,6 +2109,7 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統預設會停用隨選朗讀功能，但使用者可以隨時啟用這項功能。</translation>
+<translation id="3589193811812796052">禁止跨來源傳送 WebAssembly 模組</translation>
 <translation id="3591527072193107424">啟用「舊版瀏覽器支援」功能。</translation>
 <translation id="3591584750136265240">設定登入驗證行為</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 模式中啟用寬鬆檢查機制來放寬 <ph name="CORS" /> 檢查標準，讓擴充功能保持相容行為，並允許 <ph name="PRODUCT_NAME" /> 不需經過 <ph name="CORS" /> 檢查即可傳送指定標頭。
@@ -2169,6 +2177,7 @@
           在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="3733014427925403568">限制時段的開始及結束時間分別是星期幾。</translation>
 <translation id="3736879847913515635">允許在使用者管理工具中新增使用者</translation>
+<translation id="3749259744154402564">不支援</translation>
 <translation id="3750220015372671395">禁止在這些網站上使用金鑰產生功能</translation>
 <translation id="3755237588083934849">你可以透過這項政策，決定裝置狀態上傳內容的傳送頻率 (以毫秒為單位)，下限值是 60 秒。
 
@@ -4024,6 +4033,7 @@
       如果將這項政策設為 0，就會停用本機帳戶密碼變更功能。
 
       注意：如果用戶端長時間處於離線狀態，即使已經過了指定天數，密碼也可能不會變更。</translation>
+<translation id="628084107912717806">指定是否可以跨來源傳送 WebAssembly 模組</translation>
 <translation id="6280973140313576289">瀏覽器啟動時強制顯示設定檔選擇畫面</translation>
 <translation id="6282524907402492171">顯示 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="6282799760374509080">允許或拒絕擷取音訊</translation>
@@ -4296,6 +4306,13 @@
 
       注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的下載作業，以及透過列印選項儲存為 PDF 檔的下載作業。如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="6641981670621198190">停止支援 3D 圖形 API</translation>
+<translation id="6642682198621199507">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
+
+      網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
+
+      在 Chrome OS 中，本政策只會套用至關聯的使用者。
+
+      這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。</translation>
 <translation id="6646912445796087001">啟用或停用螢幕小鍵盤上的多項功能。這項政策只有在「VirtualKeyboardEnabled」政策已啟用時才會生效。
 
       如果將這項政策中的某項功能設為 True，系統會在螢幕小鍵盤上啟用該功能。
@@ -4489,6 +4506,15 @@
       如果不設定這項政策，受企業管理使用者的預設值為 <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />；其他一般使用者的預設值則為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />。
 
       日後也可以使用 <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 一值，將 <ph name="LACROS_NAME" /> 設為 <ph name="PRODUCT_OS_NAME" />中唯一可用的瀏覽器。</translation>
+<translation id="6865392932254477045">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取廠商 ID 和產品 ID 分別與 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位相符的 USB 序列裝置。如果省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，系統就會授權指定網站存取廠商 ID 與 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位相符的裝置，裝置的產品 ID 則沒有限制。
+
+      網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
+
+      在 Chrome OS 中，本政策只會套用至關聯的使用者。
+
+      這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。
+
+      這項政策只會影響透過 Web Serial API 存取 USB 裝置的權限。如要授予透過 WebUSB API 存取 USB 裝置的權限，請參閱 <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="68818134518270542">你可以透過這項政策指定應用程式，允許使用者在 <ph name="PRODUCT_OS_NAME" />螢幕鎖定畫面上以筆記應用程式的形式開啟。
 
       如果偏好的筆記應用程式已在螢幕鎖定畫面上，用來啟動該應用程式的 UI 元素就會顯示在畫面上。應用程式啟動後，將可在螢幕鎖定畫面的上方建立視窗，並在螢幕鎖定的情況下建立筆記。應用程式可在工作階段解鎖後，將已建立的筆記匯入主要使用者的工作階段。螢幕鎖定畫面上僅支援 <ph name="PRODUCT_NAME" /> 筆記應用程式。
@@ -5727,6 +5753,7 @@
 <translation id="8455529558077979314">隱私保護畫面設定</translation>
 <translation id="8455551509936646199">應該在星期幾重新啟動 (根據裝置當地時區)，僅適用於「frequency」設為「WEEKLY」的情況。</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463569949213141467">設定要停用的攝影機、瀏覽器設定、作業系統設定、掃描功能、線上應用程式商店、畫布和探索功能</translation>
 <translation id="8465065632133292531">使用 POST 的互動智慧搜尋網址參數</translation>
 <translation id="847472800012384958">不允許任何網站顯示彈出式視窗</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

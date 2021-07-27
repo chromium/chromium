@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1754404134430936718">Texte copié</translation>
 <translation id="1772137089884020309">Liste des dossiers de favoris fermée</translation>
+<translation id="1779766957982586368">Fermer la fenêtre</translation>
 <translation id="1782483593938241562">Date de fin : <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Module installé</translation>
 <translation id="1792959175193046959">Changer le dossier de téléchargement par défaut en tout temps</translation>
@@ -225,6 +226,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 
 Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour affiner votre recherche, sélectionnez plus ou moins de mots. Pour modifier votre recherche, ouvrez le panneau, touchez l'icône pour ouvrir la recherche dans un nouvel onglet, puis effectuez les modifications souhaitées dans le champ de recherche.</translation>
 <translation id="2459390580524506445">Recherche vocale améliorée</translation>
+<translation id="2461822463642141190">Actuelle</translation>
 <translation id="247737702124049222">Les descriptions d'images sont activées</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -500,7 +502,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4256782883801055595">Licences de logiciels libres</translation>
 <translation id="4263656433980196874">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant, ouverte à pleine hauteur</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
-<translation id="4281359692687148179">Tirez vers le bas pour actualiser</translation>
 <translation id="4290281343757112331">Télécharger plus tard?</translation>
 <translation id="4296252229500326964">Nouvel onglet navig. privée</translation>
 <translation id="4298388696830689168">Sites associés</translation>
@@ -750,6 +751,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5833984609253377421">Partager le lien</translation>
 <translation id="5834764604050996579">Pour numériser un code QR, autorisez Chrome à utiliser votre appareil photo</translation>
 <translation id="5836192821815272682">Téléchargement de la mise à jour de Chrome en cours…</translation>
+<translation id="5839058148541733625">Jeu de dinosaures de Chrome</translation>
 <translation id="5853623416121554550">interrompu</translation>
 <translation id="5854512288214985237">Aucune statistique ni aucun rapport de plantage ne sont envoyés à Google</translation>
 <translation id="5855546874025048181">Affiner : <ph name="REFINE_TEXT" /></translation>

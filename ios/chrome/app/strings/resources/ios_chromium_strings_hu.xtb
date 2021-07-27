@@ -38,7 +38,6 @@
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="3946918322491238254">Továbbra is láthatja könyvjelzőit, előzményeit, jelszavait és más beállításait ezen az eszközön. A módosításokat azonban a böngésző nem szinkronizálja az Ön fiókjába.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
-<translation id="4166206055865952171">A Chromium beállítása alapértelmezett böngészőként</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="4681781466797808448">Kapcsolja be a Chromium szkennerét</translation>
@@ -55,7 +54,6 @@
 <translation id="5573014823074921752">Tipp a Chromium használatához. A további lapbeállításokhoz érintse meg és tartsa lenyomva az eszköztárban lévő Lapok megjelenítése gombot, amely a képernyő alsó vagy felső részén található.</translation>
 <translation id="5700709190537129682">A Chromium nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="5715349567881822785">Hatékonyabb lehet a Chromiummal</translation>
-<translation id="5742135483959137648">A Chromium használata linkek megnyitására</translation>
 <translation id="5777187867430702742">A Chromium oldala</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5945387852661427312">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chromium-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chromiumból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>

@@ -136,6 +136,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2320166752086256636">Masquer le clavier</translation>
 <translation id="2339560363438331454">Services Google/Sync</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
+<translation id="235789365079050412">Règles de confidentialité de Google</translation>
 <translation id="2359043044084662842">Traduire</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360196772093551345">Voir le site mobile</translation>
@@ -474,6 +475,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5846482154967366008">Moteur de recherche</translation>
 <translation id="5854790677617711513">Datant de plus de 30 jours</translation>
 <translation id="5857090052475505287">Nouveau dossier</translation>
+<translation id="5857675236236529683">Votre liste de lecture s'affichera ici dès que vous serez prêt</translation>
 <translation id="5857770089550859117">Veuillez saisir la phrase secrète pour lancer la synchronisation.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5869029295770560994">OK</translation>
@@ -594,6 +596,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6730682669179532099">Impossible d'exporter les mots de passe</translation>
 <translation id="6748108480210050150">De</translation>
 <translation id="6760509555861141183">Revenir au dernier onglet</translation>
+<translation id="6762812039470893796">Tout désélectionner</translation>
 <translation id="6780034285637185932">Code postal</translation>
 <translation id="6785453220513215166">Envoi du rapport d'erreur en cours…</translation>
 <translation id="6797885426782475225">Recherche vocale</translation>
@@ -748,7 +751,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web en mode privé.</translation>
-<translation id="83100941411593607">Connexion désactivée</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Appuyez de manière prolongée pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>

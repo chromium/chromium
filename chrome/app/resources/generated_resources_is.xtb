@@ -532,6 +532,7 @@
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“ er þegar úthlutað á aðgerðina „<ph name="ACTION" />“. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-stjórnborð</translation>
 <translation id="1568323446248056064">Opna skjástillingar tækis</translation>
+<translation id="1571738973904005196">Skoða flipann: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gestur)</translation>
 <translation id="1572266655485775982">Wi-Fi virkjun</translation>
 <translation id="1572876035008611720">Sláðu inn netfangið þitt</translation>
@@ -2200,7 +2201,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3308852433423051161">Hleður Google hjálparann...</translation>
 <translation id="3309330461362844500">Auðkenni vottorðsprófíls</translation>
 <translation id="3311445899360743395">Gögn sem tengjast þessu forriti verða hugsanlega fjarlægð úr tækinu.</translation>
-<translation id="3312424061798279731">Virk tungumál</translation>
 <translation id="3313622045786997898">Gildi vottorðsundirritunar</translation>
 <translation id="3313950410573257029">Athuga tengingu</translation>
 <translation id="3315158641124845231">Fela <ph name="PRODUCT_NAME" /></translation>
@@ -5119,6 +5119,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6521214596282732365">Yfirleitt nota vefsvæði leturgerðirnar þínar svo að þú getir búið til hágæðaefni með vefhönnun og grafíkverkfærum</translation>
 <translation id="652492607360843641">Tegund kerfis sem þú tengist: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Deila</translation>
+<translation id="6528179044667508675">Ónáðið ekki</translation>
 <translation id="652948702951888897">Chrome ferill</translation>
 <translation id="6530186581263215931">Kerfisstjórinn valdi þessar stillingar</translation>
 <translation id="6531282281159901044">Halda hættulegri skrá</translation>
@@ -5393,7 +5394,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6833479554815567477">Flipi fjarlægður úr hópnum <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skipta yfir í öruggan og snjallan vafra</translation>
 <translation id="6834652994408928492">Sjálfkrafa kviknar á dökkri stillingu við sólsetur</translation>
-<translation id="683540480453879381">Opna <ph name="FILE_EXTENSIONS" /> skrár</translation>
 <translation id="6835762382653651563">Tengstu internetinu til að uppfæra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spyrja þegar vefsvæði vill opna og birta glugga á skjánum (ráðlagt)</translation>
 <translation id="6839225236531462745">Villa við að eyða vottorði</translation>
@@ -5659,6 +5659,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7117247127439884114">Skrá inn aftur...</translation>
 <translation id="711840821796638741">Sýna stýrð bókamerki</translation>
 <translation id="711902386174337313">Lesa lista yfir innskráð tæki sem þú átt</translation>
+<translation id="711985611146095797">Á þessari síðu geturðu stjórnað Google reikningunum sem þú ert skráð(ur) inn á. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Lokað verður á umferð í Chrome vafra og Android nema VPN sé tengt</translation>
 <translation id="7120865473764644444">Ekki var hægt að tengjast samstillingarþjóninum. Reynir aftur...</translation>
 <translation id="7121438501124788993">Forritarastilling</translation>
@@ -6133,6 +6134,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7639914187072011620">Ekki tókst að sækja framsendingarslóð SAML hjá þjóninum</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> skráir þig sjálfkrafa inn á vefsvæði með þeim aðgangsorðum sem þú hefur vistað.</translation>
 <translation id="7641513591566880111">Nýtt prófílheiti</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> bætt við</translation>
 <translation id="7642778300616172920">Fela viðkvæmt efni</translation>
 <translation id="7643842463591647490">{0,plural, =1{# opinn gluggi}one{# opinn gluggi}other{# opnir gluggar}}</translation>
 <translation id="7643932971554933646">Viltu leyfa svæði að skoða skrár?</translation>
@@ -6186,7 +6188,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7684718995427157417">Kveiktu á villuleitarbrú Android (ADB) til að búa til og prófa forritin þín. Hafðu í huga að þessi aðgerð gerir þér kleift að setja upp Android forrit sem eru ekki staðfest af Google. Núllstilla þarf tækið til að slökkva á þessu.</translation>
 <translation id="7685049629764448582">JavaScript-minni</translation>
 <translation id="7685087414635069102">PIN-númers krafist</translation>
-<translation id="768549422429443215">Bæta við tungumálum eða endurraða lista.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7690378713476594306">Velja af lista</translation>
@@ -7196,6 +7197,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8756969031206844760">Uppfæra aðgangsorð?</translation>
 <translation id="8757090071857742562">Ekki er hægt að senda út skjáborð. Athugaðu hvort þú hefur samþykkt tilkynninguna um að byrja að deila skjánum þínum.</translation>
 <translation id="8757203080302669031">Þessi flipi er að leita að Bluetooth-tækjum</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> fjarlægt</translation>
 <translation id="8758418656925882523">Kveikja á upplestri (talskrifum)</translation>
 <translation id="8759408218731716181">Ekki er hægt að setja upp margar innskráningar</translation>
 <translation id="8759753423332885148">Frekari upplýsingar.</translation>

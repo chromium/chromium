@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Açık sekmeler</translation>
 <translation id="1754404134430936718">Metin Kopyalandı</translation>
 <translation id="1772137089884020309">Yer işareti klasörlerinin listesi kapatıldı</translation>
+<translation id="1779766957982586368">Pencereyi kapat</translation>
 <translation id="1782483593938241562">Bitiş tarihi: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Yüklendi</translation>
 <translation id="1792959175193046959">Dosyaların indirileceği varsayılan konumu istediğiniz zaman değiştirebilirsiniz</translation>
@@ -225,6 +226,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 
 Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı hassaslaştırmak için daha fazla veya daha az kelime seçin. Aramanızı düzenlemek için paneli açın, simgeye dokunarak yeni bir sekmede açın ve arama kutusunda değişikliklerinizi yapın.</translation>
 <translation id="2459390580524506445">Gelişmiş sesli arama</translation>
+<translation id="2461822463642141190">Mevcut güç tüketimi</translation>
 <translation id="247737702124049222">Resim açıklamaları açık</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2485422356828889247">Kaldır</translation>
@@ -500,7 +502,6 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="4256782883801055595">Açık kaynak lisansları</translation>
 <translation id="4263656433980196874">Asistan sesli arama izni kullanıcı arayüzü tam yükseklikte açıldı</translation>
 <translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
-<translation id="4281359692687148179">Yenilemek için aşağıya çekin</translation>
 <translation id="4290281343757112331">Bunun yerine daha sonra indirilsin mi?</translation>
 <translation id="4296252229500326964">Yeni Gizli sekme</translation>
 <translation id="4298388696830689168">Bağlantılı siteler</translation>
@@ -750,6 +751,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5833984609253377421">Bağlantıyı paylaş</translation>
 <translation id="5834764604050996579">QR Kodu taramak için Chrome'un kameranızı kullanmasına izin verin</translation>
 <translation id="5836192821815272682">Chrome Güncellemesi indiriliyor…</translation>
+<translation id="5839058148541733625">Chrome Dinozor</translation>
 <translation id="5853623416121554550">duraklatıldı</translation>
 <translation id="5854512288214985237">Google'a hiçbir istatistik veya kilitlenme raporu gönderilmez</translation>
 <translation id="5855546874025048181">Hassaslaştır: <ph name="REFINE_TEXT" /></translation>

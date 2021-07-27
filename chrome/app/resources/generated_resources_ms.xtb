@@ -531,6 +531,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' telah pun diuntukkan untuk tindakan '<ph name="ACTION" />'. Tekan sebarang kekunci untuk <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Buka tetapan peranti paparan</translation>
+<translation id="1571738973904005196">Lihat tab: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Tetamu)</translation>
 <translation id="1572266655485775982">Wi-Fi didayakan</translation>
 <translation id="1572876035008611720">Masukkan e-mel anda</translation>
@@ -2200,7 +2201,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3308852433423051161">Memuatkan Google Assistant...</translation>
 <translation id="3309330461362844500">ID Profil Sijil</translation>
 <translation id="3311445899360743395">Data yang berkaitan dengan apl ini mungkin dialih keluar daripada peranti ini.</translation>
-<translation id="3312424061798279731">Bahasa yang didayakan</translation>
 <translation id="3313622045786997898">Nilai Tandatangan Sijil</translation>
 <translation id="3313950410573257029">Semak sambungan</translation>
 <translation id="3315158641124845231">Sembunyikan <ph name="PRODUCT_NAME" /></translation>
@@ -5119,6 +5119,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6521214596282732365">Lazimnya, laman menggunakan fon anda supaya anda dapat membuat kandungan fideliti tinggi dengan alatan seni rekaan dan grafik dalam talian</translation>
 <translation id="652492607360843641">Anda bersambung ke rangkaian <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Kongsi</translation>
+<translation id="6528179044667508675">Jangan ganggu</translation>
 <translation id="652948702951888897">Sejarah Chrome</translation>
 <translation id="6530186581263215931">Tetapan ini dikuatkuasakan oleh pentadbir anda</translation>
 <translation id="6531282281159901044">Simpan fail berbahaya</translation>
@@ -5393,7 +5394,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6833479554815567477">Tab dialih keluar daripada kumpulan <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Tukar kepada penyemak imbas yang pintar dan selamat</translation>
 <translation id="6834652994408928492">Mod gelap akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
-<translation id="683540480453879381">Buka fail <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Sila sambung ke Internet untuk mengemaskinikan <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="6838034009068684089">Tanya apabila tapak mahu membuka dan meletakkan tetingkap pada skrin anda (disyorkan)</translation>
 <translation id="6839225236531462745">Ralat Pemadaman Sijil</translation>
@@ -5659,6 +5659,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7117247127439884114">Log masuk Semula...</translation>
 <translation id="711840821796638741">Tunjukkan Penanda Halaman Terurus</translation>
 <translation id="711902386174337313">Baca senarai peranti anda yang dilog masuk</translation>
+<translation id="711985611146095797">Halaman ini membolehkan anda mengurus Google Account anda yang dilog masuk. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Penyemak imbas Chrome dan trafik Android akan disekat melainkan VPN disambungkan</translation>
 <translation id="7120865473764644444">Tidak dapat menyambung ke pelayan penyegerakan. Mencuba semula...</translation>
 <translation id="7121438501124788993">Mod Pembangun</translation>
@@ -6133,6 +6134,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7639914187072011620">Gagal mengambil URL ubah hala SAML daripada pelayan</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> melog masuk anda secara automatik ke tapak web yang layak menggunakan kata laluan yang disimpan.</translation>
 <translation id="7641513591566880111">Nama profil baharu</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> ditambahkan</translation>
 <translation id="7642778300616172920">Sembunyikan kandungan sensitif</translation>
 <translation id="7643842463591647490">{0,plural, =1{# tetingkap terbuka}other{# tetingkap terbuka}}</translation>
 <translation id="7643932971554933646">Benarkan tapak membaca fail?</translation>
@@ -6186,7 +6188,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7684718995427157417">Untuk membuat dan menguji apl anda, dayakan Titi Nyahpepijat Android (ADB). Harap maklum bahawa tindakan ini membolehkan pemasangan apl Android yang belum disahkan oleh Google dan memerlukan tetapan semula kilang untuk melumpuhkannya.</translation>
 <translation id="7685049629764448582">Memori JavaScript</translation>
 <translation id="7685087414635069102">PIN diperlukan</translation>
-<translation id="768549422429443215">Tambah bahasa dan susun semula senarai.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7690378713476594306">Pilih daripada senarai</translation>
@@ -7198,6 +7199,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8756969031206844760">Kemas kini kata laluan?</translation>
 <translation id="8757090071857742562">Tidak dapat menghantar desktop. Semak untuk melihat sama ada anda telah mengesahkan gesaan untuk mula berkongsi skrin.</translation>
 <translation id="8757203080302669031">Tab ini sedang aktif mengimbas peranti Bluetooth.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> dialih keluar</translation>
 <translation id="8758418656925882523">Dayakan imlak (cakap untuk menaip)</translation>
 <translation id="8759408218731716181">Tidak dapat menyediakan berbilang log masuk</translation>
 <translation id="8759753423332885148">Ketahui lebih lanjut.</translation>

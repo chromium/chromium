@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
+<translation id="3540383942695635079">MAC ଠିକଣା</translation>
 <translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="3595596368722241419">ବ୍ୟାଟେରୀ ପୂର୍ଣ୍ଣ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">ଇଥର୍‌ନେଟ୍‌</translation>
 <translation id="4483049906298469269">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
+<translation id="4536864596629708641">IP କନଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="4548483925627140043">ସିଗନାଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ବ୍ୟାଟେରୀ</translation>
 <translation id="4562494484721939086">କୌଣସି ସେବା ନାହିଁ</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="4646949265910132906">ସୁରକ୍ଷିତ ୱାଇଫାଇ ସଂଯୋଗ</translation>
 <translation id="4652335678334611408">ସେସନ୍ ଲଗ୍ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="4654549501020883054">ଦୈନିକ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="4665014895760275686">ଉତ୍ପାଦକ</translation>
 <translation id="467510802200863975">ପାସ୍‌ୱାର୍ଡ ମେଳ ହେଉ ନାହିଁ</translation>
 <translation id="467715984478005772">ଫାୟାରୱାଲ୍ ଥିବାର ସନ୍ଦେହ କରାଯାଇଛି</translation>
@@ -293,6 +296,7 @@
 <translation id="65587193855025101">ଫ୍ଲାଟବେଡ୍</translation>
 <translation id="6564646048574748301">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>
 <translation id="6574762126505704998">ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ କ୍ରପ୍ କରନ୍ତୁ</translation>
+<translation id="6596816719288285829">IP ଠିକଣା</translation>
 <translation id="6603230386432466813">ସଂଯୋଗ କରିବାରେ ସମସ୍ୟା ହେଉଛି କି?</translation>
 <translation id="6618744767048954150">ଚାଲୁଛି</translation>
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
@@ -389,6 +393,7 @@
 <translation id="8498220429738806196">ଟ୍ରାଫିକ୍ କାଉଣ୍ଟରଗୁଡ଼ିକ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8503836310948963452">ଆଉ ଅଳ୍ପ କିଛି ମିନିଟ୍ ଅଛି…</translation>
+<translation id="8521021929829989041">ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ୍ ପରି ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଏହାର ନେଟୱାର୍କ ସହ ସଂଯୋଗ କରିବାକୁ ଏହି ବିକଳ୍ପ ଆବଶ୍ୟକ କରିପାରେ। ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="8576249514688522074">ଆରମ୍ଭ କରାଯାଇନାହିଁ</translation>

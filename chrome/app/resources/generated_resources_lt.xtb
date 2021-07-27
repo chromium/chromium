@@ -534,6 +534,7 @@
 <translation id="156793199942386351">Klavišas „<ph name="CURRENTKEY" />“ jau priskirtas veiksmui „<ph name="ACTION" />“. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
 <translation id="1567993339577891801">„JavaScript“ pultas</translation>
 <translation id="1568323446248056064">Atidaryti įrenginio pateikties nustatymus</translation>
+<translation id="1571738973904005196">Peržiūrėti skirtuką: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719">„<ph name="WINDOW_TITLE" />“ (svečias)</translation>
 <translation id="1572266655485775982">Įgalinti „Wi-Fi“</translation>
 <translation id="1572876035008611720">Įveskite savo el. pašto adresą</translation>
@@ -2203,7 +2204,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3308852433423051161">Įkeliamas „Google“ padėjėjas...</translation>
 <translation id="3309330461362844500">Sertifikuojamo profilio ID</translation>
 <translation id="3311445899360743395">Su šia programa susieti duomenys gali būti pašalinti iš šio įrenginio.</translation>
-<translation id="3312424061798279731">Įgalintos kalbos</translation>
 <translation id="3313622045786997898">Sertifikato parašo vertė</translation>
 <translation id="3313950410573257029">Patikrinti ryšį</translation>
 <translation id="3315158641124845231">Slėpti „<ph name="PRODUCT_NAME" />“</translation>
@@ -5123,6 +5123,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6521214596282732365">Svetainėse paprastai naudojami jūsų šriftai, kad galėtumėte kurti didelio tikslumo turinį internetiniais dizaino ir grafikos įrankiais</translation>
 <translation id="652492607360843641">Esate prisijungę prie šio tinklo: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
+<translation id="6528179044667508675">Netrukdyti</translation>
 <translation id="652948702951888897">„Chrome“ istorija</translation>
 <translation id="6530186581263215931">Šiuos nustatymus įgalina jūsų administratorius</translation>
 <translation id="6531282281159901044">Palikti pavojingą failą</translation>
@@ -5397,7 +5398,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6833479554815567477">Skirtukas pašalintas iš grupės „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Perjunkite į išmanią ir saugią naršyklę</translation>
 <translation id="6834652994408928492">Tamsus režimas automatiškai įsijungs saulei leidžiantis</translation>
-<translation id="683540480453879381">Atidaryti <ph name="FILE_EXTENSIONS" /> failus</translation>
 <translation id="6835762382653651563">Prisijunkite prie interneto, kad galėtumėte atnaujinti „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="6838034009068684089">Klausti, kai svetainė nori atidaryti ir įdėti langų jūsų ekranuose (rekomenduojama)</translation>
 <translation id="6839225236531462745">Sertifikato ištrynimo klaida</translation>
@@ -5663,6 +5663,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7117247127439884114">Prisijungti dar kartą...</translation>
 <translation id="711840821796638741">Rodyti tvarkomas žymes</translation>
 <translation id="711902386174337313">Skaityti įrenginių, prie kurių esate prisijungę, sąrašą</translation>
+<translation id="711985611146095797">Šiame puslapyje galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">„Chrome“ naršyklės ir „Android“ srautas bus blokuojamas, kol bus prijungtas VPN</translation>
 <translation id="7120865473764644444">Nepavyko prisijungti prie sinchronizavimo serverio. Bandoma iš naujo...</translation>
 <translation id="7121438501124788993">Kūrėjo režimas</translation>
@@ -6137,6 +6138,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7639914187072011620">Nepavyko gauti SAML peradresavimo URL iš serverio</translation>
 <translation id="764017888128728">„<ph name="PASSWORD_MANAGER_BRAND" />“ automatiškai prijungs jus tinkamose svetainėse naudodama išsaugotus slaptažodžius.</translation>
 <translation id="7641513591566880111">Naujas profilio pavadinimas</translation>
+<translation id="764178579712141045">Naudotojas (<ph name="USER_EMAIL" />) pridėtas</translation>
 <translation id="7642778300616172920">Slėpti neskelbtiną turinį</translation>
 <translation id="7643842463591647490">{0,plural, =1{# atidarytas langas}one{# atidarytas langas}few{# atidaryti langai}many{# atidaryto lango}other{# atidarytų langų}}</translation>
 <translation id="7643932971554933646">Leisti svetainei peržiūrėti failus?</translation>
@@ -6190,7 +6192,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7684718995427157417">Kad galėtumėte kurti ir testuoti programas, įgalinkite „Android“ derinimo tiltą (ADB). Atminkite, kad atlikus šį veiksmą bus leidžiama įdiegti „Android“ programas, kurios nebuvo patvirtintos „Google“, o norint išjungti ADB, reikės atkurti gamyklinius nustatymus.</translation>
 <translation id="7685049629764448582">„JavaScript“ atmintis</translation>
 <translation id="7685087414635069102">Reikia PIN kodo</translation>
-<translation id="768549422429443215">Pridėkite kalbų arba pertvarkykite sąrašą.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
 <translation id="7690378713476594306">Pasirinkti iš sąrašo</translation>
@@ -7201,6 +7202,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą</translation>
 <translation id="8756969031206844760">Atnaujinti slaptažodį?</translation>
 <translation id="8757090071857742562">Nepavyko perduoti stalinio kompiuterio ekrano vaizdo. Patikrinkite, ar patvirtinote raginimą pradėti bendrinti ekraną.</translation>
 <translation id="8757203080302669031">Šis skirtukas aktyviai nuskaito „Bluetooth“ įrenginius.</translation>
+<translation id="8757368836647541092">Naudotojas (<ph name="USER_NAME_OR_EMAIL" />) pašalintas</translation>
 <translation id="8758418656925882523">Įgalinti diktavimą (sakomo teksto įvedimas)</translation>
 <translation id="8759408218731716181">Negalima nustatyti kelių paskyrų</translation>
 <translation id="8759753423332885148">Sužinokite daugiau.</translation>

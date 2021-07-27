@@ -113,6 +113,7 @@
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="1754404134430936718">テキストをコピーしました</translation>
 <translation id="1772137089884020309">ブックマーク フォルダのリストは閉じています</translation>
+<translation id="1779766957982586368">ウィンドウを閉じる</translation>
 <translation id="1782483593938241562">終了日: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792959175193046959">デフォルトのダウンロード保存先はいつでも変更できます</translation>
@@ -225,6 +226,7 @@
 
 検索するには、対象の単語を長押しします。検索を絞り込むには、単語の選択範囲を変更します。パネルを開いてアイコンをタップすると、新しいタブで検索ボックスの内容を編集できます。</translation>
 <translation id="2459390580524506445">拡張音声検索</translation>
+<translation id="2461822463642141190">電流</translation>
 <translation id="247737702124049222">画像の説明をオンにしました</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="4263656433980196874">アシスタントの音声検索の同意ダイアログが画面全体に表示されています</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
-<translation id="4281359692687148179">プルダウンして更新</translation>
 <translation id="4290281343757112331">後でダウンロードしますか？</translation>
 <translation id="4296252229500326964">新しいシークレット タブ</translation>
 <translation id="4298388696830689168">リンク済みのサイト</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">リンクを共有</translation>
 <translation id="5834764604050996579">QR コードをスキャンするには、Chrome にカメラの使用を許可してください</translation>
 <translation id="5836192821815272682">Chrome のアップデートをダウンロードしています…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">一時停止中</translation>
 <translation id="5854512288214985237">統計情報と障害レポートは Google に送信されません</translation>
 <translation id="5855546874025048181">絞り込み: <ph name="REFINE_TEXT" /></translation>

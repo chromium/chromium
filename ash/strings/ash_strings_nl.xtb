@@ -346,7 +346,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
-<translation id="3712407551474845318">Gebied vastleggen</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
@@ -485,6 +484,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
 <translation id="4705716602320768426">Feedback geven</translation>
+<translation id="4730258224256997107">Help ons om dit te verbeteren.</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4734965478015604180">Horizontaal</translation>
 <translation id="4735498845456076464">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + cijfer is veranderd. Als je functietoetsen wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + een toets op de bovenste rij.</translation>
@@ -674,7 +674,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6284232397434400372">Resolutie gewijzigd</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan later opnieuw worden toegevoegd met toestemming van een ouder.</translation>
 <translation id="6291221004442998378">Wordt niet opgeladen</translation>
-<translation id="6297287540776456956">Gebruik de stylus om een gebied te selecteren</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> is gedraaid naar <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Spraak</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te tonen</translation>
@@ -699,7 +698,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="652139407789908527">Je scherm blijft langer leeg dan gebruikelijk (tot een minuut) tijdens deze update. Druk niet op de aan/uit-knop terwijl de update wordt uitgevoerd.</translation>
 <translation id="6528179044667508675">Niet storen</translation>
 <translation id="65320610082834431">Emoji's</translation>
-<translation id="6537270692134705506">Screenshot maken</translation>
 <translation id="6537924328260219877">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Er wordt gecast naar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Vraag het de beheerder</translation>

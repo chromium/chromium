@@ -113,6 +113,7 @@
 <translation id="17513872634828108">తెరిచిన ట్యాబ్‍లు</translation>
 <translation id="1754404134430936718">టెక్స్ట్ కాపీ అయింది</translation>
 <translation id="1772137089884020309">బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్ మూసివేయబడింది</translation>
+<translation id="1779766957982586368">విండోను మూసివేస్తుంది</translation>
 <translation id="1782483593938241562">ముగింపు తేదీ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
 <translation id="1792959175193046959">డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని ఎప్పుడైనా మార్చుకోండి</translation>
@@ -225,6 +226,7 @@
 
 ఏదైనా పదంపై తాకి &amp; అలాగే నొక్కి ఉంచడం ద్వారా, దానిని వెతకండి. మీ శోధనను మెరుగుపరచడానికి, మరిన్ని లేదా తక్కువ పదాలను ఎంచుకోండి. మీ శోధనను ఎడిట్ చేయడానికి, ప్యానెల్‌ను తెరిచి, చిహ్నంపై ట్యాప్ చేయడం ద్వారా కొత్త ట్యాబ్‌లో తెరిచి, శోధన పెట్టెలో మీ మార్పులు చేయండి.</translation>
 <translation id="2459390580524506445">మెరుగైన వాయిస్ సెర్చ్</translation>
+<translation id="2461822463642141190">ప్రస్తుత</translation>
 <translation id="247737702124049222">ఇమేజ్ వివరణలు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2485422356828889247">అన్ఇన్‌స్టాల్ చేయి</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
 <translation id="4263656433980196874">Assistant వాయిస్ సెర్చ్ సమ్మతి UI పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
-<translation id="4281359692687148179">రిఫ్రెష్ చేయడానికి కిందికి లాగండి</translation>
 <translation id="4290281343757112331">తర్వాత డౌన్‌లోడ్ చేయాలా?</translation>
 <translation id="4296252229500326964">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయి</translation>
 <translation id="5834764604050996579">QR కోడ్‌ను స్కాన్ చేయడం కోసం, మీ కెమెరాను ఉపయోగించడానికి Chromeను అనుమతించండి</translation>
 <translation id="5836192821815272682">Chrome అప్‌డేట్‌ను డౌన్‌లోడ్ చేస్తోంది…</translation>
+<translation id="5839058148541733625">Chrome డినో</translation>
 <translation id="5853623416121554550">పాజ్ చేయబడింది</translation>
 <translation id="5854512288214985237">గణాంకాలు లేదా క్రాష్ రిపోర్ట్‌లు ఏవీ Googleకు పంపబడవు</translation>
 <translation id="5855546874025048181">మెరుగుపరచండి: <ph name="REFINE_TEXT" /></translation>

@@ -346,7 +346,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3702846122927433391">Populacja Nigerii</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Ładuję...</translation>
-<translation id="3712407551474845318">Zrzut obszaru ekranu</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
@@ -485,6 +484,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4705716602320768426">Zgłoś opinię</translation>
+<translation id="4730258224256997107">Pomóż nam to ulepszyć.</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4735498845456076464">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + cyfra został zmieniony. Aby użyć klawiszy funkcyjnych, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + klawisz w górnym rzędzie.</translation>
@@ -674,7 +674,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6284232397434400372">Rozdzielczość została zmieniona</translation>
 <translation id="6288235558961782912">Adres <ph name="USER_EMAIL_ADDRESS" /> będzie można dodać ponownie później po uzyskaniu zgody rodzica.</translation>
 <translation id="6291221004442998378">Nie ładuje się</translation>
-<translation id="6297287540776456956">Zaznacz obszar rysikiem</translation>
 <translation id="6310121235600822547">Wyświetlacz <ph name="DISPLAY_NAME" /> został obrócony na <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Głos</translation>
 <translation id="6330012934079202188">Pokazuję okna ze wszystkich biurek, naciśnij klawisz strzałki w górę, aby wyświetlić okna z aktualnego biurka</translation>
@@ -699,7 +698,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="652139407789908527">Podczas aktualizacji ekran wygaśnie na dłuższą chwilę (do minuty). W tym czasie nie naciskaj przycisku zasilania.</translation>
 <translation id="6528179044667508675">Nie przeszkadzać</translation>
 <translation id="65320610082834431">Emotikony</translation>
-<translation id="6537270692134705506">Zrzut całego ekranu</translation>
 <translation id="6537924328260219877">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Przesyłam do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">Poproś administratora</translation>

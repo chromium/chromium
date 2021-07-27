@@ -346,7 +346,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3702846122927433391">Populiacija Nigerijoje</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
-<translation id="3712407551474845318">Užfiksuoti sritį</translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
 <translation id="3713734891607377840">Baigus atidaryti</translation>
 <translation id="3742055079367172538">Ekrano kopija padaryta</translation>
@@ -485,6 +484,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
 <translation id="4702647871202761252">Privatumo ekranas išjungtas</translation>
 <translation id="4705716602320768426">Pateikti atsiliepimų</translation>
+<translation id="4730258224256997107">Padėkite tai patobulinti!</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
 <translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="4735498845456076464">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + skaičiaus klavišas. Jei norite naudoti funkcijų klavišus, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + klavišą viršutinėje eilutėje.</translation>
@@ -674,7 +674,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6284232397434400372">Skyra pakeista</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> galima pridėti iš naujo vėliau, gavus tėvų leidimą.</translation>
 <translation id="6291221004442998378">Nekraunama</translation>
-<translation id="6297287540776456956">Naudodami rašiklį pasirinkite sritį</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> pakeista į <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Balsas</translation>
 <translation id="6330012934079202188">Rodomi visų darbastalių langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi dabartinio darbastalio langai</translation>
@@ -699,7 +698,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="652139407789908527">Vykstant šiam atnaujinimui ekranas gali būti tuščias ilgiau nei įprastai (iki minutės). Nespauskite maitinimo mygtuko, kol vyksta atnaujinimas.</translation>
 <translation id="6528179044667508675">Netrukdyti</translation>
 <translation id="65320610082834431">Jaustukai</translation>
-<translation id="6537270692134705506">Užfiksuoti ekrano vaizdą</translation>
 <translation id="6537924328260219877">Signalo stiprumas <ph name="SIGNAL_STRENGTH" />, telefono akumuliatorius <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Perduodama į „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6559976592393364813">Klausti administratoriaus</translation>

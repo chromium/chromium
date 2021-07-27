@@ -530,6 +530,7 @@
 <translation id="156793199942386351">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
 <translation id="1568323446248056064">Открыть настройки экрана</translation>
+<translation id="1571738973904005196">Перейти на вкладку: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гость)</translation>
 <translation id="1572266655485775982">Включить Wi-Fi</translation>
 <translation id="1572876035008611720">Эл. почта</translation>
@@ -2186,7 +2187,6 @@
 <translation id="3308852433423051161">Загрузка Google Ассистента…</translation>
 <translation id="3309330461362844500">Идентификатор сертификата</translation>
 <translation id="3311445899360743395">Данные, связанные с этим приложением, могут быть удалены с устройства.</translation>
-<translation id="3312424061798279731">Добавленные языки</translation>
 <translation id="3313622045786997898">Значение подписи сертификата</translation>
 <translation id="3313950410573257029">Проверить подключение</translation>
 <translation id="3315158641124845231">Скрыть <ph name="PRODUCT_NAME" /></translation>
@@ -5104,6 +5104,7 @@
 <translation id="6521214596282732365">Обычно сайты используют ваши шрифты, чтобы вы могли создавать контент высокого качества с помощью онлайн-инструментов для дизайна и графики.</translation>
 <translation id="652492607360843641">Вы подключены к следующему типу сети: <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Поделиться</translation>
+<translation id="6528179044667508675">Не беспокоить</translation>
 <translation id="652948702951888897">История Chrome</translation>
 <translation id="6530186581263215931">Эти настройки определяются администратором</translation>
 <translation id="6531282281159901044">Сохранить</translation>
@@ -5378,7 +5379,6 @@
 <translation id="6833479554815567477">Вкладка удалена из группы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Перейдите на умный и безопасный браузер</translation>
 <translation id="6834652994408928492">Тёмная тема автоматически включается на закате</translation>
-<translation id="683540480453879381">открывать файлы <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6838034009068684089">Запрашивать разрешение на открытие и размещение сайтами окон на экранах (рекомендуется)</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
@@ -5644,6 +5644,7 @@
 <translation id="7117247127439884114">Войти снова</translation>
 <translation id="711840821796638741">Показать управляемые закладки</translation>
 <translation id="711902386174337313">Доступ к списку устройств, на которых выполнен вход</translation>
+<translation id="711985611146095797">На этой странице можно управлять аккаунтами Google, в которые вы вошли. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">При отсутствии VPN-подключения блокируется трафик в браузере Chrome и на устройстве Android</translation>
 <translation id="7120865473764644444">Ошибка синхронизации: отсутствует подключение к серверу. Повторная попытка…</translation>
 <translation id="7121438501124788993">Режим разработчика</translation>
@@ -6118,6 +6119,7 @@
 <translation id="7639914187072011620">Не удалось получить URL переадресации SAML с сервера</translation>
 <translation id="764017888128728">С помощью <ph name="PASSWORD_MANAGER_BRAND" /> вы будете автоматически входить на сайты, для которых сохранили пароли.</translation>
 <translation id="7641513591566880111">Новое название профиля</translation>
+<translation id="764178579712141045">Пользователь <ph name="USER_EMAIL" /> добавлен</translation>
 <translation id="7642778300616172920">Скрыть конфиденциальные данные</translation>
 <translation id="7643842463591647490">{0,plural, =1{Открыто # окно}one{Открыто # окно}few{Открыто # окна}many{Открыто # окон}other{Открыто # окна}}</translation>
 <translation id="7643932971554933646">Разрешить сайту доступ для просмотра файлов?</translation>
@@ -6171,7 +6173,6 @@
 <translation id="7684718995427157417">Чтобы создавать и тестировать приложения, включите Android Debug Bridge (ADB). Обратите внимание, что это позволит устанавливать приложения для Android, которые не были проверены системами Google. Для отключения инструмента потребуется сбросить настройки устройства до заводских.</translation>
 <translation id="7685049629764448582">Память JavaScript</translation>
 <translation id="7685087414635069102">Требуется PIN-код</translation>
-<translation id="768549422429443215">Добавьте языки или измените порядок их расположения.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7690378713476594306">Выбрать из списка</translation>
@@ -7181,6 +7182,7 @@
 <translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8757090071857742562">Невозможно транслировать содержимое рабочего стола. Убедитесь, что вы открыли доступ к экрану.</translation>
 <translation id="8757203080302669031">На этой вкладке выполняется активный поиск устройств Bluetooth.</translation>
+<translation id="8757368836647541092">Пользователь <ph name="USER_NAME_OR_EMAIL" /> удален</translation>
 <translation id="8758418656925882523">Включить голосовой ввод (преобразование речи в текст)</translation>
 <translation id="8759408218731716181">Не удалось настроить множественный вход</translation>
 <translation id="8759753423332885148">Подробнее…</translation>

@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Öppna flikar</translation>
 <translation id="1754404134430936718">Texten har kopierats</translation>
 <translation id="1772137089884020309">Listan över bokmärkesmappar är stängd</translation>
+<translation id="1779766957982586368">Stäng fönstret</translation>
 <translation id="1782483593938241562">Slutdatum <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792959175193046959">Ändra standardplats för nedladdningar när som helst</translation>
@@ -225,6 +226,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 
 Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att välja fler eller färre ord. Om du vill redigera sökningen öppnar du panelen, trycker på ikonen för att skapa en ny flik och ändrar i sökrutan.</translation>
 <translation id="2459390580524506445">Förbättrad röstsökning</translation>
+<translation id="2461822463642141190">Nuvarande</translation>
 <translation id="247737702124049222">Bildbeskrivningar har aktiverats</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2485422356828889247">Avinstallera</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
 <translation id="4263656433980196874">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över hela skärmen</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
-<translation id="4281359692687148179">Dra ned när du vill uppdatera</translation>
 <translation id="4290281343757112331">Vill du ladda ned senare i stället?</translation>
 <translation id="4296252229500326964">Ny inkognitoflik</translation>
 <translation id="4298388696830689168">Länkade webbplatser</translation>
@@ -750,6 +751,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5834764604050996579">Tillåt att Chrome använder kameran om du vill skanna en QR-kod.</translation>
 <translation id="5836192821815272682">Uppdatering för Chrome laddas ned …</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">pausad</translation>
 <translation id="5854512288214985237">Varken statistik eller felrapporter skickas till Google</translation>
 <translation id="5855546874025048181">Finjustera: <ph name="REFINE_TEXT" /></translation>

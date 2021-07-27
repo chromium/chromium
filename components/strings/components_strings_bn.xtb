@@ -699,6 +699,7 @@
 <translation id="3432601291244612633">পৃষ্ঠা বন্ধ করুন</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3438829137925142401">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করুন</translation>
+<translation id="3440783957068352691">বর্গাকার</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">এই ডিভাইসের মালিক ডাইনোসর গেমটি বন্ধ করেছেন৷</translation>
 <translation id="3447884698081792621">সার্টিফিকেট দেখান (<ph name="ISSUER" /> এর দ্বারা জারি করা)</translation>
@@ -868,6 +869,7 @@
 <translation id="4067947977115446013">সঠিক ঠিকানা যোগ করুন</translation>
 <translation id="4072193657607981494">নীতি লোড হচ্ছে</translation>
 <translation id="4072486802667267160">আপনার অর্ডার প্রক্রিয়া করার সময় একটি সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
+<translation id="4073797364926776829">কার্ড দেখুন</translation>
 <translation id="4075732493274867456">ক্লায়েন্ট ও সার্ভারটি কোনো অভিন্ন SSL প্রোটোকল সংস্করণ বা সাইফার স্যুট সমর্থন করে না।</translation>
 <translation id="4075941231477579656">টাচ আইডি</translation>
 <translation id="4079302484614802869">প্রক্সি কনফিগারেশনটি .pac স্ক্রিপ্ট URL-এ ব্যবহার করাতে সেট থাকে স্থির প্রক্সি সার্ভারগুলিতে নয়৷</translation>
@@ -1368,6 +1370,7 @@
 <translation id="5759751709240058861">আপনার ক্যামেরা ব্যবহার করুন এবং সরান</translation>
 <translation id="5763042198335101085">একটি সঠিক ইমেল আইডি লিখুন</translation>
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>
+<translation id="57689295674415555">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি?</translation>
 <translation id="5776313857861697733">অগ্রাধিকার</translation>
 <translation id="5778550464785688721">MIDI ডিভাইসসমূহ পূর্ণ নিয়ন্ত্রণ</translation>
 <translation id="5781136890105823427">এক্সপেরিমেন্ট চালু করা হয়েছে</translation>

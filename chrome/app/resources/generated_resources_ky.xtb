@@ -2200,7 +2200,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3308852433423051161">Google Жардамчы жүктөлүүдө…</translation>
 <translation id="3309330461362844500">Тастыктама профилинин идентификатору</translation>
 <translation id="3311445899360743395">Бул колдонмого байланыштуу маалымат бул түзмөктөн өчүрүлүшү мүмкүн.</translation>
-<translation id="3312424061798279731">Кошулган тилдер</translation>
 <translation id="3313622045786997898">Тастыктама колтамгасынын мааниси</translation>
 <translation id="3313950410573257029">Туташууну текшерүү</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> жашыруу</translation>
@@ -5119,6 +5118,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6521214596282732365">Адатта сайттар сиздин ариптерди колдонот, андыктан онлайн жасалга жана графика куралдары менен жогорку тактыктагы мазмунду түзө аласыз</translation>
 <translation id="652492607360843641"><ph name="NETWORK_TYPE" /> тармагына туташып турасыз.</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
+<translation id="6528179044667508675">Тынчымды алба</translation>
 <translation id="652948702951888897">Chrome таржымалы</translation>
 <translation id="6530186581263215931">Бул жөндөөлөрдү администраторуңуз күчүнө киргизген</translation>
 <translation id="6531282281159901044">Бул коркунучтуу файл сакталсын</translation>
@@ -5393,7 +5393,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6833479554815567477">Өтмөк төмөнкү топтон өчүрүлдү: <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Шамдагай жана коопсуз серепчиге которулуу</translation>
 <translation id="6834652994408928492">Караңгы тема күн батканда автоматтык түрдө күйөт</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> файлдарын ачуу</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> түзмөгүңүздү жаңыртуу үчүн сырсөзүңүздү кайра киргизиңиз.</translation>
 <translation id="6838034009068684089">Сайт терезени ачып, экрандарыңызга жайгаштырганы жатканда уруксат суралсын (сунушталат)</translation>
 <translation id="6839225236531462745">Тастыктаманы жок кылуу катасы</translation>
@@ -6186,7 +6185,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7684718995427157417">Колдонмолорду түзүп, сыноо үчүн Android Debug Bridge (ADB) куралын иштетиңиз. Бул аракет Google тарабынан текшерилбеген Android колдонмолорун орнотууга уруксат берет. Аларды өчүрүү үчүн түзмөктү баштапкы абалга кайтаруу керек болот.</translation>
 <translation id="7685049629764448582">JavaScript эстутуму</translation>
 <translation id="7685087414635069102">PIN код талап кылынат</translation>
-<translation id="768549422429443215">Тилдерди кошуңуз же тизмени иреттеңиз.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7690378713476594306">Тизмеден тандаңыз</translation>

@@ -327,7 +327,7 @@
 <translation id="2102495993840063010">Android 应用</translation>
 <translation id="2107021941795971877">打印方面的支持</translation>
 <translation id="2108755909498034140">重新启动计算机</translation>
-<translation id="2111166930115883695">按空格键即可播放</translation>
+<translation id="2111166930115883695">按空格键即可开始游戏</translation>
 <translation id="2111256659903765347">Super-A</translation>
 <translation id="2112529237938317174">显示权限详情</translation>
 <translation id="2113977810652731515">信用卡</translation>
@@ -692,6 +692,7 @@
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3438829137925142401">使用您 Google 帐号中保存的密码</translation>
+<translation id="3440783957068352691">方形</translation>
 <translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
@@ -858,6 +859,7 @@
 <translation id="4067947977115446013">添加有效地址</translation>
 <translation id="4072193657607981494">正在加载政策</translation>
 <translation id="4072486802667267160">处理您的订单时出错。请重试。</translation>
+<translation id="4073797364926776829">查看卡</translation>
 <translation id="4075732493274867456">客户端和服务器不支持一般 SSL 协议版本或加密套件。</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">代理配置已设置为使用 .pac 脚本网址，而不是固定的代理服务器。</translation>
@@ -1354,6 +1356,7 @@
 <translation id="5759751709240058861">使用和移动您的摄像头</translation>
 <translation id="5763042198335101085">请输入有效的电子邮件地址</translation>
 <translation id="5765072501007116331">要查看递送方式和要求，请选择相应地址</translation>
+<translation id="57689295674415555">未填充虚拟卡号？</translation>
 <translation id="5776313857861697733">优先级</translation>
 <translation id="5778550464785688721">完全控制 MIDI 设备</translation>
 <translation id="5781136890105823427">已启用实验</translation>

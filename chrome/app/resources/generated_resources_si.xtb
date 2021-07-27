@@ -2189,7 +2189,6 @@
 <translation id="3308852433423051161">Google සහායක පූරණය කරමින්...</translation>
 <translation id="3309330461362844500">සහතික පැතිකඩ ID</translation>
 <translation id="3311445899360743395">මෙම යෙදුම සමඟ සම්බන්ධ දත්ත මෙම උපාංගයෙන් ඉවත් කළ හැක.</translation>
-<translation id="3312424061798279731">භාෂා සබල කරන ලදි</translation>
 <translation id="3313622045786997898">අත්සන් අගය සහතික කරන්න</translation>
 <translation id="3313950410573257029">සම්බන්ධතාව පරීක්ෂා කරන්න</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> සඟවන්න</translation>
@@ -5107,6 +5106,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6521214596282732365">අඩවි සාමාන්‍යයෙන් ඔබගේ ෆොන්ට භාවිත කරන බැවින් ඔබට සබැඳි සැලසුම් සහ චිත්‍රක මෙවලම් සමඟ අත්‍යනුකූල අන්තර්ගතය තැනිය හැකිය</translation>
 <translation id="652492607360843641">ඔබ <ph name="NETWORK_TYPE" /> ජාලයකට සම්බන්ධ වී සිටියි.</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
+<translation id="6528179044667508675">බාධා නොකරන්න</translation>
 <translation id="652948702951888897">Chrome ඉතිහාසය</translation>
 <translation id="6530186581263215931">මෙම සැකසුම් ඔබේ පරිපාලක විසින් බලාත්මක කොට ඇත.</translation>
 <translation id="6531282281159901044">අනතුරුදායක ගොනුව තබා ගන්න</translation>
@@ -5381,7 +5381,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6833479554815567477">ටැබය <ph name="GROUP_NAME" /> සමූහය වෙතින් ගෙන යන ලදි - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">බුද්ධිමත් සහ සුරක්ෂිත බ්‍රව්සරයකට මාරු වන්න</translation>
 <translation id="6834652994408928492">හිරු බැසීමේදී අඳුරු ප්‍රකාරය ස්වයංක්‍රියව ක්‍රියාවිරහිත කරනු ඇත</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> ගොනු විවෘත කරන්න</translation>
 <translation id="6835762382653651563">ඔබේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීමට කරුණාකර අන්තර්ජාලය වෙත සබඳින්න.</translation>
 <translation id="6838034009068684089">අඩවියකට ඔබේ තිර මත windows විවෘත කිරීමට සහ තැබීමට අවශ්‍ය වූ විට අසන්න (නිර්දේශිතයි)</translation>
 <translation id="6839225236531462745">සහතික මකාදැමීම් දෝශය</translation>
@@ -6176,7 +6175,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7684718995427157417">ඔබේ යෙදුම් සෑදීමට සහ පරීක්‍ෂා කිරීමට, Android Debug Bridge (ADB) සබල කරන්න. මෙම ක්‍රියාව Google විසින් සත්‍යාපිත නොවන Android යෙදුම් ස්ථාපන කිරීමට ඉඩ දෙන අතර, අබල කිරීමට කර්මාන්තශාලා යළි සැකසුමක් අවශ්‍ය වන බව සලකන්න.</translation>
 <translation id="7685049629764448582">JavaScript මතකය</translation>
 <translation id="7685087414635069102">රහස් අංකය අවශ්‍යයි</translation>
-<translation id="768549422429443215">භාෂා එක් කරන්න හෝ ලැයිස්තුව යළි පෙළගස්වන්න.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> <ph name="DEVICE_PATH" /></translation>
 <translation id="7690294790491645610">නව මුරපදය තහවුරු කරන්න</translation>
 <translation id="7690378713476594306">ලැයිස්තුවෙන් තෝරා ගන්න</translation>

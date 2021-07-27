@@ -530,6 +530,7 @@
 <translation id="156793199942386351">سبق وتم تخصيص مفتاح "<ph name="CURRENTKEY" />" للإجراء "<ph name="ACTION" />". يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏وحدة تحكم JavaScript</translation>
 <translation id="1568323446248056064">فتح إعدادات الجهاز للعرض</translation>
+<translation id="1571738973904005196">عرض علامة التبويب <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (وضع الضيف)</translation>
 <translation id="1572266655485775982">‏تفعيل شبكة Wi-Fi</translation>
 <translation id="1572876035008611720">أدخل بريدك الإلكتروني</translation>
@@ -2182,7 +2183,6 @@
 <translation id="3308852433423051161">‏جارٍ تحميل مساعد Google...</translation>
 <translation id="3309330461362844500">رقم تعريف نموذج الشهادة</translation>
 <translation id="3311445899360743395">قد تتم إزالة البيانات المرتبطة بهذا التطبيق من الجهاز.</translation>
-<translation id="3312424061798279731">اللغات التي تم تفعيلها</translation>
 <translation id="3313622045786997898">قيمة توقيع الشهادة</translation>
 <translation id="3313950410573257029">التحقّق من الاتصال بالإنترنت</translation>
 <translation id="3315158641124845231">إخفاء <ph name="PRODUCT_NAME" /></translation>
@@ -5079,6 +5079,7 @@
 <translation id="6521214596282732365">تستخدِم المواقع الإلكترونية عادةً أشكال الخط من جهازك للسماح لك بإنشاء محتوى عالي الدقة باستخدام أدوات التصميم والرسم على الإنترنت.</translation>
 <translation id="652492607360843641">أنت متصل بشبكة من نوع <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">مشاركة</translation>
+<translation id="6528179044667508675">عدم الإزعاج</translation>
 <translation id="652948702951888897">‏سجل Chrome</translation>
 <translation id="6530186581263215931">فرض مشرفك هذه الإعدادات</translation>
 <translation id="6531282281159901044">الاحتفاظ بالملف الضار</translation>
@@ -5348,7 +5349,6 @@
 <translation id="6833479554815567477">تمت إزالة علامة التبويب من المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="683373380308365518">التبديل إلى متصفح ذكي وآمن</translation>
 <translation id="6834652994408928492">سيتم تفعيل الوضع المُعتِم تلقائيًا عند غروب الشمس.</translation>
-<translation id="683540480453879381">فتح ملفات <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">السؤال عند محاولة موقع إلكتروني فتح النوافذ ووضعها على شاشتك (إعداد مُستحسَن)</translation>
 <translation id="6839225236531462745">خطأ حذف الشهادة</translation>
@@ -5614,6 +5614,7 @@
 <translation id="7117247127439884114">تسجيل الدخول مرة أخرى...</translation>
 <translation id="711840821796638741">عرض الإشارات المرجعية المدارة</translation>
 <translation id="711902386174337313">الاطّلاع على قائمة بالأجهزة التي سجلت الدخول</translation>
+<translation id="711985611146095797">‏تتيح لك هذه الصفحة إدارة حساباتك على Google التي تم تسجيل الدخول إليها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">‏سيتم حظر متصفِّح Chrome وزيارات Android حتى يتم الاتصال بشبكة افتراضية خاصة (VPN)</translation>
 <translation id="7120865473764644444">تعذر الاتصال بخادم المزامنة. جارٍ إعادة المحاولة...</translation>
 <translation id="7121438501124788993">وضع مطوِّر البرامج</translation>
@@ -6086,6 +6087,7 @@
 <translation id="7639914187072011620">‏تعذَّر جلب عنوان URL لإعادة التوجيه وفقًا لمعيار SAML من الخادم.</translation>
 <translation id="764017888128728">يعمل <ph name="PASSWORD_MANAGER_BRAND" /> على تسجيل دخولك تلقائيًا إلى المواقع المؤهلة باستخدام كلمات المرور التي حفظتها.</translation>
 <translation id="7641513591566880111">اسم الملف الشخصي الجديد</translation>
+<translation id="764178579712141045">تمت إضافة <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">إخفاء المحتوى الحسّاس</translation>
 <translation id="7643842463591647490">{0,plural, =1{هناك نافذة واحدة مفتوحة (#).}zero{هناك # نافذة مفتوحة.}two{هناك نافذتان مفتوحتان (#).}few{هناك # نوافذ مفتوحة.}many{هناك # نافذة مفتوحة.}other{هناك # نافذة مفتوحة.}}</translation>
 <translation id="7643932971554933646">هل تسمح للموقع الإلكتروني بعرض الملفات؟</translation>
@@ -6138,7 +6140,6 @@
 <translation id="7684718995427157417">‏لإنشاء تطبيقاتك واختبارها، فعِّل (Android Debug Bridge (ADB. تجدر الإشارة إلى أنه يسمح هذا الإجراء بتثبيت تطبيقات متوافقة مع Android لم يتم إثبات ملكيتها من خلال Google، ويتطلب إعادة الضبط على الإعدادات الأصلية للإيقاف.</translation>
 <translation id="7685049629764448582">‏ذاكرة JavaScript</translation>
 <translation id="7685087414635069102">رقم التعريف الشخصي مطلوب</translation>
-<translation id="768549422429443215">يمكنك إضافة اللغات أو إعادة ترتيب القائمة.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7690378713476594306">اختيار من القائمة</translation>
@@ -7140,6 +7141,7 @@
 <translation id="8756969031206844760">هل تريد تحديث كلمة المرور؟</translation>
 <translation id="8757090071857742562">يتعذر إرسال سطح المكتب. يُرجى التحقق لمعرفة ما إذا كنت أكدت المطالبة لبدء مشاركة الشاشة.</translation>
 <translation id="8757203080302669031">تبحث علامة التبويب هذه بشكل نشط عن أجهزة تتضمّن بلوتوث.</translation>
+<translation id="8757368836647541092">تمت إزالة <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">تفعيل الإملاء (التحدُّث للكتابة)</translation>
 <translation id="8759408218731716181">يتعذر إعداد الدخول المتعدد</translation>
 <translation id="8759753423332885148">معرفة المزيد.</translation>

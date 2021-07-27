@@ -529,6 +529,7 @@
 <translation id="156793199942386351">ມີການມອບໝາຍ '<ph name="CURRENTKEY" />' ໃສ່ຄຳສັ່ງ '<ph name="ACTION" />' ຢູ່ກ່ອນແລ້ວ. ກົດປຸ່ມໃດກໍໄດ້ເພື່ອ <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">ເປີດການຕັ້ງຄ່າອຸປະກອນສະແດງຜົນ</translation>
+<translation id="1571738973904005196">ເບິ່ງແຖບ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ແຂກ)</translation>
 <translation id="1572266655485775982">ເປີດນຳໃຊ້ Wi-Fi</translation>
 <translation id="1572876035008611720">ກະ​ລຸ​ນາ​ໃສ່​ອີ​ເມວ​ຂອງ​ທ່ານ</translation>
@@ -2197,7 +2198,6 @@
 <translation id="3308852433423051161">ກຳລັງໂຫຼດຜູ້ຊ່ວຍ Google...</translation>
 <translation id="3309330461362844500">ID ໂປຣໄຟລ໌ໃບຮັບຮອງ</translation>
 <translation id="3311445899360743395">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ອາດຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
-<translation id="3312424061798279731">ພາ​ສາ​ເປີດ​ໃຊ້​ງານ​ແລ້ວ</translation>
 <translation id="3313622045786997898">ຄ່າລາຍເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="3313950410573257029">ກະລຸນາກວດສອບການເຊື່ອມຕໍ່</translation>
 <translation id="3315158641124845231">ເຊື່ອງ <ph name="PRODUCT_NAME" /></translation>
@@ -5116,6 +5116,7 @@
 <translation id="6521214596282732365">ປົກກະຕິເວັບໄຊຕ່າງໆຈະໃຊ້ຟອນຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດສ້າງເນື້ອຫາຄວາມຖືກຕ້ອງສູງດ້ວຍການອອກແບບອອນລາຍ ແລະ ເຄື່ອງມືກຣາຟິກໄດ້</translation>
 <translation id="652492607360843641">ທ່ານເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
+<translation id="6528179044667508675">ຢ່າລົບ​ກວນ</translation>
 <translation id="652948702951888897">ປະຫວັດ Chrome</translation>
 <translation id="6530186581263215931">ການຕັ້ງຄ່າເຫຼົ່ານີ້ຖືກບັງຄັບໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6531282281159901044">ຮັກສາໄຟລ໌ອັນຕະລາຍໄວ້</translation>
@@ -5390,7 +5391,6 @@
 <translation id="6833479554815567477">ລຶບແຖບອອກຈາກກຸ່ມ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="683373380308365518">ປ່ຽນເປັນໂປຣແກຣມທ່ອງເວັບທີ່ສະຫຼາດ ແລະ ປອດໄພ</translation>
 <translation id="6834652994408928492">ໂໝດມືດຈະເປີດອັດຕະໂນມັດເມື່ອຕາເວັນຕົກ</translation>
-<translation id="683540480453879381">ເປີດໄຟລ໌ <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ.</translation>
 <translation id="6838034009068684089">ຖາມເມື່ອເວັບໄຊຕ້ອງການເປີດ ແລະ ວາງໜ້າຈໍໃສ່ໃນໜ້າຈໍຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="6839225236531462745">ການລຶບໃບຢັ້ງຢືນຜິດພາດ</translation>
@@ -5656,6 +5656,7 @@
 <translation id="7117247127439884114">ລົງຊື່ເຂົ້າ​ໃຊ້ອີກ...</translation>
 <translation id="711840821796638741">ສະ​ແດງ​ບຸກມາກສ໌ທີ່​ຄຸ້ມ​ຄອງແລ້ວ</translation>
 <translation id="711902386174337313">ອ່ານລາຍຊື່ຂອງອຸປະກອນທີ່ໄດ້ລົງຊື່ເຂົ້າໃຊ້ຂອງທ່ານ</translation>
+<translation id="711985611146095797">ໜ້ານີ້ອະນຸຍາດໃຫ້ທ່ານຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບແລ້ວຂອງທ່ານໄດ້. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">ໂປຣແກຣມທ່ອງເວັບ Chrome ແລະ ທຣາບຟິກ Android ຈະຖືກບລັອກໄວ້ເວັ້ນເສຍແຕ່ຈະເຊື່ອມຕໍ່ VPN</translation>
 <translation id="7120865473764644444">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີການຊິ້ງຂໍ້ມູນໄດ້. ກຳລັງລອງໃໝ່...</translation>
 <translation id="7121438501124788993">ໂໝດຜູ້ພັດທະນາ</translation>
@@ -6130,6 +6131,7 @@
 <translation id="7639914187072011620">ໂຫຼດການປ່ຽນເສັ້ນທາງ SAML ຈາກເຊີບເວີບໍ່ສຳເລັດ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ນຳທ່ານເຂົ້າສູ່ລະບົບເວັບໄຊທີ່ມີສິດໂດຍອັດຕະໂນມັດດ້ວຍລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄວ້.</translation>
 <translation id="7641513591566880111">ຊື່ໂປຣໄຟລ໌ໃໝ່</translation>
+<translation id="764178579712141045">ເພີ່ມ <ph name="USER_EMAIL" /> ແລ້ວ</translation>
 <translation id="7642778300616172920">ເຊື່ອງເນື້ອຫາທີ່ລະອຽດອ່ອນ</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ໜ້າຈໍເປີດຢູ່}other{# ໜ້າຈໍເປີດຢູ່}}</translation>
 <translation id="7643932971554933646">ອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງໄຟລ໌ບໍ?</translation>
@@ -6183,7 +6185,6 @@
 <translation id="7684718995427157417">ເພື່ອສ້າງ ແລະ ທົດສອບແອັບຂອງທ່ານ, ກະລຸນາເປີດນຳໃຊ້ຂົວຕໍ່ແກ້ໄຂບັນຫາ Android (ADB). ກະລຸນາຮັບຊາບວ່າການດຳເນີນການນີ້ອະນຸຍາດການຕິດຕັ້ງແອັບ Android ທີ່ບໍ່ໄດ້ຜ່ານການກວດຢັ້ງຢືນຈາກ Google ແລະ ຈຳເປັນຕ້ອງຣີເຊັດເປັນຄ່າໂຮງງານເພື່ອປິດນຳໃຊ້.</translation>
 <translation id="7685049629764448582">ຄວາມ​ຈໍາ JavaScript</translation>
 <translation id="7685087414635069102">ຈໍາເປັນຕ້ອງມີ PIN</translation>
-<translation id="768549422429443215">ເພີ່ມພາສາ ຫຼື ຈັດລຳດັບລາຍການໃໝ່.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
 <translation id="7690378713476594306">ເລືອກຈາກລາຍການ</translation>
@@ -7192,6 +7193,7 @@
 <translation id="8756969031206844760">ອັບເດດລະຫັດຜ່ານບໍ?</translation>
 <translation id="8757090071857742562">ບໍ່ສາມາດສົ່ງສັນຍານເດັກສະທັອບໄດ້.  ກວດເບິ່ງວ່າທ່ານໄດ້ຢືນຢັນການເຕືອນເພື່ອເລີ່ມການແບ່ງປັນໜ້າຈໍຂອງທ່ານແລ້ວ.</translation>
 <translation id="8757203080302669031">ແຖບນີ້ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth ຢ່າງຈິງຈັງ.</translation>
+<translation id="8757368836647541092">ລຶບ <ph name="USER_NAME_OR_EMAIL" /> ອອກແລ້ວ</translation>
 <translation id="8758418656925882523">ເປີດນຳໃຊ້ການພິມຕາມຄຳບອກ (ເວົ້າໃຫ້ພິມ)</translation>
 <translation id="8759408218731716181">ບໍ່ສາມາດຕັ້ງລົງຊື່ເຂົ້າ​ໃຊ້ຫຼາຍອັນໄດ້</translation>
 <translation id="8759753423332885148">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ​.</translation>

@@ -346,7 +346,6 @@
 <translation id="3702846122927433391">尼日利亚的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">正在加载...</translation>
-<translation id="3712407551474845318">获取区域截图</translation>
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3713734891607377840">下载完成后打开</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
@@ -674,7 +673,6 @@
 <translation id="6284232397434400372">分辨率已更改</translation>
 <translation id="6288235558961782912">日后在获得家长允许的情况下可以重新添加 <ph name="USER_EMAIL_ADDRESS" />。</translation>
 <translation id="6291221004442998378">未在充电</translation>
-<translation id="6297287540776456956">使用触控笔选择一个区域</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" />已旋转为<ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">语音</translation>
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
@@ -699,7 +697,6 @@
 <translation id="652139407789908527">在此次更新期间，您的屏幕变为空白的时间会比平时长（可长达 1 分钟）。在更新过程中，请不要按电源按钮。</translation>
 <translation id="6528179044667508675">请勿打扰</translation>
 <translation id="65320610082834431">表情符号</translation>
-<translation id="6537270692134705506">获取屏幕截图</translation>
 <translation id="6537924328260219877">信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">正在投射到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6559976592393364813">询问您的管理员</translation>

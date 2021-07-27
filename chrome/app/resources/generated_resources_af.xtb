@@ -2201,7 +2201,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3308852433423051161">Laai tans Google Assistent …</translation>
 <translation id="3309330461362844500">Sertifikaatprofiel-ID</translation>
 <translation id="3311445899360743395">Data wat met hierdie program geassosieer word, kan van hierdie toestel verwyder word.</translation>
-<translation id="3312424061798279731">Geaktiveerde tale</translation>
 <translation id="3313622045786997898">Sertifikaat-handtekeningwaarde</translation>
 <translation id="3313950410573257029">Gaan verbinding na</translation>
 <translation id="3315158641124845231">Versteek <ph name="PRODUCT_NAME" /></translation>
@@ -5121,6 +5120,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6521214596282732365">Werwe gebruik gewoonlik jou lettertipes sodat jy hoëtrou-inhoud met aanlyn ontwerp- en grafiese nutsgoed kan skep</translation>
 <translation id="652492607360843641">Jy is aan 'n <ph name="NETWORK_TYPE" />-netwerk gekoppel.</translation>
 <translation id="6527303717912515753">Deel</translation>
+<translation id="6528179044667508675">Moenie Steur Nie</translation>
 <translation id="652948702951888897">Chrome-geskiedenis</translation>
 <translation id="6530186581263215931">Hierdie instellings word deur jou administrateur afgedwing</translation>
 <translation id="6531282281159901044">Hou gevaarlike lêer</translation>
@@ -5395,7 +5395,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6833479554815567477">Oortjie is verwyder uit groep <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Wissel na 'n slim en veilige blaaier</translation>
 <translation id="6834652994408928492">Donkermodus sal outomaties met sonsondergang aanskakel</translation>
-<translation id="683540480453879381">Maak <ph name="FILE_EXTENSIONS" />-lêers oop</translation>
 <translation id="6835762382653651563">Koppel aan die internet om jou <ph name="DEVICE_TYPE" /> op te dateer.</translation>
 <translation id="6838034009068684089">Vra wanneer 'n werf vensters op jou skerms wil oopmaak en plaas (aanbeveel)</translation>
 <translation id="6839225236531462745">Sertifikaat-uitveefout</translation>
@@ -6190,7 +6189,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7684718995427157417">Aktiveer die Android-ontfoutingsbrug (ADB) om jou programme te skep en te toets. Let daarop dat hierdie handeling dit moontlik maak om Android-programme te installeer wat nie deur Google geverifieer is nie, en 'n fabriekterugstelling is nodig om dit te deaktiveer.</translation>
 <translation id="7685049629764448582">JavaScript-geheue</translation>
 <translation id="7685087414635069102">PIN word vereis</translation>
-<translation id="768549422429443215">Voeg tale by of herrangskik lys.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Bevestig nuwe wagwoord</translation>
 <translation id="7690378713476594306">Kies uit lys</translation>

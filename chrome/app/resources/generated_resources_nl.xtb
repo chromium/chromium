@@ -528,6 +528,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is al toegewezen aan de actie '<ph name="ACTION" />'. Druk op een willekeurige toets om <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-console</translation>
 <translation id="1568323446248056064">Weergave-instellingen van apparaat openen</translation>
+<translation id="1571738973904005196">Tabblad bekijken: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (gast)</translation>
 <translation id="1572266655485775982">Wifi aanzetten</translation>
 <translation id="1572876035008611720">Geef je e-mailadres op</translation>
@@ -2184,7 +2185,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3308852433423051161">Google Assistent laden...</translation>
 <translation id="3309330461362844500">ID van certificaatprofiel</translation>
 <translation id="3311445899360743395">Gegevens die zijn gekoppeld aan deze app, worden mogelijk verwijderd van dit apparaat.</translation>
-<translation id="3312424061798279731">Aangezette talen</translation>
 <translation id="3313622045786997898">Handtekeningwaarde van certificaat</translation>
 <translation id="3313950410573257029">Verbinding checken</translation>
 <translation id="3315158641124845231">Verberg <ph name="PRODUCT_NAME" /></translation>
@@ -5100,6 +5100,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6521214596282732365">Sites gebruiken je lettertypen meestal om te zorgen dat je hoogwaardige content kunt maken met online ontwerp- en grafische tools</translation>
 <translation id="652492607360843641">Je hebt verbinding met een <ph name="NETWORK_TYPE" /> netwerk.</translation>
 <translation id="6527303717912515753">Delen</translation>
+<translation id="6528179044667508675">Niet storen</translation>
 <translation id="652948702951888897">Chrome-geschiedenis</translation>
 <translation id="6530186581263215931">Deze instellingen worden door je beheerder afgedwongen</translation>
 <translation id="6531282281159901044">Gevaarlijk bestand behouden</translation>
@@ -5374,7 +5375,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6833479554815567477">Tabblad verwijderd uit groep <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Overschakelen naar een slimme, beveiligde browser</translation>
 <translation id="6834652994408928492">De donkere modus wordt automatisch aangezet bij zonsondergang</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" />-bestanden openen</translation>
 <translation id="6835762382653651563">Maak verbinding met internet om je <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="6838034009068684089">Vragen als een site vensters op je schermen wil openen en plaatsen (aanbevolen)</translation>
 <translation id="6839225236531462745">Fout tijdens verwijderen van certificaat</translation>
@@ -5640,6 +5640,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="7117247127439884114">Opnieuw inloggen...</translation>
 <translation id="711840821796638741">Beheerde bookmarks tonen</translation>
 <translation id="711902386174337313">De lijst met je ingelogde apparaten lezen</translation>
+<translation id="711985611146095797">Via deze pagina kun je je ingelogde Google-accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">De Chrome-browser en Android-verkeer worden geblokkeerd tenzij je verbinding maakt met een VPN</translation>
 <translation id="7120865473764644444">Kan geen verbinding maken met de synchronisatieserver. Opnieuw proberen...</translation>
 <translation id="7121438501124788993">Ontwikkelaarsmodus</translation>
@@ -6114,6 +6115,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="7639914187072011620">Kan de SAML-omleidings-URL niet ophalen van de server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> logt je automatisch in bij geschikte sites met wachtwoorden die je hebt opgeslagen.</translation>
 <translation id="7641513591566880111">Nieuwe profielnaam</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> toegevoegd</translation>
 <translation id="7642778300616172920">Gevoelige content verbergen</translation>
 <translation id="7643842463591647490">{0,plural, =1{# geopend venster}other{# geopende vensters}}</translation>
 <translation id="7643932971554933646">Site toestemming geven deze bestanden te bekijken?</translation>
@@ -6167,7 +6169,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="7684718995427157417">Zet Android Debug Bridge (ADB) aan om je apps te maken en te testen. Let op: Met deze actie sta je toe dat Android-apps worden geïnstalleerd die niet door Google zijn geverifieerd. Als je deze functie wilt uitzetten, moeten de fabrieksinstellingen van je apparaat worden hersteld.</translation>
 <translation id="7685049629764448582">JavaScript-geheugen</translation>
 <translation id="7685087414635069102">Pincode vereist</translation>
-<translation id="768549422429443215">Voeg talen toe of sorteer de lijst opnieuw.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7690378713476594306">Selecteer een optie in de lijst</translation>
@@ -7177,6 +7178,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8756969031206844760">Wachtwoord updaten?</translation>
 <translation id="8757090071857742562">Kan desktop niet casten. Controleer of je het bericht voor het delen van je scherm hebt bevestigd.</translation>
 <translation id="8757203080302669031">Dit tabblad scant momenteel naar bluetooth-apparaten.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> verwijderd</translation>
 <translation id="8758418656925882523">Dicteren aanzetten (spreken om te typen)</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
 <translation id="8759753423332885148">Meer informatie.</translation>

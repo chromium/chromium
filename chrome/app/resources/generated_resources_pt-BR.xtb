@@ -532,6 +532,7 @@
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já foi atribuída à ação "<ph name="ACTION" />". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Abrir configurações de exibição do dispositivo</translation>
+<translation id="1571738973904005196">Ver guia: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (visitante)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Digite seu e-mail</translation>
@@ -2201,7 +2202,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3308852433423051161">Carregando o Google Assistente…</translation>
 <translation id="3309330461362844500">ID do perfil de certificado</translation>
 <translation id="3311445899360743395">Os dados associados a esse app poderão ser removidos deste dispositivo.</translation>
-<translation id="3312424061798279731">Idiomas ativados</translation>
 <translation id="3313622045786997898">Valor da assinatura do certificado</translation>
 <translation id="3313950410573257029">Verificar conexão</translation>
 <translation id="3315158641124845231">Ocultar <ph name="PRODUCT_NAME" /></translation>
@@ -5122,6 +5122,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6521214596282732365">Geralmente, os sites usam suas fontes para que você possa criar conteúdo de alta fidelidade usando ferramentas on-line gráficas e de design</translation>
 <translation id="652492607360843641">Você está conectado a uma rede <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
+<translation id="6528179044667508675">Não perturbe</translation>
 <translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6530186581263215931">Estas configurações são aplicadas pelo administrador</translation>
 <translation id="6531282281159901044">Manter arquivo perigoso</translation>
@@ -5396,7 +5397,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6833479554815567477">A guia foi removida do grupo <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Mudar para um navegador inteligente e seguro</translation>
 <translation id="6834652994408928492">O modo escuro será ativado automaticamente ao pôr do sol</translation>
-<translation id="683540480453879381">Abrir arquivos <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Perguntar quando um site quiser abrir e posicionar janelas nas suas telas (recomendado)</translation>
 <translation id="6839225236531462745">Erro de exclusão do certificado</translation>
@@ -5662,6 +5662,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7117247127439884114">Fazer login novamente...</translation>
 <translation id="711840821796638741">Mostrar favoritos gerenciados</translation>
 <translation id="711902386174337313">Ler a lista dos dispositivos nos quais você fez login</translation>
+<translation id="711985611146095797">Esta página permite gerenciar as Contas do Google conectadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">O tráfego do navegador Chrome e do Android serão bloqueados, a menos que uma VPN seja conectada</translation>
 <translation id="7120865473764644444">Não foi possível se conectar ao servidor de sincronização. Tentando novamente…</translation>
 <translation id="7121438501124788993">Modo de desenvolvedor</translation>
@@ -6136,6 +6137,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7639914187072011620">Falha ao buscar o URL de redirecionamento SAML no servidor</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> conecta você automaticamente a sites qualificados com as senhas que você salvou.</translation>
 <translation id="7641513591566880111">Novo nome do perfil</translation>
+<translation id="764178579712141045">Usuário <ph name="USER_EMAIL" /> adicionado</translation>
 <translation id="7642778300616172920">Ocultar conteúdo sensível</translation>
 <translation id="7643842463591647490">{0,plural, =1{# janela aberta}one{# janela aberta}other{# janelas abertas}}</translation>
 <translation id="7643932971554933646">Permitir que o site veja arquivos?</translation>
@@ -6189,7 +6191,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7684718995427157417">Para criar e testar seus apps, ative o Android Debug Bridge (ADB). Essa ação permite a instalação de apps Android que não foram verificados pelo Google. Para desativá-lo, será necessária uma redefinição para a configuração original.</translation>
 <translation id="7685049629764448582">Memória JavaScript</translation>
 <translation id="7685087414635069102">PIN necessário</translation>
-<translation id="768549422429443215">Adicionar idiomas ou reordenar lista.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Confirmar nova senha</translation>
 <translation id="7690378713476594306">Escolher na lista</translation>
@@ -7200,6 +7201,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8756969031206844760">Atualizar senha?</translation>
 <translation id="8757090071857742562">Não é possível transmitir a área de trabalho. Verifique se você confirmou a solicitação para começar a compartilhar sua tela.</translation>
 <translation id="8757203080302669031">Esta guia está procurando dispositivos Bluetooth no momento.</translation>
+<translation id="8757368836647541092">Usuário <ph name="USER_NAME_OR_EMAIL" /> removido</translation>
 <translation id="8758418656925882523">Ativar ditado (fale para digitar)</translation>
 <translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>
 <translation id="8759753423332885148">Saiba mais.</translation>

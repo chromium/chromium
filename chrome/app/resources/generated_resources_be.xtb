@@ -2187,7 +2187,6 @@
 <translation id="3308852433423051161">Загрузка Памочніка Google...</translation>
 <translation id="3309330461362844500">Ідэнтыфікатар профілю сертыфіката</translation>
 <translation id="3311445899360743395">Даныя, звязаныя з гэтай праграмай, могуць быць выдалены з гэтай прылады.</translation>
-<translation id="3312424061798279731">Уключаныя мовы</translation>
 <translation id="3313622045786997898">Значэнне подпісу сертыфіката</translation>
 <translation id="3313950410573257029">Праверыць падключэнне</translation>
 <translation id="3315158641124845231">Схаваць: <ph name="PRODUCT_NAME" /></translation>
@@ -5103,6 +5102,7 @@
 <translation id="6521214596282732365">Звычайна сайты выкарыстоўваюць вашы шрыфты, каб даць вам магчымасць ствараць змесціва высокай якасці з дапамогай інтэрнэт-інструментаў для дызайну і графікі</translation>
 <translation id="652492607360843641">Тып сеткі, да якой вы падключаны, – <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
+<translation id="6528179044667508675">Не турбаваць</translation>
 <translation id="652948702951888897">Гісторыя праглядаў Chrome</translation>
 <translation id="6530186581263215931">Гэтыя налады прымусова ўключаны адміністратарам</translation>
 <translation id="6531282281159901044">Захаваць небяспечны файл</translation>
@@ -5377,7 +5377,6 @@
 <translation id="6833479554815567477">Укладка выдалена з групы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Пераходзьце на разумны і бяспечны браўзер</translation>
 <translation id="6834652994408928492">Цёмны рэжым уключыцца аўтаматычна пасля захаду сонца</translation>
-<translation id="683540480453879381">Адкрываць файлы з наступнымі пашырэннямі: <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">Каб абнавіць <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="6838034009068684089">Пытацца, калі сайт запытвае дазвол адкрываць і размяшчаць вокны на экранах (рэкамендуецца)</translation>
 <translation id="6839225236531462745">Памылка пры выдаленні сертыфіката</translation>
@@ -6170,7 +6169,6 @@
 <translation id="7684718995427157417">Каб ствараць і тэсціраваць праграмы, уключыце Android Debug Bridge (ADB). Звярніце ўвагу, што, уключыўшы ADB, вы дазваляеце ўсталёўваць праграмы для Android, якія не былі спраўджаны Google, а для выключэння ADB патрабуецца скід налад да заводскіх значэнняў.</translation>
 <translation id="7685049629764448582">Памяць JavaScript</translation>
 <translation id="7685087414635069102">Патрабуецца PIN-код</translation>
-<translation id="768549422429443215">Дадайце мовы або змяніце іх парадак у спісе.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
 <translation id="7690378713476594306">Выбраць са спіса</translation>

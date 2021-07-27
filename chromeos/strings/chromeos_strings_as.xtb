@@ -118,6 +118,7 @@
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
+<translation id="3540383942695635079">MAC ঠিকনা</translation>
 <translation id="357889014807611375">নিৰিখ-নিৰ্দিষ্ট ৱাই-ফাই</translation>
 <translation id="3595596368722241419">বেটাৰী চ্চাৰ্জ সম্পূৰ্ণ হৈছে</translation>
 <translation id="360565022852130722">ৱাই-ফাই নেটৱৰ্কটো দুৰ্বল প্ৰট’কল WEP 802.1xৰ দ্বাৰা সুৰক্ষিত</translation>
@@ -163,6 +164,7 @@
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
 <translation id="4511264077854731334">প’ৰ্টেল</translation>
+<translation id="4536864596629708641">আইপি কনফিগাৰেশ্বন</translation>
 <translation id="4548483925627140043">ছিগনেল পোৱা নগ’ল</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh বেটাৰী</translation>
 <translation id="4562494484721939086">কোনো সেৱা নাই</translation>
@@ -171,6 +173,7 @@
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="4646949265910132906">সুৰক্ষিত ৱাই-ফাই সংযোগ</translation>
 <translation id="4652335678334611408">ছেশ্বনৰ লগ ছেভ কৰক</translation>
+<translation id="4654549501020883054">দৈনিক সলনি কৰক</translation>
 <translation id="4665014895760275686">উৎপাদনকাৰী</translation>
 <translation id="467510802200863975">পাছৱৰ্ডসমূহ মিলা নাই</translation>
 <translation id="467715984478005772">ফায়াৰৱালৰ সন্দেহ কৰা হৈছে</translation>
@@ -293,6 +296,7 @@
 <translation id="65587193855025101">ফ্লে'টবেড</translation>
 <translation id="6564646048574748301">বিফল হৈছে - প্ৰিণ্টাৰৰ সৈতে সংযোগ কৰিব পৰা নাই</translation>
 <translation id="6574762126505704998">সম্পূৰ্ণ স্ক্ৰীনজুৰি</translation>
+<translation id="6596816719288285829">আইপি ঠিকনা</translation>
 <translation id="6603230386432466813">সংযোগ কৰোঁতে সমস্যাৰ সৃষ্টি হৈছে নেকি?</translation>
 <translation id="6618744767048954150">চলি আছে</translation>
 <translation id="6620487321149975369">প্ৰিণ্টিঙৰ কামসমূহ মেনুৱেলভাৱে আঁতৰাই নিদিয়ালৈকে সেইসমূহ ইতিহাসত দেখা পোৱা যাব</translation>
@@ -389,6 +393,7 @@
 <translation id="8498220429738806196">ট্ৰেফিক কাউণ্টাৰ</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8503836310948963452">আৰু মাত্ৰ কেইমিনিটমান বাকী…</translation>
+<translation id="8521021929829989041">এটা ব্যক্তিগত ডিভাইচ ব্যৱহাৰ কৰক</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">আপোনাৰ বাহকৰ নেটৱৰ্কৰ সৈতে সংযুক্ত হ’বলৈ সেইটোক এই বিকল্পটোৰ আৱশ্যক হ’ব পাৰে। সবিশেষৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="8576249514688522074">আৰম্ভ কৰা হোৱা নাই</translation>

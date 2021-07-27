@@ -1709,6 +1709,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Esta política es obsoleta; usa la política <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> en su lugar.</translation>
 <translation id="3030000825273123558">Activar los informes estadísticos</translation>
+<translation id="3031796805169553856">Permitir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3032322294267258117">Controla la configuración para los usuarios autenticados mediante GAIA sin SAML.</translation>
 <translation id="3038323923255997294">Continuar ejecutando aplicaciones en segundo plano cuando <ph name="PRODUCT_NAME" /> esté cerrado</translation>
 <translation id="3041707370546071653">Recordar o no la contraseña de Kerberos. Si no se establece o se establece como falsa, no se recordará la contraseña. Se ignorará si la contraseña no se especifica.</translation>
@@ -2077,6 +2078,19 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la política se configura como verdadera o no se configura, <ph name="PRODUCT_OS_NAME" /> se comunicará automáticamente con Quirks Server, descargará archivos de configuración, si están disponibles, y los guardará en el dispositivo.  Estos archivos pueden usarse, por ejemplo, para mejorar la calidad de visualización de los monitores conectados.</translation>
 <translation id="3524204464536655762">No permitir que ningún sitio solicite acceso a dispositivos USB a través de la API de WebUSB</translation>
+<translation id="3526111349971346870">
+      Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o 
+      trabajador de origen cruzado. El uso compartido de módulos de WebAssembly entre orígenes cruzados
+      dejará de estar disponible como parte de los esfuerzos para dar de baja document.domain; consulta
+      https://github.com/mikewest/deprecating-document-domain. Esta política
+      permite volver a habilitar el uso compartido de módulos de WebAssembly entre orígenes cruzados para ofrecer
+      un período de transición más largo en el proceso hasta lograr que se dé de baja.
+
+      Si estableces la política como verdadera, los sitios también podrán enviar módulos de WebAssembly entre orígenes cruzados
+      sin restricciones.
+
+      Si la estableces como falsa, los sitios solo podrán enviar módulos a ventanas
+      y trabajadores del mismo origen.</translation>
 <translation id="3526752951628474302">Solo impresión monocromática</translation>
 <translation id="3528000905991875314">Habilitar páginas de error alternativas</translation>
 <translation id="3531084733660068324">Configuración de la supervisión parental</translation>
@@ -2129,6 +2143,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />, lo que permite que las extensiones mantengan su compatibilidad y que <ph name="PRODUCT_NAME" /> envíe encabezados específicos sin las comprobaciones de <ph name="CORS" />.
@@ -2196,6 +2211,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="3733014427925403568">El día de la semana para el intervalo.</translation>
 <translation id="3736879847913515635">Habilitar la opción para agregar una persona en el Administrador de usuarios</translation>
+<translation id="3749259744154402564">No compatible</translation>
 <translation id="3750220015372671395">Bloquear generación de claves en estos sitios</translation>
 <translation id="3755237588083934849">Si estableces la política, se determinará la frecuencia con la que se envían las cargas de estado del dispositivo (expresado en milisegundos). El mínimo permitido es 60 segundos.
 
@@ -4102,6 +4118,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si estableces la política en 0, se desactivará el cambio de contraseña de la cuenta de máquina.
 
       Nota: Es posible que las contraseñas queden obsoletas antes de la cantidad especificada de días si el cliente no se conecta por un período prolongado.</translation>
+<translation id="628084107912717806">Especificar si los módulos de WebAssembly se pueden enviar entre orígenes cruzados</translation>
 <translation id="6280973140313576289">Selector de perfiles forzado en el inicio</translation>
 <translation id="6282524907402492171">Muestra las advertencias de baja de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir o rechazar la captura de audio</translation>
@@ -4376,6 +4393,13 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Nota: Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web, así como la opción "Descargar vínculo" del menú. No se aplican a la acción de descargar la página que se muestra actualmente ni a la opción para guardar como PDF desde las opciones de impresión. Obtén más información sobre la Navegación segura ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="6641981670621198190">Inhabilitar la admisión de API gráficas en 3D</translation>
+<translation id="6642682198621199507">Si estableces la política, podrás crear una lista de los sitios que reciben automáticamente permiso para acceder a todos los puertos en serie disponibles.
+
+      Las URL deben ser válidas; de lo contrario, se ignorará la política. Solo se considera el origen (esquema, host y puerto) de la URL.
+
+      En Chrome OS, esta política solo se aplica a los usuarios afiliados.
+
+      Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, y las preferencias del usuario.</translation>
 <translation id="6646912445796087001">Habilita o inhabilita varias funciones en el teclado en pantalla. Esta política solo tiene efecto cuando habilitas la política "VirtualKeyboardEnabled".
 
       Si estableces una función de esta política como verdadera, se habilitará en el teclado en pantalla.
@@ -4569,6 +4593,15 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no estableces la política, la configuración predeterminada es <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> para los usuarios administrados por empresas y <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> para los usuarios no administrados.
 
       En el futuro, se podrá seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible en <ph name="PRODUCT_OS_NAME" /> a través del valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="6865392932254477045">Si estableces la política, podrás crear una lista de los sitios que reciben automáticamente permiso para acceder a los dispositivos seriales USB cuyos ID del producto y del proveedor coinciden con los campos <ph name="VENDOR_ID_FIELD_NAME" /> y <ph name="PRODUCT_ID_FIELD_NAME" />. Si omites el campo <ph name="PRODUCT_ID_FIELD_NAME" />, los sitios determinados tendrán acceso a los dispositivos cuyo ID de proveedor coincida con el campo <ph name="VENDOR_ID_FIELD_NAME" /> y cualquier ID del producto.
+
+      Las URL deben ser válidas; de lo contrario, se ignorará la política. Solo se considera el origen (esquema, host y puerto) de la URL.
+
+      En Chrome OS, esta política solo se aplica a los usuarios afiliados.
+
+      Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, y las preferencias del usuario.
+
+      Esta política solo afecta el acceso a dispositivos USB a través de la API de Web Serial. Para otorgar el acceso a dispositivos USB a través de la API de WebUSB, consulta la política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">Si estableces la política, se especificarán las apps que los usuarios pueden activar para tomar notas en la pantalla de bloqueo de <ph name="PRODUCT_OS_NAME" />.
 
       Si la app preferida se habilita en la pantalla de bloqueo, aparecerá un elemento de IU para ejecutar la app preferida para tomar notas. Cuando se ejecute, la app podrá crear una ventana en la parte superior de la pantalla de bloqueo para tomar notas en este contexto. La app podrá importar las notas creadas a la sesión del usuario principal cuando la sesión se desbloquee. La pantalla de bloqueo solo admite apps para tomar notas de <ph name="PRODUCT_NAME" />.
@@ -5819,6 +5852,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8455529558077979314">Configuración de la pantalla de privacidad</translation>
 <translation id="8455551509936646199">El día de la semana en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es semanal ("WEEKLY").</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463569949213141467">Inhabilitar la cámara; la configuración del navegador y del SO; el escaneo; Web Store, y las funciones de Canvas y Explorar</translation>
 <translation id="8465065632133292531">Parámetros para URL instantánea que utiliza POST</translation>
 <translation id="847472800012384958">No permitir que ningún sitio muestre ventanas emergentes</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

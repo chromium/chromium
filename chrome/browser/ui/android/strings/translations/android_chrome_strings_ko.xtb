@@ -113,6 +113,7 @@
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="1754404134430936718">텍스트가 복사됨</translation>
 <translation id="1772137089884020309">북마크 폴더 목록이 닫힘</translation>
+<translation id="1779766957982586368">창 닫기</translation>
 <translation id="1782483593938241562">종료일: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
@@ -225,6 +226,7 @@
 
 아무 단어나 길게 터치하여 검색하세요. 더욱 상세히 검색하려면 단어를 더 많이 선택하거나 적게 선택합니다. 검색어를 수정하려면 패널을 열고 아이콘을 탭하여 새 탭에서 연 다음, 검색창 내용을 변경하세요.</translation>
 <translation id="2459390580524506445">향상된 음성 검색</translation>
+<translation id="2461822463642141190">현재</translation>
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2485422356828889247">제거</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">오픈소스 라이선스</translation>
 <translation id="4263656433980196874">어시스턴트 음성 검색 동의 UI가 전체 높이로 열림</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
-<translation id="4281359692687148179">새로고침하려면 아래로 당기세요.</translation>
 <translation id="4290281343757112331">대신 나중에 다운로드하시겠습니까?</translation>
 <translation id="4296252229500326964">새 시크릿 탭</translation>
 <translation id="4298388696830689168">연결된 사이트</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">링크 공유</translation>
 <translation id="5834764604050996579">QR 코드를 스캔하려면 Chrome에서 카메라를 사용하도록 허용하세요.</translation>
 <translation id="5836192821815272682">Chrome 업데이트 다운로드 중…</translation>
+<translation id="5839058148541733625">Chrome 공룡 게임</translation>
 <translation id="5853623416121554550">일시중지</translation>
 <translation id="5854512288214985237">Google에 사용 통계와 비정상 종료 보고서를 전송하지 않음</translation>
 <translation id="5855546874025048181">상세검색: <ph name="REFINE_TEXT" /></translation>

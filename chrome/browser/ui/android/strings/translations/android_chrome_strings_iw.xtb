@@ -113,6 +113,7 @@
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
 <translation id="1754404134430936718">הטקסט הועתק</translation>
 <translation id="1772137089884020309">רשימת תיקיות הסימניות סגורה</translation>
+<translation id="1779766957982586368">סגירת חלון</translation>
 <translation id="1782483593938241562">תאריך סיום <ph name="DATE" /></translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
@@ -225,6 +226,7 @@
 
 כדי לחפש מילה, לוחצים עליה לחיצה ארוכה. כדי להתאים את החיפוש, אפשר לבחור יותר מילים או פחות מילים. כדי לערוך את החיפוש, פותחים את החלונית, מקישים על הסמל כדי לפתוח את האפליקציה בכרטיסייה חדשה ומבצעים את השינויים בתיבת החיפוש.</translation>
 <translation id="2459390580524506445">חיפוש קולי משופר</translation>
+<translation id="2461822463642141190">כרגע</translation>
 <translation id="247737702124049222">התכונה 'תיאורי תמונות' מופעלת</translation>
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4263656433980196874">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בגובה מלא</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
-<translation id="4281359692687148179">כדי לרענן, מושכים כלפי מטה</translation>
 <translation id="4290281343757112331">להוריד מאוחר יותר במקום זאת?</translation>
 <translation id="4296252229500326964">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
@@ -750,6 +751,7 @@
 <translation id="5833984609253377421">שיתוף קישור</translation>
 <translation id="5834764604050996579">‏כדי לסרוק קוד QR, מאשרים ל-Chrome להשתמש במצלמה</translation>
 <translation id="5836192821815272682">‏המערכת מורידה עדכון של Chrome…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">ההורדה בהשהיה</translation>
 <translation id="5854512288214985237">‏לא נשלחים אל Google נתונים סטטיסטיים או דוחות קריסה כלשהם</translation>
 <translation id="5855546874025048181">צמצום: <ph name="REFINE_TEXT" /></translation>

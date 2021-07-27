@@ -113,6 +113,7 @@
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
 <translation id="1754404134430936718">पाठ कपी गरियो</translation>
 <translation id="1772137089884020309">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची बन्द गरिएको छ</translation>
+<translation id="1779766957982586368">सन्झ्याल बन्द गर्नुहोस्</translation>
 <translation id="1782483593938241562">अन्तिम मिति: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
@@ -225,6 +226,7 @@
 
 कुनै शब्द खोज्न उक्त शब्दमा टच एण्ड होल्ड गर्नुहोस्। आफ्नो खोज परिष्कृत गर्न अझ धेरै वा कम शब्दहरू चयन गर्नुहोस्। आफ्नो खोज पद सम्पादन गर्न प्यानल खोल्नुहोस्, नयाँ ट्याबमा खोल्ने आइकनमा ट्याप गर्नुहोस् र खोज बाकसमा रहेको खोज पदमा आवश्यक परिवर्तनहरू गर्नुहोस्।</translation>
 <translation id="2459390580524506445">परिष्कृत भ्वाइस सर्च</translation>
+<translation id="2461822463642141190">हालको</translation>
 <translation id="247737702124049222">'फोटोको वर्णन गर्ने' सुविधा अन छ</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2485422356828889247">विस्थापन गर्नुहोस्</translation>
@@ -500,7 +502,6 @@
 <translation id="4256782883801055595">स्रोत इजाजतपत्रहरू खोल्नुहोस्</translation>
 <translation id="4263656433980196874">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI पूर्ण उचाइमा खोलिएको छ</translation>
 <translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
-<translation id="4281359692687148179">रिफ्रेस गर्न तलतिर तान्नुहोस्</translation>
 <translation id="4290281343757112331">बरु पछि डाउनलोड गर्ने हो?</translation>
 <translation id="4296252229500326964">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
@@ -749,6 +750,7 @@
 <translation id="5833984609253377421">लिंक सेयर गर्नुहोस्</translation>
 <translation id="5834764604050996579">QR कोड स्क्यान गर्न Chrome लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5836192821815272682">Chrome को अद्यावधिक डाउनलोड गर्दै…</translation>
+<translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">पज गरियो</translation>
 <translation id="5854512288214985237">तथ्याङ्क वा क्र्यास रिपोर्टहरू Google मा पठाइँदैन</translation>
 <translation id="5855546874025048181">यसअनुसार परिष्कृत गर्नुहोस्: <ph name="REFINE_TEXT" /></translation>

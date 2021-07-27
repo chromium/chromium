@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Thẻ đang mở</translation>
 <translation id="1754404134430936718">Đã sao chép văn bản</translation>
 <translation id="1772137089884020309">Đã đóng danh sách thư mục dấu trang</translation>
+<translation id="1779766957982586368">Đóng cửa sổ</translation>
 <translation id="1782483593938241562">Ngày kết thúc <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792959175193046959">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào</translation>
@@ -225,6 +226,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 
 Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung tìm kiếm, hãy chọn nhiều hoặc ít từ hơn. Để chỉnh sửa nội dung tìm kiếm, hãy mở bảng điều khiển, nhấn vào biểu tượng của ứng dụng bất kỳ bạn muốn mở trong một thẻ mới rồi thay đổi nội dung trong hộp tìm kiếm.</translation>
 <translation id="2459390580524506445">Tìm kiếm nâng cao bằng giọng nói</translation>
+<translation id="2461822463642141190">Hiện tại</translation>
 <translation id="247737702124049222">Tính năng mô tả hình ảnh đang bật</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
@@ -500,7 +502,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4256782883801055595">Giấy phép nguồn mở</translation>
 <translation id="4263656433980196874">Giao diện người dùng cho phép sử dụng Trợ lý để tìm kiếm bằng giọng nói đã mở trên toàn màn hình</translation>
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
-<translation id="4281359692687148179">Kéo xuống để làm mới</translation>
 <translation id="4290281343757112331">Tải xuống vào lúc khác?</translation>
 <translation id="4296252229500326964">Thẻ Ẩn danh mới</translation>
 <translation id="4298388696830689168">Các trang web liên kết</translation>
@@ -750,6 +751,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5833984609253377421">Chia sẻ liên kết</translation>
 <translation id="5834764604050996579">Để quét mã QR, hãy cho phép Chrome dùng máy ảnh của bạn</translation>
 <translation id="5836192821815272682">Đang tải Bản cập nhật Chrome…</translation>
+<translation id="5839058148541733625">Trò chơi khủng long trên Chrome</translation>
 <translation id="5853623416121554550">đã tạm dừng</translation>
 <translation id="5854512288214985237">Không có số liệu thống kê hoặc báo cáo sự cố nào được gửi cho Google</translation>
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>

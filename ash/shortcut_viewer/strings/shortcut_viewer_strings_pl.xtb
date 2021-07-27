@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">Przewiń stronę internetową w dół</translation>
 <translation id="2530896289327917474">Włącz lub wyłącz przeglądanie przy użyciu kursora</translation>
 <translation id="2574014812750545982">Zresetuj poziom powiększenia na stronie</translation>
-<translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, a następnie <ph name="TAB" /> lub <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Ponownie załaduj bieżącą stronę</translation>
 <translation id="2764005613199379871">Ustaw zaznaczenie na pasku adresu i wyszukiwania</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Skróty</translation>
 <translation id="3084301071537457911">Zaznacz następny element na półce</translation>
 <translation id="309173601632226815">Zaznacz przycisk uruchamiający na półce</translation>
-<translation id="3105917916468784889">Zapisz zrzut ekranu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Zaznacz pasek adresu</translation>
 <translation id="3256109297135787951">Anuluj zaznaczenia elementu na półce</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">Wyświetl pomoc do skrótów klawiszowych</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> lub <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Otwórz pasek stanu (tam, gdzie widać obraz konta)</translation>
-<translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4698850295812410683">Pokaż narzędzia rysika</translation>
 <translation id="4801989101741319327">Przejdź na koniec następnego słowa</translation>
 <translation id="4866066940972151697">Aktywuj biurko po prawej</translation>

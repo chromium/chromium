@@ -346,7 +346,6 @@
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Зарежда се...</translation>
-<translation id="3712407551474845318">Заснемане на област</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отваряне, когато е завършено</translation>
 <translation id="3742055079367172538">Направена бе екранна снимка</translation>
@@ -485,6 +484,7 @@
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4705716602320768426">Изпращане на отзиви</translation>
+<translation id="4730258224256997107">Помогнете ни да подобрим това!</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Клавишната комбинация клавиш „<ph name="LAUNCHER_KEY_NAME" />“ + цифра се промени. За да използвате функционалните клавиши, натиснете „<ph name="LAUNCHER_KEY_NAME" />“ + клавиш от най-горния ред.</translation>
@@ -674,7 +674,6 @@
 <translation id="6284232397434400372">Разделителната способност е променена</translation>
 <translation id="6288235558961782912">Имейл адресът <ph name="USER_EMAIL_ADDRESS" /> може да бъде добавен отново по-късно с разрешение от родител.</translation>
 <translation id="6291221004442998378">Не се зарежда</translation>
-<translation id="6297287540776456956">Използвайте писалката, за да изберете област</translation>
 <translation id="6310121235600822547">Завъртяхте „<ph name="DISPLAY_NAME" />“ на <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Глас</translation>
 <translation id="6330012934079202188">Показани са прозорци от всички работни кътове. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от текущия работен кът</translation>
@@ -699,7 +698,6 @@
 <translation id="652139407789908527">По време на тази актуализация екранът ще остане празен по-дълго от обичайното (до една минута). Моля, не натискайте бутона за захранване, докато тя се извършва.</translation>
 <translation id="6528179044667508675">Не безпокойте</translation>
 <translation id="65320610082834431">Емоджи</translation>
-<translation id="6537270692134705506">Заснемане на екрана</translation>
 <translation id="6537924328260219877">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6559976592393364813">Попитайте администратора</translation>

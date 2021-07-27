@@ -346,7 +346,6 @@
 <translation id="3702846122927433391">नायजेरियामधील लोकसंख्या</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
-<translation id="3712407551474845318">विभाग कॅप्‍चर करा</translation>
 <translation id="371370241367527062">समोरील मायक्रोफोन</translation>
 <translation id="3713734891607377840">पूर्ण झाल्यावर उघडा</translation>
 <translation id="3742055079367172538">स्क्रीनशॉट घेतला</translation>
@@ -485,6 +484,7 @@
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4705716602320768426">फाइल फीडबॅक</translation>
+<translation id="4730258224256997107">यामध्ये सुधारणा करण्यासाठी आम्हाला मदत करा!</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="4734965478015604180">आडवा</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + नंबर कीबोर्ड शॉर्टकट बदलला आहे. फंक्शन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + सर्वात वरच्या पंक्तीमधील की दाबा.</translation>
@@ -674,7 +674,6 @@
 <translation id="6284232397434400372">रीझोल्युशन बदलले</translation>
 <translation id="6288235558961782912">पालकाच्या परवानगीने <ph name="USER_EMAIL_ADDRESS" /> नंतर पुन्हा जोडता येईल.</translation>
 <translation id="6291221004442998378">चार्ज होत नाही</translation>
-<translation id="6297287540776456956">विभाग निवडण्यासाठी स्टायलस वापरा</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" /> वर फिरविले होते</translation>
 <translation id="6315170314923504164">Voice</translation>
 <translation id="6330012934079202188">सर्व डेस्कवरील विंडो दाखवत आहे, सध्याच्या डेस्कवरील विंडो दाखवण्यासाठी अप अ‍ॅरो की दाबा</translation>
@@ -699,7 +698,6 @@
 <translation id="652139407789908527">तुमची स्क्रीन या अपडेटदरम्यान नेहमीपेक्षा (एका मिनिटापर्यंत) जास्त वेळ बंद राहील. कृपया अपडेट सुरू असताना पॉवर बटण दाबू नका.</translation>
 <translation id="6528179044667508675">व्यत्यय आणू नका</translation>
 <translation id="65320610082834431">इमोजी</translation>
-<translation id="6537270692134705506">स्क्रीन कॅप्चर करा</translation>
 <translation id="6537924328260219877">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, फोन बॅटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> वर कास्ट करत आहे</translation>
 <translation id="6559976592393364813">अ‍ॅडमिनिस्ट्रेटरला विचारा</translation>

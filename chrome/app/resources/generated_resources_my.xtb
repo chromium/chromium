@@ -530,6 +530,7 @@
 <translation id="156793199942386351">‘<ph name="CURRENTKEY" />’ ကို ‘<ph name="ACTION" />’ လုပ်ဆောင်ချက်အတွက် သတ်မှတ်ပြီးဖြစ်သည်။ <ph name="RESPONSE" /> အတွက် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
 <translation id="1567993339577891801">JavaScript ခလုတ်ခုံ</translation>
 <translation id="1568323446248056064">မျက်နှာပြင်ပြသမှုကိရိယာ ဆက်တင်များကို ဖွင့်ပါ</translation>
+<translation id="1571738973904005196">တဘ်ကို ကြည့်ရန်- <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ဧည့်သည်)</translation>
 <translation id="1572266655485775982">Wi-Fi ကို ဖွင့်ရန်</translation>
 <translation id="1572876035008611720">သင့် အီးမေးလ် ထည့်သွင်းရန်</translation>
@@ -2198,7 +2199,6 @@
 <translation id="3308852433423051161">Google Assistant ကို ဖွင့်နေသည်...</translation>
 <translation id="3309330461362844500">အသိအမှတ်ပြုလက်မှတ်ရ ပရိုဖိုင် ID</translation>
 <translation id="3311445899360743395">ဤအက်ပ်နှင့်ဆက်စပ်သည့် ဒေတာကို ဤစက်ပစ္စည်းမှ ဖယ်ရှားလိုက်ပါမည်။</translation>
-<translation id="3312424061798279731">ဖွင့်ပေးထားသည့် ဘာသာစကားများ</translation>
 <translation id="3313622045786997898">အသိမှတ်ပြု လက်မှတ် တန်ဖိုး</translation>
 <translation id="3313950410573257029">ချိတ်ဆက်မှုကို စစ်ဆေးရန်</translation>
 <translation id="3315158641124845231">ဝှက်ရန် <ph name="PRODUCT_NAME" /></translation>
@@ -5114,6 +5114,7 @@
 <translation id="6521214596282732365">အွန်လိုင်းဒီဇိုင်းနှင့် ဂရပ်ဖစ်တူးလ်များသုံး၍ ရှင်းလင်းထင်ရှားသော အကြောင်းအရာများ ရေးသားနိုင်ရန် ဝဘ်ဆိုက်များက သင့်ဖောင့်များ အသုံးပြုလေ့ရှိသည်</translation>
 <translation id="652492607360843641">သင်သည် <ph name="NETWORK_TYPE" /> ကွန်ရက်သို့ ချိတ်ဆက်ထားသည်။</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
+<translation id="6528179044667508675">မနှောင့်ယှက်ရ</translation>
 <translation id="652948702951888897">Chrome မှတ်တမ်း</translation>
 <translation id="6530186581263215931">ဤဆက်တင်များကို သင်၏စီမံခန့်ခွဲသူက ချမှတ်ထားခြင်းဖြစ်သည်</translation>
 <translation id="6531282281159901044">အန္တရာယ်ရှိသည့်ဖိုင်ကို သိမ်းရန်</translation>
@@ -5388,7 +5389,6 @@
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">ပါးနပ်ပြီး လုံခြုံမှုရှိသော ဘရောင်ဇာသို့ ပြောင်းလိုက်ပါ</translation>
 <translation id="6834652994408928492">နေဝင်ချိန်တွင် အမှောင်မုဒ် အလိုအလျောက်ဖွင့်မည်</translation>
-<translation id="683540480453879381"><ph name="FILE_EXTENSIONS" /> ဖိုင်များ ဖွင့်ရန်</translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>
 <translation id="6838034009068684089">သင့်ဖန်သားပြင်များတွင် ဝဘ်ဆိုက်က ဝင်းဒိုးများ ဖွင့်ပြီး နေရာချထားလိုသည့်အခါ ခွင့်တောင်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="6839225236531462745">အသိမှတ်ပြု လက်မှတ် ဖျက်ခြင်း မှားယွင်းမှု</translation>
@@ -5654,6 +5654,7 @@
 <translation id="7117247127439884114">ထပ်ပြီး လက်မှတ်ထိုး ဝင်ရန်...</translation>
 <translation id="711840821796638741">စီမံကွပ်ကဲထားသည့် စာညှပ်များကို ပြရန်</translation>
 <translation id="711902386174337313">သင်၏ လက်မှတ်ထိုး ဝင်ထားသည့် ကိရိယာများ၏ စာရင်းကို ဖတ်ရန်</translation>
+<translation id="711985611146095797">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံရန် ဤစာမျက်နှာက ခွင့်ပြုသည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN ချိတ်ဆက်မထားပါက Chrome ဘရောင်ဇာနှင့် Android ဒေတာစီးဆင်းမှုတို့ကို ပိတ်ထားမည်</translation>
 <translation id="7120865473764644444">စင့်ခ်ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။ ပြန်စမ်းကြည့်နေသည်...</translation>
 <translation id="7121438501124788993">တီထွင်သူမုဒ်</translation>
@@ -6128,6 +6129,7 @@
 <translation id="7639914187072011620">ဆာဗာမှ SAML တစ်ဆင့်ပြန်ညွှန်ပြသော URL ကို မရယူနိုင်ပါ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> သည်သင်သိမ်းဆည်းထားသည့် စကားဝှက်များဖြင့် အရည်အချင်းပြည့်မီသည့်ဆိုက်များသို့ အလိုအလျောက် လက်မှတ်ထိုးဝင်ပေးပါသည်။</translation>
 <translation id="7641513591566880111">ပရိုဖိုင်အမည် အသစ်</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> ကို ထည့်ပြီးပြီ</translation>
 <translation id="7642778300616172920">အလွန်အရေးကြီးသော အကြောင်းအရာကို ဝှက်ထားရန်</translation>
 <translation id="7643842463591647490">{0,plural, =1{ဖွင့်ထားသောဝင်းဒိုး # ခု}other{ဖွင့်ထားသောဝင်းဒိုး # ခု}}</translation>
 <translation id="7643932971554933646">ဖိုင်များကို ဝဘ်ဆိုက်အား ကြည့်ခွင့်ပေးလိုပါသလား။</translation>
@@ -6181,7 +6183,6 @@
 <translation id="7684718995427157417">သင်၏အက်ပ်များကို ပြုလုပ်ပြီး စမ်းသပ်ရန် 'Android အမှားပြင်ဆင်မှုတံတား' (ADB) ဖွင့်ပါ။ ယခုလုပ်ဆောင်ချက်သည် Google က အတည်မပြုရသေးသော Android အက်ပ်များကို ထည့်သွင်းရန်ခွင့်ပြုပြီး ပိတ်ရန်အတွက် စက်ရုံထုတ်ဆက်တင် ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်ကြောင်း သတိပြုပါ။</translation>
 <translation id="7685049629764448582">JavaScript မှတ်ဉာဏ်</translation>
 <translation id="7685087414635069102">ပင်နံပါတ် လိုအပ်သည်</translation>
-<translation id="768549422429443215">ဘာသာစကားများ ထည့်ပါ သို့မဟုတ် စာရင်းကို ပြန်စီပါ။</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7690378713476594306">စာရင်းထဲမှ ရွေးရန်</translation>
@@ -7191,6 +7192,7 @@
 <translation id="8756969031206844760">စကားဝှက်ကို အပ်ဒိတ်လုပ်လိုပါသလား။</translation>
 <translation id="8757090071857742562">စားပွဲတင်ကွန်ပျူတာကို ကာစ်တ်မလုပ်နိုင်ပါ။ သင့်ဖန်သားပြင်ကို မျှဝေရန် မေးမြန်းမှုကို အတည်ပြုခဲ့ခြင်းရှိမရှိ စစ်ဆေးပါ။</translation>
 <translation id="8757203080302669031">ဤတဘ်က ဘလူးတုသ်သုံးစက်များကို ယခု ရှာနေသည်။</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ကို ဖယ်ရှားလိုက်ပြီ</translation>
 <translation id="8758418656925882523">နှုတ်တိုက်ချပေးခြင်းကို ဖွင့်ရန် (စာရိုက်ရန် စကားပြောပါ)</translation>
 <translation id="8759408218731716181">အများအပြား လက်မှတ်ထိုး ဝင်မှုကို သတ်မှတ် မပေးနိုင်</translation>
 <translation id="8759753423332885148">နောက်ထပ် လေ့လာပါ။</translation>

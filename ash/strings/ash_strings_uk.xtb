@@ -346,7 +346,6 @@
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Завантаження...</translation>
-<translation id="3712407551474845318">Зробити знімок певної області</translation>
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
@@ -485,6 +484,7 @@
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
 <translation id="4705716602320768426">Надіслати відгук</translation>
+<translation id="4730258224256997107">Допоможіть нам покращити цю функцію.</translation>
 <translation id="4731797938093519117">Батьківський доступ</translation>
 <translation id="4734965478015604180">Горизонтально</translation>
 <translation id="4735498845456076464">Комбінацію клавіш "<ph name="LAUNCHER_KEY_NAME" /> + цифра" змінено. Щоб скористатися функціональними клавішами, натисніть <ph name="LAUNCHER_KEY_NAME" /> + клавішу у верхньому рядку.</translation>
@@ -674,7 +674,6 @@
 <translation id="6284232397434400372">Роздільну здатність змінено</translation>
 <translation id="6288235558961782912">Користувача <ph name="USER_EMAIL_ADDRESS" /> можна буде знову додати з дозволу батьків.</translation>
 <translation id="6291221004442998378">Не заряджається</translation>
-<translation id="6297287540776456956">Виберіть область за допомогою стилуса</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> обернено на <ph name="ROTATION" /></translation>
 <translation id="6315170314923504164">Аудіо</translation>
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
@@ -699,7 +698,6 @@
 <translation id="652139407789908527">Під час цього оновлення зображення на екрані зникне на довше, ніж зазвичай (до хвилини). Не натискайте кнопку живлення, поки триває оновлення.</translation>
 <translation id="6528179044667508675">Не турбувати</translation>
 <translation id="65320610082834431">Смайли</translation>
-<translation id="6537270692134705506">Зробити знімок екрана</translation>
 <translation id="6537924328260219877">Рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора – <ph name="BATTERY_STATUS" /></translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6559976592393364813">Зверніться до адміністратора</translation>

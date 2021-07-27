@@ -2200,7 +2200,6 @@
 <translation id="3308852433423051161">‏טעינת Google Assistant מתבצעת...</translation>
 <translation id="3309330461362844500">מזהה פרופיל האישור</translation>
 <translation id="3311445899360743395">ייתכן שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו.</translation>
-<translation id="3312424061798279731">שפות זמינות</translation>
 <translation id="3313622045786997898">ערך חתימת אישור </translation>
 <translation id="3313950410573257029">בדיקת החיבור</translation>
 <translation id="3315158641124845231">הסתרת <ph name="PRODUCT_NAME" /></translation>
@@ -5119,6 +5118,7 @@
 <translation id="6521214596282732365">לרוב, אתרים משתמשים בגופנים שלך, כך שניתן ליצור תוכן באיכות גבוהה באמצעות כלי עיצוב וגרפיקה שזמינים אונליין</translation>
 <translation id="652492607360843641">התחברת אל רשת <ph name="NETWORK_TYPE" />.</translation>
 <translation id="6527303717912515753">שיתוף</translation>
+<translation id="6528179044667508675">נא לא להפריע</translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6530186581263215931">את ההגדרות האלה אוכף מנהל המערכת</translation>
 <translation id="6531282281159901044">השארת הקובץ המסוכן</translation>
@@ -5393,7 +5393,6 @@
 <translation id="6833479554815567477">הכרטיסייה הוסרה מהקבוצה <ph name="GROUP_NAME" /> ‏– <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">החלפה לדפדפן חכם ובטוח</translation>
 <translation id="6834652994408928492">מצב כהה יופעל באופן אוטומטי בשעת השקיעה</translation>
-<translation id="683540480453879381">פתיחת קבצים מסוג <ph name="FILE_EXTENSIONS" /></translation>
 <translation id="6835762382653651563">יש להתחבר לאינטרנט כדי לעדכן את ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">תוצג שאלה כשאתר ירצה לפתוח ולהציב חלונות במסכים שלך (מומלץ)</translation>
 <translation id="6839225236531462745">שגיאה של מחיקת אישור</translation>
@@ -6186,7 +6185,6 @@
 <translation id="7684718995427157417">‏כדי ליצור ולבדוק אפליקציות, יש להפעיל את ממשק הגישור של Android‏ (ADB). הערה: לאחר ביצוע הפעולה הזו יתאפשר להתקין אפליקציות ל-Android שלא אומתו על-ידי Google. כמו כן, כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות היצרן.</translation>
 <translation id="7685049629764448582">‏זיכרון JavaScript</translation>
 <translation id="7685087414635069102">נדרש קוד אימות</translation>
-<translation id="768549422429443215">הוספת שפות או שינוי סדר הרשימה.</translation>
 <translation id="7686938547853266130"><ph name="FRIENDLY_NAME" /> (<ph name="DEVICE_PATH" />)</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7690378713476594306">בחירה מתוך רשימה</translation>

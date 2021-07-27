@@ -136,6 +136,7 @@
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
 <translation id="2339560363438331454">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2351097562818989364">আপনার অনুবাদ সেটিংস রিসেট করা হয়েছে৷</translation>
+<translation id="235789365079050412">Google-এর গোপনীয়তা নীতি</translation>
 <translation id="2359043044084662842">অনুবাদ করুন</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2360196772093551345">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
@@ -475,6 +476,7 @@
 <translation id="5846482154967366008">সার্চ ইঞ্জিন</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5857090052475505287">নতুন ফোল্ডার</translation>
+<translation id="5857675236236529683">প্রস্তুত থাকলে, এখানে আপনার পড়ার তালিকা দেখুন</translation>
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
 <translation id="5869029295770560994">ঠিক আছে, বুঝেছি</translation>
@@ -595,6 +597,7 @@
 <translation id="6730682669179532099">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
 <translation id="6748108480210050150">থেকে</translation>
 <translation id="6760509555861141183">সাম্প্রতিক ট্যাবে ফিরে যান</translation>
+<translation id="6762812039470893796">সবকটি বাদ দিন</translation>
 <translation id="6780034285637185932">পিন কোড</translation>
 <translation id="6785453220513215166">ক্র্যাশ রিপোর্ট পাঠানো হচ্ছে...</translation>
 <translation id="6797885426782475225">ভয়েস সার্চ</translation>
@@ -748,7 +751,6 @@
 <translation id="8283172974887967105">সেট করুন…</translation>
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="8299613349954694191">গোপনে ওয়েব ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন।</translation>
-<translation id="83100941411593607">সাইন-ইন করার সুবিধা বন্ধ করা আছে</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8323906514956095947">আরও ট্যাবের বিকল্প দেখতে টাচ করে ধরে থাকুন</translation>
 <translation id="8328777765163860529">সমস্ত বন্ধ করুন</translation>

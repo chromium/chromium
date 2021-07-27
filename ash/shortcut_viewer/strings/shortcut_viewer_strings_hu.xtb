@@ -53,7 +53,6 @@
 <translation id="2530339807289914946">A weboldal lefelé görgetése</translation>
 <translation id="2530896289327917474">A billentyűzettel böngészés be- vagy kikapcsolása</translation>
 <translation id="2574014812750545982">Nagyítási szint visszaállítása az oldalon</translation>
-<translation id="2596078834055697711">Képernyőkép készítése az ablakról</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, majd <ph name="TAB" /> vagy <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Az aktuális oldal újratöltése</translation>
 <translation id="2764005613199379871">Váltás a keresési címsávra</translation>
@@ -68,7 +67,6 @@
 <translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3084301071537457911">A következő elem kiemelése a polcon</translation>
 <translation id="309173601632226815">Az indító gomb kiemelése a polcon</translation>
-<translation id="3105917916468784889">Képernyőkép készítése</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Fókuszálás a címsávra</translation>
 <translation id="3256109297135787951">A kiemelés eltávolítása a polcon található elemről</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">A billentyűparancsokat ismertető súgó megtekintése</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> vagy <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Az állapotsor megnyitása (ahol fiókja képe látható)</translation>
-<translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4698850295812410683">Érintőceruza-eszközök megjelenítése</translation>
 <translation id="4801989101741319327">Ugrás a következő szó végére</translation>
 <translation id="4866066940972151697">A jobb oldali asztal aktiválása</translation>

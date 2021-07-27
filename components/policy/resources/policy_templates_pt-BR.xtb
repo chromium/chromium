@@ -1712,6 +1712,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
 <translation id="3030000825273123558">Ativa relatórios de métricas</translation>
+<translation id="3031796805169553856">Permitir que módulos WebAssembly sejam enviados em origem cruzada</translation>
 <translation id="3032322294267258117">Controla as configurações para usuários autenticados por GAIA sem SAML.</translation>
 <translation id="3038323923255997294">Continua executando os aplicativos em segundo plano quando o <ph name="PRODUCT_NAME" /> é fechado</translation>
 <translation id="3041707370546071653">Se a senha do Kerberos será ou não lembrada. Se não for definida ou for definida como falsa, a senha não será lembrada. Será ignorada se a senha não for especificada.</translation>
@@ -2075,6 +2076,19 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> entrará em contato automaticamente com o servidor Quirks, fará o download dos arquivos de configuração, se eles estiverem disponíveis, e os armazenará no dispositivo.  Esses arquivos podem ser usados, por exemplo, para melhorar a qualidade de exibição de monitores acoplados.</translation>
 <translation id="3524204464536655762">Não permite que nenhum site solicite acesso a dispositivos USB por meio da API WebUSB</translation>
+<translation id="3526111349971346870">
+      Especifica se módulos WebAssembly podem ser enviados em origem cruzada a outra
+      janela ou outro worker. O compartilhamento do módulo WebAssembly em origem cruzada será
+      descontinuado como parte dos esforços para descontinuar document.domain, conforme descrito em
+      https://github.com/mikewest/deprecating-document-domain (link em inglês). Esta política
+      permite que o compartilhamento do módulo WebAssembly em origem cruzada seja reativado para permitir um
+      período de transição maior no processo de descontinuação.
+
+      Se ela for definida como verdadeira, os sites poderão enviar módulos WebAssembly também em origem cruzada,
+      sem restrições.
+
+      Se ela for definida como falsa, os sites poderão enviar módulos WebAssembly apenas para janelas
+      e workers na mesma origem.</translation>
 <translation id="3526752951628474302">Apenas impressão monocromática</translation>
 <translation id="3528000905991875314">Ativar páginas de erro alternativas</translation>
 <translation id="3531084733660068324">Configurações de supervisão da família</translation>
@@ -2127,6 +2141,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           Se você definir esta política, os usuários não poderão alterá-la ou substituí-la.
 
           Se esta política não for definida, o "Selecionar para ouvir" será desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="3589193811812796052">Impedir módulos WebAssembly de serem enviados em origem cruzada</translation>
 <translation id="3591527072193107424">Ativa o recurso "Suporte a navegadores legados".</translation>
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>
 <translation id="3603469950773500315">Ative as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" />, permitindo que as extensões mantenham um comportamento compatível e permitindo que o <ph name="PRODUCT_NAME" /> envie cabeçalhos especificados sem verificações de <ph name="CORS" />.
@@ -2194,6 +2209,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3733014427925403568">Dia da semana para o intervalo.</translation>
 <translation id="3736879847913515635">Ativar adição de uma pessoa no gerenciador de usuários</translation>
+<translation id="3749259744154402564">Incompatível</translation>
 <translation id="3750220015372671395">Bloquear a geração de chaves nesses sites</translation>
 <translation id="3755237588083934849">Se a política for definida, a frequência do envio de uploads de status do dispositivo será determinada, em milissegundos. O mínimo permitido é 60 segundos.
 
@@ -4091,6 +4107,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como "0", a mudança da senha da conta será desativada.
 
       Observação: as senhas podem ser mais velhas do que o número especificado de dias caso o cliente tenha passado um período maior off-line.</translation>
+<translation id="628084107912717806">Especifica se módulos WebAssembly podem ser enviados em origem cruzada</translation>
 <translation id="6280973140313576289">Seletor de perfil forçado na inicialização</translation>
 <translation id="6282524907402492171">Exibir avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6282799760374509080">Permitir ou negar captura de áudio</translation>
@@ -4365,6 +4382,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Elas não se aplicam à opção de fazer o download da página atualmente exibida nem de salvar como PDF nas opções de impressão. Leia mais sobre o "Navegação segura" (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Desativar o suporte a APIs para gráficos 3D</translation>
+<translation id="6642682198621199507">Se a política for definida, você poderá listar sites com permissão automática para acessar todas as portas seriais disponíveis.
+
+      Os URLs precisam ser válidos. Caso contrário, a política será ignorada. Apenas a origem (esquema, host e porta) do URL é considerada.
+
+      No Chrome OS, esta política se aplica apenas a usuários afiliados.
+
+      Esta política substitui <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
 <translation id="6646912445796087001">Ativa ou desativa vários recursos do teclado na tela. Esta política entra em vigor somente quando a VirtualKeyboardEnabled é ativada.
 
       Se um recurso desta política for definido como verdadeiro, ele será ativado no teclado na tela.
@@ -4558,6 +4582,15 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for deixada sem definição, o padrão será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> para usuários gerenciados por empresas e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> para usuários não gerenciados.
 
       No futuro, será possível fazer com que o <ph name="LACROS_NAME" /> seja o único navegador disponível no <ph name="PRODUCT_OS_NAME" /> com o valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="6865392932254477045">Se a política for definida, você poderá listar sites com permissão automática para acessar dispositivos seriais USB com IDs de produto e fornecedor correspondentes aos campos <ph name="VENDOR_ID_FIELD_NAME" /> e <ph name="PRODUCT_ID_FIELD_NAME" />. A omissão do campo <ph name="PRODUCT_ID_FIELD_NAME" /> concede aos sites permissão para acessar dispositivos com um ID de fornecedor correspondente ao campo <ph name="VENDOR_ID_FIELD_NAME" /> e a qualquer ID de produto.
+
+      Os URLs precisam ser válidos. Caso contrário, a política será ignorada. Apenas a origem (esquema, host e porta) do URL é considerada.
+
+      No Chrome OS, esta política se aplica apenas a usuários afiliados.
+
+      Esta política substitui <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.
+
+      Ela afeta apenas o acesso aos dispositivos USB pela API Web Serial. Para conceder acesso a dispositivos USB pela API WebUSB, consulte a política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="68818134518270542">A definição da política especifica os apps que os usuários podem ativar para fazer anotações na tela de bloqueio do <ph name="PRODUCT_OS_NAME" />.
 
       Se o app preferencial for ativado na tela de bloqueio, será exibido um elemento de IU para abri-lo. Quando iniciado, o app poderá criar uma janela própria na parte superior da tela de bloqueio e anotações no contexto dessa tela. Quando a sessão do usuário principal for desbloqueada, será possível importar para ela as notas criadas. Apenas os apps de anotação do <ph name="PRODUCT_NAME" /> são compatíveis com a tela de bloqueio.
@@ -5795,6 +5828,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8455529558077979314">Configurações da tela de privacidade</translation>
 <translation id="8455551509936646199">Dia da semana em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "WEEKLY".</translation>
 <translation id="8461914792118322307">Proxy</translation>
+<translation id="8463569949213141467">Definir quais recursos da câmera, das configurações do navegador, das configurações do SO, da digitalização, da loja on-line, do Canvas e do Explorar serão desativados</translation>
 <translation id="8465065632133292531">Parâmetros para URL de instantâneos que usa POST</translation>
 <translation id="847472800012384958">Não permite que nenhum site exiba pop-ups</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

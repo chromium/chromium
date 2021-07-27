@@ -113,6 +113,7 @@
 <translation id="17513872634828108">Schede aperte</translation>
 <translation id="1754404134430936718">Testo copiato</translation>
 <translation id="1772137089884020309">L'elenco di cartelle di preferiti è chiuso</translation>
+<translation id="1779766957982586368">Chiudi finestra</translation>
 <translation id="1782483593938241562">Data di fine: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installato</translation>
 <translation id="1792959175193046959">Modifica il percorso di download predefinito in qualsiasi momento</translation>
@@ -225,6 +226,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 
 Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la ricerca, seleziona più o meno parole. Per modificare la ricerca, apri il riquadro, tocca l'icona per aprire una nuova scheda e apporta le modifiche desiderate nella casella di ricerca.</translation>
 <translation id="2459390580524506445">Ricerca vocale migliorata</translation>
+<translation id="2461822463642141190">Attuale</translation>
 <translation id="247737702124049222">Le descrizioni delle immagini sono attive</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
@@ -500,7 +502,6 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="4256782883801055595">Licenze open source</translation>
 <translation id="4263656433980196874">Interfaccia utente per il consenso all'utilizzo dell'assistente per la ricerca vocale aperta a schermo intero</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
-<translation id="4281359692687148179">Trascina verso il basso per aggiornare</translation>
 <translation id="4290281343757112331">Vuoi scaricare più tardi?</translation>
 <translation id="4296252229500326964">Nuova scheda in incognito</translation>
 <translation id="4298388696830689168">Siti collegati</translation>
@@ -750,6 +751,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5833984609253377421">Condividi link</translation>
 <translation id="5834764604050996579">Per scansionare un codice QR, consenti a Chrome di usare la tua fotocamera</translation>
 <translation id="5836192821815272682">Download dell'aggiornamento di Chrome…</translation>
+<translation id="5839058148541733625">Dino di Chrome</translation>
 <translation id="5853623416121554550">in pausa</translation>
 <translation id="5854512288214985237">Non vengono inviati rapporti sugli arresti anomali né statistiche a Google</translation>
 <translation id="5855546874025048181">Perfeziona: <ph name="REFINE_TEXT" /></translation>
