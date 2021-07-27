@@ -1683,9 +1683,9 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
 // view-source is allowed for these schemes.
 void ChromeContentBrowserClient::GetAdditionalWebUISchemes(
     std::vector<std::string>* additional_schemes) {
-  additional_schemes->push_back(chrome::kChromeSearchScheme);
-  additional_schemes->push_back(dom_distiller::kDomDistillerScheme);
-  additional_schemes->push_back(content::kChromeDevToolsScheme);
+  additional_schemes->emplace_back(chrome::kChromeSearchScheme);
+  additional_schemes->emplace_back(dom_distiller::kDomDistillerScheme);
+  additional_schemes->emplace_back(content::kChromeDevToolsScheme);
 }
 
 void ChromeContentBrowserClient::GetAdditionalViewSourceSchemes(
@@ -3575,8 +3575,8 @@ void ChromeContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
       additional_allowed_schemes);
   additional_allowed_schemes->push_back(content::kChromeDevToolsScheme);
   additional_allowed_schemes->push_back(content::kChromeUIScheme);
-  for (size_t i = 0; i < extra_parts_.size(); ++i) {
-    extra_parts_[i]->GetAdditionalAllowedSchemesForFileSystem(
+  for (auto*& extra_part : extra_parts_) {
+    extra_part->GetAdditionalAllowedSchemesForFileSystem(
         additional_allowed_schemes);
   }
 }

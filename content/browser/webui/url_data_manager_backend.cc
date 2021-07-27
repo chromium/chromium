@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -273,11 +274,18 @@ bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
 }
 
 std::vector<std::string> URLDataManagerBackend::GetWebUISchemes() {
-  std::vector<std::string> schemes;
-  schemes.push_back(kChromeUIScheme);
-  schemes.push_back(kChromeUIUntrustedScheme);
-  GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
-  return schemes;
+  // It's OK to cache this in a static because the class implementing
+  // GetAdditionalWebUISchemes() won't change while the application is
+  // running, and because those methods always add the same items.
+  static base::NoDestructor<std::vector<std::string>> webui_schemes([]() {
+    std::vector<std::string> schemes;
+    schemes.emplace_back(kChromeUIScheme);
+    schemes.emplace_back(kChromeUIUntrustedScheme);
+    GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
+    return schemes;
+  }());
+
+  return *webui_schemes;
 }
 
 }  // namespace content
