@@ -7,7 +7,6 @@
 # for client overrides of that flag. The latter should go away.
 import("//build/config/gclient_args.gni")
 import("//build_overrides/build.gni")
-
 declare_args() {
   # Enables DCHECKs to be built-in, but to default to being non-fatal/log-only.
   # DCHECKS can then be set as fatal/non-fatal via the DCheckIsFatal feature.
@@ -28,9 +27,10 @@ declare_args() {
   # instead of reverting.
   # TODO(crbug.com/1225701): Once this sticks, try to expand this to all
   # platforms (incl. Fuchsia + any OS added here during rollout) and reduce it
-  # down to !is_official_builds || dcheck_is_configurable.
+  # down to:
+  # (build_with_chromium && !is_official_builds) || dcheck_is_configurable
   dcheck_always_on = (build_with_chromium && !is_official_build &&
-                      !is_fuchsia && !is_chromeos && !is_linux) || dcheck_is_configurable
+                      !is_fuchsia && !is_chromeos) || dcheck_is_configurable
 }
 
 declare_args() {
