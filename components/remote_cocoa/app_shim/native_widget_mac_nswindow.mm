@@ -399,6 +399,20 @@
   return YES;
 }
 
+- (BOOL)respondsToSelector:(SEL)aSelector {
+  // If this window or its parent does not handle commands, remove it from the
+  // chain.
+  bool isCommandDispatch =
+      aSelector == @selector(commandDispatch:) ||
+      aSelector == @selector(commandDispatchUsingKeyModifiers:);
+  if (isCommandDispatch && _commandHandler == nil &&
+      [_commandDispatcher bubbleParent] == nil) {
+    return NO;
+  }
+
+  return [super respondsToSelector:aSelector];
+}
+
 // CommandDispatchingWindow implementation.
 
 - (void)setCommandHandler:(id<UserInterfaceItemCommandHandler>)commandHandler {

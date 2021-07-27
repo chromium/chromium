@@ -549,11 +549,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   Browser* browser = active_browser_list()->get(0);
   EXPECT_FALSE(browser->profile()->IsGuestSession());
   // "About Chrome" is not available in the menu.
-  base::scoped_nsobject<NSMenuItem> about_menu_item(
-      [[[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu]
-          itemWithTag:IDC_ABOUT],
+  base::scoped_nsobject<NSMenu> chrome_submenu(
+      [[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu],
       base::scoped_policy::RETAIN);
+  base::scoped_nsobject<NSMenuItem> about_menu_item(
+      [chrome_submenu itemWithTag:IDC_ABOUT], base::scoped_policy::RETAIN);
   EXPECT_FALSE([ac validateUserInterfaceItem:about_menu_item]);
+  [chrome_submenu update];
+  EXPECT_FALSE([about_menu_item isEnabled]);
 }
 
 // Test that for a guest last profile, a reopen event opens the ProfilePicker.
@@ -611,6 +614,38 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   EXPECT_EQ(1u, active_browser_list()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
+}
+
+// Checks that menu items and commands work when the profile picker is open.
+IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
+  // Show the profile picker.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+
+  AppController* ac = base::mac::ObjCCastStrict<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+
+  // Unhandled menu items are disabled.
+  base::scoped_nsobject<NSMenu> file_submenu(
+      [[[NSApp mainMenu] itemWithTag:IDC_FILE_MENU] submenu],
+      base::scoped_policy::RETAIN);
+  base::scoped_nsobject<NSMenuItem> close_tab_menu_item(
+      [file_submenu itemWithTag:IDC_CLOSE_TAB], base::scoped_policy::RETAIN);
+  EXPECT_FALSE([ac validateUserInterfaceItem:close_tab_menu_item]);
+  [file_submenu update];
+  EXPECT_FALSE([close_tab_menu_item isEnabled]);
+
+  // Enabled menu items work.
+  base::scoped_nsobject<NSMenuItem> new_window_menu_item(
+      [file_submenu itemWithTag:IDC_NEW_WINDOW], base::scoped_policy::RETAIN);
+  EXPECT_TRUE([new_window_menu_item isEnabled]);
+  EXPECT_TRUE([ac validateUserInterfaceItem:new_window_menu_item]);
+  // Click on the item and checks that a new browser is opened.
+  ui_test_utils::BrowserChangeObserver browser_added_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  [file_submenu
+      performActionForItemAtIndex:[file_submenu
+                                      indexOfItemWithTag:IDC_NEW_WINDOW]];
+  EXPECT_TRUE(browser_added_observer.Wait());
 }
 
 class AppControllerOpenShortcutBrowserTest : public InProcessBrowserTest {
