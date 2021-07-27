@@ -28,6 +28,7 @@ specific_include_rules = {
   ],
   "openscreen.*_fuzzer\.cc": [
     "+third_party/openscreen/src/cast/common/channel",
+    "+third_party/openscreen/src/cast/sender/channel",
     # For google::protobuf::LogSilencer
     "+third_party/protobuf",
   ]
