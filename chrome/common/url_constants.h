@@ -37,6 +37,9 @@ extern const char kAutomaticSettingsResetLearnMoreURL[];
 // "Learn more" URL for Advanced Protection download warnings.
 extern const char kAdvancedProtectionDownloadLearnMoreURL[];
 
+// "Chrome Settings" URL for website notifications linked out from OSSettings.
+extern const char kAppNotificationsBrowserSettingsURL[];
+
 // The URL for providing help when the Bluetooth adapter is off.
 extern const char kBluetoothAdapterOffHelpURL[];
 

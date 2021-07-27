@@ -251,8 +251,13 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE},
       {"doNotDisturbToggleDesc",
        IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESC},
+      {"appNotificationsLinkToBrowserSettingsDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("appNotificationsBrowserSettingsURL",
+                         chrome::kAppNotificationsBrowserSettingsURL);
 
   // We have 2 variants of Android apps settings. Default case, when the Play
   // Store app exists we show expandable section that allows as to
