@@ -64,7 +64,7 @@ scoped_refptr<storage::FileSystemContext> GetScopedFileSystemContext(
 }
 
 // Converts the given url to a FileSystemURL.
-file_manager::util::FileSystemURLAndHandle GetFileSystemURL(
+file_manager::util::FileSystemURLAndHandle GetFileSystemURLAndHandle(
     const storage::FileSystemContext& context,
     const GURL& url) {
   // Obtain the absolute path in the file system.
@@ -119,9 +119,10 @@ ShareInfoFileHandler::~ShareInfoFileHandler() {
           std::move(scoped_temp_dirs_)));
 }
 
-file_manager::util::FileSystemURLAndHandle GetFileSystemContext(
-    content::BrowserContext* context,
-    const GURL& url) {
+// static
+file_manager::util::FileSystemURLAndHandle
+ShareInfoFileHandler::GetFileSystemURL(content::BrowserContext* context,
+                                       const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(context);
 
@@ -132,7 +133,7 @@ file_manager::util::FileSystemURLAndHandle GetFileSystemContext(
       GetScopedFileSystemContext(profile, url);
   DCHECK(file_system_context.get());
 
-  return GetFileSystemURL(*file_system_context, url);
+  return GetFileSystemURLAndHandle(*file_system_context, url);
 }
 
 const std::vector<base::FilePath>& ShareInfoFileHandler::GetFilePaths() const {
@@ -224,7 +225,7 @@ bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
     DCHECK(it_context->get());
 
     const file_manager::util::FileSystemURLAndHandle isolated_file_system =
-        GetFileSystemURL(**it_context, url);
+        GetFileSystemURLAndHandle(**it_context, url);
 
     if (!isolated_file_system.url.is_valid()) {
       LOG(ERROR) << "Invalid FileSystemURL from handle.";

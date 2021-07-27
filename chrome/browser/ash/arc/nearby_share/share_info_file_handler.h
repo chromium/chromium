@@ -68,7 +68,7 @@ class ShareInfoFileHandler
   ShareInfoFileHandler& operator=(const ShareInfoFileHandler&) = delete;
 
   // Returns FileSystemURL for a given |context| and |url|.
-  static file_manager::util::FileSystemURLAndHandle GetFileSystemContext(
+  static file_manager::util::FileSystemURLAndHandle GetFileSystemURL(
       content::BrowserContext* context,
       const GURL& url);
 
