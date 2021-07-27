@@ -210,11 +210,17 @@ const base::Feature kDefaultPinnedAppsUpdate2021Q2{
     "DefaultPinnedAppsUpdate2021Q2", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS
-// UI surfaces.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX)
+// Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS,
+// MacOS and Linux.
 const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
-    "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_ENABLED_BY_DEFAULT};
+  "DesktopPWAsAppIconShortcutsMenuUI",
+#if defined(OS_MAC) || defined(OS_LINUX)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

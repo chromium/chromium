@@ -7389,13 +7389,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kLauncherAppSort)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(https://crbug.com/1069293): Add macOS and Linux implementations.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_LINUX)
     {"enable-desktop-pwas-app-icon-shortcuts-menu-ui",
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIName,
-     flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription, kOsCrOS,
+     flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription,
+     kOsCrOS | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppIconShortcutsMenuUI)},
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-input-event-logging",
      flag_descriptions::kEnableInputEventLoggingName,
      flag_descriptions::kEnableInputEventLoggingDescription, kOsCrOS,
