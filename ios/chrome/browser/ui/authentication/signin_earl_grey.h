@@ -54,6 +54,11 @@
 // Induces a GREYAssert if there are no signed-in identities.
 - (void)verifyAuthenticated;
 
+// Triggers the reauth dialog. This is done through SigninEarlGreyAppInterface,
+// with ShowSigninCommand sent to SceneController, without any UI interaction
+// to open the dialog.
+- (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_H_

@@ -56,6 +56,10 @@
 // Signs out the current user.
 + (void)signOut;
 
+// Triggers the reauth dialog. This is done by sending ShowSigninCommand to
+// SceneController, without any UI interaction to open the dialog.
++ (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_APP_INTERFACE_H_

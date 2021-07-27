@@ -75,7 +75,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
         identityWithEmail:[NSString stringWithUTF8String:kTestEmail]
                    gaiaID:[NSString stringWithUTF8String:kTestGaiaID]
                      name:@"Foo"];
-    identity_interaction_manager.fakeIdentity = fake_identity_;
+    FakeChromeIdentityInteractionManager.identity = fake_identity_;
     return identity_interaction_manager;
   }
 
@@ -190,10 +190,10 @@ TEST_F(AddAccountSigninManagerTest, AddAccountSigninInterrupted) {
           SigninCoordinatorResultInterrupted
                                              identity:nil]);
 
-  [signin_manager_ setSigninInterrupted:YES];
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
-  [identity_interaction_manager_ addAccountViewControllerDidTapSignIn];
+  signin_manager_.signinInterrupted = YES;
+  [identity_interaction_manager_ addAccountViewControllerDidInterrupt];
 }
 
 // Verifies the following state in the successful reauth flow:
@@ -258,8 +258,8 @@ TEST_F(AddAccountSigninManagerTest, ReauthSigninInterrupted) {
           SigninCoordinatorResultInterrupted
                                              identity:nil]);
 
-  [signin_manager_ setSigninInterrupted:YES];
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
-  [identity_interaction_manager_ addAccountViewControllerDidTapSignIn];
+  signin_manager_.signinInterrupted = YES;
+  [identity_interaction_manager_ addAccountViewControllerDidInterrupt];
 }

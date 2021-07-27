@@ -391,6 +391,18 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
                             "www.example.com")];
 }
 
+// Opens the reauth dialog and interrupts it by open an URL from an external
+// app.
+- (void)testInterruptReauthSignin {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey triggerReauthDialogWithFakeIdentity:fakeIdentity];
+  // Open the URL as if it was opened from another app.
+  [ChromeEarlGrey simulateExternalAppURLOpening];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxContainingText(
+                            "www.example.com")];
+}
+
 // Verifies that advanced sign-in shows an alert dialog when being swiped to
 // dismiss.
 - (void)testSwipeDownToCancelAdvancedSignin {

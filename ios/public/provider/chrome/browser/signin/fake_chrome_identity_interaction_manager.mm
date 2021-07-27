@@ -95,7 +95,15 @@
 
 @implementation FakeChromeIdentityInteractionManager
 
-@synthesize fakeIdentity = _fakeIdentity;
+static ChromeIdentity* _identity = nil;
+
++ (void)setIdentity:(ChromeIdentity*)identity {
+  _identity = identity;
+}
+
++ (ChromeIdentity*)identity {
+  return _identity;
+}
 
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
                                     completion:
@@ -125,8 +133,8 @@
 }
 
 - (void)addAccountViewControllerDidTapSignIn {
-  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-      ->AddIdentity(_fakeIdentity);
+  ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
+      FakeChromeIdentityInteractionManager.identity);
   [self dismissAndRunCompletionCallbackWithError:nil
                                         animated:YES
                                       completion:nil];
@@ -142,6 +150,12 @@
   [self dismissAndRunCompletionCallbackWithError:[self unhandledError]
                                         animated:YES
                                       completion:nil];
+}
+
+- (void)addAccountViewControllerDidInterrupt {
+  // When the add account view is interrupted, its completion callback is
+  // invoked with the user cancel error.
+  [self addAccountViewControllerDidTapCancel];
 }
 
 #pragma mark Helper
@@ -169,7 +183,7 @@
     // Ensure self is not destroyed in the callback.
     NS_VALID_UNTIL_END_OF_SCOPE FakeChromeIdentityInteractionManager*
         strongSelf = self;
-    _completionCallback(_fakeIdentity, error);
+    _completionCallback(FakeChromeIdentityInteractionManager.identity, error);
     _completionCallback = nil;
   }
 }

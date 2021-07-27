@@ -96,4 +96,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                              @"User is not signed in");
 }
 
+- (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity {
+  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
 @end
