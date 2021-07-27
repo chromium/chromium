@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -383,6 +384,13 @@ IN_PROC_BROWSER_TEST_P(SaveDataSavingsEstimateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataSaverSiteBreakdownMetricsObserverBrowserTest,
                        NavigateToSimplePage) {
+  // The test assumes pages gets deleted after navigation, triggering histogram
+  // recording. Disable back/forward cache to ensure that pages don't get
+  // preserved in the cache.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  content::DisableBackForwardCacheForTesting(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const struct {
     std::string url;
     size_t expected_min_page_size;
