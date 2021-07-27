@@ -9,8 +9,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -114,6 +117,73 @@ bool ParseSet(const base::Value& value,
   return !maybe_members_list->GetList().empty();
 }
 
+// Deserializes a JSON-encoded string obtained from `SerializeFirstPartySets()`
+// into a map. Returns empty map if the value is invalid.
+base::flat_map<net::SchemefulSite, net::SchemefulSite>
+DeserializeFirstPartySets(const std::string& value) {
+  if (value.empty())
+    return {};
+
+  std::unique_ptr<base::Value> value_deserialized =
+      JSONStringValueDeserializer(value).Deserialize(
+          nullptr /* error_code */, nullptr /* error_message */);
+  if (!value_deserialized->is_dict())
+    return {};
+
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
+  base::flat_set<net::SchemefulSite> owner_set;
+  base::flat_set<net::SchemefulSite> member_set;
+  for (const auto item : value_deserialized->DictItems()) {
+    if (!item.second.is_string())
+      return {};
+    const absl::optional<net::SchemefulSite> maybe_member =
+        Canonicalize(item.first, true /* emit_errors */);
+    const absl::optional<net::SchemefulSite> maybe_owner =
+        Canonicalize(item.second.GetString(), true /* emit_errors */);
+    if (!maybe_member.has_value() || !maybe_owner.has_value())
+      return {};
+
+    // Skip the owner entry here and add it later explicitly to prevent the
+    // singleton sets.
+    if (*maybe_member == *maybe_owner) {
+      continue;
+    }
+    if (!owner_set.contains(maybe_owner)) {
+      map.emplace(*maybe_owner, *maybe_owner);
+    }
+    // Check disjointness. Note that we are relying on the JSON Parser to
+    // eliminate the possibility of a site being used as a key more than once,
+    // so we don't have to check for that explicitly.
+    if (owner_set.contains(*maybe_member) ||
+        member_set.contains(*maybe_owner)) {
+      return {};
+    }
+    owner_set.insert(*maybe_owner);
+    member_set.insert(*maybe_member);
+    map.emplace(std::move(*maybe_member), std::move(*maybe_owner));
+  }
+  return map;
+}
+
+// Returns a serialized JSON-encoded string representation of the input.
+// The owner -> owner entry is removed from the serialized representation
+// for brevity in the file.
+std::string SerializeFirstPartySets(
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& sets) {
+  base::DictionaryValue dict;
+  for (const auto& it : sets) {
+    std::string maybe_member = it.first.Serialize();
+    std::string owner = it.second.Serialize();
+    if (maybe_member != owner) {
+      dict.SetKey(std::move(maybe_member), base::Value(std::move(owner)));
+    }
+  }
+  std::string dict_serialized;
+  JSONStringValueSerializer(&dict_serialized).Serialize(dict);
+
+  return dict_serialized;
+}
+
 }  // namespace
 
 absl::optional<net::SchemefulSite>
@@ -140,6 +210,29 @@ FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
   }
 
   return map;
+}
+
+base::flat_map<net::SchemefulSite, net::SchemefulSite>
+FirstPartySetParser::LoadSetsFromDisk(const base::FilePath& path) {
+  std::string result;
+  if (!base::ReadFileToString(path, &result)) {
+    LOG(ERROR) << "Failed loading serialized First-Party Sets file from"
+               << path.MaybeAsASCII();
+    return {};
+  }
+  return DeserializeFirstPartySets(result);
+}
+
+bool FirstPartySetParser::MaybeWriteSetsToDisk(
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& map,
+    const base::FilePath& path) {
+  std::string serialized = SerializeFirstPartySets(map);
+  bool success = base::WriteFile(path, serialized);
+  if (!success) {
+    LOG(ERROR) << "Failed writing serialized First-Party Sets to file "
+               << path.MaybeAsASCII();
+  }
+  return success;
 }
 
 }  // namespace network

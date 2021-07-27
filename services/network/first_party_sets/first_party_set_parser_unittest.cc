@@ -4,11 +4,15 @@
 
 #include "services/network/first_party_sets/first_party_set_parser.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 using ::testing::IsEmpty;
 using ::testing::Pair;
@@ -429,5 +433,158 @@ TEST(FirstPartySetParser, Rejects_OwnerAsMember) {
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
               IsEmpty());
 }
+
+class FirstPartySetParserTest : public ::testing::Test {
+ public:
+  FirstPartySetParserTest() {
+    CHECK(persisted_sets_dir_.CreateUniqueTempDir());
+    CHECK(PathExists(persisted_sets_dir_.GetPath()));
+    persisted_sets_path_ =
+        persisted_sets_dir_.GetPath().Append(FILE_PATH_LITERAL("sets.json"));
+  }
+
+ protected:
+  base::ScopedTempDir persisted_sets_dir_;
+  base::FilePath persisted_sets_path_;
+};
+
+TEST_F(FirstPartySetParserTest, WriteSets) {
+  const base::flat_map<net::SchemefulSite, net::SchemefulSite> input = {
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL("https://example1.test"))},
+      {net::SchemefulSite(GURL("https://example1.test")),
+       net::SchemefulSite(GURL("https://example1.test"))}};
+
+  EXPECT_TRUE(
+      FirstPartySetParser::MaybeWriteSetsToDisk(input, persisted_sets_path_));
+  std::string result;
+  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &result));
+  EXPECT_EQ(R"({"https://member1.test":"https://example1.test"})", result);
+}
+
+TEST_F(FirstPartySetParserTest, WriteSetsWithOpaqueOrigin) {
+  const base::flat_map<net::SchemefulSite, net::SchemefulSite> input = {
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::SchemefulSite(GURL(""))}};
+
+  EXPECT_TRUE(
+      FirstPartySetParser::MaybeWriteSetsToDisk(input, persisted_sets_path_));
+  std::string result;
+  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &result));
+  EXPECT_EQ(R"({"https://member1.test":"null"})", result);
+}
+
+TEST_F(FirstPartySetParserTest, WriteEmptySets) {
+  EXPECT_TRUE(
+      FirstPartySetParser::MaybeWriteSetsToDisk({}, persisted_sets_path_));
+  std::string result;
+  ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &result));
+  EXPECT_EQ("{}", result);
+}
+
+TEST_F(FirstPartySetParserTest, WriteSetsToEmtpyPath) {
+  EXPECT_FALSE(FirstPartySetParser::MaybeWriteSetsToDisk({}, {}));
+}
+
+TEST_F(FirstPartySetParserTest, LoadSets) {
+  const std::string input =
+      R"({"https://member1.test":"https://example1.test",
+          "https://member3.test":"https://example1.test",
+          "https://member2.test":"https://example2.test"})";
+  // Sanity check that the input is actually valid JSON.
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, input));
+  EXPECT_THAT(
+      FirstPartySetParser::LoadSetsFromDisk(persisted_sets_path_),
+      UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                SerializesTo("https://example1.test")),
+                           Pair(SerializesTo("https://member3.test"),
+                                SerializesTo("https://example1.test")),
+                           Pair(SerializesTo("https://example1.test"),
+                                SerializesTo("https://example1.test")),
+                           Pair(SerializesTo("https://member2.test"),
+                                SerializesTo("https://example2.test")),
+                           Pair(SerializesTo("https://example2.test"),
+                                SerializesTo("https://example2.test"))));
+}
+
+TEST_F(FirstPartySetParserTest, LoadEmptySets) {
+  EXPECT_THAT(FirstPartySetParser::LoadSetsFromDisk(persisted_sets_path_),
+              IsEmpty());
+}
+
+TEST_F(FirstPartySetParserTest, LoadSetsFromEmptyPath) {
+  base::FilePath path;
+  EXPECT_THAT(FirstPartySetParser::LoadSetsFromDisk(path), IsEmpty());
+}
+
+TEST_F(FirstPartySetParserTest, LoadSetsFromNonExistentFile) {
+  base::FilePath path =
+      persisted_sets_dir_.GetPath().Append(FILE_PATH_LITERAL("non-sets.json"));
+  EXPECT_THAT(FirstPartySetParser::LoadSetsFromDisk(path), IsEmpty());
+}
+
+// Same member appear twice with different owner is not considered invalid
+// content and wouldn't end up returning an empty map, since
+// base::DictionaryValue automatically handles duplicated keys.
+TEST_F(FirstPartySetParserTest, LoadSetsDuplicatedKey) {
+  const std::string input =
+      R"({"https://member1.test":"https://example1.test",
+          "https://member1.test":"https://example2.test"})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, input));
+  EXPECT_THAT(
+      FirstPartySetParser::LoadSetsFromDisk(persisted_sets_path_),
+      UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                SerializesTo("https://example2.test")),
+                           Pair(SerializesTo("https://example2.test"),
+                                SerializesTo("https://example2.test"))));
+}
+
+// Singleton set is ignored.
+TEST_F(FirstPartySetParserTest, LoadSetsSingletonSet) {
+  const std::string input =
+      R"({"https://example1.test":"https://example1.test",
+          "https://member1.test":"https://example2.test",
+          "https://example2.test":"https://example2.test"})";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, input));
+  EXPECT_THAT(
+      FirstPartySetParser::LoadSetsFromDisk(persisted_sets_path_),
+      UnorderedElementsAre(Pair(SerializesTo("https://member1.test"),
+                                SerializesTo("https://example2.test")),
+                           Pair(SerializesTo("https://example2.test"),
+                                SerializesTo("https://example2.test"))));
+}
+
+class FirstPartySetParserInvalidContentTest
+    : public FirstPartySetParserTest,
+      public testing::WithParamInterface<std::string> {};
+
+TEST_P(FirstPartySetParserInvalidContentTest, LoadSets) {
+  std::string input = GetParam();
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(base::WriteFile(persisted_sets_path_, input));
+  EXPECT_THAT(FirstPartySetParser::LoadSetsFromDisk(persisted_sets_path_),
+              IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidContent,
+    FirstPartySetParserInvalidContentTest,
+    testing::Values(
+        // The serialized object is type of array.
+        R"(["https://member1.test","https://example1.test"])",
+        // The serialized string is type of map that contains non-URL key.
+        R"({"member1":"https://example1.test"})",
+        // The serialized string is type of map that contains non-URL value.
+        R"({"https://member1.test":"example1"})",
+        // The serialized string is type of map that contains non-string value.
+        R"({"https://member1.test":1})",
+        // Nondisjoint set. The same site shows up both as member and owner.
+        R"({"https://member1.test":"https://example1.test",
+            "https://member2.test":"https://member1.test"})",
+        R"({"https://member1.test":"https://example1.test",
+            "https://example1.test":"https://example2.test"})"));
 
 }  // namespace network
