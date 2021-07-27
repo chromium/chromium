@@ -18,6 +18,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/reporting/compression/compression_module.h"
+#include "components/reporting/compression/decompression.h"
+#include "components/reporting/compression/test_compression_module.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
@@ -46,7 +48,9 @@ namespace {
 
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
-constexpr size_t kCompressionThreshold = 512;
+constexpr size_t kCompressionThreshold = 2;
+const CompressionInformation::CompressionAlgorithm kCompressionType =
+    CompressionInformation::COMPRESSION_SNAPPY;
 
 class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
  public:
@@ -65,6 +69,13 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   void ProcessRecord(EncryptedRecord encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
     WrappedRecord wrapped_record;
+    // Decompress encrypted_wrapped_record if is was compressed.
+    if (encrypted_record.has_compression_information()) {
+      std::string decompressed_record = Decompression::DecompressRecord(
+          encrypted_record.encrypted_wrapped_record(),
+          encrypted_record.compression_information());
+      encrypted_record.set_encrypted_wrapped_record(decompressed_record);
+    }
     ASSERT_TRUE(wrapped_record.ParseFromString(
         encrypted_record.encrypted_wrapped_record()));
     // Verify generation match.
@@ -303,8 +314,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
         base::BindRepeating(&StorageQueueTest::AsyncStartMockUploader,
                             base::Unretained(this)),
         test_encryption_module_,
-        CompressionModule::Create(kCompressionThreshold,
-                                  CompressionInformation::COMPRESSION_SNAPPY),
+        CompressionModule::Create(kCompressionThreshold, kCompressionType),
         storage_queue_create_event.cb());
     StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
         storage_queue_create_event.result();
