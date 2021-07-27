@@ -120,6 +120,9 @@ const char kOmniboxGeolocationLastAuthorizationAlertVersion[] =
 const char kMetricsReportingWifiOnly[] =
     "ios.user_experience_metrics.wifi_only";
 
+// Deprecated 07/2021
+const char kLastSessionExitedCleanly[] =
+    "ios.user_experience_metrics.last_session_exited_cleanly";
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -157,7 +160,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
-  registry->RegisterBooleanPref(prefs::kLastSessionExitedCleanly, true);
+  registry->RegisterBooleanPref(kLastSessionExitedCleanly, true);
   registry->RegisterBooleanPref(kMetricsReportingWifiOnly, true);
   registry->RegisterBooleanPref(kGCMChannelStatus, true);
   registry->RegisterIntegerPref(kGCMChannelPollIntervalSeconds, 0);
@@ -294,6 +297,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 7/2021
   prefs->ClearPref(kMetricsReportingWifiOnly);
+
+  // Added 7/2021
+  prefs->ClearPref(kLastSessionExitedCleanly);
 }
 
 // This method should be periodically pruned of year+ old migrations.

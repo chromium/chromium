@@ -93,14 +93,6 @@ const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";
 const char kIosSettingsSigninPromoDisplayedCount[] =
     "ios.settings.signin_promo_displayed_count";
 
-// True if the previous session exited cleanly.
-// This can be different from kStabilityExitedCleanly, because the last run of
-// the program may not have included a browsing session, and thus the last run
-// of the program may have happened after the run that included the last
-// session.
-const char kLastSessionExitedCleanly[] =
-    "ios.user_experience_metrics.last_session_exited_cleanly";
-
 // Preference that holds a boolean indicating whether the suggestions on the NTP
 // are enabled.
 const char kNTPContentSuggestionsEnabled[] =

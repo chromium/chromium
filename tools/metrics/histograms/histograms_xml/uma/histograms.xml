@@ -64,15 +64,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency" enum="UmaCleanExitConsistency"
-    expires_after="2021-10-31">
+    expires_after="2022-01-18">
+  <obsolete>
+    Deprecated 07/2021 in favor of CleanExitBeaconConsistency2. Version 2
+    changes semantics in some of the buckets, to support measuring the frequency
+    with which the Local State data is missing.
+  </obsolete>
   <owner>asvitkine@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Reports the combined state of distinct clean exit beacons stored in Local
-    State and the Windows registry (or NSUserDefaults on iOS). They are normally
-    expected to be identical.
+    Recorded when the CleanExitBeacon is constructed. Reports the combined state
+    of distinct clean exit beacons stored in Local State and the Windows
+    registry (or NSUserDefaults on iOS). They are normally expected to be
+    identical.
+  </summary>
+</histogram>
+
+<histogram name="UMA.CleanExitBeaconConsistency2"
+    enum="UmaCleanExitConsistency2" expires_after="2022-01-18">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Recorded when the CleanExitBeacon is constructed. Reports the combined state
+    of distinct clean exit beacons stored in Local State and the Windows
+    registry (or NSUserDefaults on iOS). They are normally expected to be
+    identical. Updated from CleanExitBeaconConsistency to add missing values in
+    local state.
   </summary>
 </histogram>
 

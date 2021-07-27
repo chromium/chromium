@@ -27,6 +27,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -206,6 +207,9 @@ void IOSChromeMainParts::PreCreateThreads() {
   // after setting up field trials.
   crash_helper::SyncCrashpadEnabledOnNextRun();
 
+  // Sync the CleanExitBeacon.
+  metrics::CleanExitBeacon::SyncUseUserDefaultsBeacon();
+
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Do not install allocator shim on iOS 13.4 due to high crash volume on this
   // particular version of OS. TODO(crbug.com/1108219): Remove this workaround
@@ -272,11 +276,19 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   StartMetricsRecording();
 
   // Because the crashpad flag takes 2 restarts to take effect, register a
-  // synthetic field try when crashpad is actually running.  Called immediately
-  // after starting metrics recording.
+  // synthetic field trial when crashpad is actually running.  Called
+  // immediately after starting metrics recording.
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "CrashpadIOS",
       crash_reporter::IsCrashpadRunning() ? "Enabled" : "Disabled");
+
+  // Because the CleanExitBeacon flag takes 2 restarts to take effect, register
+  // a synthetic field trial when the user defaults beacon is set. Called
+  // immediately after starting metrics recording.
+  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "UseUserDefaultsForExitedCleanlyBeacon",
+      metrics::CleanExitBeacon::ShouldUseUserDefaultsBeacon() ? "Enabled"
+                                                              : "Disabled");
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Init the RLZ library. This just schedules a task on the file thread to be

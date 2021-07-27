@@ -4347,6 +4347,21 @@
             ]
         }
     ],
+    "IOSUseUserDefaultsForExitedCleanlyBeacon": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "UseUserDefaultsForExitedCleanlyBeaconEnabler"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [

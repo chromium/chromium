@@ -113,17 +113,6 @@ void BindNetworkChangeManagerReceiver(
   network_change_manager->AddReceiver(std::move(receiver));
 }
 
-// Used to enable the workaround for a local state not persisting sometimes.
-NSString* const kLastSessionExitedCleanly = @"LastSessionExitedCleanly";
-
-// Set both local_state and user defaults kLastSessionExitedCleanly to |clean|.
-void SetLastSessionExitedCleanly(PrefService* local_state, bool clean) {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setBool:clean forKey:kLastSessionExitedCleanly];
-  [defaults synchronize];
-  local_state->SetBoolean(prefs::kLastSessionExitedCleanly, clean);
-}
-
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 const base::Feature kUmaBackgroundSessions{"IOSUMABackgroundSessions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -134,8 +123,7 @@ ApplicationContextImpl::ApplicationContextImpl(
     base::SequencedTaskRunner* local_state_task_runner,
     const base::CommandLine& command_line,
     const std::string& locale)
-    : local_state_task_runner_(local_state_task_runner),
-      was_last_shutdown_clean_(false) {
+    : local_state_task_runner_(local_state_task_runner) {
   DCHECK(!GetApplicationContext());
   SetApplicationContext(this);
 
@@ -202,7 +190,9 @@ void ApplicationContextImpl::StartTearDown() {
   // the IO thread gets destroyed, since the destructor can call the URLFetcher
   // destructor, which does a PostDelayedTask operation on the IO thread. (The
   // IO thread will handle that URLFetcher operation before going away.)
-
+  metrics::MetricsService* metrics_service = GetMetricsService();
+  if (metrics_service)
+    metrics_service->RecordCompletedSessionEnd();
   metrics_services_manager_.reset();
   network_time_tracker_.reset();
 
@@ -226,7 +216,6 @@ void ApplicationContextImpl::StartTearDown() {
     gcm_driver_->Shutdown();
 
   if (local_state_) {
-    SetLastSessionExitedCleanly(local_state_.get(), true);
     local_state_->CommitPendingWrite();
     sessions::SessionIdGenerator::GetInstance()->Shutdown();
   }
@@ -255,15 +244,14 @@ void ApplicationContextImpl::PostDestroyThreads() {
 void ApplicationContextImpl::OnAppEnterForeground() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  PrefService* local_state = GetLocalState();
-  SetLastSessionExitedCleanly(local_state, false);
-
   // Tell the metrics services that the application resumes.
+  PrefService* local_state = GetLocalState();
   metrics::MetricsService* metrics_service = GetMetricsService();
   if (metrics_service && local_state) {
     metrics_service->OnAppEnterForeground();
     local_state->CommitPendingWrite();
   }
+
   variations::VariationsService* variations_service = GetVariationsService();
   if (variations_service)
     variations_service->OnAppEnterForeground();
@@ -289,12 +277,9 @@ void ApplicationContextImpl::OnAppEnterBackground() {
       browser_state_prefs->CommitPendingWrite();
   }
 
-  PrefService* local_state = GetLocalState();
-  SetLastSessionExitedCleanly(local_state, true);
-
   // Tell the metrics services they were cleanly shutdown.
   metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service && local_state) {
+  if (metrics_service) {
     const bool keep_reporting =
         base::FeatureList::IsEnabled(kUmaBackgroundSessions);
     metrics_service->OnAppEnterBackground(keep_reporting);
@@ -309,9 +294,10 @@ void ApplicationContextImpl::OnAppEnterBackground() {
 
 bool ApplicationContextImpl::WasLastShutdownClean() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  // Make sure the locale state is created as the file is initialized there.
-  ignore_result(GetLocalState());
-  return was_last_shutdown_clean_;
+  metrics::MetricsService* metrics_service = GetMetricsService();
+  if (metrics_service)
+    return metrics_service->WasLastShutdownClean();
+  return true;
 }
 
 PrefService* ApplicationContextImpl::GetLocalState() {
@@ -535,44 +521,6 @@ void ApplicationContextImpl::CreateLocalState() {
       std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyServer, 99),
                net::ClientSocketPoolManager::max_sockets_per_group(
                    net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
-
-  // Register the shutdown state before anything changes it.
-  if (local_state_->HasPrefPath(prefs::kLastSessionExitedCleanly)) {
-    was_last_shutdown_clean_ =
-        local_state_->GetBoolean(prefs::kLastSessionExitedCleanly);
-  }
-
-  // The logic below mirrors clean_exit_beacon.  For historical reasons ios/
-  // does not use this beacon directly.  This code should be merged with clean
-  // exit beacon (as long as the user default workaround can also go into the
-  // clean exit beacon).
-  // TODO(crbug.com/1208077): Use the CleanExitBeacon.
-
-  // An enumeration of all possible permutations of the the beacon state in the
-  // registry and in Local State.
-  enum {
-    DIRTY_DIRTY,
-    DIRTY_CLEAN,
-    CLEAN_DIRTY,
-    CLEAN_CLEAN,
-    MISSING_DIRTY,
-    MISSING_CLEAN,
-    NUM_CONSISTENCY_ENUMS
-  } consistency = DIRTY_DIRTY;
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  if ([defaults objectForKey:kLastSessionExitedCleanly] != nil) {
-    bool user_defaults_was_last_shutdown_clean_ =
-        [defaults boolForKey:kLastSessionExitedCleanly];
-    if (user_defaults_was_last_shutdown_clean_) {
-      consistency = was_last_shutdown_clean_ ? CLEAN_CLEAN : CLEAN_DIRTY;
-    } else {
-      consistency = was_last_shutdown_clean_ ? DIRTY_CLEAN : DIRTY_DIRTY;
-    }
-  } else {
-    consistency = was_last_shutdown_clean_ ? MISSING_CLEAN : MISSING_DIRTY;
-  }
-  base::UmaHistogramEnumeration("UMA.CleanExitBeaconConsistency", consistency,
-                                NUM_CONSISTENCY_ENUMS);
 }
 
 void ApplicationContextImpl::CreateGCMDriver() {

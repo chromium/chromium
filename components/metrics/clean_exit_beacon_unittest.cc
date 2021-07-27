@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
@@ -24,6 +25,11 @@ TEST(CleanExitBeaconTest, CrashStreakMetricWithDefaultPrefs) {
   TestingPrefServiceSimple pref_service;
   CleanExitBeacon::RegisterPrefs(pref_service.registry());
   base::HistogramTester histogram_tester;
+#if defined(OS_IOS)
+  // On iOS using TestingPrefServiceSimple won't clear NSUserDefaults, so
+  // forcefully clear it here.
+  CleanExitBeacon::ResetStabilityExitedCleanlyForTesting(&pref_service);
+#endif
 
   CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, &pref_service);
   histogram_tester.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes", 0,
@@ -36,7 +42,7 @@ TEST(CleanExitBeaconTest, CrashStreakMetricWithNoCrashes) {
   // The default value for kStabilityExitedCleanly is true, but defaults can
   // change, so we explicitly set it to true here. Similarly, we explicitly set
   // kVariationsCrashStreak to 0.
-  pref_service.SetBoolean(prefs::kStabilityExitedCleanly, true);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&pref_service, true);
   pref_service.SetInteger(variations::prefs::kVariationsCrashStreak, 0);
   base::HistogramTester histogram_tester;
 
@@ -50,7 +56,7 @@ TEST(CleanExitBeaconTest, CrashStreakMetricWithSomeCrashes) {
   CleanExitBeacon::RegisterPrefs(pref_service.registry());
   // The default value for kStabilityExitedCleanly is true, but defaults can
   // change, so we explicitly set it to true here.
-  pref_service.SetBoolean(prefs::kStabilityExitedCleanly, true);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&pref_service, true);
   pref_service.SetInteger(variations::prefs::kVariationsCrashStreak, 1);
   base::HistogramTester histogram_tester;
 
@@ -62,7 +68,7 @@ TEST(CleanExitBeaconTest, CrashStreakMetricWithSomeCrashes) {
 TEST(CleanExitBeaconTest, CrashIncrementsCrashStreak) {
   TestingPrefServiceSimple pref_service;
   CleanExitBeacon::RegisterPrefs(pref_service.registry());
-  pref_service.SetBoolean(prefs::kStabilityExitedCleanly, false);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&pref_service, false);
   pref_service.SetInteger(variations::prefs::kVariationsCrashStreak, 1);
   base::HistogramTester histogram_tester;
 
@@ -77,7 +83,7 @@ TEST(CleanExitBeaconTest,
      CrashIncrementsCrashStreakWithDefaultCrashStreakPref) {
   TestingPrefServiceSimple pref_service;
   CleanExitBeacon::RegisterPrefs(pref_service.registry());
-  pref_service.SetBoolean(prefs::kStabilityExitedCleanly, false);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&pref_service, false);
   base::HistogramTester histogram_tester;
 
   CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey, &pref_service);

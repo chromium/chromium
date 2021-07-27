@@ -139,7 +139,10 @@ static_library("metrics") {
   }
 
   if (is_ios) {
-    sources += [ "drive_metrics_provider_ios.mm" ]
+    sources += [
+      "clean_exit_beacon_ios.mm",
+      "drive_metrics_provider_ios.mm",
+    ]
   }
 
   if (is_linux || is_chromeos) {

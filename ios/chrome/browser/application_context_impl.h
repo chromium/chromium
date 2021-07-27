@@ -124,8 +124,6 @@ class ApplicationContextImpl : public ApplicationContext {
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 
-  bool was_last_shutdown_clean_;
-
   DISALLOW_COPY_AND_ASSIGN(ApplicationContextImpl);
 };
 

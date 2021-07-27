@@ -16,7 +16,6 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -73,21 +72,31 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
 
-  MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_, local_state_);
-
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_IOS)
   // An enumeration of all possible permutations of the the beacon state in the
-  // registry and in Local State.
-  enum {
-    DIRTY_DIRTY,
-    DIRTY_CLEAN,
-    CLEAN_DIRTY,
-    CLEAN_CLEAN,
-    MISSING_DIRTY,
-    MISSING_CLEAN,
-    NUM_CONSISTENCY_ENUMS
-  } consistency = DIRTY_DIRTY;
+  // registry (Windows) or NSUserDefaults (iOS) and in Local State.
+  enum class CleanExitBeaconConsistency {
+    kCleanClean = 0,
+    kCleanDirty = 1,
+    kCleanMissing = 2,
+    kDirtyClean = 3,
+    kDirtyDirty = 4,
+    kDirtyMissing = 5,
+    kMissingClean = 6,
+    kMissingDirty = 7,
+    kMissingMissing = 8,
+    kMaxValue = kMissingMissing,
+  };
+  CleanExitBeaconConsistency consistency =
+      CleanExitBeaconConsistency::kDirtyDirty;
 
+  bool local_state_beacon_is_missing =
+      !local_state_->HasPrefPath(prefs::kStabilityExitedCleanly);
+  bool local_state_was_last_shutdown_clean = did_previous_session_exit_cleanly_;
+
+  bool backup_beacon_was_last_shutdown_clean = true;
+  bool backup_beacon_is_missing = false;
+#if defined(OS_WIN)
   base::win::RegKey regkey;
   DWORD value = 0u;
   if (regkey.Open(HKEY_CURRENT_USER, backup_registry_key_.c_str(),
@@ -95,21 +104,50 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
       regkey.ReadValueDW(
           base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(), &value) ==
           ERROR_SUCCESS) {
-    if (value) {
-      consistency =
-          did_previous_session_exit_cleanly_ ? CLEAN_CLEAN : CLEAN_DIRTY;
+    backup_beacon_was_last_shutdown_clean = value ? true : false;
+  } else {
+    backup_beacon_is_missing = true;
+  }
+#elif defined(OS_IOS)
+  if (HasUserDefaultsBeacon()) {
+    backup_beacon_was_last_shutdown_clean = GetUserDefaultsBeacon();
+  } else {
+    backup_beacon_is_missing = true;
+  }
+#endif  // defined(OS_IOS)
+
+  if (backup_beacon_is_missing) {
+    if (local_state_beacon_is_missing) {
+      consistency = CleanExitBeaconConsistency::kMissingMissing;
     } else {
-      consistency =
-          did_previous_session_exit_cleanly_ ? DIRTY_CLEAN : DIRTY_DIRTY;
+      consistency = local_state_was_last_shutdown_clean
+                        ? CleanExitBeaconConsistency::kMissingClean
+                        : CleanExitBeaconConsistency::kMissingDirty;
     }
   } else {
-    consistency =
-        did_previous_session_exit_cleanly_ ? MISSING_CLEAN : MISSING_DIRTY;
+    if (local_state_beacon_is_missing) {
+      consistency = backup_beacon_was_last_shutdown_clean
+                        ? CleanExitBeaconConsistency::kCleanMissing
+                        : CleanExitBeaconConsistency::kDirtyMissing;
+    } else if (backup_beacon_was_last_shutdown_clean) {
+      consistency = local_state_was_last_shutdown_clean
+                        ? CleanExitBeaconConsistency::kCleanClean
+                        : CleanExitBeaconConsistency::kCleanDirty;
+    } else {
+      consistency = local_state_was_last_shutdown_clean
+                        ? CleanExitBeaconConsistency::kDirtyClean
+                        : CleanExitBeaconConsistency::kDirtyDirty;
+    }
   }
+  base::UmaHistogramEnumeration("UMA.CleanExitBeaconConsistency2", consistency);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "UMA.CleanExitBeaconConsistency", consistency, NUM_CONSISTENCY_ENUMS);
-#endif  // defined(OS_WIN)
+#if defined(OS_IOS)
+  if (ShouldUseUserDefaultsBeacon())
+    did_previous_session_exit_cleanly_ = backup_beacon_was_last_shutdown_clean;
+#endif
+#endif  // defined(OS_WIN) || defined(OS_IOS)
+
+  MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_, local_state_);
 }
 
 CleanExitBeacon::~CleanExitBeacon() = default;
@@ -143,6 +181,8 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     regkey.WriteValue(base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(),
                       exited_cleanly ? 1u : 0u);
   }
+#elif defined(OS_IOS)
+  SetUserDefaultsBeacon(exited_cleanly);
 #endif  // defined(OS_WIN)
 }
 
@@ -169,6 +209,25 @@ void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
 void CleanExitBeacon::EnsureCleanShutdown(PrefService* local_state) {
   if (!g_skip_clean_shutdown_steps)
     CHECK(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+}
+
+// static
+void CleanExitBeacon::SetStabilityExitedCleanlyForTesting(
+    PrefService* local_state,
+    bool exited_cleanly) {
+  local_state->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
+#if defined(OS_IOS)
+  SetUserDefaultsBeacon(exited_cleanly);
+#endif  // defined(OS_IOS)
+}
+
+// static
+void CleanExitBeacon::ResetStabilityExitedCleanlyForTesting(
+    PrefService* local_state) {
+  local_state->ClearPref(prefs::kStabilityExitedCleanly);
+#if defined(OS_IOS)
+  ResetUserDefaultsBeacon();
+#endif  // defined(OS_IOS)
 }
 
 // static

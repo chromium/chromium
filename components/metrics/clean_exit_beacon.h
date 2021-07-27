@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -25,9 +26,7 @@ class CleanExitBeacon {
   // On Windows, |backup_registry_key| stores a backup of the beacon to verify
   // that the pref's value corresponds to the registry's. |backup_registry_key|
   // is ignored on other platforms, but iOS has a similar verification
-  // mechanism using LastSessionExitedCleanly in
-  // ios/chrome/browser/pref_names.cc.
-  // TODO(crbug.com/1208077): Use the CleanExitBeacon for verification on iOS.
+  // mechanism embedded inside CleanExitBeacon.
   CleanExitBeacon(const std::wstring& backup_registry_key,
                   PrefService* local_state);
 
@@ -61,8 +60,28 @@ class CleanExitBeacon {
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Updates pref and NSUserDefault value for stability beacon, as either one
+  // can effect the value of exited_cleanly depending on the value of
+  // ShouldUseUserDefaultsBeacon().
+  static void SetStabilityExitedCleanlyForTesting(PrefService* local_state,
+                                                  bool exited_cleanly);
+
+  // Resets pref and NSUserDefault value for stability beacon.
+  static void ResetStabilityExitedCleanlyForTesting(PrefService* local_state);
+
   // CHECKs that Chrome exited cleanly.
   static void EnsureCleanShutdown(PrefService* local_state);
+
+#if defined(OS_IOS)
+  // Checks user default value of kUseUserDefaultsForExitedCleanlyBeacon.
+  // Because variations are not initialized early in startup, pair a user
+  // defaults value with the variations config.
+  static bool ShouldUseUserDefaultsBeacon();
+
+  // Syncs feature kUseUserDefaultsForExitedCleanlyBeacon to NSUserDefaults
+  // kUserDefaultsFeatureFlagForExitedCleanlyBeacon.
+  static void SyncUseUserDefaultsBeacon();
+#endif  // defined(OS_IOS)
 
   // Prevents a test browser from performing two clean shutdown steps. First, it
   // prevents the beacon value from being updated after this function is called.
@@ -71,8 +90,22 @@ class CleanExitBeacon {
   static void SkipCleanShutdownStepsForTesting();
 
  private:
+#if defined(OS_IOS)
+  // Checks if the NSUserDefault clean exit beacon value is set.
+  static bool HasUserDefaultsBeacon();
+
+  // Gets the NSUserDefault clean exit beacon value.
+  static bool GetUserDefaultsBeacon();
+
+  // Sets the user default clean exit beacon value.
+  static void SetUserDefaultsBeacon(bool clean);
+
+  // Clears the user default clean exit beacon value, used for testing.
+  static void ResetUserDefaultsBeacon();
+#endif  // defined(OS_IOS)
+
   PrefService* const local_state_;
-  const bool did_previous_session_exit_cleanly_;
+  bool did_previous_session_exit_cleanly_ = false;
 
   // This is the value of the last live timestamp from local state at the
   // time of construction. It notes a timestamp from the previous browser

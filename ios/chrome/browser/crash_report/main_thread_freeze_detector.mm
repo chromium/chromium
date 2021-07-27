@@ -103,11 +103,14 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _lastSessionFreezeInfo = [[NSUserDefaults standardUserDefaults]
-        dictionaryForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    _lastSessionFreezeInfo =
+        [defaults dictionaryForKey:@(kNsUserDefaultKeyLastSessionInfo)];
 
     if (_lastSessionFreezeInfo != nil) {
-      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+      // This cannot use WasLastShutdownClean() from the metrics service because
+      // MainThreadFreezeDetector starts before metrics. Instead, grab the value
+      // directly.
       bool clean = [defaults objectForKey:kLastSessionExitedCleanly] != nil &&
                    [defaults boolForKey:kLastSessionExitedCleanly];
       // Last session exited cleanly, ignore _lastSessionFreezeInfo.
@@ -118,8 +121,7 @@ enum class IOSMainThreadFreezeDetectionNotRunningAfterReportBlock {
     }
 
     _lastSessionEndedFrozen = _lastSessionFreezeInfo != nil;
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
+    [defaults removeObjectForKey:@(kNsUserDefaultKeyLastSessionInfo)];
     _delay = kFreezeDetectionDelay;
     _freezeDetectionQueue = dispatch_queue_create(
         "org.chromium.freeze_detection", DISPATCH_QUEUE_SERIAL);
