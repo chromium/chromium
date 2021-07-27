@@ -66,6 +66,30 @@ bool IsValidDeskIndex(int desk_index) {
          desk_index < int{desks_util::kMaxNumberOfDesks};
 }
 
+base::Time GetTime(int year, int month, int day_of_month, int day_of_week) {
+  base::Time::Exploded time_exploded;
+  time_exploded.year = year;
+  time_exploded.month = month;
+  time_exploded.day_of_week = day_of_week;
+  time_exploded.day_of_month = day_of_month;
+  time_exploded.hour = 0;
+  time_exploded.minute = 0;
+  time_exploded.second = 0;
+  time_exploded.millisecond = 0;
+  base::Time time;
+  const bool result = base::Time::FromLocalExploded(time_exploded, &time);
+  DCHECK(result);
+  return time;
+}
+
+// Check if base::Time::Now() is during the time period 07/27/2021 to
+// 09/07/2021.
+bool IsNowInValidTimePeriod() {
+  const auto now = base::Time::Now();
+  return now <= GetTime(2021, 9, 7, /*Tuesday=*/2) &&
+         now >= GetTime(2021, 7, 27, /*Tuesday=*/2);
+}
+
 }  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -75,6 +99,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kDesksWeeklyActiveDesksMetrics);
   registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
                                 kDefaultActiveDeskIndex);
+  registry->RegisterBooleanPref(prefs::kUserHasUsedDesksRecently,
+                                /*default_value=*/false);
 }
 
 void RestorePrimaryUserDesks() {
@@ -218,6 +244,11 @@ void UpdatePrimaryUserDeskNamesPrefs() {
   }
 
   DCHECK_EQ(name_pref_data->GetSize(), desks.size());
+
+  if (IsNowInValidTimePeriod() &&
+      !primary_user_prefs->GetBoolean(prefs::kUserHasUsedDesksRecently)) {
+    primary_user_prefs->SetBoolean(prefs::kUserHasUsedDesksRecently, true);
+  }
 }
 
 void UpdatePrimaryUserDeskMetricsPrefs() {

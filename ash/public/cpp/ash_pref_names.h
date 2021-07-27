@@ -175,6 +175,8 @@ ASH_PUBLIC_EXPORT extern const char kWallpaperColors[];
 ASH_PUBLIC_EXPORT extern const char kSyncableWallpaperInfo[];
 ASH_PUBLIC_EXPORT extern const char kWallpaperCollectionId[];
 
+ASH_PUBLIC_EXPORT extern const char kUserHasUsedDesksRecently[];
+
 ASH_PUBLIC_EXPORT extern const char kUserBluetoothAdapterEnabled[];
 ASH_PUBLIC_EXPORT extern const char kSystemBluetoothAdapterEnabled[];
 
