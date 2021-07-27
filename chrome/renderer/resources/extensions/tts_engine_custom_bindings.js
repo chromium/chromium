@@ -53,7 +53,12 @@ bindingUtil.registerEventArgumentMassager(
           });
         }
       };
-      dispatch([text, options, audioStreamOptions, sendTtsAudio]);
+
+      const sendError = function(errorMessage = '') {
+        chrome.ttsEngine.sendTtsEvent(requestId, {type: 'error', errorMessage});
+      };
+
+      dispatch([text, options, audioStreamOptions, sendTtsAudio, sendError]);
     });
 
 apiBridge.registerCustomHook(function(api) {
