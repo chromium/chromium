@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
 
 @class ConsistencyDefaultAccountViewController;
+@protocol ConsistencyLayoutDelegate;
 
 // Delegate protocol for ConsistencyDefaultAccountViewController.
 @protocol ConsistencyDefaultAccountActionDelegate <NSObject>
@@ -35,6 +36,7 @@
 // Delegate for all the user actions.
 @property(nonatomic, weak) id<ConsistencyDefaultAccountActionDelegate>
     actionDelegate;
+@property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
 
 // Starts the spinner and disables buttons.
 - (void)startSpinner;

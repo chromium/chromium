@@ -40,6 +40,7 @@
       [[ConsistencyDefaultAccountViewController alloc] init];
   self.mediator.consumer = self.defaultAccountViewController;
   self.defaultAccountViewController.actionDelegate = self;
+  self.defaultAccountViewController.layoutDelegate = self.layoutDelegate;
   [self.defaultAccountViewController view];
 }
 

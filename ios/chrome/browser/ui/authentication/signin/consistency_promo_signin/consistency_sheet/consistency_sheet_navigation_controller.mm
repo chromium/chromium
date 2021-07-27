@@ -69,7 +69,7 @@ constexpr CGFloat kCornerRadius = 12.;
           preferredContentSizeDidChangeForChildConsistencySheetViewController];
 }
 
-#pragma mark - Properties
+#pragma mark - ConsistencyLayoutDelegate
 
 - (ConsistencySheetDisplayStyle)displayStyle {
   return [self displayStyleWithTraitCollection:self.traitCollection];

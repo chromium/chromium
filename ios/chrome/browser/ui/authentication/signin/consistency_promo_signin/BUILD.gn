@@ -11,6 +11,7 @@ source_set("consistency_promo_signin") {
     "consistency_promo_signin_coordinator.mm",
   ]
   deps = [
+    ":layout",
     "//components/prefs",
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
@@ -34,4 +35,10 @@ source_set("consistency_promo_signin") {
   ]
   public_deps =
       [ "//ios/chrome/browser/ui/authentication/signin:signin_headers" ]
+}
+
+source_set("layout") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "consistency_layout_delegate.h" ]
+  deps = [ "//ui/base" ]
 }

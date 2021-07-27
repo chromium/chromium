@@ -9,6 +9,7 @@
 
 @class ChromeIdentity;
 @class ConsistencyDefaultAccountCoordinator;
+@protocol ConsistencyLayoutDelegate;
 
 @protocol ConsistencyDefaultAccountCoordinatorDelegate <NSObject>
 
@@ -37,6 +38,7 @@
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 @property(nonatomic, weak) id<ConsistencyDefaultAccountCoordinatorDelegate>
     delegate;
+@property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
 // This property can be used only after the coordinator is started.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 

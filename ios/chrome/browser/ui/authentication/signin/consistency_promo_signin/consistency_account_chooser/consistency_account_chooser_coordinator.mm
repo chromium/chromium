@@ -43,6 +43,7 @@
   self.accountChooserViewController.modelDelegate = self.mediator;
   self.mediator.consumer = self.accountChooserViewController.consumer;
   self.accountChooserViewController.actionDelegate = self;
+  self.accountChooserViewController.layoutDelegate = self.layoutDelegate;
   [self.accountChooserViewController view];
 }
 
@@ -61,7 +62,7 @@
   return self.mediator.selectedIdentity;
 }
 
-#pragma mark - ConsistencyAccountChooserTableViewControllerPresentationDelegate
+#pragma mark - ConsistencyAccountChooserTableViewControllerActionDelegate
 
 - (void)consistencyAccountChooserTableViewController:
             (ConsistencyAccountChooserTableViewController*)viewController

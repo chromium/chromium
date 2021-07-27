@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
@@ -53,6 +54,7 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
 @interface ConsistencyPromoSigninCoordinator () <
     ConsistencyAccountChooserCoordinatorDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
+    ConsistencyLayoutDelegate,
     IdentityManagerObserverBridgeDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
@@ -123,6 +125,7 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
       initWithBaseViewController:self.navigationController
                          browser:self.browser];
   self.defaultAccountCoordinator.delegate = self;
+  self.defaultAccountCoordinator.layoutDelegate = self;
   [self.defaultAccountCoordinator start];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -430,6 +433,7 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
       initWithBaseViewController:self.navigationController
                          browser:self.browser];
   self.accountChooserCoordinator.delegate = self;
+  self.accountChooserCoordinator.layoutDelegate = self;
   [self.accountChooserCoordinator
       startWithSelectedIdentity:self.defaultAccountCoordinator
                                     .selectedIdentity];
@@ -442,6 +446,12 @@ const char* kSigninAccountConsistencyPromoActionSignedInCount =
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
   [self signinWithIdentity:self.selectedIdentity];
+}
+
+#pragma mark - ConsistencyLayoutDelegate
+
+- (ConsistencySheetDisplayStyle)displayStyle {
+  return self.navigationController.displayStyle;
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
