@@ -5713,7 +5713,7 @@ crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/month-picker-appearance-ste
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-appearance-zoom125.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-top-left-selection-position-after-reopen.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-zoom150-bottom-edge-no-nan.html [ Crash Pass ]
-crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appearance-zoom150.html [ Crash Pass ]
+crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appearance-zoom150.html [ Crash Failure Pass ]
 
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
@@ -7290,3 +7290,6 @@ crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-pattern-no-r
 crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/canvas-zero-length-lineCap.html [ Failure Pass ]
 crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Failure Pass ]
 crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xml [ Failure Pass ]
+
+# Sheriff 2021-07-27
+crbug.com/1233557 [ Mac10.12 ] fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Failure Pass ]
