@@ -536,7 +536,14 @@ Polymer({
       case chromeos.printing.printingManager.mojom.PrinterErrorCode.kStopped:
         return loadTimeData.getString('stoppedGeneric');
       case chromeos.printing.printingManager.mojom.PrinterErrorCode
+          .kFilterFailed:
+        return loadTimeData.getString('filterFailed');
+      case chromeos.printing.printingManager.mojom.PrinterErrorCode
           .kUnknownError:
+        return loadTimeData.getString('unknownPrinterErrorStopped');
+      case chromeos.printing.printingManager.mojom.PrinterErrorCode
+          .kPrinterUnreachable:
+        assertNotReached();
         return loadTimeData.getString('unknownPrinterErrorStopped');
       default:
         assertNotReached();
