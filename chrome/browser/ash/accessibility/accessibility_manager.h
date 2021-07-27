@@ -268,7 +268,7 @@ class AccessibilityManager
   bool PlaySpokenFeedbackToggleCountdown(int tick_count);
 
   // Update when a view is focused in ARC++.
-  void OnViewFocusedInArc(const gfx::Rect& bounds_in_screen, bool is_editable);
+  void OnViewFocusedInArc(const gfx::Rect& bounds_in_screen);
 
   // Plays an earcon. Earcons are brief and distinctive sounds that indicate
   // the their mapped event has occurred. The |sound_key| enums can be found in

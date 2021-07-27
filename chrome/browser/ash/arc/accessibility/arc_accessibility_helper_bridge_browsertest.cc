@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
+#include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -30,6 +32,7 @@
 #include "components/viz/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -212,6 +215,74 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
   EXPECT_FALSE(fake_accessibility_helper_instance_->explore_by_touch_enabled());
+}
+
+IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
+                       FocusHighlight) {
+  AccessibilityManager::Get()->SetFocusHighlightEnabled(true);
+
+  ArcTestWindow test_window = MakeTestWindow("org.chromium.arc.1");
+  wm::ActivationClient* activation_client =
+      ash::Shell::Get()->activation_client();
+  activation_client->ActivateWindow(
+      test_window.shell_surface->GetWidget()->GetNativeWindow());
+
+  const gfx::Rect node_rect1 = gfx::Rect(50, 50, 50, 50);
+
+  auto event = mojom::AccessibilityEventData::New();
+  event->event_type = mojom::AccessibilityEventType::VIEW_FOCUSED;
+  event->task_id = 1;
+  event->node_data.push_back(mojom::AccessibilityNodeInfoData::New());
+  auto& node = event->node_data.back();
+  node->bounds_in_screen = node_rect1;
+
+  ArcAccessibilityHelperBridge* bridge =
+      ArcAccessibilityHelperBridge::GetForBrowserContext(browser()->profile());
+  bridge->OnAccessibilityEvent(event.Clone());
+
+  ash::AccessibilityFocusRingControllerImpl* ring_controller =
+      ash::Shell::Get()->accessibility_focus_ring_controller();
+  const std::vector<std::unique_ptr<ash::AccessibilityFocusRingLayer>>&
+      layers1 =
+          ring_controller->GetFocusRingGroupForTesting("HighlightController")
+              ->focus_layers_for_testing();
+  EXPECT_EQ(1u, layers1.size());
+  // Focus ring bounds has some extra margin, so only check some attributes.
+  const gfx::Rect drawn_rect1 = layers1[0]->layer()->bounds();
+  EXPECT_EQ(node_rect1.CenterPoint(), drawn_rect1.CenterPoint());
+  EXPECT_TRUE(drawn_rect1.Contains(node_rect1))
+      << "drawn_rect " << drawn_rect1.ToString()
+      << " should contain the given rect " << node_rect1.ToString();
+
+  // Next, set the filter type to ALL by enabling Select-to-Speak.
+  // We still expect that the focus highlight is updated on a focus event.
+  AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
+
+  const gfx::Rect node_rect2 = gfx::Rect(100, 100, 100, 100);
+
+  // Create a full event data.
+  event->source_id = 10;
+  event->window_data = std::vector<mojom::AccessibilityWindowInfoDataPtr>();
+  event->window_data->push_back(mojom::AccessibilityWindowInfoData::New());
+  auto& window = event->window_data->back();
+  window->window_id = 100;
+  window->root_node_id = 10;
+  node->id = 10;
+  node->bounds_in_screen = node_rect2;
+
+  bridge->OnAccessibilityEvent(event.Clone());
+
+  const std::vector<std::unique_ptr<ash::AccessibilityFocusRingLayer>>&
+      layers2 =
+          ring_controller->GetFocusRingGroupForTesting("HighlightController")
+              ->focus_layers_for_testing();
+  EXPECT_EQ(1u, layers2.size());
+  // Focus ring bounds has some extra margin, so only check some attributes.
+  const gfx::Rect drawn_rect2 = layers2[0]->layer()->bounds();
+  EXPECT_EQ(node_rect2.CenterPoint(), drawn_rect2.CenterPoint());
+  EXPECT_TRUE(drawn_rect2.Contains(node_rect2))
+      << "drawn_rect " << drawn_rect2.ToString()
+      << " should contain the given rect " << node_rect2.ToString();
 }
 
 }  // namespace arc

@@ -562,8 +562,8 @@ void AccessibilityManager::OnLocaleChanged() {
   EnableSpokenFeedback(true);
 }
 
-void AccessibilityManager::OnViewFocusedInArc(const gfx::Rect& bounds_in_screen,
-                                              bool is_editable) {
+void AccessibilityManager::OnViewFocusedInArc(
+    const gfx::Rect& bounds_in_screen) {
   AccessibilityController::Get()->SetFocusHighlightRect(bounds_in_screen);
 }
 

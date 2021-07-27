@@ -106,10 +106,7 @@ void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
       display::Screen::GetScreen()->GetDisplayNearestView(active_window);
   bounds_in_screen.Offset(display.bounds().x(), display.bounds().y());
 
-  bool is_editable = arc::GetBooleanProperty(
-      node_data, arc::mojom::AccessibilityBooleanProperty::EDITABLE);
-
-  accessibility_manager->OnViewFocusedInArc(bounds_in_screen, is_editable);
+  accessibility_manager->OnViewFocusedInArc(bounds_in_screen);
 }
 
 // Singleton factory for ArcAccessibilityHelperBridge.
