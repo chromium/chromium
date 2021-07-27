@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 // Datatypes and interfaces of handwriting recognition API.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
@@ -11,7 +13,7 @@
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
 // clients (Chromium, other downstream repos) later.
-// Use //chromeos/services/machine_learning/public/mojom/roll_mojom.sh to help
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
 
 module chromeos.machine_learning.mojom;
@@ -117,7 +119,7 @@ struct HandwritingRecognizerCandidate {
 [Stable]
 struct HandwritingRecognizerResult {
   // Status of the recognition response.
-  [Stable, ExExtensible]
+  [Stable, Extensible]
   enum Status {
     OK = 0,
     ERROR = 1,
@@ -135,6 +137,9 @@ struct HandwritingRecognizerSpec {
   // The language the recognizer will handle. Only "en" (for english) and
   // "gesture_in_context" (for gesture) are supported.
   string language;
+
+  // Path to the language pack to use (downloaded by Chrome via DLC).
+  [MinVersion=1] string? language_pack_path;
 };
 
 // The mojom interface for performing the recognition of handwritten text.

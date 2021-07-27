@@ -8,10 +8,8 @@ module chromeos.machine_learning.web_platform.mojom;
 
 // https://github.com/WICG/handwriting-recognition/blob/main/explainer.md
 
-// This mojom file is derived from the file below in chromium repo,
-// "//third_party/blink/public/mojom/handwriting/handwriting.mojom" and
-// mirrored into platform2 as well.
-//
+// This mojom file is copied from the file below in chromium repo,
+// "//third_party/blink/public/mojom/handwriting/handwriting.mojom"
 // Notice that some modifications are made,
 //   1. The module is changed to `chromeos.machine_learning.web_platform.mojom`.
 //   2. `[Stable]` tags are added.
@@ -81,7 +79,7 @@ struct HandwritingSegment {
 };
 
 // Represents one single prediction result.
-// The final prediction output is an array of these.
+// The final prediction output is an array of it.
 // Corresponds to handwriting_prediction.idl.
 [Stable]
 struct HandwritingPrediction {
