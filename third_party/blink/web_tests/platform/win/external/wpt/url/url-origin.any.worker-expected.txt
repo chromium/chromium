@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 324 tests; 313 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 326 tests; 315 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -221,7 +221,6 @@ PASS Origin parsing: <http://%30%78%63%30%2e%30%32%35%30.01%2e> against <http://
 PASS Origin parsing: <http://０Ｘｃ０．０２５０．０１> against <http://other.com/>
 PASS Origin parsing: <http://./> against <about:blank>
 PASS Origin parsing: <http://../> against <about:blank>
-PASS Origin parsing: <http://0..0x300/> against <about:blank>
 PASS Origin parsing: <http://foo:💩@example.com/bar> against <http://other.com/>
 PASS Origin parsing: <#> against <test:test>
 PASS Origin parsing: <#x> against <mailto:x@x.com>
@@ -288,16 +287,19 @@ PASS Origin parsing: <http://foo.bar/baz?qux#foo"bar> against <about:blank>
 PASS Origin parsing: <http://foo.bar/baz?qux#foo<bar> against <about:blank>
 PASS Origin parsing: <http://foo.bar/baz?qux#foo>bar> against <about:blank>
 PASS Origin parsing: <http://foo.bar/baz?qux#foo`bar> against <about:blank>
+PASS Origin parsing: <http://1.2.3.4/> against <http://other.com/>
+PASS Origin parsing: <http://1.2.3.4./> against <http://other.com/>
 PASS Origin parsing: <http://192.168.257> against <http://other.com/>
+PASS Origin parsing: <http://192.168.257.> against <http://other.com/>
 PASS Origin parsing: <http://192.168.257.com> against <http://other.com/>
 PASS Origin parsing: <http://256> against <http://other.com/>
 PASS Origin parsing: <http://256.com> against <http://other.com/>
 PASS Origin parsing: <http://999999999> against <http://other.com/>
+PASS Origin parsing: <http://999999999.> against <http://other.com/>
 PASS Origin parsing: <http://999999999.com> against <http://other.com/>
 PASS Origin parsing: <http://10000000000.com> against <http://other.com/>
 PASS Origin parsing: <http://4294967295> against <http://other.com/>
 PASS Origin parsing: <http://0xffffffff> against <http://other.com/>
-PASS Origin parsing: <http://256.256.256.256.256> against <http://other.com/>
 PASS Origin parsing: <https://0x.0x.0> against <about:blank>
 PASS Origin parsing: <asdf://%43%7C/> against <about:blank>
 PASS Origin parsing: <http://[1:0::]> against <http://example.net/>

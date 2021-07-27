@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 326 tests; 318 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 324 tests; 319 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -12,7 +12,7 @@ PASS Parsing origin: <http:foo.com> against <http://example.org/foo/bar>
 PASS Parsing origin: <	   :foo.com   
 > against <http://example.org/foo/bar>
 PASS Parsing origin: < foo.com  > against <http://example.org/foo/bar>
-FAIL Parsing origin: <a:	 foo.com> against <http://example.org/foo/bar> assert_equals: origin expected "null" but got "file://"
+PASS Parsing origin: <a:	 foo.com> against <http://example.org/foo/bar>
 PASS Parsing origin: <http://f:21/ b ? d # e > against <http://example.org/foo/bar>
 PASS Parsing origin: <http://f:/c> against <http://example.org/foo/bar>
 PASS Parsing origin: <http://f:0/c> against <http://example.org/foo/bar>
@@ -38,7 +38,7 @@ PASS Parsing origin: </> against <http://example.org/foo/bar>
 PASS Parsing origin: <:23> against <http://example.org/foo/bar>
 PASS Parsing origin: </:23> against <http://example.org/foo/bar>
 PASS Parsing origin: <\x> against <http://example.org/foo/bar>
-FAIL Parsing origin: <\\x\hello> against <http://example.org/foo/bar> assert_equals: origin expected "http://x" but got "file://"
+PASS Parsing origin: <\\x\hello> against <http://example.org/foo/bar>
 PASS Parsing origin: <::> against <http://example.org/foo/bar>
 PASS Parsing origin: <::23> against <http://example.org/foo/bar>
 PASS Parsing origin: <foo://> against <http://example.org/foo/bar>
@@ -55,7 +55,7 @@ PASS Parsing origin: <foo:/bar.com/> against <http://example.org/foo/bar>
 PASS Parsing origin: <foo://///////> against <http://example.org/foo/bar>
 PASS Parsing origin: <foo://///////bar.com/> against <http://example.org/foo/bar>
 PASS Parsing origin: <foo:////://///> against <http://example.org/foo/bar>
-FAIL Parsing origin: <c:/foo> against <http://example.org/foo/bar> assert_equals: origin expected "null" but got "file://"
+PASS Parsing origin: <c:/foo> against <http://example.org/foo/bar>
 PASS Parsing origin: <//foo/bar> against <http://example.org/foo/bar>
 PASS Parsing origin: <http://foo/path;a??e#f#g> against <http://example.org/foo/bar>
 PASS Parsing origin: <http://foo/abcd?efgh?ijkl> against <http://example.org/foo/bar>
@@ -221,6 +221,7 @@ PASS Parsing origin: <http://%30%78%63%30%2e%30%32%35%30.01%2e> against <http://
 PASS Parsing origin: <http://０Ｘｃ０．０２５０．０１> against <http://other.com/>
 PASS Parsing origin: <http://./> against <about:blank>
 PASS Parsing origin: <http://../> against <about:blank>
+PASS Parsing origin: <http://0..0x300/> against <about:blank>
 PASS Parsing origin: <http://foo:💩@example.com/bar> against <http://other.com/>
 PASS Parsing origin: <#> against <test:test>
 PASS Parsing origin: <#x> against <mailto:x@x.com>
@@ -287,19 +288,16 @@ PASS Parsing origin: <http://foo.bar/baz?qux#foo"bar> against <about:blank>
 PASS Parsing origin: <http://foo.bar/baz?qux#foo<bar> against <about:blank>
 PASS Parsing origin: <http://foo.bar/baz?qux#foo>bar> against <about:blank>
 PASS Parsing origin: <http://foo.bar/baz?qux#foo`bar> against <about:blank>
-PASS Parsing origin: <http://1.2.3.4/> against <http://other.com/>
-PASS Parsing origin: <http://1.2.3.4./> against <http://other.com/>
 PASS Parsing origin: <http://192.168.257> against <http://other.com/>
-PASS Parsing origin: <http://192.168.257.> against <http://other.com/>
 PASS Parsing origin: <http://192.168.257.com> against <http://other.com/>
 PASS Parsing origin: <http://256> against <http://other.com/>
 PASS Parsing origin: <http://256.com> against <http://other.com/>
 PASS Parsing origin: <http://999999999> against <http://other.com/>
-PASS Parsing origin: <http://999999999.> against <http://other.com/>
 PASS Parsing origin: <http://999999999.com> against <http://other.com/>
 PASS Parsing origin: <http://10000000000.com> against <http://other.com/>
 PASS Parsing origin: <http://4294967295> against <http://other.com/>
 PASS Parsing origin: <http://0xffffffff> against <http://other.com/>
+PASS Parsing origin: <http://256.256.256.256.256> against <http://other.com/>
 PASS Parsing origin: <https://0x.0x.0> against <about:blank>
 PASS Parsing origin: <asdf://%43%7C/> against <about:blank>
 PASS Parsing origin: <http://[1:0::]> against <http://example.net/>
