@@ -143,6 +143,7 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
   prefs_initialized_ = true;
 
   MigrateQuickAnswersConsentStatus(pref_service);
+  UpdateEligibility();
 }
 
 void QuickAnswersState::OnAssistantFeatureAllowedChanged(
@@ -284,7 +285,8 @@ void QuickAnswersState::UpdateEligibility() {
     std::string resolved_locale;
     l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
                                      /*perform_io=*/false);
-    is_eligible_ = settings_enabled_ &&
+    bool should_show_consent = consent_status_ == ConsentStatus::kUnknown;
+    is_eligible_ = (settings_enabled_ || should_show_consent) &&
                    IsQuickAnswersAllowedForLocale(
                        resolved_locale, icu::Locale::getDefault().getName());
     return;

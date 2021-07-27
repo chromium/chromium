@@ -92,7 +92,7 @@ class ASH_EXPORT QuickAnswersUiController {
   // Used by the controller to check if the user consent view is currently
   // showing instead of QuickAnswers.
   bool is_showing_user_consent_view() const {
-    return user_notice_view_ != nullptr;
+    return user_consent_view_ != nullptr;
   }
 
   // Used by the controller to check if the QuickAnswers view is currently
