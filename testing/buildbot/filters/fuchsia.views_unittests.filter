@@ -36,3 +36,7 @@
 -DesktopWidgetTestTest.GetAllWidgets
 -LabelTest.FontPropertyArial
 -LabelTest.FontPropertySymbol
+
+# TODO(crbug.com/1233426): These tests require handling fullscreen windows.
+-DesktopAuraWidgetTest.*Fullscreen*
+-DesktopWidgetTest.*Fullscreen*
