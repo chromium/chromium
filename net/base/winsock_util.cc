@@ -5,6 +5,7 @@
 #include "net/base/winsock_util.h"
 
 #include "base/check.h"
+#include "base/debug/alias.h"
 #include "net/base/net_errors.h"
 
 namespace net {
@@ -24,6 +25,7 @@ void CheckEventWait(WSAEVENT hEvent, DWORD wait_rv, DWORD expected) {
     DWORD err = ERROR_SUCCESS;
     if (wait_rv == WAIT_FAILED)
       err = GetLastError();
+    base::debug::Alias(&err);
     CHECK(false);  // Crash.
   }
 }

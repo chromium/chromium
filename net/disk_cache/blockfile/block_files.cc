@@ -157,10 +157,6 @@ bool BlockHeader::UsedMapBlock(int index, int size) {
 
   int byte_index = index / 8;
   uint8_t* byte_map = reinterpret_cast<uint8_t*>(header_->allocation_map);
-  uint8_t map_block = byte_map[byte_index];
-
-  if (index % 8 >= 4)
-    map_block >>= 4;
 
   STRESS_DCHECK((((1 << size) - 1) << (index % 8)) < 0x100);
   uint8_t to_clear = ((1 << size) - 1) << (index % 8);

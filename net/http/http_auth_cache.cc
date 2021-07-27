@@ -166,7 +166,6 @@ HttpAuthCache::Entry* HttpAuthCache::Add(
   HttpAuthCache::Entry* entry =
       Lookup(origin, target, realm, scheme, network_isolation_key);
   if (!entry) {
-    bool evicted = false;
     // Failsafe to prevent unbounded memory growth of the cache.
     //
     // Data was collected in June of 2019, before entries were keyed on either
@@ -178,7 +177,6 @@ HttpAuthCache::Entry* HttpAuthCache::Add(
     if (entries_.size() >= kMaxNumRealmEntries) {
       DLOG(WARNING) << "Num auth cache entries reached limit -- evicting";
       EvictLeastRecentlyUsedEntry();
-      evicted = true;
     }
     entry = &(entries_
                   .emplace(std::make_pair(
@@ -244,7 +242,6 @@ void HttpAuthCache::Entry::AddPath(const std::string& path) {
     // Remove any entries that have been subsumed by the new entry.
     base::EraseIf(paths_, IsEnclosedBy(parent_dir));
 
-    bool evicted = false;
     // Failsafe to prevent unbounded memory growth of the cache.
     //
     // Data collected on June of 2019 indicate that when we get here, the list
@@ -253,7 +250,6 @@ void HttpAuthCache::Entry::AddPath(const std::string& path) {
       DLOG(WARNING) << "Num path entries for " << origin()
                     << " has grown too large -- evicting";
       paths_.pop_back();
-      evicted = true;
     }
 
     // Add new path.
