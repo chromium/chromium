@@ -604,8 +604,9 @@ class SimpleType(IdlType):
     _NUMERIC_TYPES = _FLOATING_POINT_NUMERIC_TYPES + _INTEGER_TYPES
     _STRING_TYPES = ('DOMString', 'ByteString', 'USVString')
     _TYPED_ARRAY_TYPES = ('Int8Array', 'Int16Array', 'Int32Array',
-                          'Uint8Array', 'Uint16Array', 'Uint32Array',
-                          'Uint8ClampedArray', 'Float32Array', 'Float64Array')
+                          'BigInt64Array', 'Uint8Array', 'Uint16Array',
+                          'Uint32Array', 'BigUint64Array', 'Uint8ClampedArray',
+                          'Float32Array', 'Float64Array')
     # ArrayBufferView is not defined as a buffer source type in Web IDL, it's
     # defined as an union type of all typed array types.  However, practically
     # it's much more convenient and reasonable for most of (if not all) use

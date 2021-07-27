@@ -1184,8 +1184,9 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
         dispatch_if("{value}->IsDataView()")
 
     # 12.7. if Type(V) is Object, V has a [[TypedArrayName]] internal slot, ...
-    typed_array_types = ("Int8Array", "Int16Array", "Int32Array", "Uint8Array",
-                         "Uint16Array", "Uint32Array", "Uint8ClampedArray",
+    typed_array_types = ("Int8Array", "Int16Array", "Int32Array",
+                         "BigInt64Array", "Uint8Array", "Uint16Array",
+                         "Uint32Array", "BigUint64Array", "Uint8ClampedArray",
                          "Float32Array", "Float64Array")
     for typed_array_type in typed_array_types:
         func_like = find(lambda t, u: u.keyword_typename == typed_array_type)

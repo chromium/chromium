@@ -376,8 +376,9 @@ def make_factory_methods(cg_context):
     #   then:
     # 8.1. If types includes a typed array type whose name is the value of V's
     #   [[TypedArrayName]] internal slot, ...
-    typed_array_types = ("Int8Array", "Int16Array", "Int32Array", "Uint8Array",
-                         "Uint16Array", "Uint32Array", "Uint8ClampedArray",
+    typed_array_types = ("Int8Array", "Int16Array", "Int32Array",
+                         "BigInt64Array", "Uint8Array", "Uint16Array",
+                         "Uint32Array", "BigUint64Array", "Uint8ClampedArray",
                          "Float32Array", "Float64Array")
     for typed_array_type in typed_array_types:
         member = find_by_type(lambda t: t.keyword_typename == typed_array_type)
