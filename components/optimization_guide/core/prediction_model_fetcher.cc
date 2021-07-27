@@ -52,7 +52,7 @@ bool PredictionModelFetcher::FetchOptimizationGuideServiceModels(
     proto::RequestContext request_context,
     const std::string& locale,
     ModelsFetchedCallback models_fetched_callback) {
-  SEQUENCE_CHECKER(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (network_connection_tracker_->IsOffline()) {
     std::move(models_fetched_callback).Run(absl::nullopt);
