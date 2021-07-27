@@ -5,16 +5,12 @@
 #include "gpu/command_buffer/service/shared_image_backing_ozone.h"
 
 #include <dawn/webgpu.h>
-#include <vulkan/vulkan.h>
 
 #include <memory>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -26,7 +22,6 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image_representation_gl_ozone.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
-#include "gpu/vulkan/vulkan_device_queue.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -38,8 +33,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_image_native_pixmap.h"
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
 
 #if BUILDFLAG(USE_DAWN)
 #include "gpu/command_buffer/service/shared_image_representation_dawn_ozone.h"
@@ -51,18 +44,6 @@ namespace {
 size_t GetPixmapSizeInBytes(const gfx::NativePixmap& pixmap) {
   return gfx::BufferSizeForBufferFormat(pixmap.GetBufferSize(),
                                         pixmap.GetBufferFormat());
-}
-
-gfx::BufferUsage GetBufferUsage(uint32_t usage) {
-  if (usage & SHARED_IMAGE_USAGE_WEBGPU) {
-    // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
-    return gfx::BufferUsage::SCANOUT;
-  } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
-    return gfx::BufferUsage::SCANOUT;
-  } else {
-    NOTREACHED() << "Unsupported usage flags.";
-    return gfx::BufferUsage::SCANOUT;
-  }
 }
 
 }  // namespace
@@ -121,38 +102,6 @@ class SharedImageBackingOzone::SharedImageRepresentationOverlayOzone
 
   scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
-
-std::unique_ptr<SharedImageBackingOzone> SharedImageBackingOzone::Create(
-    scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
-    SharedContextState* context_state,
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    SurfaceHandle surface_handle) {
-  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  gfx::BufferUsage buffer_usage = GetBufferUsage(usage);
-  VkDevice vk_device = VK_NULL_HANDLE;
-  DCHECK(context_state);
-  if (context_state->vk_context_provider()) {
-    vk_device = context_state->vk_context_provider()
-                    ->GetDeviceQueue()
-                    ->GetVulkanDevice();
-  }
-  ui::SurfaceFactoryOzone* surface_factory =
-      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-  scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
-      surface_handle, vk_device, size, buffer_format, buffer_usage);
-  if (!pixmap) {
-    return nullptr;
-  }
-  return base::WrapUnique(new SharedImageBackingOzone(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      context_state, std::move(pixmap), std::move(dawn_procs)));
-}
 
 SharedImageBackingOzone::~SharedImageBackingOzone() = default;
 

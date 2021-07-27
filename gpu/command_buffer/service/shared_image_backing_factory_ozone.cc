@@ -8,11 +8,34 @@
 #include <dawn_native/DawnNative.h>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_backing_ozone.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
+#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 
 namespace gpu {
+namespace {
+
+gfx::BufferUsage GetBufferUsage(uint32_t usage) {
+  if (usage & SHARED_IMAGE_USAGE_WEBGPU) {
+    // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
+    return gfx::BufferUsage::SCANOUT;
+  } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
+    return gfx::BufferUsage::SCANOUT;
+  } else {
+    NOTREACHED() << "Unsupported usage flags.";
+    return gfx::BufferUsage::SCANOUT;
+  }
+}
+
+}  // namespace
 
 SharedImageBackingFactoryOzone::SharedImageBackingFactoryOzone(
     SharedContextState* shared_context_state)
@@ -37,9 +60,25 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     uint32_t usage,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
-  return SharedImageBackingOzone::Create(
-      dawn_procs_, shared_context_state_, mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, surface_handle);
+  gfx::BufferFormat buffer_format = viz::BufferFormat(format);
+  VkDevice vk_device = VK_NULL_HANDLE;
+  DCHECK(shared_context_state_);
+  if (shared_context_state_->vk_context_provider()) {
+    vk_device = shared_context_state_->vk_context_provider()
+                    ->GetDeviceQueue()
+                    ->GetVulkanDevice();
+  }
+  ui::SurfaceFactoryOzone* surface_factory =
+      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
+      surface_handle, vk_device, size, buffer_format, GetBufferUsage(usage));
+  if (!pixmap) {
+    return nullptr;
+  }
+  auto backing = std::make_unique<SharedImageBackingOzone>(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      shared_context_state_, std::move(pixmap), dawn_procs_);
+  return backing;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -69,8 +108,21 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  ui::SurfaceFactoryOzone* surface_factory =
+      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      surface_factory->CreateNativePixmapFromHandle(
+          surface_handle, size, buffer_format,
+          std::move(handle.native_pixmap_handle));
+  if (!pixmap) {
+    return nullptr;
+  }
+  auto backing = std::make_unique<SharedImageBackingOzone>(
+      mailbox, viz::GetResourceFormat(buffer_format), size, color_space,
+      surface_origin, alpha_type, usage, shared_context_state_,
+      std::move(pixmap), dawn_procs_);
+  backing->SetCleared();
+  return backing;
 }
 
 bool SharedImageBackingFactoryOzone::IsSupported(
@@ -84,8 +136,7 @@ bool SharedImageBackingFactoryOzone::IsSupported(
   if (is_pixel_used) {
     return false;
   }
-  // Doesn't support gmb for now
-  if (gmb_type != gfx::EMPTY_BUFFER) {
+  if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
   }
   // TODO(crbug.com/969114): Not all shared image factory implementations

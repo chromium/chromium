@@ -21,7 +21,8 @@ class SharedContextState;
 class GPU_GLES2_EXPORT SharedImageBackingFactoryOzone
     : public SharedImageBackingFactory {
  public:
-  SharedImageBackingFactoryOzone(SharedContextState* shared_context_state);
+  explicit SharedImageBackingFactoryOzone(
+      SharedContextState* shared_context_state);
 
   ~SharedImageBackingFactoryOzone() override;
 

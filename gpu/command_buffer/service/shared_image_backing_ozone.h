@@ -34,9 +34,7 @@ class VaapiDependencies;
 // aliased by both GL and Vulkan for use in rendering or compositing.
 class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
  public:
-  static std::unique_ptr<SharedImageBackingOzone> Create(
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs,
-      SharedContextState* context_state,
+  SharedImageBackingOzone(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
@@ -44,7 +42,10 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      SurfaceHandle surface_handle);
+      SharedContextState* context_state,
+      scoped_refptr<gfx::NativePixmap> pixmap,
+      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
+
   ~SharedImageBackingOzone() override;
 
   // gpu::SharedImageBacking:
@@ -80,18 +81,6 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   friend class SharedImageRepresentationDawnOzone;
   class SharedImageRepresentationVaapiOzone;
   class SharedImageRepresentationOverlayOzone;
-
-  SharedImageBackingOzone(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      SharedContextState* context_state,
-      scoped_refptr<gfx::NativePixmap> pixmap,
-      scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
 
   bool VaSync();
 
