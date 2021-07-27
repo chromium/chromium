@@ -73,6 +73,8 @@ uint64_t Sum(const CpuStats& stats) {
 
 DataSource::Snapshot::Snapshot() = default;
 DataSource::Snapshot::Snapshot(const Snapshot&) = default;
+DataSource::Snapshot& DataSource::Snapshot::operator=(const Snapshot&) =
+    default;
 
 DataSource::DataSource() {
   cpu_stats_base_ = {0};

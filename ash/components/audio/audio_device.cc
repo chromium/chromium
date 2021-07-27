@@ -159,6 +159,8 @@ AudioDevice::AudioDevice(const chromeos::AudioNode& node) {
 
 AudioDevice::AudioDevice(const AudioDevice& other) = default;
 
+AudioDevice& AudioDevice::operator=(const AudioDevice& other) = default;
+
 std::string AudioDevice::ToString() const {
   if (stable_device_id_version == 0) {
     return "Null device";

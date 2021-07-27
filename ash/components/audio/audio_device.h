@@ -41,6 +41,7 @@ struct COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevice {
   AudioDevice();
   explicit AudioDevice(const chromeos::AudioNode& node);
   AudioDevice(const AudioDevice& other);
+  AudioDevice& operator=(const AudioDevice& other);
   std::string ToString() const;
 
   // Converts between the string type sent via D-Bus and AudioDeviceType.
