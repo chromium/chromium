@@ -109,11 +109,13 @@
         display: none;
       }
 
+      :host-context([enable-branding-update]):host([always-show-logo]) picture,
       :host-context([enable-branding-update]):host(:not([narrow])) picture {
         display: initial;
         margin-inline-end: 10px;
       }
 
+      :host-context([enable-branding-update]):host([always-show-logo]) :is(picture, #product-logo),
       :host-context([enable-branding-update]):host(:not([narrow])) :is(picture, #product-logo) {
         height: 24px;
         width: 24px;

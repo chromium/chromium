@@ -390,3 +390,15 @@ var CrElementsAutoImgTest = class extends CrElementsBrowserTest {
 TEST_F('CrElementsAutoImgTest', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var CrElementsToolbarTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_test.js';
+  }
+};
+
+TEST_F('CrElementsToolbarTest', 'All', function() {
+  mocha.run();
+});

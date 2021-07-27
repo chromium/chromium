@@ -49,6 +49,7 @@ js_type_check("closure_compile") {
     ":cr_toggle_test",
     ":cr_toolbar_focus_tests",
     ":cr_toolbar_search_field_tests",
+    ":cr_toolbar_test",
     ":cr_view_manager_test",
     ":iron_list_focus_test",
   ]
@@ -384,6 +385,15 @@ js_library("cr_toolbar_focus_tests") {
     "..:chai_assert",
     "..:test_util.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("cr_toolbar_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_util.m",
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
