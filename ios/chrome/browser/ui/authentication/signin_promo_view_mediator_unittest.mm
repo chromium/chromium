@@ -74,6 +74,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = builder.Build();
+
+    feature_list_.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   }
 
   void TearDown() override {
@@ -177,7 +179,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // device.
   void ExpectNoAccountsConfiguration() {
     OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
-    NSString* title = GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+    NSString* title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
     OCMExpect([signin_promo_view_ setAccessibilityLabel:title]);
     OCMExpect([primary_button_ setTitle:title forState:UIControlStateNormal]);
     image_view_profile_image_ = nil;
@@ -297,6 +299,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   UIImage* image_view_profile_image_;
   // Value set by -[close_button_ setHidden:].
   BOOL close_button_hidden_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests signin promo view and its configurator with no accounts on the device.

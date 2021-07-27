@@ -62,7 +62,10 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
   EXPECT_FALSE(delegate->Accept());
 }
 
-TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
+TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableErrorWithoutMICE) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(signin::kMobileIdentityConsistency);
+
   ON_CALL(*sync_setup_service_mock(), GetSyncServiceState())
       .WillByDefault(Return(SyncSetupService::kSyncServiceUnrecoverableError));
 
@@ -74,7 +77,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
   EXPECT_FALSE(delegate->Accept());
 }
 
-TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableErrorWithMICE) {
+TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
 

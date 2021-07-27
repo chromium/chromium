@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -150,12 +151,15 @@ TEST_F(AdvancedSettingsSigninMediatorTest,
 // sign-in is successful.
 TEST_F(AdvancedSettingsSigninMediatorTest,
        saveUserPreferenceSigninSuccessSyncDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
   EXPECT_CALL(*sync_setup_service_mock_, CanSyncFeatureStart)
       .WillOnce(Return(false));
   EXPECT_CALL(*sync_setup_service_mock_,
               SetFirstSetupComplete(
                   syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
-      .Times(0);
+      .Times(1);
 
   authentication_service_fake_->SignIn(identity_);
   [mediator_ saveUserPreferenceForSigninResult:SigninCoordinatorResultSuccess
