@@ -137,7 +137,8 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
       forceRestart || !appIsRunning || appPIDChanged ||
       !LaunchArgumentsAreEqual(arguments, self.currentLaunchArgs);
   if (!appNeedsLaunching) {
-    [self.runningApplication activate];
+    XCTAssertTrue(self.runningApplication.state ==
+                  XCUIApplicationStateRunningForeground);
     return;
   }
 
@@ -150,6 +151,13 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
     }
 
     [self.runningApplication terminate];
+
+    // Can't use EG conditionals here since the app is terminated.
+    XCTAssertTrue([self.runningApplication
+        waitForState:XCUIApplicationStateNotRunning
+             timeout:15]);
+    XCTAssertTrue(self.runningApplication.state ==
+                  XCUIApplicationStateNotRunning);
   }
 
   XCUIApplication* application = [[XCUIApplication alloc] init];
