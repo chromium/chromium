@@ -559,8 +559,7 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       shell_delegate_(std::move(shell_delegate)),
       shutdown_controller_(std::make_unique<ShutdownControllerImpl>()),
       system_tray_notifier_(std::make_unique<SystemTrayNotifier>()),
-      native_cursor_manager_(nullptr),
-      quick_pair_mediator_(quick_pair::Mediator::Factory::Create()) {
+      native_cursor_manager_(nullptr) {
   AccelerometerReader::GetInstance()->Initialize();
 
   login_screen_controller_ =
@@ -580,6 +579,10 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
         std::move(bluetooth_system_factory));
   } else {
     tray_bluetooth_helper_ = std::make_unique<TrayBluetoothHelperLegacy>();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kFastPair)) {
+    quick_pair_mediator_ = quick_pair::Mediator::Factory::Create();
   }
 
   PowerStatus::Initialize();
