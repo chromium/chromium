@@ -702,6 +702,11 @@ void FindBadConstructsConsumer::CountType(const Type* type,
           (*trivial_member)++;
           break;
         }
+        if (options_.raw_ptr_template_as_trivial_member &&
+            base_name == "base::raw_ptr") {
+          (*trivial_member)++;
+          break;
+        }
       }
 
         (*templated_non_trivial_member)++;
