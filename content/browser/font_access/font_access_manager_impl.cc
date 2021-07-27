@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/font_access_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/features.h"
@@ -149,7 +150,8 @@ void FontAccessManagerImpl::ChooseLocalFonts(
   choosers_[context.frame_id] = delegate->RunChooser(
       rfh, selection,
       base::BindOnce(&FontAccessManagerImpl::DidChooseLocalFonts,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this), context.frame_id,
+                     std::move(callback)));
 #endif
 }
 
@@ -237,15 +239,15 @@ void FontAccessManagerImpl::DidFindAllFonts(
 }
 
 void FontAccessManagerImpl::DidChooseLocalFonts(
+    GlobalRenderFrameHostId frame_id,
     ChooseLocalFontsCallback callback,
     blink::mojom::FontEnumerationStatus status,
     std::vector<blink::mojom::FontMetadataPtr> fonts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The chooser has fulfilled its purpose. It's safe to dispose of it.
-  const BindingContext& context = receivers_.current_context();
-  int erased = choosers_.erase(context.frame_id);
-  DCHECK(erased == 1);
+  size_t erased = choosers_.erase(frame_id);
+  DCHECK_EQ(erased, 1u);
 
   std::move(callback).Run(std::move(status), std::move(fonts));
 }

@@ -63,7 +63,7 @@ class CONTENT_EXPORT FontAccessManagerImpl
       const BindingContext& context,
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);
 
-  // blink.mojom.FontAccessManager:
+  // blink::mojom::FontAccessManager:
   void EnumerateLocalFonts(EnumerateLocalFontsCallback callback) override;
   void ChooseLocalFonts(const std::vector<std::string>& selection,
                         ChooseLocalFontsCallback callback) override;
@@ -82,7 +82,8 @@ class CONTENT_EXPORT FontAccessManagerImpl
   void DidFindAllFonts(FindAllFontsCallback callback,
                        blink::mojom::FontEnumerationStatus,
                        base::ReadOnlySharedMemoryRegion);
-  void DidChooseLocalFonts(ChooseLocalFontsCallback callback,
+  void DidChooseLocalFonts(GlobalRenderFrameHostId frame_id,
+                           ChooseLocalFontsCallback callback,
                            blink::mojom::FontEnumerationStatus status,
                            std::vector<blink::mojom::FontMetadataPtr> fonts);
 
