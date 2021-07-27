@@ -30,11 +30,10 @@ class FakeChromeIdentityService : public ChromeIdentityService {
       ChromeIdentity* identity,
       UIViewController* viewController,
       BOOL animated) override;
-  ChromeIdentityInteractionManager* CreateChromeIdentityInteractionManager(
-      id<ChromeIdentityInteractionManagerDelegate> delegate) const override;
+  ChromeIdentityInteractionManager* CreateChromeIdentityInteractionManager()
+      const override;
   FakeChromeIdentityInteractionManager*
-  CreateFakeChromeIdentityInteractionManager(
-      id<ChromeIdentityInteractionManagerDelegate> delegate) const;
+  CreateFakeChromeIdentityInteractionManager() const;
 
   void IterateOverIdentities(IdentityIteratorCallback callback) override;
   void ForgetIdentity(ChromeIdentity* identity,

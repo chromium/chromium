@@ -21,10 +21,11 @@
 }
 @end
 
-@interface FakeChromeIdentityInteractionManager () {
-  SigninCompletionCallback _completionCallback;
-  UIViewController* _viewController;
-}
+@interface FakeChromeIdentityInteractionManager ()
+
+@property(nonatomic, strong) UIViewController* addAccountViewController;
+@property(nonatomic, copy) SigninCompletionCallback completionCallback;
+@property(nonatomic, assign, readwrite) BOOL viewControllerPresented;
 
 @end
 
@@ -108,13 +109,15 @@ static ChromeIdentity* _identity = nil;
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
                                     completion:
                                         (SigninCompletionCallback)completion {
-  _completionCallback = completion;
-  _viewController =
+  self.completionCallback = completion;
+  self.addAccountViewController =
       [[FakeAddAccountViewController alloc] initWithInteractionManager:self];
-  [self.delegate interactionManager:self
-              presentViewController:_viewController
-                           animated:YES
-                         completion:nil];
+  __weak __typeof(self) weakSelf = self;
+  [viewController presentViewController:self.addAccountViewController
+                               animated:YES
+                             completion:^() {
+                               weakSelf.viewControllerPresented = YES;
+                             }];
 }
 
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
@@ -125,8 +128,8 @@ static ChromeIdentity* _identity = nil;
                                     completion:completion];
 }
 
-- (void)cancelAddAccountWithAnimation:(BOOL)animated
-                           completion:(void (^)(void))completion {
+- (void)cancelAddAccountAnimated:(BOOL)animated
+                      completion:(void (^)(void))completion {
   [self dismissAndRunCompletionCallbackWithError:[self canceledError]
                                         animated:animated
                                       completion:completion];
@@ -163,28 +166,31 @@ static ChromeIdentity* _identity = nil;
 - (void)dismissAndRunCompletionCallbackWithError:(NSError*)error
                                         animated:(BOOL)animated
                                       completion:(void (^)(void))completion {
-  if (!_viewController) {
+  if (!self.addAccountViewController) {
     [self runCompletionCallbackWithError:error];
     return;
   }
-  [self.delegate interactionManager:self
+  __weak __typeof(self) weakSelf = self;
+  [self.addAccountViewController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:^{
-                           [self runCompletionCallbackWithError:error];
+                           [weakSelf runCompletionCallbackWithError:error];
                            if (completion) {
                              completion();
                            }
+                           weakSelf.viewControllerPresented = NO;
                          }];
 }
 
 - (void)runCompletionCallbackWithError:(NSError*)error {
-  _viewController = nil;
-  if (_completionCallback) {
+  self.addAccountViewController = nil;
+  if (self.completionCallback) {
     // Ensure self is not destroyed in the callback.
     NS_VALID_UNTIL_END_OF_SCOPE FakeChromeIdentityInteractionManager*
         strongSelf = self;
-    _completionCallback(FakeChromeIdentityInteractionManager.identity, error);
-    _completionCallback = nil;
+    self.completionCallback(FakeChromeIdentityInteractionManager.identity,
+                            error);
+    self.completionCallback = nil;
   }
 }
 

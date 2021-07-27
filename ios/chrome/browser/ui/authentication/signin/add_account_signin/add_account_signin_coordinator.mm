@@ -32,16 +32,14 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-@interface AddAccountSigninCoordinator () <
-    AddAccountSigninManagerDelegate,
-    ChromeIdentityInteractionManagerDelegate>
+@interface AddAccountSigninCoordinator () <AddAccountSigninManagerDelegate>
 
 // Coordinator to display modal alerts to the user.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // Coordinator that handles the sign-in UI flow.
 @property(nonatomic, strong) SigninCoordinator* userSigninCoordinator;
 // Manager that handles sign-in add account UI.
-@property(nonatomic, strong) AddAccountSigninManager* manager;
+@property(nonatomic, strong) AddAccountSigninManager* addAccountSigninManager;
 // Manager that handles interactions to add identities.
 @property(nonatomic, strong)
     ChromeIdentityInteractionManager* identityInteractionManager;
@@ -52,9 +50,9 @@ using signin_metrics::PromoAction;
 // Add account sign-in intent.
 @property(nonatomic, assign, readonly) AddAccountSigninIntent signinIntent;
 // Stores the account creation URL. This URL is received by:
-// |self.manager.openAccountCreationURLCallback|, and used once |self.manager|
-// is fully dismissed (when |addAccountSigninManagerFinishedWithSigninResult:
-// identity:| is called).
+// |self.addAccountSigninManager.openAccountCreationURLCallback|, and used once
+// |self.addAccountSigninManager| is fully dismissed (when
+// |addAccountSigninManagerFinishedWithSigninResult:identity:| is called).
 @property(nonatomic, strong) NSURL* openAccountCreationURL;
 
 @end
@@ -83,7 +81,7 @@ using signin_metrics::PromoAction;
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action
                  completion:(ProceduralBlock)completion {
   if (self.userSigninCoordinator) {
-    DCHECK(!self.identityInteractionManager);
+    DCHECK(!self.addAccountSigninManager);
     // When interrupting |self.userSigninCoordinator|,
     // |self.userSigninCoordinator.signinCompletion| is called. This callback
     // is in charge to call |[self runCompletionCallbackWithSigninResult:
@@ -93,19 +91,16 @@ using signin_metrics::PromoAction;
     return;
   }
 
-  DCHECK(self.identityInteractionManager);
-  self.manager.signinInterrupted = YES;
+  DCHECK(self.addAccountSigninManager);
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:
     case SigninCoordinatorInterruptActionDismissWithoutAnimation:
-      [self.identityInteractionManager
-          cancelAddAccountWithAnimation:NO
-                             completion:completion];
+      [self.addAccountSigninManager interruptAddAccountAnimated:NO
+                                                     completion:completion];
       break;
     case SigninCoordinatorInterruptActionDismissWithAnimation:
-      [self.identityInteractionManager
-          cancelAddAccountWithAnimation:YES
-                             completion:completion];
+      [self.addAccountSigninManager interruptAddAccountAnimated:YES
+                                                     completion:completion];
       break;
   }
 }
@@ -114,50 +109,30 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
-  self.identityInteractionManager =
+  ChromeIdentityInteractionManager* identityInteractionManager =
       ios::GetChromeBrowserProvider()
           .GetChromeIdentityService()
-          ->CreateChromeIdentityInteractionManager(self);
+          ->CreateChromeIdentityInteractionManager();
 
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  self.manager = [[AddAccountSigninManager alloc]
-      initWithPresentingViewController:self.baseViewController
-            identityInteractionManager:self.identityInteractionManager
-                           prefService:self.browser->GetBrowserState()
-                                           ->GetPrefs()
-                       identityManager:identityManager];
-  self.manager.delegate = self;
-  [self.manager showSigninWithIntent:self.signinIntent];
+  self.addAccountSigninManager = [[AddAccountSigninManager alloc]
+      initWithBaseViewController:self.baseViewController
+      identityInteractionManager:identityInteractionManager
+                     prefService:self.browser->GetBrowserState()->GetPrefs()
+                 identityManager:identityManager];
+  self.addAccountSigninManager.delegate = self;
+  [self.addAccountSigninManager showSigninWithIntent:self.signinIntent];
 }
 
 - (void)stop {
   [super stop];
   // If one of those 3 DCHECK() fails, -[AddAccountSigninCoordinator
   // runCompletionCallbackWithSigninResult] has not been called.
-  DCHECK(!self.identityInteractionManager);
+  DCHECK(!self.addAccountSigninManager);
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.userSigninCoordinator);
-}
-
-#pragma mark - ChromeIdentityInteractionManagerDelegate
-
-- (void)interactionManager:(ChromeIdentityInteractionManager*)interactionManager
-    dismissViewControllerAnimated:(BOOL)animated
-                       completion:(ProceduralBlock)completion {
-  [self.baseViewController.presentedViewController
-      dismissViewControllerAnimated:animated
-                         completion:completion];
-}
-
-- (void)interactionManager:(ChromeIdentityInteractionManager*)interactionManager
-     presentViewController:(UIViewController*)viewController
-                  animated:(BOOL)animated
-                completion:(ProceduralBlock)completion {
-  [self.baseViewController presentViewController:viewController
-                                        animated:animated
-                                      completion:completion];
 }
 
 #pragma mark - AddAccountSigninManagerDelegate
@@ -180,15 +155,15 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)signinResult
                                                identity:
                                                    (ChromeIdentity*)identity {
-  if (!self.identityInteractionManager) {
-    // The IdentityInteractionManager callback might be called after the
+  if (!self.addAccountSigninManager) {
+    // The AddAccountSigninManager callback might be called after the
     // interrupt method. If this is the case, the AddAccountSigninCoordinator
     // is already stopped. This call can be ignored.
     return;
   }
-  // Add account is done, we don't need |self.identityInteractionManager|
+  // Add account is done, we don't need |self.AddAccountSigninManager|
   // anymore.
-  self.identityInteractionManager = nil;
+  self.addAccountSigninManager = nil;
   if (signinResult == SigninCoordinatorResultInterrupted) {
     // Stop the reauth flow.
     [self addAccountDoneWithSigninResult:signinResult identity:nil];

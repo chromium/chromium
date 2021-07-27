@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
@@ -49,24 +50,25 @@ typedef void (^AddAccountOpenAccountCreationURLCallback)(NSURL* URL);
 @property(nonatomic, copy)
     AddAccountOpenAccountCreationURLCallback openAccountCreationURLCallback;
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)
-    initWithPresentingViewController:(UIViewController*)viewController
-          identityInteractionManager:
-              (ChromeIdentityInteractionManager*)identityInteractionManager
-                         prefService:(PrefService*)prefService
-                     identityManager:(signin::IdentityManager*)identityManager
-    NS_DESIGNATED_INITIALIZER;
-
 // The delegate.
 @property(nonatomic, weak) id<AddAccountSigninManagerDelegate> delegate;
 
-// Indicates that the add account sign-in flow was interrupted.
-@property(nonatomic, readwrite) BOOL signinInterrupted;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                identityInteractionManager:(ChromeIdentityInteractionManager*)
+                                               identityInteractionManager
+                               prefService:(PrefService*)prefService
+                           identityManager:
+                               (signin::IdentityManager*)identityManager
+    NS_DESIGNATED_INITIALIZER;
 
 // Displays the add account sign-in flow.
 // |signinIntent| is the add account intent.
 - (void)showSigninWithIntent:(AddAccountSigninIntent)addAccountSigninIntent;
+
+// Interrupts the add account view.
+- (void)interruptAddAccountAnimated:(BOOL)animated
+                         completion:(ProceduralBlock)completion;
 
 @end
 

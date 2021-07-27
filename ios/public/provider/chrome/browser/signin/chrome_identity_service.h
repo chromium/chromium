@@ -184,9 +184,15 @@ class ChromeIdentityService {
 
   // Returns a new ChromeIdentityInteractionManager with |delegate| as its
   // delegate.
+  // DEPRECATED
   virtual ChromeIdentityInteractionManager*
   CreateChromeIdentityInteractionManager(
       id<ChromeIdentityInteractionManagerDelegate> delegate) const;
+
+  // Returns a new ChromeIdentityInteractionManager with |delegate| as its
+  // delegate.
+  virtual ChromeIdentityInteractionManager*
+  CreateChromeIdentityInteractionManager() const;
 
   // Iterates over all known ChromeIdentities, sorted by the ordering used
   // in account manager, which is typically based on the keychain ordering

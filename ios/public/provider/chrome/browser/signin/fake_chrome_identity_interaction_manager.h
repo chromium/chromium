@@ -15,6 +15,9 @@
 // closed successfully.
 @property(nonatomic, strong, class) ChromeIdentity* identity;
 
+// YES if the fake add account view is presented.
+@property(nonatomic, assign, readonly) BOOL viewControllerPresented;
+
 // Simulates a user tapping the sign-in button.
 - (void)addAccountViewControllerDidTapSignIn;
 

@@ -159,18 +159,13 @@ FakeChromeIdentityService::PresentAccountDetailsController(
 }
 
 ChromeIdentityInteractionManager*
-FakeChromeIdentityService::CreateChromeIdentityInteractionManager(
-    id<ChromeIdentityInteractionManagerDelegate> delegate) const {
-  return CreateFakeChromeIdentityInteractionManager(delegate);
+FakeChromeIdentityService::CreateChromeIdentityInteractionManager() const {
+  return CreateFakeChromeIdentityInteractionManager();
 }
 
 FakeChromeIdentityInteractionManager*
-FakeChromeIdentityService::CreateFakeChromeIdentityInteractionManager(
-    id<ChromeIdentityInteractionManagerDelegate> delegate) const {
-  FakeChromeIdentityInteractionManager* manager =
-      [[FakeChromeIdentityInteractionManager alloc] init];
-  manager.delegate = delegate;
-  return manager;
+FakeChromeIdentityService::CreateFakeChromeIdentityInteractionManager() const {
+  return [[FakeChromeIdentityInteractionManager alloc] init];
 }
 
 void FakeChromeIdentityService::IterateOverIdentities(

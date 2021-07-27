@@ -16,30 +16,34 @@
 #endif
 
 @interface AddAccountSigninManager ()
+
 // Presenting view controller.
-@property(nonatomic, weak) UIViewController* viewController;
+@property(nonatomic, strong) UIViewController* baseViewController;
 // The coordinator's manager that handles interactions to add identities.
-@property(nonatomic, weak)
+@property(nonatomic, strong)
     ChromeIdentityInteractionManager* identityInteractionManager;
 // The Browser state's user-selected preferences.
 @property(nonatomic, assign) PrefService* prefService;
 // The Browser state's identity manager.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
+// Indicates that the add account sign-in flow was interrupted.
+@property(nonatomic, readwrite) BOOL signinInterrupted;
+
 @end
 
 @implementation AddAccountSigninManager
 
 #pragma mark - Public
 
-- (instancetype)
-    initWithPresentingViewController:(UIViewController*)viewController
-          identityInteractionManager:
-              (ChromeIdentityInteractionManager*)identityInteractionManager
-                         prefService:(PrefService*)prefService
-                     identityManager:(signin::IdentityManager*)identityManager {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                identityInteractionManager:(ChromeIdentityInteractionManager*)
+                                               identityInteractionManager
+                               prefService:(PrefService*)prefService
+                           identityManager:
+                               (signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
-    _viewController = viewController;
+    _baseViewController = baseViewController;
     _identityInteractionManager = identityInteractionManager;
     _prefService = prefService;
     _identityManager = identityManager;
@@ -79,7 +83,7 @@
       self.openAccountCreationURLCallback;
   __weak AddAccountSigninManager* weakSelf = self;
   [self.identityInteractionManager
-      addAccountWithPresentingViewController:self.viewController
+      addAccountWithPresentingViewController:self.baseViewController
                                    userEmail:userEmail
                                   completion:^(ChromeIdentity* identity,
                                                NSError* error) {
@@ -87,6 +91,13 @@
                                         operationCompletedWithIdentity:identity
                                                                  error:error];
                                   }];
+}
+
+- (void)interruptAddAccountAnimated:(BOOL)animated
+                         completion:(ProceduralBlock)completion {
+  self.signinInterrupted = YES;
+  [self.identityInteractionManager cancelAddAccountAnimated:animated
+                                                 completion:completion];
 }
 
 #pragma mark - Private
