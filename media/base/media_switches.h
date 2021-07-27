@@ -228,6 +228,10 @@ MEDIA_EXPORT extern const base::Feature kUseChromeOSDirectVideoDecoder;
 MEDIA_EXPORT extern const base::Feature kUseAlternateVideoDecoderImplementation;
 #endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
+#if defined(OS_MAC)
+MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoToolboxSharedImages;
+#endif
+
 #if defined(OS_WIN)
 MEDIA_EXPORT extern const base::Feature kDelayCopyNV12Textures;
 MEDIA_EXPORT extern const base::Feature kDirectShowGetPhotoState;

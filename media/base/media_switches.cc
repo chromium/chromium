@@ -694,6 +694,13 @@ const base::Feature kUseAlternateVideoDecoderImplementation{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
+#if defined(OS_MAC)
+// Enable binding multiple shared images to a single GpuMemoryBuffer for
+// accelerated video decode using VideoToolbox.
+const base::Feature kMultiPlaneVideoToolboxSharedImages{
+    "MultiPlaneVideoToolboxSharedImages", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_WIN)
 // Does NV12->NV12 video copy on the main thread right before the texture's
 // used by GL.
