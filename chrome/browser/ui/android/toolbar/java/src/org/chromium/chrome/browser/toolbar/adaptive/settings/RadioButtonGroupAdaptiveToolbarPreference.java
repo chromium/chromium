@@ -15,9 +15,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStats;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -56,6 +58,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_voice_search);
 
         initializeRadioButtonSelection();
+        RecordUserAction.record("Mobile.AdaptiveToolbarButton.SettingsPage.Opened");
     }
 
     private void initializeRadioButtonSelection() {
@@ -67,10 +70,13 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                     R.string.adaptive_toolbar_button_preference_based_on_your_usage_description,
                     getButtonString(uiState.autoButtonCaption)));
         });
+        AdaptiveToolbarStats.recordRadioButtonStateAsync(/* onStartup= */ true);
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        @AdaptiveToolbarButtonVariant
+        int previousSelection = mSelected;
         if (mAutoButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.AUTO;
         } else if (mNewTabButton.isChecked()) {
@@ -83,6 +89,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             assert false : "No matching setting found.";
         }
         callChangeListener(mSelected);
+        if (previousSelection != mSelected) {
+            AdaptiveToolbarStats.recordRadioButtonStateAsync(/* onStartup= */ false);
+        }
     }
 
     /**

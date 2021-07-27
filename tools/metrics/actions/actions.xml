@@ -13301,6 +13301,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Mobile.AdaptiveToolbarButton.SettingsPage.Opened">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@chromium.org</owner>
+  <description>
+    Recorded when the adaptive toolbar settings page is opened.
+  </description>
+</action>
+
 <action name="Mobile.OmniboxContextMenu.SearchCopiedImage">
   <owner>rkgibson@google.com</owner>
   <owner>stkhapugin@google.com</owner>
@@ -13453,7 +13461,15 @@ should be able to be added at any place in this file.
 <action name="MobileAdaptiveMenuCustomize">
   <owner>chrome-segmentation-platform@google.com</owner>
   <description>
-    Adaptive button action menu opening the adaptive button preferences.
+    User selected Edit Shortcut option from the adaptive toolbar button action
+    menu thereby opening the toolbar shortcut preference page.
+  </description>
+</action>
+
+<action name="MobileAdaptiveMenuShown">
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <description>
+    User long pressed the adaptive toolbar button and the action menu was shown.
   </description>
 </action>
 

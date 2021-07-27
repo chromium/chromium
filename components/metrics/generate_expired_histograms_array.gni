@@ -126,6 +126,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/histograms_xml/scheduler/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/search/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/security/histograms.xml",
+      "//tools/metrics/histograms/histograms_xml/segmentation_platform/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/service/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/session/histograms.xml",
       "//tools/metrics/histograms/histograms_xml/settings/histograms.xml",

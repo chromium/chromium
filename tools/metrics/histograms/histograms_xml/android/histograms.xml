@@ -69,6 +69,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.AdaptiveToolbarButton.Settings.Changed"
+    enum="AdaptiveToolbarRadioButtonState" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the newly selected radio button option for the adaptive toolbar
+    button on the toolbar shortcut settings page. Recorded only when the
+    selected radio button state is changed.
+  </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveToolbarButton.Settings.Startup"
+    enum="AdaptiveToolbarRadioButtonState" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the currently selected radio button option for the adaptive toolbar
+    button on the toolbar shortcut settings page. Recorded on startup, only if
+    AdaptiveButtonInTopToolbarCustomization feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveToolbarButton.SettingsToggle.Changed"
+    enum="BooleanEnabled" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records whether the toolbar settings toggle button is on or off on the
+    toolbar shortcut settings page after the user manually changes it. Recorded
+    after the user explicitly taps on the toggle button.
+  </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveToolbarButton.SettingsToggle.Startup"
+    enum="BooleanEnabled" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records whether the toolbar settings toggle button is on or off on the
+    toolbar shortcut settings page. Recorded on startup.
+  </summary>
+</histogram>
+
 <histogram name="Android.AppLaunch.BlockDrawForInitialTabAccuracy"
     enum="AppLaunchBlockDrawForInitialTabAccuracy" expires_after="2021-12-15">
   <owner>sinansahin@google.com</owner>
