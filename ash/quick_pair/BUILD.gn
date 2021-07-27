@@ -7,7 +7,14 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash,
        "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
-source_set("quick_pair") {
+component("quick_pair") {
+  sources = [
+    "quick_pair_browser_delegate.cc",
+    "quick_pair_browser_delegate.h",
+  ]
+
+  defines = [ "IS_QUICK_PAIR_IMPL" ]
+
   deps = [
     "//ash/quick_pair/common",
     "//ash/quick_pair/feature_status_tracker",
@@ -15,6 +22,7 @@ source_set("quick_pair") {
     "//ash/quick_pair/repository",
     "//ash/quick_pair/scanning",
     "//ash/quick_pair/ui",
+    "//base",
   ]
 }
 

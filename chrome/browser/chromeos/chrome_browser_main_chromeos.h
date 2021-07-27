@@ -58,7 +58,10 @@ class ArcServiceLauncher;
 
 namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
-}
+namespace quick_pair {
+class QuickPairBrowserDelegateImpl;
+}  // namespace quick_pair
+}  // namespace ash
 
 namespace crosapi {
 class BrowserManager;
@@ -225,6 +228,9 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;
   std::unique_ptr<MemoryAblationStudy> memory_ablation_study_;
+
+  std::unique_ptr<ash::quick_pair::QuickPairBrowserDelegateImpl>
+      quick_pair_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsChromeos);
 };

@@ -6,12 +6,13 @@
 #define ASH_QUICK_PAIR_COMMON_CONSTANTS_H_
 
 #include "base/component_export.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace ash {
 namespace quick_pair {
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-const device::BluetoothUUID kFastPairBluetoothUuid("0xFE2C");
+extern const device::BluetoothUUID kFastPairBluetoothUuid;
 
 }  // namespace quick_pair
 }  // namespace ash

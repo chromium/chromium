@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_QUICK_PAIR_QUICK_PAIR_BROWSER_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_ASH_QUICK_PAIR_QUICK_PAIR_BROWSER_DELEGATE_IMPL_H_
+
+#include "ash/quick_pair/quick_pair_browser_delegate.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace ash {
+namespace quick_pair {
+
+// QuickPairBrowserDelegate implementation which handles all browser dependency
+// requests for the Quick Pair system.
+class QuickPairBrowserDelegateImpl : public QuickPairBrowserDelegate {
+ public:
+  QuickPairBrowserDelegateImpl();
+  QuickPairBrowserDelegateImpl(const QuickPairBrowserDelegateImpl&) = delete;
+  QuickPairBrowserDelegateImpl& operator=(const QuickPairBrowserDelegateImpl*) =
+      delete;
+  ~QuickPairBrowserDelegateImpl() final;
+
+  // QuickPairBrowserDelegate:
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+};
+
+}  // namespace quick_pair
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_ASH_QUICK_PAIR_QUICK_PAIR_BROWSER_DELEGATE_IMPL_H_

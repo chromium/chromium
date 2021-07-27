@@ -109,6 +109,7 @@
 #include "chrome/browser/ash/power/renderer_freezer.h"
 #include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
 #include "chrome/browser/ash/system/breakpad_consent_watcher.h"
@@ -798,6 +799,9 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // SessionChanged event and assistant_client initialization. It must come
   // after AssistantStateClient.
   assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
+
+  quick_pair_delegate_ =
+      std::make_unique<ash::quick_pair::QuickPairBrowserDelegateImpl>();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
