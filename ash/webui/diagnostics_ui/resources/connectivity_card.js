@@ -138,7 +138,6 @@ Polymer({
 
   /** @protected */
   getNetworkCardTitle_() {
-    // TODO(michaelcheco): Map network state to an icon or localize.
     var title = this.networkType_;
     if (this.networkState_) {
       title = title + ' (' + this.networkState_ + ')';

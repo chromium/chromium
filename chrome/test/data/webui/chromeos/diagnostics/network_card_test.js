@@ -69,7 +69,7 @@ export function networkCardTestSuite() {
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
     return initializeNetworkCard('wifiGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'WiFi (Connected)');
+          networkCardElement.$$('#cardTitle'), 'Wi-Fi (Connected)');
       assertFalse(isVisible(getTroubleConnectingElement()));
     });
   });
@@ -77,7 +77,7 @@ export function networkCardTestSuite() {
   test('WifiDisconnectedShowTroubleShooting', () => {
     return initializeNetworkCard('wifiDisconnectedGuid').then(() => {
       dx_utils.assertElementContainsText(
-          networkCardElement.$$('#cardTitle'), 'WiFi (Not Connected)');
+          networkCardElement.$$('#cardTitle'), 'Wi-Fi (Not Connected)');
       assertTrue(isVisible(getTroubleConnectingElement()));
     });
   });

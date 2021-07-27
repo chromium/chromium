@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {NetworkState, NetworkType} from './diagnostics_types.js';
 
 /**
@@ -59,14 +60,13 @@ export function getDiagnosticsIcon(id) {
  * @return {string}
  */
 export function getNetworkType(type) {
-  // TODO(michaelcheco): Add localized strings.
   switch (type) {
     case NetworkType.kWiFi:
-      return 'WiFi';
+      return loadTimeData.getString('wifiLabel');
     case NetworkType.kEthernet:
-      return 'Ethernet';
+      return loadTimeData.getString('ethernetLabel');
     case NetworkType.kCellular:
-      return 'Cellular';
+      return loadTimeData.getString('cellularLabel');
     default:
       assertNotReached();
       return '';
@@ -81,15 +81,15 @@ export function getNetworkState(state) {
   // TODO(michaelcheco): Add localized strings.
   switch (state) {
     case NetworkState.kOnline:
-      return 'Online';
+      return loadTimeData.getString('networkStateOnlineText');
     case NetworkState.kConnected:
-      return 'Connected';
+      return loadTimeData.getString('networkStateConnectedText');
     case NetworkState.kPortal:
-      return 'Portal';
+      return loadTimeData.getString('networkStatePortalText');
     case NetworkState.kConnecting:
-      return 'Connecting';
+      return loadTimeData.getString('networkStateConnectingText');
     case NetworkState.kNotConnected:
-      return 'Not Connected';
+      return loadTimeData.getString('networkStateNotConnectedText');
     default:
       assertNotReached();
       return '';

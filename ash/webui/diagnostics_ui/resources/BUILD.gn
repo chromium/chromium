@@ -119,6 +119,7 @@ js_library("diagnostics_types") {
 }
 
 js_library("diagnostics_utils") {
+  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
 }
 
 js_library("ethernet_info") {

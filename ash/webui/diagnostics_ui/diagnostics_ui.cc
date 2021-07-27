@@ -72,6 +72,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
       {"boardAndVersionInfo", IDS_DIAGNOSTICS_DEVICE_INFO_TEXT},
       {"captivePortalRoutineText", IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL},
+      {"cellularLabel", IDS_NETWORK_TYPE_CELLULAR},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
       {"connectivityText", IDS_DIAGNOSTICS_CONNECTIVITY},
       {"cpuBannerMessage", IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE},
@@ -103,6 +104,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"dnsResolutionRoutineText", IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION},
       {"dnsResolverPresentRoutineText",
        IDS_NETWORK_DIAGNOSTICS_DNS_RESOLVER_PRESENT},
+      {"ethernetLabel", IDS_NETWORK_TYPE_ETHERNET},
       {"gatewayCanBePingedRoutineText",
        IDS_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED},
       {"hasSecureWiFiConnectionRoutineText",
@@ -129,6 +131,11 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkAuthenticationLabel", IDS_NETWORK_DIAGNOSTICS_AUTHENTICATION},
       {"networkIpAddressLabel", IDS_NETWORK_DIAGNOSTICS_IP_ADDRESS},
       {"networkLinkSpeedLabel", IDS_NETWORK_DIAGNOSTICS_LINK_SPEED},
+      {"networkStateConnectedText", IDS_NETWORK_HEALTH_STATE_CONNECTED},
+      {"networkStateConnectingText", IDS_NETWORK_HEALTH_STATE_CONNECTING},
+      {"networkStateNotConnectedText", IDS_NETWORK_HEALTH_STATE_NOT_CONNECTED},
+      {"networkStateOnlineText", IDS_NETWORK_HEALTH_STATE_ONLINE},
+      {"networkStatePortalText", IDS_NETWORK_HEALTH_STATE_PORTAL},
       {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
@@ -167,6 +174,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
       {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
+      {"wifiLabel", IDS_NETWORK_TYPE_WIFI},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedStrings(*GetDataSourceUpdate());
