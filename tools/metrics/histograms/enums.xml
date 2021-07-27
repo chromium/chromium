@@ -8226,6 +8226,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="originator_client_item_id is a valid GUID"/>
   <int value="2" label="GUID field left empty"/>
   <int value="3" label="GUID was inferred"/>
+  <int value="4"
+      label="GUID cannot be inferred (possibly update with client tag)"/>
 </enum>
 
 <enum name="BookmarkLaunchLocation">

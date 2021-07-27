@@ -39,8 +39,11 @@ enum class BookmarkGuidSource {
   // so the GUID is inferred from combining originator_client_item_id and
   // originator_cache_guid.
   kInferred = 3,
-
-  kMaxValue = kInferred,
+  // GUID not found in the specifics and the update doesn't have enough
+  // information to infer it. This is likely because the update contains a
+  // client tag instead of originator information.
+  kLeftEmptyPossiblyForClientTag = 4,
+  kMaxValue = kLeftEmptyPossiblyForClientTag,
 };
 
 inline void LogGuidSource(BookmarkGuidSource source) {
@@ -184,6 +187,12 @@ bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
         base::ToLowerASCII(update_entity.originator_client_item_id()));
     DCHECK(base::IsValidGUIDOutputString(specifics->bookmark().guid()));
     LogGuidSource(BookmarkGuidSource::kValidOCII);
+  } else if (update_entity.originator_cache_guid().empty() &&
+             update_entity.originator_client_item_id().empty()) {
+    // There's no GUID that could be inferred from empty originator
+    // information.
+    LogGuidSource(BookmarkGuidSource::kLeftEmptyPossiblyForClientTag);
+    return false;
   } else {
     specifics->mutable_bookmark()->set_guid(
         InferGuidForLegacyBookmark(update_entity.originator_cache_guid(),

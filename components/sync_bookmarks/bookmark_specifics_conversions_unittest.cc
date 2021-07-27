@@ -18,8 +18,13 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -690,6 +695,78 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
   EXPECT_EQ(2u, new_folder->children().size());
   EXPECT_EQ(0, new_folder->GetIndexOf(url1));
   EXPECT_EQ(1, new_folder->GetIndexOf(url2));
+}
+
+TEST(BookmarkSpecificsConversionsTest,
+     ShouldConsiderValidBookmarkGuidIfMatchesClientTag) {
+  const std::string kGuid = base::GUID::GenerateRandomV4().AsLowercaseString();
+
+  sync_pb::BookmarkSpecifics specifics;
+  specifics.set_guid(kGuid);
+
+  EXPECT_TRUE(HasExpectedBookmarkGuid(
+      specifics, syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS, kGuid),
+      /*originator_cache_guid=*/"",
+      /*originator_client_item_id=*/""));
+}
+
+TEST(BookmarkSpecificsConversionsTest,
+     ShouldConsiderValidBookmarkGuidIfMatchesOriginator) {
+  const std::string kGuid = base::GUID::GenerateRandomV4().AsLowercaseString();
+
+  sync_pb::BookmarkSpecifics specifics;
+  specifics.set_guid(kGuid);
+
+  EXPECT_TRUE(HasExpectedBookmarkGuid(specifics, syncer::ClientTagHash(),
+                                      /*originator_cache_guid=*/"",
+                                      /*originator_client_item_id=*/kGuid));
+}
+
+TEST(BookmarkSpecificsConversionsTest,
+     ShouldConsiderInvalidBookmarkGuidIfEmptyOriginator) {
+  const std::string kGuid = InferGuidFromLegacyOriginatorId(
+                                /*originator_cache_guid=*/"",
+                                /*=originator_client_item_id=*/"")
+                                .AsLowercaseString();
+
+  sync_pb::BookmarkSpecifics specifics;
+  specifics.set_guid(kGuid);
+
+  EXPECT_FALSE(HasExpectedBookmarkGuid(specifics,
+                                       syncer::ClientTagHash::FromHashed("foo"),
+                                       /*originator_cache_guid=*/"",
+                                       /*originator_client_item_id=*/""));
+}
+
+TEST(BookmarkSpecificsConversionsTest, ShouldFixGuidInSpecificsDueToPastBug) {
+  auto tracker = SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+
+  const std::string kSyncId = "SYNC_ID";
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_bookmark();
+
+  bookmarks::BookmarkNode node(/*id=*/1, kGuid, GURL());
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, /*server_version=*/0, /*creation_time=*/base::Time(),
+      syncer::UniquePosition(), specifics);
+  ASSERT_THAT(entity, NotNull());
+
+  // Mimic in incoming update with a client tag hash but not GUID in specifics.
+  syncer::EntityData update_entity;
+  update_entity.id = kSyncId;
+  update_entity.client_tag_hash =
+      SyncedBookmarkTracker::GetClientTagHashFromGUID(kGuid);
+  // Populate at least one field in specifics so it's not considered a
+  // tombstone.
+  update_entity.specifics.mutable_bookmark()->set_creation_time_us(1);
+
+  MaybeFixGuidInSpecificsDueToPastBug(*tracker, &update_entity);
+
+  EXPECT_THAT(update_entity.specifics.bookmark().guid(),
+              Eq(kGuid.AsLowercaseString()));
+  EXPECT_TRUE(update_entity.is_bookmark_guid_in_specifics_preprocessed);
 }
 
 }  // namespace

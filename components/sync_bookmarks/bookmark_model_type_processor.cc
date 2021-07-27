@@ -190,6 +190,12 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
     return;
   }
 
+  // Before applying incremental updates, run a quirk to mitigate some data
+  // corruption issue introduced by crbug.com/1231450.
+  for (syncer::UpdateResponseData& update : updates) {
+    MaybeFixGuidInSpecificsDueToPastBug(*bookmark_tracker_, &update.entity);
+  }
+
   // Incremental updates.
   ScopedRemoteUpdateBookmarks update_bookmarks(
       bookmark_model_, bookmark_undo_service_, bookmark_model_observer_.get());
