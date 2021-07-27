@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/webui/signin/signin_reauth_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/signin_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -63,18 +63,19 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
   webui::SetJSModuleDefaults(source);
-  source->SetDefaultResource(IDR_SIGNIN_REAUTH_HTML);
+  source->SetDefaultResource(IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
 
   static constexpr webui::ResourcePath kResources[] = {
-      {"signin_reauth_app.js", IDR_SIGNIN_REAUTH_APP_JS},
-      {"signin_reauth_browser_proxy.js", IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS},
-      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+      {"signin_reauth_app.js", IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_JS},
+      {"signin_reauth_browser_proxy.js",
+       IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_BROWSER_PROXY_JS},
+      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       // Resources for the account passwords reauth.
       {"images/signin_reauth_illustration.svg",
-       IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG},
+       IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_SVG},
       {"images/signin_reauth_illustration_dark.svg",
-       IDR_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
+       IDR_SIGNIN_SIGNIN_REAUTH_IMAGES_ACCOUNT_PASSWORDS_REAUTH_ILLUSTRATION_DARK_SVG},
   };
   source->AddResourcePaths(kResources);
 

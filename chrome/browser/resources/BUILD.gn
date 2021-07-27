@@ -41,6 +41,7 @@ group("resources") {
       "new_tab_page_third_party:resources",
       "read_later:resources",
       "settings:resources",
+      "signin:resources",
       "tab_search:resources",
       "whats_new:resources",
     ]

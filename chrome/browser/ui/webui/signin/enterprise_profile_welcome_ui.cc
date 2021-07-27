@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/signin_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -26,16 +26,17 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
       chrome::kChromeUIEnterpriseProfileWelcomeHost);
   webui::SetJSModuleDefaults(source);
 
-  source->SetDefaultResource(IDR_ENTERPRISE_PROFILE_WELCOME_HTML);
+  source->SetDefaultResource(
+      IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_HTML);
   static constexpr webui::ResourcePath kResources[] = {
       {"enterprise_profile_welcome_app.js",
-       IDR_ENTERPRISE_PROFILE_WELCOME_APP_JS},
+       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_APP_JS},
       {"enterprise_profile_welcome_browser_proxy.js",
-       IDR_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS},
+       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS},
       {"images/enterprise_profile_welcome_illustration.svg",
-       IDR_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG},
-      {"signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS},
-      {"signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS},
+       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG},
+      {"signin_shared_css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_vars_css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
   };
   source->AddResourcePaths(kResources);
 

@@ -3,7 +3,17 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 group("closure_compile") {
   deps = [ "sync_confirmation:closure_compile" ]
@@ -41,4 +51,104 @@ html_to_js("web_components_local") {
     "signin_shared_css.js",
     "signin_vars_css.js",
   ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/signin_resources.h",
+    "grit/signin_resources_map.cc",
+    "grit/signin_resources_map.h",
+    "signin_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "signin"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  input_files = [
+    "sync_confirmation/images/sync_confirmation_refreshed_illustration_dark.svg",
+    "sync_confirmation/images/sync_confirmation_illustration.svg",
+    "sync_confirmation/images/sync_confirmation_illustration_dark.svg",
+    "sync_confirmation/images/sync_confirmation_refreshed_illustration.svg",
+  ]
+  if (!is_chromeos_ash) {
+    input_files += [
+      "signin_reauth/images/account_passwords_reauth_illustration_dark.svg",
+      "signin_reauth/images/account_passwords_reauth_illustration.svg",
+      "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg",
+    ]
+  }
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [
+    ":preprocess",
+    ":preprocess_gen",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "sync_confirmation/sync_confirmation_browser_proxy.js",
+    "sync_confirmation/sync_confirmation.html",
+    "sync_confirmation/sync_confirmation.js",
+    "sync_confirmation/sync_disabled_confirmation.html",
+    "sync_confirmation/sync_loading_confirmation.html",
+  ]
+
+  if (!is_chromeos_ash) {
+    in_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.js",
+      "dice_web_signin_intercept/dice_web_signin_intercept.html",
+      "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.js",
+      "enterprise_profile_welcome/enterprise_profile_welcome.html",
+      "profile_customization/profile_customization_browser_proxy.js",
+      "profile_customization/profile_customization.html",
+      "signin_email_confirmation/signin_email_confirmation.html",
+      "signin_error/signin_error.html",
+      "signin_error/signin_error.js",
+      "signin_reauth/signin_reauth_browser_proxy.js",
+      "signin_reauth/signin_reauth.html",
+    ]
+  }
+}
+
+preprocess_if_expr("preprocess_gen") {
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "signin_shared_css.js",
+    "signin_vars_css.js",
+    "sync_confirmation/sync_confirmation_app.js",
+    "sync_confirmation/sync_disabled_confirmation_app.js",
+  ]
+
+  if (!is_chromeos_ash) {
+    in_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.js",
+      "enterprise_profile_welcome/enterprise_profile_welcome_app.js",
+      "profile_customization/profile_customization_app.js",
+      "signin_email_confirmation/signin_email_confirmation_app.js",
+      "signin_error/signin_error_app.js",
+      "signin_reauth/signin_reauth_app.js",
+    ]
+  }
+
+  deps = [ ":web_components" ]
 }
