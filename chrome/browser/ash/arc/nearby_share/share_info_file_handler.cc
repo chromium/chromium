@@ -14,8 +14,6 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -86,14 +84,15 @@ std::string StripPathComponents(const std::string& file_name) {
 ShareInfoFileHandler::FileShareConfig::FileShareConfig() = default;
 ShareInfoFileHandler::FileShareConfig::~FileShareConfig() = default;
 
-ShareInfoFileHandler::~ShareInfoFileHandler() = default;
-
-ShareInfoFileHandler::ShareInfoFileHandler(Profile* profile,
-                                           mojom::ShareIntentInfo* share_info,
-                                           base::FilePath directory)
-    : profile_(profile) {
+ShareInfoFileHandler::ShareInfoFileHandler(
+    Profile* profile,
+    mojom::ShareIntentInfo* share_info,
+    base::FilePath directory,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : profile_(profile), task_runner_(task_runner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
+  DCHECK(task_runner_);
   DCHECK(share_info);
 
   file_config_.directory = directory;
@@ -108,6 +107,16 @@ ShareInfoFileHandler::ShareInfoFileHandler(Profile* profile,
     }
     file_config_.num_files = file_config_.external_urls.size();
   }
+}
+
+ShareInfoFileHandler::~ShareInfoFileHandler() {
+  DCHECK(task_runner_);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::list<base::ScopedTempDir> dirs_list) { dirs_list.clear(); },
+          std::move(scoped_temp_dirs_)));
 }
 
 file_manager::util::FileSystemURLAndHandle GetFileSystemContext(
@@ -138,8 +147,8 @@ void ShareInfoFileHandler::StartPreparingFiles(
     CompletedCallback completed_callback,
     ProgressBarUpdateCallback update_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!completed_callback.is_null());
-  DCHECK(!update_callback.is_null());
+  DCHECK(completed_callback);
+  DCHECK(update_callback);
 
   completed_callback_ = std::move(completed_callback);
   update_callback_ = std::move(update_callback);
@@ -173,10 +182,8 @@ void ShareInfoFileHandler::StartPreparingFiles(
   }
 
   VLOG(1) << "Creating unique directory for share and converting URLs to files";
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      // USER_VISIBLE because of downloading files requested by the user and
-      // will help update UI on progress of transfers.
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ShareInfoFileHandler::CreateDirectoryAndStreamFiles,
                      this),
       base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles,

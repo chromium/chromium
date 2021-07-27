@@ -73,8 +73,6 @@ ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   session_map_.clear();
 }
 
-// TODO(b/191430761): Tie this to Nearby Share transfer complete/abort/cancel
-// so that cache files are not wiped prematurely.
 void ArcNearbyShareBridge::OnNearbyShareSessionFinished(int32_t task_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!session_map_.erase(task_id)) {

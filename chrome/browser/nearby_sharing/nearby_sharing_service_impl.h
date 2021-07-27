@@ -125,6 +125,8 @@ class NearbySharingServiceImpl
   void Open(const ShareTarget& share_target,
             StatusCodesCallback status_codes_callback) override;
   void OpenURL(GURL url) override;
+  void SetArcTransferCleanupCallback(
+      base::OnceCallback<void()> callback) override;
   NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id) override;
   NearbyShareSettings* GetSettings() override;
@@ -441,7 +443,7 @@ class NearbySharingServiceImpl
   base::ObserverList<NearbySharingService::Observer> observers_;
   // A list of foreground receivers.
   base::ObserverList<TransferUpdateCallback> foreground_receive_callbacks_;
-  // A list of foreground receivers.
+  // A list of background receivers.
   base::ObserverList<TransferUpdateCallback> background_receive_callbacks_;
   // A list of foreground receivers for transfer updates on the send surface.
   base::ObserverList<TransferUpdateCallback>
@@ -559,6 +561,9 @@ class NearbySharingServiceImpl
 
   mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
       settings_receiver_{this};
+
+  // Called when cleanup for ARC is needed as part of the transfer.
+  base::OnceCallback<void()> arc_transfer_cleanup_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -32,6 +32,8 @@ class NearbyShareAction : public sharesheet::ShareAction,
   bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
                         bool contains_hosted_document) override;
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator) override;
+  void SetActionCleanupCallbackForArc(
+      base::OnceCallback<void()> callback) override;
 
   // content::WebContentsDelegate:
   bool HandleKeyboardEvent(

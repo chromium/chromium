@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -60,6 +61,15 @@ class ShareAction {
   // ShareAction should return true if the accelerator has been processed and
   // false otherwise. If not processed, the Sharesheet will close.
   virtual bool OnAcceleratorPressed(const ui::Accelerator& accelerator);
+
+  // Only called for shares started with ShowNearbyShareBubbleForArc. This
+  // interface should not be needed by other ShareActions. Invoked to indicate
+  // that resource cleanup is required. |callback| will perform any necessary
+  // resource cleanup for data that is passed through the intent. If |callback|
+  // is set, ShareAction must run |callback| when it has finished using the
+  // intent data to ensure this cleanup occurs.
+  virtual void SetActionCleanupCallbackForArc(
+      base::OnceCallback<void()> callback);
 };
 
 }  // namespace sharesheet

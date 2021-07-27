@@ -83,6 +83,10 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Nearby Share bubble.
   void OnSessionDisconnected();
 
+  // Called when shared files are no longer used by Nearby Share and can be
+  // cleaned up along with the share session.
+  void OnCleanupSession();
+
   // Android activity's task ID
   int32_t task_id_;
 
@@ -107,6 +111,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Timer used to wait for the ARC window to be asynchronously initialized and
   // visible.
   base::OneShotTimer window_initialization_timer_;
+
+  // Sequenced task runner for executing backend file IO cleanup tasks.
+  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Observes the ARC window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
