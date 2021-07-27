@@ -32,6 +32,7 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   CreateDevToolsManagerDelegate() final;
   std::string GetProduct() final;
   std::string GetUserAgent() final;
+  blink::UserAgentMetadata GetUserAgentMetadata() final;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* web_prefs) final;
   void RegisterBrowserInterfaceBindersForFrame(

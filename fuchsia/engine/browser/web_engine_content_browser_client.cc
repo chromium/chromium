@@ -10,17 +10,16 @@
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_split.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/strings/grit/components_locale_settings.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "fuchsia/base/fuchsia_dir_scheme.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_throttle.h"
@@ -101,11 +100,11 @@ WebEngineContentBrowserClient::CreateDevToolsManagerDelegate() {
 }
 
 std::string WebEngineContentBrowserClient::GetProduct() {
-  return version_info::GetProductNameAndVersionForUserAgent();
+  return embedder_support::GetProduct();
 }
 
 std::string WebEngineContentBrowserClient::GetUserAgent() {
-  std::string user_agent = content::BuildUserAgentFromProduct(GetProduct());
+  std::string user_agent = embedder_support::GetUserAgent();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUserAgentProductAndVersion)) {
     user_agent +=
@@ -113,6 +112,10 @@ std::string WebEngineContentBrowserClient::GetUserAgent() {
                   switches::kUserAgentProductAndVersion);
   }
   return user_agent;
+}
+
+blink::UserAgentMetadata WebEngineContentBrowserClient::GetUserAgentMetadata() {
+  return embedder_support::GetUserAgentMetadata();
 }
 
 void WebEngineContentBrowserClient::OverrideWebkitPrefs(

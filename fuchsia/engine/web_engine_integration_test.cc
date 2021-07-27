@@ -7,9 +7,15 @@
 #include <zircon/rights.h>
 #include <zircon/types.h>
 
+#include <string>
+
 #include <lib/zx/vmo.h>
 
+#include "base/cxx17_backports.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "components/version_info/version_info.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
@@ -82,7 +88,54 @@ class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
         std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
     return embedded_test_server_.GetURL(echo_user_agent_header_path);
   }
+
+  // Returns the expected user agent string for the current Chrome version.
+  static std::string GetExpectedUserAgentString() {
+    // The default (base) user agent string without any client modifications.
+    // TODO(crbug.com/1225812): Replace "X11; " appropriately and the version
+    // with <majorVersion>.0.0.0.
+    constexpr char kDefaultUserAgentStringWithVersionPlaceholder[] =
+        "Mozilla/5.0 (X11; Fuchsia) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/%s Safari/537.36";
+
+    std::string expected_ua =
+        base::StringPrintf(kDefaultUserAgentStringWithVersionPlaceholder,
+                           version_info::GetVersionNumber().c_str());
+
+    // Ensure the field was actually populated.
+    EXPECT_GT(expected_ua.length(),
+              base::size(kDefaultUserAgentStringWithVersionPlaceholder));
+    EXPECT_NE(expected_ua.find(version_info::GetVersionNumber()),
+              std::string::npos);
+
+    return expected_ua;
+  }
+
+  static std::string GetExpectedUserAgentStringWithProduct(
+      const char* product) {
+    return base::StringPrintf("%s %s", GetExpectedUserAgentString().c_str(),
+                              product);
+  }
 };
+
+// Although this does not need to be an integration test, all other user agent
+// tests are here.
+TEST_F(WebEngineIntegrationUserAgentTest, Default) {
+  // Create a Context with no values specified.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  CreateContextAndFrameAndLoadUrl(std::move(create_params),
+                                  GetEchoUserAgentUrl());
+
+  // Query & verify that the header echoed into the document body is as
+  // expected.
+  std::string result =
+      ExecuteJavaScriptWithStringResult("document.body.innerText;");
+  EXPECT_EQ(result, GetExpectedUserAgentString());
+
+  // Query & verify that the navigator.userAgent is as expected.
+  result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
+  EXPECT_EQ(result, GetExpectedUserAgentString());
+}
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
   // Create a Context with just an embedder product specified.
@@ -91,15 +144,20 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
   CreateContextAndFrameAndLoadUrl(std::move(create_params),
                                   GetEchoUserAgentUrl());
 
+  std::string expected =
+      GetExpectedUserAgentStringWithProduct(kValidUserAgentProduct);
+
   // Query & verify that the header echoed into the document body contains
   // the product tag.
   std::string result =
       ExecuteJavaScriptWithStringResult("document.body.innerText;");
   EXPECT_TRUE(result.find(kValidUserAgentProduct) != std::string::npos);
+  EXPECT_EQ(result, expected);
 
   // Query & verify that the navigator.userAgent contains the product tag.
   result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
   EXPECT_TRUE(result.find(kValidUserAgentProduct) != std::string::npos);
+  EXPECT_EQ(result, expected);
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
@@ -110,17 +168,22 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
   CreateContextAndFrameAndLoadUrl(std::move(create_params),
                                   GetEchoUserAgentUrl());
 
+  std::string expected =
+      GetExpectedUserAgentStringWithProduct(kValidUserAgentProductAndVersion);
+
   // Query & verify that the header echoed into the document body contains
   // both product & version.
   std::string result =
       ExecuteJavaScriptWithStringResult("document.body.innerText;");
   EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
               std::string::npos);
+  EXPECT_EQ(result, expected);
 
   // Query & verify that the navigator.userAgent contains product & version.
   result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
   EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
               std::string::npos);
+  EXPECT_EQ(result, expected);
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, InvalidProduct) {
