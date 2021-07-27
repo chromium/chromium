@@ -34,6 +34,11 @@ bool WebGLMultiDrawCommon::ValidateArray(WebGLExtensionScopedContext* scoped,
                                          outOfBoundsDescription);
     return false;
   }
+  if (static_cast<uint64_t>(drawcount) + offset > size) {
+    scoped->Context()->SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                                         "drawcount plus offset out of bounds");
+    return false;
+  }
   return true;
 }
 
