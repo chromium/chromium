@@ -1854,13 +1854,13 @@ try_.chromium_win_builder(
 
 try_.chromium_win_builder(
     name = "win10-rel-orchestrator",
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     cores = 2,
     os = os.LINUX_BIONIC,
     executable = "recipe:chromium/orchestrator",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
+    # TODO (kimstephanie): turn coverage back on when crbug.com/1233609 is done
+    # use_clang_coverage = True,
+    # coverage_test_types = ["unit", "overall"],
     properties = {
         "compilator": "win10-rel-compilator",
     },
@@ -1869,15 +1869,12 @@ try_.chromium_win_builder(
 
 try_.chromium_win_builder(
     name = "win10-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     cores = 16,
     os = os.WINDOWS_10,
     ssd = True,
     goma_jobs = goma.jobs.J300,
     executable = "recipe:chromium/compilator",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
     properties = {
         "orchestrator": {
             "builder_name": "win10-rel-orchestrator",
