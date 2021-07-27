@@ -11,7 +11,7 @@ xmlns:android="http://schemas.android.com/apk/res/android" >
         android:gravity="center">
         <shape
             android:shape="oval">
-            <solid android:color="@color/default_icon_color_light" />
+            <solid android:color="@color/default_bg_color_light"/>
         </shape>
     </item>
 </layer-list>
