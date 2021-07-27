@@ -56,6 +56,9 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns whether |identity| is valid and known by the service.
   bool IsValidIdentity(ChromeIdentity* identity);
 
+  // Returns whether |email| is restricted.
+  bool IsEmailRestricted(base::StringPiece email) const;
+
   // Returns the ChromeIdentity with gaia ID equals to |gaia_id| or nil if
   // no matching identity is found. There are two overloads to reduce the
   // need to convert between NSString* and std::string.

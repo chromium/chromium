@@ -170,6 +170,11 @@ bool ChromeAccountManagerService::IsValidIdentity(ChromeIdentity* identity) {
   return GetIdentityWithGaiaID(identity.gaiaID) != nil;
 }
 
+bool ChromeAccountManagerService::IsEmailRestricted(
+    base::StringPiece email) const {
+  return restriction_.IsAccountRestricted(email);
+}
+
 ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
     NSString* gaia_id) {
   // Do not iterate if the gaia ID is invalid.
