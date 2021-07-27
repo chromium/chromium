@@ -2733,7 +2733,8 @@
       },
       'chromeos-kevin-chrome': {
         # TODO(crbug.com/1182948): Remove the experiment.
-        'experiment_percentage': 100,
+        # TODO(b/188822176): Restore to 100% when we have additional capacity.
+        'experiment_percentage': 0,
       },
       'linux-bionic-rel': {
         'args': [
