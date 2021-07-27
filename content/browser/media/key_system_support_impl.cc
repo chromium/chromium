@@ -127,17 +127,12 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     bool* lazy_initialize) {
   *lazy_initialize = false;
 
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon)) {
-    DVLOG(1) << "Hardware secure decryption disabled";
-    return absl::nullopt;
-  }
-#else
+#if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
     DVLOG(1) << "Hardware secure decryption disabled";
     return absl::nullopt;
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   // Secure codecs override takes precedence over other checks.
   auto overridden_capability =

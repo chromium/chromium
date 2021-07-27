@@ -220,11 +220,6 @@ const base::Feature kButtonARCNetworkDiagnostics{
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, will use the CDM in the Chrome OS daemon rather than loading the
-// CDM using the library CDM interface.
-const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, allow per-network roaming configuration when cellular roaming is
 // not disabled for the device through enterprise policy.
 const base::Feature kCellularAllowPerNetworkRoaming{

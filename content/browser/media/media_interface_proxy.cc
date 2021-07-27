@@ -48,9 +48,6 @@
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -359,8 +356,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 
   // Handle `use_hw_secure_codecs` cases first.
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon) &&
-      cdm_config.use_hw_secure_codecs &&
+  if (cdm_config.use_hw_secure_codecs &&
       cdm_config.allow_distinctive_identifier) {
     auto* factory = media_interface_factory_ptr_->Get();
     if (factory) {

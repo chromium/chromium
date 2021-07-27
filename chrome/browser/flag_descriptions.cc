@@ -4239,10 +4239,6 @@ const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
     "Launcher search results grouped by categories";
 
-const char kCdmFactoryDaemonName[] = "CDM Factory Daemon";
-const char kCdmFactoryDaemonDescription[] =
-    "Use the CDM daemon instead of the library CDM";
-
 const char kCellularAllowPerNetworkRoamingName[] =
     "Allow per-networking roaming";
 const char kCellularAllowPerNetworkRoamingDescription[] =
