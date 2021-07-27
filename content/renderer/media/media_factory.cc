@@ -124,16 +124,16 @@
 
 namespace {
 
-// This limit corresponds to the per-platform 99.9th %ile of the number of
-// WebMediaPlayers used by a single frame, as measured in March 2021. This
+// This limit corresponds to the per-platform 99.99th %ile of the number of
+// WebMediaPlayers used by a single frame, as measured in June 2021. This
 // tries to balance minimizing web platform breakage and preventing abusive
 // API usage. See http://crbug.com/1144736#c49
 constexpr size_t kDefaultMaxWebMediaPlayers =
 #if defined(OS_ANDROID)
-    40;
+    100;
 #else
     // All desktop platforms share the same value.
-    75;
+    200;
 #endif
 
 size_t GetMaxWebMediaPlayers() {
