@@ -45,6 +45,10 @@ class PasswordStoreAndroidBackendBridge {
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
   // task with the returned TaskId succeeds.
   virtual TaskId GetAllLogins() WARN_UNUSED_RESULT = 0;
+
+  // Factory function for creating the bridge. Implementation is pulled in by
+  // including an implementation or by defining it explicitly in tests.
+  static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create();
 };
 
 }  // namespace password_manager

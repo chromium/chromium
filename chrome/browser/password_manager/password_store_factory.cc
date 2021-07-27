@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -36,6 +37,9 @@
 
 #if defined(OS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
+#endif
+#if defined(OS_ANDROID)
+#include "chrome/browser/password_manager/android/password_store_android_backend_bridge_impl.h"
 #endif
 
 using password_manager::PasswordStore;
@@ -105,7 +109,8 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   // not implement the PasswordStore abstract class anymore.
   if (base::FeatureList::IsEnabled(
           password_manager::features::kUnifiedPasswordManagerAndroid)) {
-    ps = new password_manager::PasswordStore(nullptr);
+    ps = new password_manager::PasswordStore(
+        password_manager::PasswordStoreBackend::Create(std::move(login_db)));
   } else {
     ps = new password_manager::PasswordStoreImpl(std::move(login_db));
   }

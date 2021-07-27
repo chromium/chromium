@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
+
 #include <jni.h>
+#include <memory>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
@@ -20,8 +24,21 @@ using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
 
 PasswordStoreAndroidBackend::SyncModelTypeControllerDelegate::
     SyncModelTypeControllerDelegate() = default;
+
 PasswordStoreAndroidBackend::SyncModelTypeControllerDelegate::
     ~SyncModelTypeControllerDelegate() = default;
+
+std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
+    std::unique_ptr<LoginDatabase> login_db) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kUnifiedPasswordManagerAndroid)) {
+    // TODO(crbug.com/1217071): Once PasswordStoreImpl does not implement the
+    // PasswordStore abstract class anymore, return a local backend.
+    return nullptr;
+  }
+  return std::make_unique<PasswordStoreAndroidBackend>(
+      PasswordStoreAndroidBackendBridge::Create());
+}
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge)

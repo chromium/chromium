@@ -10,7 +10,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
@@ -39,6 +41,18 @@ PasswordStoreChangeList BuildPasswordChangeListForInsecureCredentialsUpdate(
 }
 
 }  // namespace
+
+// TODO(crbug.com/1217071): Definition would clash with factory implementation
+// in the PasswordStoreAndroidBackend. Remove #if guard when Android doesn't
+// need to create a local backend anymore (i.e. when the feature is cleaned up).
+#if !defined(OS_ANDROID)
+std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
+    std::unique_ptr<LoginDatabase> login_db) {
+  // TODO(crbug.com/1217071): Once PasswordStoreImpl does not implement the
+  // PasswordStore abstract class anymore, return a local backend.
+  return nullptr;
+}
+#endif
 
 PasswordStoreImpl::PasswordStoreImpl(std::unique_ptr<LoginDatabase> login_db)
     : login_db_(std::move(login_db)) {

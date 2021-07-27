@@ -12,6 +12,15 @@
 
 using TaskId = PasswordStoreAndroidBackendBridgeImpl::TaskId;
 
+namespace password_manager {
+
+std::unique_ptr<PasswordStoreAndroidBackendBridge>
+PasswordStoreAndroidBackendBridge::Create() {
+  return std::make_unique<PasswordStoreAndroidBackendBridgeImpl>();
+}
+
+}  // namespace password_manager
+
 PasswordStoreAndroidBackendBridgeImpl::PasswordStoreAndroidBackendBridgeImpl() {
   java_object_ = Java_PasswordStoreAndroidBackendBridgeImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
