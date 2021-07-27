@@ -19,9 +19,6 @@ SafeBrowsingSubresourceHelper::~SafeBrowsingSubresourceHelper() = default;
 void SafeBrowsingSubresourceHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->GetNetErrorCode() == net::ERR_BLOCKED_BY_CLIENT) {
-    if (!ui_manager_)
-      return;
-
     security_interstitials::UnsafeResource resource;
     if (ui_manager_->PopUnsafeResourceForURL(navigation_handle->GetURL(),
                                              &resource)) {
