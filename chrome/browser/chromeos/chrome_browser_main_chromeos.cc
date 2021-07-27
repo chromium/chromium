@@ -201,6 +201,7 @@
 #include "components/ownership/owner_key_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/quirks/quirks_manager.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/user_manager/user.h"
@@ -262,6 +263,13 @@ void InitializeNetworkPortalDetector() {
     network_portal_detector::SetNetworkPortalDetector(
         new NetworkPortalDetectorImpl());
   }
+}
+
+void ApplySigninProfileModifications(Profile* profile) {
+  DCHECK(ash::ProfileHelper::IsSigninProfile(profile));
+  auto* prefs = profile->GetPrefs();
+
+  prefs->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
 }
 
 }  // namespace
@@ -966,6 +974,8 @@ void ChromeBrowserMainPartsChromeos::PostProfileInit() {
     // to ensure it is correctly persisted.
     if (profile()->IsNewProfile())
       ProfileHelper::Get()->FlushProfile(profile());
+
+    ApplySigninProfileModifications(profile());
   } else {
     // Force loading of signin profile if it was not loaded before. It is
     // possible when we are restoring session or skipping login screen for some
