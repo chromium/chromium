@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_password_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -45,7 +44,7 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   PasswordInfobarModalOverlayMediatorTest()
       : url_(kUrlSpec),
-        infobar_([[FakeInfobarUIDelegate alloc] init],
+        infobar_(InfobarType::kInfobarTypePasswordSave,
                  MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername,
                                                                   kPassword,
                                                                   url_)),

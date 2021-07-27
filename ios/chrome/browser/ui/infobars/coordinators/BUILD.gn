@@ -5,8 +5,6 @@
 source_set("coordinators") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "infobar_confirm_coordinator.h",
-    "infobar_confirm_coordinator.mm",
     "infobar_coordinator+subclassing.h",
     "infobar_coordinator.h",
     "infobar_coordinator.mm",

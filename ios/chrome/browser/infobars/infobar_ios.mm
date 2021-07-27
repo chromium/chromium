@@ -23,17 +23,6 @@ InfoBarIOS::InfoBarIOS(InfobarType infobar_type,
       infobar_type_(infobar_type),
       skip_banner_(skip_banner) {}
 
-InfoBarIOS::InfoBarIOS(id<InfobarUIDelegate> ui_delegate,
-                       std::unique_ptr<InfoBarDelegate> delegate,
-                       bool skip_banner)
-    : InfoBar(std::move(delegate)),
-      ui_delegate_(ui_delegate),
-      infobar_type_(ui_delegate_.infobarType),
-      skip_banner_(skip_banner) {
-  DCHECK(ui_delegate_);
-  [ui_delegate_ setDelegate:this];
-}
-
 InfoBarIOS::~InfoBarIOS() {
   ui_delegate_.delegate = nullptr;
   [ui_delegate_ detachView];

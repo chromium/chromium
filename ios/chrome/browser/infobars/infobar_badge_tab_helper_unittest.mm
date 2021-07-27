@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"

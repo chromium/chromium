@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

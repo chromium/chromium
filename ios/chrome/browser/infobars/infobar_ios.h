@@ -27,11 +27,6 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   InfoBarIOS(InfobarType infobar_type,
              std::unique_ptr<infobars::InfoBarDelegate> delegate,
              bool skip_banner = false);
-  // TODO(crbug.com/1030357): InfobarUIDelegate and this constructor can be
-  // removed once overlay-based infobar UI is fully supported.
-  InfoBarIOS(id<InfobarUIDelegate> ui_delegate,
-             std::unique_ptr<infobars::InfoBarDelegate> delegate,
-             bool skip_banner = false);
   ~InfoBarIOS() override;
   InfoBarIOS(const InfoBarIOS&) = delete;
   InfoBarIOS& operator=(const InfoBarIOS&) = delete;
