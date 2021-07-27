@@ -88,13 +88,7 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(WasmTrapHandlerBrowserTest);
 };
 
-// This test fails on Linux MSan and Linux ChromiumOS MSan. crbug.com/1231858
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OutOfBounds DISABLED_OutOfBounds
-#else
-#define MAYBE_OutOfBounds OutOfBounds
-#endif
-IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, MAYBE_OutOfBounds) {
+IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, OutOfBounds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto& url = embedded_test_server()->GetURL("/wasm/out_of_bounds.html");
   ui_test_utils::NavigateToURL(browser(), url);
