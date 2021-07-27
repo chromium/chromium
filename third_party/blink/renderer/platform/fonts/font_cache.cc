@@ -35,6 +35,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
@@ -355,8 +357,11 @@ scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
   if (Character::IsPrivateUse(lookup_char) ||
       Character::IsNonCharacter(lookup_char))
     return nullptr;
-  return PlatformFallbackFontForCharacter(
+  base::ElapsedTimer timer;
+  scoped_refptr<SimpleFontData> result = PlatformFallbackFontForCharacter(
       description, lookup_char, font_data_to_substitute, fallback_priority);
+  FontPerformance::AddSystemFallbackFontTime(timer.Elapsed());
+  return result;
 }
 
 void FontCache::ReleaseFontData(const SimpleFontData* font_data) {

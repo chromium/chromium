@@ -4763,6 +4763,8 @@ void LocalFrameView::OnFirstContentfulPaint() {
                         FontPerformance::PrimaryFontTime());
     UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP.Style",
                         FontPerformance::PrimaryFontTimeInStyle());
+    UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.FCP",
+                        FontPerformance::SystemFallbackFontTime());
   }
   EnsureUkmAggregator().DidReachFirstContentfulPaint(is_main_frame);
 }

@@ -8,6 +8,7 @@ namespace blink {
 
 base::TimeDelta FontPerformance::primary_font_;
 base::TimeDelta FontPerformance::primary_font_in_style_;
+base::TimeDelta FontPerformance::system_fallback_;
 unsigned FontPerformance::in_style_ = 0;
 
 }  // namespace blink

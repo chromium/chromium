@@ -271,6 +271,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
+    expires_after="2021-10-31">
+  <owner>yosin@chromium.org</owner>
+  <owner>kojii@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent finding the system fallback font consumed in the main tread
+    before FCP. On Windows, this includes IPC roundtrip to browser process and
+    DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.Hung.Duration" units="ms" expires_after="M85">
   <obsolete>
     Expired in M85, removed in M88.

@@ -30,6 +30,12 @@ class PLATFORM_EXPORT FontPerformance {
       primary_font_ += time;
   }
 
+  // The aggregated time spent in |FallbackFontForCharacter|.
+  static base::TimeDelta SystemFallbackFontTime() { return system_fallback_; }
+  static void AddSystemFallbackFontTime(base::TimeDelta time) {
+    system_fallback_ += time;
+  }
+
   class StyleScope {
    public:
     StyleScope() { ++in_style_; }
@@ -42,6 +48,7 @@ class PLATFORM_EXPORT FontPerformance {
  private:
   static base::TimeDelta primary_font_;
   static base::TimeDelta primary_font_in_style_;
+  static base::TimeDelta system_fallback_;
   static unsigned in_style_;
 };
 
