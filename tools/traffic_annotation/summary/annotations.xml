@@ -11,7 +11,7 @@ Refer to README.md for content description and update process.
  <item id="CRD_relay_session_request" added_in_milestone="62" hash_code="24058523" type="0" deprecated="2019-07-22" content_hash_code="36997811" file_path=""/>
  <item id="accounts_image_fetcher" added_in_milestone="66" hash_code="98658519" type="0" content_hash_code="45432230" os_list="linux,windows" file_path="components/signin/internal/identity_manager/account_fetcher_service.cc"/>
  <item id="adb_client_socket" added_in_milestone="65" hash_code="87775794" type="0" content_hash_code="56654828" os_list="linux,windows" file_path="chrome/browser/devtools/device/adb/adb_client_socket.cc"/>
- <item id="affiliation_lookup" added_in_milestone="62" hash_code="111904019" type="0" content_hash_code="81061452" os_list="linux,windows" file_path="components/password_manager/core/browser/android_affiliation/affiliation_fetcher.cc"/>
+ <item id="affiliation_lookup" added_in_milestone="62" hash_code="111904019" type="0" deprecated="2021-07-27" content_hash_code="81061452" file_path=""/>
  <item id="affiliation_lookup_by_hash" added_in_milestone="87" hash_code="57748571" type="0" content_hash_code="40566404" os_list="linux,windows" file_path="components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.cc"/>
  <item id="android_device_manager_socket" added_in_milestone="65" hash_code="37249086" type="0" content_hash_code="6436865" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_device_manager.cc"/>
  <item id="android_web_socket" added_in_milestone="65" hash_code="39356976" type="0" content_hash_code="12310113" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_web_socket.cc"/>

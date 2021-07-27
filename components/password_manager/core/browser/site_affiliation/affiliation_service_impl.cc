@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

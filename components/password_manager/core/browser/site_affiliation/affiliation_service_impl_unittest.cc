@@ -9,8 +9,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_base.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -251,7 +251,8 @@ TEST_F(AffiliationServiceImplTest,
   const std::vector<GURL> origins_2 = {origin3, origin4, origin5};
   auto mock_fetcher = std::make_unique<MockAffiliationFetcher>();
   auto new_mock_fetcher = std::make_unique<MockAffiliationFetcher>();
-  AffiliationFetcher::RequestInfo request_info{.change_password_info = true};
+  AffiliationFetcherBase::RequestInfo request_info{.change_password_info =
+                                                       true};
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs(origins_1), request_info));
@@ -431,7 +432,8 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
   auto new_mock_fetcher = std::make_unique<MockAffiliationFetcher>();
   auto* new_raw_mock_fetcher = new_mock_fetcher.get();
 
-  AffiliationFetcher::RequestInfo request_info{.change_password_info = true};
+  AffiliationFetcherBase::RequestInfo request_info{.change_password_info =
+                                                       true};
 
   EXPECT_CALL(*mock_fetcher,
               StartRequest(ToFacetsURIs(origins_1), request_info));

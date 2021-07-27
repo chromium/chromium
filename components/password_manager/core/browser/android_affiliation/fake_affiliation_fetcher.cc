@@ -12,17 +12,27 @@ namespace password_manager {
 password_manager::FakeAffiliationFetcher::FakeAffiliationFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AffiliationFetcherDelegate* delegate)
-    : AffiliationFetcher(std::move(url_loader_factory), delegate) {}
+    : delegate_(delegate) {}
 
 password_manager::FakeAffiliationFetcher::~FakeAffiliationFetcher() = default;
 
 void password_manager::FakeAffiliationFetcher::SimulateSuccess(
     std::unique_ptr<AffiliationFetcherDelegate::Result> fake_result) {
-  delegate()->OnFetchSucceeded(this, std::move(fake_result));
+  delegate_->OnFetchSucceeded(this, std::move(fake_result));
 }
 
 void password_manager::FakeAffiliationFetcher::SimulateFailure() {
-  delegate()->OnFetchFailed(this);
+  delegate_->OnFetchFailed(this);
+}
+
+void password_manager::FakeAffiliationFetcher::StartRequest(
+    const std::vector<FacetURI>& facet_uris,
+    RequestInfo request_info) {
+  facets_ = facet_uris;
+}
+const std::vector<FacetURI>&
+password_manager::FakeAffiliationFetcher::GetRequestedFacetURIs() const {
+  return facets_;
 }
 
 password_manager::FakeAffiliationFetcherFactory::

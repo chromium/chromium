@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_database.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetch_throttler.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/android_affiliation/facet_manager.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

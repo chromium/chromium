@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/url_constants.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_api.pb.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"

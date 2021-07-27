@@ -9,17 +9,15 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
 
 namespace password_manager {
 
 // A fake AffiliationFetcher that can be used in tests to return fake API
 // responses to users of AffiliationFetcher.
-// TODO(crbug.com/1117445): FakeAffiliationFetcher should implement
-// AffiliationFetcherInterface.
-class FakeAffiliationFetcher : public AffiliationFetcher {
+class FakeAffiliationFetcher : public AffiliationFetcherInterface {
  public:
   FakeAffiliationFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -35,8 +33,15 @@ class FakeAffiliationFetcher : public AffiliationFetcher {
   // may choose to destroy |this| from within this call.
   void SimulateFailure();
 
+  // AffiliationFetcherInterface
+  void StartRequest(const std::vector<FacetURI>& facet_uris,
+                    RequestInfo request_info) override;
+  const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAffiliationFetcher);
+  AffiliationFetcherDelegate* const delegate_;
+
+  std::vector<FacetURI> facets_;
 };
 
 // Used in tests to return fake API responses to users of AffiliationFetcher.
