@@ -68,7 +68,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -4928,42 +4927,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplAllowInsecureLocalhostBrowserTest,
   observer.SetPattern("*SSL certificate*");
 
   ASSERT_TRUE(NavigateToURL(shell(), url));
-  observer.Wait();
-}
-
-class WebContentsImplAllowInsecureLocalhostPrerenderBrowserTest
-    : public WebContentsImplAllowInsecureLocalhostBrowserTest {
- protected:
-  test::PrerenderTestHelper& prerender_test_helper() {
-    return prerender_test_helper_;
-  }
-
- private:
-  test::PrerenderTestHelper prerender_test_helper_{base::BindRepeating(
-      [](decltype(this) test) { return test->shell()->web_contents(); },
-      base::Unretained(this))};
-};
-
-IN_PROC_BROWSER_TEST_F(
-    WebContentsImplAllowInsecureLocalhostPrerenderBrowserTest,
-    WarnsInPrerenderWithSwitch) {
-  ASSERT_TRUE(https_server().Start());
-  ASSERT_TRUE(NavigateToURL(shell(), https_server().GetURL("/title1.html")));
-
-  https_server().ResetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED,
-                                net::SSLServerConfig());
-  GURL prerender_url = https_server().GetURL("/title2.html");
-
-  WebContentsConsoleObserver observer(shell()->web_contents());
-  observer.SetFilter(base::BindRepeating(
-      [](const GURL& expected_url,
-         const WebContentsConsoleObserver::Message& message) {
-        return message.source_frame->GetLastCommittedURL() == expected_url;
-      },
-      prerender_url));
-  observer.SetPattern("*SSL certificate*");
-
-  prerender_test_helper().AddPrerender(prerender_url);
   observer.Wait();
 }
 

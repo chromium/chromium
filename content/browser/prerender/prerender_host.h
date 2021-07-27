@@ -75,7 +75,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kCancelAllHostsForTesting = 22,
     kDidFailLoad = 23,
     kStop = 24,
-    kMaxValue = kStop,
+    kSslCertificateError = 25,
+    kMaxValue = kSslCertificateError,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

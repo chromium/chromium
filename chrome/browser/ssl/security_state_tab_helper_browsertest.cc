@@ -2160,7 +2160,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
   host_observer.WaitForDestroyed();
   EXPECT_EQ(content::RenderFrameHost::kNoFrameTreeNodeId,
             prerender_helper_.GetHostForUrl(prerender_url));
-  EXPECT_EQ(net::ERR_CERT_DATE_INVALID, nav_observer.net_error_code());
 
   // Navigate to prerender_url and expect cert error.
   prerender_helper_.NavigatePrimaryPage(prerender_url);

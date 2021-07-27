@@ -229,6 +229,12 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     return ssl_server_.GetURL("b.test", path);
   }
 
+  void ResetSSLConfig(
+      net::test_server::EmbeddedTestServer::ServerCertificate cert,
+      const net::SSLServerConfig& ssl_config) {
+    ASSERT_TRUE(ssl_server_.ResetSSLConfig(cert, ssl_config));
+  }
+
   int GetRequestCount(const GURL& url) {
     return prerender_helper_->GetRequestCount(url);
   }
@@ -1817,6 +1823,202 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
             "MBPA_BAD_INTERFACE: content.mojom.TestInterfaceForUnexpected");
 
   SetBrowserClientForTesting(old_browser_client);
+}
+
+enum class SSLPrerenderTestErrorBlockType { kClientCertRequested, kCertError };
+
+std::string SSLPrerenderTestErrorBlockTypeToString(
+    const testing::TestParamInfo<SSLPrerenderTestErrorBlockType>& info) {
+  switch (info.param) {
+    case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+      return "ClientCertRequested";
+    case SSLPrerenderTestErrorBlockType::kCertError:
+      return "CertError";
+  }
+}
+
+class SSLPrerenderBrowserTest
+    : public testing::WithParamInterface<SSLPrerenderTestErrorBlockType>,
+      public PrerenderBrowserTest {
+ protected:
+  void RequireClientCertsOrSendExpiredCerts() {
+    net::SSLServerConfig ssl_config;
+    switch (GetParam()) {
+      case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+        ssl_config.client_cert_type =
+            net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+        ResetSSLConfig(net::test_server::EmbeddedTestServer::CERT_TEST_NAMES,
+                       ssl_config);
+        break;
+      case SSLPrerenderTestErrorBlockType::kCertError:
+        ResetSSLConfig(net::test_server::EmbeddedTestServer::CERT_EXPIRED,
+                       ssl_config);
+        break;
+    }
+  }
+  PrerenderHost::FinalStatus GetExpectedFinalStatus() {
+    switch (GetParam()) {
+      case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+        return PrerenderHost::FinalStatus::kClientCertRequested;
+      case SSLPrerenderTestErrorBlockType::kCertError:
+        return PrerenderHost::FinalStatus::kSslCertificateError;
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SSLPrerenderBrowserTest,
+    testing::Values(SSLPrerenderTestErrorBlockType::kClientCertRequested,
+                    SSLPrerenderTestErrorBlockType::kCertError),
+    SSLPrerenderTestErrorBlockTypeToString);
+
+// For a prerendering navigation request, if the server requires a client
+// certificate or responds to the request with an invalid certificate, the
+// prernedering should be canceled.
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       CertificateValidation_Navigation) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Reset the server's config.
+  RequireClientCertsOrSendExpiredCerts();
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents());
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+
+  // Start prerendering `kPrerenderingUrl`.
+  prerender_helper()->AddPrerenderAsync(kPrerenderingUrl);
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = prerender_helper()->GetHostForUrl(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      GetExpectedFinalStatus(), 1);
+}
+
+// For a prerendering subresource request, if the server requires a client
+// certificate or responds to the request with an invalid certificate, the
+// prernedering should be canceled.
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       CertificateValidation_Subresource) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents());
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // Reset the server's config.
+  RequireClientCertsOrSendExpiredCerts();
+
+  ASSERT_NE(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Fetch a subresrouce.
+  std::string fetch_subresource_script = R"(
+        const imgElement = document.createElement('img');
+        imgElement.src = '/load_image/image.png';
+        document.body.appendChild(imgElement);
+  )";
+  ignore_result(ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
+                       fetch_subresource_script));
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      GetExpectedFinalStatus(), 1);
+}
+
+// Tests that prerendering will be cancelled if the server asks for client
+// certificates or responds with an expired certificate, even if the main
+// resource request is intercepted and sent by a service worker.
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       CertificateValidation_SWMainResource) {
+  base::HistogramTester histogram_tester;
+
+  // Register a service worker that intercepts resource requests.
+  const GURL kInitialUrl = GetUrl("/workers/service_worker_setup.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_EQ("ok", EvalJs(web_contents(), "setup();"));
+
+  // Reset the server's config.
+  RequireClientCertsOrSendExpiredCerts();
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents());
+  const GURL kPrerenderingUrl = GetUrl("/workers/simple.html?intercept");
+  prerender_helper()->AddPrerenderAsync(kPrerenderingUrl);
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = prerender_helper()->GetHostForUrl(kPrerenderingUrl);
+
+  // The prerender should be destroyed.
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // For the kCertError case, StoragePartitionImpl cannot locate any
+  // WebContents. So, the certificate error does not cause any UI changes; it
+  // just cancels the url request, and leads to the cancellation of
+  // prerendering with kNavigationRequestNetworkError.
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      GetParam() == SSLPrerenderTestErrorBlockType::kClientCertRequested
+          ? PrerenderHost::FinalStatus::kClientCertRequested
+          : PrerenderHost::FinalStatus::kNavigationRequestNetworkError,
+      1);
+}
+
+// Tests that prerendering will be cancelled if the server asks for client
+// certificates or responds with an expired certificate, even if the subresource
+// request is intercepted by a service worker.
+IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
+                       CertificateValidation_SWSubResource) {
+  base::HistogramTester histogram_tester;
+
+  const GURL kInitialUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Prerender a page, then register a service worker that intercepts resource
+  // requests.
+  const GURL kPrerenderingUrl = GetUrl("/workers/service_worker_setup.html");
+  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ("ok",
+            EvalJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
+                   "setup();"));
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  RequireClientCertsOrSendExpiredCerts();
+
+  // Try to fetch a sub resource through the registered service worker. The
+  // server should ask for a client certificate or respond with an expired
+  // certificate, which leads to the cancellation of prerendering.
+  std::string resource_url = GetUrl("/workers/empty.js?intercept").spec();
+  ignore_result(ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
+                       JsReplace("fetch($1);", resource_url)));
+
+  // Check the prerender was destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      GetExpectedFinalStatus(), 1);
 }
 
 // TODO(https://crbug.com/1132746): Test canceling prerendering when its

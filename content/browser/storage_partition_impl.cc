@@ -560,6 +560,15 @@ void OnAuthRequiredContinuation(
                            first_auth_attempt);  // deletes self
 }
 
+bool IsPrimaryMainFrameRequest(int process_id, int routing_id) {
+  if (process_id != network::mojom::kBrowserProcessId)
+    return false;
+
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(routing_id);
+  return frame_tree_node &&
+         frame_tree_node->current_frame_host()->IsInPrimaryMainFrame();
+}
+
 bool IsMainFrameRequest(int process_id, int routing_id) {
   if (process_id != network::mojom::kBrowserProcessId)
     return false;
@@ -641,6 +650,38 @@ void CallCancelRequest(
   mojo::Remote<network::mojom::ClientCertificateResponder>
       client_cert_responder(std::move(client_cert_responder_remote));
   client_cert_responder->CancelRequest();
+}
+
+// Cancels prerendering if `frame_tree_node_id` is in a prerendered frame tree,
+// using `final_status` as the cancellation reason. Returns true if cancelled.
+bool CancelIfPrerendering(int frame_tree_node_id,
+                          PrerenderHost::FinalStatus final_status) {
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (frame_tree_node && frame_tree_node->frame_tree()->is_prerendering()) {
+    auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
+    int root_node_id =
+        frame_tree_node->frame_tree()->root()->frame_tree_node_id();
+    web_contents->GetPrerenderHostRegistry()->CancelHost(root_node_id,
+                                                         final_status);
+    return true;
+  }
+  return false;
+}
+
+// Cancels prerendering if `render_frame_host_id` is in a prerendered frame
+// tree, using `final_status` as the cancellation reason. Returns true if
+// cancelled.
+bool CancelIfPrerendering(GlobalRenderFrameHostId render_frame_host_id,
+                          PrerenderHost::FinalStatus final_status) {
+  auto* render_frame_host_impl =
+      RenderFrameHostImpl::FromID(render_frame_host_id);
+  if (render_frame_host_impl &&
+      render_frame_host_impl->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
+    render_frame_host_impl->CancelPrerendering(final_status);
+    return true;
+  }
+  return false;
 }
 
 void OnCertificateRequestedContinuation(
@@ -1721,6 +1762,8 @@ void StoragePartitionImpl::OnAuthRequired(
       }
     }
   } else {
+    // TODO(https://crbug.com/1219655): Use IsPrimaryMainFrameRequest and remove
+    // IsMainFrameRequest.
     is_main_frame = IsMainFrameRequest(process_id, routing_id);
     web_contents_getter =
         base::BindRepeating(GetWebContents, process_id, routing_id);
@@ -1768,14 +1811,14 @@ void StoragePartitionImpl::OnCertificateRequested(
       // `CreateURLLoaderNetworkObserverForNavigationRequest()`.
       frame_tree_node_id = routing_id;
     }
-    auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-    if (frame_tree_node && frame_tree_node->frame_tree()->is_prerendering()) {
-      // If this request is for prerendering, cancel the prerendering and the
-      // request.
+
+    // Cancel this request and the prerendering if the request is for a
+    // prerendering page, because prerendering pages are invisible and browser
+    // cannot prompt the user to select certificates on invisible pages.
+    if (CancelIfPrerendering(
+            frame_tree_node_id,
+            PrerenderHost::FinalStatus::kClientCertRequested)) {
       CallCancelRequest(std::move(cert_responder));
-      auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
-      web_contents->GetPrerenderHostRegistry()->CancelHost(
-          frame_tree_node_id, PrerenderHost::FinalStatus::kClientCertRequested);
       return;
     }
     web_contents_getter = base::BindRepeating(&WebContents::FromFrameTreeNodeId,
@@ -1784,19 +1827,13 @@ void StoragePartitionImpl::OnCertificateRequested(
     // Route via `process_id` and `routing_id`, which can identify
     // RenderFrameHostImpl instances.
     DCHECK(!window_id);
-
-    // This observer is for Frame, see
-    // `CreateURLLoaderNetworkObserverForFrame()`.
-    auto* render_frame_host_impl =
-        RenderFrameHostImpl::FromID(process_id, routing_id);
-    if (render_frame_host_impl &&
-        render_frame_host_impl->lifecycle_state() ==
-            RenderFrameHostImpl::LifecycleStateImpl::kPrerendering) {
-      // If this request is for prerendering, cancel the prerendering and the
-      // request.
+    // Cancel this request and the prerendering if the request is for a
+    // prerendering page, because prerendering pages are invisble and browser
+    // cannot select certificates on invisible pages.
+    if (CancelIfPrerendering(
+            GlobalRenderFrameHostId(process_id, routing_id),
+            PrerenderHost::FinalStatus::kClientCertRequested)) {
       CallCancelRequest(std::move(cert_responder));
-      render_frame_host_impl->CancelPrerendering(
-          PrerenderHost::FinalStatus::kClientCertRequested);
       return;
     }
 
@@ -1817,11 +1854,40 @@ void StoragePartitionImpl::OnSSLCertificateError(
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
 
+  if (process_id == network::mojom::kBrowserProcessId) {
+    // The remote end of this URLLoaderNetworkServiceObserver pipe was created
+    // for NavigationRequest, see
+    // `CreateURLLoaderNetworkObserverForNavigationRequest`.
+
+    // Cancel this request and the prerendering if the request is for a
+    // prerendering page, because prerendering pages are invisble and browser
+    // cannot show errors on invisible pages.
+    if (CancelIfPrerendering(
+            routing_id, PrerenderHost::FinalStatus::kSslCertificateError)) {
+      std::move(response).Run(net_error);
+      return;
+    }
+  } else {
+    // The remote end of this URLLoaderNetworkServiceObserver pipe was created
+    // for Frame, see `CreateURLLoaderNetworkObserverForFrame`.
+
+    // Cancel this request and the prerendering if the request is for a
+    // prerendering page, because prerendering pages are invisble and browser
+    // cannot show errors on invisible pages.
+    if (CancelIfPrerendering(
+            GlobalRenderFrameHostId(process_id, routing_id),
+            PrerenderHost::FinalStatus::kSslCertificateError)) {
+      std::move(response).Run(net_error);
+      return;
+    }
+  }
+
   SSLErrorDelegate* delegate =
       new SSLErrorDelegate(std::move(response));  // deletes self
-  bool is_main_frame_request = IsMainFrameRequest(process_id, routing_id);
+  bool is_primary_main_frame_request =
+      IsPrimaryMainFrameRequest(process_id, routing_id);
   SSLManager::OnSSLCertificateError(
-      delegate->GetWeakPtr(), is_main_frame_request, url,
+      delegate->GetWeakPtr(), is_primary_main_frame_request, url,
       GetWebContents(process_id, routing_id), net_error, ssl_info, fatal);
 }
 
