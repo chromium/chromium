@@ -98,6 +98,11 @@ void DroppedFrameCounter::AddDroppedFrame() {
 }
 
 void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
+  // Start with flushing the frames in frame_sorter ignoring the currently
+  // pending frames (In other words calling NotifyFrameResult and update
+  // smoothness metrics tracked for all frames that have received their ack).
+  frame_sorter_.Reset();
+
   // Before resetting the pending frames, update the measurements for the
   // sliding windows.
   if (!latest_sliding_window_start_.is_null()) {
@@ -150,7 +155,6 @@ void DroppedFrameCounter::ResetPendingFrames(base::TimeTicks timestamp) {
   sliding_window_ = {};
   latest_sliding_window_start_ = {};
   latest_sliding_window_interval_ = {};
-  frame_sorter_.Reset();
 }
 
 void DroppedFrameCounter::OnBeginFrame(const viz::BeginFrameArgs& args,
@@ -280,6 +284,7 @@ void DroppedFrameCounter::SetUkmSmoothnessDestination(
 }
 
 void DroppedFrameCounter::Reset() {
+  frame_sorter_.Reset();
   total_frames_ = 0;
   total_partial_ = 0;
   total_dropped_ = 0;
@@ -294,7 +299,6 @@ void DroppedFrameCounter::Reset() {
   latest_sliding_window_start_ = {};
   sliding_window_histogram_.Clear();
   ring_buffer_.Clear();
-  frame_sorter_.Reset();
   time_max_delta_ = {};
   last_reported_metrics_ = {};
 }

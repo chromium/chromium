@@ -274,6 +274,15 @@ class DroppedFrameCounterTest : public testing::Test {
     }
   }
 
+  void SimulatePendingFrame(int repeat) {
+    for (int i = 0; i < repeat; i++) {
+      viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
+      dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
+      sequence_number_++;
+      frame_time_ += interval_;
+    }
+  }
+
   void AdvancetimeByIntervals(int interval_count) {
     frame_time_ += interval_ * interval_count;
   }
@@ -541,6 +550,54 @@ TEST_F(DroppedFrameCounterTest,
   EXPECT_EQ(dropped_frame_counter_.sliding_window_max_percent_dropped(),
             dropped_frame_counter_.SlidingWindow95PercentilePercentDropped());
   EXPECT_GT(dropped_frame_counter_.sliding_window_max_percent_dropped(), 0u);
+}
+
+TEST_F(DroppedFrameCounterTest, ResetPendingFramesAccountingForPendingFrames) {
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  SetInterval(kInterval);
+
+  // First 2 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 2);
+
+  // Have a pending frame which would hold the frames in queue.
+  SimulatePendingFrame(1);
+
+  // One second with 40% dropped frames.
+  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5));
+
+  // On the first 2 seconds are accounted for and pdf is 20%.
+  EXPECT_EQ(MaxPercentDroppedFrame(), 20);
+
+  dropped_frame_counter_.ResetPendingFrames(GetNextFrameTime());
+
+  // After resetting the pending frames, the pdf would be 40%.
+  EXPECT_EQ(MaxPercentDroppedFrame(), 40);
+}
+
+TEST_F(DroppedFrameCounterTest, Reset) {
+  // Set an interval that rounds up nicely with 1 second.
+  constexpr auto kInterval = base::TimeDelta::FromMilliseconds(10);
+  constexpr size_t kFps = base::TimeDelta::FromSeconds(1) / kInterval;
+  SetInterval(kInterval);
+
+  // First 2 seconds with 20% dropped frames.
+  SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 2);
+
+  // Have a pending frame which would hold the frames in queue.
+  SimulatePendingFrame(1);
+
+  // Another 2 seconds with 40% dropped frames.
+  SimulateFrameSequence({false, false, false, true, true}, (kFps / 5) * 2);
+
+  EXPECT_EQ(MaxPercentDroppedFrame(), 20u);
+
+  dropped_frame_counter_.Reset();  // Simulating gpu thread crash
+
+  // After reset the max percent dropped frame would be 0 and frames in queue
+  // behind the pending frame would not affect it.
+  EXPECT_EQ(MaxPercentDroppedFrame(), 0u);
 }
 
 }  // namespace
