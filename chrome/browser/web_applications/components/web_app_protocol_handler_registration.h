@@ -9,13 +9,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 
 class Profile;
-
-namespace web_app {
-using AppId = std::string;
-}
 
 namespace web_app {
 
