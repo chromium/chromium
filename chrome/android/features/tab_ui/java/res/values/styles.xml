@@ -55,6 +55,18 @@
         <item name="cornerRadiusBottomEnd">@dimen/tab_grid_card_thumbnail_corner_radius_bottom</item>
     </style>
 
+    <style name="TabGridCardTitleStyle">
+        <item name="android:layout_marginEnd">@dimen/tab_list_card_title_end_margin</item>
+        <item name="android:requiresFadingEdge">horizontal</item>
+        <item name="android:fadingEdgeLength">@dimen/tab_list_card_title_fading_length</item>
+        <item name="android:minHeight">?attr/tabGridHeaderHeight</item>
+    </style>
+
+    <style name="TabGridCardTitleStyle.ThemeRefactor">
+        <item name="android:layout_marginEnd">@dimen/tab_grid_card_title_end_margin</item>
+        <item name="android:fadingEdgeLength">@dimen/tab_grid_card_title_fading_length</item>
+    </style>
+
     <style name="TabGridDialogUngroupBarDivider.Shadow" parent="">
         <item name="android:layout_height">@dimen/toolbar_shadow_height</item>
         <item name="android:src">@drawable/modern_toolbar_shadow</item>
@@ -73,11 +85,11 @@
         <item name="tabGridHeaderHeight">@dimen/tab_list_card_title_height</item>
         <item name="tabGridBackground">@drawable/popup_bg_tinted</item>
         <item name="tabGridMargin">@dimen/tab_list_card_margin</item>
-        <item name="tabGridTitleFadingLength">@dimen/tab_list_card_title_fading_length</item>
 
         <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>
         <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle</item>
         <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle</item>
+        <item name="tabGridTitleStyle">@style/TabGridCardTitleStyle</item>
 
         <item name="tabGridDialogCornerRadius">@dimen/tab_list_card_radius</item>
         <item name="tabGridDialogAppBarPadding">0dp</item>
@@ -89,11 +101,11 @@
         <item name="tabGridHeaderHeight">@dimen/tab_grid_card_header_height</item>
         <item name="tabGridBackground">@drawable/tab_grid_card_background</item>
         <item name="tabGridMargin">@dimen/tab_grid_card_margin</item>
-        <item name="tabGridTitleFadingLength">@dimen/tab_grid_card_title_fading_length</item>
 
         <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle.ThemeRefactor</item>
         <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle.ThemeRefactor</item>
         <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle.ThemeRefactor</item>
+        <item name="tabGridTitleStyle">@style/TabGridCardTitleStyle.ThemeRefactor</item>
 
         <item name="tabGridDialogCornerRadius">@dimen/tab_grid_dialog_bg_radius</item>
         <item name="tabGridDialogAppBarPadding">@dimen/tab_grid_dialog_app_bar_padding</item>
