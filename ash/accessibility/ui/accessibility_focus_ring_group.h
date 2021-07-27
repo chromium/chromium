@@ -41,6 +41,9 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
   static void ComputeOpacity(LayerAnimationInfo* animation_info,
                              base::TimeTicks timestamp);
 
+  // Clears the underlying layer's animation observation.
+  void ClearAnimationObservation();
+
   LayerAnimationInfo* focus_animation_info() { return &focus_animation_info_; }
 
   void set_no_fade_for_testing() { no_fade_for_testing_ = true; }

@@ -34,7 +34,7 @@ class AccessibilityLayerDelegate {
 
   // Called by a layer during animation observation on its compositor. Returns
   // true when animation has finished.
-  virtual bool OnAnimationStep(base::TimeTicks timestamp) = 0;
+  virtual void OnAnimationStep(base::TimeTicks timestamp) = 0;
 
  protected:
   virtual ~AccessibilityLayerDelegate() {}
@@ -63,6 +63,9 @@ class AccessibilityLayer : public ui::LayerDelegate,
   // Returns true if this layer is in a composited window with an
   // animation observer.
   bool CanAnimate() const;
+
+  // Clears this layer's animation observation.
+  void ClearAnimationObservation();
 
   // Returns true if a layer needs to animate.
   virtual bool NeedToAnimate() const = 0;
@@ -102,9 +105,6 @@ class AccessibilityLayer : public ui::LayerDelegate,
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
-  // Reset internal observation and state.
-  void Reset();
-
   // The object that owns this layer.
   AccessibilityLayerDelegate* delegate_;
 
@@ -113,10 +113,6 @@ class AccessibilityLayer : public ui::LayerDelegate,
                           &ui::Compositor::AddAnimationObserver,
                           &ui::Compositor::RemoveAnimationObserver>
       animation_observation_{this};
-
-  bool got_first_animation_step_ = false;
-
-  base::WeakPtrFactory<AccessibilityLayer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityLayer);
 };

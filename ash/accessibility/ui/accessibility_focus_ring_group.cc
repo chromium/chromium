@@ -328,6 +328,11 @@ void AccessibilityFocusRingGroup::SplitIntoParagraphShape(
   *bottom = bottom_rect;
 }
 
+void AccessibilityFocusRingGroup::ClearAnimationObservation() {
+  for (auto& focus_layer : focus_layers_)
+    focus_layer->ClearAnimationObservation();
+}
+
 AccessibilityFocusRing AccessibilityFocusRingGroup::RingFromSortedRects(
     const std::vector<gfx::Rect>& rects) const {
   if (rects.size() == 1)

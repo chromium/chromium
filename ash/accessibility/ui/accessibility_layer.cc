@@ -87,7 +87,7 @@ void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
         display::Screen::GetScreen()->GetDisplayMatching(bounds);
     ui::Compositor* compositor = root_window->layer()->GetCompositor();
     if (compositor && !animation_observation_.IsObservingSource(compositor)) {
-      Reset();
+      ClearAnimationObservation();
       animation_observation_.Observe(compositor);
     }
   }
@@ -101,26 +101,17 @@ void AccessibilityLayer::OnDeviceScaleFactorChanged(
 }
 
 void AccessibilityLayer::OnAnimationStep(base::TimeTicks timestamp) {
-  // Require the |delegate_| get forwarded the call after the first such
-  // callback from the compositor. This avoids a crash within tests under low
-  // resource situations.
-  if (got_first_animation_step_ && delegate_->OnAnimationStep(timestamp)) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AccessibilityLayer::Reset, weak_factory_.GetWeakPtr()));
-  }
-
-  got_first_animation_step_ = true;
+  delegate_->OnAnimationStep(timestamp);
+  // |this| may have been deleted by |delegate_| at this point.
 }
 
 void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
   if (compositor && animation_observation_.IsObservingSource(compositor))
-    Reset();
+    ClearAnimationObservation();
 }
 
-void AccessibilityLayer::Reset() {
+void AccessibilityLayer::ClearAnimationObservation() {
   animation_observation_.Reset();
-  got_first_animation_step_ = false;
 }
 
 }  // namespace ash

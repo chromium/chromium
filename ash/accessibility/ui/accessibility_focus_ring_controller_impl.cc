@@ -179,7 +179,7 @@ void AccessibilityFocusRingControllerImpl::OnDeviceScaleFactorChanged() {
     iter->second->UpdateFocusRingsFromInfo(this);
 }
 
-bool AccessibilityFocusRingControllerImpl::OnAnimationStep(
+void AccessibilityFocusRingControllerImpl::OnAnimationStep(
     base::TimeTicks timestamp) {
   bool has_animation_finished = true;
   for (auto iter = focus_ring_groups_.begin(); iter != focus_ring_groups_.end();
@@ -188,39 +188,43 @@ bool AccessibilityFocusRingControllerImpl::OnAnimationStep(
       has_animation_finished &= iter->second->AnimateFocusRings(timestamp);
   }
 
+  // Release all resources, including observers if needed.
+  if (has_animation_finished) {
+    for (auto iter = focus_ring_groups_.begin();
+         iter != focus_ring_groups_.end(); ++iter) {
+      iter->second->ClearAnimationObservation();
+    }
+  }
+
   if (cursor_layer_ && cursor_layer_->CanAnimate())
-    has_animation_finished &= AnimateCursorRing(timestamp);
+    AnimateCursorRing(timestamp);
 
   if (caret_layer_ && caret_layer_->CanAnimate())
-    has_animation_finished &= AnimateCaretRing(timestamp);
-
-  return has_animation_finished;
+    AnimateCaretRing(timestamp);
 }
 
-bool AccessibilityFocusRingControllerImpl::AnimateCursorRing(
+void AccessibilityFocusRingControllerImpl::AnimateCursorRing(
     base::TimeTicks timestamp) {
   CHECK(cursor_layer_);
 
   ComputeOpacity(&cursor_animation_info_, timestamp);
   if (cursor_animation_info_.opacity == 0.0) {
     cursor_layer_.reset();
-    return true;
+    return;
   }
   cursor_layer_->SetOpacity(cursor_animation_info_.opacity);
-  return false;
 }
 
-bool AccessibilityFocusRingControllerImpl::AnimateCaretRing(
+void AccessibilityFocusRingControllerImpl::AnimateCaretRing(
     base::TimeTicks timestamp) {
   CHECK(caret_layer_);
 
   ComputeOpacity(&caret_animation_info_, timestamp);
   if (caret_animation_info_.opacity == 0.0) {
     caret_layer_.reset();
-    return true;
+    return;
   }
   caret_layer_->SetOpacity(caret_animation_info_.opacity);
-  return false;
 }
 
 AccessibilityFocusRingGroup*
