@@ -17,7 +17,6 @@ import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -25,6 +24,8 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.ui.base.WindowAndroid;
 
 import javax.inject.Inject;
@@ -46,20 +47,28 @@ public class CustomTabIncognitoManager
             new UnownedUserDataKey<>(CustomTabIncognitoManager.class);
 
     private final Activity mActivity;
+    private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final WindowAndroid mWindowAndroid;
 
     private OTRProfileID mOTRProfileID;
 
+    @Nullable
+    private IncognitoCustomTabHost mIncognitoTabHost;
+
+    private final IncognitoTabHostRegistry mIncognitoTabHostRegistry;
+
     @Inject
     public CustomTabIncognitoManager(Activity activity, WindowAndroid windowAndroid,
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityNavigationController navigationController,
-            CustomTabActivityTabProvider tabProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            IncognitoTabHostRegistry incognitoTabHostRegistry) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mIntentDataProvider = intentDataProvider;
+        mNavigationController = navigationController;
+        mIncognitoTabHostRegistry = incognitoTabHostRegistry;
 
         lifecycleDispatcher.register(this);
 
@@ -119,6 +128,10 @@ public class CustomTabIncognitoManager
 
     @Override
     public void onDestroy() {
+        if (mIncognitoTabHost != null) {
+            mIncognitoTabHostRegistry.unregister(mIncognitoTabHost);
+        }
+
         if (mOTRProfileID != null) {
             Profile.getLastUsedRegularProfile()
                     .getOffTheRecordProfile(mOTRProfileID, /*createIfNeeded=*/true)
@@ -130,10 +143,36 @@ public class CustomTabIncognitoManager
     }
 
     private void initializeIncognito() {
+        if (mIntentDataProvider.isOpenedByChrome()) {
+            mIncognitoTabHost = new IncognitoCustomTabHost();
+            mIncognitoTabHostRegistry.register(mIncognitoTabHost);
+        }
+
         if (!CommandLine.getInstance().hasSwitch(
                     ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             // Disable taking screenshots and seeing snapshots in recents.
             mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        }
+    }
+
+    /**
+     * This class registers itself with {@link IncognitoTabHostRegistry} only if the Incognito
+     * custom tab was opened by Chrome.
+     */
+    private class IncognitoCustomTabHost implements IncognitoTabHost {
+        @Override
+        public boolean isActiveModel() {
+            return true;
+        }
+
+        @Override
+        public boolean hasIncognitoTabs() {
+            return !mActivity.isFinishing();
+        }
+
+        @Override
+        public void closeAllIncognitoTabs() {
+            mNavigationController.finish(CustomTabActivityNavigationController.FinishReason.OTHER);
         }
     }
 }

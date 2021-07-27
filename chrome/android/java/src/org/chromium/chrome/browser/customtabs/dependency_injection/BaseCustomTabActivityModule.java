@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStr
 import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHandlingStrategy;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
 
@@ -119,5 +120,10 @@ public class BaseCustomTabActivityModule {
     @Reusable
     public OriginVerifierFactory providesOriginVerifierFactory() {
         return new OriginVerifierFactoryImpl();
+    }
+
+    @Provides
+    public IncognitoTabHostRegistry provideIncognitoTabHostRegistry() {
+        return IncognitoTabHostRegistry.getInstance();
     }
 }

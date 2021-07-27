@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DOM_DISTILLER_SCHEME;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
@@ -37,6 +38,7 @@ import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Tap;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -60,6 +62,7 @@ import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl;
 import org.chromium.chrome.browser.infobar.ReaderModeInfoBar;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -173,6 +176,31 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.READER_MODE_IN_CCT, ChromeFeatureList.CCT_INCOGNITO})
     public void testReaderModeInCCT_Incognito() throws TimeoutException {
+        openReaderModeInIncognitoCCT();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.READER_MODE_IN_CCT, ChromeFeatureList.CCT_INCOGNITO})
+    public void testCloseAllIncognitoNotification_ClosesCCT()
+            throws PendingIntent.CanceledException, TimeoutException {
+        CustomTabActivity customTabActivity = openReaderModeInIncognitoCCT();
+
+        // Click on "Close all Incognito tabs" notification.
+        PendingIntent clearIntent =
+                IncognitoNotificationServiceImpl
+                        .getRemoveAllIncognitoTabsIntent(InstrumentationRegistry.getTargetContext())
+                        .getPendingIntent();
+        clearIntent.send();
+
+        // Verify the Incognito CCT is closed.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(customTabActivity.getTabModelSelector().getModel(true).getCount(),
+                    Matchers.equalTo(0));
+        });
+    }
+
+    private CustomTabActivity openReaderModeInIncognitoCCT() throws TimeoutException {
         ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
                 (ChromeTabbedActivity) mDownloadTestRule.getActivity(), mURL, true);
 
@@ -193,6 +221,8 @@ public class ReaderModeTest implements CustomMainActivityStart {
         Tab distillerViewerTab = Objects.requireNonNull(customTabActivity.getActivityTab());
         waitForDistillation(TITLE, distillerViewerTab);
         assertTrue(distillerViewerTab.isIncognito());
+
+        return customTabActivity;
     }
 
     private void downloadAndOpenOfflinePage() {
