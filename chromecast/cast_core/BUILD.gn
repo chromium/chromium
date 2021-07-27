@@ -94,6 +94,34 @@ if (is_linux) {
   }
 }
 
+cast_source_set("metrics_recorder") {
+  sources = [
+    "cast_runtime_action_recorder.cc",
+    "cast_runtime_action_recorder.h",
+    "cast_runtime_histogram_flattener.cc",
+    "cast_runtime_histogram_flattener.h",
+    "cast_runtime_metrics_recorder.cc",
+    "cast_runtime_metrics_recorder.h",
+    "cast_runtime_metrics_recorder_service.cc",
+    "cast_runtime_metrics_recorder_service.h",
+    "metrics_recorder_grpc.cc",
+    "metrics_recorder_grpc.h",
+  ]
+
+  public_deps = [
+    ":grpc_impl",
+    "//base",
+    "//chromecast/metrics:metrics_recorder",
+    "//third_party/grpc:grpc++",
+    "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
+  ]
+
+  deps = [
+    "//chromecast/base/metrics",
+    "//third_party/metrics_proto",
+  ]
+}
+
 cast_source_set("renderer") {
   sources = [
     "cast_runtime_content_renderer_client.cc",
@@ -198,17 +226,23 @@ if (enable_cast_media_runtime) {
   }
 }
 
+# TODO(b/194439829): Upstream additional metrics unit tests.
 test("cast_cast_core_unittests") {
   sources = [
+    "cast_runtime_histogram_flattener_unittest.cc",
+    "cast_runtime_metrics_test_helpers.cc",
+    "cast_runtime_metrics_test_helpers.h",
     "streaming_receiver_session_client_unittest.cc",
     "url_rewrite_rules_adapter_unittests.cc",
   ]
 
   deps = [
+    ":metrics_recorder",
     ":streaming_receiver_session_client",
     ":url_rewrite",
     "//base",
     "//base/test:test_support",
+    "//chromecast/base/metrics",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public/mojom",
@@ -216,5 +250,6 @@ test("cast_cast_core_unittests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/metrics_proto",
   ]
 }
