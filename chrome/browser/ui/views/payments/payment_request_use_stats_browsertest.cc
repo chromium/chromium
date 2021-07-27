@@ -39,8 +39,9 @@ class PaymentRequestAutofillInstrumentUseStatsTest
 
 // Tests that use stats for the autofill payment instrument used in a Payment
 // Request are properly updated upon completion.
+// TODO(crbug.com/938763): Flaky on Linux and Win10, at least
 IN_PROC_BROWSER_TEST_F(PaymentRequestAutofillInstrumentUseStatsTest,
-                       RecordUse) {
+                       DISABLED_RecordUse) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(kSomeDate);
