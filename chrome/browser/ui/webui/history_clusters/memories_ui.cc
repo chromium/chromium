@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/history_clusters/memories_ui.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
@@ -13,6 +14,7 @@
 #include "chrome/grit/history_clusters_resources.h"
 #include "chrome/grit/history_clusters_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -47,6 +49,9 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddString("searchPrompt", u"Search clusters");
   source->AddString("toggleButtonLabelLess", u"Show less");
   source->AddString("toggleButtonLabelMore", u"Show more");
+
+  source->AddBoolean("isDebug",
+                     base::FeatureList::IsEnabled(history_clusters::kDebug));
 
   webui::SetupWebUIDataSource(
       source,

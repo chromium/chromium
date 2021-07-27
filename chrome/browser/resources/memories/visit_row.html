@@ -89,6 +89,10 @@
     color: var(--cr-secondary-text-color);
     flex-shrink: 0;
   }
+
+  #debug-info {
+    color: var(--cr-secondary-text-color);
+  }
 </style>
 <div id="header">
   <a id="start-justified" href="[[visit.normalizedUrl.url]]">
@@ -102,6 +106,8 @@
       </div>
       <span id="hostname" class="truncate" hidden="[[isSearchResultsPage_]]">
         [[getHostnameFromUrl_(visit.normalizedUrl)]]
+        <!-- Print the debug next to the hostname to keep layout the same. -->
+        <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
       </span>
     </div>
   </a>

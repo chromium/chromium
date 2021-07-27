@@ -109,8 +109,12 @@ class TopVisitElement extends PolymerElement {
   private computeHiddenRelatedVisits_(): Array<URLVisit> {
     return this.visit && this.visit.relatedVisits ?
         this.visit.relatedVisits.filter((visit: URLVisit) => {
-          // 'Ghost' visits with scores of 0 (or below) are never to be shown.
-          return visit.score > 0 && visit.belowTheFold;
+          // 'Ghost' visits with scores of 0 (or below) are never to be shown,
+          // unless the debug flag is switched on.
+          if (visit.score <= 0 && !loadTimeData.getBoolean('isDebug')) {
+            return false;
+          }
+          return visit.belowTheFold;
         }) :
         [];
   }
@@ -123,8 +127,12 @@ class TopVisitElement extends PolymerElement {
   private computeVisibleRelatedVisits_(): Array<URLVisit> {
     return this.visit && this.visit.relatedVisits ?
         this.visit.relatedVisits.filter((visit: URLVisit) => {
-          // 'Ghost' visits with scores of 0 (or below) are never to be shown.
-          return visit.score > 0 && !visit.belowTheFold;
+          // 'Ghost' visits with scores of 0 (or below) are never to be shown,
+          // unless the debug flag is switched on.
+          if (visit.score <= 0 && !loadTimeData.getBoolean('isDebug')) {
+            return false;
+          }
+          return !visit.belowTheFold;
         }) :
         [];
   }

@@ -83,6 +83,14 @@ class VisitRowElement extends PolymerElement {
         value: false,
         computed: 'computeHasRelatedVisits_(visit.*)',
       },
+
+      /**
+       * Debug info for the visit.
+       */
+      debugInfo_: {
+        type: String,
+        computed: 'computeDebugInfo_(visit)',
+      },
     };
   }
 
@@ -163,6 +171,14 @@ class VisitRowElement extends PolymerElement {
                  return visit.score > 0;
                })
                .length > 0;
+  }
+
+  private computeDebugInfo_(): string {
+    if (!loadTimeData.getBoolean('isDebug')) {
+      return '';
+    }
+
+    return '(score = ' + this.visit.score.toFixed(2) + ')';
   }
 
   /**
