@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/no_destructor.h"
 
 namespace crypto {
 class AppleKeychain;
@@ -18,9 +17,9 @@ class AppleKeychain;
 class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
  public:
 #if defined(ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE)
-  using KeychainNameType = base::NoDestructor<std::string>;
+  using KeychainNameType = std::string;
 #else
-  using KeychainNameType = const base::NoDestructor<std::string>;
+  using KeychainNameType = const std::string;
 #endif
 
   KeychainPassword(const crypto::AppleKeychain& keychain);
@@ -35,8 +34,8 @@ class COMPONENT_EXPORT(OS_CRYPT) KeychainPassword {
   std::string GetPassword() const;
 
   // The service and account names used in Chrome's Safe Storage keychain item.
-  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType service_name;
-  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType account_name;
+  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetServiceName();
+  static COMPONENT_EXPORT(OS_CRYPT) KeychainNameType& GetAccountName();
 
  private:
   const crypto::AppleKeychain& keychain_;
