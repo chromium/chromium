@@ -2770,6 +2770,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebrtcPipeWireCapturerDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebRtcPipeWireCapturer)},
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-lacros-in-web-kiosk", flag_descriptions::kWebKioskEnableLacrosName,
+     flag_descriptions::kWebKioskEnableLacrosDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kWebKioskEnableLacros)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     {"send-webui-javascript-error-reports",
      flag_descriptions::kSendWebUIJavaScriptErrorReportsName,

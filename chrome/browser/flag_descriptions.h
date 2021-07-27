@@ -3234,6 +3234,11 @@ extern const char kWebrtcPipeWireCapturerName[];
 extern const char kWebrtcPipeWireCapturerDescription[];
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kWebKioskEnableLacrosName[];
+extern const char kWebKioskEnableLacrosDescription[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

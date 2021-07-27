@@ -5538,6 +5538,14 @@ const char kWebrtcPipeWireCapturerDescription[] =
     "capturing the desktop content on the Wayland display server.";
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kWebKioskEnableLacrosName[] =
+    "Enables Lacros in the web (PWA) Kiosk";
+const char kWebKioskEnableLacrosDescription[] =
+    "Uses Lacros-chrome as the web browser in the web (PWA) Kiosk session on "
+    "Chrome OS. When disabled, the Ash-chrome will be used";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

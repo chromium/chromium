@@ -2117,6 +2117,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-lacros-in-web-kiosk",
+    "owners": ["anqing", "apotapchuk"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-launcher-app-paging",
     "owners": [ "//ash/app_list/OWNERS" ],
     "expiry_milestone": 95
