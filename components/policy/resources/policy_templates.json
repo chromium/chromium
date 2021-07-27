@@ -25462,11 +25462,12 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['acostinas@chromium.org', 'pmarko@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:89-'],
+      'supported_on': ['chrome_os:89-93'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'deprecated': True,
       'items': [
         {
           'value': True,
@@ -25482,11 +25483,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'default': False,
       'caption': '''Allow reusing the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials for network authentication''',
       'tags': [],
-      'desc': '''This setting allows users to authenticate to a managed proxy secured with NTLM authentication using the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials.
-
-      If this policy is set to False or unset, the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials will not be used for network authentication.
-
-      If this policy is set to True, the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials will be used for network authentication to a managed proxy. In case the authentication with the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> login credentials fails, the user will be prompted for credentials.''',
+      'desc': ''' This policy is deprecated, please configure Kerberos policies to reuse the login password instead.''',
     },
     {
       'name': 'ClearBrowsingDataOnExitList',
