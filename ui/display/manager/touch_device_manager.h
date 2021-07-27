@@ -101,6 +101,7 @@ struct DISPLAY_MANAGER_EXPORT TouchCalibrationData {
   TouchCalibrationData(const CalibrationPointPairQuad& point_pairs,
                        const gfx::Size& bounds);
   TouchCalibrationData(const TouchCalibrationData& calibration_data);
+  TouchCalibrationData& operator=(const TouchCalibrationData& calibration_data);
 
   bool operator==(const TouchCalibrationData& other) const;
 
