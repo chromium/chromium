@@ -778,16 +778,15 @@ void ProfileMenuViewBase::AddFeatureButton(const std::u16string& text,
         views::BoxLayout::Orientation::kVertical));
   }
 
-  views::View* button;
   if (&icon == &gfx::kNoneIcon) {
-    button = features_container_->AddChildView(std::make_unique<HoverButton>(
+    features_container_->AddChildView(std::make_unique<HoverButton>(
         base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                             base::Unretained(this), std::move(action)),
         text));
   } else {
     auto icon_view =
         std::make_unique<FeatureButtonIconView>(icon, icon_to_image_ratio);
-    button = features_container_->AddChildView(std::make_unique<HoverButton>(
+    features_container_->AddChildView(std::make_unique<HoverButton>(
         base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                             base::Unretained(this), std::move(action)),
         std::move(icon_view), text));

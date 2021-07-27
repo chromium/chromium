@@ -218,22 +218,10 @@ std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
   // Set up a fake clock error.
   int cert_error = net::ERR_CERT_DATE_INVALID;
   GURL request_url("https://example.com");
-  bool overridable = false;
-  bool strict_enforcement = false;
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url", &url_param) &&
       GURL(url_param).is_valid()) {
     request_url = GURL(url_param);
-  }
-  std::string overridable_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "overridable",
-                                 &overridable_param)) {
-    overridable = overridable_param == "1";
-  }
-  std::string strict_enforcement_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "strict_enforcement",
-                                 &strict_enforcement_param)) {
-    strict_enforcement = strict_enforcement_param == "1";
   }
 
   // Determine whether to change the clock to be ahead or behind.
@@ -251,13 +239,6 @@ std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
   net::SSLInfo ssl_info;
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   // This delegate doesn't create an interstitial.
-  int options_mask = 0;
-  if (overridable)
-    options_mask |=
-        security_interstitials::SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED;
-  if (strict_enforcement)
-    options_mask |=
-        security_interstitials::SSLErrorOptionsMask::STRICT_ENFORCEMENT;
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateBadClockBlockingPage(
       web_contents, cert_error, ssl_info, request_url, base::Time::Now(),
