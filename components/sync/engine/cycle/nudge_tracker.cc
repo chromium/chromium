@@ -24,7 +24,7 @@ constexpr base::TimeDelta kRemoteInvalidationDelay =
 }  // namespace
 
 NudgeTracker::NudgeTracker() {
-  for (ModelType type : ProtocolTypes()) {
+  for (ModelType type : ModelTypeSet::All()) {
     type_trackers_[type] = std::make_unique<DataTypeTracker>(type);
   }
 }

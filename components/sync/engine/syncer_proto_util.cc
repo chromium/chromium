@@ -491,7 +491,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
       for (int i = 0; i < command.custom_nudge_delays_size(); ++i) {
         ModelType type = GetModelTypeFromSpecificsFieldNumber(
             command.custom_nudge_delays(i).datatype_id());
-        if (ProtocolTypes().Has(type)) {
+        if (type != UNSPECIFIED) {
           delay_map[type] = base::TimeDelta::FromMilliseconds(
               command.custom_nudge_delays(i).delay_ms());
         }

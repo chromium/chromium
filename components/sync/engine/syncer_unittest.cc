@@ -224,9 +224,9 @@ class SyncerTest : public testing::Test,
   // not preceeded by GetUpdates.
   void ConfigureNoGetUpdatesRequired() {
     nudge_tracker_.OnInvalidationsEnabled();
-    nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+    nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 
-    ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+    ASSERT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -588,10 +588,10 @@ TEST_F(SyncerTest, CommitFailureWithConflict) {
       ->AppendCommitRequest(ClientTagHash::FromHashed("tag1"),
                             MakeSpecifics(PREFERENCES), "id1");
 
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   EXPECT_TRUE(SyncShareNudge());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   GetProcessor(PREFERENCES)
       ->AppendCommitRequest(ClientTagHash::FromHashed("tag1"),
@@ -599,10 +599,10 @@ TEST_F(SyncerTest, CommitFailureWithConflict) {
 
   mock_server_->set_conflict_n_commits(1);
   EXPECT_FALSE(SyncShareNudge());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 }
 
 // Tests that sending debug info events on Commit works.

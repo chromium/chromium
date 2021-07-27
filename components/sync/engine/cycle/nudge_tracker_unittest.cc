@@ -96,8 +96,8 @@ class NudgeTrackerTest : public ::testing::Test {
 // Use with valgrind to detect uninitialized members.
 TEST_F(NudgeTrackerTest, EmptyNudgeTracker) {
   // Now we're at the normal, "idle" state.
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
   EXPECT_EQ(sync_pb::SyncEnums::UNKNOWN_ORIGIN, nudge_tracker_.GetOrigin());
 
   sync_pb::GetUpdateTriggers gu_trigger;
@@ -240,7 +240,7 @@ TEST_F(NudgeTrackerTest, DropHintsAtServer_Alone) {
   }
 
   // Clear status then verify.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   {
     sync_pb::GetUpdateTriggers gu_trigger;
     nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger);
@@ -269,7 +269,7 @@ TEST_F(NudgeTrackerTest, DropHintsAtServer_WithOtherInvalidations) {
   }
 
   // Clear status then verify.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   {
     sync_pb::GetUpdateTriggers gu_trigger;
     nudge_tracker_.FillProtoMessage(BOOKMARKS, &gu_trigger);
@@ -284,34 +284,34 @@ TEST_F(NudgeTrackerTest, EnableDisableInvalidations) {
   // Start with invalidations offline.
   nudge_tracker_.OnInvalidationsDisabled();
   EXPECT_TRUE(InvalidationsOutOfSync());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Simply enabling invalidations does not bring us back into sync.
   nudge_tracker_.OnInvalidationsEnabled();
   EXPECT_TRUE(InvalidationsOutOfSync());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // We must successfully complete a sync cycle while invalidations are enabled
   // to be sure that we're in sync.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_FALSE(InvalidationsOutOfSync());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // If the invalidator malfunctions, we go become unsynced again.
   nudge_tracker_.OnInvalidationsDisabled();
   EXPECT_TRUE(InvalidationsOutOfSync());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // A sync cycle while invalidations are disabled won't reset the flag.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(InvalidationsOutOfSync());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Nor will the re-enabling of invalidations be sufficient, even now that
   // we've had a successful sync cycle.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(InvalidationsOutOfSync());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 }
 
 // Tests that locally modified types are correctly written out to the
@@ -325,7 +325,7 @@ TEST_F(NudgeTrackerTest, WriteLocallyModifiedTypesToProto) {
   EXPECT_EQ(1, ProtoLocallyModifiedCount(PREFERENCES));
 
   // Record a successful sync cycle.  Verify the count is cleared.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_EQ(0, ProtoLocallyModifiedCount(PREFERENCES));
 }
 
@@ -340,91 +340,91 @@ TEST_F(NudgeTrackerTest, WriteRefreshRequestedTypesToProto) {
   EXPECT_EQ(1, ProtoRefreshRequestedCount(SESSIONS));
 
   // Record a successful sync cycle.  Verify the count is cleared.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_EQ(0, ProtoRefreshRequestedCount(SESSIONS));
 }
 
 // Basic tests for the IsSyncRequired() flag.
 TEST_F(NudgeTrackerTest, IsSyncRequired) {
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // Initial sync request.
   nudge_tracker_.RecordInitialSyncRequired(BOOKMARKS);
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
   // Note: The initial sync happens as part of a configuration cycle, not a
   // normal cycle, so here we need to use RecordInitialSyncDone() rather than
   // RecordSuccessfulSyncCycle().
   // A finished initial sync for a different data type doesn't affect us.
   nudge_tracker_.RecordInitialSyncDone({EXTENSIONS});
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
   nudge_tracker_.RecordInitialSyncDone({BOOKMARKS});
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // Sync request for resolve conflict.
   nudge_tracker_.RecordCommitConflict(BOOKMARKS);
   // Now a sync is required for BOOKMARKS.
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
   EXPECT_TRUE(nudge_tracker_.IsSyncRequired({BOOKMARKS}));
   // But not for SESSIONS.
   EXPECT_FALSE(nudge_tracker_.IsSyncRequired({SESSIONS}));
   // A successful cycle for SESSIONS doesn't change anything.
   nudge_tracker_.RecordSuccessfulSyncCycle({SESSIONS});
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
   // A successful cycle for all types resolves things.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // Local changes.
   nudge_tracker_.RecordLocalChange(SESSIONS);
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // Refresh requests.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(SESSIONS));
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // Invalidations.
   nudge_tracker_.RecordRemoteInvalidation(PREFERENCES,
                                           BuildInvalidation(1, "hint"));
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 }
 
 // Basic tests for the IsGetUpdatesRequired() flag.
 TEST_F(NudgeTrackerTest, IsGetUpdatesRequired) {
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Initial sync request.
   // TODO(crbug.com/926184): This is probably wrong; a missing initial sync
   // should not cause IsGetUpdatesRequired(): The former happens during config
   // cycles, but the latter refers to normal cycles.
   nudge_tracker_.RecordInitialSyncRequired(BOOKMARKS);
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
-  nudge_tracker_.RecordInitialSyncDone(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordInitialSyncDone(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Local changes.
   nudge_tracker_.RecordLocalChange(SESSIONS);
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Refresh requests.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(SESSIONS));
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Invalidations.
   nudge_tracker_.RecordRemoteInvalidation(PREFERENCES,
                                           BuildInvalidation(1, "hint"));
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 }
 
 // Test IsSyncRequired() responds correctly to data type throttling and backoff.
@@ -432,35 +432,35 @@ TEST_F(NudgeTrackerTest, IsSyncRequired_Throttling_Backoff) {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta throttle_length = base::TimeDelta::FromMinutes(0);
 
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // A local change to sessions enables the flag.
   nudge_tracker_.RecordLocalChange(SESSIONS);
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // But the throttling of sessions unsets it.
   nudge_tracker_.SetTypesThrottledUntil(ModelTypeSet(SESSIONS), throttle_length,
                                         now);
   EXPECT_TRUE(IsTypeThrottled(SESSIONS));
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // A refresh request for bookmarks means we have reason to sync again.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(BOOKMARKS));
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // But the backoff of bookmarks unsets it.
   nudge_tracker_.SetTypeBackedOff(BOOKMARKS, throttle_length, now);
   EXPECT_TRUE(IsTypeThrottled(SESSIONS));
   EXPECT_TRUE(IsTypeBackedOff(BOOKMARKS));
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // A refresh request for preferences means we have reason to sync again.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(PREFERENCES));
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // A successful sync cycle means we took care of preferences.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 
   // But we still haven't dealt with sessions and bookmarks. We'll need to
   // remember that sessions and bookmarks are out of sync and re-enable the flag
@@ -468,7 +468,7 @@ TEST_F(NudgeTrackerTest, IsSyncRequired_Throttling_Backoff) {
   nudge_tracker_.UpdateTypeThrottlingAndBackoffState();
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(SESSIONS));
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(BOOKMARKS));
-  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsSyncRequired(ModelTypeSet::All()));
 }
 
 // Test IsGetUpdatesRequired() responds correctly to data type throttling and
@@ -477,34 +477,34 @@ TEST_F(NudgeTrackerTest, IsGetUpdatesRequired_Throttling_Backoff) {
   const base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta throttle_length = base::TimeDelta::FromMinutes(0);
 
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // A refresh request to sessions enables the flag.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(SESSIONS));
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // But the throttling of sessions unsets it.
   nudge_tracker_.SetTypesThrottledUntil(ModelTypeSet(SESSIONS), throttle_length,
                                         now);
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // A refresh request for bookmarks means we have reason to sync again.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(BOOKMARKS));
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // But the backoff of bookmarks unsets it.
   nudge_tracker_.SetTypeBackedOff(BOOKMARKS, throttle_length, now);
   EXPECT_TRUE(IsTypeThrottled(SESSIONS));
   EXPECT_TRUE(IsTypeBackedOff(BOOKMARKS));
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // A refresh request for preferences means we have reason to sync again.
   nudge_tracker_.RecordLocalRefreshRequest(ModelTypeSet(PREFERENCES));
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // A successful sync cycle means we took care of preferences.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // But we still haven't dealt with sessions and bookmarks. We'll need to
   // remember that sessions and bookmarks are out of sync and re-enable the flag
@@ -512,7 +512,7 @@ TEST_F(NudgeTrackerTest, IsGetUpdatesRequired_Throttling_Backoff) {
   nudge_tracker_.UpdateTypeThrottlingAndBackoffState();
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(SESSIONS));
   EXPECT_FALSE(nudge_tracker_.IsTypeBlocked(BOOKMARKS));
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 }
 
 // Tests blocking-related getter functions when no types are blocked.
@@ -651,20 +651,20 @@ TEST_F(NudgeTrackerTest, Retry) {
   // Not due yet at t0.
   nudge_tracker_.SetSyncCycleStartTime(t0);
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // Successful sync cycle at t0 changes nothing.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
-  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_FALSE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // At t4, the retry becomes due.
   nudge_tracker_.SetSyncCycleStartTime(t4);
   EXPECT_TRUE(nudge_tracker_.IsRetryRequired());
-  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ProtocolTypes()));
+  EXPECT_TRUE(nudge_tracker_.IsGetUpdatesRequired(ModelTypeSet::All()));
 
   // A sync cycle unsets the flag.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
 
   // It's still unset at the start of the next sync cycle.
@@ -694,7 +694,7 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_MidCycleUpdate1) {
   EXPECT_TRUE(nudge_tracker_.IsRetryRequired());
 
   // Verify that the successful sync cycle clears the flag.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
 
   // Verify expecations around the new retry time.
@@ -726,7 +726,7 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_MidCycleUpdate2) {
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
 
   // The cycle succeeded.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 
   // The time t3 is greater than the GU retry time scheduled at the beginning of
   // the test, but later than the retry time that overwrote it during the
@@ -758,7 +758,7 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_FailedCycle) {
   EXPECT_TRUE(nudge_tracker_.IsRetryRequired());
 
   // The second cycle is a success.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
 }
 
@@ -791,19 +791,19 @@ TEST_F(NudgeTrackerTest, IsRetryRequired_FailedCycleIncludesUpdate) {
   EXPECT_TRUE(nudge_tracker_.IsRetryRequired());
 
   // It succeeds.  The retry time is not updated, so it should remain at t5.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 
   // Another sync cycle.  This one is still before the scheduled retry.  It does
   // not change the scheduled retry time.
   nudge_tracker_.SetSyncCycleStartTime(t4);
   EXPECT_FALSE(nudge_tracker_.IsRetryRequired());
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 
   // The retry scheduled way back during the first cycle of this test finally
   // becomes due.  Perform a successful sync cycle to service it.
   nudge_tracker_.SetSyncCycleStartTime(t6);
   EXPECT_TRUE(nudge_tracker_.IsRetryRequired());
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 }
 
 // Test the default nudge delays for various types.
@@ -919,7 +919,7 @@ TEST_F(NudgeTrackerAckTrackingTest, SimpleAcknowledgement) {
 
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
 
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
 
   EXPECT_TRUE(AllInvalidationsAccountedFor());
@@ -935,7 +935,7 @@ TEST_F(NudgeTrackerAckTrackingTest, ManyAcknowledgements) {
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv2_id));
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv3_id));
 
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
   EXPECT_TRUE(IsInvalidationAcknowledged(inv2_id));
   EXPECT_TRUE(IsInvalidationAcknowledged(inv3_id));
@@ -966,7 +966,7 @@ TEST_F(NudgeTrackerAckTrackingTest, OverflowAndRecover) {
   EXPECT_TRUE(IsInvalidationDropped(inv10_id));
 
   // This should recover from the drop and bring us back into sync.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
 
   for (int id : invalidation_ids)
     EXPECT_TRUE(IsInvalidationAcknowledged(id));
@@ -980,7 +980,7 @@ TEST_F(NudgeTrackerAckTrackingTest, OverflowAndRecover) {
 TEST_F(NudgeTrackerAckTrackingTest, UnknownVersionFromServer_Simple) {
   int inv_id = SendUnknownVersionInvalidation(BOOKMARKS);
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv_id));
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv_id));
   EXPECT_TRUE(AllInvalidationsAccountedFor());
 }
@@ -1003,7 +1003,7 @@ TEST_F(NudgeTrackerAckTrackingTest, UnknownVersionFromServer_Complex) {
   EXPECT_TRUE(IsInvalidationUnacknowledged(inv5_id));
 
   // Finish the sync cycle and expect all remaining invalidations to be acked.
-  nudge_tracker_.RecordSuccessfulSyncCycle(ProtocolTypes());
+  nudge_tracker_.RecordSuccessfulSyncCycle(ModelTypeSet::All());
   EXPECT_TRUE(IsInvalidationAcknowledged(inv1_id));
   EXPECT_TRUE(IsInvalidationAcknowledged(inv2_id));
   EXPECT_TRUE(IsInvalidationAcknowledged(inv3_id));

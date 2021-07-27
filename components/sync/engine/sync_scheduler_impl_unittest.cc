@@ -305,7 +305,7 @@ class SyncSchedulerImplTest : public testing::Test {
   }
 
   void SetDefaultLocalChangeNudgeDelays() {
-    for (ModelType type : ProtocolTypes()) {
+    for (ModelType type : ModelTypeSet::All()) {
       scheduler_->nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
           type, default_delay());
     }
