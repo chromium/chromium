@@ -24,11 +24,14 @@
 // The main sublety of this class is that it observes all Lacros profiles for
 // installed/running extensions-based apps, whereas Ash itself will only ever
 // run a single (login) profile. As such, this class is also responsible for
-// [de]muxing responses to form this many : one relationship.
+// muxing responses to form this many : one relationship.
 //
 // This class only tracks apps added to non-incognito profiles. As such, it only
 // needs to observe ProfileManager, not the profiles themselves for creation of
 // incognito profiles.
+//
+// See LacrosExtensionAppsController for the class responsible for receiving
+// events from Ash.
 class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
  public:
   LacrosExtensionAppsPublisher();

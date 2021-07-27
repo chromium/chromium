@@ -8,6 +8,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
+#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
@@ -18,9 +19,6 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 
 namespace {
-
-// The delimiter separates the profile basename from the extension id.
-constexpr char kDelimiter[] = "###";
 
 // Returns whether the extension is a chrome app. This class only tracks
 // chrome apps.
@@ -90,7 +88,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   void OnExtensionLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override {
-    const auto* extension = MaybeGetExtension(app_id);
+    const auto* extension =
+        lacros_extension_apps_utility::MaybeGetPackagedV2App(profile_, app_id);
     if (!extension)
       return;
 
@@ -171,12 +170,6 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     registry_observation_.Reset();
   }
 
-  // Returns a muxed id that consists of the profile base name joined to the
-  // extension id.
-  std::string MuxedId(const extensions::Extension* extension) {
-    return profile_->GetBaseName().value() + kDelimiter + extension->id();
-  }
-
   // Publishes a differential update to the app service.
   void Publish(crosapi::mojom::AppPtr app) {
     std::vector<crosapi::mojom::AppPtr> apps;
@@ -187,19 +180,6 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   // Publishes a vector of differential updates to the app service.
   void Publish(std::vector<crosapi::mojom::AppPtr> apps) {
     publisher_->Publish(std::move(apps));
-  }
-
-  // Returns an extension pointer if |app_id| corresponds to a chrome app.
-  const extensions::Extension* MaybeGetExtension(const std::string& app_id) {
-    DCHECK(profile_);
-    extensions::ExtensionRegistry* registry =
-        extensions::ExtensionRegistry::Get(profile_);
-    DCHECK(registry);
-    const extensions::Extension* extension =
-        registry->GetInstalledExtension(app_id);
-    if (!extension || !IsChromeApp(extension))
-      return nullptr;
-    return extension;
   }
 
   // Whether the app should be shown in the launcher, shelf, etc.
@@ -226,7 +206,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     crosapi::mojom::AppPtr app = crosapi::mojom::App::New();
 
     app->app_type = crosapi::mojom::AppType::kStandaloneBrowserExtension;
-    app->app_id = MuxedId(extension);
+    app->app_id = lacros_extension_apps_utility::MuxId(profile_, extension);
     app->readiness = readiness;
     app->name = extension->name();
     app->short_name = extension->short_name();

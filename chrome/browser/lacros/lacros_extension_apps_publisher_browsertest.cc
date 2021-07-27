@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -139,6 +140,22 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Uninstall) {
     ASSERT_EQ(apps[0]->readiness,
               crosapi::mojom::Readiness::kUninstalledByUser);
   }
+}
+
+// Test id muxing and demuxing.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Mux) {
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  std::string muxed_id1 =
+      lacros_extension_apps_utility::MuxId(profile(), extension);
+  ASSERT_FALSE(muxed_id1.empty());
+  Profile* demuxed_profile = nullptr;
+  const extensions::Extension* demuxed_extension = nullptr;
+  bool success = lacros_extension_apps_utility::DemuxId(
+      muxed_id1, &demuxed_profile, &demuxed_extension);
+  ASSERT_TRUE(success);
+  EXPECT_EQ(demuxed_profile, profile());
+  EXPECT_EQ(demuxed_extension, extension);
 }
 
 }  // namespace
