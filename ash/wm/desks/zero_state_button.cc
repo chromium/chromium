@@ -191,7 +191,11 @@ gfx::Size ZeroStateDefaultDeskButton::CalculatePreferredSize() const {
   gfx::Canvas::SizeStringInt(DesksController::Get()->desks()[0]->name(),
                              gfx::FontList(), &label_width, &label_height, 0,
                              gfx::Canvas::NO_ELLIPSIS);
-  const int width = base::ClampToRange(
+  // This is a broken clamp function that successfully returns a bogus value
+  // when invalid inputs are provided, rather than crashing.
+  // TODO(https://crbug.com/1231837): Migrate this call to use base::clamp()
+  // from base/cxx17_backports.h, and fix all the broken tests that result.
+  const int width = base::BrokenClampThatShouldNotBeUsed(
       label_width + 2 * kZeroStateDefaultButtonHorizontalPadding,
       kZeroStateDefaultDeskButtonMinWidth, preview_width);
   return gfx::Size(width, kZeroStateButtonHeight);

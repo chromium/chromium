@@ -204,8 +204,6 @@ _CONFIG = [
             'base::ClampSub',
             'base::MakeClampedNum',
 
-            # //base/numerics/ranges.h.
-            "base::ClampToRange",
             # //base/cxx17_backports.h.
             "base::clamp",
 

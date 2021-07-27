@@ -449,9 +449,13 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   const int previous_width = desk_name_view_->width();
   const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
 
-  const int text_width =
-      base::ClampToRange(desk_name_view_size.width(), kMinDeskNameViewWidth,
-                         preview_bounds.width());
+  // This is a broken clamp function that successfully returns a bogus value
+  // when invalid inputs are provided, rather than crashing.
+  // TODO(https://crbug.com/1231842): Migrate this call to use base::clamp()
+  // from base/cxx17_backports.h, and fix all the broken tests that result.
+  const int text_width = base::BrokenClampThatShouldNotBeUsed(
+      desk_name_view_size.width(), kMinDeskNameViewWidth,
+      preview_bounds.width());
 
   const int desk_name_view_x =
       preview_bounds.x() + (preview_bounds.width() - text_width) / 2;

@@ -292,7 +292,11 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
   // Each added tab introduces a reduction of 2% in |x_offset|, with a value of
   // one fourth of |x_offset| as the minimum (i.e. we need 38 tabs to reach
   // that minimum reduction).
-  swipe_x_ += base::ClampToRange(
+  // This is a broken clamp function that successfully returns a bogus value
+  // when invalid inputs are provided, rather than crashing.
+  // TODO(https://crbug.com/1232262): Migrate this call to use base::clamp()
+  // from base/cxx17_backports.h, and fix all the broken tests that result.
+  swipe_x_ += base::BrokenClampThatShouldNotBeUsed(
       x_offset - (tab_strip_->GetTabCount() * 0.02f * x_offset),
       0.25f * x_offset, x_offset);
 

@@ -214,7 +214,12 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   float maximum = scroll_layer_length() - clip_layer_length();
 
   // With the length known, we can compute the thumb's position.
-  float clamped_current_pos = base::ClampToRange(current_pos(), 0.0f, maximum);
+  // This is a broken clamp function that successfully returns a bogus value
+  // when invalid inputs are provided, rather than crashing.
+  // TODO(https://crbug.com/1231833): Migrate this call to use base::clamp()
+  // from base/cxx17_backports.h, and fix all the broken tests that result.
+  float clamped_current_pos =
+      base::BrokenClampThatShouldNotBeUsed(current_pos(), 0.0f, maximum);
 
   int thumb_offset = TrackStart();
   if (maximum > 0) {
