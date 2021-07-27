@@ -29,7 +29,7 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
     private LevelDBPersistedDataStorage mPersistedDataStorage;
     // Callback is only used for synchronization of save and delete in testing.
     // Otherwise it is a no-op.
-    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or @RemovableInRelease to improve
+    // TODO(crbug.com/1146799) Apply tricks like @CheckDiscard or proguard rules to improve
     // performance
     private boolean mIsDestroyed;
 

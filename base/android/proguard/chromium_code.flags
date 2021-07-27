@@ -16,7 +16,6 @@
 -keep @interface org.chromium.base.annotations.CalledByNative
 -keep @interface org.chromium.base.annotations.CalledByNativeUnchecked
 -keep @interface org.chromium.base.annotations.DoNotInline
--keep @interface org.chromium.base.annotations.RemovableInRelease
 -keep @interface org.chromium.base.annotations.UsedByReflection
 -keep @interface org.chromium.base.annotations.IdentifierNameString
 
@@ -57,16 +56,6 @@
 }
 -keepclasseswithmembernames,includedescriptorclasses class org.chromium.base.library_loader.** {
   native <methods>;
-}
-
--assumenosideeffects class ** {
-  # Remove @RemovableInRelease methods so long as return values are unused.
-  @org.chromium.base.annotations.RemovableInRelease <methods>;
-  # Remove object @RemovableInRelease methods even when return value is used.
-  # Note: * in return type does not match primitives.
-  @org.chromium.base.annotations.RemovableInRelease * *(...) return null;
-  # Remove boolean @RemovableInRelease methods even when return value is used.
-  @org.chromium.base.annotations.RemovableInRelease boolean *(...) return false;
 }
 
 -assumenosideeffects class org.chromium.base.Log {

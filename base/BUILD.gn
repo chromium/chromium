@@ -3893,7 +3893,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/annotations/MainDex.java",
       "android/java/src/org/chromium/base/annotations/MockedInTests.java",
       "android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
-      "android/java/src/org/chromium/base/annotations/RemovableInRelease.java",
       "android/java/src/org/chromium/base/annotations/UsedByReflection.java",
       "android/java/src/org/chromium/base/annotations/VerifiesOnLollipop.java",
       "android/java/src/org/chromium/base/annotations/VerifiesOnLollipopMR1.java",
