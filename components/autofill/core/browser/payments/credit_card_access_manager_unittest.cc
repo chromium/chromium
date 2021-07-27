@@ -138,8 +138,23 @@ class CreditCardAccessManagerTest : public testing::Test {
  public:
   CreditCardAccessManagerTest()
       : task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
-            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {
+    // Advance the mock clock to 2021-01-01, 00:00:00.000.
+    base::Time year_2021;
+    CHECK(base::Time::FromUTCExploded({.year = 2021,
+                                       .month = 1,
+                                       .day_of_week = 4,
+                                       .day_of_month = 1,
+                                       .hour = 0,
+                                       .minute = 0,
+                                       .second = 0,
+                                       .millisecond = 0},
+                                      &year_2021));
+    task_environment_.AdvanceClock(year_2021 -
+                                   task_environment_.GetMockClock()->Now());
+  }
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
@@ -929,6 +944,7 @@ TEST_F(CreditCardAccessManagerTest,
 
       ResetFetchCreditCard();
       credit_card_access_manager_->PrepareToFetchCreditCard();
+      task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
       WaitForCallbacks();
 
       credit_card_access_manager_->FetchCreditCard(local_card,
@@ -949,6 +965,7 @@ TEST_F(CreditCardAccessManagerTest,
       credit_card_access_manager_->PrepareToFetchCreditCard();
       credit_card_access_manager_->FetchCreditCard(server_card,
                                                    accessor_->GetWeakPtr());
+      task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
       WaitForCallbacks();
 
       histogram_tester.ExpectUniqueSample(
@@ -1022,6 +1039,8 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
 
     // Mock a delayed response.
     InvokeDelayedGetUnmaskDetailsResponse();
+
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
     WaitForCallbacks();
 
     histogram_tester.ExpectUniqueSample(
@@ -1043,6 +1062,7 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
     credit_card_access_manager_->PrepareToFetchCreditCard();
     credit_card_access_manager_->FetchCreditCard(server_card,
                                                  accessor_->GetWeakPtr());
+    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(4));
     WaitForCallbacks();
 
     histogram_tester.ExpectUniqueSample(
