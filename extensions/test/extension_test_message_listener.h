@@ -15,6 +15,10 @@
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
 class TestSendMessageFunction;
 }
@@ -146,6 +150,10 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
     extension_id_ = extension_id;
   }
 
+  void set_browser_context(const content::BrowserContext* browser_context) {
+    browser_context_ = browser_context;
+  }
+
   const std::string& message() const { return message_; }
 
   const extensions::ExtensionId& extension_id_for_message() const {
@@ -185,6 +193,9 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
 
   // The extension id that we listen for, or empty.
   std::string extension_id_;
+
+  // If non-null, we listen to messages only from this BrowserContext.
+  const content::BrowserContext* browser_context_ = nullptr;
 
   // The message that signals failure.
   absl::optional<std::string> failure_message_;

@@ -12,9 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -41,8 +40,7 @@ class RSAPrivateKey;
 // certificate and private key (see src/net/data/ssl/certificates). The
 // supported signature algorithms are currently hardcoded to PKCS #1 v1.5 with
 // SHA-1 and SHA-256.
-class TestCertificateProviderExtension final
-    : public content::NotificationObserver {
+class TestCertificateProviderExtension final {
  public:
   static extensions::ExtensionId extension_id();
   static base::FilePath GetExtensionSourcePath();
@@ -53,7 +51,7 @@ class TestCertificateProviderExtension final
 
   explicit TestCertificateProviderExtension(
       content::BrowserContext* browser_context);
-  ~TestCertificateProviderExtension() override;
+  ~TestCertificateProviderExtension();
 
   // Causes the extension to call chrome.certificateProvider.setCertificates,
   // providing the certificates that are currently available.
@@ -90,10 +88,7 @@ class TestCertificateProviderExtension final
   using ReplyToJsCallback =
       base::OnceCallback<void(const base::Value& response)>;
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void HandleMessage(const std::string& message);
 
   void HandleCertificatesRequest(ReplyToJsCallback callback);
   void HandleSignatureRequest(const base::Value& sign_request,
@@ -114,7 +109,7 @@ class TestCertificateProviderExtension final
   int remaining_pin_attempts_ = -1;
   bool should_provide_certificates_ = true;
   bool should_fail_sign_digest_requests_ = false;
-  content::NotificationRegistrar notification_registrar_;
+  ExtensionTestMessageListener message_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(TestCertificateProviderExtension);
 };

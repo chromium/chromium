@@ -87,7 +87,8 @@ void ExtensionTestMessageListener::Observe(
     sender_extension_id = function->extension_id();
 
   if (satisfied_ ||
-      (!extension_id_.empty() && sender_extension_id != extension_id_)) {
+      (!extension_id_.empty() && sender_extension_id != extension_id_) ||
+      (browser_context_ && function->browser_context() != browser_context_)) {
     return;
   }
 
