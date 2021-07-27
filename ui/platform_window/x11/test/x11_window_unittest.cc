@@ -113,7 +113,7 @@ class ShapedX11ExtensionDelegate : public X11ExtensionDelegate {
     return false;
   }
 #endif
-  bool IsOverrideRedirect(bool is_tiling_wm) const override { return false; }
+  bool IsOverrideRedirect() const override { return false; }
 };
 
 // Blocks till the window state hint, |hint|, is set or unset.

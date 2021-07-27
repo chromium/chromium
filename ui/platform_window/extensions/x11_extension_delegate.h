@@ -34,11 +34,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) X11ExtensionDelegate {
 #endif
 
   // Returns true if this window should be in a forced override-redirect state
-  // (not managed by the window manager). If |is_tiling_wm| is set to true, the
-  // underlaying window manager is tiling. If it is set to false, the wm is
-  // stacking. The delegate can use this information to determine the value
-  // returned for override-redirect.
-  virtual bool IsOverrideRedirect(bool is_tiling_wm) const = 0;
+  // (not managed by the window manager).
+  virtual bool IsOverrideRedirect() const = 0;
 
  protected:
   virtual ~X11ExtensionDelegate() = default;

@@ -129,6 +129,7 @@ class X11_WINDOW_EXPORT X11Window
   bool ContainsPointInXRegion(const gfx::Point& point) const override;
   void LowerXWindow() override;
   void SetOverrideRedirect(bool override_redirect) override;
+  bool CanResetOverrideRedirect() const override;
   void SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) override;
 
   // x11::EventObserver:

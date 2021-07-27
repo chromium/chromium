@@ -62,7 +62,7 @@ class BrowserDesktopWindowTreeHostLinux
   void UnlockMouse(aura::Window* window) override;
 
   // ui::X11ExtensionDelegate:
-  bool IsOverrideRedirect(bool is_tiling_wm) const override;
+  bool IsOverrideRedirect() const override;
 
   // ui::PlatformWindowDelegate
   void OnBoundsChanged(const BoundsChange& change) override;

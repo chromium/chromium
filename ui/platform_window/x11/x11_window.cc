@@ -1134,6 +1134,12 @@ void X11Window::SetOverrideRedirect(bool override_redirect) {
   }
 }
 
+bool X11Window::CanResetOverrideRedirect() const {
+  // Ratpoision sometimes hangs when setting the override-redirect state to a
+  // new value (https://crbug.com/1216221).
+  return ui::GuessWindowManager() != ui::WindowManagerName::WM_RATPOISON;
+}
+
 void X11Window::SetX11ExtensionDelegate(X11ExtensionDelegate* delegate) {
   x11_extension_delegate_ = delegate;
 }
@@ -1577,7 +1583,7 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
   bounds.set_size(adjusted_size_in_pixels);
   const auto override_redirect =
       properties.x11_extension_delegate &&
-      properties.x11_extension_delegate->IsOverrideRedirect(IsWmTiling());
+      properties.x11_extension_delegate->IsOverrideRedirect();
 
   workspace_extension_delegate_ = properties.workspace_extension_delegate;
   x11_extension_delegate_ = properties.x11_extension_delegate;

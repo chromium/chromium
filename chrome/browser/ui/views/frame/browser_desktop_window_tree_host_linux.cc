@@ -125,7 +125,8 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
     return;
 
   auto* x11_extension = GetX11Extension();
-  if (x11_extension && x11_extension->IsWmTiling()) {
+  if (x11_extension && x11_extension->IsWmTiling() &&
+      x11_extension->CanResetOverrideRedirect()) {
     bool was_dragging_window =
         browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs;
     bool is_dragging_window = tab_drag_kind == TabDragKind::kAllTabs;
@@ -253,10 +254,11 @@ void BrowserDesktopWindowTreeHostLinux::CloseNow() {
   DesktopWindowTreeHostLinux::CloseNow();
 }
 
-bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect(
-    bool is_tiling_wm) const {
+bool BrowserDesktopWindowTreeHostLinux::IsOverrideRedirect() const {
+  auto* x11_extension = GetX11Extension();
   return (browser_frame_->tab_drag_kind() == TabDragKind::kAllTabs) &&
-         is_tiling_wm;
+         x11_extension && x11_extension->IsWmTiling() &&
+         x11_extension->CanResetOverrideRedirect();
 }
 
 void BrowserDesktopWindowTreeHostLinux::OnBoundsChanged(
