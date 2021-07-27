@@ -70,7 +70,13 @@ class Json::JsonImpl {
   }
 
   bool GetStringValueForKey(const std::string& key, std::string* value) const {
-    return dict_.GetStringWithoutPathExpansion(key, value);
+    const std::string* value_str = dict_.FindStringKey(key);
+    if (!value_str)
+      return false;
+
+    DCHECK(value);
+    *value = *value_str;
+    return true;
   }
 
  private:
