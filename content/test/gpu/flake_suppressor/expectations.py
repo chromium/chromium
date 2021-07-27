@@ -35,11 +35,10 @@ def IterateThroughResultsForUser(result_map, group_by_tags):
         expectation whose tags are the largest subset of the produced tags. If
         False, new expectations will be appended to the end of the file.
   """
+  typ_tag_ordered_result_map = _ReorderMapByTypTags(result_map)
   for suite, test_map in result_map.items():
     for test, tag_map in test_map.items():
-      for _, unique_result in tag_map.items():
-        typ_tags = unique_result['typ_tags']
-        build_url_list = unique_result['build_url_list']
+      for typ_tags, build_url_list in tag_map.items():
 
         print('')
         print('Suite: %s' % suite)
@@ -55,7 +54,7 @@ def IterateThroughResultsForUser(result_map, group_by_tags):
             print('    %d failures on %s' % (failure_count, ' '.join(tags)))
 
         other_failures_for_config = FindFailuresInSameConfig(
-            result_map, suite, test, typ_tags)
+            typ_tag_ordered_result_map, suite, test, typ_tags)
         if other_failures_for_config:
           print('Other failures on same configuration found in other tests')
           for (name, failure_count) in other_failures_for_config:
@@ -88,23 +87,25 @@ def FindFailuresInSameTest(result_map, target_suite, target_test,
     times the test failed on that configuration.
   """
   other_failures = []
+  target_typ_tags = tuple(target_typ_tags)
   tag_map = result_map.get(target_suite, {}).get(target_test, {})
-  for _, unique_result in tag_map.items():
-    typ_tags = unique_result['typ_tags']
+  for typ_tags, build_url_list in tag_map.items():
     if typ_tags == target_typ_tags:
       continue
-    other_failures.append((typ_tags, len(unique_result['build_url_list'])))
+    other_failures.append((typ_tags, len(build_url_list)))
   return other_failures
 
 
-def FindFailuresInSameConfig(result_map, target_suite, target_test,
-                             target_typ_tags):
+def FindFailuresInSameConfig(typ_tag_ordered_result_map, target_suite,
+                             target_test, target_typ_tags):
   """Finds all other failures that occurred on the given configuration.
 
   Ignores the failures for the given test on the given configuration.
 
   Args:
-    result_map: Aggregated query results from results.AggregateResults.
+    typ_tag_ordered_result_map: Aggregated query results from
+        results.AggregateResults that have been reordered using
+        _ReorderMapByTypTags.
     target_suite: A string containing the test suite the original failure was
         found in.
     target_test: A string containing the test case the original failure was
@@ -117,21 +118,43 @@ def FindFailuresInSameConfig(result_map, target_suite, target_test,
     test suite and test case concatenated together. |count| is how many times
     |full_name| failed on the configuration specified by |target_typ_tags|.
   """
-  # TODO(crbug.com/1192733): Maybe create a typ_tags -> suite -> test_map dict
-  # elsewhere once and use that instead of looping through everything every
-  # time.
+  target_typ_tags = tuple(target_typ_tags)
   other_failures = []
-  for suite, test_map in result_map.items():
-    for test, tag_map in test_map.items():
+  suite_map = typ_tag_ordered_result_map.get(target_typ_tags, {})
+  for suite, test_map in suite_map.items():
+    for test, build_url_list in test_map.items():
       if suite == target_suite and test == target_test:
         continue
-      for _, unique_result in tag_map.items():
-        typ_tags = unique_result['typ_tags']
-        if typ_tags != target_typ_tags:
-          continue
-        full_name = '%s.%s' % (suite, test)
-        other_failures.append((full_name, len(unique_result['build_url_list'])))
+      full_name = '%s.%s' % (suite, test)
+      other_failures.append((full_name, len(build_url_list)))
   return other_failures
+
+
+def _ReorderMapByTypTags(result_map):
+  """Rearranges|result_map| to use typ tags as the top level keys.
+
+  Args:
+    result_map: Aggregated query results from results.AggregateResults
+
+  Returns:
+    A dict containing the same contents as |result_map|, but in the following
+    format:
+    {
+      typ_tags (tuple of str): {
+        suite (str): {
+          test (str): build_url_list (list of str),
+        },
+      },
+    }
+  """
+  reordered_map = {}
+  for suite, test_map in result_map.items():
+    for test, tag_map in test_map.items():
+      for typ_tags, build_url_list in tag_map.items():
+        reordered_map.setdefault(typ_tags,
+                                 {}).setdefault(suite,
+                                                {})[test] = build_url_list
+  return reordered_map
 
 
 def PromptUserForExpectationAction():

@@ -55,31 +55,19 @@ class AggregateResultsUnittest(unittest.TestCase):
     expected_output = {
         'webgl_conformance_integration_test': {
             'conformance/textures/misc/video-rotation.html': {
-                'nvidia__win': {
-                    'typ_tags': ['nvidia', 'win'],
-                    'build_url_list': [
-                        'http://ci.chromium.org/b/1111',
-                        'http://ci.chromium.org/b/2222',
-                    ],
-                },
-                'amd__win': {
-                    'typ_tags': ['amd', 'win'],
-                    'build_url_list': ['http://ci.chromium.org/b/3333'],
-                },
+                ('nvidia', 'win'): [
+                    'http://ci.chromium.org/b/1111',
+                    'http://ci.chromium.org/b/2222',
+                ],
+                ('amd', 'win'): ['http://ci.chromium.org/b/3333'],
             },
             'conformance/textures/misc/texture-npot-video.html': {
-                'nvidia__win': {
-                    'typ_tags': ['nvidia', 'win'],
-                    'build_url_list': ['http://ci.chromium.org/b/4444'],
-                },
+                ('nvidia', 'win'): ['http://ci.chromium.org/b/4444'],
             },
         },
         'pixel_integration_test': {
             'Pixel_CSS3DBlueBox': {
-                'nvidia__win': {
-                    'typ_tags': ['nvidia', 'win'],
-                    'build_url_list': ['http://ci.chromium.org/b/5555'],
-                },
+                ('nvidia', 'win'): ['http://ci.chromium.org/b/5555'],
             },
         },
     }

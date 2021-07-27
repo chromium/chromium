@@ -15,10 +15,7 @@ def AggregateResults(results):
     {
       'test_suite': {
         'test_name': {
-          'typ_tags_as_string': {
-            'typ_tags': [ 'list', 'of', 'tags ],
-            'build_url_list': [ 'list', 'of', 'urls' ],
-          },
+          'typ_tags_as_tuple': [ 'list', 'of', 'urls' ],
         },
       },
     }
@@ -30,11 +27,9 @@ def AggregateResults(results):
     build_url = 'http://ci.chromium.org/b/%s' % build_id
     typ_tags = r['typ_tags']
     typ_tags.sort()
-    typ_tags_str = '__'.join(typ_tags)
+    typ_tags_tuple = tuple(typ_tags)
 
-    unique_test = aggregated_results.setdefault(suite, {}).setdefault(
-        test_name, {}).setdefault(typ_tags_str, {})
-    build_url_list = unique_test.setdefault('build_url_list', [])
+    build_url_list = aggregated_results.setdefault(suite, {}).setdefault(
+        test_name, {}).setdefault(typ_tags_tuple, [])
     build_url_list.append(build_url)
-    unique_test.setdefault('typ_tags', typ_tags)
   return aggregated_results

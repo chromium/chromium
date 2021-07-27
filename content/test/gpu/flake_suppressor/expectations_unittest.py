@@ -43,20 +43,11 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
-                'win': {
-                    'typ_tags': ['win'],
-                    'build_url_list': ['a'],
-                },
-                'mac': {
-                    'typ_tags': ['mac'],
-                    'build_url_list': ['b'],
-                },
+                tuple(['win']): ['a'],
+                tuple(['mac']): ['b'],
             },
             'bar_test': {
-                'win': {
-                    'typ_tags': ['win'],
-                    'build_url_list': ['c'],
-                },
+                tuple(['win']): ['c'],
             },
         },
     }
@@ -167,46 +158,22 @@ class FindFailuresInSameConditionUnittest(unittest.TestCase):
     self.result_map = {
         'pixel_integration_test': {
             'foo_test': {
-                'win': {
-                    'typ_tags': ['win'],
-                    'build_url_list': ['a'],
-                },
-                'mac': {
-                    'typ_tags': ['mac'],
-                    'build_url_list': ['a', 'b'],
-                },
+                tuple(['win']): ['a'],
+                tuple(['mac']): ['a', 'b'],
             },
             'bar_test': {
-                'win': {
-                    'typ_tags': ['win'],
-                    'build_url_list': ['a', 'b', 'c'],
-                },
-                'mac': {
-                    'typ_tags': ['mac'],
-                    'build_url_list': ['a', 'b', 'c', 'd'],
-                },
+                tuple(['win']): ['a', 'b', 'c'],
+                tuple(['mac']): ['a', 'b', 'c', 'd'],
             },
         },
         'webgl_conformance_integration_test': {
             'foo_test': {
-                'win': {
-                    'typ_tags': ['win'],
-                    'build_url_list': ['a', 'b', 'c', 'd', 'e'],
-                },
-                'mac': {
-                    'typ_tags': ['mac'],
-                    'build_url_list': ['a', 'b', 'c', 'd', 'e', 'f'],
-                },
+                tuple(['win']): ['a', 'b', 'c', 'd', 'e'],
+                tuple(['mac']): ['a', 'b', 'c', 'd', 'e', 'f'],
             },
             'bar_test': {
-                'win': {
-                    'typ_tags': ['win'],
-                    'build_url_list': ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
-                },
-                'mac': {
-                    'typ_tags': ['mac'],
-                    'build_url_list': ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
-                },
+                tuple(['win']): ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+                tuple(['mac']): ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'],
             },
         },
     }
@@ -214,11 +181,14 @@ class FindFailuresInSameConditionUnittest(unittest.TestCase):
   def testFindFailuresInSameTest(self):
     other_failures = expectations.FindFailuresInSameTest(
         self.result_map, 'pixel_integration_test', 'foo_test', ['win'])
-    self.assertEqual(other_failures, [(['mac'], 2)])
+    self.assertEqual(other_failures, [(tuple(['mac']), 2)])
 
   def testFindFailuresInSameConfig(self):
+    typ_tag_ordered_result_map = expectations._ReorderMapByTypTags(
+        self.result_map)
     other_failures = expectations.FindFailuresInSameConfig(
-        self.result_map, 'pixel_integration_test', 'foo_test', ['win'])
+        typ_tag_ordered_result_map, 'pixel_integration_test', 'foo_test',
+        ['win'])
     expected_other_failures = [
         ('pixel_integration_test.bar_test', 3),
         ('webgl_conformance_integration_test.foo_test', 5),
