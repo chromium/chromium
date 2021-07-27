@@ -22,6 +22,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/soda/constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
@@ -31,6 +32,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/url_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -48,6 +50,25 @@ std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
 }
 
 }  // namespace
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool ShouldShowLacrosSideBySideWarningInAsh() {
+  return base::FeatureList::IsEnabled(
+             switches::kSyncSettingsShowLacrosSideBySideWarning) &&
+         crosapi::browser_util::IsAshWebBrowserEnabled() &&
+         crosapi::browser_util::IsLacrosEnabled();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldShowLacrosSideBySideWarningInLacros() {
+  // TODO(crbug.com/1221498): determine whether Lacros is enabled in
+  // side-by-side mode (needs exposure of LacrosLaunchSwitch by Ash into
+  // Lacros).
+  return base::FeatureList::IsEnabled(
+      switches::kSyncSettingsShowLacrosSideBySideWarning);
+}
 #endif
 
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
@@ -223,46 +244,52 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
 
 void AddSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"syncDisabledByAdministrator",
-       IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
-      {"passwordsCheckboxLabel", IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL},
-      {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
-      {"peopleSignInSyncPagePromptSecondaryWithAccount",
-       IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-      {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
-       IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-      {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
-      {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
-      {"encryptWithGoogleCredentialsLabel",
-       IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
-      {"bookmarksCheckboxLabel", IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL},
-      {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
-      {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
-      {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
-      {"incorrectPassphraseError", IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR},
-      {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
-      {"passphraseConfirmationPlaceholder",
-       IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
-      {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
-      {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
-      {"themesAndWallpapersCheckboxLabel",
-       IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL},
-      {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
-      {"sync", IDS_SETTINGS_SYNC},
-      {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
-      {"syncSetupCancelDialogTitle",
-       IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_TITLE},
-      {"syncSetupCancelDialogBody", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY},
-      {"personalizeGoogleServicesTitle",
-       IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
-      {"manageSyncedDataTitle",
-       IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
-      {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
-      {"enterPassphraseLabelWithDate",
-       IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE},
-      {"existingPassphraseLabelWithDate",
-       IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
-      {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM}};
+    {"syncDisabledByAdministrator", IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
+    {"passwordsCheckboxLabel", IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL},
+    {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
+    {"peopleSignInSyncPagePromptSecondaryWithAccount",
+     IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
+    {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
+     IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
+    {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
+    {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
+    {"encryptWithGoogleCredentialsLabel",
+     IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
+    {"bookmarksCheckboxLabel", IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL},
+    {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
+    {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
+    {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
+    {"incorrectPassphraseError", IDS_SETTINGS_INCORRECT_PASSPHRASE_ERROR},
+    {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
+    {"passphraseConfirmationPlaceholder",
+     IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
+    {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
+    {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
+    {"themesAndWallpapersCheckboxLabel",
+     IDS_SETTINGS_THEMES_AND_WALLPAPERS_CHECKBOX_LABEL},
+    {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
+    {"sync", IDS_SETTINGS_SYNC},
+    {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
+    {"syncSetupCancelDialogTitle", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_TITLE},
+    {"syncSetupCancelDialogBody", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY},
+    {"personalizeGoogleServicesTitle",
+     IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
+    {"manageSyncedDataTitle",
+     IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
+    {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
+    {"enterPassphraseLabelWithDate", IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE},
+    {"existingPassphraseLabelWithDate",
+     IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
+    {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM},
+  // Settings warning for Lacros side-by-side mode.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"syncSettingsLacrosSideBySideWarning",
+     IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_ASH},
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"syncSettingsLacrosSideBySideWarning",
+     IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS},
+#endif
+  };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   std::string sync_dashboard_url =
@@ -294,6 +321,13 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
           GetHelpUrlWithBoard(chrome::kSyncEncryptionHelpURL)));
 #else
           base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
+                          ShouldShowLacrosSideBySideWarningInAsh());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
+                          ShouldShowLacrosSideBySideWarningInLacros());
 #endif
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
 }

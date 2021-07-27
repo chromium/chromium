@@ -49,6 +49,10 @@ extern const base::Feature kSyncTrustedVaultPassphraseRecovery;
 
 extern const base::Feature kSyncTrustedVaultPassphrasePromo;
 
+#if defined(OS_CHROMEOS)
+extern const base::Feature kSyncSettingsShowLacrosSideBySideWarning;
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_DRIVER_SYNC_DRIVER_SWITCHES_H_

@@ -64,6 +64,7 @@
         padding-inline-start: 0;
       }
     </style>
+
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
@@ -81,6 +82,16 @@
         $i18n{syncDisabledByAdministrator}
       </div>
     </div>
+
+<if expr="chromeos or lacros">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
+      </div>
+    </template>
+</if>
 
     <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
         syncPrefs.passphraseRequired)]]"

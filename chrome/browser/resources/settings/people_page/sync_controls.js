@@ -129,6 +129,17 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
     }
   }
 
+
+  // <if expr="chromeos or lacros">
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowLacrosSideBySideWarning_() {
+    return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
+  }
+  // </if>
+
   /**
    * Handler for when the sync preferences are updated.
    * @private

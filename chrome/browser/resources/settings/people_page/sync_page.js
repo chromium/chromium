@@ -314,6 +314,16 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         this.shadowRoot.querySelector('settings-personalization-options'));
   }
 
+  // <if expr="chromeos or lacros">
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowLacrosSideBySideWarning_() {
+    return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
+  }
+  // </if>
+
   /**
    * @return {boolean}
    * @private
