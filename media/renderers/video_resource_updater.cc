@@ -65,7 +65,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     GLuint target,
     int num_textures,
     gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes],
-    bool use_stream_video_draw_quad) {
+    bool use_stream_video_draw_quad,
+    bool dcomp_surface) {
   switch (format) {
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
@@ -84,7 +85,12 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
-          if (use_stream_video_draw_quad)
+          // `use_stream_video_draw_quad` is set on Android and `dcomp_surface`
+          // is used on Windows.
+          // TODO(sunnyps): It's odd to reuse the Android path on Windows. There
+          // could be other unknown assumptions in other parts of the rendering
+          // stack about stream video quads. Investigate alternative solutions.
+          if (use_stream_video_draw_quad || dcomp_surface)
             return VideoFrameResourceType::STREAM_TEXTURE;
           FALLTHROUGH;
         case GL_TEXTURE_2D:
@@ -860,7 +866,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes];
   external_resources.type = ExternalResourceTypeForHardwarePlanes(
       video_frame->format(), target, video_frame->NumTextures(), buffer_formats,
-      use_stream_video_draw_quad_);
+      use_stream_video_draw_quad_, video_frame->metadata().dcomp_surface);
 
   if (external_resources.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"

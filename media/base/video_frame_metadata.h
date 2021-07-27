@@ -122,6 +122,9 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // notified about its promotability to an overlay.
   bool wants_promotion_hint = false;
 
+  // Windows only: set when frame is backed by a dcomp surface handle.
+  bool dcomp_surface = false;
+
   // This video frame comes from protected content.
   bool protected_video = false;
 

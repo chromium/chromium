@@ -174,7 +174,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
         base::MakeRefCounted<DCOMPTextureMailboxResources>(mailbox_, factory_);
   }
 
-  auto new_frame = media::VideoFrame::WrapNativeTextures(
+  auto frame = media::VideoFrame::WrapNativeTextures(
       media::PIXEL_FORMAT_ARGB, holders,
       base::BindPostTask(
           media_task_runner_,
@@ -182,7 +182,10 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       natural_size_, gfx::Rect(natural_size_), natural_size_,
       base::TimeDelta());
 
-  std::move(create_video_frame_cb).Run(new_frame);
+  // Sets `dcomp_surface` to use StreamTexture. See `VideoResourceUpdater`.
+  frame->metadata().dcomp_surface = true;
+
+  std::move(create_video_frame_cb).Run(frame);
 }
 
 void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
