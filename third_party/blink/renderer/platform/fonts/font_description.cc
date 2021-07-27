@@ -590,6 +590,26 @@ String FontDescription::ToString(FontVariantCaps variant) {
   return "Unknown";
 }
 
+String FontDescription::ToStringForIdl(FontVariantCaps variant) {
+  switch (variant) {
+    case FontVariantCaps::kCapsNormal:
+      return "normal";
+    case FontVariantCaps::kSmallCaps:
+      return "small-caps";
+    case FontVariantCaps::kAllSmallCaps:
+      return "all-small-caps";
+    case FontVariantCaps::kPetiteCaps:
+      return "petite-caps";
+    case FontVariantCaps::kAllPetiteCaps:
+      return "all-petite-caps";
+    case FontVariantCaps::kUnicase:
+      return "unicase";
+    case FontVariantCaps::kTitlingCaps:
+      return "titling-caps";
+  }
+  return "Unknown";
+}
+
 String FontDescription::VariantLigatures::ToString() const {
   return String::Format(
       "common=%s, discretionary=%s, historical=%s, contextual=%s",

@@ -2413,7 +2413,7 @@ double BaseRenderingContext2D::textWordSpacing() const {
 }
 
 String BaseRenderingContext2D::textRendering() const {
-  return ToString(GetState().GetTextRendering());
+  return ToStringForIdl(GetState().GetTextRendering());
 }
 
 float BaseRenderingContext2D::GetFontBaseline(
@@ -2452,15 +2452,15 @@ void BaseRenderingContext2D::setTextBaseline(const String& s) {
 }
 
 String BaseRenderingContext2D::fontKerning() const {
-  return FontDescription::ToString(GetState().GetFontKerning());
+  return FontDescription::ToString(GetState().GetFontKerning()).LowerASCII();
 }
 
 String BaseRenderingContext2D::fontStretch() const {
-  return FontDescription::ToString(GetState().GetFontStretch());
+  return FontDescription::ToString(GetState().GetFontStretch()).LowerASCII();
 }
 
 String BaseRenderingContext2D::fontVariantCaps() const {
-  return FontDescription::ToString(GetState().GetFontVariantCaps());
+  return FontDescription::ToStringForIdl(GetState().GetFontVariantCaps());
 }
 
 void BaseRenderingContext2D::Trace(Visitor* visitor) const {
