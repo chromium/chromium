@@ -87,7 +87,7 @@ public final class WebFeedFollowIntroViewTest {
     @Test
     @SmallTest
     public void showIPHTest() {
-        mWebFeedFollowIntroView.showIPH(mOnTouchListenerStub, mTracker, mHelper);
+        mWebFeedFollowIntroView.showIPH(mTracker, mHelper);
         verify(mHelper, times(1)).requestShowIPH(any());
     }
 }

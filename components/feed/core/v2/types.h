@@ -124,6 +124,12 @@ class ContentIdSet {
   base::flat_set<int64_t> content_ids_;
 };
 
+struct ContentStats {
+  int card_count = 0;
+  int total_content_frame_size_bytes = 0;
+  int shared_state_size = 0;
+};
+
 struct LaunchResult {
   LoadStreamStatus load_stream_status;
   feedwire::DiscoverLaunchResult launch_result;

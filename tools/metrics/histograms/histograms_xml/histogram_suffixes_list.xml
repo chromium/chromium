@@ -5873,6 +5873,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="UploadActions" label="Requests to upload user action data"/>
   <suffix name="WebFeedListContents"
       label="Request to fetch the contents of the web feed"/>
+  <affected-histogram
+      name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB"/>
   <affected-histogram name="ContentSuggestions.Feed.Network.Duration"/>
   <affected-histogram name="ContentSuggestions.Feed.Network.ResponseStatus"/>
 </histogram_suffixes>

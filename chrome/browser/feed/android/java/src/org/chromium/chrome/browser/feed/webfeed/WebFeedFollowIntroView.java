@@ -82,8 +82,7 @@ class WebFeedFollowIntroView {
         mFollowBubble.show();
     }
 
-    void showIPH(View.OnTouchListener onTouchListener, Tracker featureEngagementTracker,
-            UserEducationHelper helper) {
+    void showIPH(Tracker featureEngagementTracker, UserEducationHelper helper) {
         int iphStringResource = R.string.follow_accelerator;
         int iphAccessibilityStringResource = R.string.accessibility_follow_accelerator_iph;
 

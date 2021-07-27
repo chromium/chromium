@@ -12,7 +12,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
@@ -28,6 +31,18 @@ class WebFeedDialogCoordinator {
     private final WebFeedDialogMediator mMediator;
 
     private Context mContext;
+    /**
+     * This enum is reported in a UMA histogram. Changes must be synchronized with
+     * WebFeedPostFollowDialogPresentation in enums.xml, and values may not be re-used.
+     */
+    @IntDef({WebFeedPostFollowDialogPresentation.AVAILABLE,
+            WebFeedPostFollowDialogPresentation.UNAVAILABLE,
+            WebFeedPostFollowDialogPresentation.VALUE_COUNT})
+    @interface WebFeedPostFollowDialogPresentation {
+        int AVAILABLE = 0;
+        int UNAVAILABLE = 1;
+        int VALUE_COUNT = 2;
+    }
 
     /**
      * Constructs an instance of {@link WebFeedDialogCoordinator}.
@@ -63,6 +78,12 @@ class WebFeedDialogCoordinator {
 
     private WebFeedDialogContents buildDialogContents(
             FeedLauncher feedLauncher, boolean isActive, String title) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show",
+                isActive ? WebFeedPostFollowDialogPresentation.AVAILABLE
+                         : WebFeedPostFollowDialogPresentation.UNAVAILABLE,
+                WebFeedPostFollowDialogPresentation.VALUE_COUNT);
+
         String description;
         String primaryButtonText;
         String secondaryButtonText;

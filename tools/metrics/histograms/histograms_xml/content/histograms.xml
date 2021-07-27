@@ -916,6 +916,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB"
+    units="KB" expires_after="2022-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The wire size (potentially compressed) of a Feed network response
+    received by the Feed's networking host. Recorded when a successful response
+    is received.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.Network.Duration" units="ms"
     expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
@@ -1491,6 +1503,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.{Event}"
+    units="follows" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The number of web feeds the user is following. Reported {Event}.
+  </summary>
+  <token key="Event">
+    <variant name="AfterFollow" summary="after a successful follow action."/>
+    <variant name="AfterUnfollow"
+        summary="after a successful unfollow action."/>
+    <variant name="ContentShown"
+        summary="after the Following feed is shown, and some content is
+                 displayed."/>
+    <variant name="EngagedWithFeed"
+        summary="after the user has been recorded as FeedEngagementType
+                 'Engaged', reported at most once per day when the user
+                 interacts with the Following Feed."/>
+    <variant name="NoContentShown"
+        summary="after the Following Feed is shown, and no content is
+                 available for display."/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowUriResult"
     enum="WebFeedSubscriptionRequestStatus" expires_after="2022-07-01">
   <owner>harringtond@chromium.org</owner>
@@ -1517,6 +1553,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     can be different from the position observed by the user, e.g. when the user
     dismissed some suggestions from the list or requested more that got inserted
     in the middle of the feed.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.PostFollowDialog.Show"
+    enum="WebFeedPostFollowDialogPresentation" expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports which presentation of the post-follow dialog is shown.
+    Reported when the post-follow dialog is displayed, after the user follows a
+    Web Feed.
   </summary>
 </histogram>
 
@@ -1783,6 +1830,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     last card is 2/3rds shown before additional content loads. In this case,
     this histogram can be reported multiple times without leaving the Feed
     surface.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.SharedStateSizeKB" units="KB"
+    expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the total size in KB of the shared state for the
+    {FeedType}. Reported once when loading {FeedType} content for display, and
+    once each time additional pages of content are added.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.StreamContentSizeKB" units="KB"
+    expires_after="2022-07-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the total size in KB of all of the {FeedType} content (not
+    including shared state, or dynamically fetched media). Reported once when
+    loading {FeedType} content for display, and once each time additional pages
+    of content are added.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>

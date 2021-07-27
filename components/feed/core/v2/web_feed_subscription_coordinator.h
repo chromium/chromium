@@ -62,6 +62,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void RefreshSubscriptions(
       base::OnceCallback<void(RefreshResult)> callback) override;
   void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override;
+  void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
 
   // Types / functions exposed for task implementations.
 
@@ -156,6 +157,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       FetchSubscribedWebFeedsTask::Result result);
   void CallRefreshCompleteCallbacks(RefreshResult);
   void IsWebFeedSubscriberDone(base::OnceCallback<void(bool)> callback);
+  void SubscribedWebFeedCountDone(base::OnceCallback<void(int)> callback);
 
   FeedStream* feed_stream_;  // Always non-null, it owns this.
 

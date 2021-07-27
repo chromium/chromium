@@ -455,6 +455,10 @@ bool WebFeedIndex::HasSubscriptions() const {
   return !subscribed_->entries().empty();
 }
 
+int WebFeedIndex::SubscriptionCount() const {
+  return subscribed_->entries().size();
+}
+
 std::vector<WebFeedIndex::Entry> WebFeedIndex::GetRecommendedEntriesForTesting()
     const {
   return recommended_->entries();

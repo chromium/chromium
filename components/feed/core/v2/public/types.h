@@ -61,6 +61,7 @@ struct NetworkResponseInfo {
   std::string bless_nonce;
   GURL base_request_url;
   size_t response_body_bytes = 0;
+  size_t encoded_size_bytes = 0;
   bool was_signed_in = false;
   base::TimeTicks fetch_time_ticks;
   base::TimeTicks loader_start_time_ticks;

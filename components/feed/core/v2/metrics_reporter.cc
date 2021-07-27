@@ -16,6 +16,7 @@
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 
 namespace feed {
 namespace {
@@ -149,6 +150,10 @@ MetricsReporter::~MetricsReporter() {
   FinalizeMetrics();
 }
 
+void MetricsReporter::Initialize(Delegate* delegate) {
+  delegate_ = delegate;
+}
+
 void MetricsReporter::OnEnterBackground() {
   FinalizeMetrics();
 }
@@ -159,6 +164,23 @@ void MetricsReporter::RecordInteraction(const StreamType& stream_type) {
   RecordEngagement(stream_type, /*scroll_distance_dp=*/0, /*interacted=*/true);
   ReportEngagementTypeHistogram(stream_type,
                                 FeedEngagementType::kFeedInteracted);
+}
+
+void MetricsReporter::LogContentStats(const StreamType& stream_type,
+                                      const ContentStats& content_stats) {
+  // Don't report anything if there's no content.
+  if (content_stats.card_count == 0)
+    return;
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                    "StreamContentSizeKB"}),
+      content_stats.total_content_frame_size_bytes / 1024);
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
+                    "SharedStateSizeKB"}),
+      content_stats.shared_state_size / 1024);
 }
 
 void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
@@ -224,6 +246,10 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
       (scroll_distance_dp > kMinScrollThresholdDp || interacted)) {
     ReportEngagementTypeHistogram(stream_type,
                                   FeedEngagementType::kFeedEngaged);
+    // Unretained is safe because MetricsReporter outlives `FeedStream`.
+    delegate_->SubscribedWebFeedCount(base::BindOnce(
+        &MetricsReporter::ReportSubscriptionCountAtEngagementTime,
+        base::Unretained(this)));
     data.engaged_reported_ = true;
   }
 }
@@ -526,17 +552,21 @@ void MetricsReporter::ReportCardOpenEndIfNeeded(bool success) {
   pending_open_ = {};
 }
 
-void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
-                                             int http_status_code,
-                                             base::TimeDelta latency) {
+void MetricsReporter::NetworkRequestComplete(
+    NetworkRequestType type,
+    const NetworkResponseInfo& response_info) {
   base::StringPiece request_name = NetworkRequestTypeUmaName(type);
   base::UmaHistogramSparse(
       base::StrCat(
           {"ContentSuggestions.Feed.Network.ResponseStatus.", request_name}),
-      http_status_code);
+      response_info.status_code);
   base::UmaHistogramMediumTimes(
       base::StrCat({"ContentSuggestions.Feed.Network.Duration.", request_name}),
-      latency);
+      response_info.fetch_duration);
+  base::UmaHistogramCounts10000(
+      base::StrCat({"ContentSuggestions.Feed.Network.CompressedResponseSizeKB.",
+                    request_name}),
+      response_info.encoded_size_bytes / 1024);
 }
 
 void MetricsReporter::OnLoadStream(
@@ -546,7 +576,7 @@ void MetricsReporter::OnLoadStream(
     bool is_initial_load,
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
-    int content_count,
+    const ContentStats& content_stats,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
   DVLOG(1) << "OnLoadStream load_from_store_status=" << load_from_store_status
            << " final_status=" << final_status;
@@ -591,8 +621,14 @@ void MetricsReporter::OnLoadStream(
     base::UmaHistogramSparse(
         base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                       "LoadedCardCount"}),
-        content_count);
+        content_stats.card_count);
   }
+  if (stream_type.IsWebFeed()) {
+    delegate_->SubscribedWebFeedCount(base::BindOnce(
+        &MetricsReporter::ReportFollowCountOnLoad, base::Unretained(this),
+        /*content_shown=*/content_stats.card_count != 0));
+  }
+  LogContentStats(stream_type, content_stats);
 }
 
 void MetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
@@ -616,10 +652,13 @@ void MetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
       kLoadTimeout);
 }
 
-void MetricsReporter::OnLoadMore(LoadStreamStatus status) {
+void MetricsReporter::OnLoadMore(const StreamType& stream_type,
+                                 LoadStreamStatus status,
+                                 const ContentStats& content_stats) {
   DVLOG(1) << "OnLoadMore status=" << status;
   base::UmaHistogramEnumeration(
       "ContentSuggestions.Feed.LoadStreamStatus.LoadMore", status);
+  LogContentStats(stream_type, content_stats);
 }
 
 void MetricsReporter::OnImageFetched(int net_error_or_http_status) {
@@ -722,6 +761,11 @@ void MetricsReporter::OnFollowAttempt(
         "ContentSuggestions.Feed.WebFeed.FollowUriResult",
         result.request_status);
   }
+  if (result.request_status == WebFeedSubscriptionRequestStatus::kSuccess) {
+    base::UmaHistogramSparse(
+        "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow",
+        result.subscription_count);
+  }
 }
 
 void MetricsReporter::OnUnfollowAttempt(
@@ -729,6 +773,12 @@ void MetricsReporter::OnUnfollowAttempt(
   DVLOG(1) << "OnUnfollowAttempt status=" << result.request_status;
   base::UmaHistogramEnumeration(
       "ContentSuggestions.Feed.WebFeed.UnfollowResult", result.request_status);
+
+  if (result.request_status == WebFeedSubscriptionRequestStatus::kSuccess) {
+    base::UmaHistogramSparse(
+        "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow",
+        result.subscription_count);
+  }
 }
 
 void MetricsReporter::RefreshRecommendedWebFeedsAttempted(
@@ -753,6 +803,21 @@ void MetricsReporter::RefreshSubscribedWebFeedsAttempted(
     base::UmaHistogramEnumeration(
         "ContentSuggestions.Feed.WebFeed.RefreshSubscribedFeeds.Force", status);
   }
+}
+
+void MetricsReporter::ReportSubscriptionCountAtEngagementTime(
+    int subscription_count) {
+  base::UmaHistogramSparse(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged",
+      subscription_count);
+}
+
+void MetricsReporter::ReportFollowCountOnLoad(bool content_shown,
+                                              int subscription_count) {
+  base::UmaHistogramSparse(
+      base::StrCat({"ContentSuggestions.Feed.WebFeed.FollowCount.",
+                    content_shown ? "ContentShown" : "NoContentShown"}),
+      subscription_count);
 }
 
 }  // namespace feed

@@ -225,27 +225,26 @@ public class WebFeedFollowIntroController {
                     currentTimeMillis);
         }
 
-        GestureDetector gestureDetector = new GestureDetector(
-                mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public boolean onSingleTapUp(MotionEvent motionEvent) {
-                        if (!mAcceleratorPressed) {
-                            mAcceleratorPressed = true;
-                            performFollowWithAccelerator();
-                        }
-                        return true;
-                    }
-                });
-        View.OnTouchListener onTouchListener = (view, motionEvent) -> {
-            view.performClick();
-            gestureDetector.onTouchEvent(motionEvent);
-            return true;
-        };
-
         if (shouldUseIPH()) {
             UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
-            mWebFeedFollowIntroView.showIPH(onTouchListener, mFeatureEngagementTracker, helper);
+            mWebFeedFollowIntroView.showIPH(mFeatureEngagementTracker, helper);
         } else {
+            GestureDetector gestureDetector = new GestureDetector(mActivity.getApplicationContext(),
+                    new GestureDetector.SimpleOnGestureListener() {
+                        @Override
+                        public boolean onSingleTapUp(MotionEvent motionEvent) {
+                            if (!mAcceleratorPressed) {
+                                mAcceleratorPressed = true;
+                                performFollowWithAccelerator();
+                            }
+                            return true;
+                        }
+                    });
+            View.OnTouchListener onTouchListener = (view, motionEvent) -> {
+                view.performClick();
+                gestureDetector.onTouchEvent(motionEvent);
+                return true;
+            };
             mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
         }
     }

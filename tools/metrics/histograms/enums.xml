@@ -85943,6 +85943,13 @@ others/histograms.xml -->
   <int value="3" label="Transferred WebContents"/>
 </enum>
 
+<enum name="WebFeedPostFollowDialogPresentation">
+  <int value="0"
+      label="Available - Post-follow dialog for an available web feed"/>
+  <int value="1"
+      label="Unavailable - Post-follow dialog for an unavailable web feed"/>
+</enum>
+
 <enum name="WebFeedRefreshStatus">
   <int value="0" label="Unknown status"/>
   <int value="1" label="Success"/>

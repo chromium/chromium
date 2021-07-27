@@ -19,6 +19,8 @@ class WebFeedSubscriptions {
         WebFeedSubscriptionRequestStatus::kUnknown;
     // If followed, the metadata for the followed feed.
     WebFeedMetadata web_feed_metadata;
+    // Number of subscriptions the user has after the Follow operation.
+    int subscription_count = 0;
   };
   // Follow a web feed given information about a web page. Calls `callback` when
   // complete. The callback parameter reports whether the url is now considered
@@ -35,6 +37,8 @@ class WebFeedSubscriptions {
   struct UnfollowWebFeedResult {
     WebFeedSubscriptionRequestStatus request_status =
         WebFeedSubscriptionRequestStatus::kUnknown;
+    // Number of subscriptions the user has after the Unfollow operation.
+    int subscription_count = 0;
   };
 
   // Follow a web feed given a URL. Calls `callback` when complete. The callback
@@ -76,6 +80,12 @@ class WebFeedSubscriptions {
   // fetching data from the server if cached data is not fresh. If fetching
   // fails, returns the last-known state.
   virtual void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) = 0;
+
+  // How many web feeds for which the user is subscribed. May require
+  // fetching data from the server if cached data is not fresh. If fetching
+  // fails, returns the last-known state.
+  virtual void SubscribedWebFeedCount(
+      base::OnceCallback<void(int)> callback) = 0;
 };
 
 }  // namespace feed

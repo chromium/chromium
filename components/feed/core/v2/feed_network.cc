@@ -18,12 +18,11 @@ FeedNetwork::QueryRequestResult& FeedNetwork::QueryRequestResult::operator=(
 FeedNetwork::~FeedNetwork() = default;
 
 // static
-void FeedNetwork::ParseAndForwardApiResponseBegin(
+void FeedNetwork::ParseAndForwardApiResponseStarted(
     NetworkRequestType request_type,
     const RawResponse& raw_response) {
-  MetricsReporter::NetworkRequestComplete(
-      request_type, raw_response.response_info.status_code,
-      raw_response.response_info.fetch_duration);
+  MetricsReporter::NetworkRequestComplete(request_type,
+                                          raw_response.response_info);
 }
 
 }  // namespace feed

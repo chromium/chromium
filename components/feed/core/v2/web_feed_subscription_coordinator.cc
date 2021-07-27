@@ -315,6 +315,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
   callback_result.web_feed_metadata.is_recommended =
       index_.IsRecommended(result.followed_web_feed_id);
   callback_result.request_status = result.request_status;
+  callback_result.subscription_count = index_.SubscriptionCount();
   feed_stream_->GetMetricsReporter().OnFollowAttempt(followed_with_id,
                                                      callback_result);
   std::move(callback).Run(std::move(callback_result));
@@ -357,6 +358,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedComplete(
   DequeueInflightChange();
   UnfollowWebFeedResult callback_result;
   callback_result.request_status = result.request_status;
+  callback_result.subscription_count = index_.SubscriptionCount();
   feed_stream_->GetMetricsReporter().OnUnfollowAttempt(callback_result);
   std::move(callback).Run(callback_result);
 }
@@ -732,10 +734,23 @@ void WebFeedSubscriptionCoordinator::IsWebFeedSubscriber(
                      base::Unretained(this), std::move(callback)));
 }
 
+void WebFeedSubscriptionCoordinator::SubscribedWebFeedCount(
+    base::OnceCallback<void(int)> callback) {
+  FetchSubscribedWebFeedsIfStale(base::BindOnce(
+      &WebFeedSubscriptionCoordinator::SubscribedWebFeedCountDone,
+      base::Unretained(this), std::move(callback)));
+}
+
 void WebFeedSubscriptionCoordinator::IsWebFeedSubscriberDone(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(IsSignedInAndWebFeedsEnabled() &&
                           index_.HasSubscriptions());
+}
+
+void WebFeedSubscriptionCoordinator::SubscribedWebFeedCountDone(
+    base::OnceCallback<void(int)> callback) {
+  std::move(callback).Run(
+      IsSignedInAndWebFeedsEnabled() ? index_.SubscriptionCount() : 0);
 }
 
 }  // namespace feed

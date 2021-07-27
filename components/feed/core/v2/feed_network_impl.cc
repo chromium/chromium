@@ -93,9 +93,8 @@ void ParseAndForwardQueryResponse(
     NetworkRequestType request_type,
     base::OnceCallback<void(FeedNetwork::QueryRequestResult)> result_callback,
     RawResponse raw_response) {
-  MetricsReporter::NetworkRequestComplete(
-      request_type, raw_response.response_info.status_code,
-      raw_response.response_info.fetch_duration);
+  MetricsReporter::NetworkRequestComplete(request_type,
+                                          raw_response.response_info);
   FeedNetwork::QueryRequestResult result;
   result.response_info = raw_response.response_info;
   result.response_info.fetch_time_ticks = base::TimeTicks::Now();
@@ -335,6 +334,9 @@ class FeedNetworkImpl::NetworkFetch {
   }
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response) {
+    const network::mojom::URLResponseHead* loader_response_info =
+        simple_loader_->ResponseInfo();
+
     NetworkResponseInfo response_info;
     response_info.status_code = simple_loader_->NetError();
     response_info.fetch_duration =
@@ -343,6 +345,8 @@ class FeedNetworkImpl::NetworkFetch {
     response_info.base_request_url = GetUrlWithoutQuery(url_);
     response_info.was_signed_in = !access_token_.empty();
     response_info.loader_start_time_ticks = loader_only_start_ticks_;
+    response_info.encoded_size_bytes =
+        loader_response_info ? loader_response_info->encoded_data_length : 0;
 
     // If overriding the feed host, try to grab the Bless nonce. This is
     // strictly informational, and only displayed in snippets-internals.

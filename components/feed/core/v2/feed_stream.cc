@@ -124,6 +124,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
+  metrics_reporter_->Initialize(this);
 
   base::RepeatingClosure preference_change_callback =
       base::BindRepeating(&FeedStream::EnabledPreferencesChanged, GetWeakPtr());
@@ -255,15 +256,15 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   if (result.request_schedule)
     SetRequestSchedule(stream.type, *result.request_schedule);
 
-  int content_count = 0;
-  if (stream.model) {
-    content_count = stream.model->GetContentList().size();
-  }
+  ContentStats content_stats;
+  if (stream.model)
+    content_stats = stream.model->GetContentStats();
+
   metrics_reporter_->OnLoadStream(
       stream.type, result.load_from_store_status, result.final_status,
       result.load_type == LoadType::kInitialLoad,
       result.loaded_new_content_from_network, result.stored_content_age,
-      content_count, std::move(result.latencies));
+      content_stats, std::move(result.latencies));
 
   UpdateIsActivityLoggingEnabled(result.stream_type);
   stream.model_loading_in_progress = false;
@@ -507,7 +508,9 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
     SetRequestSchedule(stream.type, *result.request_schedule);
 
   UpdateIsActivityLoggingEnabled(stream.type);
-  metrics_reporter_->OnLoadMore(result.final_status);
+  metrics_reporter_->OnLoadMore(
+      result.stream_type, result.final_status,
+      stream.model ? stream.model->GetContentStats() : ContentStats());
   stream.surface_updater->SetLoadingMore(false);
   std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
       std::move(stream.load_more_complete_callbacks);
@@ -724,6 +727,11 @@ offline_pages::TaskQueue& FeedStream::GetTaskQueueForTesting() {
 void FeedStream::OnTaskQueueIsIdle() {
   if (idle_callback_)
     idle_callback_.Run();
+}
+
+void FeedStream::SubscribedWebFeedCount(
+    base::OnceCallback<void(int)> callback) {
+  subscriptions().SubscribedWebFeedCount(std::move(callback));
 }
 
 void FeedStream::SetIdleCallbackForTesting(

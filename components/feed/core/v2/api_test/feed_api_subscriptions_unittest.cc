@@ -142,6 +142,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }",
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
+  EXPECT_EQ(1, callback.RunAndGetResult().subscription_count);
   EXPECT_EQ("follow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
   ASSERT_THAT(
@@ -150,6 +151,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowUriResult",
       WebFeedSubscriptionRequestStatus::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
@@ -163,9 +166,12 @@ TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
       "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribed }",
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
+  EXPECT_EQ(1, callback.RunAndGetResult().subscription_count);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowByIdResult",
       WebFeedSubscriptionRequestStatus::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
 }
 
 // Make two Follow attempts for the same page. Both appear successful, but only
@@ -185,6 +191,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceAtOnce) {
             callback.RunAndGetResult().request_status);
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback2.RunAndGetResult().request_status);
+  EXPECT_EQ(1, callback.RunAndGetResult().subscription_count);
   EXPECT_EQ(1, network_.GetFollowRequestCount());
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
@@ -209,6 +216,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceFromDifferentUrls) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback2.RunAndGetResult().request_status);
   EXPECT_EQ(2, network_.GetFollowRequestCount());
+  EXPECT_EQ(1, callback.RunAndGetResult().subscription_count);
+  EXPECT_EQ(1, callback2.RunAndGetResult().subscription_count);
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
@@ -230,6 +239,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowTwoWebFeedsAtOnce) {
             callback.RunAndGetResult().request_status);
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback2.RunAndGetResult().request_status);
+  EXPECT_EQ(1, callback.RunAndGetResult().subscription_count);
+  EXPECT_EQ(2, callback2.RunAndGetResult().subscription_count);
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }, "
@@ -290,13 +301,16 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
                 ->consistency_token()
                 .token());
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
-            unfollow_callback.GetResult()->request_status);
+            unfollow_callback.RunAndGetResult().request_status);
+  EXPECT_EQ(0, unfollow_callback.RunAndGetResult().subscription_count);
   EXPECT_EQ("unfollow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
   EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.UnfollowResult",
       WebFeedSubscriptionRequestStatus::kSuccess, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow", 0, 1);
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {

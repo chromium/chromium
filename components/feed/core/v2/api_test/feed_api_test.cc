@@ -690,7 +690,7 @@ void TestMetricsReporter::OnLoadStream(
     bool is_initial_load,
     bool loaded_new_content_from_network,
     base::TimeDelta stored_content_age,
-    int content_count,
+    const ContentStats& content_stats,
     std::unique_ptr<LoadLatencyTimes> latencies) {
   load_stream_from_store_status = load_from_store_status;
   load_stream_status = final_status;
@@ -698,7 +698,7 @@ void TestMetricsReporter::OnLoadStream(
             << " (store status: " << load_from_store_status << ")";
   MetricsReporter::OnLoadStream(
       stream_type, load_from_store_status, final_status, is_initial_load,
-      loaded_new_content_from_network, stored_content_age, content_count,
+      loaded_new_content_from_network, stored_content_age, content_stats,
       std::move(latencies));
 }
 void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
@@ -706,9 +706,11 @@ void TestMetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
   load_more_surface_id = surface_id;
   MetricsReporter::OnLoadMoreBegin(stream_type, surface_id);
 }
-void TestMetricsReporter::OnLoadMore(LoadStreamStatus final_status) {
+void TestMetricsReporter::OnLoadMore(const StreamType& stream_type,
+                                     LoadStreamStatus final_status,
+                                     const ContentStats& content_stats) {
   load_more_status = final_status;
-  MetricsReporter::OnLoadMore(final_status);
+  MetricsReporter::OnLoadMore(stream_type, final_status, content_stats);
 }
 void TestMetricsReporter::OnBackgroundRefresh(const StreamType& stream_type,
                                               LoadStreamStatus final_status) {

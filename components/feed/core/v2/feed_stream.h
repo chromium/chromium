@@ -20,6 +20,7 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -57,6 +58,7 @@ class SurfaceUpdater;
 // needed by other classes within the Feed component.
 class FeedStream : public FeedApi,
                    public offline_pages::TaskQueue::Delegate,
+                   public MetricsReporter::Delegate,
                    public StreamModel::StoreObserver {
  public:
   class Delegate {
@@ -157,6 +159,9 @@ class FeedStream : public FeedApi,
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;
+
+  // MetricsReporter::Delegate.
+  void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
 
   // StreamModel::StoreObserver.
   void OnStoreChange(StreamModel::StoreUpdate update) override;
