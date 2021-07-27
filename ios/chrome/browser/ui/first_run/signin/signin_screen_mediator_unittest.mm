@@ -5,20 +5,18 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
 #import "base/test/ios/wait_util.h"
-#include "components/prefs/pref_service.h"
-#include "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
-#import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
@@ -38,7 +36,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, copy) NSString* givenName;
 @property(nonatomic, strong) UIImage* userImage;
-@property(nonatomic, assign) BOOL UIEnabled;
 
 @end
 
@@ -68,12 +65,18 @@ class SigninScreenMediatorTest : public PlatformTest {
     PlatformTest::SetUp();
     identity_service_ =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
+
+    browser_state_ = builder.Build();
     mediator_ = [[SigninScreenMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(
                                               browser_state_.get())
-                unifiedConsentService:UnifiedConsentServiceFactory::
+                authenticationService:AuthenticationServiceFactory::
                                           GetForBrowserState(
                                               browser_state_.get())];
     consumer_ = [[FakeSigninScreenConsumer alloc] init];
@@ -212,8 +215,8 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 
   second_service->AddIdentity(second_identity);
 
-  EXPECT_NE(email, consumer_.email);
-  EXPECT_NE(name, consumer_.userName);
+  EXPECT_EQ(email, consumer_.email);
+  EXPECT_EQ(name, consumer_.userName);
 
   NSString* updated_email = @"updated@email.com";
   NSString* updated_name = @"Second - Updated";
@@ -222,53 +225,28 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
   second_identity.userFullName = updated_name;
 
   // The name shouldn't have changed yet.
-  EXPECT_NE(email, consumer_.email);
-  EXPECT_NE(name, consumer_.userName);
+  EXPECT_EQ(email, consumer_.email);
+  EXPECT_EQ(name, consumer_.userName);
 
   // Triggering the update is updating the consumer.
   second_service->TriggerIdentityUpdateNotification(second_identity);
 
-  EXPECT_NE(updated_email, consumer_.email);
-  EXPECT_NE(updated_name, consumer_.userName);
+  EXPECT_EQ(updated_email, consumer_.email);
+  EXPECT_EQ(updated_name, consumer_.userName);
 }
 
-// Tests the authentication flow for the mediator.
-TEST_F(SigninScreenMediatorTest, TestAuthenticationFlow) {
-  mediator_.consumer = consumer_;
-  consumer_.UIEnabled = YES;
-  TestBrowser browser;
+// Tests Signing In the selected identity.
+TEST_F(SigninScreenMediatorTest, TestSignIn) {
+  mediator_.selectedIdentity = identity_;
 
-  id mock_delegate = OCMProtocolMock(@protocol(SigninScreenMediatorDelegate));
-  id mock_flow = OCMClassMock([AuthenticationFlow class]);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
 
-  mediator_.delegate = mock_delegate;
+  EXPECT_NSEQ(nil, authenticationService->GetPrimaryIdentity(
+                       signin::ConsentLevel::kSignin));
 
-  __block signin_ui::CompletionCallback completion = nil;
+  [mediator_ startSignIn];
 
-  OCMStub([mock_flow startSignInWithCompletion:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        __weak signin_ui::CompletionCallback block;
-        [invocation getArgument:&block atIndex:2];
-        completion = [block copy];
-      });
-
-  EXPECT_EQ(nil, completion);
-  EXPECT_TRUE(consumer_.UIEnabled);
-
-  [mediator_ startSignInWithAuthenticationFlow:mock_flow];
-
-  EXPECT_FALSE(consumer_.UIEnabled);
-  ASSERT_NE(nil, completion);
-
-  OCMExpect([mock_delegate
-           signinScreenMediator:mediator_
-      didFinishSigninWithResult:SigninCoordinatorResultSuccess]);
-
-  // Simulate the signin completion being successful.
-  completion(YES);
-
-  EXPECT_TRUE(browser_state_->GetPrefs()->GetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-  EXPECT_TRUE(consumer_.UIEnabled);
-  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  EXPECT_NSEQ(identity_, authenticationService->GetPrimaryIdentity(
+                             signin::ConsentLevel::kSignin));
 }

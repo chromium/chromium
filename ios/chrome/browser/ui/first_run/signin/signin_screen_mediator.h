@@ -7,15 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
 class ChromeAccountManagerService;
-@class AuthenticationFlow;
 @class ChromeIdentity;
 @protocol SigninScreenConsumer;
-@protocol SigninScreenMediatorDelegate;
-
-namespace unified_consent {
-class UnifiedConsentService;
-}
 
 // Mediator that handles the sign-in operation.
 @interface SigninScreenMediator : NSObject
@@ -23,17 +18,14 @@ class UnifiedConsentService;
 // The designated initializer.
 - (instancetype)initWithAccountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
-                        unifiedConsentService:
-                            (unified_consent::UnifiedConsentService*)
-                                unifiedConsentService NS_DESIGNATED_INITIALIZER;
+                        authenticationService:
+                            (AuthenticationService*)authenticationService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<SigninScreenConsumer> consumer;
-
-// Delegate.
-@property(nonatomic, weak) id<SigninScreenMediatorDelegate> delegate;
 
 // The identity currently selected.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
@@ -44,9 +36,8 @@ class UnifiedConsentService;
 // Disconnect the mediator.
 - (void)disconnect;
 
-// Starts the sign in process, using |authenticationFlow|.
-- (void)startSignInWithAuthenticationFlow:
-    (AuthenticationFlow*)authenticationFlow;
+// Sign in the selected account.
+- (void)startSignIn;
 
 @end
 

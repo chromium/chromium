@@ -4,15 +4,13 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
-#import "components/unified_consent/unified_consent_service.h"
 #include "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
-#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -28,15 +26,12 @@
 }
 
 @property(nonatomic, readonly) ios::ChromeIdentityService* identityService;
-// Manager for the authentication flow.
-@property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
 // Logger used to record sign in metrics.
 @property(nonatomic, strong) UserSigninLogger* logger;
-// Manager for user consent.
-@property(nonatomic, assign)
-    unified_consent::UnifiedConsentService* unifiedConsentService;
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+// Authentication service for sign in.
+@property(nonatomic, assign) AuthenticationService* authenticationService;
 
 @end
 
@@ -44,16 +39,15 @@
 
 - (instancetype)initWithAccountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
-                        unifiedConsentService:
-                            (unified_consent::UnifiedConsentService*)
-                                unifiedConsentService {
+                        authenticationService:
+                            (AuthenticationService*)authenticationService {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
-    DCHECK(unifiedConsentService);
+    DCHECK(authenticationService);
 
     _accountManagerService = accountManagerService;
-    _unifiedConsentService = unifiedConsentService;
+    _authenticationService = authenticationService;
     _browserProviderObserver =
         std::make_unique<ChromeBrowserProviderObserverBridge>(self);
     _identityServiceObserver =
@@ -72,27 +66,20 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.unifiedConsentService);
   DCHECK(!self.accountManagerService);
 }
 
 - (void)disconnect {
   [self.logger disconnect];
-  self.unifiedConsentService = nullptr;
   self.accountManagerService = nullptr;
 }
 
-- (void)startSignInWithAuthenticationFlow:
-    (AuthenticationFlow*)authenticationFlow {
-  DCHECK(!self.authenticationFlow);
+- (void)startSignIn {
+  self.authenticationService->SignIn(self.selectedIdentity);
 
-  [self.consumer setUIEnabled:NO];
-
-  self.authenticationFlow = authenticationFlow;
-  __weak __typeof(self) weakSelf = self;
-  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf onAccountSigninCompletionWithSuccess:success];
-  }];
+  [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                               addedAccount:self.addedAccount
+                      advancedSettingsShown:NO];
 }
 
 #pragma mark - Properties
@@ -183,23 +170,5 @@
   }
 }
 
-// Callback used when the sign in flow is complete, with |success|.
-- (void)onAccountSigninCompletionWithSuccess:(BOOL)success {
-  self.authenticationFlow = nil;
-  [self.consumer setUIEnabled:YES];
-
-  if (success) {
-    // Only log if the sign-in is successful.
-    [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                                 addedAccount:self.addedAccount
-                        advancedSettingsShown:NO];
-    // Allow for anonymized data collection after the user has signed in.
-    self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(
-        true);
-
-    [self.delegate signinScreenMediator:self
-              didFinishSigninWithResult:SigninCoordinatorResultSuccess];
-  }
-}
 
 @end
