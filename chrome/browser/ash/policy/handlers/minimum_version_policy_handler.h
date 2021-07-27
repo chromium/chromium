@@ -62,7 +62,8 @@ class MinimumVersionPolicyHandler
    public:
     virtual ~Delegate() {}
 
-    // Checks if the user is logged in as any kiosk app.
+    // Checks if the user is logged in as any kiosk app or this is an
+    // auto-launch kiosk device.
     virtual bool IsKioskMode() const = 0;
 
     // Checks if the device is enterprise managed.

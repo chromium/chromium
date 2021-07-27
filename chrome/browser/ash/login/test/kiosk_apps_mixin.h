@@ -22,6 +22,8 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
       enterprise_management::ChromeDeviceSettingsProto* policy_payload);
   static void AppendWebKioskAccount(
       enterprise_management::ChromeDeviceSettingsProto* policy_payload);
+  static void AppendAutoLaunchKioskAccount(
+      enterprise_management::ChromeDeviceSettingsProto* policy_payload);
 
   KioskAppsMixin(InProcessBrowserTestMixinHost* host,
                  net::EmbeddedTestServer* embedded_test_server);

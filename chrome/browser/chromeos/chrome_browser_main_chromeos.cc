@@ -42,8 +42,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -248,17 +248,6 @@ using ::ash::AudioDevicesPrefHandlerImpl;
 
 void ChromeOSVersionCallback(const std::string& version) {
   base::SetLinuxDistro(std::string("CrOS ") + version);
-}
-
-bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line) {
-  KioskAppManager* app_manager = KioskAppManager::Get();
-  WebKioskAppManager* web_app_manager = WebKioskAppManager::Get();
-  ArcKioskAppManager* arc_app_manager = ArcKioskAppManager::Get();
-  return command_line.HasSwitch(switches::kLoginManager) &&
-         (app_manager->IsAutoLaunchEnabled() ||
-          web_app_manager->GetAutoLaunchAccountId().is_valid() ||
-          arc_app_manager->GetAutoLaunchAccountId().is_valid()) &&
-         KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone;
 }
 
 // Creates an instance of the NetworkPortalDetector implementation or a stub.
@@ -827,7 +816,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // are disabled for tests and kiosk app launch by default.
   // Individual tests may enable them if they want.
   if (parsed_command_line().HasSwitch(::switches::kTestType) ||
-      ShouldAutoLaunchKioskApp(parsed_command_line())) {
+      ash::ShouldAutoLaunchKioskApp(parsed_command_line(),
+                                    g_browser_process->local_state())) {
     WizardController::SetZeroDelays();
   }
 

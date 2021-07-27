@@ -11,11 +11,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
@@ -29,7 +26,6 @@
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
@@ -66,27 +62,6 @@
 
 namespace ash {
 namespace {
-
-// Whether kiosk auto launch should be started.
-bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
-                              PrefService* local_state) {
-  KioskAppManager* app_manager = KioskAppManager::Get();
-  WebKioskAppManager* web_app_manager = WebKioskAppManager::Get();
-  ArcKioskAppManager* arc_app_manager = ArcKioskAppManager::Get();
-
-  // We shouldn't auto launch kiosk app if powerwash screen should be shown.
-  bool prevent_autolaunch =
-      local_state->GetBoolean(prefs::kFactoryResetRequested);
-  return command_line.HasSwitch(switches::kLoginManager) &&
-         (app_manager->IsAutoLaunchEnabled() ||
-          web_app_manager->GetAutoLaunchAccountId().is_valid() ||
-          arc_app_manager->GetAutoLaunchAccountId().is_valid()) &&
-         KioskAppLaunchError::Get() == KioskAppLaunchError::Error::kNone &&
-         // IsOobeCompleted() is needed to prevent kiosk session start in case
-         // of enterprise rollback, when keeping the enrollment, policy, not
-         // clearing TPM, but wiping stateful partition.
-         StartupUtils::IsOobeCompleted() && !prevent_autolaunch;
-}
 
 // Starts kiosk app auto launch and shows the splash screen.
 void StartKioskSession() {

@@ -18,6 +18,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/notifications/update_required_notification.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
@@ -382,6 +383,9 @@ void MinimumVersionPolicyHandler::HandleUpdateRequired(
     // a) Update was not required before and now critical update is required.
     // b) Update was required and warning time has expired when device is
     // rebooted.
+    // Update the local state with the current policy values.
+    if (update_required_deadline_ > previous_deadline)
+      UpdateLocalState(warning_time);
     OnDeadlineReached();
     return;
   }

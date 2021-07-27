@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 
+#include "base/command_line.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
@@ -28,7 +30,10 @@ MinimumVersionPolicyHandlerDelegateImpl::
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsKioskMode() const {
   return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp();
+         (ash::ShouldAutoLaunchKioskApp(
+              *(base::CommandLine::ForCurrentProcess()),
+              g_browser_process->local_state()) ||
+          user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsDeviceEnterpriseManaged()
