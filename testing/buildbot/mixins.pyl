@@ -450,6 +450,13 @@
       },
     },
   },
+  # Use of this mixin signals to the recipe that the test uploads its results
+  # to result-sink and doesn't need to be wrapped by result_adapter.
+  'has_native_resultdb_integration': {
+    'resultdb': {
+      'enable': True,
+    },
+  },
   'intel_iris_5100': {
     'swarming': {
       'dimensions': {
