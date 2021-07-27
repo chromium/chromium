@@ -57,6 +57,7 @@
 #include "components/javascript_dialogs/android/app_modal_dialog_view_android.h"  // nogncheck
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"  // nogncheck
 #include "components/metrics/metrics_service.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -171,15 +172,19 @@ int BrowserMainPartsImpl::PreCreateThreads() {
 
   // WebLayer initializes the MetricsService once consent is determined.
   // Determining consent is async and potentially slow. VariationsIdsProvider
-  // is responsible for updating the X-Client-Data header. To ensure the header
-  // is always provided, VariationsIdsProvider is registered now.
+  // is responsible for updating the X-Client-Data header.
+  // SyntheticTrialsActiveGroupIdProvider is responsible for updating the
+  // variations crash keys. To ensure the header and crash keys are always
+  // provided, they are registered now.
   //
-  // Chrome registers the VariationsIdsProvider from PreCreateThreads() as well.
-  auto* metrics_client = WebLayerMetricsServiceClient::GetInstance();
-  metrics_client->GetMetricsService()
-      ->synthetic_trial_registry()
-      ->AddSyntheticTrialObserver(
-          variations::VariationsIdsProvider::GetInstance());
+  // Chrome registers these providers from PreCreateThreads() as well.
+  auto* synthetic_trial_registry = WebLayerMetricsServiceClient::GetInstance()
+                                       ->GetMetricsService()
+                                       ->synthetic_trial_registry();
+  synthetic_trial_registry->AddSyntheticTrialObserver(
+      variations::VariationsIdsProvider::GetInstance());
+  synthetic_trial_registry->AddSyntheticTrialObserver(
+      variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
 #endif
 
   return content::RESULT_CODE_NORMAL_EXIT;
