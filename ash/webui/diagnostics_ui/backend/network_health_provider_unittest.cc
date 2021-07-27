@@ -35,62 +35,85 @@ namespace ash {
 namespace diagnostics {
 namespace {
 
+constexpr char kEth0DevicePath[] = "/device/eth0";
+constexpr char kEth0Name[] = "eth0_name";
+constexpr char kEth0NetworkGuid[] = "eth0_network_guid";
+constexpr char kWlan0DevicePath[] = "/device/wlan0";
+constexpr char kWlan0Name[] = "wlan0_name";
+constexpr char kWlan0NetworkGuid[] = "wlan0_network_guid";
+
 // TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
 namespace network_config = ::chromeos::network_config;
 
-void ValidateManagedPropertiesSet(
-    const NetworkPropertiesMap& network_properties_map,
-    const std::string& guid) {
-  EXPECT_TRUE(base::Contains(network_properties_map, guid));
-  auto network_props_iter_wifi = network_properties_map.find(guid);
-  auto managed_properties_guid =
-      network_props_iter_wifi->second.managed_properties->guid;
-  EXPECT_EQ(managed_properties_guid, guid);
-}
-
-struct FakeNetworkListObserver : public mojom::NetworkListObserver {
-  void OnNetworkListChanged(const std::vector<std::string>& network_guids,
+class FakeNetworkListObserver : public mojom::NetworkListObserver {
+ public:
+  void OnNetworkListChanged(const std::vector<std::string>& observer_guids,
                             const std::string& active_guid) override {
-    fake_network_guids = std::move(network_guids);
-    fake_active_guid = active_guid;
-    network_list_changed_event_received_ = true;
+    observer_guids_ = observer_guids;
+    active_guid_ = active_guid;
+    call_count_++;
   }
 
   mojo::PendingRemote<mojom::NetworkListObserver> pending_remote() {
-    return receiver.BindNewPipeAndPassRemote();
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
-  bool network_list_changed_event_received() {
-    return network_list_changed_event_received_;
+  const std::vector<std::string>& observer_guids() const {
+    return observer_guids_;
   }
 
-  std::vector<std::string> fake_network_guids;
-  std::string fake_active_guid;
-  bool network_list_changed_event_received_ = false;
-  mojo::Receiver<mojom::NetworkListObserver> receiver{this};
+  const std::string& active_guid() const { return active_guid_; }
+
+  size_t call_count() const { return call_count_; }
+
+ private:
+  std::vector<std::string> observer_guids_;
+  std::string active_guid_;
+  size_t call_count_ = 0;
+  mojo::Receiver<mojom::NetworkListObserver> receiver_{this};
 };
 
-struct FakeNetworkStateObserver : public mojom::NetworkStateObserver {
+class FakeNetworkStateObserver : public mojom::NetworkStateObserver {
+ public:
   void OnNetworkStateChanged(mojom::NetworkPtr network_ptr) override {
-    fake_network_state_updates.push_back(std::move(network_ptr));
-    network_state_changed_event_received_ = true;
+    network_state_updates_.push_back(std::move(network_ptr));
   }
 
   mojo::PendingRemote<mojom::NetworkStateObserver> pending_remote() {
-    return receiver.BindNewPipeAndPassRemote();
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
-  bool network_state_changed_event_received() {
-    return network_state_changed_event_received_;
+  const mojom::NetworkPtr& GetLatestState() const {
+    DCHECK(HasFired());
+    return network_state_updates_.back();
   }
 
+  size_t GetCallCount() const { return network_state_updates_.size(); }
+
+  bool HasFired() const { return GetCallCount() > 0; }
+
+ private:
   // Tracks calls to OnNetworkStateChanged. Each call adds an element to
   // the vector.
-  std::vector<mojom::NetworkPtr> fake_network_state_updates;
-
-  mojo::Receiver<mojom::NetworkStateObserver> receiver{this};
-  bool network_state_changed_event_received_ = false;
+  std::vector<mojom::NetworkPtr> network_state_updates_;
+  mojo::Receiver<mojom::NetworkStateObserver> receiver_{this};
 };
+
+// Expects that the call count increases and returns the new call count.
+size_t ExpectListObserverFired(const FakeNetworkListObserver& observer,
+                               size_t prior_call_count) {
+  const size_t current_call_count = observer.call_count();
+  EXPECT_GT(current_call_count, prior_call_count);
+  return current_call_count;
+}
+
+// Expects that the call count increases and returns the new call count.
+size_t ExpectStateObserverFired(const FakeNetworkStateObserver& observer,
+                                size_t prior_call_count) {
+  const size_t current_call_count = observer.GetCallCount();
+  EXPECT_GT(current_call_count, prior_call_count);
+  return current_call_count;
+}
 
 }  // namespace
 
@@ -108,6 +131,7 @@ class NetworkHealthProviderTest : public testing::Test {
         managed_network_configuration_handler_.get());
     // Wait until |cros_network_config_test_helper_| has initialized.
     base::RunLoop().RunUntilIdle();
+    ClearDevicesAndServices();
     network_health_provider_ = std::make_unique<NetworkHealthProvider>();
   }
 
@@ -159,31 +183,123 @@ class NetworkHealthProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetupWiFiNetwork() {
-    network_state_helper().ConfigureService(
-        R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "ready",
-            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID": false})");
-
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetupEthernetNetwork() {
-    network_state_helper().device_test()->AddDevice(
-        "/device/stub_eth_device", shill::kTypeEthernet, "stub_eth_device");
-    network_state_helper().ConfigureService(
-        R"({"GUID": "eth_guid", "Type": "ethernet", "State": "online"})");
-
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetupVPNNetwork() {
-    network_state_helper().ConfigureService(
-        R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
-            "Provider": {"Type": "l2tpipsec"}})");
-    base::RunLoop().RunUntilIdle();
-  }
-
  protected:
+  void CreateEthernetDevice() {
+    network_state_helper().manager_test()->AddTechnology(shill::kTypeEthernet,
+                                                         true);
+    network_state_helper().device_test()->AddDevice(
+        kEth0DevicePath, shill::kTypeEthernet, kEth0Name);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void CreateWifiDevice() {
+    network_state_helper().manager_test()->AddTechnology(shill::kTypeWifi,
+                                                         true);
+    network_state_helper().device_test()->AddDevice(
+        kWlan0DevicePath, shill::kTypeWifi, kWlan0Name);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void CreateVpnDevice() {
+    network_state_helper().manager_test()->AddTechnology(shill::kTypeVPN, true);
+    network_state_helper().device_test()->AddDevice(
+        "/device/vpn", shill::kTypeVPN, "vpn_name");
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // The device must have been created with CreateEthernetDevice().
+  void AssociateEthernet() {
+    network_state_helper().service_test()->AddService(
+        kEth0DevicePath, kEth0NetworkGuid, kEth0Name, shill::kTypeEthernet,
+        shill::kStateAssociation, true);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AssociateWifi() {
+    network_state_helper().service_test()->AddService(
+        kWlan0DevicePath, kWlan0NetworkGuid, kWlan0Name, shill::kTypeWifi,
+        shill::kStateAssociation, true);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AssociateAndConnectVpn() {
+    network_state_helper().service_test()->AddService(
+        "/device/vpn", "vpn guid", "vpn_name", shill::kTypeVPN,
+        shill::kStateAssociation, true);
+
+    SetNetworkState("/device/vpn", shill::kStateOnline);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetNetworkState(const std::string& device_path,
+                       const std::string& state) {
+    network_state_helper().SetServiceProperty(
+        device_path, shill::kStateProperty, base::Value(state));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetEthernetConnected() {
+    // NOTE: `kStateReady` is connected but not "online".
+    SetNetworkState(kEth0DevicePath, shill::kStateReady);
+  }
+
+  void SetEthernetOnline() {
+    SetNetworkState(kEth0DevicePath, shill::kStateOnline);
+  }
+
+  void SetEthernetDisconnected() {
+    SetNetworkState(kEth0DevicePath, shill::kStateOffline);
+  }
+
+  void SetWifiConnected() {
+    // NOTE: `kStateReady` is connected but not "online".
+    SetNetworkState(kWlan0DevicePath, shill::kStateReady);
+  }
+
+  void SetWifiOnline() {
+    SetNetworkState(kWlan0DevicePath, shill::kStateOnline);
+  }
+
+  void SetWifiDisconnected() {
+    SetNetworkState(kWlan0DevicePath, shill::kStateOffline);
+  }
+
+  void SetWifiProperty(std::string property, base::Value value) {
+    network_state_helper().SetServiceProperty(kWlan0DevicePath, property,
+                                              value);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetWifiSignalStrength(int signal_strength) {
+    SetWifiProperty(shill::kSignalStrengthProperty,
+                    base::Value(signal_strength));
+  }
+
+  void SetWifiFrequency(int frequency) {
+    SetWifiProperty(shill::kWifiFrequency, base::Value(frequency));
+  }
+
+  void SetWifiBssid(std::string bssid) {
+    SetWifiProperty(shill::kWifiBSsid, base::Value(bssid));
+  }
+
+  void SetupObserver(FakeNetworkListObserver* observer) {
+    network_health_provider_->ObserveNetworkList(observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupObserver(FakeNetworkStateObserver* observer,
+                     const std::string& observer_guid) {
+    network_health_provider_->ObserveNetwork(observer->pending_remote(),
+                                             observer_guid);
+    base::RunLoop().RunUntilIdle();
+  }
+
   network_config::CrosNetworkConfigTestHelper&
   cros_network_config_test_helper() {
     return cros_network_config_test_helper_;
@@ -193,9 +309,10 @@ class NetworkHealthProviderTest : public testing::Test {
     return cros_network_config_test_helper_.network_state_helper();
   }
 
-  void ResetDevicesAndServices() {
-    // Clear test devices and services and setup the default wifi device.
-    network_state_helper().ResetDevicesAndServices();
+  void ClearDevicesAndServices() {
+    // Clear test devices and services.
+    network_state_helper().ClearDevices();
+    network_state_helper().ClearServices();
     task_environment_.RunUntilIdle();
   }
 
@@ -212,199 +329,365 @@ class NetworkHealthProviderTest : public testing::Test {
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;
 };
 
-TEST_F(NetworkHealthProviderTest, MultipleConnectedNetworksStoredInActiveList) {
-  ResetDevicesAndServices();
-  SetupWiFiNetwork();
-  SetupEthernetNetwork();
+TEST_F(NetworkHealthProviderTest, ZeroNetworksAvailable) {
+  FakeNetworkListObserver observer;
+  SetupObserver(&observer);
+  ExpectListObserverFired(observer, /*prior_call_count=*/0);
+  EXPECT_TRUE(observer.observer_guids().empty());
+  EXPECT_TRUE(observer.active_guid().empty());
+}
 
-  const std::vector<std::string>& network_guid_list =
-      network_health_provider_->GetNetworkGuidList();
-  ASSERT_EQ(2u, network_guid_list.size());
-  ASSERT_TRUE(base::Contains(network_guid_list, "wifi1_guid"));
-  ASSERT_TRUE(base::Contains(network_guid_list, "eth_guid"));
+TEST_F(NetworkHealthProviderTest, ObserveNonExistantNetwork) {
+  // Observe a guid that doesn't exist and nothing happens.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, "unknown_guid");
+  EXPECT_FALSE(observer.HasFired());
 }
 
 TEST_F(NetworkHealthProviderTest, UnsupportedNetworkTypeIgnored) {
-  ResetDevicesAndServices();
-  SetupVPNNetwork();
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  size_t list_call_count =
+      ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
 
-  const std::vector<std::string>& network_guid_list =
-      network_health_provider_->GetNetworkGuidList();
-  ASSERT_TRUE(network_guid_list.empty());
+  // Create a VPN device, and it should not be visible to the observer.
+  CreateVpnDevice();
+  EXPECT_TRUE(list_observer.observer_guids().empty());
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Associate and connect the VPN but it should still not be visible.
+  AssociateAndConnectVpn();
+  EXPECT_TRUE(list_observer.observer_guids().empty());
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Create an ethernet device and verify that the observer list added the
+  // network.
+  CreateEthernetDevice();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
+  ASSERT_FALSE(guid.empty());
+
+  // Observe the guid and verify that it's the ethernet.
+  FakeNetworkStateObserver eth_observer;
+  SetupObserver(&eth_observer, guid);
+  EXPECT_EQ(eth_observer.GetLatestState()->type, mojom::NetworkType::kEthernet);
 }
 
-TEST_F(NetworkHealthProviderTest, SingleSupportedDeviceStoredInDeviceTypeMap) {
-  ResetDevicesAndServices();
-  SetupWiFiNetwork();
+// Test the setup and all intermediate states for ethernet network.
+TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
+  // Observe the network list.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  size_t list_call_count =
+      ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
 
-  const DeviceMap& device_type_map =
-      network_health_provider_->GetDeviceTypeMapForTesting();
+  // No networks are present and no active network.
+  ASSERT_EQ(0u, list_observer.observer_guids().size());
+  EXPECT_TRUE(list_observer.active_guid().empty());
 
-  EXPECT_EQ(1U, device_type_map.size());
-  EXPECT_TRUE(base::Contains(device_type_map,
-                             network_config::mojom::NetworkType::kWiFi));
+  // Create an ethernet device and verify `list_observer` fired.
+  CreateEthernetDevice();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+
+  // Verify a new network is created, but there is no active guid because
+  // the network isn't connected.
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
+  EXPECT_FALSE(guid.empty());
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Observe the network and verify the observer fired.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, guid);
+  size_t state_call_count =
+      ExpectStateObserverFired(observer, /*prior_call_count=*/0);
+
+  // Get latest state and verify ethernet in not connected state.
+  EXPECT_EQ(observer.GetLatestState()->guid, guid);
+  EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kEthernet);
+  // TODO(michaelcheco): Support disabled state.
+  EXPECT_EQ(observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+  // TODO(michaelcheco): In this state, type_properties should be optional.
+  EXPECT_TRUE(observer.GetLatestState()->type_properties->is_ethernet());
+
+  // Put the ethernet device into the connecting/associating state and verify
+  // the new state and there is still no active guid.
+  AssociateEthernet();
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnecting);
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Put ethernet into connected (but not online) state. It's guid should now
+  // be the active one.
+  SetEthernetConnected();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnected);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+  // TODO(michaelcheco): Verify ethernet authentication properties once added
+  // to the API.
+
+  // Put ethernet into online state. It's guid should remain active.
+  SetEthernetOnline();
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+
+  // Simulate unplug and network goes back to kNotConnected, and the active
+  // guid should be cleared.
+  SetEthernetDisconnected();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Simulate plug in and back to online state. The active guid should be set.
+  SetEthernetOnline();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
 }
 
-TEST_F(NetworkHealthProviderTest,
-       MultipleSupportedDevicesStoredInDeviceTypeMap) {
-  ResetDevicesAndServices();
-  SetupWiFiNetwork();
-  SetupEthernetNetwork();
+// Test the setup and all intermediate states for ethernet network.
+TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
+  // Observe the network list.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  size_t list_call_count =
+      ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
 
-  const DeviceMap& device_type_map =
-      network_health_provider_->GetDeviceTypeMapForTesting();
+  // No networks are present and no active network.
+  ASSERT_EQ(0u, list_observer.observer_guids().size());
+  EXPECT_TRUE(list_observer.active_guid().empty());
 
-  EXPECT_EQ(2U, device_type_map.size());
-  EXPECT_TRUE(base::Contains(device_type_map,
-                             network_config::mojom::NetworkType::kWiFi));
-  EXPECT_TRUE(base::Contains(device_type_map,
-                             network_config::mojom::NetworkType::kEthernet));
+  // Create a wifi device and verify `list_observer` fired.
+  CreateWifiDevice();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+
+  // Verify a new network is created, but there is no active guid because
+  // the network isn't connected.
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
+  EXPECT_FALSE(guid.empty());
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Observe the network and verify the observer fired.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, guid);
+  size_t state_call_count =
+      ExpectStateObserverFired(observer, /*prior_call_count=*/0);
+
+  // Get latest state and verify wifi in not connected state.
+  EXPECT_EQ(observer.GetLatestState()->guid, guid);
+  EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kWiFi);
+  // TODO(michaelcheco): Support disabled state.
+  EXPECT_EQ(observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+  // TODO(michaelcheco): In this state, type_properties should be optional.
+  EXPECT_TRUE(observer.GetLatestState()->type_properties->is_wifi());
+
+  // Put the wifi device into the connecting/associating state and verify
+  // the new state and there is still no active guid.
+  AssociateWifi();
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnecting);
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Put wifi into connected (but not online) state. It's guid should now
+  // be the active one.
+  SetWifiConnected();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnected);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+  // TODO(michaelcheco): Verify encryption properties once added to the API.
+
+  // Put wifi into online state. It's guid should remain active.
+  SetWifiOnline();
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+
+  // Simulate disconnect and network goes back to kNotConnected, and the
+  // active guid should be cleared.
+  SetWifiDisconnected();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Simulate reconnect and back to online state. The active guid should be
+  // set.
+  SetWifiOnline();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
 }
 
-TEST_F(NetworkHealthProviderTest, DeviceTypeMapEmptyWithNoDevices) {
-  ResetDevicesAndServices();
-  // Remove the default WiFi device created by network_state_helper.
-  cros_network_config_test_helper_.network_state_helper()
-      .manager_test()
-      ->RemoveTechnology(shill::kTypeWifi);
-  task_environment_.RunUntilIdle();
+// Test modifying wifi properties
+TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
+  // Create a wifi device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateWifiDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
 
-  const DeviceMap& device_type_map =
-      network_health_provider_->GetDeviceTypeMapForTesting();
-  EXPECT_EQ(0U, device_type_map.size());
+  // Put wifi online and validate it is active.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, guid);
+  AssociateWifi();
+  SetWifiOnline();
+  ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
+  size_t state_call_count =
+      ExpectStateObserverFired(observer, /*prior_call_count=*/0);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+
+  // Set signal strength.
+  const int signal_strength_1 = 40;
+  SetWifiSignalStrength(signal_strength_1);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_wifi()->signal_strength,
+      signal_strength_1);
+
+  // Change the signal strength.
+  const int signal_strength_2 = 55;
+  SetWifiSignalStrength(signal_strength_2);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_wifi()->signal_strength,
+      signal_strength_2);
+
+  // Set BSSID.
+  const std::string bssid_1("wifi_bssid_1");
+  SetWifiBssid(bssid_1);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->bssid,
+            bssid_1);
+
+  // Change BSSID.
+  const std::string bssid_2("wifi_bssid_2");
+  SetWifiBssid(bssid_2);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->bssid,
+            bssid_2);
+
+  // Set frequency.
+  const int frequency_1 = 2400;
+  SetWifiFrequency(frequency_1);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->frequency,
+            frequency_1);
+
+  // Change frequency.
+  const int frequency_2 = 2450;
+  SetWifiFrequency(frequency_2);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->frequency,
+            frequency_2);
+
+  // Verify all properties are still set.
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_wifi()->signal_strength,
+      signal_strength_2);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->bssid,
+            bssid_2);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->frequency,
+            frequency_2);
 }
 
-TEST_F(NetworkHealthProviderTest, ManagedPropertiesSetForNetwork) {
-  ResetDevicesAndServices();
-  SetupWiFiNetwork();
+// Start with an online ethernet connection and validate the interaction
+// with a newly added wifi network.
+TEST_F(NetworkHealthProviderTest, EthernetOnlineThenConnectWifi) {
+  // Create an ethernet device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateEthernetDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string eth_guid = list_observer.observer_guids()[0];
 
-  const NetworkPropertiesMap& network_properties_map =
-      network_health_provider_->GetNetworkPropertiesMapForTesting();
+  // Put ethernet online and validate it is active.
+  FakeNetworkStateObserver eth_observer;
+  SetupObserver(&eth_observer, eth_guid);
+  AssociateEthernet();
+  SetEthernetOnline();
+  size_t list_call_count =
+      ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
+  size_t eth_state_call_count =
+      ExpectStateObserverFired(eth_observer, /*prior_call_count=*/0);
+  EXPECT_EQ(eth_observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
 
-  EXPECT_EQ(1U, network_properties_map.size());
-  ValidateManagedPropertiesSet(network_properties_map, "wifi1_guid");
-}
+  // Create Wifi device and verify it was added to the network list. The
+  // ethernet network should remain active.
+  CreateWifiDevice();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  ASSERT_EQ(2u, list_observer.observer_guids().size());
+  const std::string wifi_guid = (list_observer.observer_guids()[0] == eth_guid)
+                                    ? list_observer.observer_guids()[1]
+                                    : list_observer.observer_guids()[0];
+  ASSERT_NE(eth_guid, wifi_guid);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  ASSERT_EQ(eth_guid, list_observer.active_guid());
 
-TEST_F(NetworkHealthProviderTest, ManagedPropertiesSetForMultipleNetwork) {
-  ResetDevicesAndServices();
-  SetupWiFiNetwork();
-  SetupEthernetNetwork();
+  // Observe and associate the Wifi network. The wifi network should be in
+  // the connecting state, and the active guid should still be ethernet.
+  FakeNetworkStateObserver wifi_observer;
+  SetupObserver(&wifi_observer, wifi_guid);
+  AssociateWifi();
+  size_t wifi_state_call_count =
+      ExpectStateObserverFired(wifi_observer, /*prior_call_count=*/0);
+  EXPECT_EQ(wifi_observer.GetLatestState()->state,
+            mojom::NetworkState::kConnecting);
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
 
-  const NetworkPropertiesMap& network_properties_map =
-      network_health_provider_->GetNetworkPropertiesMapForTesting();
+  // Put wifi network online. With both networks online, the ethernet should
+  // still remain the active network.
+  SetWifiOnline();
+  wifi_state_call_count =
+      ExpectStateObserverFired(wifi_observer, wifi_state_call_count);
+  EXPECT_EQ(wifi_observer.GetLatestState()->state,
+            mojom::NetworkState::kOnline);
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
 
-  EXPECT_EQ(2U, network_properties_map.size());
-  ValidateManagedPropertiesSet(network_properties_map, "wifi1_guid");
-  ValidateManagedPropertiesSet(network_properties_map, "eth_guid");
-}
+  // Disconnect ethernet and wifi should become the active network.
+  SetEthernetDisconnected();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  eth_state_call_count =
+      ExpectStateObserverFired(eth_observer, eth_state_call_count);
+  EXPECT_EQ(eth_observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+  EXPECT_EQ(wifi_observer.GetLatestState()->state,
+            mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  ASSERT_EQ(wifi_guid, list_observer.active_guid());
 
-TEST_F(NetworkHealthProviderTest, NetworkListObserverSingleNetwork) {
-  ResetDevicesAndServices();
-  FakeNetworkListObserver fake_network_list_observer;
-  network_health_provider_->ObserveNetworkList(
-      fake_network_list_observer.pending_remote());
-
-  SetupEthernetNetwork();
-
-  std::vector<std::string> expected = {"eth_guid"};
-  EXPECT_EQ(1U, fake_network_list_observer.fake_network_guids.size());
-  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
-  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "eth_guid");
-  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
-            true);
-}
-
-TEST_F(NetworkHealthProviderTest, NetworkListObserverNoActiveNetwork) {
-  ResetDevicesAndServices();
-  FakeNetworkListObserver fake_network_list_observer;
-  network_health_provider_->ObserveNetworkList(
-      fake_network_list_observer.pending_remote());
-
-  SetupWiFiNetwork();
-
-  std::vector<std::string> expected = {"wifi1_guid"};
-  EXPECT_EQ(1U, fake_network_list_observer.fake_network_guids.size());
-  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
-  EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
-  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
-  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
-            true);
-}
-
-TEST_F(NetworkHealthProviderTest, NetworkListObserverMultipleNetworks) {
-  ResetDevicesAndServices();
-  FakeNetworkListObserver fake_network_list_observer;
-  network_health_provider_->ObserveNetworkList(
-      fake_network_list_observer.pending_remote());
-
-  SetupEthernetNetwork();
-  SetupWiFiNetwork();
-
-  std::vector<std::string> expected = {"eth_guid", "wifi1_guid"};
-  EXPECT_EQ(2U, fake_network_list_observer.fake_network_guids.size());
-  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
-  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "eth_guid");
-  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
-            true);
-}
-
-TEST_F(NetworkHealthProviderTest, NetworkListObserverNoNetworks) {
-  ResetDevicesAndServices();
-  FakeNetworkListObserver fake_network_list_observer;
-  network_health_provider_->ObserveNetworkList(
-      fake_network_list_observer.pending_remote());
-
-  std::vector<std::string> expected;
-  EXPECT_EQ(0U, fake_network_list_observer.fake_network_guids.size());
-  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
-  EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
-  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
-}
-
-TEST_F(NetworkHealthProviderTest, ActiveGuidResetsWhenConnectionStateChanges) {
-  ResetDevicesAndServices();
-  FakeNetworkListObserver fake_network_list_observer;
-  network_health_provider_->ObserveNetworkList(
-      fake_network_list_observer.pending_remote());
-
-  SetupEthernetNetwork();
-
-  std::vector<std::string> expected = {"eth_guid"};
-  EXPECT_EQ(1U, fake_network_list_observer.fake_network_guids.size());
-  EXPECT_EQ(fake_network_list_observer.fake_network_guids, expected);
-  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "eth_guid");
-  EXPECT_EQ(fake_network_list_observer.network_list_changed_event_received(),
-            true);
-
-  ResetDevicesAndServices();
-
-  EXPECT_EQ(0U, fake_network_list_observer.fake_active_guid.size());
-  EXPECT_EQ(fake_network_list_observer.fake_active_guid, "");
-}
-
-TEST_F(NetworkHealthProviderTest, NetworkStateObserver) {
-  ResetDevicesAndServices();
-  SetupWiFiNetwork();
-  FakeNetworkStateObserver fake_network_state_observer;
-  network_health_provider_->ObserveNetwork(
-      fake_network_state_observer.pending_remote(), "wifi1_guid");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, fake_network_state_observer.fake_network_state_updates.size());
-  auto network =
-      std::move(fake_network_state_observer.fake_network_state_updates[0]);
-
-  // Correct NetworkTypeProperties struct set.
-  EXPECT_EQ(network->type_properties->which(),
-            mojom::NetworkTypeProperties::Tag::kWifi);
-  EXPECT_EQ(network->type_properties->get_wifi()->signal_strength, 50);
-  // Network state correctly mapped to corresponding mojom::NetworkState enum.
-  EXPECT_EQ(network->state, mojom::NetworkState::kConnected);
-  // Network state correctly mapped to corresponding mojom::NetworkType enum.
-  EXPECT_EQ(network->type, mojom::NetworkType::kWiFi);
-  EXPECT_EQ(network->guid, "wifi1_guid");
-  LOG(INFO) << network->mac_address.value() << "$";
-  EXPECT_EQ(fake_network_state_observer.network_state_changed_event_received(),
-            true);
+  // Reconnect ethernet and it becomes the active network again.
+  SetEthernetOnline();
+  list_call_count = ExpectListObserverFired(list_observer, list_call_count);
+  eth_state_call_count =
+      ExpectStateObserverFired(eth_observer, eth_state_call_count);
+  EXPECT_EQ(eth_observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_EQ(wifi_observer.GetLatestState()->state,
+            mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  ASSERT_EQ(eth_guid, list_observer.active_guid());
 }
 
 }  // namespace diagnostics

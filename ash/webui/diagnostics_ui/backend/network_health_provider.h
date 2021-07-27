@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
+#include "base/containers/flat_map.h"
+#include "base/guid.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,21 +23,15 @@ namespace diagnostics {
 
 class NetworkingLog;
 
-// Stores network state, managed properties, and an observer for a network.
-struct NetworkProperties {
-  explicit NetworkProperties(
-      chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
-  ~NetworkProperties();
-  chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state;
-  chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties;
+struct NetworkObserverInfo {
+  NetworkObserverInfo();
+  NetworkObserverInfo(NetworkObserverInfo&&);
+  NetworkObserverInfo& operator=(NetworkObserverInfo&&);
+  ~NetworkObserverInfo();
+  std::string network_guid;
+  mojom::NetworkPtr network;
   mojo::Remote<mojom::NetworkStateObserver> observer;
 };
-
-using NetworkPropertiesMap = std::map<std::string, NetworkProperties>;
-
-using DeviceMap =
-    std::map<chromeos::network_config::mojom::NetworkType,
-             chromeos::network_config::mojom::DeviceStatePropertiesPtr>;
 
 class NetworkHealthProvider
     : public chromeos::network_config::mojom::CrosNetworkConfigObserver,
@@ -54,7 +50,7 @@ class NetworkHealthProvider
       mojo::PendingRemote<mojom::NetworkListObserver> observer) override;
 
   void ObserveNetwork(mojo::PendingRemote<mojom::NetworkStateObserver> observer,
-                      const std::string& guid) override;
+                      const std::string& observer_guid) override;
 
   void BindInterface(
       mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver);
@@ -71,11 +67,9 @@ class NetworkHealthProvider
   void OnVpnProvidersChanged() override;
   void OnNetworkCertificatesChanged() override;
 
-  std::vector<std::string> GetNetworkGuidList();
-
-  const DeviceMap& GetDeviceTypeMapForTesting();
-
-  const NetworkPropertiesMap& GetNetworkPropertiesMapForTesting();
+  // Returns the list of observer guids. Each guid corresponds to one network
+  // interface.
+  std::vector<std::string> GetObserverGuids();
 
  private:
   // Handler for receiving a list of active networks.
@@ -90,47 +84,70 @@ class NetworkHealthProvider
 
   // Handler for receiving managed properties for a network.
   void OnManagedPropertiesReceived(
-      const std::string& guid,
+      const std::string& observer_guid,
       chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties);
 
   // Gets ManagedProperties for a network |guid| from CrosNetworkConfig.
-  void GetManagedPropertiesForNetwork(const std::string& guid);
+  void GetManagedPropertiesForNetwork(const std::string& network_guid,
+                                      const std::string& observer_guid);
 
-  // Gets a list of network guids as well as the guid of the currently active
-  // network (if one exists) and uses |network_list_observer_| to send the
-  // result to each observer.
+  // Notifies observers registered with ObserveNetworkList() the current list
+  // of observer guids, and which one is active (if any).
   void NotifyNetworkListObservers();
 
-  // Creates a mojom::Network struct and sends it to the corresponding
-  // network state observer.
-  void NotifyNetworkStateObserver(const NetworkProperties& network_props);
+  // Notifies an observer for a specific network registered with
+  // ObserverNetwork() that there was a state change.
+  void NotifyNetworkStateObserver(const NetworkObserverInfo& network_props);
 
-  // Gets network state from CrosNetworkConfig.
-  void GetNetworkState();
+  // Requests a callback with the list of active network states from
+  // CrosNetworkConfig to OnActiveNetworksChanged().
+  void GetActiveNetworkState();
 
-  // Gets device state from CrosNetworkConfig.
+  // Requests a callback with the list of device states from CrosNetworkConfig
+  // to OnDeviceStateListChanged().
   void GetDeviceState();
 
-  NetworkProperties& GetNetworkProperties(const std::string& guid);
+  // Adds a net network to |networks_|. This is called
+  std::string AddNewNetwork(
+      const chromeos::network_config::mojom::DeviceStatePropertiesPtr& device);
 
-  // Finds a matching device for a given network type.
-  chromeos::network_config::mojom::DeviceStateProperties* GetMatchingDevice(
-      chromeos::network_config::mojom::NetworkType type);
+  // Looks up a network in |networks_|. When |must_match_existing_guid| is true
+  // a network will only match if the backend network guid matches. This is to
+  // perform state updates to already known networks. When false, the network
+  // will match to a device/interface which allows rebinding a new network
+  // to a device/interface.
+  NetworkObserverInfo* LookupNetwork(
+      const chromeos::network_config::mojom::NetworkStatePropertiesPtr& network,
+      bool must_match_existing_guid);
+
+  // Performs a lookup, and updates the matching network (if any). The value
+  // of |must_match_existing_guid| is describe in LookupNetwork().
+  void UpdateMatchingNetwork(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network,
+      bool must_match_existing_guid);
+
+  // Recalculates which network is the active/primary network. Currently a
+  // network must be connected, and ethernet takes precedence over Wifi if
+  // both are connected.
+  // TODO(michaelcheco): Change this to rank networks when cellular/other
+  // network types are handled.
+  bool UpdateActiveGuid();
 
   bool IsLoggingEnabled() const;
 
   NetworkingLog* networking_log_ptr_ = nullptr;  // Not owned.
 
-  // Map of networks that are active and of a supported
-  // type (Ethernet, WiFi, Cellular).
-  NetworkPropertiesMap network_properties_map_;
-
-  // Maps device type to device properties, used to find corresponding device
-  // for a network.
-  DeviceMap device_type_map_;
-
-  // Guid for the currently active network (if one exists).
+  // Guid for the currently active network (if one exists). This guid will
+  // be present in |networks_|.
   std::string active_guid_;
+
+  // A map from an observer guid, to a struct that contains network
+  // information, the backends network guid, and a mojo remote for the
+  // observer. Effectively each entry corresponds to a network interface
+  // (or device in the backend API), however the network info is populated as
+  // the aggregation of the device, and the network properties of any network
+  // connected on that interface.
+  base::flat_map<std::string, NetworkObserverInfo> networks_;
 
   // Remote for sending requests to the CrosNetworkConfig service.
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
