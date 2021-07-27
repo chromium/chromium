@@ -1428,6 +1428,11 @@ void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
   controller_->RegisterAccelerators(accelerators, accelerators_length);
 }
 
+bool AcceleratorControllerImpl::TestApi::IsActionForAcceleratorEnabled(
+    const ui::Accelerator& accelerator) {
+  return controller_->IsActionForAcceleratorEnabled(accelerator);
+}
+
 const DeprecatedAcceleratorData*
 AcceleratorControllerImpl::TestApi::GetDeprecatedAcceleratorData(
     AcceleratorAction action) {
@@ -1539,12 +1544,6 @@ void AcceleratorControllerImpl::Unregister(const ui::Accelerator& accelerator,
 
 void AcceleratorControllerImpl::UnregisterAll(ui::AcceleratorTarget* target) {
   accelerator_manager_->UnregisterAll(target);
-}
-
-bool AcceleratorControllerImpl::IsActionForAcceleratorEnabled(
-    const ui::Accelerator& accelerator) const {
-  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
-  return action_ptr && CanPerformAction(*action_ptr, accelerator);
 }
 
 bool AcceleratorControllerImpl::Process(const ui::Accelerator& accelerator) {
@@ -1723,6 +1722,12 @@ void AcceleratorControllerImpl::RegisterDeprecatedAccelerators() {
     deprecated_accelerators_.insert(deprecated_accelerator);
   }
   Register(ui_accelerators, this);
+}
+
+bool AcceleratorControllerImpl::IsActionForAcceleratorEnabled(
+    const ui::Accelerator& accelerator) const {
+  const AcceleratorAction* action_ptr = accelerators_.Find(accelerator);
+  return action_ptr && CanPerformAction(*action_ptr, accelerator);
 }
 
 bool AcceleratorControllerImpl::CanPerformAction(

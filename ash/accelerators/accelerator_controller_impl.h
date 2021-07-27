@@ -108,6 +108,9 @@ class ASH_EXPORT AcceleratorControllerImpl
     void RegisterAccelerators(const AcceleratorData accelerators[],
                               size_t accelerators_length);
 
+    // Returns whether the action for this accelerator is enabled.
+    bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator);
+
     // Returns the corresponding accelerator data if |action| maps to a
     // deprecated accelerator, otherwise return nullptr.
     const DeprecatedAcceleratorData* GetDeprecatedAcceleratorData(
@@ -196,9 +199,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Unregisters all keyboard accelerators for the specified target.
   void UnregisterAll(ui::AcceleratorTarget* target);
 
-  // Returns true if there is an action for |accelerator| and it is enabled.
-  bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator) const;
-
   // AcceleratorControllerImpl:
   bool Process(const ui::Accelerator& accelerator) override;
   bool IsDeprecated(const ui::Accelerator& accelerator) const override;
@@ -256,6 +256,9 @@ class ASH_EXPORT AcceleratorControllerImpl
 
   // Registers the deprecated accelerators and their replacing new ones.
   void RegisterDeprecatedAccelerators();
+
+  // Returns true if there is an action for |accelerator| and it is enabled.
+  bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator) const;
 
   // Returns whether |action| can be performed. The |accelerator| may provide
   // additional data the action needs.

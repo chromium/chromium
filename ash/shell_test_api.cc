@@ -276,8 +276,9 @@ bool ShellTestApi::IsContextMenuShown() const {
 
 bool ShellTestApi::IsActionForAcceleratorEnabled(
     const ui::Accelerator& accelerator) const {
-  return Shell::Get()->accelerator_controller()->IsActionForAcceleratorEnabled(
-      accelerator);
+  auto* controller = Shell::Get()->accelerator_controller();
+  return AcceleratorControllerImpl::TestApi(controller)
+      .IsActionForAcceleratorEnabled(accelerator);
 }
 
 bool ShellTestApi::PressAccelerator(const ui::Accelerator& accelerator) {
