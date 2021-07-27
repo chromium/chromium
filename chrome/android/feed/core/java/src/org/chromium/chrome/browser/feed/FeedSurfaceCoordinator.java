@@ -384,6 +384,7 @@ public class FeedSurfaceCoordinator
 
     @Override
     public void onRefresh() {
+        mLaunchReliabilityLogger.logManualRefresh(System.nanoTime());
         mStream.triggerRefresh((Boolean v) -> { mSwipeRefreshLayout.setRefreshing(false); });
     }
 

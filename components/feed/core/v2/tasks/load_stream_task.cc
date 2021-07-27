@@ -97,7 +97,6 @@ void LoadStreamTask::Run() {
 
 bool LoadStreamTask::CheckPreconditions() {
   if (stream_.ClearAllInProgress()) {
-    // TODO(iwells): add a DiscoverLaunchResult for this case?
     Done({LoadStreamStatus::kAbortWithPendingClearAll,
           feedwire::DiscoverLaunchResult::CLEAR_ALL_IN_PROGRESS});
     return false;
