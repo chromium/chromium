@@ -68,6 +68,10 @@ class TabModelTest : public PlatformTest {
   ~TabModelTest() override = default;
 
   void TearDown() override {
+    @autoreleasepool {
+      browser_->GetWebStateList()->CloseAllWebStates(
+          WebStateList::CLOSE_NO_FLAGS);
+    }
     SetTabModel(nil);
     PlatformTest::TearDown();
   }
