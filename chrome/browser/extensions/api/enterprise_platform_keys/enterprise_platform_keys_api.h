@@ -54,7 +54,8 @@ class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
   ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
   ResponseAction Run() override;
 
-  void OnGetCertificates(crosapi::mojom::GetCertificatesResultPtr result);
+  void OnGetCertificates(
+      crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
                              ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
 };

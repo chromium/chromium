@@ -392,31 +392,34 @@ void KeystoreServiceAsh::DidSelectClientCertificates(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
-                                         GetCertificatesCallback callback) {
+void KeystoreServiceAsh::DEPRECATED_GetCertificates(
+    mojom::KeystoreType keystore,
+    DEPRECATED_GetCertificatesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
   absl::optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
-    std::move(callback).Run(mojom::GetCertificatesResult::NewErrorMessage(
-        kUnsupportedKeystoreType));
+    std::move(callback).Run(
+        mojom::DEPRECATED_GetCertificatesResult::NewErrorMessage(
+            kUnsupportedKeystoreType));
     return;
   }
 
   platform_keys_service->GetCertificates(
-      token_id.value(), base::BindOnce(&KeystoreServiceAsh::DidGetCertificates,
-                                       std::move(callback)));
+      token_id.value(),
+      base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidGetCertificates,
+                     std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidGetCertificates(
-    GetCertificatesCallback callback,
+void KeystoreServiceAsh::DEPRECATED_DidGetCertificates(
+    DEPRECATED_GetCertificatesCallback callback,
     std::unique_ptr<net::CertificateList> certs,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  mojom::GetCertificatesResultPtr result_ptr =
-      mojom::GetCertificatesResult::New();
+  mojom::DEPRECATED_GetCertificatesResultPtr result_ptr =
+      mojom::DEPRECATED_GetCertificatesResult::New();
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
     std::vector<std::vector<uint8_t>> output;

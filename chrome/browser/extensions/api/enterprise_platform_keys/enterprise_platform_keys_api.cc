@@ -213,8 +213,9 @@ EnterprisePlatformKeysGetCertificatesFunction::Run() {
       api_epk::GetCertificates::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(
-      KeystoreService::kGetCertificatesMinVersion, browser_context());
+  std::string error =
+      ValidateCrosapi(KeystoreService::kDEPRECATED_GetCertificatesMinVersion,
+                      browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -228,12 +229,12 @@ EnterprisePlatformKeysGetCertificatesFunction::Run() {
   auto c = base::BindOnce(
       &EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates, this);
   GetKeystoreService(browser_context())
-      ->GetCertificates(keystore, std::move(c));
+      ->DEPRECATED_GetCertificates(keystore, std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysGetCertificatesFunction::OnGetCertificates(
-    crosapi::mojom::GetCertificatesResultPtr result) {
+    crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result) {
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;

@@ -62,10 +62,11 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
 
 // Tests that get certificates works.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
-  crosapi::mojom::GetCertificatesResultPtr result;
+  crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.GetCertificates(crosapi::mojom::KeystoreType::kUser, &result);
+  async_waiter.DEPRECATED_GetCertificates(crosapi::mojom::KeystoreType::kUser,
+                                          &result);
   ASSERT_TRUE(result->is_certificates());
   EXPECT_EQ(0u, result->get_certificates().size());
 }
