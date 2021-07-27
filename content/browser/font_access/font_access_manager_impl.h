@@ -51,16 +51,9 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
   ~FontAccessManagerImpl() override;
 
-  struct BindingContext {
-    BindingContext(const url::Origin& origin, GlobalRenderFrameHostId frame_id)
-        : origin(origin), frame_id(frame_id) {}
-
-    url::Origin origin;
-    GlobalRenderFrameHostId frame_id;
-  };
-
   void BindReceiver(
-      const BindingContext& context,
+      url::Origin origin,
+      GlobalRenderFrameHostId frame_id,
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);
 
   // blink::mojom::FontAccessManager:
@@ -77,6 +70,11 @@ class CONTENT_EXPORT FontAccessManagerImpl
   }
 
  private:
+  struct BindingContext {
+    url::Origin origin;
+    GlobalRenderFrameHostId frame_id;
+  };
+
   void DidRequestPermission(EnumerateLocalFontsCallback callback,
                             blink::mojom::PermissionStatus status);
   void DidFindAllFonts(FindAllFontsCallback callback,

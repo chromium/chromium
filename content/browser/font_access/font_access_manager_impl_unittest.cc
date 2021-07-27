@@ -101,11 +101,9 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
     const int routing_id = main_rfh()->GetRoutingID();
     const GlobalRenderFrameHostId frame_id =
         GlobalRenderFrameHostId{process_id, routing_id};
-    const FontAccessManagerImpl::BindingContext bindingContext = {kTestOrigin,
-                                                                  frame_id};
 
     manager_impl_ = std::make_unique<FontAccessManagerImpl>();
-    manager_impl_->BindReceiver(bindingContext,
+    manager_impl_->BindReceiver(kTestOrigin, frame_id,
                                 manager_.BindNewPipeAndPassReceiver());
     manager_sync_ = std::make_unique<FontAccessManagerSync>(manager_.get());
 

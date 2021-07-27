@@ -35,11 +35,16 @@ FontAccessManagerImpl::~FontAccessManagerImpl() {
 }
 
 void FontAccessManagerImpl::BindReceiver(
-    const BindingContext& context,
+    url::Origin origin,
+    GlobalRenderFrameHostId frame_id,
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  receivers_.Add(this, std::move(receiver), context);
+  receivers_.Add(this, std::move(receiver),
+                 {
+                     .origin = std::move(origin),
+                     .frame_id = frame_id,
+                 });
 }
 
 void FontAccessManagerImpl::EnumerateLocalFonts(
