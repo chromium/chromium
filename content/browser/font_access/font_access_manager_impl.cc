@@ -4,10 +4,16 @@
 
 #include "content/browser/font_access/font_access_manager_impl.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -25,9 +31,24 @@
 
 namespace content {
 
-FontAccessManagerImpl::FontAccessManagerImpl()
-    : ipc_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
+// static
+std::unique_ptr<FontAccessManagerImpl> FontAccessManagerImpl::Create() {
+  return std::make_unique<FontAccessManagerImpl>(
+      FontEnumerationCache::Create(), base::PassKey<FontAccessManagerImpl>());
+}
+
+// static
+std::unique_ptr<FontAccessManagerImpl> FontAccessManagerImpl::CreateForTesting(
+    base::SequenceBound<FontEnumerationCache> font_enumeration_cache) {
+  return std::make_unique<FontAccessManagerImpl>(
+      std::move(font_enumeration_cache),
+      base::PassKey<FontAccessManagerImpl>());
+}
+
+FontAccessManagerImpl::FontAccessManagerImpl(
+    base::SequenceBound<FontEnumerationCache> font_enumeration_cache,
+    base::PassKey<FontAccessManagerImpl>)
+    : font_enumeration_cache_(std::move(font_enumeration_cache)),
       results_task_runner_(content::GetUIThreadTaskRunner({})) {}
 
 FontAccessManagerImpl::~FontAccessManagerImpl() {
@@ -161,30 +182,26 @@ void FontAccessManagerImpl::ChooseLocalFonts(
 }
 
 void FontAccessManagerImpl::FindAllFonts(FindAllFontsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           {});
 #else
-  // Obtain cached font enumeration.
-  ipc_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](FontAccessManagerImpl* impl, FindAllFontsCallback callback,
-             scoped_refptr<base::TaskRunner> results_task_runner) {
-            FontEnumerationCache::GetInstance()
-                ->QueueShareMemoryRegionWhenReady(
-                    results_task_runner,
-                    base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
-                                   base::Unretained(impl),
-                                   std::move(callback)));
-          },
-          base::Unretained(this), std::move(callback), results_task_runner_));
+  // TODO(pwnall): base::Unretained is unsafe. Introduce a factory.
+  font_enumeration_cache_
+      .AsyncCall(&FontEnumerationCache::QueueShareMemoryRegionWhenReady)
+      .WithArgs(results_task_runner_,
+                base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
+                               base::Unretained(this), std::move(callback)));
 #endif
 }
 
 void FontAccessManagerImpl::DidRequestPermission(
     EnumerateLocalFontsCallback callback,
     blink::mojom::PermissionStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           base::ReadOnlySharedMemoryRegion());
@@ -199,15 +216,9 @@ void FontAccessManagerImpl::DidRequestPermission(
 
 // Per-platform delegation for obtaining cached font enumeration data occurs
 // here, after the permission has been granted.
-  ipc_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](EnumerateLocalFontsCallback callback,
-                        scoped_refptr<base::TaskRunner> results_task_runner) {
-                       FontEnumerationCache::GetInstance()
-                           ->QueueShareMemoryRegionWhenReady(
-                               results_task_runner, std::move(callback));
-                     },
-                     std::move(callback), results_task_runner_));
+  font_enumeration_cache_
+      .AsyncCall(&FontEnumerationCache::QueueShareMemoryRegionWhenReady)
+      .WithArgs(results_task_runner_, std::move(callback));
 #endif
 }
 

@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_FONTCONFIG_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_FONTCONFIG_H_
 
-#include "base/no_destructor.h"
+#include <string>
+
+#include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using blink::mojom::FontEnumerationStatus;
 
@@ -17,25 +20,25 @@ namespace content {
 class CONTENT_EXPORT FontEnumerationCacheFontconfig
     : public FontEnumerationCache {
  public:
-  FontEnumerationCacheFontconfig();
+  // The constructor is public for internal use of base::SequenceBound.
+  //
+  // Production code should call FontEnumerationCache::Create(). Testing code
+  // should call FontEnumerationCache::CreateForTesting().
+  FontEnumerationCacheFontconfig(absl::optional<std::string> locale_override,
+                                 base::PassKey<FontEnumerationCache>);
 
   FontEnumerationCacheFontconfig(const FontEnumerationCacheFontconfig&) =
       delete;
   FontEnumerationCacheFontconfig& operator=(
       const FontEnumerationCacheFontconfig&) = delete;
 
-  ~FontEnumerationCacheFontconfig();
+  ~FontEnumerationCacheFontconfig() override;
 
  protected:
   // FontEnumerationCache interface.
   void SchedulePrepareFontEnumerationCache() override;
 
  private:
-  friend class base::NoDestructor<FontEnumerationCacheFontconfig>;
-  // This gives FontEnumerationCache::GetInstance access to the class
-  // constructor.
-  friend class FontEnumerationCache;
-
   void PrepareFontEnumerationCache();
 };
 

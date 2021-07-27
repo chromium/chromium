@@ -6,18 +6,23 @@
 
 #import <AppKit/AppKit.h>
 #import <CoreText/CoreText.h>
-#import <cmath>
-#import <limits>
+
+#include <cmath>
+#include <limits>
+#include <memory>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
+#include "content/browser/font_access/font_enumeration_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -117,14 +122,22 @@ float CTWidthToWebStretch(CGFloat width) {
 
 }  // namespace
 
-FontEnumerationCacheMac::FontEnumerationCacheMac() = default;
-FontEnumerationCacheMac::~FontEnumerationCacheMac() = default;
-
 // static
-FontEnumerationCache* FontEnumerationCache::GetInstance() {
-  static base::NoDestructor<FontEnumerationCacheMac> instance;
-  return instance.get();
+base::SequenceBound<FontEnumerationCache>
+FontEnumerationCache::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    absl::optional<std::string> locale_override) {
+  return base::SequenceBound<FontEnumerationCacheMac>(
+      std::move(task_runner), std::move(locale_override),
+      base::PassKey<FontEnumerationCache>());
 }
+
+FontEnumerationCacheMac::FontEnumerationCacheMac(
+    absl::optional<std::string> locale_override,
+    base::PassKey<FontEnumerationCache>)
+    : FontEnumerationCache(std::move(locale_override)) {}
+
+FontEnumerationCacheMac::~FontEnumerationCacheMac() = default;
 
 void FontEnumerationCacheMac::SchedulePrepareFontEnumerationCache() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));

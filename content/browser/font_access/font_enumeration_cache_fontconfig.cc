@@ -6,13 +6,19 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
+#include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
+#include "content/browser/font_access/font_enumeration_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -131,14 +137,22 @@ float FCWidthToWebStretch(int width) {
 
 }  // namespace
 
-FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig() = default;
-FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() = default;
-
 // static
-FontEnumerationCache* FontEnumerationCache::GetInstance() {
-  static base::NoDestructor<FontEnumerationCacheFontconfig> instance;
-  return instance.get();
+base::SequenceBound<FontEnumerationCache>
+FontEnumerationCache::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    absl::optional<std::string> locale_override) {
+  return base::SequenceBound<FontEnumerationCacheFontconfig>(
+      std::move(task_runner), std::move(locale_override),
+      base::PassKey<FontEnumerationCache>());
 }
+
+FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig(
+    absl::optional<std::string> locale_override,
+    base::PassKey<FontEnumerationCache>)
+    : FontEnumerationCache(std::move(locale_override)) {}
+
+FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() = default;
 
 void FontEnumerationCacheFontconfig::SchedulePrepareFontEnumerationCache() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));

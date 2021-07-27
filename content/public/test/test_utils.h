@@ -154,11 +154,6 @@ WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh);
 // Spins a run loop until IsDocumentOnLoadCompletedInMainFrame() is true.
 void AwaitDocumentOnLoadCompleted(WebContents* web_contents);
 
-// Resets the font enumeration cache for use between tests. Tests that use
-// BrowserTaskEnvironment can leave the font enumeration cache in a bad state,
-// due to the task environment getting torn down by ~BrowserTaskEnvironment.
-void ResetFontEnumerationCache();
-
 // Helper class to Run and Quit the message loop. Run and Quit can only happen
 // once per instance. Make a new instance for each use. Calling Quit after Run
 // has returned is safe and has no effect.

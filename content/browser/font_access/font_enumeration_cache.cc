@@ -4,28 +4,48 @@
 
 #include "content/browser/font_access/font_enumeration_cache.h"
 
+#include <string>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
 
-FontEnumerationCache::FontEnumerationCache() {
-  InitializeCacheState();
+// static
+base::SequenceBound<FontEnumerationCache> FontEnumerationCache::Create() {
+  return FontEnumerationCache::CreateForTesting(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      absl::nullopt);
 }
-
-FontEnumerationCache::~FontEnumerationCache() = default;
 
 #if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
-//  static
-FontEnumerationCache* FontEnumerationCache::GetInstance() {
-  return nullptr;
+
+// static
+base::SequenceBound<FontEnumerationCache>
+FontEnumerationCache::CreateForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    absl::optional<std::string> locale_override) {
+  return base::SequenceBound<FontEnumerationCache>();
 }
-#endif
+
+#endif  // !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
+
+FontEnumerationCache::FontEnumerationCache(
+    absl::optional<std::string> locale_override)
+    : locale_override_(std::move(locale_override)),
+      enumeration_cache_built_(std::make_unique<base::AtomicFlag>()),
+      enumeration_cache_build_started_(std::make_unique<base::AtomicFlag>()) {}
+
+FontEnumerationCache::~FontEnumerationCache() = default;
 
 void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
     scoped_refptr<base::TaskRunner> task_runner,
@@ -51,12 +71,6 @@ bool FontEnumerationCache::IsFontEnumerationCacheReady() {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
 
   return enumeration_cache_built_->IsSet() && IsFontEnumerationCacheValid();
-}
-
-void FontEnumerationCache::ResetStateForTesting() {
-  callbacks_task_runner_ =
-      base::MakeRefCounted<base::DeferredSequencedTaskRunner>();
-  InitializeCacheState();
 }
 
 base::ReadOnlySharedMemoryRegion FontEnumerationCache::DuplicateMemoryRegion() {
@@ -118,13 +132,6 @@ void FontEnumerationCache::BuildEnumerationCache(
   }
 
   enumeration_cache_built_->Set();
-}
-
-void FontEnumerationCache::InitializeCacheState() {
-  enumeration_cache_memory_ = base::MappedReadOnlyRegion();
-  enumeration_cache_built_ = std::make_unique<base::AtomicFlag>();
-  enumeration_cache_build_started_ = std::make_unique<base::AtomicFlag>();
-  status_ = blink::mojom::FontEnumerationStatus::kOk;
 }
 
 }  // namespace content

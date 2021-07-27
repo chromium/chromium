@@ -8,10 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/sequence_bound.h"
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -21,6 +24,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
@@ -91,9 +95,6 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   }
 
   void SetUp() override {
-    FontEnumerationCache* instance = FontEnumerationCache::GetInstance();
-    instance->ResetStateForTesting();
-
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(kTestUrl);
 
@@ -102,7 +103,13 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
     const GlobalRenderFrameHostId frame_id =
         GlobalRenderFrameHostId{process_id, routing_id};
 
-    manager_impl_ = std::make_unique<FontAccessManagerImpl>();
+    cache_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    base::SequenceBound<FontEnumerationCache> font_enumeration_cache =
+        FontEnumerationCache::CreateForTesting(cache_task_runner_,
+                                               absl::nullopt);
+    manager_impl_ = FontAccessManagerImpl::CreateForTesting(
+        std::move(font_enumeration_cache));
     manager_impl_->BindReceiver(kTestOrigin, frame_id,
                                 manager_.BindNewPipeAndPassReceiver());
     manager_sync_ = std::make_unique<FontAccessManagerSync>(manager_.get());
@@ -116,7 +123,18 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
         std::make_unique<PermissionControllerImpl>(browser_context);
   }
 
-  void TearDown() override { RenderViewHostImplTestHarness::TearDown(); }
+  void TearDown() override {
+    // Ensure that the FontEnumerationCache instance is destroyed before the
+    // test ends. This avoids ASAN failures.
+    manager_sync_ = nullptr;
+    manager_.reset();
+    manager_impl_ = nullptr;
+    base::RunLoop run_loop;
+    cache_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+
+    RenderViewHostImplTestHarness::TearDown();
+  }
 
   TestFontAccessPermissionManager* test_permission_manager() {
     return static_cast<TestFontAccessPermissionManager*>(
@@ -179,6 +197,7 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<FontAccessManagerImpl> manager_impl_;
   mojo::Remote<blink::mojom::FontAccessManager> manager_;
   std::unique_ptr<FontAccessManagerSync> manager_sync_;
+  scoped_refptr<base::SequencedTaskRunner> cache_task_runner_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };

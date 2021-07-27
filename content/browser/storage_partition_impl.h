@@ -218,6 +218,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   BucketContext* GetBucketContext();
   QuotaContext* GetQuotaContext();
   ConversionManagerImpl* GetConversionManager();
+  void SetFontAccessManagerForTesting(
+      std::unique_ptr<FontAccessManagerImpl> font_access_manager);
   FontAccessManagerImpl* GetFontAccessManager();
   InterestGroupManager* GetInterestGroupManager();
   ComputePressureManager* GetComputePressureManager();

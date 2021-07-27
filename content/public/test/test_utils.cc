@@ -318,10 +318,6 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
   Awaiter(web_contents).Await();
 }
 
-void ResetFontEnumerationCache() {
-  FontEnumerationCache::GetInstance()->ResetStateForTesting();
-}
-
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)
     : quit_mode_(quit_mode) {}
 

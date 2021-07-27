@@ -1375,7 +1375,7 @@ void StoragePartitionImpl::Initialize(
                                                settings.size_in_bytes());
   }
 
-  font_access_manager_ = std::make_unique<FontAccessManagerImpl>();
+  font_access_manager_ = FontAccessManagerImpl::Create();
   compute_pressure_manager_ = ComputePressureManager::Create();
 }
 
@@ -1653,6 +1653,13 @@ ConversionManagerImpl* StoragePartitionImpl::GetConversionManager() {
 FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
   DCHECK(initialized_);
   return font_access_manager_.get();
+}
+
+void StoragePartitionImpl::SetFontAccessManagerForTesting(
+    std::unique_ptr<FontAccessManagerImpl> font_access_manager) {
+  DCHECK(initialized_);
+  DCHECK(font_access_manager);
+  font_access_manager_ = std::move(font_access_manager);
 }
 
 InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
