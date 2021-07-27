@@ -9,12 +9,14 @@
 #include "chrome/browser/ui/views/overlay/back_to_tab_label_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
@@ -361,35 +363,12 @@ class OverlayWindowViewsMediaSessionWebRTCTest : public OverlayWindowViewsTest {
 };
 
 TEST_F(OverlayWindowViewsMediaSessionWebRTCTest,
-       BackToTabLabelButtonDisplaysOrigin) {
+       BackToTabLabelButtonDisplaysText) {
+  // Navigation does not affect the text displayed on the button.
   NavigateTo(GURL("https://foo.com/bar?baz=1"));
   overlay_window().UpdateVideoSize({200, 200});
   overlay_window().ShowInactive();
-  EXPECT_EQ(u"foo.com",
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT),
             overlay_window().back_to_tab_label_button_for_testing()->GetText());
-}
-
-TEST_F(OverlayWindowViewsMediaSessionWebRTCTest,
-       BackToTabLabelButtonDoesNotOutgrowWindow) {
-  overlay_window().UpdateVideoSize({200, 200});
-  BackToTabLabelButton* back_to_tab_button =
-      overlay_window().back_to_tab_label_button_for_testing();
-
-  // With a short origin to display, the button should be shorter than the width
-  // of the window and not truncated.
-  NavigateTo(GURL("https://foo.com/bar?baz=1"));
-  overlay_window().ShowInactive();
-  EXPECT_LT(back_to_tab_button->width(), 200);
-  EXPECT_FALSE(back_to_tab_button->IsTextElidedForTesting());
-  const int short_width = back_to_tab_button->width();
-
-  // With a long origin to display, the button should grow but not exceed the
-  // width of the window and become truncated.
-  NavigateTo(GURL(
-      "https://"
-      "somereallylong.origin.thatexceeds.thewidthof.theoverlaywindow.com/foo"));
-  overlay_window().ShowInactive();
-  EXPECT_GT(back_to_tab_button->width(), short_width);
-  EXPECT_LT(back_to_tab_button->width(), 200);
-  EXPECT_TRUE(back_to_tab_button->IsTextElidedForTesting());
 }
