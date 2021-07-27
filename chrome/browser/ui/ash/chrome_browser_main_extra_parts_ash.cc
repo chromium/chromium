@@ -216,6 +216,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (chromeos::features::IsProjectorEnabled()) {
     projector_client_ = std::make_unique<ProjectorClientImpl>();
   }
+
+  desks_client_ = std::make_unique<DesksClient>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
@@ -256,8 +258,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
 
   // Initialize TabScrubber after the Ash Shell has been initialized.
   TabScrubber::GetInstance();
-
-  desks_client_ = std::make_unique<DesksClient>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -274,6 +274,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   night_light_client_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
+  desks_client_.reset();
 
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();
