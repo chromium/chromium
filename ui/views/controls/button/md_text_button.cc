@@ -74,6 +74,8 @@ void MdTextButton::SetProminent(bool is_prominent) {
     return;
 
   is_prominent_ = is_prominent;
+  SetProperty(kDrawFocusRingBackgroundOutline, is_prominent);
+
   UpdateColors();
   OnPropertyChanged(&is_prominent_, kPropertyEffectsNone);
 }

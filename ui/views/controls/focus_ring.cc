@@ -19,6 +19,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
@@ -30,9 +31,13 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(views::FocusRing*)
 
 namespace views {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDrawFocusRingBackgroundOutline, false)
+
 namespace {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(FocusRing*, kFocusRingIdKey, nullptr)
+
+constexpr float kOutlineThickness = 1.0f;
 
 bool IsPathUsable(const SkPath& path) {
   return !path.isEmpty() && (path.isRect(nullptr) || path.isOval(nullptr) ||
@@ -158,6 +163,10 @@ void FocusRing::Layout() {
   }
 
   focus_bounds.Inset(gfx::Insets(FocusRing::kHaloInset));
+
+  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline))
+    focus_bounds.Inset(gfx::Insets(-2 * kOutlineThickness));
+
   SetBoundsRect(focus_bounds);
 
   // Need to match canvas direction with the parent. This is required to ensure
@@ -192,13 +201,22 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
+  const SkRRect ring_rect = GetRingRoundRect();
   cc::PaintFlags paint;
   paint.setAntiAlias(true);
-  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
   paint.setStyle(cc::PaintFlags::kStroke_Style);
-  paint.setStrokeWidth(FocusRing::kHaloThickness);
 
-  canvas->sk_canvas()->drawRRect(GetRingRoundRect(), paint);
+  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
+    // Draw with full stroke width + 2x outline thickness to effectively paint
+    // the outline thickness on both sides of the FocusRing.
+    paint.setStrokeWidth(FocusRing::kHaloThickness + 2 * kOutlineThickness);
+    paint.setColor(GetBackgroundColor(this));
+    canvas->sk_canvas()->drawRRect(ring_rect, paint);
+  }
+
+  paint.setColor(color_.value_or(GetColor(this, !invalid_)));
+  paint.setStrokeWidth(FocusRing::kHaloThickness);
+  canvas->sk_canvas()->drawRRect(ring_rect, paint);
 }
 
 SkRRect FocusRing::GetRingRoundRect() const {
@@ -285,7 +303,7 @@ SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRRect& rrect) const {
-  double thickness = FocusRing::kHaloThickness / 2.f;
+  const double thickness = FocusRing::kHaloThickness / 2.f;
   gfx::RectF r = gfx::SkRectToRectF(rrect.rect());
   View::ConvertRectToTarget(parent(), this, &r);
 
