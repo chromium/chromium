@@ -10575,7 +10575,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 25
+          "shards": 40
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
