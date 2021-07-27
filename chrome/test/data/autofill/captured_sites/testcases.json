@@ -129,7 +129,7 @@
     { "site_name": "net_a_porter" },
     { "site_name": "netfirstplatinum" },
     { "site_name": "netspend" },
-    { "site_name": "newbalance" },
+    { "site_name": "newbalance", "bug_number":1233110 },
     { "site_name": "newegg" },
     { "site_name": "newlook" },
     { "site_name": "nflshop" },

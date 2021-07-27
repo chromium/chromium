@@ -229,9 +229,9 @@ bool AddressField::ParseAddressFieldSequence(
 
   while (!scanner->IsEnd()) {
     if (!street_name_ &&
-        ParseFieldSpecifics(scanner, kStreetNameRe, MATCH_DEFAULT,
-                            street_name_patterns, &street_name_,
-                            {log_manager_, "kStreetNameRe"})) {
+        ParseFieldSpecifics(scanner, kStreetNameRe,
+                            MATCH_DEFAULT | MATCH_SEARCH, street_name_patterns,
+                            &street_name_, {log_manager_, "kStreetNameRe"})) {
       continue;
     }
     if (!house_number_ &&
@@ -298,18 +298,20 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
       PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_1",
                                                       page_language);
 
-  if (!ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT,
+  if (!ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT | MATCH_SEARCH,
                            address_line1_patterns, &address1_,
                            {log_manager_, "kAddressLine1Re"}) &&
-      !ParseFieldSpecifics(scanner, label_pattern, MATCH_LABEL | MATCH_TEXT,
+      !ParseFieldSpecifics(scanner, label_pattern,
+                           MATCH_LABEL | MATCH_SEARCH | MATCH_TEXT,
                            address_line1_patterns, &address1_,
                            {log_manager_, "kAddressLine1LabelRe"}) &&
-      !ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT | MATCH_TEXT_AREA,
+      !ParseFieldSpecifics(scanner, pattern,
+                           MATCH_DEFAULT | MATCH_SEARCH | MATCH_TEXT_AREA,
                            address_line1_patterns, &street_address_,
                            {log_manager_, "kAddressLine1Re"},
                            {.augment_types = MATCH_TEXT_AREA}) &&
       !ParseFieldSpecifics(scanner, label_pattern,
-                           MATCH_LABEL | MATCH_TEXT_AREA,
+                           MATCH_LABEL | MATCH_SEARCH | MATCH_TEXT_AREA,
                            address_line1_patterns, &street_address_,
                            {log_manager_, "kAddressLine1LabelRe"},
                            {.augment_types = MATCH_TEXT_AREA}))
