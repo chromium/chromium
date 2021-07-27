@@ -16,6 +16,22 @@
         </accelerator-edit-view>
       </template>
     </div>
+    <template id="newAccelerator" is="dom-if" if="[[isAddingNewAccelerator_]]"
+        restamp>
+      <accelerator-edit-view id="pendingAccelerator"
+          is-edit-view="{{isAddingNewAccelerator_}}">
+      </accelerator-edit-view>
+    </template>
+    <div id="addAcceleratorContainer" hidden="[[isAddingNewAccelerator_]]">
+      <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked_">
+        <!-- TODO(jimmyxgong): Replace with proper spec icon -->
+        <iron-icon id="addIcon" icon="shortcut-customization:cancel">
+        </iron-icon>
+        <!-- TODO(jimmyxgong): Localize this string -->
+        Add shortcut
+      </cr-icon-button>
+    </div>
+
   </div>
   <div slot="button-container">
     <cr-button id="doneButton" on-click="onDoneButtonClicked">

@@ -74,4 +74,50 @@ export function acceleratorEditDialogTest() {
     button.click();
     assertFalse(dialog.open);
   });
+
+  test('AddShortcut', async () => {
+    // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
+    // version.
+    const accelerators = [
+      {
+        modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
+        key: 'g',
+        rawKey: 0x0
+      },
+      {modifiers: ModifierKeys.CONTROL, key: 'c', rawKey: 0x0}
+    ];
+    const description = 'test shortcut';
+
+    viewElement.accelerators = accelerators;
+    viewElement.description = description;
+    await flush();
+    const dialog = viewElement.shadowRoot.querySelector('cr-dialog');
+    assertTrue(dialog.open);
+
+    // The "Add Shortcut" button should be visible and the pending accelerator
+    // should not be visible.
+    const buttonContainer = dialog.querySelector('#addAcceleratorContainer');
+    assertFalse(buttonContainer.hidden);
+    let pendingAccelerator = dialog.querySelector('#pendingAccelerator');
+    assertFalse(!!pendingAccelerator);
+
+    // Clicking on the "Add Shortcut" button should hide the button and show
+    // the pending shortcut.
+    const addButton = dialog.querySelector('#addAcceleratorButton');
+    addButton.click();
+    await flush();
+    assertTrue(buttonContainer.hidden);
+    // Re-query the stamped element.
+    pendingAccelerator = dialog.querySelector('#pendingAccelerator');
+    assertTrue(!!pendingAccelerator);
+
+    // Click on the cancel button, expect the "Add Shortcut" button to be
+    // visible and the pending accelerator to be hidden.
+    pendingAccelerator.shadowRoot.querySelector('#cancelButton').click();
+    await flush();
+    assertFalse(buttonContainer.hidden);
+    // Re-query the stamped element.
+    pendingAccelerator = dialog.querySelector('#pendingAccelerator');
+    assertFalse(!!pendingAccelerator);
+  });
 }

@@ -39,10 +39,10 @@ export class AcceleratorEditViewElement extends PolymerElement {
         value: () => {},
       },
 
-      /** @private */
-      isEditView_: {
+      isEditView: {
         type: Boolean,
         value: false,
+        notify:true,
         reflectToAttribute: true,
       },
     }
@@ -50,7 +50,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
 
   /** @private */
   onEditButtonClicked_() {
-    this.isEditView_ = true;
+    this.isEditView = true;
   }
 
   /** @private */
@@ -60,7 +60,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
 
   /** @private  */
   onCancelButtonClicked_() {
-    this.isEditView_ = false;
+    this.isEditView = false;
   }
 }
 

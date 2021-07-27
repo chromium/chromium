@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement, afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
@@ -42,7 +42,13 @@ export class AcceleratorEditDialogElement extends PolymerElement {
       accelerators: {
         type: Array,
         value: () => {},
-      }
+      },
+
+      /** @private */
+      isAddingNewAccelerator_: {
+        type: Boolean,
+        value: false,
+      },
     }
   }
 
@@ -55,6 +61,18 @@ export class AcceleratorEditDialogElement extends PolymerElement {
   onDoneButtonClicked() {
     this.$.editDialog.close();
   }
+
+  /** @private */
+  onAddAcceleratorClicked_() {
+    this.isAddingNewAccelerator_ = true;
+
+    afterNextRender(this, () => {
+      const editView = this.$.editDialog.querySelector('#pendingAccelerator');
+      const accelItem = editView.shadowRoot.querySelector("#acceleratorItem");
+      accelItem.shadowRoot.querySelector('#container').focus();
+    });
+  }
+
 }
 
 customElements.define(AcceleratorEditDialogElement.is,
