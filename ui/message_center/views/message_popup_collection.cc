@@ -12,6 +12,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
+#include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
@@ -35,16 +36,13 @@ constexpr base::TimeDelta kWaitForReset = base::TimeDelta::FromSeconds(10);
 
 MessagePopupCollection::MessagePopupCollection()
     : animation_(std::make_unique<gfx::LinearAnimation>(this)),
-      weak_ptr_factory_(this) {
-  MessageCenter::Get()->AddObserver(this);
-}
+      weak_ptr_factory_(this) {}
 
 MessagePopupCollection::~MessagePopupCollection() {
   // Ignore calls to update which can cause crashes.
   is_updating_ = true;
   for (const auto& item : popup_items_)
     item.popup->Close();
-  MessageCenter::Get()->RemoveObserver(this);
 }
 
 void MessagePopupCollection::Update() {
@@ -125,8 +123,23 @@ void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
   }
 }
 
+MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
+    const std::string& notification_id) {
+  auto it =
+      std::find_if(popup_items_.begin(), popup_items_.end(), [&](auto child) {
+        return child.popup->message_view()->notification_id() ==
+               notification_id;
+      });
+
+  if (it == popup_items_.end())
+    return nullptr;
+
+  return it->popup->message_view();
+}
+
 void MessagePopupCollection::OnNotificationAdded(
     const std::string& notification_id) {
+  NotificationViewController::OnNotificationAdded(notification_id);
   // Should not call MessagePopupCollection::Update here. Because notification
   // may be removed before animation which is triggered by the previous
   // operation on MessagePopupCollection ends. As result, when a new
@@ -139,6 +152,8 @@ void MessagePopupCollection::OnNotificationAdded(
 void MessagePopupCollection::OnNotificationRemoved(
     const std::string& notification_id,
     bool by_user) {
+  NotificationViewController::OnNotificationRemoved(notification_id, by_user);
+
   if (by_user) {
     recently_closed_by_user_ = true;
     recently_closed_by_user_timer_ = std::make_unique<base::OneShotTimer>();
@@ -470,21 +485,8 @@ bool MessagePopupCollection::AddPopup() {
     item.will_fade_in = false;
   }
 
-  if (AddInExistingGroup(new_notification))
+  if (new_notification->group_child())
     return false;
-
-  // The notification needs to be grouped but the popup for the group does not
-  // currently exist. Show the parent pop up again and let it assemble all
-  // grouped notifications.
-  if (new_notification->group_child()) {
-    new_notification = MessageCenter::Get()->FindOldestNotificationByNotiferId(
-        new_notification->notifier_id());
-    // TODO(crbug/1223697): Implement grouped notification construction when the
-    // MessageView for a parent notification is created.
-    new_notification->set_group_parent(true);
-
-    MessageCenter::Get()->ResetSinglePopup(new_notification->id());
-  }
 
   {
     PopupItem item;
@@ -520,34 +522,6 @@ bool MessagePopupCollection::AddPopup() {
   item.start_bounds = item.bounds;
   item.start_bounds +=
       gfx::Vector2d((IsFromLeft() ? -1 : 1) * item.bounds.width(), 0);
-  return true;
-}
-
-bool MessagePopupCollection::AddInExistingGroup(Notification* notification) {
-  if (!notification->allow_group())
-    return false;
-
-  Notification* parent_notification =
-      MessageCenter::Get()->FindOldestNotificationByNotiferId(
-          notification->notifier_id());
-  DCHECK(parent_notification);
-  if (parent_notification->id() == notification->id())
-    return false;
-
-  notification->set_group_child(true);
-
-  MessagePopupView* parent_popup =
-      GetPopupViewForNotificationID(parent_notification->id());
-  // If the parent popup has already expired, we will add it back and
-  // create the group from scratch in MessagePopupCollection::AddPopup.
-  if (!parent_popup)
-    return false;
-
-  parent_notification->set_group_parent(true);
-  parent_popup->message_view()->AddGroupedNotification(*notification);
-  MessageCenter::Get()->DisplayedNotification(notification->id(),
-                                              DISPLAY_SOURCE_POPUP);
-  MessageCenter::Get()->MarkSinglePopupAsShown(notification->id(), false);
   return true;
 }
 

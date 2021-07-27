@@ -21,6 +21,8 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/message_view_factory.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -43,6 +45,7 @@ constexpr base::TimeDelta kClearAllStackedAnimationDuration =
 constexpr base::TimeDelta kClearAllVisibleAnimationDuration =
     base::TimeDelta::FromMilliseconds(160);
 
+constexpr char kMessageViewContainerClassName[] = "MessageViewContainer";
 constexpr char kMoveDownAnimationSmoothnessHistogramName[] =
     "Ash.Notification.MoveDown.AnimationSmoothness";
 constexpr char kClearAllStackedAnimationSmoothnessHistogramName[] =
@@ -170,7 +173,9 @@ class UnifiedMessageListView::MessageViewContainer
     PreferredSizeChanged();
   }
 
-  const char* GetClassName() const override { return "UnifiedMessageListView"; }
+  const char* GetClassName() const override {
+    return kMessageViewContainerClassName;
+  }
 
   // MessageView::Observer:
   void OnSlideChanged(const std::string& notification_id) override {
@@ -206,6 +211,8 @@ class UnifiedMessageListView::MessageViewContainer
 
   bool is_slid_out() { return is_slid_out_; }
 
+  MessageView* message_view() { return message_view_; }
+
  private:
   // The bounds that the container starts animating from. If not animating, it's
   // ignored.
@@ -239,18 +246,12 @@ UnifiedMessageListView::UnifiedMessageListView(
       message_center_view_(message_center_view),
       model_(model),
       animation_(std::make_unique<gfx::LinearAnimation>(this)) {
-  MessageCenter::Get()->AddObserver(this);
   animation_->SetCurrentValue(1.0);
   SetBackground(views::CreateSolidBackground(
       message_center_style::kSwipeControlBackgroundColor));
 }
 
 UnifiedMessageListView::~UnifiedMessageListView() {
-  // The MessageCenter may be destroyed already during shutdown. See
-  // crbug.com/946153.
-  if (MessageCenter::Get())
-    MessageCenter::Get()->RemoveObserver(this);
-
   model_->ClearNotificationChanges();
   for (auto* view : children())
     AsMVC(view)->StoreExpandedState(model_);
@@ -386,6 +387,21 @@ gfx::Size UnifiedMessageListView::CalculatePreferredSize() const {
 
 const char* UnifiedMessageListView::GetClassName() const {
   return "UnifiedMessageListView";
+}
+
+message_center::MessageView*
+UnifiedMessageListView::GetMessageViewForNotificationId(const std::string& id) {
+  auto it =
+      std::find_if(children().begin(), children().end(), [&](auto* child) {
+        DCHECK(child->GetClassName() == kMessageViewContainerClassName);
+        return static_cast<MessageViewContainer*>(child)
+                   ->message_view()
+                   ->notification_id() == id;
+      });
+
+  if (it == children().end())
+    return nullptr;
+  return static_cast<MessageViewContainer*>(*it)->message_view();
 }
 
 void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {

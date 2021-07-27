@@ -116,10 +116,6 @@ MessageView::~MessageView() {
   RemovedFromWidget();
 }
 
-void MessageView::AddGroupedNotification(const Notification& notification) {
-  // Stub
-}
-
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
   std::u16string new_accessible_name = CreateAccessibleName(notification);

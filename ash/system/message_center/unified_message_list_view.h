@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/view.h"
@@ -30,7 +31,7 @@ class UnifiedSystemTrayModel;
 // it's enclosed. This class is used only from UnifiedMessageCenterView.
 class ASH_EXPORT UnifiedMessageListView
     : public views::View,
-      public message_center::MessageCenterObserver,
+      public message_center::NotificationViewController,
       public message_center::MessageView::Observer,
       public views::AnimationDelegateViews {
  public:
@@ -84,7 +85,9 @@ class ASH_EXPORT UnifiedMessageListView
   gfx::Size CalculatePreferredSize() const override;
   const char* GetClassName() const override;
 
-  // message_center::MessageCenterObserver:
+  // message_center::NotificationViewController:
+  message_center::MessageView* GetMessageViewForNotificationId(
+      const std::string& id) override;
   void OnNotificationAdded(const std::string& id) override;
   void OnNotificationRemoved(const std::string& id, bool by_user) override;
   void OnNotificationUpdated(const std::string& id) override;

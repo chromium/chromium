@@ -73,6 +73,8 @@ component("message_center") {
       "notification_blocker.h",
       "notification_list.cc",
       "notification_list.h",
+      "notification_view_controller.cc",
+      "notification_view_controller.h",
       "popup_timer.cc",
       "popup_timer.h",
       "popup_timers_controller.cc",

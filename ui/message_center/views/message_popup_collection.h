@@ -13,6 +13,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/notification_view_controller.h"
+#include "ui/message_center/views/message_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace base {
@@ -36,7 +38,7 @@ class PopupAlignmentDelegate;
 // Container of notification popups usually shown at the right bottom of the
 // screen. Manages animation state and updates these popup widgets.
 class MESSAGE_CENTER_EXPORT MessagePopupCollection
-    : public MessageCenterObserver,
+    : public NotificationViewController,
       public gfx::AnimationDelegate {
  public:
   MessagePopupCollection();
@@ -55,7 +57,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Notify the popup is closed. Called from MessagePopupView.
   virtual void NotifyPopupClosed(MessagePopupView* popup);
 
-  // MessageCenterObserver:
+  // NotificationViewController:
+  MessageView* GetMessageViewForNotificationId(
+      const std::string& notification_id) override;
   void OnNotificationAdded(const std::string& notification_id) override;
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;
@@ -212,8 +216,6 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   // Return true if a popup is actually added. It may still return false when
   // HasAddedPopup() return true by the lack of work area to show popup.
   bool AddPopup();
-
-  bool AddInExistingGroup(Notification* notification);
 
   // Mark |is_animating| flag of removed popup to true for FADE_OUT animation.
   void MarkRemovedPopup();

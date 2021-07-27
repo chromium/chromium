@@ -152,6 +152,10 @@ bool MessageCenterImpl::IsSpokenFeedbackEnabled() const {
   return spoken_feedback_enabled_;
 }
 
+Notification* MessageCenterImpl::FindNotificationById(const std::string& id) {
+  return notification_list_->GetNotificationById(id);
+}
+
 Notification* MessageCenterImpl::FindOldestNotificationByNotiferId(
     const NotifierId& notifier_id) {
   auto notifier_id_match = [&notifier_id](Notification* notification) {
@@ -232,6 +236,12 @@ void MessageCenterImpl::AddNotification(
   if (already_exists) {
     UpdateNotification(id, std::move(notification));
     return;
+  }
+
+  auto* parent = FindOldestNotificationByNotiferId(notification->notifier_id());
+  if (notification->allow_group() && parent) {
+    parent->SetGroupParent();
+    notification->SetGroupChild();
   }
 
   notification_list_->AddNotification(std::move(notification));

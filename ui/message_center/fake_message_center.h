@@ -33,6 +33,7 @@ class FakeMessageCenter : public MessageCenter {
   bool HasPopupNotifications() const override;
   bool IsQuietMode() const override;
   bool IsSpokenFeedbackEnabled() const override;
+  Notification* FindNotificationById(const std::string& id) override;
   Notification* FindOldestNotificationByNotiferId(
       const NotifierId& notifier_id) override;
   Notification* FindPopupNotificationById(const std::string& id) override;

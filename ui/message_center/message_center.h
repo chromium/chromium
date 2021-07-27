@@ -79,8 +79,12 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Returns true if chrome vox spoken feedback is enabled.
   virtual bool IsSpokenFeedbackEnabled() const = 0;
 
-  // Find the oldest notification by the corresponding notifier id. Returns null
-  // if not found. The returned instance is owned by the message center.
+  // Returns the notification with the corresponding id. If not found, returns
+  // nullptr. Notification instance is owned by this list.
+  virtual Notification* FindNotificationById(const std::string& id) = 0;
+
+  // Find the oldest notification by the corresponding notifier id. Returns
+  // nullptr if not found. The returned instance is owned by the message center.
   virtual Notification* FindOldestNotificationByNotiferId(
       const NotifierId& notifier_id) = 0;
 
