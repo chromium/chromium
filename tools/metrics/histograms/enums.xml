@@ -2843,6 +2843,8 @@ Unknown properties are collapsed to zero. -->
              &amp; Stable on Android"/>
   <int value="38" label="Manifest URL was changed during fetch"/>
   <int value="39" label="Manifest display_override value not supported"/>
+  <int value="40" label="Offline is not capable"/>
+  <int value="41" label="Pipeline should restart so it stops running one"/>
 </enum>
 
 <enum name="AppBannersInstallEvent">

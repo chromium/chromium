@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/models/image_model.h"
@@ -60,7 +61,16 @@ void IntentPickerTabHelper::SetShouldShowIcon(
 }
 
 IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* provider = web_app::WebAppProvider::Get(profile);
+
+  // Profile might not contain a web app provider. eg. kiosk profile in
+  // Chrome OS.
+  if (provider)
+    registrar_observation_.Observe(&provider->registrar());
+}
 
 // static
 void IntentPickerTabHelper::LoadAppIcons(
@@ -137,6 +147,24 @@ void IntentPickerTabHelper::DidFinishNavigation(
       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
     apps::MaybeShowIntentPicker(navigation_handle);
   }
+}
+
+void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+
+  // WebAppTabHelper has an app_id but it is reset during
+  // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
+  auto local_app_id =
+      web_app::WebAppProvider::Get(profile)->registrar().FindAppWithUrlInScope(
+          web_contents()->GetLastCommittedURL());
+  if (app_id == local_app_id)
+    SetShouldShowIcon(web_contents(), false);
+}
+
+void IntentPickerTabHelper::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper)

@@ -4042,8 +4042,8 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
     // If PWA is already loaded, call callback immediately.
     Installable installable =
         app_banner_manager_->GetInstallableWebAppCheckResultForTesting();
-    if (installable == Installable::kPromotable ||
-        installable == Installable::kByUserRequest) {
+    if (installable == Installable::kYes_Promotable ||
+        installable == Installable::kYes_ByUserRequest) {
       observation_.Reset();
       std::move(callback_).Run();
     }
@@ -4056,16 +4056,16 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
     switch (installable) {
       case Installable::kNo:
         FALLTHROUGH;
-      case Installable::kNoAlreadyInstalled:
+      case Installable::kNo_AlreadyInstalled:
         FALLTHROUGH;
       case Installable::kUnknown:
         DCHECK(false) << "Unexpected AppBannerManager::Installable value (kNo "
                          "or kNoAlreadyInstalled or kUnknown)";
         break;
 
-      case Installable::kPromotable:
+      case Installable::kYes_Promotable:
         FALLTHROUGH;
-      case Installable::kByUserRequest:
+      case Installable::kYes_ByUserRequest:
         observation_.Reset();
         std::move(callback_).Run();
         break;

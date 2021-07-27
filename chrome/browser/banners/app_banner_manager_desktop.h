@@ -87,11 +87,14 @@ class AppBannerManagerDesktop
 
   // web_app::AppRegistrarObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
   void CreateWebApp(WebappInstallSource install_source);
 
   extensions::ExtensionRegistry* extension_registry_;
+  web_app::AppId uninstalling_app_id_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>

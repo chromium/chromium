@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   EXPECT_EQ(
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
       webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNoAlreadyInstalled);
+          kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   EXPECT_EQ(
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
       webapps::AppBannerManager::InstallableWebAppCheckResult::
-          kNoAlreadyInstalled);
+          kNo_AlreadyInstalled);
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
 
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   EXPECT_EQ(
       result.app_banner_manager->GetInstallableWebAppCheckResultForTesting(),
-      webapps::AppBannerManager::InstallableWebAppCheckResult::kPromotable);
+      webapps::AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 }
 
