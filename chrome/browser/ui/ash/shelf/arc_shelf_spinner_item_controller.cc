@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
+#include "chrome/browser/ash/full_restore/arc_app_launch_handler.h"
+#include "chrome/browser/ash/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"

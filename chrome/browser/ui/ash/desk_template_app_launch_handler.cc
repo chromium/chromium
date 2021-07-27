@@ -8,8 +8,8 @@
 
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
+#include "chrome/browser/ash/full_restore/full_restore_app_launch_handler.h"
+#include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"

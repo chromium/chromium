@@ -1018,7 +1018,7 @@
       'filepath': 'fuchsia',
     },
     'full_restore': {
-      'filepath': 'chrome/browser/chromeos/full_restore/|' \
+      'filepath': 'chrome/browser/ash/full_restore/|' \
                   'components/full_restore/'
     },
     'fuzzing': {
