@@ -686,7 +686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.CryptidRenderResult" enum="CryptidRenderResult"
-    expires_after="2021-11-21">
+    expires_after="2022-01-23">
   <owner>tmartino@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -1247,7 +1247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilDismissal"
-    units="units" expires_after="2021-11-21">
+    units="units" expires_after="2022-01-23">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
