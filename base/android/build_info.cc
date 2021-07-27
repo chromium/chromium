@@ -86,5 +86,11 @@ BuildInfo* BuildInfo::GetInstance() {
   return Singleton<BuildInfo, BuildInfoSingletonTraits >::get();
 }
 
+// static
+bool BuildInfo::IsAtLeastS() {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_BuildInfo_isAtLeastS(env);
+}
+
 }  // namespace android
 }  // namespace base
