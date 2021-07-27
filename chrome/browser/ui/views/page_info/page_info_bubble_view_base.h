@@ -65,6 +65,7 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
+  void WebContentsDestroyed() override;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewBase);
 };

@@ -212,6 +212,22 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {
             PageInfoBubbleView::GetShownBubbleType());
 }
 
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       StopShowingBubbleWhenWebContentsDestroyed) {
+  // Open a new tab so the whole browser does not close once we close
+  // the tab via WebContents::Close() below.
+  AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
+                ui::PAGE_TRANSITION_TYPED);
+  OpenPageInfoBubble(browser());
+  EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
+            PageInfoBubbleView::GetShownBubbleType());
+
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
+            PageInfoBubbleView::GetShownBubbleType());
+}
+
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ChromeURL) {
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings"));
   OpenPageInfoBubble(browser());

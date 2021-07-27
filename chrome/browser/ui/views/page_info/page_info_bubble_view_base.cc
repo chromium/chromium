@@ -89,5 +89,9 @@ void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
   GetWidget()->Close();
 }
 
+void PageInfoBubbleViewBase::WebContentsDestroyed() {
+  GetWidget()->Close();
+}
+
 BEGIN_METADATA(PageInfoBubbleViewBase, views::BubbleDialogDelegateView)
 END_METADATA
