@@ -57,8 +57,10 @@ SafeBrowsingUIManager::CreateBlockingPageForSubresource(
     const UnsafeResource& unsafe_resource) {
   SafeBrowsingSubresourceHelper::CreateForWebContents(contents, this);
   WebLayerSafeBrowsingBlockingPageFactory factory;
-  SafeBrowsingBlockingPage* blocking_page = factory.CreateSafeBrowsingPage(
-      this, contents, blocked_url, unsafe_resource);
+  safe_browsing::SafeBrowsingBlockingPage* blocking_page =
+      factory.CreateSafeBrowsingPage(this, contents, blocked_url,
+                                     {unsafe_resource},
+                                     /*should_trigger_reporting=*/false);
   return blocking_page;
 }
 

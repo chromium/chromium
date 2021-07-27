@@ -7,6 +7,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -25,7 +26,6 @@
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/real_time_url_lookup_service_factory.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"
 #include "weblayer/public/navigation.h"
@@ -226,7 +226,7 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
     load_observer.Wait();
     EXPECT_EQ(expect_interstitial, HasInterstitial());
     if (expect_interstitial) {
-      ASSERT_EQ(SafeBrowsingBlockingPage::kTypeForTesting,
+      ASSERT_EQ(safe_browsing::SafeBrowsingBlockingPage::kTypeForTesting,
                 GetSecurityInterstitialPage()->GetTypeForTesting());
       EXPECT_TRUE(GetSecurityInterstitialPage()->GetHTMLContents().length() >
                   0);

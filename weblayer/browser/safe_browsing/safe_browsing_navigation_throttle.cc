@@ -30,8 +30,10 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
     content::NavigationHandle* handle = navigation_handle();
     if (ui_manager_->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
       WebLayerSafeBrowsingBlockingPageFactory factory;
-      SafeBrowsingBlockingPage* blocking_page = factory.CreateSafeBrowsingPage(
-          ui_manager_, handle->GetWebContents(), handle->GetURL(), resource);
+      safe_browsing::SafeBrowsingBlockingPage* blocking_page =
+          factory.CreateSafeBrowsingPage(ui_manager_, handle->GetWebContents(),
+                                         handle->GetURL(), {resource},
+                                         /*should_trigger_reporting=*/false);
       std::string error_page_content = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(handle->GetWebContents(),

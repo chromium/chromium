@@ -26,9 +26,11 @@ void SafeBrowsingSubresourceHelper::ReadyToCommitNavigation(
     if (ui_manager_->PopUnsafeResourceForURL(navigation_handle->GetURL(),
                                              &resource)) {
       WebLayerSafeBrowsingBlockingPageFactory factory;
-      SafeBrowsingBlockingPage* blocking_page = factory.CreateSafeBrowsingPage(
-          ui_manager_, navigation_handle->GetWebContents(),
-          navigation_handle->GetURL(), resource);
+      safe_browsing::SafeBrowsingBlockingPage* blocking_page =
+          factory.CreateSafeBrowsingPage(
+              ui_manager_, navigation_handle->GetWebContents(),
+              navigation_handle->GetURL(), {resource},
+              /*should_trigger_reporting=*/false);
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(navigation_handle->GetWebContents(),
                                 navigation_handle->GetNavigationId(),

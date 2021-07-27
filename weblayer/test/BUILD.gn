@@ -11,6 +11,7 @@ import("//weblayer/variables.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//components/safe_browsing/buildflags.gni")
 
   weblayer_browsertests_manifest =
       "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"
@@ -267,6 +268,10 @@ test("weblayer_browsertests") {
       "//weblayer/browser/java:upstream_java",
     ]
 
+    # Necessary to avoid GN errors in Cast builds, where this target isn't defined.
+    if (safe_browsing_mode > 0) {
+      deps += [ "//components/safe_browsing/content/browser:safe_browsing_blocking_page" ]
+    }
     android_manifest =
         "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":weblayer_browsertests_manifest"
