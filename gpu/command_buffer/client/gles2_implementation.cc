@@ -5134,16 +5134,20 @@ void GLES2Implementation::BindFramebufferHelper(GLenum target,
       }
       break;
     case GL_READ_FRAMEBUFFER:
+#if EXPENSIVE_DCHECKS_ARE_ON()
       DCHECK(capabilities_.major_version >= 3 ||
              IsChromiumFramebufferMultisampleAvailable());
+#endif
       if (bound_read_framebuffer_ != framebuffer) {
         bound_read_framebuffer_ = framebuffer;
         changed = true;
       }
       break;
     case GL_DRAW_FRAMEBUFFER:
+#if EXPENSIVE_DCHECKS_ARE_ON()
       DCHECK(capabilities_.major_version >= 3 ||
              IsChromiumFramebufferMultisampleAvailable());
+#endif
       if (bound_framebuffer_ != framebuffer) {
         bound_framebuffer_ = framebuffer;
         changed = true;
