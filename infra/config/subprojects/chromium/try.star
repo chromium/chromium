@@ -478,8 +478,7 @@ try_.chromium_android_builder(
     goma_jobs = goma.jobs.J300,
     ssd = True,
     main_list_view = "try",
-    # TODO(crbug.com/1233700): Re-enable this builder
-    # tryjob = try_.job(),
+    tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
