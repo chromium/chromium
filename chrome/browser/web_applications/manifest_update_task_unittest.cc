@@ -43,76 +43,84 @@ class ManifestUpdateTaskTest : public testing::Test {
   ~ManifestUpdateTaskTest() override = default;
 };
 
-// Below tests primarily test HaveFileHandlersChanged.
-// Basic tests like added/removed/unchanged handlers are also in
-// functional tests at ManifestUpdateManagerBrowserTestWithFileHandling.
+// Below tests primarily test file handler comparison after conversion from
+// manifest format. Basic tests like added/removed/unchanged handlers are also
+// in functional tests at ManifestUpdateManagerBrowserTestWithFileHandling.
 TEST_F(ManifestUpdateTaskTest, TestFileHandlersUnchanged) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
-      GetDefaultManifestFileHandlers();
+  apps::FileHandlers new_handlers = CreateFileHandlersFromManifest(
+      GetDefaultManifestFileHandlers(), GURL("http://foo.com"));
 
-  EXPECT_FALSE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_EQ(old_handlers, new_handlers);
 }
 
 TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
+  std::vector<blink::Manifest::FileHandler> manifest_handlers =
       GetDefaultManifestFileHandlers();
   blink::Manifest::FileHandler second_handler;
   second_handler.action = GURL("http://foo.com/?csv");
   second_handler.name = u"Comma-Separated Value";
   std::vector<std::u16string> extensions = {u".csv"};
   second_handler.accept.emplace(u"text/csv", extensions);
-  new_handlers.push_back(second_handler);
+  manifest_handlers.push_back(second_handler);
 
-  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  apps::FileHandlers new_handlers =
+      CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
+  EXPECT_NE(old_handlers, new_handlers);
 }
 
+// Ignore name changes, because the registrar doesn't store the name.
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
+  std::vector<blink::Manifest::FileHandler> manifest_handlers =
       GetDefaultManifestFileHandlers();
-  new_handlers[0].name = u"Comma-Separated Values";
+  manifest_handlers[0].name = u"Comma-Separated Values";
 
-  // Ignore name changes, because the registrar doesn't store the name.
-  EXPECT_FALSE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  apps::FileHandlers new_handlers =
+      CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
+  EXPECT_EQ(old_handlers, new_handlers);
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedAction) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
+  std::vector<blink::Manifest::FileHandler> manifest_handlers =
       GetDefaultManifestFileHandlers();
-  new_handlers[0].action = GURL("/?csvtext");
+  manifest_handlers[0].action = GURL("/?csvtext");
 
-  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  apps::FileHandlers new_handlers =
+      CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
+  EXPECT_NE(old_handlers, new_handlers);
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerExtraAccept) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
+  std::vector<blink::Manifest::FileHandler> manifest_handlers =
       GetDefaultManifestFileHandlers();
   std::vector<std::u16string> csv_extensions = {u".csv"};
-  new_handlers[0].accept.emplace(u"text/csv", csv_extensions);
+  manifest_handlers[0].accept.emplace(u"text/csv", csv_extensions);
 
-  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  apps::FileHandlers new_handlers =
+      CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
+  EXPECT_NE(old_handlers, new_handlers);
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedMimeType) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
-      GetDefaultManifestFileHandlers();
   old_handlers[0].accept[0].mime_type = "text/csv";
+  apps::FileHandlers new_handlers = CreateFileHandlersFromManifest(
+      GetDefaultManifestFileHandlers(), GURL("http://foo.com"));
 
-  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_NE(old_handlers, new_handlers);
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedExtension) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
-  std::vector<blink::Manifest::FileHandler> new_handlers =
-      GetDefaultManifestFileHandlers();
   old_handlers[0].accept[0].file_extensions.emplace(".csv");
+  apps::FileHandlers new_handlers = CreateFileHandlersFromManifest(
+      GetDefaultManifestFileHandlers(), GURL("http://foo.com"));
 
-  EXPECT_TRUE(HaveFileHandlersChanged(&old_handlers, new_handlers));
+  EXPECT_NE(old_handlers, new_handlers);
 }
 
 }  // namespace web_app

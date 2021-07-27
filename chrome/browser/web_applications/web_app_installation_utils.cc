@@ -32,8 +32,6 @@ namespace web_app {
 
 namespace {
 
-const char kChromeScheme[] = "chrome";
-
 std::vector<SquareSizePx> GetSquareSizePxs(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
   std::vector<SquareSizePx> sizes;
@@ -62,38 +60,6 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
   return shortcuts_menu_icons_sizes;
 }
 
-void SetWebAppFileHandlers(
-    const std::vector<blink::Manifest::FileHandler>& manifest_file_handlers,
-    WebApp& web_app) {
-  apps::FileHandlers web_app_file_handlers;
-
-  for (const auto& manifest_file_handler : manifest_file_handlers) {
-    apps::FileHandler web_app_file_handler;
-    web_app_file_handler.action = manifest_file_handler.action;
-
-    for (const auto& it : manifest_file_handler.accept) {
-      apps::FileHandler::AcceptEntry web_app_accept_entry;
-      web_app_accept_entry.mime_type = base::UTF16ToUTF8(it.first);
-      for (const auto& manifest_file_extension : it.second) {
-        web_app_accept_entry.file_extensions.insert(
-            base::UTF16ToUTF8(manifest_file_extension));
-      }
-      web_app_file_handler.accept.push_back(std::move(web_app_accept_entry));
-    }
-
-    web_app_file_handlers.push_back(std::move(web_app_file_handler));
-
-    if (web_app_file_handlers.size() == kMaxFileHandlers &&
-        !web_app.scope().SchemeIs(kChromeScheme)) {
-      break;
-    }
-  }
-
-  DCHECK(web_app_file_handlers.size() <= kMaxFileHandlers ||
-         web_app.scope().SchemeIs(kChromeScheme));
-
-  web_app.SetFileHandlers(std::move(web_app_file_handlers));
-}
 
 void SetWebAppProtocolHandlers(
     const std::vector<blink::Manifest::ProtocolHandler>& protocol_handlers,
@@ -156,7 +122,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
       GetDownloadedShortcutsMenuIconsSizes(
           web_app_info.shortcuts_menu_icon_bitmaps));
 
-  SetWebAppFileHandlers(web_app_info.file_handlers, web_app);
+  web_app.SetFileHandlers(web_app_info.file_handlers);
   web_app.SetShareTarget(web_app_info.share_target);
   SetWebAppProtocolHandlers(web_app_info.protocol_handlers, web_app);
   web_app.SetUrlHandlers(web_app_info.url_handlers);

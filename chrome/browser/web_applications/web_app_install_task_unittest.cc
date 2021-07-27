@@ -1812,7 +1812,9 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   // Update the app, adding a file handler.
   auto app_info = CreateWebApplicationInfo(url);
-  AddFileHandler(&app_info->file_handlers);
+  std::vector<blink::Manifest::FileHandler> file_handlers;
+  AddFileHandler(&file_handlers);
+  app_info->file_handlers = CreateFileHandlersFromManifest(file_handlers, url);
 
   InstallResult update_result =
       UpdateWebAppFromInfo(app_id, std::move(app_info));
@@ -1842,7 +1844,9 @@ TEST_F(WebAppInstallTaskTestWithFileHandlers,
 
   // Update the app, adding a file handler.
   auto app_info = CreateWebApplicationInfo(url);
-  AddFileHandler(&app_info->file_handlers);
+  std::vector<blink::Manifest::FileHandler> file_handlers;
+  AddFileHandler(&file_handlers);
+  app_info->file_handlers = CreateFileHandlersFromManifest(file_handlers, url);
 
   InstallResult update_result =
       UpdateWebAppFromInfo(app_id, std::move(app_info));

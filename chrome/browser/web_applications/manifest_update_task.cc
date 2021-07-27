@@ -114,57 +114,6 @@ bool AllowUnpromptedIconUpdate(const AppId& app_id,
 
 }  // namespace
 
-bool HaveFileHandlersChanged(
-    const apps::FileHandlers* old_handlers,
-    const std::vector<blink::Manifest::FileHandler>& new_handlers) {
-  if (!old_handlers)
-    return true;
-
-  if (old_handlers->size() != new_handlers.size())
-    return true;
-
-  for (size_t i = 0; i < old_handlers->size(); ++i) {
-    // Compare apps::FileHandler and blink::Manifest::FileHandler.
-    const apps::FileHandler& old_handler = (*old_handlers)[i];
-    const blink::Manifest::FileHandler& new_handler = new_handlers[i];
-
-    if (old_handler.action != new_handler.action)
-      return true;
-
-    // Note: While blink::Manifest::FileHandler contains a `name` field, the
-    // corresponding apps::FileHandler doesn't store this field.  As a result,
-    // we don't compare the incoming blink::Manifest::FileHandler `name` field
-    // anywhere and so it has no effect on the comparison result.
-
-    // Check `accept` maps for equality.
-    if (old_handler.accept.size() != new_handler.accept.size())
-      return true;
-
-    for (const auto& old_accept_entry : old_handler.accept) {
-      auto new_accept_it = new_handler.accept.find(
-          base::UTF8ToUTF16(old_accept_entry.mime_type));
-      if (new_accept_it == new_handler.accept.end())
-        return true;
-
-      // Check `file_extensions` for equality.
-      const base::flat_set<std::string>& old_extensions_set =
-          old_accept_entry.file_extensions;
-      const std::vector<std::u16string>& new_extensions_list =
-          new_accept_it->second;
-
-      if (old_extensions_set.size() != new_extensions_list.size())
-        return true;
-      for (const std::u16string& new_extension : new_extensions_list) {
-        if (!base::Contains(old_extensions_set,
-                            base::UTF16ToUTF8(new_extension))) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
-
 bool HaveProtocolHandlersChanged(
     const apps::ProtocolHandlers* old_handlers,
     const std::vector<blink::Manifest::ProtocolHandler>& new_handlers) {
@@ -380,9 +329,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   }
 
   if (os_integration_manager_.IsFileHandlingAPIAvailable(app_id_) &&
-      HaveFileHandlersChanged(
-          /*old_handlers=*/registrar_.GetAppFileHandlers(app_id_),
-          /*new_handlers=*/web_application_info_->file_handlers)) {
+      app->file_handlers() != web_application_info_->file_handlers) {
     return true;
   }
 

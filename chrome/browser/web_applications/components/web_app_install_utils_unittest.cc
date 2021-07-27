@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
@@ -156,17 +158,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[4].url);
 
   // Check file handlers were updated.
-  EXPECT_EQ(1u, web_app_info.file_handlers.size());
+  ASSERT_EQ(1u, web_app_info.file_handlers.size());
   auto file_handler = web_app_info.file_handlers;
+  ASSERT_EQ(1u, file_handler[0].accept.size());
+  EXPECT_EQ(file_handler[0].accept[0].mime_type, "image/png");
   EXPECT_EQ(manifest.file_handlers[0].action, file_handler[0].action);
-  ASSERT_EQ(file_handler[0].accept.count(u"image/png"), 1u);
-  EXPECT_EQ(file_handler[0].accept[u"image/png"][0], u".png");
-  EXPECT_EQ(file_handler[0].name, u"Images");
-  EXPECT_EQ(file_handler[0].icons.size(), 1u);
-  // TODO(https://crbug.com/1218210): Consider having WebApplicationInfo's
-  // file handlers use WebApplicationIconInfo, like used for other icons in
-  // this layer, rather than ImageResource.
-  EXPECT_EQ(file_handler[0].icons[0].src, kFileHandlingIcon);
+  EXPECT_TRUE(file_handler[0].accept[0].file_extensions.contains(".png"));
 
   // Check protocol handlers were updated.
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
@@ -174,6 +171,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(protocol_handler.protocol, u"mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
+  // Check URL handlers were updated.
   EXPECT_EQ(1u, web_app_info.url_handlers.size());
   auto url_handler = web_app_info.url_handlers[0];
   EXPECT_EQ(url_handler.origin,
@@ -466,17 +464,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_EQ(kIconUrl3, web_app_shortcut_icon.url);
 
   // Check file handlers were updated.
-  EXPECT_EQ(1u, web_app_info.file_handlers.size());
+  ASSERT_EQ(1u, web_app_info.file_handlers.size());
   auto file_handler = web_app_info.file_handlers;
+  ASSERT_EQ(1u, file_handler[0].accept.size());
+  EXPECT_EQ(file_handler[0].accept[0].mime_type, "image/png");
   EXPECT_EQ(manifest.file_handlers[0].action, file_handler[0].action);
-  ASSERT_EQ(file_handler[0].accept.count(u"image/png"), 1u);
-  EXPECT_EQ(file_handler[0].accept[u"image/png"][0], u".png");
-  EXPECT_EQ(file_handler[0].name, u"Images");
-  EXPECT_EQ(file_handler[0].icons.size(), 1u);
-  // TODO(https://crbug.com/1218210): Consider having WebApplicationInfo's
-  // file handlers use WebApplicationIconInfo, like used for other icons in
-  // this layer, rather than ImageResource.
-  EXPECT_EQ(file_handler[0].icons[0].src, kFileHandlingIcon);
+  EXPECT_TRUE(file_handler[0].accept[0].file_extensions.contains(".png"));
 
   // Check protocol handlers were updated.
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
@@ -805,6 +798,45 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingWithShortcutIcons) {
   EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
   for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
+  }
+}
+
+TEST(WebAppInstallUtils, CreateFileHandlersFromManifest_MaxFileHandlers) {
+  const GURL start_url = GURL("https://www.example.com/index.html");
+
+  auto action_url = [&start_url](unsigned index) {
+    return start_url.Resolve(base::StringPrintf("a%u", index));
+  };
+
+  auto mime_type = [](unsigned index) {
+    return base::StringPrintf("application/x-%u", index);
+  };
+
+  auto extension = [](unsigned index) {
+    return base::StringPrintf(".e%u", index);
+  };
+
+  // Add more than |kMaxFileHandlers| file handlers.
+  std::vector<blink::Manifest::FileHandler> manifest_file_handlers;
+  for (unsigned i = 0; i <= 2 * kMaxFileHandlers; ++i) {
+    const std::u16string name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
+    std::map<std::u16string, std::vector<std::u16string>> accept;
+    accept[base::UTF8ToUTF16(mime_type(i))] = {base::UTF8ToUTF16(extension(i))};
+    manifest_file_handlers.push_back(
+        {action_url(i), u"unused name",
+         std::vector<blink::Manifest::ImageResource>(), std::move(accept)});
+  }
+
+  apps::FileHandlers file_handlers =
+      CreateFileHandlersFromManifest(manifest_file_handlers, start_url);
+  EXPECT_EQ(file_handlers.size(), kMaxFileHandlers);
+  for (unsigned i = 0; i < kMaxFileHandlers; ++i) {
+    EXPECT_EQ(file_handlers[i].action, action_url(i));
+    EXPECT_EQ(file_handlers[i].accept.size(), 1U);
+    EXPECT_EQ(file_handlers[i].accept[0].mime_type, mime_type(i));
+    EXPECT_EQ(file_handlers[i].accept[0].file_extensions.size(), 1U);
+    EXPECT_EQ(*file_handlers[i].accept[0].file_extensions.begin(),
+              extension(i));
   }
 }
 

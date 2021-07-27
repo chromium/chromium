@@ -23,7 +23,7 @@ namespace {
 
 // FileHandler configuration.
 // See https://github.com/WICG/file-handling/blob/master/explainer.md.
-constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
+constexpr std::pair<const char*, const char*> kFileHandlers[] = {
     {"image/*", ""},
     {"video/*", ""},
 
@@ -59,17 +59,19 @@ constexpr std::tuple<const char*, const char*> kFileHandlers[] = {
     {"application/pdf", ".pdf"},
 };
 
-using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
+// Converts the kFileHandlers constexpr into the type needed to populate the
+// WebApplicationInfo's `accept` property.
+std::vector<apps::FileHandler::AcceptEntry> MakeHandlerAccept() {
+  std::vector<apps::FileHandler::AcceptEntry> result;
 
-// Converts the kFileHandlers constexpr into the std::map needed to populate the
-// web app manifest's `accept` property.
-AcceptMap MakeHandlerAccept() {
-  AcceptMap result;
-  const std::u16string separator = u",";
+  const std::string separator = ",";
   for (const auto& handler : kFileHandlers) {
-    result[base::ASCIIToUTF16(std::get<0>(handler))] =
-        base::SplitString(base::ASCIIToUTF16(std::get<1>(handler)), separator,
-                          base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    result.emplace_back();
+    result.back().mime_type = handler.first;
+    auto file_extensions = base::SplitString(
+        handler.second, separator, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    result.back().file_extensions.insert(file_extensions.begin(),
+                                         file_extensions.end());
   }
   return result;
 }
@@ -104,7 +106,6 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
           {"app_icon_128.png", 128, IDR_MEDIA_APP_GALLERY_ICON_128_PNG},
           {"app_icon_192.png", 192, IDR_MEDIA_APP_GALLERY_ICON_192_PNG},
           {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
-
       },
       *info);
   info->theme_color = 0xff202124;
@@ -112,9 +113,8 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->open_as_window = true;
 
-  blink::Manifest::FileHandler file_handler;
+  apps::FileHandler file_handler;
   file_handler.action = GURL(chromeos::kChromeUIMediaAppURL);
-  file_handler.name = u"Media File";
   file_handler.accept = MakeHandlerAccept();
   info->file_handlers.push_back(std::move(file_handler));
   return info;

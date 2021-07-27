@@ -81,10 +81,9 @@ bool AreAppsLocallyInstalledBySync();
 // `profile`. In other words, if `new_handlers` would not change the text
 // returned by `GetFileHandlersForAllWebAppsWithOrigin()`, then this will return
 // true, otherwise false.
-bool AreFileHandlersAlreadyRegistered(
-    Profile* profile,
-    const GURL& url,
-    const std::vector<blink::Manifest::FileHandler>& new_handlers);
+bool AreFileHandlersAlreadyRegistered(Profile* profile,
+                                      const GURL& url,
+                                      const apps::FileHandlers& new_handlers);
 
 // Returns all file handlers associated with any apps at the origin of `url`, in
 // the `profile`. This is not limited to a particular app's scope because it's

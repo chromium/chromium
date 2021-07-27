@@ -10,14 +10,12 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 struct WebApplicationInfo;
 class SkBitmap;
-
-namespace blink {
-struct Manifest;
-}
 
 namespace content {
 class WebContents;
@@ -35,6 +33,11 @@ enum class ForInstallableSite {
   kNo,
   kUnknown,
 };
+
+// Converts from the manifest type to the Chrome type.
+apps::FileHandlers CreateFileHandlersFromManifest(
+    const std::vector<blink::Manifest::FileHandler>& manifest_file_handlers,
+    const GURL& app_scope);
 
 // Update the given WebApplicationInfo with information from the manifest.
 // Will sanitise the manifest fields to be suitable for installation to prevent

@@ -85,13 +85,13 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
   if (content_setting == CONTENT_SETTING_BLOCK)
     return FileHandlerUpdateAction::kNoUpdate;
 
-  // TODO(https://crbug.com/1197013): Consider trying to re-use
-  // HaveFileHandlersChanged() results from the ManifestUpdateTask.
-  if (!HaveFileHandlersChanged(
-          /*old_handlers=*/finalizer_->registrar().GetAppFileHandlers(app_id),
-          /*new_handlers=*/web_app_info.file_handlers)) {
+  // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
+  // results from the ManifestUpdateTask.
+  const apps::FileHandlers* old_handlers =
+      finalizer_->registrar().GetAppFileHandlers(app_id);
+  DCHECK(old_handlers);
+  if (*old_handlers == web_app_info.file_handlers)
     return FileHandlerUpdateAction::kNoUpdate;
-  }
 
   return FileHandlerUpdateAction::kUpdate;
 }

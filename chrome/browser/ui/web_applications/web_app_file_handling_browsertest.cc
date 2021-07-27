@@ -143,26 +143,29 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     web_app_info->title = u"A Hosted App";
 
     // Basic plain text format.
-    blink::Manifest::FileHandler entry1;
+    apps::FileHandler entry1;
     entry1.action = GetTextFileHandlerActionURL();
-    entry1.name = u"text";
-    entry1.accept[u"text/*"].push_back(u".txt");
+    entry1.accept.emplace_back();
+    entry1.accept[0].mime_type = "text/*";
+    entry1.accept[0].file_extensions.insert(".txt");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
     // A format that the browser is also a handler for, to confirm that the
     // browser doesn't override PWAs using File Handling for types that the
     // browser also handles.
-    blink::Manifest::FileHandler entry2;
+    apps::FileHandler entry2;
     entry2.action = GetHTMLFileHandlerActionURL();
-    entry2.name = u"html";
-    entry2.accept[u"text/html"].push_back(u".html");
+    entry2.accept.emplace_back();
+    entry2.accept[0].mime_type = "text/html";
+    entry2.accept[0].file_extensions.insert(".html");
     web_app_info->file_handlers.push_back(std::move(entry2));
 
     // application/* format.
-    blink::Manifest::FileHandler entry3;
+    apps::FileHandler entry3;
     entry3.action = GetCSVFileHandlerActionURL();
-    entry3.name = u"csv";
-    entry3.accept[u"application/csv"].push_back(u".csv");
+    entry3.accept.emplace_back();
+    entry3.accept[0].mime_type = "application/csv";
+    entry3.accept[0].file_extensions.insert(".csv");
     web_app_info->file_handlers.push_back(std::move(entry3));
 
     app_id_ =
@@ -176,10 +179,11 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     web_app_info->title = u"A second app";
 
     // This one handles jpegs.
-    blink::Manifest::FileHandler entry1;
+    apps::FileHandler entry1;
     entry1.action = GetTextFileHandlerActionURL();
-    entry1.name = u"jpeg";
-    entry1.accept[u"image/jpeg"].push_back(u".jpeg");
+    entry1.accept.emplace_back();
+    entry1.accept[0].mime_type = "image/jpeg";
+    entry1.accept[0].file_extensions.insert(".jpeg");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
     WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
@@ -396,11 +400,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
   web_app_info->title = u"An app that redirects";
 
-  blink::Manifest::FileHandler entry;
+  apps::FileHandler entry;
   entry.action = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files_with_redirect.html");
-  entry.name = u"text";
-  entry.accept[u"text/*"].push_back(u".txt");
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
   web_app_info->file_handlers.push_back(std::move(entry));
 
   AppId app_id =
@@ -429,12 +434,13 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
   web_app_info->title = u"An app that redirects to a different origin";
 
-  blink::Manifest::FileHandler entry;
+  apps::FileHandler entry;
   entry.action = https_server()->GetURL(
       "app.com",
       "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
-  entry.name = u"text";
-  entry.accept[u"text/*"].push_back(u".txt");
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
   web_app_info->file_handlers.push_back(std::move(entry));
 
   AppId app_id =
@@ -484,16 +490,19 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     web_app_info->scope = web_app_info->start_url;
     web_app_info->title = u"Many File Handlers";
 
+    std::vector<blink::Manifest::FileHandler> file_handlers;
     for (unsigned i = 0; i < kNumHandlers; ++i) {
       const std::u16string name =
           base::UTF8ToUTF16(base::StringPrintf("n%u", i));
       std::map<std::u16string, std::vector<std::u16string>> accept;
       accept[base::UTF8ToUTF16(mime_type(i))] = {
           base::UTF8ToUTF16(extension(i))};
-      web_app_info->file_handlers.push_back(
-          {action_url(i), name, std::vector<blink::Manifest::ImageResource>(),
-           std::move(accept)});
+      file_handlers.push_back({action_url(i), name,
+                               std::vector<blink::Manifest::ImageResource>(),
+                               std::move(accept)});
     }
+    web_app_info->file_handlers =
+        CreateFileHandlersFromManifest(file_handlers, web_app_info->scope);
 
     app_id =
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
@@ -997,10 +1006,11 @@ class WebAppFileHandlingOriginTrialTest : public WebAppControllerBrowserTest {
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A Web App";
 
-    blink::Manifest::FileHandler entry1;
+    apps::FileHandler entry1;
     entry1.action = start_url;
-    entry1.name = u"text";
-    entry1.accept[u"text/*"].push_back(u".txt");
+    entry1.accept.emplace_back();
+    entry1.accept[0].mime_type = "text/*";
+    entry1.accept[0].file_extensions.insert(".txt");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
     AppId app_id =

@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/values.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
@@ -251,7 +252,7 @@ struct WebApplicationInfo {
   bool enable_experimental_tabbed_window = false;
 
   // The extensions and mime types the app can handle.
-  std::vector<blink::Manifest::FileHandler> file_handlers;
+  apps::FileHandlers file_handlers;
 
   // File types the app accepts as a Web Share Target.
   absl::optional<apps::ShareTarget> share_target;

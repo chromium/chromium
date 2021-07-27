@@ -30,13 +30,6 @@ namespace web_app {
 enum class AppIdentityUpdate;
 struct IconDiff;
 
-// Checks for whether file handlers have changed. Ignores differences in names,
-// which aren't stored in the apps::FileHandlers, and ordering, which may
-// change after being inserted into a set or map.
-bool HaveFileHandlersChanged(
-    const apps::FileHandlers* old_handlers,
-    const std::vector<blink::Manifest::FileHandler>& new_handlers);
-
 // Checks whether protocol handlers have changed. Ignores differences in
 // ordering, which may change after being inserted into a set or map.
 bool HaveProtocolHandlersChanged(
