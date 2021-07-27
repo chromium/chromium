@@ -451,6 +451,7 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
 }
 
 void AutofillManager::Reset() {
+  query_result_delay_task_.Cancel();
   form_structures_.clear();
   form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }
