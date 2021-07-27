@@ -7190,7 +7190,6 @@ crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.h
 
 # Sheriff 2021-07-13
 crbug.com/1220114 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
-crbug.com/1228788 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-audio.https.html [ Failure Pass ]
 crbug.com/1228772 [ Linux ] external/wpt/webrtc/simulcast/h264.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1228772 [ Linux ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 crbug.com/1228959 [ Linux ] virtual/scroll-unification/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
