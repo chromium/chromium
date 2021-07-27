@@ -31,6 +31,8 @@ generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
     "index.html",
+    "mojo_interface_provider.js",
+    "shortcut_types.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_generated" ]
@@ -53,9 +55,11 @@ js_type_check("closure_compile") {
     ":chromeos_shortcuts_page",
     ":icons",
     ":input_key",
+    ":mojo_interface_provider",
     ":shortcut_customization_app",
     ":shortcut_customization_fonts_css",
     ":shortcut_input",
+    ":shortcut_types",
   ]
 }
 
@@ -132,6 +136,10 @@ js_library("input_key") {
   ]
 }
 
+js_library("mojo_interface_provider") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
 js_library("shortcut_customization_app") {
   deps = [
     ":shortcut_customization_fonts_css",
@@ -151,6 +159,9 @@ js_library("shortcut_input") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("shortcut_types") {
 }
 
 preprocess_if_expr("preprocess_generated") {
