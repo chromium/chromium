@@ -806,6 +806,7 @@ public class StartSurfaceTest {
     @Feature({"StartSurface", "TabGroup"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @FlakyTest(message = "https://crbug.com/1232695")
     public void testCreateTabWithinTabGroup() throws Exception {
         // Create tab state files for a group with two tabs.
         TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
