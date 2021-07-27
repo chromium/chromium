@@ -51,6 +51,7 @@ body:is(:not(.show-scanner-mode), :not(.scanner), :not(.streaming)) #scanner-mod
 
 .scanner-mode-item > div.label {
   border-radius: var(--border-radius-rounded-with-short-side);
+  font-family: var(--default-font-family);
   line-height: 20px;
   padding: 6px 16px;
   size: 14px;
