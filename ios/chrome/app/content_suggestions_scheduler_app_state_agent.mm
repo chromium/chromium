@@ -23,7 +23,7 @@
 
 @implementation ContentSuggestionsSchedulerAppAgent
 
-#pragma mark - SceneStateObserver
+#pragma mark - SceneObservingAppAgent
 
 - (void)appDidEnterForeground {
   [self notifyForeground];
