@@ -186,6 +186,11 @@ IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTestWithPdfPartialLoading,
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
 
+  // TODO(crbug.com/1232701): Flaky when partial loading enabled.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfPartialLoading)) {
+    return;
+  }
+
   // Load contents of a big, linearized pdf test file.
   // See also //content/test/data/linearized.pdf.README file.
   std::string pdf_contents;
