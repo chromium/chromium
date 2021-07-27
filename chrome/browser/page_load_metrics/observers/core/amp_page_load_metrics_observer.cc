@@ -535,33 +535,21 @@ void AMPPageLoadMetricsObserver::RecordMobileFriendliness(
 
   const blink::MobileFriendliness& mf = subframe_info.mobile_friendliness;
 
-  if (mf.viewport_device_width == blink::mojom::ViewportStatus::kYes)
-    builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(true);
-  else if (mf.viewport_device_width == blink::mojom::ViewportStatus::kNo)
-    builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(false);
+  // Make sure at least one MF evaluation happen.
+  if (mf.small_text_ratio == -1 && mf.bad_tap_targets_ratio == -1)
+    return;
 
-  if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kYes)
-    builder.SetSubFrame_MobileFriendliness_AllowUserZoom(true);
-  else if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kNo)
-    builder.SetSubFrame_MobileFriendliness_AllowUserZoom(false);
-
-  if (mf.small_text_ratio != -1)
-    builder.SetSubFrame_MobileFriendliness_SmallTextRatio(mf.small_text_ratio);
-
-  if (mf.viewport_initial_scale_x10 != -1) {
-    builder.SetSubFrame_MobileFriendliness_ViewportInitialScaleX10(
-        page_load_metrics::GetBucketedViewportInitialScale(mf));
-  }
-
-  if (mf.viewport_hardcoded_width != -1) {
-    builder.SetSubFrame_MobileFriendliness_ViewportHardcodedWidth(
-        page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
-  }
-  if (mf.text_content_outside_viewport_percentage != -1) {
-    builder.SetSubFrame_MobileFriendliness_TextContentOutsideViewportPercentage(
-        mf.text_content_outside_viewport_percentage);
-  }
-  if (mf.bad_tap_targets_ratio != -1)
-    builder.SetSubFrame_MobileFriendliness_BadTapTargetsRatio(
-        mf.bad_tap_targets_ratio);
+  builder.SetSubFrame_MobileFriendliness_ViewportDeviceWidth(
+      mf.viewport_device_width == blink::mojom::ViewportStatus::kYes);
+  builder.SetSubFrame_MobileFriendliness_AllowUserZoom(
+      mf.allow_user_zoom == blink::mojom::ViewportStatus::kYes);
+  builder.SetSubFrame_MobileFriendliness_SmallTextRatio(mf.small_text_ratio);
+  builder.SetSubFrame_MobileFriendliness_ViewportInitialScaleX10(
+      page_load_metrics::GetBucketedViewportInitialScale(mf));
+  builder.SetSubFrame_MobileFriendliness_ViewportHardcodedWidth(
+      page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
+  builder.SetSubFrame_MobileFriendliness_TextContentOutsideViewportPercentage(
+      mf.text_content_outside_viewport_percentage);
+  builder.SetSubFrame_MobileFriendliness_BadTapTargetsRatio(
+      mf.bad_tap_targets_ratio);
 }

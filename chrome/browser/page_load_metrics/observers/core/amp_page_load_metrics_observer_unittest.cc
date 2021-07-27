@@ -323,6 +323,7 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
 
   blink::MobileFriendliness mf;
   mf.text_content_outside_viewport_percentage = 55;
+  mf.small_text_ratio = 66;
   tester()->SimulateMobileFriendlinessUpdate(mf, subframe);
 
   page_load_metrics::mojom::PageLoadTiming subframe_timing;
@@ -380,6 +381,8 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(),
       "SubFrame.MobileFriendliness.TextContentOutsideViewportPercentage", 55);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry.get(), "SubFrame.MobileFriendliness.SmallTextRatio", 66);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics_LayoutInstability) {

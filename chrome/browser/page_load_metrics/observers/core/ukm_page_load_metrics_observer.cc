@@ -1151,36 +1151,23 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
   ukm::builders::MobileFriendliness builder(GetDelegate().GetPageUkmSourceId());
   const blink::MobileFriendliness& mf = GetDelegate().GetMobileFriendliness();
 
-  if (mf.viewport_device_width == blink::mojom::ViewportStatus::kYes)
-    builder.SetViewportDeviceWidth(true);
-  else if (mf.viewport_device_width == blink::mojom::ViewportStatus::kNo)
-    builder.SetViewportDeviceWidth(false);
+  builder.SetViewportDeviceWidth(mf.viewport_device_width ==
+                                 blink::mojom::ViewportStatus::kYes);
+  builder.SetAllowUserZoom(mf.allow_user_zoom ==
+                           blink::mojom::ViewportStatus::kYes);
 
-  if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kYes)
-    builder.SetAllowUserZoom(true);
-  else if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kNo)
-    builder.SetAllowUserZoom(false);
+  builder.SetSmallTextRatio(mf.small_text_ratio);
+  builder.SetViewportInitialScaleX10(
+      page_load_metrics::GetBucketedViewportInitialScale(mf));
+  builder.SetViewportHardcodedWidth(
+      page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
+  builder.SetTextContentOutsideViewportPercentage(
+      mf.text_content_outside_viewport_percentage);
+  builder.SetBadTapTargetsRatio(mf.bad_tap_targets_ratio);
 
-  if (mf.small_text_ratio != -1)
-    builder.SetSmallTextRatio(mf.small_text_ratio);
-
-  if (mf.viewport_initial_scale_x10 != -1)
-    builder.SetViewportInitialScaleX10(
-        page_load_metrics::GetBucketedViewportInitialScale(mf));
-
-  if (mf.viewport_hardcoded_width != -1)
-    builder.SetViewportHardcodedWidth(
-        page_load_metrics::GetBucketedViewportHardcodedWidth(mf));
-
-  if (mf.text_content_outside_viewport_percentage != -1) {
-    builder.SetTextContentOutsideViewportPercentage(
-        mf.text_content_outside_viewport_percentage);
-  }
-
-  if (mf.bad_tap_targets_ratio != -1)
-    builder.SetBadTapTargetsRatio(mf.bad_tap_targets_ratio);
-
-  builder.Record(ukm::UkmRecorder::Get());
+  // Make sure at least one MF evaluation happen.
+  if (mf.bad_tap_targets_ratio != -1 || mf.small_text_ratio != -1)
+    builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(

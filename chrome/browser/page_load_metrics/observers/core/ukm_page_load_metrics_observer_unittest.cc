@@ -1077,6 +1077,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, MobileFriendliness) {
   mobile_friendliness.viewport_hardcoded_width = 533;
   mobile_friendliness.viewport_initial_scale_x10 = 10;
   mobile_friendliness.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
+  mobile_friendliness.small_text_ratio = 2;
   const int expected_viewport_hardcoded_width = 520;
   const int expected_viewport_initial_scale = 10;
 
@@ -1102,6 +1103,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, MobileFriendliness) {
         expected_viewport_initial_scale);
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), MobileFriendliness::kAllowUserZoomName, true);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), MobileFriendliness::kSmallTextRatioName, 2);
   }
 }
 
