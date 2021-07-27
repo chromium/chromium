@@ -39,6 +39,8 @@ const char* ProtoEnumToString(sync_pb::AppSpecifics::LaunchType launch_type);
 const char* ProtoEnumToString(
     sync_pb::AutofillWalletSpecifics::WalletInfoType wallet_info_type);
 
+const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type);
+
 const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type);
 

@@ -64,7 +64,6 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   ADD_TO_DICT_WITH_TRANSFORM(dict, ctime, GetTimeDebugString);
   ADD_TO_DICT_WITH_TRANSFORM(dict, mtime, GetTimeDebugString);
   ADD_TO_DICT_WITH_TRANSFORM(dict, unique_position, UniquePositionToString);
-  dict->SetBoolean("IS_DIR", is_folder);
   return dict;
 }
 

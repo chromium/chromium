@@ -78,6 +78,17 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::BookmarkSpecifics::Type type) {
+  ASSERT_ENUM_BOUNDS(sync_pb::BookmarkSpecifics, Type, UNSPECIFIED, FOLDER);
+  switch (type) {
+    ENUM_CASE(sync_pb::BookmarkSpecifics, UNSPECIFIED);
+    ENUM_CASE(sync_pb::BookmarkSpecifics, URL);
+    ENUM_CASE(sync_pb::BookmarkSpecifics, FOLDER);
+  }
+  NOTREACHED();
+  return "";
+}
+
 const char* ProtoEnumToString(
     sync_pb::CommitResponse::ResponseType response_type) {
   ASSERT_ENUM_BOUNDS(sync_pb::CommitResponse, ResponseType, SUCCESS,

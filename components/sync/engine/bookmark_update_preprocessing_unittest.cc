@@ -176,6 +176,69 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldInferDistictGuids) {
               Ne(InferGuidForLegacyBookmarkForTesting("cacheguid2", "1")));
 }
 
+TEST(BookmarkUpdatePreprocessingTest, ShouldUseTypeInSpecifics) {
+  sync_pb::SyncEntity entity;
+  sync_pb::EntitySpecifics specifics;
+
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  specifics.mutable_bookmark()->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(),
+              Eq(sync_pb::BookmarkSpecifics::FOLDER));
+
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  specifics.mutable_bookmark()->set_type(sync_pb::BookmarkSpecifics::URL);
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(), Eq(sync_pb::BookmarkSpecifics::URL));
+
+  // Even if SyncEntity says otherwise, specifics should prevail.
+  entity.set_folder(true);
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  specifics.mutable_bookmark()->set_type(sync_pb::BookmarkSpecifics::URL);
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(), Eq(sync_pb::BookmarkSpecifics::URL));
+}
+
+TEST(BookmarkUpdatePreprocessingTest,
+     ShouldInferTypeFromFolderFieldInSyncEntity) {
+  sync_pb::SyncEntity entity;
+  sync_pb::EntitySpecifics specifics;
+
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  entity.set_folder(true);
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(),
+              Eq(sync_pb::BookmarkSpecifics::FOLDER));
+
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  entity.set_folder(false);
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(), Eq(sync_pb::BookmarkSpecifics::URL));
+}
+
+TEST(BookmarkUpdatePreprocessingTest,
+     ShouldInferTypeFromPresenceOfUrlInSpecifics) {
+  sync_pb::SyncEntity entity;
+  sync_pb::EntitySpecifics specifics;
+
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(),
+              Eq(sync_pb::BookmarkSpecifics::FOLDER));
+
+  *specifics.mutable_bookmark() =
+      sync_pb::BookmarkSpecifics::default_instance();
+  specifics.mutable_bookmark()->set_url("http://foo.com");
+  AdaptTypeForBookmark(entity, &specifics);
+  EXPECT_THAT(specifics.bookmark().type(), Eq(sync_pb::BookmarkSpecifics::URL));
+}
+
 }  // namespace
 
 }  // namespace syncer

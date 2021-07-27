@@ -449,12 +449,6 @@ bool IsTypeWithServerGeneratedRoot(ModelType model_type);
 // that type is initially synced.
 bool IsTypeWithClientGeneratedRoot(ModelType model_type);
 
-// Returns true if |model_type| supports parent-child hierarchy or entries.
-bool TypeSupportsHierarchy(ModelType model_type);
-
-// Returns true if |model_type| supports ordering of sibling entries.
-bool TypeSupportsOrdering(ModelType model_type);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_MODEL_TYPE_H_

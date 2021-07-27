@@ -88,18 +88,19 @@ class UpdateResponseDataBuilder {
     data_.id = server_id;
     data_.parent_id = parent_id;
     data_.unique_position = unique_position;
-    data_.is_folder = true;
 
     sync_pb::BookmarkSpecifics* bookmark_specifics =
         data_.specifics.mutable_bookmark();
     bookmark_specifics->set_legacy_canonicalized_title(title);
     bookmark_specifics->set_full_title(title);
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
 
     SetGuid(base::GUID::GenerateRandomV4());
   }
 
   UpdateResponseDataBuilder& SetUrl(const GURL& url) {
-    data_.is_folder = false;
+    data_.specifics.mutable_bookmark()->set_type(
+        sync_pb::BookmarkSpecifics::URL);
     data_.specifics.mutable_bookmark()->set_url(url.spec());
     return *this;
   }

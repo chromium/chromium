@@ -522,7 +522,6 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   data.modification_time =
       syncer::ProtoTimeToTime(metadata->modification_time());
   data.name = base::UTF16ToUTF8(node->GetTitle());
-  data.is_folder = node->is_folder();
   data.unique_position =
       syncer::UniquePosition::FromProto(metadata->unique_position());
   data.specifics =

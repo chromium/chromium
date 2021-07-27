@@ -438,7 +438,6 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   data.creation_time = ProtoTimeToTime(update_entity.ctime());
   data.modification_time = ProtoTimeToTime(update_entity.mtime());
   data.name = update_entity.name();
-  data.is_folder = update_entity.folder();
   data.parent_id = update_entity.parent_id_string();
   data.server_defined_unique_tag = update_entity.server_defined_unique_tag();
 
@@ -450,6 +449,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   // Adapt the update for compatibility.
   if (model_type == BOOKMARKS) {
     AdaptUniquePositionForBookmark(update_entity, &data);
+    AdaptTypeForBookmark(update_entity, &data.specifics);
     AdaptTitleForBookmark(update_entity, &data.specifics,
                           specifics_were_encrypted);
     data.is_bookmark_guid_in_specifics_preprocessed =

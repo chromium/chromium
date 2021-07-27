@@ -155,12 +155,13 @@ std::string LegacyCanonicalizedTitleFromSpecifics(
 bool NodeSemanticsMatch(const bookmarks::BookmarkNode* local_node,
                         const std::string& remote_canonicalized_title,
                         const GURL& remote_url,
-                        bool remote_is_folder) {
-  if (local_node->is_folder() != remote_is_folder) {
+                        sync_pb::BookmarkSpecifics::Type remote_type) {
+  if (GetProtoTypeFromBookmarkNode(local_node) != remote_type) {
     return false;
   }
 
-  if (!remote_is_folder && local_node->url() != remote_url) {
+  if (remote_type == sync_pb::BookmarkSpecifics::URL &&
+      local_node->url() != remote_url) {
     return false;
   }
 
@@ -182,23 +183,36 @@ bool NodeSemanticsMatch(const bookmarks::BookmarkNode* local_node,
 BookmarksGUIDDuplicates MatchBookmarksGUIDDuplicates(
     const UpdateResponseData& update,
     const UpdateResponseData& duplicate_update) {
-  if (update.entity.is_folder != duplicate_update.entity.is_folder) {
+  if (update.entity.specifics.bookmark().type() !=
+      duplicate_update.entity.specifics.bookmark().type()) {
     return BookmarksGUIDDuplicates::kDifferentTypes;
   }
-  if (update.entity.is_folder) {
-    // Both entities are folders.
-    const bool matching_titles =
-        LegacyCanonicalizedTitleFromSpecifics(
-            update.entity.specifics.bookmark()) ==
-        LegacyCanonicalizedTitleFromSpecifics(
-            duplicate_update.entity.specifics.bookmark());
-    return matching_titles ? BookmarksGUIDDuplicates::kMatchingFolders
-                           : BookmarksGUIDDuplicates::kDifferentFolders;
+
+  switch (update.entity.specifics.bookmark().type()) {
+    case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+      NOTREACHED();
+      break;
+    case sync_pb::BookmarkSpecifics::URL: {
+      const bool matching_urls =
+          update.entity.specifics.bookmark().url() ==
+          duplicate_update.entity.specifics.bookmark().url();
+      return matching_urls ? BookmarksGUIDDuplicates::kMatchingUrls
+                           : BookmarksGUIDDuplicates::kDifferentUrls;
+    }
+    case sync_pb::BookmarkSpecifics::FOLDER: {
+      // Both entities are folders.
+      const bool matching_titles =
+          LegacyCanonicalizedTitleFromSpecifics(
+              update.entity.specifics.bookmark()) ==
+          LegacyCanonicalizedTitleFromSpecifics(
+              duplicate_update.entity.specifics.bookmark());
+      return matching_titles ? BookmarksGUIDDuplicates::kMatchingFolders
+                             : BookmarksGUIDDuplicates::kDifferentFolders;
+    }
   }
-  const bool matching_urls = update.entity.specifics.bookmark().url() ==
-                             duplicate_update.entity.specifics.bookmark().url();
-  return matching_urls ? BookmarksGUIDDuplicates::kMatchingUrls
-                       : BookmarksGUIDDuplicates::kDifferentUrls;
+
+  NOTREACHED();
+  return BookmarksGUIDDuplicates();
 }
 
 void ReparentAllChildren(const std::string& from_parent_id,
@@ -235,10 +249,12 @@ bool CompareDuplicateUpdates(const UpdateResponseData& next_update,
             previous_update.entity.specifics.bookmark().guid());
   DCHECK_NE(next_update.entity.id, previous_update.entity.id);
 
-  if (next_update.entity.is_folder != previous_update.entity.is_folder) {
+  if (next_update.entity.specifics.bookmark().type() !=
+      previous_update.entity.specifics.bookmark().type()) {
     // There are two entities, one of them is a folder and another one is a
     // URL. Prefer to save the folder as it may contain many bookmarks.
-    return next_update.entity.is_folder;
+    return next_update.entity.specifics.bookmark().type() ==
+           sync_pb::BookmarkSpecifics::FOLDER;
   }
   // Choose the latest element to keep if both updates have the same type.
   return next_update.entity.creation_time >
@@ -296,14 +312,16 @@ void DeduplicateValidUpdatesByGUID(UpdatesPerParentId* updates_per_parent_id) {
 
   for (std::list<UpdateResponseData>::iterator updates_iter :
        updates_to_remove) {
-    if (updates_iter->entity.is_folder) {
+    if (updates_iter->entity.specifics.bookmark().type() ==
+        sync_pb::BookmarkSpecifics::FOLDER) {
       const base::GUID guid = base::GUID::ParseLowercase(
           updates_iter->entity.specifics.bookmark().guid());
       DCHECK(base::Contains(guid_to_update, guid));
       DCHECK(guid_to_update[guid] != updates_iter);
 
       // Never remove a folder if its duplicate is a URL.
-      DCHECK(guid_to_update[guid]->entity.is_folder);
+      DCHECK_EQ(guid_to_update[guid]->entity.specifics.bookmark().type(),
+                sync_pb::BookmarkSpecifics::FOLDER);
 
       // Merge doesn't affect iterators.
       ReparentAllChildren(
@@ -335,8 +353,7 @@ bool IsValidUpdate(const UpdateResponseData& update) {
     LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidUniquePosition);
     return false;
   }
-  if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
-                                update_entity.is_folder)) {
+  if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark())) {
     // Ignore updates with invalid specifics.
     DLOG(ERROR) << "Remote update with invalid specifics";
     LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidSpecifics);
@@ -461,7 +478,8 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
 
   // Only folders may have descendants (ignore them otherwise). Treat
   // permanent nodes as folders explicitly.
-  if (!node.update_.entity.is_folder &&
+  if (node.update_.entity.specifics.bookmark().type() !=
+          sync_pb::BookmarkSpecifics::FOLDER &&
       node.update_.entity.server_defined_unique_tag.empty()) {
     // Children of a non-folder are ignored.
     for (UpdateResponseData& child_update :
@@ -478,8 +496,7 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
   for (UpdateResponseData& child_update :
        (*updates_per_parent_id)[node.entity().id]) {
     DCHECK_EQ(child_update.entity.parent_id, node.entity().id);
-    DCHECK(IsValidBookmarkSpecifics(child_update.entity.specifics.bookmark(),
-                                    child_update.entity.is_folder));
+    DCHECK(IsValidBookmarkSpecifics(child_update.entity.specifics.bookmark()));
 
     node.children_.push_back(BuildTree(std::move(child_update), max_depth - 1,
                                        updates_per_parent_id));
@@ -677,7 +694,8 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
       continue;
     }
 
-    if (node->is_folder() != remote_entity.is_folder ||
+    if (GetProtoTypeFromBookmarkNode(node) !=
+            remote_entity.specifics.bookmark().type() ||
         (node->is_url() &&
          node->url() != remote_entity.specifics.bookmark().url())) {
       // If local node and its remote node match are conflicting in node type or
@@ -859,13 +877,11 @@ void BookmarkModelMerger::ProcessRemoteCreation(
   DCHECK(!FindMatchingLocalNodeByGUID(remote_node));
 
   const EntityData& remote_update_entity = remote_node.entity();
-  DCHECK(IsValidBookmarkSpecifics(remote_update_entity.specifics.bookmark(),
-                                  remote_update_entity.is_folder));
+  DCHECK(IsValidBookmarkSpecifics(remote_update_entity.specifics.bookmark()));
 
   const sync_pb::EntitySpecifics& specifics = remote_node.entity().specifics;
   const bookmarks::BookmarkNode* bookmark_node =
       CreateBookmarkNodeFromSpecifics(specifics.bookmark(), local_parent, index,
-                                      remote_update_entity.is_folder,
                                       bookmark_model_, favicon_service_);
   DCHECK(bookmark_node);
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker_->Add(
@@ -956,18 +972,19 @@ size_t BookmarkModelMerger::FindMatchingChildBySemanticsStartingAt(
   // node.
   const std::string remote_canonicalized_title =
       LegacyCanonicalizedTitleFromSpecifics(remote_entity.specifics.bookmark());
-  const bool remote_is_folder = remote_entity.is_folder;
+  const sync_pb::BookmarkSpecifics::Type remote_type =
+      remote_entity.specifics.bookmark().type();
   GURL remote_url;
-  if (!remote_entity.is_folder) {
+  if (remote_type == sync_pb::BookmarkSpecifics::URL) {
     remote_url = GURL(remote_entity.specifics.bookmark().url());
   }
   const auto it = std::find_if(
       children.cbegin() + starting_child_index, children.cend(),
       [this, &remote_canonicalized_title, &remote_url,
-       remote_is_folder](const auto& child) {
+       remote_type](const auto& child) {
         return !FindMatchingRemoteNodeByGUID(child.get()) &&
                NodeSemanticsMatch(child.get(), remote_canonicalized_title,
-                                  remote_url, remote_is_folder);
+                                  remote_url, remote_type);
       });
   return (it == children.cend()) ? kInvalidIndex : (it - children.cbegin());
 }

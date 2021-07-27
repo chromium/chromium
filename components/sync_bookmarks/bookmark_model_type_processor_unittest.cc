@@ -93,8 +93,9 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   bookmark_specifics->set_legacy_canonicalized_title(bookmark_info.title);
   bookmark_specifics->set_full_title(bookmark_info.title);
   if (bookmark_info.url.empty()) {
-    data.is_folder = true;
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   } else {
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
     bookmark_specifics->set_url(bookmark_info.url);
   }
 

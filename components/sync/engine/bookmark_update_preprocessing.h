@@ -26,6 +26,11 @@ struct EntityData;
 void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
                                     EntityData* data);
 
+// Populates |specifics->bookmark().type()| (i.e. whether a bookmark is a
+// folder) for the cases where the field isn't populated.
+void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
+                          sync_pb::EntitySpecifics* specifics);
+
 // Populates |specifics->bookmark().legacy_canonicalized_title()| from the
 // various supported sources, or no-op if specifics already have the field set.
 // |specifics| must not be null.

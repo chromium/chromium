@@ -147,6 +147,30 @@ void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
   }
 }
 
+void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
+                          sync_pb::EntitySpecifics* specifics) {
+  DCHECK(specifics);
+  // Nothing to do if the field is set or if it's a deletion.
+  if (specifics->bookmark().has_type() || update_entity.deleted()) {
+    return;
+  }
+  DCHECK(specifics->has_bookmark());
+  // For legacy data, SyncEntity.folder is always populated.
+  if (update_entity.has_folder()) {
+    specifics->mutable_bookmark()->set_type(
+        update_entity.folder() ? sync_pb::BookmarkSpecifics::FOLDER
+                               : sync_pb::BookmarkSpecifics::URL);
+    return;
+  }
+  // Remaining cases should be unreachable today. In case SyncEntity.folder gets
+  // removed in the future, with legacy data still being around prior to M94,
+  // infer folderness based on the present of field |url| (only populated for
+  // URL bookmarks).
+  specifics->mutable_bookmark()->set_type(
+      specifics->bookmark().has_url() ? sync_pb::BookmarkSpecifics::URL
+                                      : sync_pb::BookmarkSpecifics::FOLDER);
+}
+
 void AdaptTitleForBookmark(const sync_pb::SyncEntity& update_entity,
                            sync_pb::EntitySpecifics* specifics,
                            bool specifics_were_encrypted) {
@@ -157,6 +181,7 @@ void AdaptTitleForBookmark(const sync_pb::SyncEntity& update_entity,
     // SyncEntity so this hack is not needed at all.
     return;
   }
+  DCHECK(specifics->has_bookmark());
   // Legacy clients populate the name field in the SyncEntity instead of the
   // title field in the BookmarkSpecifics.
   if (!specifics->bookmark().has_legacy_canonicalized_title() &&
@@ -174,6 +199,7 @@ bool AdaptGuidForBookmark(const sync_pb::SyncEntity& update_entity,
       !update_entity.server_defined_unique_tag().empty()) {
     return false;
   }
+  DCHECK(specifics->has_bookmark());
   // Legacy clients don't populate the guid field in the BookmarkSpecifics, so
   // we use the originator_client_item_id instead, if it is a valid GUID.
   // Otherwise, we leave the field empty.

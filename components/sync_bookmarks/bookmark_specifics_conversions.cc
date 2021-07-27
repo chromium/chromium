@@ -236,6 +236,8 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     bool force_favicon_load) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
+
+  bm_specifics->set_type(GetProtoTypeFromBookmarkNode(node));
   if (!node->is_folder()) {
     bm_specifics->set_url(node->url().spec());
   }
@@ -288,12 +290,12 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics,
     const bookmarks::BookmarkNode* parent,
     size_t index,
-    bool is_folder,
     bookmarks::BookmarkModel* model,
     favicon::FaviconService* favicon_service) {
   DCHECK(parent);
   DCHECK(model);
   DCHECK(favicon_service);
+  DCHECK(IsValidBookmarkSpecifics(specifics));
 
   base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());
@@ -307,17 +309,24 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
       // always used the Windows epoch.
       base::TimeDelta::FromMicroseconds(creation_time_us));
 
-  if (is_folder) {
-    return model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
-                            &metainfo, creation_time, guid);
+  switch (specifics.type()) {
+    case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+      NOTREACHED();
+      break;
+    case sync_pb::BookmarkSpecifics::URL: {
+      const bookmarks::BookmarkNode* node =
+          model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
+                        GURL(specifics.url()), &metainfo, creation_time, guid);
+      SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
+      return node;
+    }
+    case sync_pb::BookmarkSpecifics::FOLDER:
+      return model->AddFolder(parent, index, NodeTitleFromSpecifics(specifics),
+                              &metainfo, creation_time, guid);
   }
 
-  const bookmarks::BookmarkNode* node =
-      model->AddURL(parent, index, NodeTitleFromSpecifics(specifics),
-                    GURL(specifics.url()), &metainfo, creation_time, guid);
-  SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
-
-  return node;
+  NOTREACHED();
+  return nullptr;
 }
 
 void UpdateBookmarkNodeFromSpecifics(
@@ -340,6 +349,23 @@ void UpdateBookmarkNodeFromSpecifics(
   if (!node->is_folder()) {
     model->SetURL(node, GURL(specifics.url()));
     SetBookmarkFaviconFromSpecifics(specifics, node, favicon_service);
+  }
+}
+
+sync_pb::BookmarkSpecifics::Type GetProtoTypeFromBookmarkNode(
+    const bookmarks::BookmarkNode* node) {
+  DCHECK(node);
+
+  switch (node->type()) {
+    case bookmarks::BookmarkNode::URL:
+      DCHECK(!node->is_folder());
+      return sync_pb::BookmarkSpecifics::URL;
+    case bookmarks::BookmarkNode::FOLDER:
+    case bookmarks::BookmarkNode::BOOKMARK_BAR:
+    case bookmarks::BookmarkNode::OTHER_NODE:
+    case bookmarks::BookmarkNode::MOBILE:
+      DCHECK(node->is_folder());
+      return sync_pb::BookmarkSpecifics::FOLDER;
   }
 }
 
@@ -372,8 +398,7 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
   return new_node;
 }
 
-bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
-                              bool is_folder) {
+bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
   bool is_valid = true;
   if (specifics.ByteSize() == 0) {
     DLOG(ERROR) << "Invalid bookmark: empty specifics.";
@@ -395,25 +420,36 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
       is_valid = false;
     }
   }
-  if (!is_folder) {
-    if (!GURL(specifics.url()).is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid url in the specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidURL);
+
+  switch (specifics.type()) {
+    case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+      // Note that old data doesn't run into this because ModelTypeWorker takes
+      // care of backfilling the field.
+      DLOG(ERROR) << "Invalid bookmark: invalid type in specifics.";
       is_valid = false;
-    }
-    if (specifics.favicon().empty() && !specifics.icon_url().empty()) {
-      DLOG(ERROR) << "Invalid bookmark: specifics cannot have an icon_url "
-                     "without having a favicon.";
-      LogInvalidSpecifics(
-          InvalidBookmarkSpecificsError::kIconURLWithoutFavicon);
-      is_valid = false;
-    }
-    if (!specifics.icon_url().empty() &&
-        !GURL(specifics.icon_url()).is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid icon_url in specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidIconURL);
-      is_valid = false;
-    }
+      break;
+    case sync_pb::BookmarkSpecifics::URL:
+      if (!GURL(specifics.url()).is_valid()) {
+        DLOG(ERROR) << "Invalid bookmark: invalid url in the specifics.";
+        LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidURL);
+        is_valid = false;
+      }
+      if (specifics.favicon().empty() && !specifics.icon_url().empty()) {
+        DLOG(ERROR) << "Invalid bookmark: specifics cannot have an icon_url "
+                       "without having a favicon.";
+        LogInvalidSpecifics(
+            InvalidBookmarkSpecificsError::kIconURLWithoutFavicon);
+        is_valid = false;
+      }
+      if (!specifics.icon_url().empty() &&
+          !GURL(specifics.icon_url()).is_valid()) {
+        DLOG(ERROR) << "Invalid bookmark: invalid icon_url in specifics.";
+        LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidIconURL);
+        is_valid = false;
+      }
+      break;
+    case sync_pb::BookmarkSpecifics::FOLDER:
+      break;
   }
 
   // Verify all keys in meta_info are unique.

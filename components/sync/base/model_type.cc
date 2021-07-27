@@ -562,12 +562,4 @@ bool IsTypeWithClientGeneratedRoot(ModelType model_type) {
          !IsTypeWithServerGeneratedRoot(model_type);
 }
 
-bool TypeSupportsHierarchy(ModelType model_type) {
-  return model_type == BOOKMARKS;
-}
-
-bool TypeSupportsOrdering(ModelType model_type) {
-  return model_type == BOOKMARKS;
-}
-
 }  // namespace syncer

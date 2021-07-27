@@ -323,7 +323,6 @@ void NigoriModelTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(entity_data);
   DCHECK(!entity_data->is_deleted());
-  DCHECK(entity_data->is_folder);
   DCHECK(!entity_data->name.empty());
   DCHECK(!entity_data->specifics.has_encrypted());
   DCHECK_EQ(NIGORI, GetModelTypeFromSpecifics(entity_data->specifics));

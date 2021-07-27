@@ -79,9 +79,6 @@ struct EntityData {
   // hierarchical datatypes (e.g. Bookmarks).
   std::string parent_id;
 
-  // Indicate whether this is a folder or not. Relevant only for bookmarks.
-  bool is_folder = false;
-
   // Indicate whether bookmark GUID was missing in the original specifics during
   // GetUpdates. If the GUID in specifics was evaluated by
   // AdaptGuidForBookmark(), this field will be set to true. Relevant only for

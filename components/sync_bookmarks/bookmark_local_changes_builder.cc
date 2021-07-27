@@ -94,13 +94,6 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
       DCHECK(parent_entity);
       data->parent_id = parent_entity->metadata()->server_id();
-      // TODO(crbug.com/516866): Double check that custom passphrase works well
-      // with this implementation, because:
-      // 1. syncer::CommitContributionImpl::AdjustCommitProto() clears the
-      //    title out.
-      // 2. Bookmarks (maybe ancient legacy bookmarks only?) use/used |name| to
-      //    encode the title.
-      data->is_folder = node->is_folder();
       data->unique_position =
           syncer::UniquePosition::FromProto(metadata->unique_position());
       // Assign specifics only for the non-deletion case. In case of deletion,

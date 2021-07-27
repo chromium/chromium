@@ -150,11 +150,9 @@ void ApplyRemoteUpdate(
   const bookmarks::BookmarkNode* new_parent =
       new_parent_tracked_entity->bookmark_node();
 
-  if (update_entity.is_folder != node->is_folder()) {
-    DLOG(ERROR) << "Could not update node. Remote node is a "
-                << (update_entity.is_folder ? "folder" : "bookmark")
-                << " while local node is a "
-                << (node->is_folder() ? "folder" : "bookmark");
+  if (update_entity.specifics.bookmark().type() !=
+      GetProtoTypeFromBookmarkNode(node)) {
+    DLOG(ERROR) << "Could not update bookmark node due to conflicting types";
     LogProblematicBookmark(RemoteBookmarkUpdateError::kConflictingTypes);
     return;
   }
@@ -222,8 +220,7 @@ void BookmarkRemoteUpdatesHandler::Process(
 
     // Only non-deletions should have valid specifics and unique positions.
     if (!update_entity.is_deleted()) {
-      if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
-                                    update_entity.is_folder)) {
+      if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark())) {
         // Ignore updates with invalid specifics.
         DLOG(ERROR)
             << "Couldn't process an update bookmark with an invalid specifics.";
@@ -528,8 +525,7 @@ BookmarkRemoteUpdatesHandler::ProcessCreate(
   const syncer::EntityData& update_entity = update.entity;
   DCHECK(!update_entity.is_deleted());
   DCHECK(update_entity.server_defined_unique_tag.empty());
-  DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
-                                  update_entity.is_folder));
+  DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark()));
 
   const bookmarks::BookmarkNode* parent_node = GetParentNode(update_entity);
   if (!parent_node) {
@@ -555,7 +551,7 @@ BookmarkRemoteUpdatesHandler::ProcessCreate(
           update_entity.specifics.bookmark(), parent_node,
           ComputeChildNodeIndex(parent_node, update_entity.unique_position,
                                 bookmark_tracker_),
-          update_entity.is_folder, bookmark_model_, favicon_service_);
+          bookmark_model_, favicon_service_);
   DCHECK(bookmark_node);
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker_->Add(
       bookmark_node, update_entity.id, update.response_version,
@@ -578,8 +574,7 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
   // Must not be a deletion.
   DCHECK(!update_entity.is_deleted());
   DCHECK(update_entity.server_defined_unique_tag.empty());
-  DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
-                                  update_entity.is_folder));
+  DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark()));
   DCHECK(!tracked_entity->IsUnsynced());
 
   const bookmarks::BookmarkNode* node = tracked_entity->bookmark_node();

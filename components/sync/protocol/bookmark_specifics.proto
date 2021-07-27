@@ -52,4 +52,15 @@ message BookmarkSpecifics {
   optional string full_title = 11;
   // Introduced in M94, represents the GUID (field |guid|) of the parent.
   optional string parent_guid = 12;
+  // Introduced in M94, determines whether this entity represents a bookmark
+  // folder. This field is redundant to the similar field in SyncEntity. If this
+  // field in specifics is set, it takes precedence over the one in SyncEntity.
+  enum Type {
+    // |UNSPECIFIED| is relevant only for the case where the field is not set.
+    // M94 and above should not use this value.
+    UNSPECIFIED = 0;
+    URL = 1;
+    FOLDER = 2;
+  }
+  optional Type type = 13;
 }

@@ -265,6 +265,7 @@ VISIT_PROTO_FIELDS(const sync_pb::BookmarkSpecifics& proto) {
   VISIT_REP(meta_info);
   VISIT(full_title);
   VISIT(parent_guid);
+  VISIT_ENUM(type);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {

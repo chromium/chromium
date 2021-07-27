@@ -138,8 +138,9 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     bookmark_specifics->set_guid(guid.AsLowercaseString());
     bookmark_specifics->set_legacy_canonicalized_title(title);
     bookmark_specifics->set_full_title(title);
+    bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   }
-  data.is_folder = true;
+
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
   response_data.response_version = version;
@@ -931,7 +932,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
-  data.is_folder = false;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
   data.originator_client_item_id = bookmark_specifics->guid();
 
   syncer::UpdateResponseData response_data;
@@ -985,7 +986,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   bookmark_specifics->set_url(kUrl.spec());
   bookmark_specifics->set_icon_url(kIconUrl.spec());
   bookmark_specifics->set_favicon("PNG");
-  data.is_folder = false;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
   data.originator_client_item_id = bookmark_specifics->guid();
 
   syncer::UpdateResponseData response_data;
@@ -1024,7 +1025,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   // Use the server id as the title for simplicity.
   bookmark_specifics->set_legacy_canonicalized_title(kTitle);
   bookmark_specifics->set_url(kUrl.spec());
-  data.is_folder = false;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::URL);
   data.originator_client_item_id = bookmark_specifics->guid();
 
   syncer::UpdateResponseData response_data;
@@ -1063,6 +1064,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   bookmark_specifics->set_guid(
       base::GUID::GenerateRandomV4().AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title("Title");
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+
   bookmarks::BookmarkNode node(/*id=*/1, kBookmarkGuid, GURL());
   // Track a sync entity (similar to what happens after a local creation). The
   // |originator_client_item_id| is used a temp sync id and mark the entity that
@@ -1085,7 +1088,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       syncer::UniquePosition::RandomSuffix());
   data.specifics = specifics;
   data.specifics.mutable_bookmark()->set_guid(kOriginatorClientItemId);
-  data.is_folder = true;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
 
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
@@ -1126,6 +1129,8 @@ TEST_F(
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kBookmarkGuid);
   bookmark_specifics->set_legacy_canonicalized_title("Title");
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+
   bookmarks::BookmarkNode node(
       /*id=*/1, base::GUID::ParseLowercase(kBookmarkGuid), GURL());
   // Track a sync entity (similar to what happens after a local creation). The
@@ -1149,7 +1154,7 @@ TEST_F(
       syncer::UniquePosition::RandomSuffix());
   data.specifics = specifics;
   data.specifics.mutable_bookmark()->set_guid(kBookmarkGuid);
-  data.is_folder = true;
+  bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
 
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);
