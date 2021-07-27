@@ -4,20 +4,29 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import android.app.Activity;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +34,8 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link SnackbarManager}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class SnackbarTest extends DummyUiChromeActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class SnackbarTest {
     private SnackbarManager mManager;
     private SnackbarController mDefaultController = new SnackbarController() {
         @Override
@@ -45,15 +55,29 @@ public class SnackbarTest extends DummyUiChromeActivityTestCase {
         public void onAction(Object actionData) {}
     };
 
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
+
+    private static Activity sActivity;
     private boolean mDismissed;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        SnackbarManager.setDurationForTesting(1000);
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivity = activityTestRule.getActivity();
+            SnackbarManager.setDurationForTesting(1000);
+        });
+    }
+
+    @Before
+    public void setupTest() {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             mManager = new SnackbarManager(
-                    getActivity(), getActivity().findViewById(android.R.id.content), null);
+                    sActivity, sActivity.findViewById(android.R.id.content), null);
         });
     }
 

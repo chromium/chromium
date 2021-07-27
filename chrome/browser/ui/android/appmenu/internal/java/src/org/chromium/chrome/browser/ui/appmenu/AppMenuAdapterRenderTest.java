@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.ui.appmenu.AppMenuAdapterTest.buildIco
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuAdapterTest.buildMenuItem;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuAdapterTest.buildTitleMenuItem;
 
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,21 +22,27 @@ import android.widget.FrameLayout;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +54,8 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class AppMenuAdapterRenderTest {
     // TODO(twellington): Add night mode variant after NightModeTestUtils methods are modularized
     //                    in https://crbug.com/1002287.
 
@@ -65,14 +73,36 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
         }
     }
 
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    private static Activity sActivity;
+    private static FrameLayout sParentView;
+
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivity = activityTestRule.getActivity();
+            // Create a new FrameLayout to set as the main content view.
+            sParentView = new FrameLayout(sActivity);
+            sParentView.setLayoutParams(new FrameLayout.LayoutParams(
+                    sActivity.getResources().getDimensionPixelSize(R.dimen.menu_width),
+                    FrameLayout.LayoutParams.WRAP_CONTENT));
+            sActivity.setContentView(sParentView);
+        });
+    }
+
+    @Before
+    public void setupTest() {
         MockitoAnnotations.initMocks(this);
+        TestThreadUtils.runOnUiThreadBlocking(sParentView::removeAllViews);
     }
 
     @Test
@@ -92,7 +122,7 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
     public void testStandardMenuItem_Icon(boolean enabled) throws IOException {
         setRenderTestPrefix(enabled);
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         MenuItem item = buildMenuItem(1, TITLE_1, enabled, icon);
         mRenderTestRule.render(createView(item, false), "standard_with_icon");
     }
@@ -104,7 +134,7 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
     public void testStandardMenuItem_IconBeforeItem(boolean enabled) throws IOException {
         setRenderTestPrefix(enabled);
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         MenuItem item = buildMenuItem(1, TITLE_1, enabled, icon);
         mRenderTestRule.render(createView(item, true), "standard_with_icon_before_item");
     }
@@ -116,7 +146,7 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
     public void testTitleButtonMenuItem_Icon(boolean enabled) throws IOException {
         setRenderTestPrefix(enabled);
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         MenuItem item =
                 buildTitleMenuItem(1, 2, TITLE_2, 3, TITLE_3, icon, false, false, enabled, null);
         mRenderTestRule.render(createView(item, false), "title_button_icon");
@@ -152,7 +182,7 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
             throws IOException {
         setRenderTestPrefix(enabled);
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         MenuItem item =
                 buildTitleMenuItem(1, 2, TITLE_2, 3, TITLE_3, null, true, false, enabled, icon);
         mRenderTestRule.render(
@@ -166,11 +196,11 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
     public void testIconRow_ThreeIcons(boolean enabled) throws IOException {
         setRenderTestPrefix(enabled);
         Drawable icon1 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_arrow_forward_black_24dp);
+                sActivity, R.drawable.test_ic_arrow_forward_black_24dp);
         Drawable icon2 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_star_border_black_24dp);
+                sActivity, R.drawable.test_ic_star_border_black_24dp);
         Drawable icon3 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_arrow_downward_black_24dp);
+                sActivity, R.drawable.test_ic_arrow_downward_black_24dp);
         MenuItem item = buildIconRow(1, 2, TITLE_1, icon1, 3, TITLE_2, icon2, 4, TITLE_3, icon3, 0,
                 "", null, 0, "", null, enabled);
 
@@ -183,13 +213,13 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
     public void testIconRow_FourIcons() throws IOException {
         setRenderTestPrefix(true);
         Drawable icon1 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_arrow_forward_black_24dp);
+                sActivity, R.drawable.test_ic_arrow_forward_black_24dp);
         Drawable icon2 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_star_border_black_24dp);
+                sActivity, R.drawable.test_ic_star_border_black_24dp);
         Drawable icon3 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_arrow_downward_black_24dp);
+                sActivity, R.drawable.test_ic_arrow_downward_black_24dp);
         Drawable icon4 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_info_outline_black_24dp);
+                sActivity, R.drawable.test_ic_info_outline_black_24dp);
         MenuItem item = buildIconRow(1, 2, TITLE_1, icon1, 3, TITLE_2, icon2, 4, TITLE_3, icon3, 5,
                 TITLE_4, icon4, 0, "", null, true);
 
@@ -202,15 +232,15 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
     public void testIconRow_FiveIcons() throws IOException {
         setRenderTestPrefix(true);
         Drawable icon1 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_arrow_forward_black_24dp);
+                sActivity, R.drawable.test_ic_arrow_forward_black_24dp);
         Drawable icon2 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_star_border_black_24dp);
+                sActivity, R.drawable.test_ic_star_border_black_24dp);
         Drawable icon3 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_arrow_downward_black_24dp);
+                sActivity, R.drawable.test_ic_arrow_downward_black_24dp);
         Drawable icon4 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_info_outline_black_24dp);
-        Drawable icon5 = AppCompatResources.getDrawable(
-                getActivity(), R.drawable.test_ic_refresh_black_24dp);
+                sActivity, R.drawable.test_ic_info_outline_black_24dp);
+        Drawable icon5 =
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_refresh_black_24dp);
         MenuItem item = buildIconRow(1, 2, TITLE_1, icon1, 3, TITLE_2, icon2, 4, TITLE_3, icon3, 5,
                 TITLE_4, icon4, 6, TITLE_5, icon5, true);
 
@@ -225,21 +255,14 @@ public class AppMenuAdapterRenderTest extends DummyUiChromeActivityTestCase {
         List<MenuItem> items = new ArrayList<>();
         items.add(item);
         AppMenuAdapter adapter = new AppMenuAdapter(new AppMenuAdapterTest.TestClickHandler(),
-                items, getActivity().getLayoutInflater(), 0, null, iconBeforeMenuItem);
-
-        // Create a new FrameLayout to set as the main content view.
-        FrameLayout parentView = new FrameLayout(getActivity());
-        parentView.setLayoutParams(new FrameLayout.LayoutParams(
-                getActivity().getResources().getDimensionPixelSize(R.dimen.menu_width),
-                FrameLayout.LayoutParams.WRAP_CONTENT));
+                items, sActivity.getLayoutInflater(), 0, null, iconBeforeMenuItem);
 
         // Create a view for the provided menu item and attach it to the content view.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View view = adapter.getView(0, null, parentView);
-            parentView.addView(view);
-            getActivity().setContentView(parentView);
+            View view = adapter.getView(0, null, sParentView);
+            sParentView.addView(view);
         });
 
-        return parentView.getChildAt(0);
+        return sParentView.getChildAt(0);
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -18,17 +19,23 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.ArrayList;
@@ -41,7 +48,8 @@ import java.util.concurrent.TimeoutException;
  * Tests for {@link AppMenuAdapter}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class AppMenuAdapterTest {
     static class TestClickHandler implements AppMenuClickHandler {
         public CallbackHelper onClickCallback = new CallbackHelper();
         public MenuItem lastClickedItem;
@@ -71,10 +79,23 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
 
     private TestClickHandler mClickHandler;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @ClassRule
+    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
 
+    private static Activity sActivity;
+
+    @BeforeClass
+    public static void setupSuite() {
+        activityTestRule.launchActivity(null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { sActivity = activityTestRule.getActivity(); });
+    }
+
+    @Before
+    public void setupTest() {
         MockitoAnnotations.initMocks(this);
         mClickHandler = new TestClickHandler();
     }
@@ -87,11 +108,11 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         items.add(buildMenuItem(itemId, TITLE_1));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
         Assert.assertEquals("Wrong item view type", AppMenuAdapter.MenuItemType.STANDARD,
                 adapter.getItemViewType(0));
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         TextView titleView1 = view1.findViewById(R.id.menu_item_text);
 
@@ -112,15 +133,15 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         int itemId = 1234;
         List<MenuItem> items = new ArrayList<>();
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         items.add(buildMenuItem(itemId, TITLE_1, true, icon));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, true);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, true);
         Assert.assertEquals("Wrong item view type", AppMenuAdapter.MenuItemType.STANDARD,
                 adapter.getItemViewType(0));
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         ChromeImageView itemIcon = view1.findViewById(R.id.menu_item_icon);
         Assert.assertNotNull("Should have icon for item 1", itemIcon.getDrawable());
@@ -134,9 +155,9 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         items.add(buildMenuItem(2, TITLE_2));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         TextView titleView = view1.findViewById(R.id.menu_item_text);
 
@@ -155,12 +176,12 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         items.add(buildTitleMenuItem(4, 5, TITLE_3, 6, TITLE_4));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
 
         Assert.assertEquals("Wrong item view type", AppMenuAdapter.MenuItemType.TITLE_BUTTON,
                 adapter.getItemViewType(0));
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         TextViewWithCompoundDrawables titleView = view1.findViewById(R.id.title);
 
@@ -179,17 +200,17 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
     public void testConvertView_Reused_TitleMenuItem_WithMenuIcon() {
         List<MenuItem> items = new ArrayList<>();
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         items.add(buildTitleMenuItem(1, 2, TITLE_1, 3, TITLE_2, icon));
         items.add(buildTitleMenuItem(4, 5, TITLE_3, 6, TITLE_4, icon));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, true);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, true);
 
         Assert.assertEquals("Wrong item view type", AppMenuAdapter.MenuItemType.TITLE_BUTTON,
                 adapter.getItemViewType(0));
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         TextViewWithCompoundDrawables titleView = view1.findViewById(R.id.title);
         Drawable[] drawables = titleView.getCompoundDrawablesRelative();
@@ -200,7 +221,7 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
     @MediumTest
     public void testConvertView_Reused_IconRow() {
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         List<MenuItem> items = new ArrayList<>();
         items.add(buildIconRow(1, 2, TITLE_1, icon, 3, TITLE_2, icon, 4, "", icon, 0, null, null, 0,
                 null, null, true));
@@ -208,9 +229,9 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
                 null, null, true));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         View buttonOne = view1.findViewById(R.id.button_one);
 
@@ -231,14 +252,14 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         items.add(buildTitleMenuItem(2, 3, TITLE_2, 4, TITLE_3));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
 
         Assert.assertEquals("Wrong item view type for item 1", AppMenuAdapter.MenuItemType.STANDARD,
                 adapter.getItemViewType(0));
         Assert.assertEquals("Wrong item view type for item 2",
                 AppMenuAdapter.MenuItemType.TITLE_BUTTON, adapter.getItemViewType(1));
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         TextView titleView = view1.findViewById(R.id.menu_item_text);
 
@@ -257,7 +278,7 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
     @MediumTest
     public void testConvertView_NotReused_IconRow() {
         Drawable icon =
-                AppCompatResources.getDrawable(getActivity(), R.drawable.test_ic_vintage_filter);
+                AppCompatResources.getDrawable(sActivity, R.drawable.test_ic_vintage_filter);
         List<MenuItem> items = new ArrayList<>();
         items.add(buildIconRow(1, 2, TITLE_1, icon, 3, TITLE_2, icon, 4, "", icon, 0, null, null, 0,
                 null, null, true));
@@ -265,9 +286,9 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
                 0, null, null, true));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         View view2 = adapter.getView(1, view1, parentView);
         Assert.assertNotEquals("Convert view should not have been re-used", view1, view2);
@@ -293,8 +314,8 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         items.add(buildMenuItem(customBinder1.supportedId3, TITLE_4));
         items.add(buildMenuItem(customBinder2.supportedId1, TITLE_5));
 
-        AppMenuAdapter adapter = new AppMenuAdapter(mClickHandler, items,
-                getActivity().getLayoutInflater(), 0, customViewBinders, false);
+        AppMenuAdapter adapter = new AppMenuAdapter(
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, customViewBinders, false);
         Map<CustomViewBinder, Integer> offsetMap = adapter.getViewTypeOffsetMapForTests();
 
         Assert.assertEquals("Incorrect view type offset for binder 1",
@@ -321,7 +342,7 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
                 adapter.getItemViewType(4));
 
         // Check that custom binders and convert views are used as expected.
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view1 = adapter.getView(0, null, parentView);
         Assert.assertEquals("Binder1 incorrectly called", 0,
                 customBinder1.getViewItemCallbackHelper.getCallCount());
@@ -368,9 +389,9 @@ public class AppMenuAdapterTest extends DummyUiChromeActivityTestCase {
         items.add(buildTitleMenuItem(1, 2, TITLE_1, 3, TITLE_2));
 
         AppMenuAdapter adapter = new AppMenuAdapter(
-                mClickHandler, items, getActivity().getLayoutInflater(), 0, null, false);
+                mClickHandler, items, sActivity.getLayoutInflater(), 0, null, false);
 
-        ViewGroup parentView = getActivity().findViewById(android.R.id.content);
+        ViewGroup parentView = sActivity.findViewById(android.R.id.content);
         View view = adapter.getView(0, null, parentView);
         AppMenuItemIcon checkbox = view.findViewById(R.id.checkbox);
 
