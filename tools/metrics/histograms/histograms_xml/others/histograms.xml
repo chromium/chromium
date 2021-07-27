@@ -827,14 +827,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.Canceled" enum="BooleanCanceled"
-    expires_after="2021-08-09">
+    expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>Tracks whether the update job was canceled.</summary>
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingCorruptionFixedInUpdate"
-    units="resources" expires_after="2021-08-09">
+    units="resources" expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -847,7 +847,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceCheck" units="units"
-    expires_after="2021-08-09">
+    expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -857,7 +857,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceCorrupt" units="units"
-    expires_after="2021-08-09">
+    expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -888,7 +888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceNotCorrupt"
-    units="resources" expires_after="2021-08-09">
+    units="resources" expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -916,7 +916,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceOnlyNotCorrupt"
-    units="resources" expires_after="2021-08-09">
+    units="resources" expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>enne@chromium.org</owner>
   <summary>
@@ -931,7 +931,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceReused" units="units"
-    expires_after="2021-08-09">
+    expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -941,14 +941,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.FinalInternalState"
-    enum="AppCacheUpdateJobInternalState" expires_after="2021-08-09">
+    enum="AppCacheUpdateJobInternalState" expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>Tracks the final internal state for the update job.</summary>
 </histogram>
 
 <histogram name="appcache.UpdateJob.ResourceFreshness" units="days"
-    expires_after="2021-08-09">
+    expires_after="2021-10-05">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
