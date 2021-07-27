@@ -404,7 +404,10 @@ shared_library("remoting_core") {
     "launch_native_messaging_host_process.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
+    "set_up_url_forwarder_dialog.cc",
+    "set_up_url_forwarder_dialog.h",
     "unprivileged_process_delegate.cc",
+    "url_forwarder_configurator_main.cc",
     "wts_session_process_delegate.cc",
 
     # TODO(crbug.com/1184893): These files are also listed in //remoting/host:common, so they should probably be moved to a shared target they can both depend on.

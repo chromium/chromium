@@ -133,6 +133,7 @@
 #include <commctrl.h>
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_version.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
 #include "remoting/host/win/session_desktop_environment.h"
 #endif  // defined(OS_WIN)
@@ -1579,10 +1580,17 @@ void HostProcess::StartHost() {
         enable_user_interface_);
   }
 
-#if defined(OS_LINUX) || (!defined(NDEBUG) && defined(OS_WIN))
   // Remote open URL is fully supported on Linux and still in development for
   // Windows.
+#if defined(OS_LINUX)
   desktop_environment_options_.set_enable_remote_open_url(true);
+#elif !defined(NDEBUG) && defined(OS_WIN)
+  // The modern default apps settings dialog is only available to Windows 8+.
+  // Given older Windows versions are EOL, we only advertise the feature on
+  // Windows 8+.
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
+    desktop_environment_options_.set_enable_remote_open_url(true);
+  }
 #endif
 
   host_ = std::make_unique<ChromotingHost>(
