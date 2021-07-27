@@ -1847,11 +1847,7 @@
   },
   "SafeBrowsingForTrustedSourcesEnabled": {
     "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos",
-      "android"
+      "win"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
