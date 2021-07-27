@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/passwords/password_generation_confirmation_view.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
-#include "chrome/browser/ui/views/passwords/password_save_update_with_account_store_view.h"
+#include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/browser/ui/views/passwords/post_save_compromised_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -82,8 +82,8 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state ==
                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
-    view = new PasswordSaveUpdateWithAccountStoreView(web_contents, anchor_view,
-                                                      reason, promo_controller);
+    view = new PasswordSaveUpdateView(web_contents, anchor_view, reason,
+                                      promo_controller);
   } else if (model_state == password_manager::ui::
                                 WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE) {
     view = new PasswordSaveUnsyncedCredentialsLocallyView(web_contents,

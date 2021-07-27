@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_
 
 #include "base/scoped_observation.h"
 #include "base/token.h"
@@ -27,17 +27,14 @@ class FeaturePromoControllerViews;
 // a username and password field, and in case of a saving a destination picker.
 // In addition, it contains a "Save"/"Update" button and a "Never"/"Nope"
 // button.
-// TODO(crbug.com/1108738): Rename to PasswordSaveUpdateView.
-class PasswordSaveUpdateWithAccountStoreView
-    : public PasswordBubbleViewBase,
-      public views::WidgetObserver,
-      public views::AnimatingLayoutManager::Observer {
+class PasswordSaveUpdateView : public PasswordBubbleViewBase,
+                               public views::WidgetObserver,
+                               public views::AnimatingLayoutManager::Observer {
  public:
-  PasswordSaveUpdateWithAccountStoreView(
-      content::WebContents* web_contents,
-      views::View* anchor_view,
-      DisplayReason reason,
-      FeaturePromoControllerViews* promo_controller);
+  PasswordSaveUpdateView(content::WebContents* web_contents,
+                         views::View* anchor_view,
+                         DisplayReason reason,
+                         FeaturePromoControllerViews* promo_controller);
 
   views::Combobox* DestinationDropdownForTesting() {
     return destination_dropdown_;
@@ -54,7 +51,7 @@ class PasswordSaveUpdateWithAccountStoreView
                     // about the switch to local mode.
   };
   class AutoResizingLayout;
-  ~PasswordSaveUpdateWithAccountStoreView() override;
+  ~PasswordSaveUpdateView() override;
 
   // PasswordBubbleViewBase
   PasswordBubbleControllerBase* GetController() override;
@@ -138,4 +135,4 @@ class PasswordSaveUpdateWithAccountStoreView
       animating_layout_for_iph_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_WITH_ACCOUNT_STORE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_

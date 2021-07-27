@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/passwords/password_save_update_with_account_store_view.h"
+#include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 
 #include <algorithm>
 #include <memory>
@@ -288,14 +288,13 @@ base::TimeDelta GetShortIPHTimeout() {
 // TODO(crbug.com/1077706): come up with a more general solution for this.
 // This layout auto-resizes the host view to always adapt to changes in the size
 // of the child views.
-class PasswordSaveUpdateWithAccountStoreView::AutoResizingLayout
-    : public views::FillLayout {
+class PasswordSaveUpdateView::AutoResizingLayout : public views::FillLayout {
  public:
   AutoResizingLayout() = default;
 
  private:
-  PasswordSaveUpdateWithAccountStoreView* bubble_view() {
-    return static_cast<PasswordSaveUpdateWithAccountStoreView*>(host_view());
+  PasswordSaveUpdateView* bubble_view() {
+    return static_cast<PasswordSaveUpdateView*>(host_view());
   }
 
   void OnLayoutChanged() override {
@@ -305,7 +304,7 @@ class PasswordSaveUpdateWithAccountStoreView::AutoResizingLayout
   }
 };
 
-PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
+PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
     views::View* anchor_view,
     DisplayReason reason,
@@ -323,11 +322,6 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
       are_passwords_revealed_(
           controller_.are_passwords_revealed_when_bubble_is_opened()),
       promo_controller_(promo_controller) {
-  // If kEnablePasswordsAccountStorage is disabled, then PasswordSaveUpdateView
-  // should be used instead of this class.
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   DCHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
          controller_.state() ==
              password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
@@ -338,8 +332,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
         controller_.GetPrimaryAccountAvatar(ComboboxIconSize()),
         controller_.IsUsingAccountStore());
     destination_dropdown->SetCallback(base::BindRepeating(
-        &PasswordSaveUpdateWithAccountStoreView::DestinationChanged,
-        base::Unretained(this)));
+        &PasswordSaveUpdateView::DestinationChanged, base::Unretained(this)));
     destination_dropdown_ = destination_dropdown.get();
   }
   const password_manager::PasswordForm& password_form =
@@ -376,18 +369,16 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
     std::unique_ptr<views::EditableCombobox> username_dropdown =
         CreateUsernameEditableCombobox(password_form);
     username_dropdown->SetCallback(base::BindRepeating(
-        &PasswordSaveUpdateWithAccountStoreView::OnContentChanged,
-        base::Unretained(this)));
+        &PasswordSaveUpdateView::OnContentChanged, base::Unretained(this)));
     std::unique_ptr<views::EditableCombobox> password_dropdown =
         CreatePasswordEditableCombobox(password_form, are_passwords_revealed_);
     password_dropdown->SetCallback(base::BindRepeating(
-        &PasswordSaveUpdateWithAccountStoreView::OnContentChanged,
-        base::Unretained(this)));
+        &PasswordSaveUpdateView::OnContentChanged, base::Unretained(this)));
     std::unique_ptr<views::ToggleImageButton> password_view_button =
         CreatePasswordViewButton(
-            base::BindRepeating(&PasswordSaveUpdateWithAccountStoreView::
-                                    TogglePasswordVisibility,
-                                base::Unretained(this)),
+            base::BindRepeating(
+                &PasswordSaveUpdateView::TogglePasswordVisibility,
+                base::Unretained(this)),
             are_passwords_revealed_);
     // Set up layout:
     SetLayoutManager(std::make_unique<AutoResizingLayout>());
@@ -445,7 +436,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
   {
     using Controller = SaveUpdateBubbleController;
     using ControllerNotifyFn = void (Controller::*)();
-    auto button_clicked = [](PasswordSaveUpdateWithAccountStoreView* dialog,
+    auto button_clicked = [](PasswordSaveUpdateView* dialog,
                              ControllerNotifyFn func) {
       dialog->UpdateUsernameAndPasswordInModel();
       (dialog->controller_.*func)();
@@ -463,27 +454,24 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
   UpdateBubbleUIElements();
 }
 
-PasswordSaveUpdateWithAccountStoreView::
-    ~PasswordSaveUpdateWithAccountStoreView() {
+PasswordSaveUpdateView::~PasswordSaveUpdateView() {
   CloseIPHBubbleIfOpen();
 }
 
-views::View*
-PasswordSaveUpdateWithAccountStoreView::GetUsernameTextfieldForTest() const {
+views::View* PasswordSaveUpdateView::GetUsernameTextfieldForTest() const {
   return username_dropdown_->GetTextfieldForTest();
 }
 
-PasswordBubbleControllerBase*
-PasswordSaveUpdateWithAccountStoreView::GetController() {
+PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController() {
   return &controller_;
 }
 
-const PasswordBubbleControllerBase*
-PasswordSaveUpdateWithAccountStoreView::GetController() const {
+const PasswordBubbleControllerBase* PasswordSaveUpdateView::GetController()
+    const {
   return &controller_;
 }
 
-void PasswordSaveUpdateWithAccountStoreView::DestinationChanged() {
+void PasswordSaveUpdateView::DestinationChanged() {
   bool is_account_store_selected =
       destination_dropdown_->GetSelectedIndex() == 0;
   controller_.OnToggleAccountStore(is_account_store_selected);
@@ -506,7 +494,7 @@ void PasswordSaveUpdateWithAccountStoreView::DestinationChanged() {
     CloseIPHBubbleIfOpen();
 }
 
-views::View* PasswordSaveUpdateWithAccountStoreView::GetInitiallyFocusedView() {
+views::View* PasswordSaveUpdateView::GetInitiallyFocusedView() {
   if (username_dropdown_ && username_dropdown_->GetText().empty())
     return username_dropdown_;
   View* initial_view = PasswordBubbleViewBase::GetInitiallyFocusedView();
@@ -518,18 +506,18 @@ views::View* PasswordSaveUpdateWithAccountStoreView::GetInitiallyFocusedView() {
   return (initial_view && initial_view->IsFocusable()) ? initial_view : nullptr;
 }
 
-bool PasswordSaveUpdateWithAccountStoreView::IsDialogButtonEnabled(
+bool PasswordSaveUpdateView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return button != ui::DIALOG_BUTTON_OK ||
          controller_.pending_password().IsFederatedCredential() ||
          !controller_.pending_password().password_value.empty();
 }
 
-ui::ImageModel PasswordSaveUpdateWithAccountStoreView::GetWindowIcon() {
+ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
   return ui::ImageModel();
 }
 
-void PasswordSaveUpdateWithAccountStoreView::AddedToWidget() {
+void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
   UpdateHeaderImage();
@@ -539,7 +527,7 @@ void PasswordSaveUpdateWithAccountStoreView::AddedToWidget() {
     MaybeShowIPH(IPHType::kRegular);
 }
 
-void PasswordSaveUpdateWithAccountStoreView::OnThemeChanged() {
+void PasswordSaveUpdateView::OnThemeChanged() {
   PasswordBubbleViewBase::OnThemeChanged();
   if (password_view_button_) {
     auto* theme = GetNativeTheme();
@@ -557,14 +545,14 @@ void PasswordSaveUpdateWithAccountStoreView::OnThemeChanged() {
   }
 }
 
-void PasswordSaveUpdateWithAccountStoreView::OnLayoutIsAnimatingChanged(
+void PasswordSaveUpdateView::OnLayoutIsAnimatingChanged(
     views::AnimatingLayoutManager* source,
     bool is_animating) {
   if (!is_animating)
     MaybeShowIPH(IPHType::kRegular);
 }
 
-void PasswordSaveUpdateWithAccountStoreView::TogglePasswordVisibility() {
+void PasswordSaveUpdateView::TogglePasswordVisibility() {
   if (!are_passwords_revealed_ && !controller_.RevealPasswords())
     return;
 
@@ -574,8 +562,7 @@ void PasswordSaveUpdateWithAccountStoreView::TogglePasswordVisibility() {
   password_dropdown_->RevealPasswords(are_passwords_revealed_);
 }
 
-void PasswordSaveUpdateWithAccountStoreView::
-    UpdateUsernameAndPasswordInModel() {
+void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
   if (!username_dropdown_ && !password_dropdown_)
     return;
   std::u16string new_username = controller_.pending_password().username_value;
@@ -590,7 +577,7 @@ void PasswordSaveUpdateWithAccountStoreView::
                                  std::move(new_password));
 }
 
-void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
+void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
   std::u16string ok_button_text;
   if (controller_.IsAccountStorageOptInRequired()) {
@@ -637,7 +624,7 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
   destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
 }
 
-void PasswordSaveUpdateWithAccountStoreView::UpdateHeaderImage() {
+void PasswordSaveUpdateView::UpdateHeaderImage() {
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kUseNewHeaderForSavePasswordWithAccountStoreBubble)) {
@@ -653,7 +640,7 @@ void PasswordSaveUpdateWithAccountStoreView::UpdateHeaderImage() {
   SetBubbleHeader(light_image_id, dark_image_id);
 }
 
-bool PasswordSaveUpdateWithAccountStoreView::ShouldShowFailedReauthIPH() {
+bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {
   // If the reauth failed, we should have automatically switched to local mdoe,
   // and we should show the reauth failed IPH unconditionally as long as the
   // user didn't change the save location.
@@ -661,7 +648,7 @@ bool PasswordSaveUpdateWithAccountStoreView::ShouldShowFailedReauthIPH() {
          !controller_.IsUsingAccountStore();
 }
 
-void PasswordSaveUpdateWithAccountStoreView::MaybeShowIPH(IPHType type) {
+void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
   DCHECK_NE(IPHType::kNone, type);
 
   // IPH is shown only where the destination dropdown is shown (i.e. only for
@@ -712,7 +699,7 @@ void PasswordSaveUpdateWithAccountStoreView::MaybeShowIPH(IPHType type) {
   set_close_on_deactivate(close_save_bubble_on_deactivate_original_value);
 }
 
-void PasswordSaveUpdateWithAccountStoreView::CloseIPHBubbleIfOpen() {
+void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {
   // The promo controller may not exist in tests.
   if (!promo_controller_)
     return;
@@ -731,7 +718,7 @@ void PasswordSaveUpdateWithAccountStoreView::CloseIPHBubbleIfOpen() {
   failed_reauth_promo_id_ = absl::nullopt;
 }
 
-void PasswordSaveUpdateWithAccountStoreView::AnnounceSaveUpdateChange() {
+void PasswordSaveUpdateView::AnnounceSaveUpdateChange() {
   // Federated credentials bubbles don't change the state between Update and
   // Save, and hence they don't have an `accessibility_alert_` view created.
   if (!accessibility_alert_)
@@ -752,7 +739,7 @@ void PasswordSaveUpdateWithAccountStoreView::AnnounceSaveUpdateChange() {
                                                  true);
 }
 
-void PasswordSaveUpdateWithAccountStoreView::OnContentChanged() {
+void PasswordSaveUpdateView::OnContentChanged() {
   bool is_update_state_before = controller_.IsCurrentStateUpdate();
   bool is_ok_button_enabled_before =
       IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK);

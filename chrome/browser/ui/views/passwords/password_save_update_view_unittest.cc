@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/passwords/password_save_update_with_account_store_view.h"
+#include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -17,7 +16,6 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,11 +35,10 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 
 }  // namespace
 
-class PasswordSaveUpdateWithAccountStoreViewTest
-    : public PasswordBubbleViewTestBase {
+class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
  public:
-  PasswordSaveUpdateWithAccountStoreViewTest();
-  ~PasswordSaveUpdateWithAccountStoreViewTest() override = default;
+  PasswordSaveUpdateViewTest();
+  ~PasswordSaveUpdateViewTest() override = default;
 
   void CreateViewAndShow();
   void SimulateSignIn();
@@ -53,7 +50,7 @@ class PasswordSaveUpdateWithAccountStoreViewTest
     PasswordBubbleViewTestBase::TearDown();
   }
 
-  PasswordSaveUpdateWithAccountStoreView* view() { return view_; }
+  PasswordSaveUpdateView* view() { return view_; }
   views::Combobox* account_picker() {
     return view_->DestinationDropdownForTesting();
   }
@@ -62,19 +59,11 @@ class PasswordSaveUpdateWithAccountStoreViewTest
   password_manager::PasswordForm pending_password_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  PasswordSaveUpdateWithAccountStoreView* view_;
+  PasswordSaveUpdateView* view_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 
-PasswordSaveUpdateWithAccountStoreViewTest::
-    PasswordSaveUpdateWithAccountStoreViewTest() {
-  // If kEnablePasswordsAccountStorage is disabled, then
-  // PasswordSaveUpdateView is used instead of
-  // PasswordSaveUpdateWithAccountStoreView.
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kEnablePasswordsAccountStorage);
-
+PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
       .WillByDefault(
           Return(password_manager::PasswordForm::Store::kAccountStore));
@@ -97,37 +86,37 @@ PasswordSaveUpdateWithAccountStoreViewTest::
       profile(), base::BindRepeating(&BuildTestSyncService));
 }
 
-void PasswordSaveUpdateWithAccountStoreViewTest::CreateViewAndShow() {
+void PasswordSaveUpdateViewTest::CreateViewAndShow() {
   CreateAnchorViewAndShow();
 
-  view_ = new PasswordSaveUpdateWithAccountStoreView(
-      web_contents(), anchor_view(), LocationBarBubbleDelegateView::AUTOMATIC,
-      /*promo_controller=*/nullptr);
+  view_ = new PasswordSaveUpdateView(web_contents(), anchor_view(),
+                                     LocationBarBubbleDelegateView::AUTOMATIC,
+                                     /*promo_controller=*/nullptr);
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 
-void PasswordSaveUpdateWithAccountStoreViewTest::SimulateSignIn() {
+void PasswordSaveUpdateViewTest::SimulateSignIn() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo info = signin::MakePrimaryAccountAvailable(
       identity_manager, "test@email.com", signin::ConsentLevel::kSync);
 }
 
-TEST_F(PasswordSaveUpdateWithAccountStoreViewTest, HasTitleAndTwoButtons) {
+TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
   CreateViewAndShow();
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
   EXPECT_TRUE(view()->GetOkButton());
   EXPECT_TRUE(view()->GetCancelButton());
 }
 
-TEST_F(PasswordSaveUpdateWithAccountStoreViewTest, ShouldNotShowAccountPicker) {
+TEST_F(PasswordSaveUpdateViewTest, ShouldNotShowAccountPicker) {
   ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(false));
   CreateViewAndShow();
   EXPECT_FALSE(account_picker());
 }
 
-TEST_F(PasswordSaveUpdateWithAccountStoreViewTest, ShouldShowAccountPicker) {
+TEST_F(PasswordSaveUpdateViewTest, ShouldShowAccountPicker) {
   ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
   SimulateSignIn();
@@ -136,8 +125,7 @@ TEST_F(PasswordSaveUpdateWithAccountStoreViewTest, ShouldShowAccountPicker) {
   EXPECT_EQ(0, account_picker()->GetSelectedIndex());
 }
 
-TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
-       ShouldSelectAccountStoreByDefault) {
+TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
   ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
@@ -156,8 +144,7 @@ TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
       account_picker()->GetTextForRow(account_picker()->GetSelectedIndex()));
 }
 
-TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
-       ShouldSelectProfileStoreByDefault) {
+TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
   ON_CALL(*feature_manager_mock(), ShouldShowAccountStorageBubbleUi)
       .WillByDefault(Return(true));
   ON_CALL(*feature_manager_mock(), GetDefaultPasswordStore)
@@ -174,7 +161,7 @@ TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
 }
 
 // This is a regression test for crbug.com/1093290
-TEST_F(PasswordSaveUpdateWithAccountStoreViewTest,
+TEST_F(PasswordSaveUpdateViewTest,
        OnThemesChangedShouldNotCrashForFederatedCredentials) {
   GURL kURL("https://example.com");
   url::Origin kOrigin = url::Origin::Create(kURL);
