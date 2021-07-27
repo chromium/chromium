@@ -270,6 +270,7 @@ const gfx::FontList& Combobox::GetFontList() const {
 void Combobox::SetSelectedIndex(int index) {
   if (selected_index_ == index)
     return;
+  // TODO(pbos): Add (D)CHECKs to validate the selected index.
   selected_index_ = index;
   if (size_to_largest_label_) {
     OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
@@ -277,6 +278,11 @@ void Combobox::SetSelectedIndex(int index) {
     content_size_ = GetContentSize();
     OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
   }
+}
+
+base::CallbackListSubscription Combobox::AddSelectedIndexChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&selected_index_, std::move(callback));
 }
 
 bool Combobox::SelectValue(const std::u16string& value) {
@@ -419,9 +425,11 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   // TODO(oshima): handle IME.
   DCHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
 
+  // TODO(pbos): Do we need to handle selected_index_ == -1 for unselected here?
+  // Ditto on handling an empty model?
   DCHECK_GE(selected_index_, 0);
   DCHECK_LT(selected_index_, GetModel()->GetItemCount());
-  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount())
+  if (selected_index_ < 0 || selected_index_ >= GetModel()->GetItemCount())
     SetSelectedIndex(0);
 
   bool show_menu = false;
@@ -607,10 +615,13 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
 
   // Draw the text.
   SkColor text_color = GetTextColorForEnableState(*this, GetEnabled());
-  if (selected_index_ < 0 || selected_index_ > GetModel()->GetItemCount()) {
-    NOTREACHED();
+  // TODO(pbos): Do we need to handle selected_index_ == -1 for unselected here?
+  // Ditto on handling an empty model?
+  DCHECK_GE(selected_index_, 0);
+  DCHECK_LT(selected_index_, GetModel()->GetItemCount());
+  if (selected_index_ < 0 || selected_index_ >= GetModel()->GetItemCount())
     SetSelectedIndex(0);
-  }
+
   std::u16string text = GetModel()->GetItemAt(selected_index_);
 
   int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;
