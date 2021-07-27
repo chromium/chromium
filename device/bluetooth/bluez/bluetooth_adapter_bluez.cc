@@ -1287,6 +1287,10 @@ void BluetoothAdapterBlueZ::RemoveAdapter() {
   }
 
   PresentChanged(false);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  is_advertisement_monitor_application_provider_registered_ = false;
+#endif
 }
 
 void BluetoothAdapterBlueZ::DiscoverableChanged(bool discoverable) {

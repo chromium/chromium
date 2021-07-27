@@ -4708,6 +4708,38 @@ TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterAddedLater) {
   background_scan_session.reset();
   ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
 }
+
+TEST_F(BluetoothBlueZTest, StartLowEnergyScanSessionAdapterBecomeNotPresent) {
+  GetAdapter();
+  ASSERT_TRUE(adapter_->IsPresent());
+
+  // Remove Adapter
+  fake_bluetooth_adapter_client_->SetPresent(false);
+
+  FakeBluetoothAdvertisementMonitorApplicationServiceProvider*
+      application_manager =
+          static_cast<FakeBluetoothAdvertisementMonitorManagerClient*>(
+              bluez::BluezDBusManager::Get()
+                  ->GetBluetoothAdvertisementMonitorManagerClient())
+              ->application_provider();
+
+  auto filter = CreateLowEnergyScanFilter();
+  FakeBluetoothLowEnergyScanSessionDelegate delegate;
+
+  auto background_scan_session = adapter_->StartLowEnergyScanSession(
+      std::move(filter), /*delegate=*/delegate.GetWeakPtr());
+
+  // Check that advertisement monitor was not added to d-bus layer since there
+  // is no adapter present.
+  ASSERT_EQ(0u, application_manager->AdvertisementMonitorsCount());
+
+  // Add Adapter
+  fake_bluetooth_adapter_client_->SetPresent(true);
+
+  // Check that queued advertisement monitor was added to d-bus after adapter
+  // becomes present.
+  ASSERT_EQ(1u, application_manager->AdvertisementMonitorsCount());
+}
 #endif
 
 }  // namespace bluez
