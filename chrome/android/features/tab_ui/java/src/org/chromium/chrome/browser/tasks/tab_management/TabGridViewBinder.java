@@ -309,27 +309,11 @@ class TabGridViewBinder {
 
     private static void bindSelectableTabProperties(
             PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
-        final int defaultLevel = view.getResources().getInteger(R.integer.list_item_level_default);
-        final int selectedLevel =
-                view.getResources().getInteger(R.integer.list_item_level_selected);
         final int tabId = model.get(TabProperties.TAB_ID);
 
         if (TabProperties.IS_SELECTED == propertyKey) {
-            boolean isSelected = model.get(TabProperties.IS_SELECTED);
-            ImageView actionButton = (ImageView) view.fastFindViewById(R.id.action_button);
-            actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
-            DrawableCompat.setTintList(actionButton.getBackground().mutate(),
-                    isSelected ? model.get(
-                            TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND)
-                               : model.get(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND));
-
-            // The check should be invisible if not selected.
-            actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
-            ApiCompatibilityUtils.setImageTintList(actionButton,
-                    isSelected ? model.get(TabProperties.CHECKED_DRAWABLE_STATE_LIST) : null);
-            if (isSelected) {
-                ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
-            }
+            updateColorForSelectionToggleButton(view, model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
         } else if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
             view.setOnClickListener(v -> {
                 model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(tabId);
@@ -347,6 +331,8 @@ class TabGridViewBinder {
             ((SelectableTabGridView) view).setItem(tabId);
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
             updateColor(view, model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
+            updateColorForSelectionToggleButton(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
         }
     }
@@ -435,6 +421,31 @@ class TabGridViewBinder {
         ApiCompatibilityUtils.setImageTintList(actionButton,
                 TabUiThemeProvider.getActionButtonTintList(
                         actionButton.getContext(), isIncognito, isSelected));
+    }
+
+    private static void updateColorForSelectionToggleButton(
+            ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
+        final int defaultLevel =
+                rootView.getResources().getInteger(R.integer.list_item_level_default);
+        final int selectedLevel =
+                rootView.getResources().getInteger(R.integer.list_item_level_selected);
+
+        ImageView actionButton = (ImageView) rootView.fastFindViewById(R.id.action_button);
+        actionButton.getBackground().setLevel(isSelected ? selectedLevel : defaultLevel);
+        DrawableCompat.setTintList(actionButton.getBackground().mutate(),
+                TabUiThemeProvider.getToggleActionButtonBackgroundTintList(
+                        rootView.getContext(), isIncognito, isSelected));
+
+        // The check should be invisible if not selected.
+        actionButton.getDrawable().setAlpha(isSelected ? 255 : 0);
+        ApiCompatibilityUtils.setImageTintList(actionButton,
+                isSelected ? TabUiThemeProvider.getToggleActionButtonCheckedDrawableTintList(
+                        rootView.getContext(), isIncognito)
+                           : null);
+
+        if (isSelected) {
+            ((AnimatedVectorDrawableCompat) actionButton.getDrawable()).start();
+        }
     }
 
     @VisibleForTesting
