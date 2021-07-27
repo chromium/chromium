@@ -134,11 +134,11 @@ testcase.showGridViewTitles = async () => {
 testcase.showGridViewDocumentsProvider = async () => {
   const caller = getCaller();
 
-  // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
-
   // Add files to the DocumentsProvider volume.
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
   const documentsProviderVolumeQuery =

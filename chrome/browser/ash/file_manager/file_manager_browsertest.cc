@@ -459,12 +459,24 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkLinuxFilesContextMenu"),
         TestCase("checkDeleteDisabledInDocProvider")
             .EnableGenericDocumentsProvider(),
+        TestCase("checkDeleteDisabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("checkDeleteEnabledInDocProvider")
             .EnableGenericDocumentsProvider(),
+        TestCase("checkDeleteEnabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("checkRenameDisabledInDocProvider")
             .EnableGenericDocumentsProvider(),
+        TestCase("checkRenameDisabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("checkRenameEnabledInDocProvider")
             .EnableGenericDocumentsProvider(),
+        TestCase("checkRenameEnabledInDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("checkContextMenuFocus"),
         TestCase("checkContextMenusForInputElements"),
         TestCase("checkDeleteDisabledInRecents"),
@@ -928,7 +940,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("showGridViewTitles"),
                       TestCase("showGridViewMouseSelectionA11y"),
                       TestCase("showGridViewDocumentsProvider")
-                          .EnableGenericDocumentsProvider()));
+                          .EnableGenericDocumentsProvider(),
+                      TestCase("showGridViewDocumentsProvider")
+                          .EnableGenericDocumentsProvider()
+                          .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Providers, /* providers.js */
@@ -965,7 +980,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TestCase("showAvailableStorageDrive"),
         TestCase("showAvailableStorageSmbfs"),
         TestCase("showAvailableStorageDocProvider")
-            .EnableGenericDocumentsProvider()));
+            .EnableGenericDocumentsProvider(),
+        TestCase("showAvailableStorageDocProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesTooltip, /* files_tooltip.js */
@@ -1041,6 +1059,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("metadataDocumentsProvider").EnableGenericDocumentsProvider(),
+        TestCase("metadataDocumentsProvider")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
         TestCase("metadataDownloads"),
         TestCase("metadataDrive"),
         TestCase("metadataTeamDrives"),

@@ -348,11 +348,11 @@ testcase.metadataDocumentsProvider = async () => {
   const documentsProviderVolumeQuery =
       '[has-children="true"] [volume-type-icon="documents_provider"]';
 
-  // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
-
   // Add files to the DocumentsProvider volume.
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
   await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
