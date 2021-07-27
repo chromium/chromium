@@ -12,10 +12,13 @@
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/escape.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/chromeos/colors/cros_colors.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/flex_layout.h"
@@ -71,19 +74,34 @@ void AssistantQueryView::OnThemeChanged() {
   background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
       assistant_colors::ColorName::kBgAssistantPlate));
 
+  // TODO(crbug.com/1176919): We cannot use ScopedLightModeAsDefault from
+  // ash/assistant/ui as it causes a circular dependency. Find a better way to
+  // resolve cros_colors color.
+  SkColor text_color_primary =
+      features::IsDarkLightModeEnabled()
+          ? ColorProvider::Get()->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorPrimary)
+          : cros_colors::ResolveColor(cros_colors::ColorName::kTextColorPrimary,
+                                      /*is_dark_mode=*/false,
+                                      /*use_debug_colors=*/false);
+  SkColor text_color_secondary =
+      features::IsDarkLightModeEnabled()
+          ? ColorProvider::Get()->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorSecondary)
+          : cros_colors::ResolveColor(
+                cros_colors::ColorName::kTextColorSecondary,
+                /*is_dark_mode=*/false,
+                /*use_debug_colors=*/false);
+
   high_confidence_label_->SetBackgroundColor(
       ash::assistant::ResolveAssistantColor(
           assistant_colors::ColorName::kBgAssistantPlate));
-  high_confidence_label_->SetEnabledColor(
-      ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kTextColorPrimary));
+  high_confidence_label_->SetEnabledColor(text_color_primary);
 
   low_confidence_label_->SetBackgroundColor(
       ash::assistant::ResolveAssistantColor(
           assistant_colors::ColorName::kBgAssistantPlate));
-  low_confidence_label_->SetEnabledColor(
-      ColorProvider::Get()->GetContentLayerColor(
-          ColorProvider::ContentLayerType::kTextColorSecondary));
+  low_confidence_label_->SetEnabledColor(text_color_secondary);
 }
 
 void AssistantQueryView::InitLayout() {
