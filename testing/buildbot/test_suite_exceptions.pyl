@@ -953,6 +953,7 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
         ],
+        'ci_only': True, # https://crbug.com/1233700
       },
       'android-pie-x86-rel': {
         'args': [

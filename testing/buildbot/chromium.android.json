@@ -43505,6 +43505,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
