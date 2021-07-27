@@ -80,10 +80,9 @@ bool TranslateClientImpl::ShowTranslateUI(
     const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     bool triggered_from_menu) {
+#if defined(OS_ANDROID)
   if (error_type != translate::TranslateErrors::NONE)
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
-
-#if defined(OS_ANDROID)
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
       translate_manager_->GetWeakPtr(),
@@ -91,8 +90,9 @@ bool TranslateClientImpl::ShowTranslateUI(
       web_contents()->GetBrowserContext()->IsOffTheRecord(), step,
       source_language, target_language, error_type, triggered_from_menu);
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 translate::TranslateDriver* TranslateClientImpl::GetTranslateDriver() {
