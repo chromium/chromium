@@ -12,7 +12,7 @@
 #include "media/gpu/vp9_picture.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 #include "media/gpu/h265_dpb.h"
 #endif
 
@@ -49,7 +49,7 @@ class VaapiH264Picture : public H264Picture {
   DISALLOW_COPY_AND_ASSIGN(VaapiH264Picture);
 };
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 class VaapiH265Picture : public H265Picture {
  public:
   explicit VaapiH265Picture(scoped_refptr<VASurface> va_surface);
@@ -77,7 +77,7 @@ class VaapiH265Picture : public H265Picture {
   scoped_refptr<VASurface> va_surface_;
   scoped_refptr<VASurface> decode_va_surface_;
 };
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 
 class VaapiVP8Picture : public VP8Picture {
  public:

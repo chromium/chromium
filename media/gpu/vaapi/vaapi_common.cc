@@ -22,7 +22,7 @@ void VaapiH264Picture::SetDecodeSurface(
   decode_va_surface_ = std::move(decode_va_surface);
 }
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 VaapiH265Picture::VaapiH265Picture(scoped_refptr<VASurface> va_surface)
     : va_surface_(va_surface) {}
 
@@ -37,7 +37,7 @@ void VaapiH265Picture::SetDecodeSurface(
   decode_va_surface_ = std::move(decode_va_surface);
 }
 
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 
 VaapiVP8Picture::VaapiVP8Picture(scoped_refptr<VASurface> va_surface)
     : va_surface_(va_surface) {}

@@ -85,6 +85,13 @@ declare_args() {
   enable_platform_hevc =
       proprietary_codecs &&
       (is_chromecast || use_fuzzing_engine || enable_platform_encrypted_hevc)
+
+  # Enable HEVC/H265 decoding with hardware acceleration assist. Enabled by
+  # default for fuzzer builds and protected video on ChromeOS. It is also
+  # enabled for Chromecast by default so the unit tests get run in Chrome CQ.
+  enable_platform_hevc_decoding =
+      proprietary_codecs &&
+      (is_chromecast || use_fuzzing_engine || use_chromeos_protected_media)
 }
 
 assert(

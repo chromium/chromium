@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "media/base/subsample_entry.h"
 #include "media/base/test_data_util.h"
 #include "media/video/h265_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -279,115 +278,6 @@ TEST_F(H265ParserTest, SliceHeaderParsing) {
   EXPECT_EQ(shdr.five_minus_max_num_merge_cand, 3);
   EXPECT_EQ(shdr.slice_qp_delta, 8);
   EXPECT_TRUE(shdr.slice_loop_filter_across_slices_enabled_flag);
-}
-
-// Verify that GetCurrentSubsamples works.
-TEST_F(H265ParserTest, GetCurrentSubsamplesNormal) {
-  constexpr uint8_t kStream[] = {
-      // First NALU.
-      // Clear bytes = 5.
-      0x00, 0x00, 0x01,  // start code.
-      0x28, 0x00,        // Nalu type = 20, IDR slice.
-      // Below is bogus data.
-      // Encrypted bytes = 15.
-      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-      0x04, 0x05, 0x06,
-      // Clear bytes = 5.
-      0x07, 0x00, 0x01, 0x02, 0x03,
-      // Encrypted until next NALU. Encrypted bytes = 20.
-      0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Note that this is still in the encrypted region but looks like a start
-      // code.
-      0x00, 0x00, 0x01, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Second NALU. Completely clear.
-      // Clear bytes = 11.
-      0x00, 0x00, 0x01,  // start code.
-      0x42, 0x00,        // nalu type = 33, SPS.
-      // Bogus data.
-      0xff, 0xfe, 0xfd, 0xee, 0x12, 0x33,
-  };
-  std::vector<SubsampleEntry> subsamples;
-  subsamples.emplace_back(5u, 15u);
-  subsamples.emplace_back(5u, 20u);
-  subsamples.emplace_back(11u, 0u);
-  H265Parser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
-
-  H265NALU nalu;
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
-  auto nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(2u, nalu_subsamples.size());
-
-  // Note that nalu->data starts from the NALU header, i.e. does not include
-  // the start code.
-  EXPECT_EQ(2u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(15u, nalu_subsamples[0].cypher_bytes);
-  EXPECT_EQ(5u, nalu_subsamples[1].clear_bytes);
-  EXPECT_EQ(20u, nalu_subsamples[1].cypher_bytes);
-
-  // Make sure that it reached the next NALU.
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::SPS_NUT, nalu.nal_unit_type);
-  nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(1u, nalu_subsamples.size());
-
-  EXPECT_EQ(8u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
-}
-
-// Verify that subsamples starting at non-NALU boundary also works.
-TEST_F(H265ParserTest, GetCurrentSubsamplesSubsampleNotStartingAtNaluBoundary) {
-  constexpr uint8_t kStream[] = {
-      // First NALU.
-      // Clear bytes = 5.
-      0x00, 0x00, 0x01,  // start code.
-      0x28, 0x00,        // Nalu type = 20, IDR slice.
-      // Below is bogus data.
-      // Encrypted bytes = 24.
-      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-      0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Clear bytes = 19. The rest is in the clear. Note that this is not at
-      // a NALU boundary and a NALU starts below.
-      0xaa, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      // Second NALU. Completely clear.
-      0x00, 0x00, 0x01,  // start code.
-      0x42, 0x00,        // nalu type = 33, SPS.
-      // Bogus data.
-      0xff, 0xfe, 0xfd, 0xee, 0x12, 0x33,
-  };
-
-  std::vector<SubsampleEntry> subsamples;
-  subsamples.emplace_back(5u, 24u);
-  subsamples.emplace_back(19u, 0u);
-  H265Parser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
-
-  H265NALU nalu;
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::IDR_N_LP, nalu.nal_unit_type);
-  auto nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(2u, nalu_subsamples.size());
-
-  // Note that nalu->data starts from the NALU header, i.e. does not include
-  // the start code.
-  EXPECT_EQ(2u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(24u, nalu_subsamples[0].cypher_bytes);
-
-  // The nalu ends with 8 more clear bytes. The last 10 bytes should be
-  // associated with the next nalu.
-  EXPECT_EQ(8u, nalu_subsamples[1].clear_bytes);
-  EXPECT_EQ(0u, nalu_subsamples[1].cypher_bytes);
-
-  EXPECT_EQ(H265Parser::kOk, parser.AdvanceToNextNALU(&nalu));
-  EXPECT_EQ(H265NALU::SPS_NUT, nalu.nal_unit_type);
-  nalu_subsamples = parser.GetCurrentSubsamples();
-  EXPECT_EQ(1u, nalu_subsamples.size());
-
-  // Although the input had 10 more bytes, since nalu->data starts from the nalu
-  // header, there's only 7 more bytes left.
-  EXPECT_EQ(8u, nalu_subsamples[0].clear_bytes);
-  EXPECT_EQ(0u, nalu_subsamples[0].cypher_bytes);
 }
 
 }  // namespace media

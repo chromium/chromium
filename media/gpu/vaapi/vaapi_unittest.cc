@@ -46,7 +46,7 @@ absl::optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
     {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
     {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
     {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
     {HEVCPROFILE_MAIN, VAProfileHEVCMain},
     {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
 #endif
@@ -71,7 +71,7 @@ absl::optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
     {"VAProfileVP9Profile0", VAProfileVP9Profile0},
     {"VAProfileVP9Profile2", VAProfileVP9Profile2},
     {"VAProfileAV1Profile0", VAProfileAV1Profile0},
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
     {"VAProfileHEVCMain", VAProfileHEVCMain},
     {"VAProfileHEVCMain10", VAProfileHEVCMain10},
 #endif

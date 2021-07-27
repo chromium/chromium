@@ -35,7 +35,7 @@
 #include "media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 #endif
 
@@ -244,7 +244,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     transcryption_ = (VaapiWrapper::GetImplementationType() ==
                       VAImplementation::kMesaGallium);
 #endif
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   } else if (config.codec() == kCodecHEVC &&
              !base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kEnableClearHevcForTesting)) {
@@ -978,7 +978,7 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
     decoder_.reset(
         new VP9Decoder(std::move(accelerator), profile_, color_space_));
   }
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
     auto accelerator = std::make_unique<H265VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),
@@ -989,15 +989,14 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
     decoder_.reset(
         new H265Decoder(std::move(accelerator), profile_, color_space_));
   }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
     auto accelerator =
         std::make_unique<AV1VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(new AV1Decoder(std::move(accelerator), profile_));
-  }
-  else {
+  } else {
     return Status(StatusCode::kDecoderUnsupportedProfile)
         .WithData("profile", profile_);
   }

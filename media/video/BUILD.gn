@@ -46,11 +46,17 @@ source_set("video") {
     "video_encoder_info.h",
   ]
 
-  if (proprietary_codecs && enable_platform_hevc) {
+  if (enable_platform_hevc) {
     sources += [
-      "h265_parser.cc",
-      "h265_parser.h",
+      "h265_nalu_parser.cc",
+      "h265_nalu_parser.h",
     ]
+    if (enable_platform_hevc_decoding) {
+      sources += [
+        "h265_parser.cc",
+        "h265_parser.h",
+      ]
+    }
   }
 
   public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
@@ -132,7 +138,10 @@ source_set("unit_tests") {
     "video_encode_accelerator_adapter_test.cc",
   ]
   if (enable_platform_hevc) {
-    sources += [ "h265_parser_unittest.cc" ]
+    sources += [ "h265_nalu_parser_unittest.cc" ]
+    if (enable_platform_hevc_decoding) {
+      sources += [ "h265_parser_unittest.cc" ]
+    }
   }
 
   configs += [ "//media:media_config" ]
@@ -160,7 +169,7 @@ fuzzer_test("media_h264_parser_fuzzer") {
   ]
 }
 
-if (proprietary_codecs && enable_platform_hevc) {
+if (enable_platform_hevc_decoding) {
   fuzzer_test("media_h265_parser_fuzzer") {
     sources = [ "h265_parser_fuzzertest.cc" ]
     deps = [

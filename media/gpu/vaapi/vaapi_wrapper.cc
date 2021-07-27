@@ -406,7 +406,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
           {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
         // VaapiWrapper does not support AV1 Profile 1.
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
           {HEVCPROFILE_MAIN, VAProfileHEVCMain},
           {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
 #endif
