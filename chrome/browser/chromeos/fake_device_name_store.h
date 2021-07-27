@@ -17,13 +17,20 @@ class FakeDeviceNameStore : public DeviceNameStore {
   FakeDeviceNameStore();
   ~FakeDeviceNameStore() override;
 
+  // Sets the result of setting the device name the next time SetDeviceName() is
+  // called.
+  void SetNextSetDeviceNameResult(
+      DeviceNameStore::SetDeviceNameResult name_update_result);
+
   // DeviceNameStore:
   std::string GetDeviceName() const override;
-
-  void SetDeviceName(const std::string& new_device_name);
+  DeviceNameStore::SetDeviceNameResult SetDeviceName(
+      const std::string& new_device_name) override;
 
  private:
   std::string device_name_ = kDefaultDeviceName;
+  DeviceNameStore::SetDeviceNameResult name_update_result_ =
+      DeviceNameStore::SetDeviceNameResult::kSuccess;
 };
 
 }  // namespace chromeos

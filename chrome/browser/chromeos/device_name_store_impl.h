@@ -7,6 +7,7 @@
 
 #include "chrome/browser/chromeos/device_name_store.h"
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 
 namespace chromeos {
@@ -25,6 +26,8 @@ class DeviceNameStoreImpl : public DeviceNameStore,
 
   // DeviceNameStore:
   std::string GetDeviceName() const override;
+  DeviceNameStore::SetDeviceNameResult SetDeviceName(
+      const std::string& new_device_name) override;
 
  private:
   friend class DeviceNameStoreImplTest;
@@ -39,15 +42,26 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   // Computes the new device name according to the device name policy.
   std::string ComputeDeviceName() const;
 
-  // Updates the device name if it is different from the one set previously in
-  // |prefs_|.
-  void UpdateDeviceName();
+  // Returns whether the device name policy in place prohits name update.
+  bool IsConfiguringDeviceNameProhibitedByPolicy();
+
+  // Sets the device name and notify observers of DeviceNameStore class.
+  void ChangeDeviceName(const std::string& device_name);
+
+  // Called from OnHostnamePolicyChanged() and SetDeviceName() to set the device
+  // name and notify observers of DeviceNameStore class. The new device name
+  // must be different from the one set previously in |prefs_|.
+  void AttemptDeviceNameChange(const std::string& device_name);
 
   // Provides access and persistence for the device name value.
   PrefService* prefs_;
 
   policy::DeviceNamePolicyHandler* handler_;
   std::unique_ptr<DeviceNameApplier> device_name_applier_;
+
+  base::ScopedObservation<policy::DeviceNamePolicyHandler,
+                          policy::DeviceNamePolicyHandler::Observer>
+      observation_{this};
 };
 
 }  // namespace chromeos

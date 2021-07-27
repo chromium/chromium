@@ -9,9 +9,7 @@ namespace chromeos {
 // static
 const char FakeDeviceNameStore::kDefaultDeviceName[] = "ChromeOS";
 
-FakeDeviceNameStore::FakeDeviceNameStore() {
-  device_name_ = kDefaultDeviceName;
-}
+FakeDeviceNameStore::FakeDeviceNameStore() = default;
 
 FakeDeviceNameStore::~FakeDeviceNameStore() = default;
 
@@ -19,8 +17,16 @@ std::string FakeDeviceNameStore::GetDeviceName() const {
   return device_name_;
 }
 
-void FakeDeviceNameStore::SetDeviceName(const std::string& new_device_name) {
-  device_name_ = new_device_name;
+DeviceNameStore::SetDeviceNameResult FakeDeviceNameStore::SetDeviceName(
+    const std::string& new_device_name) {
+  if (name_update_result_ == DeviceNameStore::SetDeviceNameResult::kSuccess)
+    device_name_ = new_device_name;
+  return name_update_result_;
+}
+
+void FakeDeviceNameStore::SetNextSetDeviceNameResult(
+    DeviceNameStore::SetDeviceNameResult name_update_result) {
+  name_update_result_ = name_update_result;
 }
 
 }  // namespace chromeos

@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -32,6 +34,33 @@ namespace chromeos {
 // Must only be used on the UI thread.
 class DeviceNameStore {
  public:
+  enum class SetDeviceNameResult {
+    // Device name was updated successfully.
+    kSuccess,
+
+    // Device name change is prohibited by policy. An administrator can choose
+    // the device name directly and/or prevent managed users from changing it.
+    kProhibitedByPolicy,
+
+    // Non-managed users who are not device owners cannot update the name.
+    kNotDeviceOwner,
+
+    // Name must be >0 characters and <=15 characters long and contain only
+    // letters, numbers or hyphens. Examples of invalid names include "Chrome
+    // OS" (uses a space), "ChromeOS!" (uses an exclamation point),
+    // "0123456789012345" (too long), "" (empty string).
+    kInvalidName
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    // Called when the device name changes. Use GetDeviceName() to get the new
+    // device name
+    virtual void OnDeviceNameChanged() = 0;
+  };
+
   // Returns a pointer to the singleton instance for the current process.
   // Should only be called after Initialize().
   static DeviceNameStore* GetInstance();
@@ -52,13 +81,24 @@ class DeviceNameStore {
 
   virtual std::string GetDeviceName() const = 0;
 
+  // Attempts to update the device name and returns the result of the update.
+  virtual SetDeviceNameResult SetDeviceName(
+      const std::string& new_device_name) = 0;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
   DeviceNameStore();
   virtual ~DeviceNameStore();
 
+  void NotifyDeviceNameChanged();
+
  private:
   DeviceNameStore(const DeviceNameStore&) = delete;
   DeviceNameStore& operator=(const DeviceNameStore&) = delete;
+
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace chromeos

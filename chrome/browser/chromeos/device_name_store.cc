@@ -53,4 +53,18 @@ DeviceNameStore::DeviceNameStore() = default;
 
 DeviceNameStore::~DeviceNameStore() = default;
 
+void DeviceNameStore::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void DeviceNameStore::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void DeviceNameStore::NotifyDeviceNameChanged() {
+  for (auto& observer : observer_list_) {
+    observer.OnDeviceNameChanged();
+  }
+}
+
 }  // namespace chromeos
