@@ -655,6 +655,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteContextAffectedByBugfix1166211"
     enum="BooleanAffected" expires_after="2021-12-19">
+  <obsolete>
+    Removed July 2021, no longer needed: crbug.com/1166211
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -705,6 +708,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.SameSiteCookieInclusionChangedByBugfix1166211"
     enum="BooleanChanged" expires_after="2021-12-19">
+  <obsolete>
+    Removed July 2021, no longer needed: crbug.com/1166211
+  </obsolete>
   <owner>chlily@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>

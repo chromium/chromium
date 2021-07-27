@@ -313,7 +313,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
           metadata, roundtrip));
   EXPECT_EQ(metadata, roundtrip);
 
-  metadata.affected_by_bugfix_1166211 = true;
   metadata.cross_site_redirect_downgrade =
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextDowngradeType::kStrictToLax;
@@ -333,17 +332,13 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_STRICT};
 
   ContextMetadata metadata1;
-  metadata1.affected_by_bugfix_1166211 = true;
+  metadata1.cross_site_redirect_downgrade =
+      ContextMetadata::ContextDowngradeType::kStrictToLax;
   ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade =
-      ContextMetadata::ContextDowngradeType::kStrictToLax;
-  ContextMetadata metadata3;
-  metadata3.affected_by_bugfix_1166211 = true;
-  metadata3.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kLaxToCross;
 
-  const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2,
-                                    metadata3};
+  const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2};
 
   for (ContextType context_type : all_context_types) {
     for (ContextType schemeful_context_type : all_context_types) {

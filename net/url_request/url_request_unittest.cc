@@ -2322,8 +2322,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
     CookieInclusionStatus expected_lax_status =
         CookieInclusionStatus::MakeFromReasonsForTesting(
             {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
-            {CookieInclusionStatus::
-                 WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211});
+            {} /* warning_reasons */);
     EXPECT_EQ(expected_strict_status,
               req->maybe_sent_cookies()[0].access_result.status);
     EXPECT_EQ(expected_lax_status,
@@ -2800,8 +2799,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SettingSameSiteCookies) {
     CookieInclusionStatus expected_lax_status =
         CookieInclusionStatus::MakeFromReasonsForTesting(
             {CookieInclusionStatus::EXCLUDE_SAMESITE_LAX},
-            {CookieInclusionStatus::
-                 WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211});
+            {} /* warning_reasons */);
     EXPECT_EQ(expected_strict_status,
               req->maybe_stored_cookies()[0].access_result.status);
     EXPECT_EQ(expected_lax_status,

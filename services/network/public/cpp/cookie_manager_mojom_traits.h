@@ -95,10 +95,6 @@ template <>
 struct StructTraits<
     network::mojom::CookieSameSiteContextMetadataDataView,
     net::CookieOptions::SameSiteCookieContext::ContextMetadata> {
-  static bool affected_by_bugfix_1166211(
-      const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
-    return m.affected_by_bugfix_1166211;
-  }
   static net::CookieOptions::SameSiteCookieContext::ContextMetadata::
       ContextDowngradeType
       cross_site_redirect_downgrade(

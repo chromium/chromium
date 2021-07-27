@@ -679,21 +679,6 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
       std::make_move_iterator(maybe_included_cookies.end()));
   maybe_included_cookies.clear();
 
-  // If the cookie was excluded due to the fix for crbug.com/1166211, this
-  // applies a warning to the status that will show up in the netlog.
-  // TODO(crbug.com/1166211): Remove once no longer needed.
-  if (options.same_site_cookie_context().AffectedByBugfix1166211()) {
-    for (auto& cookie_with_access_result : maybe_sent_cookies) {
-      if (!cookie_with_access_result.access_result.status
-               .HasOnlyExclusionReason(CookieInclusionStatus::ExclusionReason::
-                                           EXCLUDE_USER_PREFERENCES)) {
-        options.same_site_cookie_context()
-            .MaybeApplyBugfix1166211WarningToStatusAndLogHistogram(
-                cookie_with_access_result.access_result.status);
-      }
-    }
-  }
-
   if (request_->net_log().IsCapturing()) {
     for (const auto& cookie_with_access_result : maybe_sent_cookies) {
       request_->net_log().AddEvent(
@@ -843,14 +828,6 @@ void URLRequestHttpJob::OnSetCookieResult(
                                  });
   }
 
-  // If the cookie was excluded due to the fix for crbug.com/1166211, this
-  // applies a warning to the status that will show up in the netlog.
-  // TODO(crbug.com/1166211): Remove once no longer needed.
-  if (options.same_site_cookie_context().AffectedByBugfix1166211()) {
-    options.same_site_cookie_context()
-        .MaybeApplyBugfix1166211WarningToStatusAndLogHistogram(
-            access_result.status);
-  }
   set_cookie_access_result_list_.emplace_back(
       std::move(cookie), std::move(cookie_string), access_result);
 

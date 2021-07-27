@@ -176,32 +176,25 @@ class NET_EXPORT CookieInclusionStatus {
     // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
     WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
 
-    // The cookie was SameSite=Lax (or unspecified-treated-as-lax) and was
-    // excluded due to the fix for crbug.com/1166211, i.e. it was accessed by an
-    // HTTP request which was not a main frame navigation, whose initiator was
-    // cross-site and whose site-for-cookies was same-site with the request URL.
-    // TODO(crbug.com/1166211): Remove when no longer needed.
-    WARN_SAMESITE_LAX_EXCLUDED_AFTER_BUGFIX_1166211 = 12,
-
     // This cookie was SameSite=None and was included, but would have been
     // excluded if it had been SameParty and the SameParty context had been
     // computed using *either* top & current or the whole ancestor tree.
-    WARN_SAMESITE_NONE_REQUIRED = 13,
+    WARN_SAMESITE_NONE_REQUIRED = 12,
     // This cookie was SameSite=None, was included, would have been included if
     // it had been SameParty and the SameParty context type had been computed
     // with only the top frame & resource URL, but would have been excluded if
     // the SameParty context type had been computed using all ancestor frames.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE = 14,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE = 13,
     // This cookie was SameSite=None, was included, and would have been included
     // if it had been SameParty and the SameParty context type had been computed
     // using all ancestor frames.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS = 15,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS = 14,
     // This cookie was SameSite=None, was included, and would have been included
     // if it had been SameSite=Lax.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX = 16,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX = 15,
     // This cookie was SameSite=None, was included, and would have been included
     // if it had been SameSite=Strict.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 17,
+    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 16,
 
     // The cookie would have been included prior to the spec change considering
     // redirects in the SameSite context calculation
@@ -213,7 +206,7 @@ class NET_EXPORT CookieInclusionStatus {
     // was actually used for the inclusion decision). This is not applied if
     // the context was downgraded but the cookie would have been
     // included/excluded in both cases.
-    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 18,
+    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 17,
 
     // This should be kept last.
     NUM_WARNING_REASONS

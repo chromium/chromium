@@ -362,7 +362,6 @@ bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
                   net::CookieOptions::SameSiteCookieContext::ContextMetadata>::
     Read(network::mojom::CookieSameSiteContextMetadataDataView data,
          net::CookieOptions::SameSiteCookieContext::ContextMetadata* out) {
-  out->affected_by_bugfix_1166211 = data.affected_by_bugfix_1166211();
   if (!data.ReadCrossSiteRedirectDowngrade(&out->cross_site_redirect_downgrade))
     return false;
 
