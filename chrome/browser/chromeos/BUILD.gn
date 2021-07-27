@@ -3519,7 +3519,6 @@ static_library("test_support") {
     "../ash/policy/handlers/fake_device_name_policy_handler.h",
     "../ash/policy/handlers/minimum_version_policy_test_helpers.cc",
     "../ash/policy/handlers/minimum_version_policy_test_helpers.h",
-    "../ash/policy/remote_commands/future_value.h",
     "../ash/settings/scoped_testing_cros_settings.cc",
     "../ash/settings/scoped_testing_cros_settings.h",
     "android_sms/fake_android_sms_app_manager.cc",

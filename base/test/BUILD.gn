@@ -118,6 +118,7 @@ static_library("test_support") {
     "test_discardable_memory_allocator.h",
     "test_file_util.cc",
     "test_file_util.h",
+    "test_future.h",
     "test_io_thread.cc",
     "test_io_thread.h",
     "test_message_loop.cc",

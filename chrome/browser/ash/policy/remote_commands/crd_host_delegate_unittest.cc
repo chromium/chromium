@@ -13,8 +13,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/policy/remote_commands/future_value.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +25,7 @@ namespace {
 
 using ::testing::HasSubstr;
 using SessionParameters = CRDHostDelegate::SessionParameters;
+using base::test::TestFuture;
 
 std::string FindStringKey(const base::Value& dictionary,
                           const std::string& key) {
@@ -93,17 +94,16 @@ class NativeMessageHostStub : public extensions::NativeMessageHost {
   NativeMessageHostStub(const NativeMessageHostStub&) = delete;
   NativeMessageHostStub& operator=(const NativeMessageHostStub&) = delete;
   ~NativeMessageHostStub() override {
-    EXPECT_FALSE(last_message_.has_value())
-        << "Test finishes without handling a message: "
-        << last_message_.value();
+    EXPECT_FALSE(last_message_->IsReady())
+        << "Test finishes without handling a message: " << last_message_->Get();
   }
 
   // extensions::NativeMessageHost implementation:
   void OnMessage(const std::string& message) override {
-    EXPECT_FALSE(last_message_.has_value())
-        << "Unhandled message: " << last_message_.value();
+    EXPECT_FALSE(last_message_->IsReady())
+        << "Unhandled message: " << last_message_->Get();
 
-    last_message_.SetValue(message);
+    last_message_->SetValue(message);
   }
 
   void Start(Client* client) override {
@@ -118,18 +118,20 @@ class NativeMessageHostStub : public extensions::NativeMessageHost {
     if (client_)
       return;  // Start has already been called
 
-    is_started_.WaitWithTimeout("Timeout waiting for start");
+    EXPECT_TRUE(is_started_.Wait()) << "Timeout waiting for start.";
   }
 
   void WaitForHello() { WaitForMessageOfType("hello"); }
 
   // Wait until a message is received, checks the type and returns the message.
   base::Value WaitForMessageOfType(const std::string& type) {
-    std::string message_str = last_message_.GetWithTimeout(base::StringPrintf(
-        "Timeout waiting for message of type '%s'", type.c_str()));
+    EXPECT_TRUE(last_message_->Wait())
+        << "Timeout waiting for message of type '" << type.c_str() << "'";
 
-    // Prepare the future value for our next message.
-    last_message_.Reset();
+    std::string message_str = last_message_->Get();
+
+    // Prepare for our next message.
+    last_message_ = std::make_unique<TestFuture<std::string>>();
 
     absl::optional<base::Value> message = base::JSONReader::Read(message_str);
     if (!message) {
@@ -142,7 +144,7 @@ class NativeMessageHostStub : public extensions::NativeMessageHost {
     return std::move(message.value());
   }
 
-  bool has_message() const { return last_message_.has_value(); }
+  bool has_message() const { return last_message_->IsReady(); }
 
   void PostMessageOfType(const std::string& type) {
     PostMessage(Message().WithType(type));
@@ -176,8 +178,13 @@ class NativeMessageHostStub : public extensions::NativeMessageHost {
 
  private:
   Client* client_ = nullptr;
-  FutureValue<bool> is_started_;
-  FutureValue<std::string> last_message_;
+  TestFuture<bool> is_started_;
+
+  // Waiter for the next message from the CRD Host.
+  // Will never be null.
+  std::unique_ptr<TestFuture<std::string>> last_message_ =
+      std::make_unique<TestFuture<std::string>>();
+
   bool is_destroyed_ = false;
 };
 

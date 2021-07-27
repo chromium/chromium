@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/policy/remote_commands/future_value.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -41,6 +41,8 @@ namespace policy {
 namespace em = enterprise_management;
 
 namespace {
+
+using base::test::TestFuture;
 
 constexpr char kResultCodeFieldName[] = "resultCode";
 constexpr char kResultMessageFieldName[] = "message";
@@ -196,7 +198,7 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
 
   Result RunJobAndWaitForResult() {
     InitializeAndRunJob();
-    return future_result_.GetWithTimeout();
+    return future_result_.Get();
   }
 
   std::string CreateSuccessPayload(const std::string& access_code);
@@ -339,7 +341,7 @@ class DeviceCommandStartCRDSessionJobTest : public ash::DeviceSettingsTestBase {
 
   // Future value that will be populated with the result once the remote command
   // job is completed.
-  FutureValue<Result> future_result_;
+  TestFuture<Result> future_result_;
 
   base::TimeTicks test_start_time_;
 };
