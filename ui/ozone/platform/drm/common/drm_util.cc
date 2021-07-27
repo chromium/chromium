@@ -508,7 +508,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     display_name = edid_parser.display_name();
     active_pixel_size = edid_parser.active_pixel_size();
     product_code = edid_parser.GetProductCode();
-    display_id = edid_parser.GetDisplayId(display_index);
+    display_id = edid_parser.GetIndexBasedDisplayId(display_index);
     year_of_manufacture = edid_parser.year_of_manufacture();
     has_overscan =
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();

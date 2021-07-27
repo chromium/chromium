@@ -333,7 +333,8 @@ struct TestParams {
   SkColorSpacePrimaries primaries;
 
   uint32_t product_code;
-  int64_t display_id_zero;
+  int64_t index_based_display_id_zero;
+  int64_t edid_based_display_id;
 
   std::string manufacturer_id_string;
   std::string product_id_string;
@@ -360,6 +361,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834990092472576,
+     1713305697,
      "HWP",
      "286C",
      {},
@@ -382,6 +384,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     51468448,
      "HWP",
      "286C",
      {},
@@ -404,6 +407,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     403808854,
      "HWP",
      "286C",
      {},
@@ -426,6 +430,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     3094128629,
      "HWP",
      "286C",
      {},
@@ -448,6 +453,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     2769865770,
      "HWP",
      "286C",
      {},
@@ -470,6 +476,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     4082014303,
      "HWP",
      "286C",
      {},
@@ -492,6 +499,7 @@ struct TestParams {
      kNormalDisplayPrimaries,
      586181672,
      9834734971736576,
+     1070357245,
      "HWP",
      "286C",
      {},
@@ -514,6 +522,7 @@ struct TestParams {
      kInternalDisplayPrimaries,
      1285767729,
      21571318625337344,
+     1646280528,
      "SEC",
      "3142",
      {},
@@ -536,6 +545,7 @@ struct TestParams {
      kOverscanDisplayPrimaries,
      1278082568,
      21442559853606400,
+     3766836601,
      "SAM",
      "08FE",
      {},
@@ -558,6 +568,7 @@ struct TestParams {
      kMisdetectedDisplayPrimaries,
      279733312,
      4692848143772416,
+     1487444765,
      "DEL",
      "4064",
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
@@ -580,6 +591,7 @@ struct TestParams {
      kLP2565APrimaries,
      586184230,
      9834630174887424,
+     1695949480,
      "HWP",
      "2676",
      {},
@@ -602,6 +614,7 @@ struct TestParams {
      kLP2565BPrimaries,
      586183974,
      9834630174887424,
+     3357789438,
      "HWP",
      "2675",
      {},
@@ -624,6 +637,7 @@ struct TestParams {
      kHPz32xPrimaries,
      586183986,
      9834799315992832,
+     129207725,
      "HWP",
      "3275",
      {},
@@ -646,6 +660,7 @@ struct TestParams {
      kSamusPrimaries,
      820260356,
      13761487533244416,
+     2825178591,
      "LGD",
      "042E",
      {},
@@ -668,6 +683,7 @@ struct TestParams {
      kEvePrimaries,
      1292929556,
      21692109949126656,
+     2755351929,
      "SHP",
      "148A",
      {},
@@ -690,6 +706,7 @@ struct TestParams {
      kHDRPrimaries,
      1278080525,
      21442559853606400,
+     755395064,
      "SAM",
      "0DF6",
      {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M,
@@ -717,6 +734,8 @@ struct TestParams {
      SkColorSpacePrimaries(),
      0,
      0,
+     // Not zero because we're still hashing some string of zero/empty values.
+     710538554,
      "@@@",
      "0000",
      {},
@@ -760,8 +779,9 @@ TEST_P(EDIDParserTest, ParseEdids) {
                       GetParam().primaries);
 
   EXPECT_EQ(parser_.GetProductCode(), GetParam().product_code);
-  EXPECT_EQ(parser_.GetDisplayId(0 /* product_index */),
-            GetParam().display_id_zero);
+  EXPECT_EQ(parser_.GetIndexBasedDisplayId(0 /* product_index */),
+            GetParam().index_based_display_id_zero);
+  EXPECT_EQ(parser_.GetEdidBasedDisplayId(), GetParam().edid_based_display_id);
 
   EXPECT_EQ(EdidParser::ManufacturerIdToString(parser_.manufacturer_id()),
             GetParam().manufacturer_id_string);

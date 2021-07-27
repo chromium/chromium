@@ -111,13 +111,23 @@ uint32_t EdidParser::GetProductCode() const {
           (static_cast<uint32_t>(product_id_)));
 }
 
-int64_t EdidParser::GetDisplayId(uint8_t output_index) const {
+int64_t EdidParser::GetIndexBasedDisplayId(uint8_t output_index) const {
   // Generates product specific value from product_name instead of product code.
   // See https://crbug.com/240341
   const uint32_t product_code_hash =
       display_name_.empty() ? 0 : base::Hash(display_name_);
   // An ID based on display's index will be assigned later if this call fails.
   return GenerateDisplayID(manufacturer_id_, product_code_hash, output_index);
+}
+
+int64_t EdidParser::GetEdidBasedDisplayId() const {
+  const std::string string_to_hash =
+      base::NumberToString(manufacturer_id_) +
+      base::NumberToString(product_id_) + display_name_ +
+      base::NumberToString(week_of_manufacture()) +
+      base::NumberToString(year_of_manufacture_) + max_image_size().ToString() +
+      block_zero_serial_number_hash() + descriptor_block_serial_number_hash();
+  return static_cast<int64_t>(base::PersistentHash(string_to_hash));
 }
 
 // static

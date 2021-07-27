@@ -249,7 +249,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
         GetEDIDProperty(&randr, static_cast<x11::RandR::Output>(output_id)));
     auto output_32 = static_cast<uint32_t>(output_id);
     int64_t display_id =
-        output_32 > 0xff ? 0 : edid_parser.GetDisplayId(output_32);
+        output_32 > 0xff ? 0 : edid_parser.GetIndexBasedDisplayId(output_32);
     // It isn't ideal, but if we can't parse the EDID data, fall back on the
     // display number.
     if (!display_id)
