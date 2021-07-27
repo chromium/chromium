@@ -181,40 +181,18 @@ void URLLoaderFactory::CreateLoaderAndStart(
 
     keepalive_request_size = url_size + headers_size;
 
-    KeepaliveBlockStatus block_status = KeepaliveBlockStatus::kNotBlocked;
     const auto& top_frame_id = *params_->top_frame_id;
     const auto& recorder = *keepalive_statistics_recorder;
 
-    if (!context_->CanCreateLoader(params_->process_id)) {
-      // We already checked this, but we have this here for histogram.
-      DCHECK(exhausted);
-      block_status = KeepaliveBlockStatus::kBlockedDueToCanCreateLoader;
-    } else if (recorder.num_inflight_requests() >= kMaxKeepaliveConnections) {
-      exhausted = true;
-      block_status = KeepaliveBlockStatus::kBlockedDueToNumberOfRequests;
-    } else if (recorder.NumInflightRequestsPerTopLevelFrame(top_frame_id) >=
-               kMaxKeepaliveConnectionsPerTopLevelFrame) {
-      exhausted = true;
-      block_status =
-          KeepaliveBlockStatus::kBlockedDueToNumberOfRequestsPerTopLevelFrame;
-    } else if (recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
-                   keepalive_request_size >
-               kMaxTotalKeepaliveRequestSize) {
-      exhausted = true;
-      block_status =
-          KeepaliveBlockStatus::kBlockedDueToTotalSizeOfUrlAndHeaders;
-    } else if (recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
-                   keepalive_request_size >
-               384 * 1024) {
-      block_status =
-          KeepaliveBlockStatus::kNotBlockedButUrlAndHeadersExceeds384kb;
-    } else if (recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
-                   keepalive_request_size >
-               256 * 1024) {
-      block_status =
-          KeepaliveBlockStatus::kNotBlockedButUrlAndHeadersExceeds256kb;
-    } else {
-      block_status = KeepaliveBlockStatus::kNotBlocked;
+    if (!exhausted) {
+      if (recorder.num_inflight_requests() >= kMaxKeepaliveConnections ||
+          recorder.NumInflightRequestsPerTopLevelFrame(top_frame_id) >=
+              kMaxKeepaliveConnectionsPerTopLevelFrame ||
+          recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
+                  keepalive_request_size >
+              kMaxTotalKeepaliveRequestSize) {
+        exhausted = true;
+      }
     }
   }
 
