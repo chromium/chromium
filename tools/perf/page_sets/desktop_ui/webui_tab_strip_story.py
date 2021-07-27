@@ -114,6 +114,18 @@ class WebUITabStripStoryMeasureMemory(WebUITabStripStory):
     action_runner.MeasureMemory(deterministic_mode=True)
 
 
+class WebUITabStripStoryMeasureMemory2Window(WebUITabStripStoryMeasureMemory):
+  NAME = 'webui_tab_strip:measure_memory:2window'
+  URL_LIST = []
+  URL = 'about:blank'
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+  def InteractWithPage(self, action_runner):
+    action_runner.tab.browser.tabs.New(url='about:blank', in_new_window=True)
+    action_runner.Wait(1)
+    action_runner.MeasureMemory(deterministic_mode=True)
+
+
 SCROLL_ELEMENT_FUNCTION = '''
 document.querySelector('tabstrip-tab-list')
 '''

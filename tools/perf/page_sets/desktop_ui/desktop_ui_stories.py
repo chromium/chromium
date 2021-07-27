@@ -44,6 +44,7 @@ class DesktopUIStorySet(story.StorySet):
   WEBUI_TAB_STRIP_STORIES = [
       webui_tab_strip_story.WebUITabStripStoryCleanSlate,
       webui_tab_strip_story.WebUITabStripStoryMeasureMemory,
+      webui_tab_strip_story.WebUITabStripStoryMeasureMemory2Window,
       webui_tab_strip_story.WebUITabStripStoryTop10,
       webui_tab_strip_story.WebUITabStripStoryTop10Loading,
   ]
