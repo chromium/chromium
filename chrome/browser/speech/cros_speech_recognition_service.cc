@@ -21,25 +21,22 @@ void PopulateFilePaths(const std::string* language,
                        base::FilePath& binary_path,
                        base::FilePath& languagepack_path) {
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (!soda_installer->IsSodaInstalled()) {
-    LOG(DFATAL) << "Instantiation of SODA requested without SODA being "
-                   "installed";
-    return;
-  }
-
   // TODO(crbug.com/1161569): Language should not be optional in
   // PopulateFilePaths, as it will be required once we support multiple
   // languages since the CrosSpeechRecognitionService supports several
   // features at once. For now only US English is available.
-  std::string language_code = language ? *language : kUsEnglishLocale;
-  if (!soda_installer->IsLanguageInstalled(language_code)) {
+  LanguageCode language_code =
+      language ? GetLanguageCode(*language) : LanguageCode::kEnUs;
+  if (!soda_installer->IsSodaInstalled(language_code)) {
     LOG(DFATAL) << "Instantiation of SODA requested with language "
-                << language_code
-                << ", but the requested language was not installed.";
+                << GetLanguageName(language_code)
+                << ", but either SODA or the requested language was not "
+                   "already installed";
     return;
   }
   binary_path = soda_installer->GetSodaBinaryPath();
-  languagepack_path = soda_installer->GetLanguagePath(language_code);
+  languagepack_path =
+      soda_installer->GetLanguagePath(GetLanguageName(language_code));
 }
 
 }  // namespace

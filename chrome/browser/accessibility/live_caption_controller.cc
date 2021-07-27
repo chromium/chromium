@@ -140,7 +140,10 @@ void LiveCaptionController::StartLiveCaption() {
   // whether or not to download. Once SODA is on the device and ready, the
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
   // that time.
-  if (speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
+  const std::string locale =
+      profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
+  if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+          speech::GetLanguageCode(locale))) {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
@@ -166,8 +169,11 @@ void LiveCaptionController::OnSodaInstalled() {
 void LiveCaptionController::CreateUI() {
   if (is_ui_constructed_)
     return;
+
   DCHECK(!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-         speech::SodaInstaller::GetInstance()->IsSodaInstalled());
+         speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+             speech::GetLanguageCode(
+                 profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode))));
   is_ui_constructed_ = true;
 
   caption_bubble_controller_ = CaptionBubbleController::Create();

@@ -10,9 +10,11 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
@@ -24,6 +26,8 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "components/prefs/pref_service.h"
+#include "components/soda/soda_installer.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -544,7 +548,16 @@ void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
   if (!dictation_enabled)
     soda_installer->RemoveObserver(this);
 
-  if (dictation_enabled && !soda_installer->IsSodaInstalled()) {
+  std::string dictation_locale = speech::kUsEnglishLocale;
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (pref_service) {
+    dictation_locale =
+        pref_service->GetString(prefs::kAccessibilityDictationLocale);
+  }
+
+  if (dictation_enabled && !soda_installer->IsSodaInstalled(
+                               speech::GetLanguageCode(dictation_locale))) {
     // Make sure this view observes SODA installation. We only want to update
     // the user of the installation status if dictation is enabled.
     soda_installer->AddObserver(this);

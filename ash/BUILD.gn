@@ -1918,6 +1918,7 @@ component("ash") {
     "//components/session_manager:base",
     "//components/session_manager/core",
     "//components/soda",
+    "//components/soda:constants",
     "//components/strings",
     "//components/sync",
     "//components/user_manager",

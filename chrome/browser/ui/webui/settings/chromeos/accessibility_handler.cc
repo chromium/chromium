@@ -6,6 +6,7 @@
 
 #include <set>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
@@ -151,7 +152,10 @@ void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
   // TODO(crbug.com/1195916): Don't display SODA status if the Dictation
   // language is not a downloaded or available SODA language.
   if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
-    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
+    const std::string dictation_locale =
+        profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+            speech::GetLanguageCode(dictation_locale))) {
       OnSodaInstalled();
     } else {
       // Add self as an observer. If this was a page refresh we don't want to

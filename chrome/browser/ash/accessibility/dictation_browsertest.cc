@@ -125,9 +125,7 @@ class DictationTest : public InProcessBrowserTest,
       // Fake that SODA is installed so Dictation uses OnDeviceSpeechRecognizer.
       // Do this here, since SetUpOnMainThread is run after the browser process
       // initializes (which is when the global SodaInstaller gets created).
-      static_cast<speech::SodaInstallerImplChromeOS*>(
-          speech::SodaInstaller::GetInstance())
-          ->set_soda_installed_for_test(true);
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
     }
   }
 

@@ -143,4 +143,13 @@ std::string GetLanguageName(LanguageCode language_code) {
   return language_name;
 }
 
+LanguageCode GetLanguageCode(const std::string& language_name) {
+  absl::optional<speech::SodaLanguagePackComponentConfig> language_config =
+      speech::GetLanguageComponentConfig(language_name);
+  if (language_config.has_value()) {
+    return language_config.value().language_code;
+  }
+  return LanguageCode::kNone;
+}
+
 }  // namespace speech

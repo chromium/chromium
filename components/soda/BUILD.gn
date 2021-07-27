@@ -49,3 +49,22 @@ source_set("constants") {
     "//components/strings/",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  if (is_chromeos_ash) {
+    sources = [ "soda_installer_impl_chromeos_unittest.cc" ]
+
+    deps = [
+      ":constants",
+      ":soda",
+      "//ash/constants",
+      "//chromeos/dbus/dlcservice:test_support",
+      "//components/live_caption:constants",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

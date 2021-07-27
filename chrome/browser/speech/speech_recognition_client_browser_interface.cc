@@ -70,8 +70,11 @@ void SpeechRecognitionClientBrowserInterface::
   bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
 
   if (enabled) {
+    const std::string live_caption_locale =
+        profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
     if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-        speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
+        speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+            speech::GetLanguageCode(live_caption_locale))) {
       NotifyObservers(enabled);
     }
   } else {

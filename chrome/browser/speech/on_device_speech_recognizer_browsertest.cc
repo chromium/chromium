@@ -109,9 +109,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
     mock_speech_delegate_ =
         std::make_unique<testing::StrictMock<MockSpeechRecognizerDelegate>>();
     // Fake that SODA is installed.
-    static_cast<speech::SodaInstallerImplChromeOS*>(
-        speech::SodaInstaller::GetInstance())
-        ->set_soda_installed_for_test(true);
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
   void TearDownOnMainThread() override {

@@ -67,9 +67,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    static_cast<speech::SodaInstallerImplChromeOS*>(
-        speech::SodaInstaller::GetInstance())
-        ->set_soda_installed_for_test(true);
+    speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
 
     scoped_resetter_ =
         std::make_unique<ProjectorController::ScopedInstanceResetterForTest>();

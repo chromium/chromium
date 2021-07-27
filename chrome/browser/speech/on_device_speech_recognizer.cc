@@ -64,8 +64,7 @@ bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return false;
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  return soda_installer->IsSodaInstalled() &&
-         soda_installer->IsLanguageInstalled(language);
+  return soda_installer->IsSodaInstalled(speech::GetLanguageCode(language));
 }
 
 OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(

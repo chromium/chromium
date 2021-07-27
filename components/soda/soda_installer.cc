@@ -100,6 +100,19 @@ void SodaInstaller::SetUninstallTimer(PrefService* profile_prefs,
       base::Time::Now() + base::TimeDelta::FromDays(kSodaCleanUpDelayInDays));
 }
 
+bool SodaInstaller::IsSodaInstalled(speech::LanguageCode language_code) const {
+  return (soda_binary_installed_ && IsLanguageInstalled(language_code));
+}
+
+bool SodaInstaller::IsAnyLanguagePackInstalled() const {
+  return !installed_languages_.empty();
+}
+
+bool SodaInstaller::IsLanguageInstalled(
+    speech::LanguageCode language_code) const {
+  return installed_languages_.find(language_code) != installed_languages_.end();
+}
+
 void SodaInstaller::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -110,13 +123,17 @@ void SodaInstaller::RemoveObserver(Observer* observer) {
 
 void SodaInstaller::NotifySodaInstalledForTesting() {
   soda_binary_installed_ = true;
-  language_installed_ = true;
+  is_soda_downloading_ = false;
+  installed_languages_.insert(speech::LanguageCode::kEnUs);
+  language_pack_progress_.clear();
   NotifyOnSodaInstalled();
 }
 
 void SodaInstaller::UninstallSodaForTesting() {
   soda_binary_installed_ = false;
-  language_installed_ = false;
+  is_soda_downloading_ = false;
+  installed_languages_.clear();
+  language_pack_progress_.clear();
 }
 
 void SodaInstaller::RegisterRegisteredLanguagePackPref(
@@ -179,6 +196,12 @@ void SodaInstaller::RegisterLanguage(const std::string& language,
 void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
   ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
   update->ClearList();
+}
+
+bool SodaInstaller::IsSodaDownloading(
+    speech::LanguageCode language_code) const {
+  return is_soda_downloading_ || language_pack_progress_.find(language_code) !=
+                                     language_pack_progress_.end();
 }
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) {

@@ -36,15 +36,11 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   // SodaInstaller:
   void InstallLanguage(const std::string& language,
                        PrefService* global_prefs) override;
-  bool IsSodaInstalled() const override;
-  bool IsLanguageInstalled(const std::string& language) const override;
   std::vector<std::string> GetAvailableLanguages() const override;
 
-  void set_soda_installed_for_test(bool installed) {
-    soda_installed_for_test_ = installed;
-  }
-
  private:
+  friend class SodaInstallerImplChromeOSTest;
+
   // SodaInstaller:
   void InstallSoda(PrefService* global_prefs) override;
   // Here "uninstall" is used in the DLC sense of the term: Uninstallation will
@@ -73,16 +69,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   // This is the UninstallCallback for DlcserviceClient::Uninstall().
   void OnDlcUninstalled(const std::string& dlc_id, const std::string& err);
 
-  // When true, IsSodaInstalled() will return true. This may be used by tests
-  // that need to pretend soda is installed before using
-  // FakeSpeechRecognitionService.
-  bool soda_installed_for_test_ = false;
-
-  bool is_soda_downloading_ = false;
-  bool is_language_downloading_ = false;
-
   double soda_progress_ = 0.0;
-  double language_progress_ = 0.0;
 
   base::FilePath soda_lib_path_;
   base::FilePath language_path_;
