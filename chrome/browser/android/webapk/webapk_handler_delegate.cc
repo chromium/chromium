@@ -8,8 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/WebApkHandlerDelegate_jni.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_helpers.h"
 

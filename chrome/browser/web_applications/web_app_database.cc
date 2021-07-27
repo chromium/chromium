@@ -30,7 +30,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

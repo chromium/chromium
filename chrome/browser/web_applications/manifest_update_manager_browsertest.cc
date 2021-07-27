@@ -53,7 +53,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
