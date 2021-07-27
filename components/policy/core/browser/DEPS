@@ -6,6 +6,7 @@ include_rules = [
   "+components/strings/grit/components_strings.h",
   "+components/url_formatter",
   "+components/url_matcher",
+  "+components/version_info",
   "+extensions/buildflags",
   "+third_party/icu",
   "+ui/base/l10n",

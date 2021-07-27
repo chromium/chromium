@@ -49,6 +49,7 @@
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
+#include "components/policy/core/browser/webui/json_generation.h"
 #include "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -78,6 +79,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1074,16 +1076,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::ListValue* args) {
 }
 
 std::string PolicyUIHandler::GetPoliciesAsJson() {
-  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
-      web_ui()->GetWebContents()->GetBrowserContext());
-  base::Value dict =
-      policy::DictionaryPolicyConversions(std::move(client)).ToValue();
-
-  base::Value chrome_metadata(base::Value::Type::DICTIONARY);
-
-  chrome_metadata.SetKey(
-      "application", base::Value(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
-  std::string cohort_name;
+  absl::optional<std::string> cohort_name;
 #if defined(OS_WIN)
   std::u16string cohort_version_info =
       version_utils::win::GetCohortVersionInfo();
@@ -1092,45 +1085,47 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
         " %s", base::UTF16ToUTF8(cohort_version_info).c_str());
   }
 #endif
-  std::string channel_name =
-      chrome::GetChannelName(chrome::WithExtendedStable(true));
-  std::string version = base::StringPrintf(
-      "%s (%s)%s %s%s", version_info::GetVersionNumber().c_str(),
-      l10n_util::GetStringUTF8(version_info::IsOfficialBuild()
-                                   ? IDS_VERSION_UI_OFFICIAL
-                                   : IDS_VERSION_UI_UNOFFICIAL)
-          .c_str(),
-      (channel_name.empty() ? "" : " " + channel_name).c_str(),
-      l10n_util::GetStringUTF8(VersionUI::VersionProcessorVariation()).c_str(),
-      cohort_name.c_str());
-  chrome_metadata.SetKey("version", base::Value(version));
 
+  absl::optional<std::string> os_name;
+  absl::optional<std::string> platform_name;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chrome_metadata.SetKey("platform",
-                         base::Value(chromeos::version_loader::GetVersion(
-                             chromeos::version_loader::VERSION_FULL)));
+  platform_name = chromeos::version_loader::GetVersion(
+      chromeos::version_loader::VERSION_FULL);
 #elif defined(OS_MAC)
-  chrome_metadata.SetKey("OS", base::Value(base::mac::GetOSDisplayName()));
+  os_name = base::mac::GetOSDisplayName();
 #else
-  std::string os = version_info::GetOSType();
+  os_name = version_info::GetOSType();
 #if defined(OS_WIN)
-  os += " " + version_utils::win::GetFullWindowsVersion();
+  os_name = os_name.value() + " " + version_utils::win::GetFullWindowsVersion();
 #elif defined(OS_ANDROID)
-  os += " " + AndroidAboutAppInfo::GetOsInfo();
+  os_name = os_name.value() + " " + AndroidAboutAppInfo::GetOsInfo();
 #endif
-  chrome_metadata.SetKey("OS", base::Value(os));
 #endif
-  chrome_metadata.SetKey("revision",
-                         base::Value(version_info::GetLastChange()));
 
-  dict.SetKey("chromeMetadata", std::move(chrome_metadata));
-  dict.SetKey("status", GetStatusValue(/*for_webui*/ false));
+  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
+      web_ui()->GetWebContents()->GetBrowserContext());
 
-  std::string json_policies;
-  base::JSONWriter::WriteWithOptions(
-      dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_policies);
+  policy::JsonGenerationParams params;
+  params.with_application_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME))
+      .with_channel_name(
+          chrome::GetChannelName(chrome::WithExtendedStable(true)))
+      .with_processor_variation(
+          l10n_util::GetStringUTF8(VersionUI::VersionProcessorVariation()));
 
-  return json_policies;
+  if (cohort_name) {
+    params.with_cohort_name(cohort_name.value());
+  }
+
+  if (os_name) {
+    params.with_os_name(os_name.value());
+  }
+
+  if (platform_name) {
+    params.with_platform_name(platform_name.value());
+  }
+
+  return policy::GenerateJson(std::move(client),
+                              GetStatusValue(/*for_webui*/ false), params);
 }
 
 void DoWritePoliciesToJSONFile(const base::FilePath& path,
