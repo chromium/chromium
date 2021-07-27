@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 435 tests; 263 PASS, 172 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 435 tests; 265 PASS, 170 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -293,8 +293,8 @@ FAIL <a>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equal
 FAIL <area>: Setting <non-spec:/.//p>.hostname = 'h' Drop /. from path assert_equals: expected "non-spec://h//p" but got "non-spec:/.//p"
 FAIL <a>: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
 FAIL <area>: Setting <non-spec:/.//p>.hostname = '' assert_equals: expected "non-spec:////p" but got "non-spec:/.//p"
-FAIL <a>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
-FAIL <area>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "http://example.com/" but got "http://bad.com/"
+PASS <a>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
+PASS <area>: Setting <http://example.com/>.hostname = '///bad.com' Leading / is not stripped
 FAIL <a>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 FAIL <area>: Setting <sc://example.com/>.hostname = '///bad.com' Leading / is not stripped assert_equals: expected "sc:///" but got "sc://example.com/"
 PASS <a>: Setting <http://example.net>.port = '8080'

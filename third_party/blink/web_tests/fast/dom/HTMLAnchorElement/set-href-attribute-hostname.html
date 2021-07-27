@@ -19,7 +19,7 @@ try {
 debug("Extra slashes before hostname");
 a.href = "https://www.mydomain.com:8080/path/";
 a.hostname = "//www.otherdomain.com";
-shouldBe("a.href", "'https://www.otherdomain.com:8080/path/'");
+shouldBe("a.href", "'https://www.mydomain.com:8080/path/'");
 } catch(e) {
 debug("Exception: " + e.description);
 }
