@@ -131,6 +131,17 @@ UIColor* BackgroundColor() {
   self.showNewPasswordOption = showNewPasswordOption;
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];
+
+  // Remove or add the search controller depending on whether there are
+  // passwords to search.
+  if (self.allPasswords.count > 0) {
+    self.navigationItem.searchController = self.searchController;
+  } else {
+    if (self.navigationItem.searchController.isActive) {
+      self.navigationItem.searchController.active = NO;
+    }
+    self.navigationItem.searchController = nil;
+  }
 }
 
 - (void)setTopPrompt:(NSString*)prompt {
@@ -340,7 +351,7 @@ UIColor* BackgroundColor() {
 - (BOOL)isSuggestedPasswordSection:(int)section {
   int sections = [self numberOfSections];
   if ((sections == 2 && section == 0) ||
-      (sections == 1 && self.suggestedPasswords.count)) {
+      (sections == 1 && [self numberOfRowsInSuggestedPasswordSection])) {
     return YES;
   } else {
     return NO;

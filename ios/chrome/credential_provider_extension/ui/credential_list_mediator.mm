@@ -88,7 +88,7 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (!self.allCredentials.count) {
+      if (!IsPasswordCreationEnabled() && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
       }
