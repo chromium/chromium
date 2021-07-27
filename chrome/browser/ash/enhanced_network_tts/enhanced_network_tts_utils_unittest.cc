@@ -101,10 +101,6 @@ TEST_F(EnhancedNetworkTtsUtilsTest, GetResultOnError) {
   EXPECT_TRUE(result->is_error_code());
   EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kServerError);
 
-  result = GetResultOnError(mojom::TtsRequestError::kOverLength);
-  EXPECT_TRUE(result->is_error_code());
-  EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kOverLength);
-
   result = GetResultOnError(mojom::TtsRequestError::kRequestOverride);
   EXPECT_TRUE(result->is_error_code());
   EXPECT_EQ(result->get_error_code(), mojom::TtsRequestError::kRequestOverride);

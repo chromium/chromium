@@ -50,13 +50,6 @@ void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
     return;
   }
 
-  // Return early if the utterance is over length limit.
-  if (request->utterance.size() > mojom::kEnhancedNetworkTtsMaxCharacterSize) {
-    std::move(callback).Run(
-        GetResultOnError(mojom::TtsRequestError::kOverLength));
-    return;
-  }
-
   // If the prior request is not finished, we override it and process any
   // unfinished audio callback.
   if (ongoing_server_request_)

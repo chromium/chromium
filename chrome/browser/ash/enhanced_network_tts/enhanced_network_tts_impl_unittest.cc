@@ -265,21 +265,6 @@ TEST_F(EnhancedNetworkTtsImplTest, EmptyUtteranceError) {
   EXPECT_EQ(error, mojom::TtsRequestError::kEmptyUtterance);
 }
 
-TEST_F(EnhancedNetworkTtsImplTest, OverLengthError) {
-  const std::string input_text(mojom::kEnhancedNetworkTtsMaxCharacterSize + 1,
-                               'x');
-  absl::optional<mojom::TtsRequestError> error;
-  std::vector<uint8_t> audio_data;
-  std::vector<mojom::TimingInfo> timing_data;
-  GetTestingInstance().GetAudioData(
-      mojom::TtsRequest::New(input_text, absl::nullopt, absl::nullopt),
-      base::BindOnce(&ReportResult, &error, &audio_data, &timing_data));
-  test_task_env_.RunUntilIdle();
-
-  // Over length request will be terminated before sending to server.
-  EXPECT_EQ(error, mojom::TtsRequestError::kOverLength);
-}
-
 TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
   const std::string input_text("request");
   absl::optional<mojom::TtsRequestError> error_first_request;
