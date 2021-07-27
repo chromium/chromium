@@ -72,6 +72,8 @@
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/share/share_history.h"
+#include "chrome/browser/share/share_ranking.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -640,6 +642,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     FindBarStateFactory::GetForBrowserContext(profile_)->SetLastSearchText(
         std::u16string());
+
+#if defined(OS_ANDROID)
+    if (auto* share_history = sharing::ShareHistory::Get(profile_))
+      share_history->Clear(delete_begin_, delete_end_);
+    if (auto* share_ranking = sharing::ShareRanking::Get(profile_))
+      share_ranking->Clear(delete_begin_, delete_end_);
+#endif
   }
 
   //////////////////////////////////////////////////////////////////////////////

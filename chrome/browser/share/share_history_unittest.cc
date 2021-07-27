@@ -62,7 +62,13 @@ class ShareHistoryTest : public testing::Test {
  public:
   using FakeDB = leveldb_proto::test::FakeDB<mojom::ShareHistory>;
 
-  ShareHistoryTest() { Init(); }
+  ShareHistoryTest() {
+    // These tests often want to place events/history "in the past", but the
+    // mock time source starts at the epoch, which breaks a bunch of those
+    // computations; give ourselves some margin to work with here.
+    environment_.FastForwardBy(base::TimeDelta::FromDays(7));
+    Init();
+  }
 
   void Init(bool do_default_init = true) {
     auto backing_db = std::make_unique<FakeDB>(&backing_entries_);
@@ -204,6 +210,36 @@ TEST_F(ShareHistoryTest, OffTheRecordProfileHasNoInstance) {
       Profile::OTRProfileID::CreateUniqueForTesting(), true);
   ShareHistory* db = ShareHistory::Get(otr_profile);
   ASSERT_FALSE(db);
+}
+
+TEST_F(ShareHistoryTest, ClearYesterdayOnly) {
+  // After rewriting backing_entries(), to simulate having stored data on disk,
+  // reinitialize the database to cause it to reread the backing DB.
+  (*backing_entries())["share_history"] = BuildTestProto();
+  Init();
+
+  {
+    auto result = GetFlatShareHistory();
+    ASSERT_EQ(result.size(), 2U);
+    EXPECT_EQ(result[0].component_name, kTarget0Name);
+    EXPECT_EQ(result[0].count, 5);
+    EXPECT_EQ(result[1].component_name, kTarget1Name);
+    EXPECT_EQ(result[1].count, 2);
+  }
+
+  auto start_offset = base::TimeDelta::FromDays(DaysSinceUnixEpoch() - 1);
+  auto end_offset = start_offset + base::TimeDelta::FromSeconds(3600);
+  db()->Clear(base::Time::UnixEpoch() + start_offset,
+              base::Time::UnixEpoch() + end_offset);
+
+  {
+    auto result = GetFlatShareHistory();
+    ASSERT_EQ(result.size(), 2U);
+    EXPECT_EQ(result[0].component_name, kTarget0Name);
+    EXPECT_EQ(result[0].count, 4);
+    EXPECT_EQ(result[1].component_name, kTarget1Name);
+    EXPECT_EQ(result[1].count, 2);
+  }
 }
 
 }  // namespace sharing

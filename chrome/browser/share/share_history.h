@@ -47,6 +47,9 @@ class ShareHistory : public base::SupportsUserData::Data {
   virtual void GetFlatShareHistory(GetFlatHistoryCallback callback,
                                    int window = -1);
 
+  virtual void Clear(const base::Time& start = base::Time(),
+                     const base::Time& end = base::Time());
+
   // Don't call this.
   //
   // TODO(ellyjones): There should be a better way to deal with this - it's used

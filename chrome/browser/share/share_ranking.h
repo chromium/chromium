@@ -50,6 +50,9 @@ class ShareRanking : public base::SupportsUserData::Data {
             bool persist_update,
             GetRankingCallback callback);
 
+  void Clear(const base::Time& start = base::Time(),
+             const base::Time& end = base::Time());
+
   // The core of the ranking algorithm, exposed as a pure function for ease of
   // testing and reasoning about the code. This function takes the existing
   // share history and ranking for this type, a set of all targets available on

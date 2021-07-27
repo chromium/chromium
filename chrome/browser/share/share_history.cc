@@ -45,6 +45,16 @@ std::unique_ptr<ShareHistory::BackingDb> MakeDefaultDbForProfile(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 }
 
+bool DayOverlapsTimeRange(base::Time day_start,
+                          base::Time start,
+                          base::Time end) {
+  const base::Time epoch = base::Time::UnixEpoch();
+  int day = (day_start - epoch).InDays();
+  int start_day = (start - epoch).InDays();
+  int end_day = (end - epoch).InDays();
+  return day >= start_day && day <= end_day;
+}
+
 }  // namespace
 
 // static
@@ -135,6 +145,23 @@ void ShareHistory::GetFlatShareHistory(GetFlatHistoryCallback callback,
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+void ShareHistory::Clear(const base::Time& start, const base::Time& end) {
+  google::protobuf::RepeatedPtrField<mojom::DayShareHistory> histories_to_keep;
+  for (const auto& day : history_.day_histories()) {
+    base::Time day_start =
+        base::Time::UnixEpoch() + base::TimeDelta::FromDays(day.day());
+    if (!DayOverlapsTimeRange(day_start, start, end)) {
+      mojom::DayShareHistory this_day;
+      this_day.CopyFrom(day);
+      histories_to_keep.Add(std::move(this_day));
+    }
+  }
+
+  history_.mutable_day_histories()->Swap(&histories_to_keep);
+
+  FlushToBackingDb();
 }
 
 void ShareHistory::Init() {

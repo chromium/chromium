@@ -305,6 +305,18 @@ void ShareRanking::Rank(ShareHistory* history,
                                               std::move(pending_call)));
 }
 
+void ShareRanking::Clear(const base::Time& start, const base::Time& end) {
+  // Since the ranking doesn't contain timestamps (they wouldn't really make
+  // sense), there's no way to remove only ranking data that came from the
+  // specified deletion interval. Instead, we forget all the ranking data
+  // altogether whenever we're clearing any interval - this almost always
+  // over-deletes, unfortunately.
+  db_->UpdateEntriesWithRemoveFilter(
+      std::make_unique<BackingDb::KeyEntryVector>(),
+      base::BindRepeating([](const std::string& key) -> bool { return true; }),
+      base::DoNothing());
+}
+
 // static
 void ShareRanking::ComputeRanking(
     const std::map<std::string, int>& all_share_history,

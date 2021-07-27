@@ -193,7 +193,7 @@ TEST_F(ShareRankingTest, InitialStateNoHistory) {
         loop.Quit();
       });
 
-  // TODO(ellyjones): figure out a better way to do this.
+  // TODO(https://crbug.com/1232529): Stop doing this.
   // This is currently required because internally, Rank() makes three async
   // calls - two to ShareHistory::GetFlatShareHistory(), and one to
   // ShareRanking::GetRanking(). The two calls to GetFlatShareHistory()
@@ -233,15 +233,19 @@ TEST_F(ShareRankingTest, InitialStateNoHistory) {
 }
 
 TEST_F(ShareRankingTest, DISABLED_AllHistoryUpdatesRanking) {
-  // TODO(ellyjones): Implement.
+  // TODO(https://crbug.com/1232529): Implement.
 }
 
 TEST_F(ShareRankingTest, DISABLED_NoPersistDoesNotPersist) {
-  // TODO(ellyjones): Implement.
+  // TODO(https://crbug.com/1232529): Implement.
 }
 
 TEST_F(ShareRankingTest, DISABLED_RecentHistoryUpdatesRanking) {
-  // TODO(ellyjones): Implement.
+  // TODO(https://crbug.com/1232529): Implement.
+}
+
+TEST_F(ShareRankingTest, DISABLED_ClearClearsDatabase) {
+  // TODO(https://crbug.com/1232529): Implement.
 }
 
 }  // namespace sharing
