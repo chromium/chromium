@@ -69,8 +69,8 @@ class CredentialProviderService
   void RemoveCredentials(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
-  // Syncs account_validation_id_.
-  void UpdateAccountValidationId();
+  // Syncs account_id_.
+  void UpdateAccountId();
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
@@ -109,7 +109,7 @@ class CredentialProviderService
   id<MutableCredentialStore> credential_store_ = nil;
 
   // The current validation ID or nil.
-  NSString* account_validation_id_ = nil;
+  NSString* account_id_ = nil;
 
   // Weak pointer factory.
   base::WeakPtrFactory<CredentialProviderService> weak_factory_{this};

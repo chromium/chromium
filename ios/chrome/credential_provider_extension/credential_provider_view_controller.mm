@@ -259,7 +259,7 @@
   };
 
   NSString* validationID = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserID()];
   if (validationID) {
     [self.accountVerificator
         validateValidationID:validationID

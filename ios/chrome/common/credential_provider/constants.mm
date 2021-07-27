@@ -65,7 +65,7 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
   return [credentialProviderURL URLByAppendingPathComponent:filename];
 }
 
-NSString* AppGroupUserDefaultsCredentialProviderManagedUserID() {
+NSString* AppGroupUserDefaultsCredentialProviderUserID() {
   return [AppGroupPrefix()
       stringByAppendingString:kUserDefaultsCredentialProviderManagedUserID];
 }

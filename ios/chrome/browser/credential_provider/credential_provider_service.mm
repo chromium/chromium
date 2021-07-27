@@ -144,7 +144,7 @@ CredentialProviderService::CredentialProviderService(
   password_store_->AddObserver(this);
 
   DCHECK(authentication_service_);
-  UpdateAccountValidationId();
+  UpdateAccountId();
 
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
@@ -176,7 +176,7 @@ void CredentialProviderService::Shutdown() {
 }
 
 void CredentialProviderService::RequestSyncAllCredentials() {
-  UpdateAccountValidationId();
+  UpdateAccountId();
   password_store_->GetAutofillableLogins(this);
 }
 
@@ -219,10 +219,10 @@ void CredentialProviderService::SyncStore(bool set_first_time_sync_flag) {
 void CredentialProviderService::AddCredentials(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
   for (const auto& form : forms) {
-    ArchivableCredential* credential = [[ArchivableCredential alloc]
-        initWithPasswordForm:*form
-                     favicon:nil
-        validationIdentifier:account_validation_id_];
+    ArchivableCredential* credential =
+        [[ArchivableCredential alloc] initWithPasswordForm:*form
+                                                   favicon:nil
+                                      validationIdentifier:account_id_];
     DCHECK(credential);
     [credential_store_ addCredential:credential];
   }
@@ -237,19 +237,18 @@ void CredentialProviderService::RemoveCredentials(
   }
 }
 
-void CredentialProviderService::UpdateAccountValidationId() {
+void CredentialProviderService::UpdateAccountId() {
   if (authentication_service_->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin)) {
-    account_validation_id_ =
-        authentication_service_
-            ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-            .gaiaID;
+    account_id_ = authentication_service_
+                      ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                      .gaiaID;
   } else {
-    account_validation_id_ = nil;
+    account_id_ = nil;
   }
   [app_group::GetGroupUserDefaults()
-      setObject:account_validation_id_
-         forKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+      setObject:account_id_
+         forKey:AppGroupUserDefaultsCredentialProviderUserID()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResults(
