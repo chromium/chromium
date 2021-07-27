@@ -7,6 +7,7 @@ import './browser_shortcuts_page.js'
 import './chromeos_shortcuts_page.js'
 import './android_shortcuts_page.js'
 import './accessibility_shortcuts_page.js'
+import './shortcut_customization_fonts_css.js'
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';

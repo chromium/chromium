@@ -22,6 +22,7 @@ polymer_element_files = [
   "chromeos_shortcuts_page.js",
   "icons.js",
   "input_key.js",
+  "shortcut_customization_fonts_css.js",
   "shortcut_customization_app.js",
   "shortcut_input.js",
 ]
@@ -46,6 +47,7 @@ js_type_check("closure_compile") {
 
 js_library("shortcut_customization_app") {
   deps = [
+    ":shortcut_customization_fonts_css",
     ":shortcut_input",
     "//ash/webui/common/resources:navigation_view_panel",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -126,6 +128,12 @@ js_library("accelerator_edit_view") {
 }
 
 js_library("icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shortcut_customization_fonts_css") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
