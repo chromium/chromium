@@ -147,27 +147,20 @@ void ShareInfoFileStreamAdapter::WriteToPipe(int bytes_read) {
   DCHECK(producer_stream_.is_valid());
   DCHECK_GT(bytes_read, 0);
 
-  auto write_pipe_func = base::BindOnce(
-      [](mojo::ScopedDataPipeProducerHandle stream,
-         scoped_refptr<net::IOBuffer> buf, int size) -> bool {
-        uint32_t num_bytes = base::checked_cast<uint32_t>(size);
-        const MojoResult mojo_result = stream->WriteData(
-            buf->data(), &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  uint32_t num_bytes = base::checked_cast<uint32_t>(bytes_read);
+  const MojoResult mojo_result = producer_stream_->WriteData(
+      net_iobuf_->data(), &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
 
-        mojo::HandleSignalsState state = stream->QuerySignalsState();
-        const bool peer_closed = state.peer_closed();
-        LOG_IF(ERROR, peer_closed) << "Unexpected close of data pipe.";
+  mojo::HandleSignalsState state = producer_stream_->QuerySignalsState();
+  const bool peer_closed = state.peer_closed();
+  LOG_IF(ERROR, peer_closed) << "Unexpected close of data pipe.";
 
-        const bool result = ((mojo_result == MOJO_RESULT_OK) && !peer_closed);
-        LOG_IF(ERROR, !result) << "Failed to write to data pipe.";
-        return result;
-      },
-      std::move(producer_stream_), net_iobuf_, bytes_read);
+  const bool result = ((mojo_result == MOJO_RESULT_OK) && !peer_closed);
+  LOG_IF(ERROR, !result) << "Failed to write to data pipe.";
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE, std::move(write_pipe_func),
-      base::BindOnce(&ShareInfoFileStreamAdapter::OnWriteFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ShareInfoFileStreamAdapter::OnWriteFinished,
+                                weak_ptr_factory_.GetWeakPtr(), result));
 }
 
 void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
@@ -190,7 +183,9 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
   if (dest_fd_.is_valid()) {
     WriteToFile(bytes_read);
   } else if (producer_stream_.is_valid()) {
-    WriteToPipe(bytes_read);
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&ShareInfoFileStreamAdapter::WriteToPipe,
+                                  this, bytes_read));
   } else {
     LOG(ERROR) << "Unexpected could not find valid endpoint for streamed data.";
     OnStreamingFinished(false);
