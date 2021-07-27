@@ -187,7 +187,7 @@ Polymer({
     /** @private */
     creationTime_: {
       type: String,
-      computed: 'computeDate_(jobEntry.creationTime)'
+      computed: 'computeDate_(jobEntry.creationTime)',
     },
 
     /** @private */
@@ -230,9 +230,10 @@ Polymer({
      */
     showFullOngoingStatus_: Boolean,
   },
+
   observers: [
     'printJobEntryDataChanged_(jobTitle_, printerName_, creationTime_, ' +
-        'completionStatus_)'
+        'completionStatus_)',
   ],
 
   listeners: {
@@ -256,7 +257,7 @@ Polymer({
         }
       }
                                                                               )
- },
+  },
 
   /** @private */
   onClick_() {
@@ -360,7 +361,8 @@ Polymer({
 
   /**
    * Returns the corresponding completion status from |mojoCompletionStatus|.
-   * @param {number} mojoCompletionStatus
+   * @param {!chromeos.printing.printingManager.mojom.PrintJobCompletionStatus}
+   *     mojoCompletionStatus
    * @return {string}
    * @private
    */
@@ -465,7 +467,8 @@ Polymer({
   },
 
   /**
-   * @param {number} mojoPrinterErrorCode
+   * @param {!chromeos.printing.printingManager.mojom.PrinterErrorCode}
+   *     mojoPrinterErrorCode
    * @return {string}
    * @private
    */
@@ -504,7 +507,8 @@ Polymer({
   },
 
   /**
-   * @param {number} mojoPrinterErrorCode
+   * @param {!chromeos.printing.printingManager.mojom.PrinterErrorCode}
+   *     mojoPrinterErrorCode
    * @return {string}
    * @private
    */
