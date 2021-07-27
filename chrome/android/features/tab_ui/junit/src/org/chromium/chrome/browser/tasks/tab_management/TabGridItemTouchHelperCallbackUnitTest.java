@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -196,7 +197,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private void setupItemTouchHelperCallback(boolean isDialog) {
         mItemTouchHelperCallback = new TabGridItemTouchHelperCallback(
                 ContextUtils.getApplicationContext(), mModel, mTabModelSelector, mTabClosedListener,
-                isDialog ? mTabGridDialogHandler : null, "", !isDialog);
+                isDialog ? mTabGridDialogHandler : null, "", !isDialog, TabListMode.GRID);
         mItemTouchHelperCallback.setupCallback(THRESHOLD, THRESHOLD, THRESHOLD, mProfile);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }
