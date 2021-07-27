@@ -1405,7 +1405,43 @@
     ]
   },
   "ForceSafeSearch": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceSafeSearch": true
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceSafeSearch": false
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "ForceGoogleSafeSearch": {
     "os": [
@@ -1417,11 +1453,55 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ForceGoogleSafeSearch": true
         },
         "prefs": {
-          "settings.force_google_safesearch": {}
+          "settings.force_google_safesearch": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceGoogleSafeSearch": false
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "ForceGoogleSafeSearch overrules ForceSafeSearch",
+        "policies": {
+          "ForceSafeSearch": true,
+          "ForceGoogleSafeSearch": false
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "ForceGoogleSafeSearch overrules ForceSafeSearch",
+        "policies": {
+          "ForceSafeSearch": false,
+          "ForceGoogleSafeSearch": true
+        },
+        "prefs": {
+          "settings.force_google_safesearch": {
+            "value": true
+          }
         }
       }
     ]
