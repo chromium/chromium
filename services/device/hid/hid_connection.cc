@@ -64,9 +64,11 @@ bool HasAlwaysProtectedCollection(
 }  // namespace
 
 HidConnection::HidConnection(scoped_refptr<HidDeviceInfo> device_info,
-                             bool allow_protected_reports)
+                             bool allow_protected_reports,
+                             bool allow_fido_reports)
     : device_info_(device_info),
       allow_protected_reports_(allow_protected_reports),
+      allow_fido_reports_(allow_fido_reports),
       closed_(false) {
   has_always_protected_collection_ =
       HasAlwaysProtectedCollection(device_info->collections());
@@ -186,6 +188,18 @@ void HidConnection::SendFeatureReport(
 bool HidConnection::IsReportIdProtected(uint8_t report_id,
                                         HidReportType report_type) {
   if (!allow_protected_reports_) {
+    // If |allow_fido_reports_| is true, allow access to reports in collections
+    // with a usage from the FIDO usage page. FIDO reports are normally blocked
+    // by the HID blocklist.
+    if (allow_fido_reports_) {
+      auto* collection_info =
+          FindCollectionByReportId(device_info_->collections(), report_id);
+      if (collection_info &&
+          collection_info->usage->usage_page == mojom::kPageFido) {
+        return false;
+      }
+    }
+
     // Deny access to reports that match HID blocklist rules.
     if (report_type == kInput) {
       if (device_info_->device()->protected_input_report_ids.has_value() &&

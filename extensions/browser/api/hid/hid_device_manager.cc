@@ -180,6 +180,7 @@ void HidDeviceManager::Connect(const std::string& device_guid,
   hid_manager_->Connect(device_guid, /*connection_client=*/mojo::NullRemote(),
                         /*watcher=*/mojo::NullRemote(),
                         /*allow_protected_reports=*/true,
+                        /*allow_fido_reports=*/true,
                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                             std::move(callback), mojo::NullRemote()));
 }

@@ -14,6 +14,14 @@
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/strings/string_piece.h"
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -88,6 +96,24 @@ const device::mojom::HidDeviceInfo* ChromeHidDelegate::GetDeviceInfo(
     const std::string& guid) {
   auto* chooser_context = GetChooserContext(render_frame_host);
   return chooser_context->GetDeviceInfo(guid);
+}
+
+bool ChromeHidDelegate::IsFidoAllowedForOrigin(const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  static constexpr auto kPrivilegedExtensionIds =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
+          "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
+          "pebbhcjfokadbgbnlmogdkkaahmamnap",  // gnubbyd-v3 local
+      });
+
+  if (origin.scheme() == extensions::kExtensionScheme &&
+      base::Contains(kPrivilegedExtensionIds, origin.host())) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return false;
 }
 
 void ChromeHidDelegate::OnPermissionRevoked(const url::Origin& origin) {

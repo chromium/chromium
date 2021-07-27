@@ -7,10 +7,11 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/strings/string_piece.h"
-#include "components/variations/variations_params_manager.h"
+#include "base/test/scoped_feature_list.h"
 #include "services/device/hid/test_report_descriptors.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor.h"
+#include "services/device/hid/test_util.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
+#include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,15 +31,18 @@ constexpr uint8_t kTestReportId = 0x01;
 class HidBlocklistTest : public testing::Test {
  public:
   HidBlocklistTest() : blocklist_(HidBlocklist::Get()) {}
+  HidBlocklistTest(HidBlocklistTest&) = delete;
+  HidBlocklistTest& operator=(HidBlocklistTest&) = delete;
 
   const HidBlocklist& list() { return blocklist_; }
 
   void SetDynamicBlocklist(base::StringPiece list) {
-    params_manager_.ClearAllVariationParams();
+    feature_list_.Reset();
 
     std::map<std::string, std::string> params;
-    params["blocklist_additions"] = std::string(list);
-    params_manager_.SetVariationParams("WebHIDBlocklist", params);
+    params[kWebHidBlocklistAdditions.name] = std::string(list);
+    feature_list_.InitWithFeaturesAndParameters({{kWebHidBlocklist, params}},
+                                                /*disabled_features=*/{});
 
     blocklist_.ResetToDefaultValuesForTest();
   }
@@ -135,46 +139,15 @@ class HidBlocklistTest : public testing::Test {
     return device;
   }
 
-  mojom::HidDeviceInfoPtr CreateDeviceFromReportDescriptor(
-      uint16_t vendor_id,
-      uint16_t product_id,
-      base::span<const uint8_t> report_descriptor_data) {
-    auto device = mojom::HidDeviceInfo::New();
-    device->guid = base::GenerateGUID();
-    device->vendor_id = vendor_id;
-    device->product_id = product_id;
-
-    size_t max_input_report_size;
-    size_t max_output_report_size;
-    size_t max_feature_report_size;
-    HidReportDescriptor descriptor_parser(report_descriptor_data);
-    descriptor_parser.GetDetails(
-        &device->collections, &device->has_report_id, &max_input_report_size,
-        &max_output_report_size, &max_feature_report_size);
-    device->max_input_report_size = max_input_report_size;
-    device->max_output_report_size = max_output_report_size;
-    device->max_feature_report_size = max_feature_report_size;
-    device->protected_input_report_ids = blocklist_.GetProtectedReportIds(
-        HidBlocklist::kReportTypeInput, vendor_id, product_id,
-        device->collections);
-    device->protected_output_report_ids = blocklist_.GetProtectedReportIds(
-        HidBlocklist::kReportTypeOutput, vendor_id, product_id,
-        device->collections);
-    device->protected_feature_report_ids = blocklist_.GetProtectedReportIds(
-        HidBlocklist::kReportTypeFeature, vendor_id, product_id,
-        device->collections);
-    return device;
-  }
-
  private:
   void TearDown() override {
     // Because HidBlocklist is a singleton it must be cleared after tests run
     // to prevent leakage between tests.
-    params_manager_.ClearAllVariationParams();
+    feature_list_.Reset();
     blocklist_.ResetToDefaultValuesForTest();
   }
 
-  variations::testing::VariationParamsManager params_manager_;
+  base::test::ScopedFeatureList feature_list_;
   HidBlocklist& blocklist_;
 };
 

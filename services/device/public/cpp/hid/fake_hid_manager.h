@@ -23,7 +23,8 @@ class FakeHidConnection : public mojom::HidConnection {
       mojom::HidDeviceInfoPtr device,
       mojo::PendingReceiver<mojom::HidConnection> receiver,
       mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
-      mojo::PendingRemote<mojom::HidConnectionWatcher> watcher);
+      mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
+      bool allow_fido_reports);
   FakeHidConnection(FakeHidConnection&) = delete;
   FakeHidConnection& operator=(FakeHidConnection&) = delete;
   ~FakeHidConnection() override;
@@ -45,6 +46,7 @@ class FakeHidConnection : public mojom::HidConnection {
   mojom::HidDeviceInfoPtr device_;
   mojo::Remote<mojom::HidConnectionClient> client_;
   mojo::Remote<mojom::HidConnectionWatcher> watcher_;
+  bool allow_fido_reports_;
 };
 
 class FakeHidManager : public mojom::HidManager {
@@ -67,6 +69,7 @@ class FakeHidManager : public mojom::HidManager {
       mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
       mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
       bool allow_protected_reports,
+      bool allow_fido_reports,
       ConnectCallback callback) override;
 
   mojom::HidDeviceInfoPtr CreateAndAddDevice(

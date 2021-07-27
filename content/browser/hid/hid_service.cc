@@ -28,12 +28,16 @@ namespace {
 // Removes reports from |device| if the report IDs match the IDs in the
 // protected report ID lists. If all of the reports are removed from a
 // collection, the collection is also removed.
-void RemoveProtectedReports(device::mojom::HidDeviceInfo& device) {
+void RemoveProtectedReports(device::mojom::HidDeviceInfo& device,
+                            bool is_fido_allowed) {
   std::vector<device::mojom::HidCollectionInfoPtr> collections;
   for (auto& collection : device.collections) {
+    const bool is_fido =
+        collection->usage->usage_page == device::mojom::kPageFido;
     std::vector<device::mojom::HidReportDescriptionPtr> input_reports;
     for (auto& report : collection->input_reports) {
-      if (!device.protected_input_report_ids.has_value() ||
+      if ((is_fido && is_fido_allowed) ||
+          !device.protected_input_report_ids.has_value() ||
           !base::Contains(*device.protected_input_report_ids,
                           report->report_id)) {
         input_reports.push_back(std::move(report));
@@ -41,7 +45,8 @@ void RemoveProtectedReports(device::mojom::HidDeviceInfo& device) {
     }
     std::vector<device::mojom::HidReportDescriptionPtr> output_reports;
     for (auto& report : collection->output_reports) {
-      if (!device.protected_output_report_ids.has_value() ||
+      if ((is_fido && is_fido_allowed) ||
+          !device.protected_output_report_ids.has_value() ||
           !base::Contains(*device.protected_output_report_ids,
                           report->report_id)) {
         output_reports.push_back(std::move(report));
@@ -49,7 +54,8 @@ void RemoveProtectedReports(device::mojom::HidDeviceInfo& device) {
     }
     std::vector<device::mojom::HidReportDescriptionPtr> feature_reports;
     for (auto& report : collection->feature_reports) {
-      if (!device.protected_feature_report_ids.has_value() ||
+      if ((is_fido && is_fido_allowed) ||
+          !device.protected_feature_report_ids.has_value() ||
           !base::Contains(*device.protected_feature_report_ids,
                           report->report_id)) {
         feature_reports.push_back(std::move(report));
@@ -160,13 +166,12 @@ void HidService::Connect(
       watchers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
   watcher_ids_.insert({device_guid, receiver_id});
 
-  GetContentClient()
-      ->browser()
-      ->GetHidDelegate()
-      ->GetHidManager(render_frame_host())
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  delegate->GetHidManager(render_frame_host())
       ->Connect(
           device_guid, std::move(client), std::move(watcher),
           /*allow_protected_reports=*/false,
+          delegate->IsFidoAllowedForOrigin(origin_),
           base::BindOnce(&HidService::FinishConnect, weak_factory_.GetWeakPtr(),
                          std::move(callback)));
 }
@@ -191,13 +196,13 @@ void HidService::DecrementActiveFrameCount() {
 
 void HidService::OnDeviceAdded(
     const device::mojom::HidDeviceInfo& device_info) {
-  if (!GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          render_frame_host(), device_info)) {
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  if (!delegate->HasDevicePermission(render_frame_host(), device_info))
     return;
-  }
 
   auto filtered_device_info = device_info.Clone();
-  RemoveProtectedReports(*filtered_device_info);
+  RemoveProtectedReports(*filtered_device_info,
+                         delegate->IsFidoAllowedForOrigin(origin_));
   if (filtered_device_info->collections.empty())
     return;
 
@@ -207,13 +212,14 @@ void HidService::OnDeviceAdded(
 
 void HidService::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device_info) {
-  if (!GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          render_frame_host(), device_info)) {
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  if (!delegate->HasDevicePermission(render_frame_host(), device_info)) {
     return;
   }
 
   auto filtered_device_info = device_info.Clone();
-  RemoveProtectedReports(*filtered_device_info);
+  RemoveProtectedReports(*filtered_device_info,
+                         delegate->IsFidoAllowedForOrigin(origin_));
   if (filtered_device_info->collections.empty())
     return;
 
@@ -223,14 +229,15 @@ void HidService::OnDeviceRemoved(
 
 void HidService::OnDeviceChanged(
     const device::mojom::HidDeviceInfo& device_info) {
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
   const bool has_device_permission =
-      GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
-          render_frame_host(), device_info);
+      delegate->HasDevicePermission(render_frame_host(), device_info);
 
   device::mojom::HidDeviceInfoPtr filtered_device_info;
   if (has_device_permission) {
     filtered_device_info = device_info.Clone();
-    RemoveProtectedReports(*filtered_device_info);
+    RemoveProtectedReports(*filtered_device_info,
+                           delegate->IsFidoAllowedForOrigin(origin_));
   }
 
   if (!has_device_permission || filtered_device_info->collections.empty()) {
@@ -291,10 +298,12 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
 void HidService::FinishGetDevices(
     GetDevicesCallback callback,
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+
+  bool is_fido_allowed = delegate->IsFidoAllowedForOrigin(origin_);
   std::vector<device::mojom::HidDeviceInfoPtr> result;
-  HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   for (auto& device : devices) {
-    RemoveProtectedReports(*device);
+    RemoveProtectedReports(*device, is_fido_allowed);
     if (device->collections.empty())
       continue;
 

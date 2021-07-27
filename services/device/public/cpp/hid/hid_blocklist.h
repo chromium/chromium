@@ -5,10 +5,19 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_HID_HID_BLOCKLIST_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_HID_HID_BLOCKLIST_H_
 
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "services/device/public/mojom/hid.mojom.h"
+#include "services/device/public/mojom/hid.mojom-forward.h"
 
 namespace device {
+
+// Feature used to configure entries in the HID blocklist which can be deployed
+// using a server configuration.
+extern const base::Feature kWebHidBlocklist;
+
+// Dynamic additions to the HID blocklist.
+extern const base::FeatureParam<std::string> kWebHidBlocklistAdditions;
 
 class HidBlocklist final {
  public:

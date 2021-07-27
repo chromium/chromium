@@ -182,7 +182,8 @@ void FidoHidDevice::Connect(
   hid_manager_->Connect(device_info_->guid,
                         /*connection_client=*/mojo::NullRemote(),
                         /*watcher=*/mojo::NullRemote(),
-                        /*allow_protected_reports=*/true, std::move(callback));
+                        /*allow_protected_reports=*/true,
+                        /*allow_fido_reports=*/true, std::move(callback));
 }
 
 void FidoHidDevice::OnConnect(

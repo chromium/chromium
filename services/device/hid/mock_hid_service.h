@@ -12,6 +12,8 @@ namespace device {
 class MockHidService : public HidService {
  public:
   MockHidService();
+  MockHidService(MockHidService&) = delete;
+  MockHidService& operator=(MockHidService&) = delete;
   ~MockHidService() override;
 
   // Public wrappers around protected functions needed for tests.
@@ -22,6 +24,7 @@ class MockHidService : public HidService {
 
   void Connect(const std::string& device_id,
                bool allow_protected_reports,
+               bool allow_fido_reports,
                ConnectCallback callback) override;
 
  private:

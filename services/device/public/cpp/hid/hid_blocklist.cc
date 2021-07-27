@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
+#include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
 
@@ -195,6 +196,12 @@ bool IsReportTypeComponent(base::StringPiece string) {
 
 }  // namespace
 
+constexpr base::Feature kWebHidBlocklist{"WebHIDBlocklist",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+constexpr base::FeatureParam<std::string> kWebHidBlocklistAdditions{
+    &kWebHidBlocklist, "blocklist_additions", /*default_value=*/""};
+
 // static
 HidBlocklist& HidBlocklist::Get() {
   static base::NoDestructor<HidBlocklist> instance;
@@ -263,8 +270,7 @@ std::vector<uint8_t> HidBlocklist::GetProtectedReportIds(
 }
 
 void HidBlocklist::PopulateWithServerProvidedValues() {
-  std::string blocklist_string = variations::GetVariationParamValue(
-      "WebHIDBlocklist", "blocklist_additions");
+  std::string blocklist_string = kWebHidBlocklistAdditions.Get();
   DLOG(WARNING) << "HID blocklist additions: " << blocklist_string;
   for (const auto& blocklist_rule :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,

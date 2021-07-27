@@ -14,7 +14,6 @@
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/apdu/apdu_command.h"
@@ -33,6 +32,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice final : public FidoDevice {
  public:
   FidoHidDevice(device::mojom::HidDeviceInfoPtr device_info,
                 device::mojom::HidManager* hid_manager);
+  FidoHidDevice(FidoHidDevice&) = delete;
+  FidoHidDevice& operator=(FidoHidDevice&) = delete;
   ~FidoHidDevice() final;
 
   // Returns FidoDevice::GetId() for a given HidDeviceInfo.
@@ -161,8 +162,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice final : public FidoDevice {
   device::mojom::HidDeviceInfoPtr device_info_;
   scoped_refptr<FidoHidDevice::RefCountedHidConnection> connection_;
   base::WeakPtrFactory<FidoHidDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FidoHidDevice);
 };
 
 }  // namespace device

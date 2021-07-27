@@ -193,9 +193,11 @@ mojom::HidBusType BusTypeFromLinuxBusId(uint16_t bus_id) {
 struct HidServiceLinux::ConnectParams {
   ConnectParams(scoped_refptr<HidDeviceInfo> device_info,
                 bool allow_protected_reports,
+                bool allow_fido_reports,
                 ConnectCallback callback)
       : device_info(std::move(device_info)),
         allow_protected_reports(allow_protected_reports),
+        allow_fido_reports(allow_fido_reports),
         callback(std::move(callback)),
         task_runner(base::SequencedTaskRunnerHandle::Get()),
         blocking_task_runner(
@@ -204,6 +206,7 @@ struct HidServiceLinux::ConnectParams {
 
   scoped_refptr<HidDeviceInfo> device_info;
   bool allow_protected_reports;
+  bool allow_fido_reports;
   ConnectCallback callback;
   scoped_refptr<base::SequencedTaskRunner> task_runner;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner;
@@ -368,6 +371,7 @@ base::WeakPtr<HidService> HidServiceLinux::GetWeakPtr() {
 
 void HidServiceLinux::Connect(const std::string& device_guid,
                               bool allow_protected_reports,
+                              bool allow_fido_reports,
                               ConnectCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -384,16 +388,17 @@ void HidServiceLinux::Connect(const std::string& device_guid,
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   chromeos::PermissionBrokerClient::Get()->OpenPath(
       device_info->device_node(),
-      base::BindOnce(
-          &HidServiceLinux::OnPathOpenComplete,
-          std::make_unique<ConnectParams>(device_info, allow_protected_reports,
-                                          std::move(split_callback.first))),
+      base::BindOnce(&HidServiceLinux::OnPathOpenComplete,
+                     std::make_unique<ConnectParams>(
+                         device_info, allow_protected_reports,
+                         allow_fido_reports, std::move(split_callback.first))),
       base::BindOnce(&HidServiceLinux::OnPathOpenError,
                      device_info->device_node(),
                      std::move(split_callback.second)));
 #else
-  auto params = std::make_unique<ConnectParams>(
-      device_info, allow_protected_reports, std::move(callback));
+  auto params =
+      std::make_unique<ConnectParams>(device_info, allow_protected_reports,
+                                      allow_fido_reports, std::move(callback));
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
       params->blocking_task_runner;
   blocking_task_runner->PostTask(
@@ -475,7 +480,7 @@ void HidServiceLinux::FinishOpen(std::unique_ptr<ConnectParams> params) {
       .Run(base::MakeRefCounted<HidConnectionLinux>(
           std::move(params->device_info), std::move(params->fd),
           std::move(params->blocking_task_runner),
-          params->allow_protected_reports));
+          params->allow_protected_reports, params->allow_fido_reports));
 }
 
 }  // namespace device

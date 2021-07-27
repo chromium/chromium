@@ -44,6 +44,8 @@ class DeviceCatcher : HidService::Observer {
         base::BindOnce(&DeviceCatcher::OnEnumerationComplete,
                        base::Unretained(this), hid_service));
   }
+  DeviceCatcher(DeviceCatcher&) = delete;
+  DeviceCatcher& operator=(DeviceCatcher&) = delete;
 
   const std::string& WaitForDevice() {
     run_loop_.Run();
@@ -79,8 +81,10 @@ class DeviceCatcher : HidService::Observer {
 
 class TestConnectCallback {
  public:
-  TestConnectCallback() {}
-  ~TestConnectCallback() {}
+  TestConnectCallback() = default;
+  TestConnectCallback(TestConnectCallback&) = delete;
+  TestConnectCallback& operator=(TestConnectCallback&) = delete;
+  ~TestConnectCallback() = default;
 
   void SetConnection(scoped_refptr<HidConnection> connection) {
     connection_ = connection;
@@ -104,8 +108,10 @@ class TestConnectCallback {
 
 class TestIoCallback {
  public:
-  TestIoCallback() {}
-  ~TestIoCallback() {}
+  TestIoCallback() = default;
+  TestIoCallback(TestIoCallback&) = delete;
+  TestIoCallback& operator=(TestIoCallback&) = delete;
+  ~TestIoCallback() = default;
 
   void SetReadResult(bool success,
                      scoped_refptr<base::RefCountedBytes> buffer,
@@ -151,6 +157,8 @@ class HidConnectionTest : public testing::Test {
   HidConnectionTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         io_thread_(base::TestIOThread::kAutoStart) {}
+  HidConnectionTest(HidConnectionTest&) = delete;
+  HidConnectionTest& operator=(HidConnectionTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -186,6 +194,7 @@ TEST_F(HidConnectionTest, ReadWrite) {
 
   TestConnectCallback connect_callback;
   service_->Connect(device_guid_, /*allow_protected_reports=*/false,
+                    /*allow_fido_reports=*/false,
                     connect_callback.GetCallback());
   scoped_refptr<HidConnection> conn = connect_callback.WaitForConnection();
   ASSERT_TRUE(conn.get());
