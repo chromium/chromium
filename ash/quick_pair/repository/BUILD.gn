@@ -11,6 +11,8 @@ source_set("repository") {
   sources = [
     "fast_pair_repository.cc",
     "fast_pair_repository.h",
+    "http_fetcher.cc",
+    "http_fetcher.h",
   ]
 
   deps = [
@@ -18,6 +20,9 @@ source_set("repository") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//device/bluetooth",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
