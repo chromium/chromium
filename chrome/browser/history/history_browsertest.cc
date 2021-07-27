@@ -36,9 +36,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -813,4 +815,96 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReplaceStateSamePageIsNotRecorded) {
   EXPECT_EQ(url, urls[0]);
   history::QueryURLResult url_result = QueryURL(url);
   EXPECT_EQ(1u, url_result.visits.size());
+}
+
+// For tests which use prerender.
+class HistoryPrerenderBrowserTest : public HistoryBrowserTest {
+ protected:
+  HistoryPrerenderBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&HistoryPrerenderBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    HistoryBrowserTest::SetUpOnMainThread();
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Verify a prerendered page is not recorded if we do not activate it.
+IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
+                       PrerenderPageIsNotRecordedUnlessActivated) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Start a prerender, but we don't activate it.
+  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // The prerendered page should not be recorded.
+  EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(initial_url));
+}
+
+// Verify a prerendered page is recorded if we activate it.
+IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
+                       PrerenderPageIsRecordedIfActivated) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Start a prerender.
+  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Activate.
+  prerender_helper_.NavigatePrimaryPage(prerendering_url);
+  ASSERT_EQ(prerendering_url, web_contents()->GetURL());
+
+  // The prerendered page should be recorded.
+  EXPECT_THAT(GetHistoryContents(),
+              testing::ElementsAre(prerendering_url, initial_url));
+}
+
+// Verify a prerendered page's last committed URL is recorded if we activate it.
+IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
+                       PrerenderLastCommitedURLIsRecordedIfActivated) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+  const GURL prerendering_fragment_url =
+      embedded_test_server()->GetURL("/empty.html?prerender#test");
+
+  // Navigate to an initial page.
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  // Start a prerender.
+  const int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Do a fragment navigation in the prerendered page.
+  prerender_helper_.NavigatePrerenderedPage(host_id, prerendering_fragment_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
+
+  // Activate.
+  prerender_helper_.NavigatePrimaryPage(prerendering_url);
+  ASSERT_EQ(prerendering_fragment_url, web_contents()->GetURL());
+
+  // The last committed URL of the prerendering page, instead of the original
+  // prerendering URL, should be recorded.
+  EXPECT_THAT(GetHistoryContents(),
+              testing::ElementsAre(prerendering_fragment_url, initial_url));
 }
