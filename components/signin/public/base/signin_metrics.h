@@ -427,12 +427,19 @@ enum class ReportingType { PERIODIC, ON_CHANGE };
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 enum class FetchAccountCapabilitiesFromSystemLibraryResult {
   // Errors common to iOS and Android.
   kSuccess = 0,
   kErrorGeneric = 1,
 
   // Errors from 10 to 19 are reserved for Android.
+  kApiRequestFailed = 10,
+  kApiError = 11,
+  kApiNotPermitted = 12,
+  kApiUnknownCapability = 13,
+  kApiFailedToSync = 14,
+  kApiNotAvailable = 15,
 
   // Errors after 20 are reserved for iOS.
   kErrorMissingCapability = 20,

@@ -36,6 +36,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.metrics.FetchAccountCapabilitiesFromSystemLibraryResult;
 
 import java.io.IOException;
 
@@ -147,6 +148,10 @@ public class SystemAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public @CapabilityResponse int hasCapability(Account account, String capability) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+                FetchAccountCapabilitiesFromSystemLibraryResult.API_NOT_AVAILABLE,
+                FetchAccountCapabilitiesFromSystemLibraryResult.MAX_VALUE + 1);
         return CapabilityResponse.EXCEPTION;
     }
 
