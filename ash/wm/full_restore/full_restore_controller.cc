@@ -78,56 +78,6 @@ full_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
   return window->GetProperty(full_restore::kWindowInfoKey);
 }
 
-// Returns the sibling of `window` that `window` should be stacked below based
-// on restored activation indices. Returns nullptr if `window` does not need
-// to be moved in the z-ordering. Should be called after `window` is added as
-// a child of its parent.
-aura::Window* GetSiblingToStackBelow(aura::Window* window) {
-  DCHECK(window->parent());
-  auto siblings = window->parent()->children();
-#if DCHECK_IS_ON()
-  // Verify that the activation keys are descending. Non-restored windows may be
-  // stacked in certain ways by other window manager features so there may be
-  // non-restored windows at any point but the windows that have the
-  // `full_restore::kActivationIndexKey` should be in relative descending order.
-  absl::optional<int32_t> last_activation_key;
-  for (size_t i = 0; i < siblings.size(); ++i) {
-    // The current window needs to be stacked, so there is a chance it is
-    // initially out of order.
-    if (window == siblings[i])
-      continue;
-
-    int32_t* current_activation_key =
-        siblings[i]->GetProperty(full_restore::kActivationIndexKey);
-    if (!current_activation_key)
-      continue;
-
-    if (last_activation_key)
-      DCHECK_LT(*current_activation_key, *last_activation_key);
-    last_activation_key = *current_activation_key;
-  }
-#endif
-
-  int32_t* restore_activation_key =
-      window->GetProperty(full_restore::kActivationIndexKey);
-  DCHECK(restore_activation_key);
-
-  for (int i = 0; i < static_cast<int>(siblings.size()) - 1; ++i) {
-    int32_t* sibling_restore_activation_key =
-        siblings[i]->GetProperty(full_restore::kActivationIndexKey);
-
-    if (!sibling_restore_activation_key ||
-        *restore_activation_key > *sibling_restore_activation_key) {
-      // Activation index is saved to match MRU order so lower means more
-      // recent/higher in stacking order. Also restored windows should be
-      // stacked below non-restored windows.
-      return siblings[i];
-    }
-  }
-
-  return nullptr;
-}
-
 // If `window`'s saved window info makes the `window` out-of-bounds for the
 // display, manually restore its bounds. Also ensures that at least 30% of the
 // window is visible to handle the case where the display a window is restored
@@ -210,6 +160,28 @@ FullRestoreController* FullRestoreController::Get() {
 }
 
 // static
+bool FullRestoreController::CanActivateFullRestoredWindow(
+    const aura::Window* window) {
+  if (!window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+    return true;
+
+  // Ghost windows can be activated.
+  const AppType app_type =
+      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const bool is_real_arc_window =
+      window->GetProperty(full_restore::kRealArcTaskWindow);
+  if (app_type == AppType::ARC_APP && !is_real_arc_window)
+    return true;
+
+  auto* desk_container = window->parent();
+  if (!desk_container || !desks_util::IsDeskContainer(desk_container))
+    return true;
+
+  // Only the topmost Full Restore'd window can be activated.
+  return window == desk_container->children().back();
+}
+
+// static
 bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   if (!tablet_mode_controller || !tablet_mode_controller->InTabletMode())
@@ -241,6 +213,32 @@ bool FullRestoreController::CanActivateAppList(const aura::Window* window) {
   return true;
 }
 
+// static
+std::vector<aura::Window*>::const_iterator
+FullRestoreController::GetWindowToInsertBefore(
+    aura::Window* window,
+    const std::vector<aura::Window*>& windows) {
+  int32_t* activation_index =
+      window->GetProperty(full_restore::kActivationIndexKey);
+  DCHECK(activation_index);
+
+  auto it = windows.begin();
+  while (it != windows.end()) {
+    int32_t* next_activation_index =
+        (*it)->GetProperty(full_restore::kActivationIndexKey);
+
+    if (!next_activation_index || *activation_index > *next_activation_index) {
+      // Activation index is saved to match MRU order so lower means more
+      // recent/higher in stacking order. Also restored windows should be
+      // stacked below non-restored windows.
+      return it;
+    }
+    it = std::next(it);
+  }
+
+  return it;
+}
+
 void FullRestoreController::SaveWindow(WindowState* window_state) {
   SaveWindowImpl(window_state, /*activation_index=*/absl::nullopt);
 }
@@ -258,12 +256,6 @@ void FullRestoreController::SaveAllWindows() {
 }
 
 void FullRestoreController::OnWindowActivated(aura::Window* gained_active) {
-  DCHECK(gained_active);
-
-  // Once a window gains activation, it can be cleared of its activation index
-  // key since it is no longer used in the stacking algorithm.
-  gained_active->ClearProperty(full_restore::kActivationIndexKey);
-
   SaveAllWindows();
 }
 
@@ -363,17 +355,12 @@ void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
         kAllowActivationDelay);
   }
 
-  if (key != full_restore::kActivationIndexKey &&
-      key != full_restore::kLaunchedFromFullRestoreKey) {
-    return;
-  }
-
-  if (window->GetProperty(full_restore::kActivationIndexKey) ||
+  if (key != full_restore::kLaunchedFromFullRestoreKey ||
       window->GetProperty(full_restore::kLaunchedFromFullRestoreKey)) {
     return;
   }
 
-  // Once these two properties are cleared, there is no need to observe `window`
+  // Once this property is cleared, there is no need to observe `window`
   // anymore.
   DCHECK(windows_observation_.IsObservingSource(window));
   windows_observation_.RemoveObservation(window);
@@ -381,19 +368,6 @@ void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
 
   if (base::Contains(restore_property_clear_callbacks_, window))
     CancelAndRemoveRestorePropertyClearCallback(window);
-}
-
-void FullRestoreController::OnWindowStackingChanged(aura::Window* window) {
-  DCHECK(windows_observation_.IsObservingSource(window));
-
-  // Do nothing if stacking was triggered by us.
-  if (is_stacking_)
-    return;
-
-  // Once a window has its stacking changed, possibly by another window
-  // management feature, it can be cleared of its activation index
-  // key since it is no longer used in the stacking algorithm.
-  window->ClearProperty(full_restore::kActivationIndexKey);
 }
 
 void FullRestoreController::OnWindowVisibilityChanged(aura::Window* window,
@@ -463,11 +437,11 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
     return;
 
   // Stack the window.
-  auto* target_sibling = GetSiblingToStackBelow(window);
-  if (target_sibling) {
-    base::AutoReset<bool> auto_reset_is_stacking(&is_stacking_, true);
-    window->parent()->StackChildBelow(window, target_sibling);
-  }
+  auto siblings = window->parent()->children();
+  auto insertion_point =
+      FullRestoreController::GetWindowToInsertBefore(window, siblings);
+  if (insertion_point != siblings.end())
+    window->parent()->StackChildBelow(window, *insertion_point);
 }
 
 void FullRestoreController::SaveWindowImpl(

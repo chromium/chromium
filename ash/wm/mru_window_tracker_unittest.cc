@@ -233,10 +233,9 @@ TEST_F(MruWindowTrackerFullRestoreTest, FullRestoredWindowsInMRUWindowList) {
   // Create an `aura::Window` using `CreateTestWindow()` so that the window is
   // parented to something. Then set its
   // `full_restore::kLaunchedFromFullRestoreKey` to simulate it being Full
-  // Restore'd. `w1` should not be activatable.
+  // Restore'd.
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   w1.get()->SetProperty(full_restore::kLaunchedFromFullRestoreKey, true);
-  ASSERT_FALSE(wm::CanActivateWindow(w1.get()));
 
   // Build the MRU window list. `w1` should be included despite not being
   // activatable.
