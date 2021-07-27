@@ -15,13 +15,11 @@ namespace {
 // Client name for Chrome extensions that require access to Identity APIs.
 const char* const kExtensionsIdentityAPIOAuthConsumerName =
     "extensions_identity_api";
-const char* const kTokenHandleFetcherOAuthConsumerName = "token_handle_fetcher";
-const char* const kArcAuthContextOAuthConsumerName = "ArcAuthContext";
 
 }  // namespace
 
-// clang-format off
 const std::set<std::string> GetUnconsentedOAuth2Scopes() {
+  // clang-format off
   return {
       // Used to fetch account information.
       GaiaConstants::kGoogleUserInfoEmail,
@@ -68,13 +66,14 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kKidManagementPrivilegedOAuth2Scope,
       GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope,
       GaiaConstants::kNearbyShareOAuth2Scope,
+      GaiaConstants::kOAuth1LoginScope,
       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
       GaiaConstants::kPhotosOAuth2Scope,
       GaiaConstants::kTachyonOAuthScope,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
-}
 // clang-format on
+}
 
 const std::set<std::string> GetPrivilegedOAuth2Scopes() {
   return {
@@ -85,8 +84,6 @@ const std::set<std::string> GetPrivilegedOAuth2Scopes() {
 const std::set<std::string> GetPrivilegedOAuth2Consumers() {
   return {
       kExtensionsIdentityAPIOAuthConsumerName,
-      kTokenHandleFetcherOAuthConsumerName,
-      kArcAuthContextOAuthConsumerName,
   };
 }
 

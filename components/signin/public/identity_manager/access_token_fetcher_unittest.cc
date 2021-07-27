@@ -770,14 +770,6 @@ TEST_F(AccessTokenFetcherTest,
 // Client access tests that require DCHECK_IS_ON().
 #if DCHECK_IS_ON()
 // Tests that a request with an unconsented client accessing an OAuth2 API
-// that requires consent fails.
-TEST_F(AccessTokenFetcherTest, FetcherWithUnconsentedClientAccessToConsentAPI) {
-  CoreAccountId account_id = AddPrimaryAccount(kTestGaiaId, kTestEmail);
-  EXPECT_CHECK_DEATH(VerifyScopeAccess(account_id, "test_consumer",
-                                       {GaiaConstants::kOAuth1LoginScope}));
-}
-
-// Tests that a request with an unconsented client accessing an OAuth2 API
 // that requires privileged access fails.
 TEST_F(AccessTokenFetcherTest,
        FetcherWithUnconsentedClientAccessToPrivelegedAPI) {
