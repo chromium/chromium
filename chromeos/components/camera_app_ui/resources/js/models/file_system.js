@@ -5,7 +5,12 @@
 import {assert} from '../chrome_util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
-import {Filenamer, IMAGE_PREFIX, VIDEO_PREFIX} from './file_namer.js';
+import {
+  DOCUMENT_PREFIX,
+  Filenamer,
+  IMAGE_PREFIX,
+  VIDEO_PREFIX,
+} from './file_namer.js';
 import {
   DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
   DirectoryAccessEntryImpl,
@@ -31,6 +36,15 @@ export function hasVideoPrefix(entry) {
  */
 function hasImagePrefix(entry) {
   return entry.name.startsWith(IMAGE_PREFIX);
+}
+
+/**
+ * Checks if the entry's name has the document prefix.
+ * @param {!FileAccessEntry} entry File entry.
+ * @return {boolean} Has the document prefix or not.
+ */
+function hasDocumentPrefix(entry) {
+  return entry.name.startsWith(DOCUMENT_PREFIX);
 }
 
 /**
@@ -173,7 +187,8 @@ export async function createPrivateTempVideoFile() {
 export async function getEntries() {
   const entries = await cameraDir.getFiles();
   return entries.filter((entry) => {
-    if (!hasVideoPrefix(entry) && !hasImagePrefix(entry)) {
+    if (!hasVideoPrefix(entry) && !hasImagePrefix(entry) &&
+        !hasDocumentPrefix(entry)) {
       return false;
     }
     return entry.name.match(/_(\d{8})_(\d{6})(?: \((\d+)\))?/);
