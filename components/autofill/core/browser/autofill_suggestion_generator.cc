@@ -89,15 +89,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
             base::i18n::ToLower(creditcard_field_value), field_contents_lower,
             type, credit_card->record_type() == CreditCard::MASKED_SERVER_CARD,
             &prefix_matched_suggestion)) {
-      // If the card is enrolled in virtual card, add a new suggestion option
-      // for it above its original suggestion.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableMerchantBoundVirtualCards) &&
-          credit_card->virtual_card_enrollment_state() ==
-              CreditCard::ENROLLED &&
-          (base::FeatureList::IsEnabled(
-               features::kAutofillSuggestVirtualCardsOnIncompleteForm) ||
-           IsCompleteCreditCardFormIncludingCvcField(form_structure))) {
+      if (ShouldShowVirtualCardOption(credit_card, form_structure)) {
         suggestions.push_back(CreateCreditCardSuggestion(
             *credit_card, type, prefix_matched_suggestion,
             /*virtual_card_option=*/true, app_locale));
@@ -180,9 +172,23 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 
   suggestion.value = credit_card.GetInfo(type, app_locale);
   suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
-  suggestion.backend_id = credit_card.guid();
+  std::string backend_id = credit_card.guid();
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
                                                : Suggestion::SUBSTRING_MATCH;
+
+  std::string server_id_for_virtual_card_option;
+  if (virtual_card_option &&
+      credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
+    server_id_for_virtual_card_option = credit_card.server_id();
+  } else if (virtual_card_option &&
+             credit_card.record_type() == CreditCard::LOCAL_CARD) {
+    const CreditCard* server_duplicate_card =
+        GetServerCardForLocalCard(&credit_card);
+    DCHECK(server_duplicate_card);
+    server_id_for_virtual_card_option = server_duplicate_card->server_id();
+    backend_id = server_duplicate_card->guid();
+  }
+  suggestion.backend_id = backend_id;
 
   // Get the nickname for the card suggestion, which may not be the same as
   // the card's nickname if there are duplicates of the card on file.
@@ -245,11 +251,70 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
         feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
 #endif  // OS_ANDROID
 
-    // TODO(crbug.com/1196021): Populate custom_icon with card art if available.
+    // TODO(crbug.com/1196021): Populate custom_icon with card art if available
+    // (use server_id_for_virtual_card_option).
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
   }
 
   return suggestion;
+}
+
+bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
+    const CreditCard* candidate_card,
+    const FormStructure& form_structure) const {
+  // If virtual card experiment is disabled:
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableMerchantBoundVirtualCards)) {
+    return false;
+  }
+
+  // If the form is an incomplete form and the incomplete form experiment is
+  // disabled, do not offer a virtual card option. We will likely not be able to
+  // fill in all information, and the user doesn't have the info either.
+  if (!IsCompleteCreditCardFormIncludingCvcField(form_structure) &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillSuggestVirtualCardsOnIncompleteForm)) {
+    return false;
+  }
+
+  switch (candidate_card->record_type()) {
+    case CreditCard::MASKED_SERVER_CARD:
+      return candidate_card->virtual_card_enrollment_state() ==
+             CreditCard::ENROLLED;
+    case CreditCard::LOCAL_CARD: {
+      const CreditCard* server_duplicate =
+          GetServerCardForLocalCard(candidate_card);
+      return server_duplicate &&
+             server_duplicate->virtual_card_enrollment_state() ==
+                 CreditCard::ENROLLED;
+    }
+    case CreditCard::FULL_SERVER_CARD:
+      return false;
+    case CreditCard::VIRTUAL_CARD:
+      // Should not happen since virtual card is not persisted.
+      NOTREACHED();
+      return false;
+  }
+}
+
+const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
+    const CreditCard* local_card) const {
+  DCHECK(local_card);
+  if (local_card->record_type() != CreditCard::LOCAL_CARD)
+    return nullptr;
+
+  std::vector<CreditCard*> server_cards =
+      personal_data_->GetServerCreditCards();
+  auto it = base::ranges::find_if(
+      server_cards.begin(), server_cards.end(),
+      [&](const CreditCard* server_card) {
+        return local_card->IsLocalDuplicateOfServerCard(*server_card);
+      });
+
+  if (it != server_cards.end())
+    return *it;
+
+  return nullptr;
 }
 
 }  // namespace autofill

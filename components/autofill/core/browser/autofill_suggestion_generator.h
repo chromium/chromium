@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+
 namespace base {
 class Time;
 }  // namespace base
@@ -54,6 +56,15 @@ class AutofillSuggestionGenerator {
   std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
+                           CreateCreditCardSuggestion_LocalCard);
+  FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
+                           CreateCreditCardSuggestion_ServerCard);
+  FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
+                           GetServerCardForLocalCard);
+  FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
+                           ShouldShowVirtualCardOption);
+
   // Creates a suggestion for the given |credit_card|. |type| denotes the
   // AutofillType of the field that is focused when the query is triggered.
   // |prefix_matched_suggestion| indicates whether the suggestion has content
@@ -64,6 +75,17 @@ class AutofillSuggestionGenerator {
                                         bool prefix_matched_suggestion,
                                         bool virtual_card_option,
                                         const std::string& app_locale) const;
+
+  // Helper function to decide whether to show the virtual card option for
+  // |candidate_card| given the |form_structure|.
+  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
+                                   const FormStructure& form_structure) const;
+
+  // Returns a pointer to the server card that has duplicate information of the
+  // |local_card|. It is not guaranteed that a server card is found. If not,
+  // nullptr is returned.
+  const CreditCard* GetServerCardForLocalCard(
+      const CreditCard* local_card) const;
 
   // autofill_client_ and the generator are both one per tab, and have the same
   // lifecycle.
