@@ -72,28 +72,6 @@ cast_source_set("message_port") {
   ]
 }
 
-if (is_linux) {
-  cast_source_set("core_runtime_bindings") {
-    sources = [
-      "bindings_manager_web_runtime.cc",
-      "bindings_manager_web_runtime.h",
-    ]
-
-    public_deps = [
-      ":message_port",
-      "//base",
-      "//chromecast/bindings/public/mojom",
-      "//components/cast/api_bindings:manager",
-      "//components/cast/message_port",
-      "//mojo/public/cpp/bindings",
-      "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
-      "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
-    ]
-
-    deps = [ "//chromecast/bindings:bindings_manager_cast" ]
-  }
-}
-
 cast_source_set("metrics_recorder") {
   sources = [
     "cast_runtime_action_recorder.cc",
@@ -120,6 +98,63 @@ cast_source_set("metrics_recorder") {
     "//chromecast/base/metrics",
     "//third_party/metrics_proto",
   ]
+}
+
+if (is_linux) {
+  cast_source_set("core_runtime_bindings") {
+    sources = [
+      "bindings_manager_web_runtime.cc",
+      "bindings_manager_web_runtime.h",
+    ]
+
+    public_deps = [
+      ":message_port",
+      "//base",
+      "//chromecast/bindings/public/mojom",
+      "//components/cast/api_bindings:manager",
+      "//components/cast/message_port",
+      "//mojo/public/cpp/bindings",
+      "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
+    ]
+
+    deps = [ "//chromecast/bindings:bindings_manager_cast" ]
+  }
+
+  cast_source_set("core_runtime") {
+    sources = [
+      "cast_core_switches.h",
+      "runtime_application_service.cc",
+      "runtime_application_service.h",
+      "runtime_service.cc",
+      "runtime_service.h",
+      "web_runtime_application_service.cc",
+      "web_runtime_application_service.h",
+    ]
+
+    public_deps = [
+      ":grpc_impl",
+      ":grpc_support",
+      ":metrics_recorder",
+      "//base",
+      "//chromecast/browser:public",
+      "//third_party/grpc:grpc++",
+      "//third_party/openscreen/src/cast/cast_core/api:application_config_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:cast_core_service_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:cast_message_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
+    ]
+
+    deps = [
+      ":core_runtime_bindings",
+      ":url_rewrite",
+      "//chromecast/browser:browser_base",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
 }
 
 cast_source_set("renderer") {
