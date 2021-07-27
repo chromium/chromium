@@ -35,6 +35,9 @@ struct CONTENT_EXPORT AXTextEdit {
   base::scoped_nsprotocol<id> edit_text_marker;
 };
 
+// Returns true if the given object is an NSRange instance.
+bool IsNSRange(id value);
+
 // Uses a system API to verify that the given object is an AXTextMarker object.
 bool IsAXTextMarker(id text_marker);
 

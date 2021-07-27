@@ -749,6 +749,11 @@ NSString* const NSAccessibilityRequiredAttributeChrome = @"AXRequired";
 #define NSAccessibilityLanguageAttribute @"AXLanguage"
 #endif
 
+bool content::IsNSRange(id value) {
+  return [value isKindOfClass:[NSValue class]] &&
+         0 == strcmp([value objCType], @encode(NSRange));
+}
+
 bool content::IsAXTextMarker(id object) {
   if (object == nil)
     return false;
@@ -3829,18 +3834,21 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return;
 
   if ([attribute isEqualToString:NSAccessibilityFocusedAttribute]) {
-    BrowserAccessibilityManager* manager = _owner->manager();
     NSNumber* focusedNumber = value;
+    BrowserAccessibilityManager* manager = _owner->manager();
     BOOL focused = [focusedNumber intValue];
     if (focused)
       manager->SetFocus(*_owner);
   }
   if ([attribute isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
-    NSRange range = [(NSValue*)value rangeValue];
-    BrowserAccessibilityManager* manager = _owner->manager();
-    manager->SetSelection(BrowserAccessibility::AXRange(
-        _owner->CreateTextPositionAt(range.location)->AsLeafTextPosition(),
-        _owner->CreateTextPositionAt(NSMaxRange(range))->AsLeafTextPosition()));
+    if (content::IsNSRange(value)) {
+      NSRange range = [(NSValue*)value rangeValue];
+      BrowserAccessibilityManager* manager = _owner->manager();
+      manager->SetSelection(BrowserAccessibility::AXRange(
+          _owner->CreateTextPositionAt(range.location)->AsLeafTextPosition(),
+          _owner->CreateTextPositionAt(NSMaxRange(range))
+              ->AsLeafTextPosition()));
+    }
   }
   if ([attribute
           isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute]) {
