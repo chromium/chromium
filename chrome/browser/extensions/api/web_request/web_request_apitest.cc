@@ -170,29 +170,19 @@ class CancelLoginDialog : public content::NotificationObserver {
 // Observer that listens for messages from chrome.test.sendMessage to allow them
 // to be used to trigger browser initiated naviagations from the javascript for
 // testing purposes.
-class NavigateTabMessageHandler : public content::NotificationObserver {
+class NavigateTabMessageHandler {
  public:
-  explicit NavigateTabMessageHandler(Profile* profile) : profile_(profile) {
-    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                   content::NotificationService::AllSources());
+  explicit NavigateTabMessageHandler(Profile* profile)
+      : profile_(profile), navigate_listener_(/* will_reply */ false) {
+    navigate_listener_.SetOnRepeatedlySatisfied(base::BindRepeating(
+        &NavigateTabMessageHandler::HandleNavigateTabMessage,
+        base::Unretained(this)));
   }
 
-  ~NavigateTabMessageHandler() override {}
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    HandleNavigateTabMessage(type, source, details, profile_);
-  }
+  ~NavigateTabMessageHandler() = default;
 
  private:
-  void HandleNavigateTabMessage(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details,
-                                Profile* profile) {
-    DCHECK_EQ(NOTIFICATION_EXTENSION_TEST_MESSAGE, type);
-    const auto message =
-        content::Details<std::pair<std::string, bool*>>(details)->first;
+  void HandleNavigateTabMessage(const std::string& message) {
     absl::optional<base::Value> command = base::JSONReader::Read(message);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
       base::Value* data = command->FindDictKey("navigate");
@@ -203,17 +193,18 @@ class NavigateTabMessageHandler : public content::NotificationObserver {
 
         content::WebContents* contents = nullptr;
         ExtensionTabUtil::GetTabById(
-            tab_id, profile, profile->HasPrimaryOTRProfile(), &contents);
+            tab_id, profile_, profile_->HasPrimaryOTRProfile(), &contents);
         ASSERT_NE(contents, nullptr)
             << "Could not find tab with id: " << tab_id;
         content::NavigationController::LoadURLParams params(url);
         contents->GetController().LoadURLWithParams(params);
       }
     }
+    navigate_listener_.Reset();
   }
 
-  content::NotificationRegistrar registrar_;
   Profile* profile_;
+  ExtensionTestMessageListener navigate_listener_;
 };
 
 // Sends an XHR request to the provided host, port, and path, and responds when

@@ -122,5 +122,10 @@ void ExtensionTestMessageListener::Observe(
 
     if (quit_wait_closure_)
       std::move(quit_wait_closure_).Run();
+
+    if (on_satisfied_)
+      std::move(on_satisfied_).Run(message);
+    if (on_repeatedly_satisfied_)
+      on_repeatedly_satisfied_.Run(message);
   }
 }

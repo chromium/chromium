@@ -70,6 +70,15 @@ class TestSendMessageFunction;
 //   ASSERT_TRUE(listener.WaitUntilSatisfied());
 //   ... do some work.
 //
+// A callback can be set to react to a message from an extension, instead of
+// manually waiting.
+//
+//   ExtensionTestMessageListener listener("do_something", false);
+//   listener.SetOnSatisfied(base::BindOnce(&DoSomething));
+//   ... run test
+//   // SetOnRepeatedlySatisfied could be used if the message is expected
+//   // multiple times.
+//
 // Finally, you can reset the listener to reuse it.
 //
 //   ExtensionTestMessageListener listener(true);  // will reply
@@ -124,6 +133,15 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
     failure_message_ = failure_message;
   }
 
+  using OnSatisfiedSignature = void(const std::string&);
+  void SetOnSatisfied(base::OnceCallback<OnSatisfiedSignature> on_satisfied) {
+    on_satisfied_ = std::move(on_satisfied);
+  }
+  void SetOnRepeatedlySatisfied(
+      base::RepeatingCallback<OnSatisfiedSignature> on_repeatedly_satisfied) {
+    on_repeatedly_satisfied_ = on_repeatedly_satisfied;
+  }
+
   void set_extension_id(const std::string& extension_id) {
     extension_id_ = extension_id;
   }
@@ -156,6 +174,10 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
 
   // Holds the quit Closure for the RunLoop during WaitUntilSatisfied().
   base::OnceClosure quit_wait_closure_;
+
+  // Notifies when the expected message is received.
+  base::OnceCallback<OnSatisfiedSignature> on_satisfied_;
+  base::RepeatingCallback<OnSatisfiedSignature> on_repeatedly_satisfied_;
 
   // If true, we expect the calling code to manually send a reply. Otherwise,
   // we send an automatic empty reply to the extension.
