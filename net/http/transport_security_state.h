@@ -584,7 +584,7 @@ class NET_EXPORT TransportSecurityState {
   bool has_dynamic_pkp_state() const { return !enabled_pkp_hosts_.empty(); }
 
   // The number of cached ExpectCTState entries.
-  size_t num_expect_ct_entries() const;
+  size_t num_expect_ct_entries_for_testing() const;
 
   // The number of cached STSState entries.
   size_t num_sts_entries() const;

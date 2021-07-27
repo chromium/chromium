@@ -3791,7 +3791,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTDelay) {
   // Should have removed enough entries to get down to kExpectCTPruneMin
   // entries.
   EXPECT_EQ(features::kExpectCTPruneMin.Get(),
-            static_cast<int>(state.num_expect_ct_entries()));
+            static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
   // Add more prunable entries, but pruning should not be triggered, due to the
   // delay between subsequent pruning tasks.
@@ -3802,14 +3802,14 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTDelay) {
   }
   EXPECT_EQ(
       features::kExpectCTPruneMax.Get() + features::kExpectCTPruneMin.Get(),
-      static_cast<int>(state.num_expect_ct_entries()));
+      static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
   // Time passes, which does not trigger pruning.
   FastForwardBy(
       base::TimeDelta::FromSeconds(features::kExpectCTPruneDelaySecs.Get()));
   EXPECT_EQ(
       features::kExpectCTPruneMax.Get() + features::kExpectCTPruneMin.Get(),
-      static_cast<int>(state.num_expect_ct_entries()));
+      static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
   // Another entry is added, which triggers pruning, now that enough time has
   // passed.
@@ -3817,13 +3817,13 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTDelay) {
                     report_uri,
                     CreateUniqueNetworkIsolationKey(true /* is_transient */));
   EXPECT_EQ(features::kExpectCTPruneMin.Get(),
-            static_cast<int>(state.num_expect_ct_entries()));
+            static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
   // More time passes.
   FastForwardBy(base::TimeDelta::FromSeconds(
       10 * features::kExpectCTPruneDelaySecs.Get()));
   EXPECT_EQ(features::kExpectCTPruneMin.Get(),
-            static_cast<int>(state.num_expect_ct_entries()));
+            static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
   // When enough entries are added to trigger pruning, it runs immediately,
   // since enough time has passed.
@@ -3835,7 +3835,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTDelay) {
                       CreateUniqueNetworkIsolationKey(true /* is_transient */));
   }
   EXPECT_EQ(features::kExpectCTPruneMin.Get(),
-            static_cast<int>(state.num_expect_ct_entries()));
+            static_cast<int>(state.num_expect_ct_entries_for_testing()));
 }
 
 // Test that Expect-CT pruning respects kExpectCTMaxEntriesPerNik, which is only
@@ -3867,7 +3867,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTNetworkIsolationKeyLimit) {
         CreateUniqueNetworkIsolationKey(false /* is_transient */));
   }
   EXPECT_EQ(features::kExpectCTPruneMax.Get(),
-            static_cast<int>(state.num_expect_ct_entries()));
+            static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
   // Add kExpectCTMaxEntriesPerNik non-prunable entries with a single NIK,
   // allowing pruning to run each time. No entries should be deleted.
@@ -3879,7 +3879,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTNetworkIsolationKeyLimit) {
     state.AddExpectCT(CreateUniqueHostName(), expiry2, true /* enforce */,
                       report_uri, network_isolation_key);
     EXPECT_EQ(features::kExpectCTPruneMax.Get() + i + 1,
-              static_cast<int>(state.num_expect_ct_entries()));
+              static_cast<int>(state.num_expect_ct_entries_for_testing()));
   }
 
   // Add kExpectCTMaxEntriesPerNik non-prunable entries with the same NIK as
@@ -3892,7 +3892,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTNetworkIsolationKeyLimit) {
                       report_uri, network_isolation_key);
     EXPECT_EQ(features::kExpectCTPruneMax.Get() +
                   features::kExpectCTMaxEntriesPerNik.Get(),
-              static_cast<int>(state.num_expect_ct_entries()));
+              static_cast<int>(state.num_expect_ct_entries_for_testing()));
 
     // Count entries with |expiry2| and |expiry3|. For each loop iteration, an
     // entry with |expiry2| should be replaced by one with |expiry3|.

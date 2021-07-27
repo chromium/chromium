@@ -1081,7 +1081,7 @@ void TransportSecurityState::ClearReportCachesForTesting() {
   sent_expect_ct_reports_cache_.Clear();
 }
 
-size_t TransportSecurityState::num_expect_ct_entries() const {
+size_t TransportSecurityState::num_expect_ct_entries_for_testing() const {
   return enabled_expect_ct_hosts_.size();
 }
 

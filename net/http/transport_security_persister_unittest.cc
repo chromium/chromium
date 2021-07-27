@@ -226,23 +226,23 @@ TEST_P(TransportSecurityPersisterTest, SerializeData3) {
 // entries being added to the transport security state.
 TEST_P(TransportSecurityPersisterTest, DeserializeBadData) {
   persister_->LoadEntries("");
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 
   persister_->LoadEntries("Foopy");
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 
   persister_->LoadEntries("15");
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 
   persister_->LoadEntries("[15]");
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 
   persister_->LoadEntries("{\"version\":1}");
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 }
 
@@ -258,7 +258,7 @@ TEST_P(TransportSecurityPersisterTest, DeserializeDataOldWithoutCreationDate) {
       "}"
       "}";
   persister_->LoadEntries(kInput);
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 }
 
@@ -300,7 +300,7 @@ TEST_P(TransportSecurityPersisterTest, DeserializeDataOldMergedDictionary) {
       "}";
 
   persister_->LoadEntries(kInput);
-  EXPECT_EQ(0u, state_->num_expect_ct_entries());
+  EXPECT_EQ(0u, state_->num_expect_ct_entries_for_testing());
   EXPECT_EQ(0u, state_->num_sts_entries());
 }
 
