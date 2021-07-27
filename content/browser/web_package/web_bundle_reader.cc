@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
 
 namespace content {

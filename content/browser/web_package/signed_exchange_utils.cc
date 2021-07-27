@@ -22,6 +22,7 @@
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {

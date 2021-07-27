@@ -16,6 +16,7 @@
 #include "chrome/common/extensions/api/wallpaper_private.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
 
 #include "base/bind.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"

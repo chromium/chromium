@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/network_isolation_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

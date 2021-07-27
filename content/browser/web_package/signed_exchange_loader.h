@@ -21,6 +21,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

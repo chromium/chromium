@@ -26,6 +26,7 @@
 #include "chrome/browser/printing/cloud_print/privet_constants.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 

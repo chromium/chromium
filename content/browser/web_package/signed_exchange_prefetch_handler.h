@@ -19,6 +19,7 @@
 namespace network {
 class NetworkIsolationKey;
 class SharedURLLoaderFactory;
+struct ResourceRequest;
 }
 
 namespace blink {

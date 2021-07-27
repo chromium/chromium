@@ -15,6 +15,7 @@
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

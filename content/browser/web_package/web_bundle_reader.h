@@ -26,6 +26,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace content {
 
 class WebBundleSource;

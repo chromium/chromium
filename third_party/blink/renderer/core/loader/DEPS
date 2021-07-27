@@ -9,4 +9,7 @@ specific_include_rules = {
     "progress_tracker_test.cc" : [
         "+base/run_loop.h"
     ],
+    "prefetched_signed_exchange_manager.cc": [
+        "+services/network/public/cpp/resource_request.h"
+    ],
 }

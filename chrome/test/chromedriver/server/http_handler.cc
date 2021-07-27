@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/server/http_server_request_info.h"
 #include "net/server/http_server_response_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"

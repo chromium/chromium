@@ -23,6 +23,7 @@
 
 namespace network {
 class SharedURLLoaderFactory;
+struct ResourceRequest;
 }  // namespace network
 
 namespace mojo {
