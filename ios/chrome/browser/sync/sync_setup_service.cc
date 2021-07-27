@@ -132,6 +132,8 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
   switch (sync_service_->GetAuthError().state()) {
     case GoogleServiceAuthError::REQUEST_CANCELED:
       return kSyncServiceCouldNotConnect;
+    // TODO(crbug.com/1194007): This will support the SyncDisabled policy that
+    // can force the Sync service to become unavailable.
     // Based on GetSyncStatusLabelsForAuthError, SERVICE_UNAVAILABLE
     // corresponds to sync having been disabled for the user's domain.
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
