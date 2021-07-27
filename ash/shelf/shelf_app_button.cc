@@ -45,7 +45,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/painter.h"
-#include "ui/views/style/platform_style.h"
 
 namespace {
 
@@ -335,7 +334,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
-          gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2, 0), 0));
+          gfx::Insets(views::FocusRing::kHaloThickness / 2, 0), 0));
 }
 
 ShelfAppButton::~ShelfAppButton() {

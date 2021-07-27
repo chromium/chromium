@@ -28,9 +28,9 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -339,8 +339,7 @@ CaptureLabelView::CreatePathGenerator() {
   // the same size as its widget, inset by half the focus ring thickness to
   // ensure the focus ring is drawn inside the widget bounds.
   return std::make_unique<views::RoundRectHighlightPathGenerator>(
-      gfx::Insets(views::PlatformStyle::kFocusHaloThickness / 2),
-      kCaptureLabelRadius);
+      gfx::Insets(views::FocusRing::kHaloThickness / 2), kCaptureLabelRadius);
 }
 
 void CaptureLabelView::ScheduleCountDownAnimation() {

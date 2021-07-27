@@ -31,7 +31,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/views/style/platform_style.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -292,8 +292,8 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
   } else if (path_type == PathType::kHighlight) {
     // The path is a round rect inset by the focus ring thickness. The
     // radius is also adjusted by the inset.
-    const float inset = views::PlatformStyle::kFocusHaloThickness +
-                        views::PlatformStyle::kFocusHaloInset;
+    const float inset =
+        views::FocusRing::kHaloThickness + views::FocusRing::kHaloInset;
     SkRRect rrect = SkRRect::MakeRectXY(
         SkRect::MakeLTRB(tab_left + inset, tab_top + inset, tab_right - inset,
                          tab_bottom - inset),

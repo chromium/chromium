@@ -65,10 +65,6 @@ class VIEWS_EXPORT PlatformStyle {
   // dragging but available to do so.
   static const bool kTextfieldUsesDragCursorWhenDraggable;
 
-  // The thickness and inset amount of focus ring halos.
-  static const float kFocusHaloThickness;
-  static const float kFocusHaloInset;
-
   // Whether controls in inactive widgets appear disabled.
   static const bool kInactiveWidgetControlsAppearDisabled;
 

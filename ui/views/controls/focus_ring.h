@@ -43,6 +43,10 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // Removes the FocusRing, if present, from `host`.
   static void Remove(View* host);
 
+  // The thickness and inset amount of focus ring halos.
+  static const float kHaloThickness;
+  static const float kHaloInset;
+
   ~FocusRing() override;
 
   // Sets the HighlightPathGenerator to draw this FocusRing around.

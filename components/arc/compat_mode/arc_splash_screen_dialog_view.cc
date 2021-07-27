@@ -30,6 +30,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -38,7 +39,6 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -64,7 +64,7 @@ class HighlightBorder : public views::View {
 
   void Layout() override {
     auto bounds = parent()->GetLocalBounds();
-    bounds.Inset(gfx::Insets(views::PlatformStyle::kFocusHaloInset));
+    bounds.Inset(gfx::Insets(views::FocusRing::kHaloInset));
     SetBoundsRect(bounds);
   }
 
@@ -82,7 +82,7 @@ class HighlightBorder : public views::View {
     flags.setColor(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_FocusedBorderColor));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(views::PlatformStyle::kFocusHaloThickness);
+    flags.setStrokeWidth(views::FocusRing::kHaloThickness);
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
   }
 };

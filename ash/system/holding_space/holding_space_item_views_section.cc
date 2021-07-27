@@ -19,9 +19,9 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -89,8 +89,7 @@ class HoldingSpaceScrollView : public views::ScrollView,
     // be applied to prevent this view from painting its contents outside of its
     // viewport.
     const float kFocusInsets =
-        kHoldingSpaceFocusInsets -
-        (views::PlatformStyle::kFocusHaloThickness / 2.f);
+        kHoldingSpaceFocusInsets - (views::FocusRing::kHaloThickness / 2.f);
     gfx::Rect bounds = GetLocalBounds();
     bounds.Inset(gfx::Insets(kFocusInsets));
     layer()->SetClipRect(bounds);

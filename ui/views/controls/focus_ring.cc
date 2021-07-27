@@ -23,7 +23,6 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -65,7 +64,7 @@ SkColor GetColor(View* focus_ring, bool valid) {
 }
 
 double GetCornerRadius() {
-  const double thickness = PlatformStyle::kFocusHaloThickness / 2.f;
+  const double thickness = FocusRing::kHaloThickness / 2.f;
   return FocusableBorder::kCornerRadiusDp + thickness;
 }
 
@@ -87,6 +86,11 @@ SkPath GetHighlightPathInternal(const View* view) {
 }
 
 }  // namespace
+
+// Set `kHaloInset` to negative half of `kHaloThickness` to draw half of the
+// focus ring inside and half outside the parent element.
+const float FocusRing::kHaloThickness = 2.f;
+const float FocusRing::kHaloInset = -1.f;
 
 // static
 void FocusRing::Install(View* host) {
@@ -153,7 +157,7 @@ void FocusRing::Layout() {
         gfx::ToEnclosingRect(gfx::SkRectToRectF(path.getBounds())));
   }
 
-  focus_bounds.Inset(gfx::Insets(PlatformStyle::kFocusHaloInset));
+  focus_bounds.Inset(gfx::Insets(FocusRing::kHaloInset));
   SetBoundsRect(focus_bounds);
 
   // Need to match canvas direction with the parent. This is required to ensure
@@ -192,7 +196,7 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   paint.setAntiAlias(true);
   paint.setColor(color_.value_or(GetColor(this, !invalid_)));
   paint.setStyle(cc::PaintFlags::kStroke_Style);
-  paint.setStrokeWidth(PlatformStyle::kFocusHaloThickness);
+  paint.setStrokeWidth(FocusRing::kHaloThickness);
 
   canvas->sk_canvas()->drawRRect(GetRingRoundRect(), paint);
 }
@@ -281,7 +285,7 @@ SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRRect& rrect) const {
-  double thickness = PlatformStyle::kFocusHaloThickness / 2.f;
+  double thickness = FocusRing::kHaloThickness / 2.f;
   gfx::RectF r = gfx::SkRectToRectF(rrect.rect());
   View::ConvertRectToTarget(parent(), this, &r);
 
@@ -291,7 +295,7 @@ SkRRect FocusRing::RingRectFromPathRect(const SkRRect& rrect) const {
   // The focus indicator should hug the normal border, when present (as in the
   // case of text buttons). Since it's drawn outside the parent view, increase
   // the rounding slightly by adding half the ring thickness.
-  skr.inset(PlatformStyle::kFocusHaloInset, PlatformStyle::kFocusHaloInset);
+  skr.inset(FocusRing::kHaloInset, FocusRing::kHaloInset);
   skr.inset(thickness, thickness);
 
   return skr;

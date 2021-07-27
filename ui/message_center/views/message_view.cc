@@ -29,7 +29,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_WIN)
@@ -194,7 +193,7 @@ SkPath MessageView::GetHighlightPath() const {
   // them on top of the notifications. We need to do this because TrayBubbleView
   // has a layer that masks to bounds due to which the focus ring can not extend
   // outside the view.
-  int inset = -views::PlatformStyle::kFocusHaloInset;
+  int inset = -views::FocusRing::kHaloInset;
   rect.Inset(gfx::Insets(inset));
 
   SkScalar top_radius = std::max(0, top_radius_ - inset);
