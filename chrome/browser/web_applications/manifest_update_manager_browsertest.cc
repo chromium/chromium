@@ -994,13 +994,14 @@ class ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate
       public testing::WithParamInterface<bool> {
  public:
   ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kWebAppManifestPolicyAppIdentityUpdate);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kWebAppManifestPolicyAppIdentityUpdate, GetParam());
   }
 
-  bool ExpectUpdateAllowed() { return GetParam(); }
+  bool ExpectUpdateAllowed() {
+    return base::FeatureList::IsEnabled(
+        features::kWebAppManifestPolicyAppIdentityUpdate);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
