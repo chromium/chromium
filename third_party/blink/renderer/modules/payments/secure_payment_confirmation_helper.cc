@@ -42,14 +42,6 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
 
-  if (!RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled() &&
-      !request->hasNetworkData()) {
-    exception_state.ThrowTypeError(
-        "The \"secure-payment-confirmation\" method requires a non-empty "
-        "\"networkData\" field.");
-    return nullptr;
-  }
-
   if (request->hasTimeout() && request->timeout() > kMaxTimeoutInMilliseconds) {
     exception_state.ThrowRangeError(
         "The \"secure-payment-confirmation\" method requires at most 1 hour "
@@ -57,25 +49,23 @@ SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled()) {
-    if (request->instrument()->displayName().IsEmpty()) {
-      exception_state.ThrowTypeError(
-          "The \"secure-payment-confirmation\" method requires a non-empty "
-          "\"instrument.displayName\" field.");
-      return nullptr;
-    }
-    if (request->instrument()->icon().IsEmpty()) {
-      exception_state.ThrowTypeError(
-          "The \"secure-payment-confirmation\" method requires a non-empty "
-          "\"instrument.icon\" field.");
-      return nullptr;
-    }
-    if (!KURL(request->instrument()->icon()).IsValid()) {
-      exception_state.ThrowTypeError(
-          "The \"secure-payment-confirmation\" method requires a valid URL in "
-          "the \"instrument.icon\" field.");
-      return nullptr;
-    }
+  if (request->instrument()->displayName().IsEmpty()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"instrument.displayName\" field.");
+    return nullptr;
+  }
+  if (request->instrument()->icon().IsEmpty()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a non-empty "
+        "\"instrument.icon\" field.");
+    return nullptr;
+  }
+  if (!KURL(request->instrument()->icon()).IsValid()) {
+    exception_state.ThrowTypeError(
+        "The \"secure-payment-confirmation\" method requires a valid URL in "
+        "the \"instrument.icon\" field.");
+    return nullptr;
   }
 
   return mojo::ConvertTo<

@@ -74,11 +74,6 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kSecurePaymentConfirmationAPIV2)) {
-    return true;
-  }
-
   if (request->instrument->display_name.empty()) {
     *error_message = errors::kInstrumentDisplayNameRequired;
     return false;
@@ -249,43 +244,24 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   if (!instruments.empty())
     instrument = std::move(instruments.front());
 
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    // Download the (possibly) updated icon for the payment instrument. The
-    // download URL was passed into the PaymentRequest API.
-    //
-    // Perform this download regardless of whether there is an instrument on
-    // file, so the server that hosts the image cannot detect presence of the
-    // instrument on file.
-    auto* request_ptr = request.get();
-    request_ptr->pending_icon_download_request_id =
-        request_ptr->web_contents()->DownloadImageInFrame(
-            request_ptr->delegate->GetInitiatorRenderFrameHostId(),
-            request_ptr->mojo_request->instrument->icon,  // source URL
-            false,                                        // is_favicon
-            0,                                            // no preferred size
-            0,                                            // no max size
-            false,  // normal cache policy (a.k.a. do not bypass cache)
-            base::BindOnce(
-                &SecurePaymentConfirmationAppFactory::DidDownloadIcon,
-                weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
-                std::move(request)));
-  } else {
-    if (!instrument) {
-      request->delegate->OnDoneCreatingPaymentApps();
-      return;
-    }
-
-    // Decode the icon in a sandboxed process off the main thread. This icon was
-    // stored in sqlite during enrollment.
-    auto* instrument_ptr = instrument.get();
-    data_decoder::DecodeImageIsolated(
-        instrument_ptr->icon, data_decoder::mojom::ImageCodec::kDefault,
-        /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
-        /*desired_image_frame_size=*/gfx::Size(),
-        base::BindOnce(&SecurePaymentConfirmationAppFactory::OnAppIcon,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
-                       std::move(request)));
-  }
+  // Download the (possibly) updated icon for the payment instrument. The
+  // download URL was passed into the PaymentRequest API.
+  //
+  // Perform this download regardless of whether there is an instrument on
+  // file, so the server that hosts the image cannot detect presence of the
+  // instrument on file.
+  auto* request_ptr = request.get();
+  request_ptr->pending_icon_download_request_id =
+      request_ptr->web_contents()->DownloadImageInFrame(
+          request_ptr->delegate->GetInitiatorRenderFrameHostId(),
+          request_ptr->mojo_request->instrument->icon,  // source URL
+          false,                                        // is_favicon
+          0,                                            // no preferred size
+          0,                                            // no max size
+          false,  // normal cache policy (a.k.a. do not bypass cache)
+          base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadIcon,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
+                         std::move(request)));
 }
 
 void SecurePaymentConfirmationAppFactory::OnAppIcon(
@@ -311,9 +287,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
   }
 
   std::u16string label =
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
-          ? base::UTF8ToUTF16(request->mojo_request->instrument->display_name)
-          : instrument->label;
+      base::UTF8ToUTF16(request->mojo_request->instrument->display_name);
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(

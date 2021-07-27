@@ -707,14 +707,9 @@ void OnPaymentCredentialCreationComplete(
           client_data_buffer, attestation_buffer, credential->transports,
           authenticator_data, public_key_der, credential->public_key_algo);
 
-  resolver->Resolve(
-      RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled()
-          ? MakeGarbageCollected<PublicKeyCredential>(
-                credential->info->id, raw_id, authenticator_response,
-                AuthenticationExtensionsClientOutputs::Create())
-          : MakeGarbageCollected<PaymentCredential>(
-                credential->info->id, raw_id, authenticator_response,
-                AuthenticationExtensionsClientOutputs::Create()));
+  resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
+      credential->info->id, raw_id, authenticator_response,
+      AuthenticationExtensionsClientOutputs::Create()));
 }
 
 void OnPaymentCredentialCreationFailure(

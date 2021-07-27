@@ -55,7 +55,7 @@ class SecurePaymentConfirmationAppFactory
       const SkBitmap& icon);
 
   // Called after downloading the icon whose URL was passed into PaymentRequest
-  // API. Used when SecurePaymentConfirmationAPIV2 feature is enabled.
+  // API.
   void DidDownloadIcon(
       std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
       std::unique_ptr<Request> request,

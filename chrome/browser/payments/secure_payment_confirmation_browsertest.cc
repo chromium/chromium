@@ -516,30 +516,43 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, UserCancel) {
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+enum class APIVersion {
+  kApiV2,
+  kApiV3,
+};
+
+std::string APIVersionToString(const testing::TestParamInfo<APIVersion>& info) {
+  return APIVersion::kApiV2 == info.param ? "APIV2" : "APIV3";
+}
+
 class SecurePaymentConfirmationCreationTestWithParameter
     : public SecurePaymentConfirmationCreationTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<APIVersion> {
  public:
   SecurePaymentConfirmationCreationTestWithParameter() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kSecurePaymentConfirmation,
-                                features::kSecurePaymentConfirmationAPIV2},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kSecurePaymentConfirmation},
-          /*disabled_features=*/{features::kSecurePaymentConfirmationAPIV2});
+    std::vector<base::Feature> enabled_features = {
+        features::kSecurePaymentConfirmation};
+    std::vector<base::Feature> disabled_features;
+    switch (GetParam()) {
+      case APIVersion::kApiV2:
+        disabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
+        break;
+      case APIVersion::kApiV3:
+        enabled_features.push_back(features::kSecurePaymentConfirmationAPIV3);
+        break;
     }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(APIV2,
+INSTANTIATE_TEST_SUITE_P(APIVersion,
                          SecurePaymentConfirmationCreationTestWithParameter,
-                         testing::Values(true, false));
+                         testing::Values(APIVersion::kApiV2,
+                                         APIVersion::kApiV3),
+                         APIVersionToString);
 
 // Closing the page while the browser enrollment dialog is opened should not
 // crash.
@@ -568,9 +581,7 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   RespondToFutureEnrollments(/*confirm=*/true);
 
   EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
-          ? "PublicKeyCredential"
-          : "PaymentCredential",
+      "PublicKeyCredential",
       content::EvalJs(GetActiveWebContents(),
                       content::JsReplace("createCredentialAndReturnItsType($1)",
                                          GetDefaultIconURL())));
@@ -582,14 +593,11 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
 
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
-          ? "payment.create"
-          : "webauthn.create",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("createCredentialAndReturnClientDataType($1)",
-                             GetDefaultIconURL())));
+  EXPECT_EQ("payment.create",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace(
+                                "createCredentialAndReturnClientDataType($1)",
+                                GetDefaultIconURL())));
 
   // Verify that credential id size gets recorded.
   histogram_tester_.ExpectTotalCount(
@@ -631,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationDisableDebugTest,
                                          GetDefaultIconURL())));
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        LookupPaymentCredential) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -684,7 +692,7 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
           .ExtractString());
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
@@ -734,85 +742,34 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   test_controller()->SetHasAuthenticator(true);
   confirm_payment_ = true;
 
-  bool is_api_v2 =
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2);
-
   // EvalJs waits for JavaScript promise to resolve.
-  // The `networkData` field is the base64 encoding of 'hello world', which is
-  // set in `get_challenge.js`.
-  std::string expected_challenge_field =
-      is_api_v2
-          ? "undefined"
-          : "{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
-                "\",\"total\":{\"currency\":\"USD\",\"value\":\"0.01\"}},"
-                "\"networkData\":\"aGVsbG8gd29ybGQ=\"}";
-  EXPECT_EQ(expected_challenge_field,
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("getChallenge($1, $2);",
-                                               credentialIdentifier, "0.01")));
-  EXPECT_EQ(is_api_v2 ? "0.01" : "undefined",
-            content::EvalJs(
-                GetActiveWebContents(),
-                content::JsReplace("getTotalAmountFromClientData($1, $2);",
-                                   credentialIdentifier, "0.01")));
+  EXPECT_EQ("0.01", content::EvalJs(GetActiveWebContents(),
+                                    content::JsReplace(
+                                        "getTotalAmountFromClientData($1, $2);",
+                                        credentialIdentifier, "0.01")));
 
   // Verify that passing a promise into PaymentRequest.show() that updates the
-  // `total` price will result in the challenge price being set only after the
+  // `total` price will result in the client data price being set only after the
   // promise resolves with the finalized price.
-  expected_challenge_field =
-      is_api_v2
-          ? "undefined"
-          : "{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
-                "\",\"total\":{\"currency\":\"USD\",\"value\":\"0.02\"}},"
-                "\"networkData\":\"aGVsbG8gd29ybGQ=\"}";
-  EXPECT_EQ(expected_challenge_field,
-            content::EvalJs(
-                GetActiveWebContents(),
-                content::JsReplace("getChallengeWithShowPromise($1, $2, $3);",
-                                   credentialIdentifier, "0.01", "0.02")));
-  EXPECT_EQ(is_api_v2 ? "0.02" : "undefined",
+  EXPECT_EQ("0.02",
             content::EvalJs(
                 GetActiveWebContents(),
                 content::JsReplace(
                     "getTotalAmountFromClientDataWithShowPromise($1, $2);",
                     credentialIdentifier, "0.02")));
 
-  // Verify that the returned challenge correctly reflects the modified
+  // Verify that the returned client data correctly reflects the modified
   // amount.
-  expected_challenge_field =
-      is_api_v2
-          ? "undefined"
-          : "{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
-                "\",\"total\":{\"currency\":\"USD\",\"value\":\"0.03\"}},"
-                "\"networkData\":\"aGVsbG8gd29ybGQ=\"}";
-  EXPECT_EQ(
-      expected_challenge_field,
-      content::EvalJs(GetActiveWebContents(),
-                      content::JsReplace("getChallengeWithModifier($1, $2);",
-                                         credentialIdentifier, "0.03")));
-  EXPECT_EQ(
-      is_api_v2 ? "0.03" : "undefined",
-      content::EvalJs(GetActiveWebContents(),
-                      content::JsReplace(
-                          "getTotalAmountFromClientDataWithModifier($1, $2);",
-                          credentialIdentifier, "0.03")));
+  EXPECT_EQ("0.03", content::EvalJs(
+                        GetActiveWebContents(),
+                        content::JsReplace(
+                            "getTotalAmountFromClientDataWithModifier($1, $2);",
+                            credentialIdentifier, "0.03")));
 
-  // Verify that the returned challenge correctly reflects the modified amount
+  // Verify that the returned client data correctly reflects the modified amount
   // that is set when the promised passed into PaymentRequest.show() resolves.
-  expected_challenge_field =
-      is_api_v2
-          ? "undefined"
-          : "{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
-                "\",\"total\":{\"currency\":\"USD\",\"value\":\"0.04\"}},"
-                "\"networkData\":\"aGVsbG8gd29ybGQ=\"}";
   EXPECT_EQ(
-      expected_challenge_field,
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("getChallengeWithModifierAndShowPromise($1, $2);",
-                             credentialIdentifier, "0.04")));
-  EXPECT_EQ(
-      is_api_v2 ? "0.04" : "undefined",
+      "0.04",
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace(
@@ -825,11 +782,11 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
       SecurePaymentConfirmationEnrollDialogResult::kAccepted, 1);
   ExpectEnrollSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted, 1);
-  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 8);
+  ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kAccepted, 4);
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        UserVerificationFails) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
@@ -849,9 +806,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
   // EvalJs waits for JavaScript promise to resolve.
   EXPECT_EQ("Authenticator returned NOT_ALLOWED_ERROR.",
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("getChallenge($1, $2);",
-                                               credentialIdentifier, "0.01")));
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace("getTotalAmountFromClientData($1, $2);",
+                                   credentialIdentifier, "0.01")));
 
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
                           1);
@@ -863,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       NonexistentIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
@@ -883,7 +842,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       InsecureIcon) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
 
@@ -905,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, InsecureIcon) {
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        CreatePaymentCredentialTwice) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -935,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        WebContentsClosedDuringEnrollmentOSPrompt) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true, /*should_hang=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -965,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        UserVerificationFailsThenSucceeds) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
@@ -1000,18 +960,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   confirm_payment_ = true;
 
   // EvalJs waits for JavaScript promise to resolve.
-  // The `networkData` field is the base64 encoding of 'hello world', which is
-  // set in `get_challenge.js`.
-  std::string expected_challenge_field =
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
-          ? "undefined"
-          : "{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
-                "\",\"total\":{\"currency\":\"USD\",\"value\":\"0.01\"}},"
-                "\"networkData\":\"aGVsbG8gd29ybGQ=\"}";
-  EXPECT_EQ(expected_challenge_field,
-            content::EvalJs(GetActiveWebContents(),
-                            content::JsReplace("getChallenge($1, $2);",
-                                               credentialIdentifier, "0.01")));
+  EXPECT_EQ("0.01", content::EvalJs(GetActiveWebContents(),
+                                    content::JsReplace(
+                                        "getTotalAmountFromClientData($1, $2);",
+                                        credentialIdentifier, "0.01")));
 
   ExpectEnrollDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown,
                           2);
@@ -1042,7 +994,7 @@ std::unique_ptr<net::test_server::HttpResponse> HangRequest(
   return std::make_unique<net::test_server::HungResponse>();
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
                        WebContentsClosedDuringIconDownload) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
@@ -1078,13 +1030,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
 // Expect that an error is returned when there is no RP ID. This is a
 // regression test for crbug.com/1183559.
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, MissingRpId) {
+IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
+                       MissingRpId) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   EXPECT_EQ(
       "a JavaScript error: \"NotSupportedError: Required parameters missing "
-      "in "
-      "`options.payment`.\"\n",
+      "in `options.payment`.\"\n",
       content::EvalJs(GetActiveWebContents(),
                       content::JsReplace("createCredentialWithNoRpId($1)",
                                          GetDefaultIconURL()))

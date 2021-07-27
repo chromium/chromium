@@ -113,7 +113,6 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   const std::unique_ptr<SkBitmap> icon_;
   const std::u16string label_;
   const std::vector<uint8_t> credential_id_;
-  const std::string encoded_credential_id_;
   const url::Origin merchant_origin_;
   const base::WeakPtr<PaymentRequestSpec> spec_;
   const mojom::SecurePaymentConfirmationRequestPtr request_;

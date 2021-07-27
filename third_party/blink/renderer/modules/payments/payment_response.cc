@@ -27,8 +27,7 @@ v8::Local<v8::Value> BuildDetails(
     ScriptState* script_state,
     const String& json,
     SecurePaymentConfirmationResponsePtr secure_payment_confirmation) {
-  if (secure_payment_confirmation &&
-      RuntimeEnabledFeatures::SecurePaymentConfirmationAPIV2Enabled()) {
+  if (secure_payment_confirmation) {
     const auto& info = secure_payment_confirmation->credential_info;
     auto* authenticator_response =
         MakeGarbageCollected<AuthenticatorAssertionResponse>(
@@ -41,8 +40,8 @@ v8::Local<v8::Value> BuildDetails(
         secure_payment_confirmation->credential_info->id,
         DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
                                info->raw_id.size()),
-        authenticator_response, AuthenticationExtensionsClientOutputs::Create(),
-        /*type=*/"payment");
+        authenticator_response,
+        AuthenticationExtensionsClientOutputs::Create());
     return result->Wrap(script_state).ToLocalChecked();
   }
 

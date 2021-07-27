@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/rsolomakhin/secure-payment-confirmation
+// https://github.com/w3c/secure-payment-confirmation
 
 enum SecurePaymentConfirmationAction {
     "authenticate",
@@ -11,16 +11,12 @@ enum SecurePaymentConfirmationAction {
 dictionary SecurePaymentConfirmationRequest {
     SecurePaymentConfirmationAction action;
     required FrozenArray<BufferSource> credentialIds;
+
     // Opaque data about the current transaction provided by the issuer. As the
-    // issuer is the RP of the credential, `networkData` provides protection
+    // issuer is the RP of the credential, `challenge` provides protection
     // against replay attacks.
-    BufferSource networkData;
+    required BufferSource challenge;
 
-    // Equivalent to `networkData`. Used when the SecurePaymentConfirmationAPIV2
-    // flag is enabled.
-    [RuntimeEnabled=SecurePaymentConfirmationAPIV2] required BufferSource challenge;
-
-    [RuntimeEnabled=SecurePaymentConfirmationAPIV2] required PaymentCredentialInstrument instrument;
-
+    required PaymentCredentialInstrument instrument;
     unsigned long timeout;
 };

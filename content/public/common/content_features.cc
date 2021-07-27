@@ -652,10 +652,6 @@ const base::Feature kSecurePaymentConfirmation{
     "SecurePaymentConfirmationBrowser", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Used to enable API changes for Secure Payment Confirmation.
-const base::Feature kSecurePaymentConfirmationAPIV2{
-    "SecurePaymentConfirmationAPIV2", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Used to enable API changes for Secure Payment Confirmation.
 // TODO(crbug.com/1228924): Enable by default in M94.
 const base::Feature kSecurePaymentConfirmationAPIV3{
     "SecurePaymentConfirmationAPIV3", base::FEATURE_DISABLED_BY_DEFAULT};

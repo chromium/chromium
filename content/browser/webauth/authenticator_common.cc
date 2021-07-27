@@ -1020,8 +1020,7 @@ void AuthenticatorCommon::MakeCredential(
     request_delegate_->DisableUI();
   }
 
-  if (options->is_payment_credential_creation &&
-      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
+  if (options->is_payment_credential_creation) {
     client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kPaymentCreate, caller_origin_.Serialize(),
         options->challenge, is_cross_origin);
@@ -1172,9 +1171,7 @@ void AuthenticatorCommon::GetAssertion(
     client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kU2fSign, options->relying_party_id,
         options->challenge, /*is_cross_origin=*/false);
-  } else if (options->payment &&
-             base::FeatureList::IsEnabled(
-                 features::kSecurePaymentConfirmationAPIV2)) {
+  } else if (options->payment) {
     auto* web_contents = WebContents::FromRenderFrameHost(GetRenderFrameHost());
     if (!web_contents) {
       CompleteGetAssertionRequest(

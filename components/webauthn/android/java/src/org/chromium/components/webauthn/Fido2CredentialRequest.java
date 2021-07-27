@@ -179,9 +179,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
                         .setOrigin(Uri.parse(callerOriginString));
 
         if (options.payment != null
-                && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                && PaymentFeatureList.isEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_API_V2)) {
+                && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
             assert options.challenge != null;
             mClientDataJson = ClientDataJson.buildClientDataJson(ClientDataRequestType.PAYMENT_GET,
                     callerOriginString, options.challenge,

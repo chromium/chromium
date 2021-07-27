@@ -525,17 +525,14 @@ public class Fido2ApiTestHelper {
     }
 
     /**
-     * Mocks PaymentFeatureList so that the Security Payment Confirmation flag and the Security
-     * Payment Confirmation flag have both been enabled.
+     * Mocks PaymentFeatureList so that the Security Payment Confirmation flag has been enabled.
      * @param mocker The mocker used to mock the PaymentFeatureListJni.
      */
-    public static void setSecurePaymentConfirmationV2Enabled(JniMocker mocker) {
+    public static void setSecurePaymentConfirmationEnabled(JniMocker mocker) {
         PaymentFeatureList.Natives paymentFeatureListJni = new PaymentFeatureList.Natives() {
             @Override
             public boolean isEnabled(String featureName) {
-                return featureName.equals(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                        || featureName.equals(
-                                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_API_V2);
+                return featureName.equals(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION);
             }
         };
         mocker.mock(PaymentFeatureListJni.TEST_HOOKS, paymentFeatureListJni);

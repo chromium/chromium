@@ -1233,7 +1233,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         TestThreadUtils.runOnUiThreadBlocking(() -> mRequest.setWindowForTesting(mWindowAndroid));
 
-        Fido2ApiTestHelper.setSecurePaymentConfirmationV2Enabled(mMocker);
+        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
         String clientDataJson = "520";
         Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
 
@@ -1260,7 +1260,7 @@ public class Fido2CredentialRequestTest {
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         TestThreadUtils.runOnUiThreadBlocking(() -> mRequest.setWindowForTesting(mWindowAndroid));
 
-        Fido2ApiTestHelper.setSecurePaymentConfirmationV2Enabled(mMocker);
+        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
         Fido2ApiTestHelper.mockClientDataJson(mMocker, null);
 
         mMockWebContents.setLastCommittedUrl(new GURL("https://www.chromium.org/pay"));

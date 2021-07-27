@@ -111,19 +111,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
                                 const std::string& stringified_details,
                                 const PayerData& payer_data) override {
     EXPECT_EQ(method_name, methods::kSecurePaymentConfirmation);
-    if (base::FeatureList::IsEnabled(
-            features::kSecurePaymentConfirmationAPIV2)) {
-      EXPECT_EQ(stringified_details, "{}");
-    } else {
-      EXPECT_EQ(
-          stringified_details,
-          "{\"appid_extension\":false,\"challenge\":\"{\\\"merchantData\\\":{"
-          "\\\"merchantOrigin\\\":\\\"https://"
-          "merchant.example\\\",\\\"total\\\":{\\\"currency\\\":\\\"USD\\\","
-          "\\\"value\\\":\\\"1.25\\\"}},\\\"networkData\\\":\\\"aaaa\\\"}\","
-          "\"echo_appid_extension\":false,\"echo_prf\":false,\"info\":{},\"prf_"
-          "not_evaluated\":false,\"prf_results\":{},\"signature\":\"\"}");
-    }
+    EXPECT_EQ(stringified_details, "{}");
     EXPECT_EQ(payer_data.payer_name, "");
     EXPECT_EQ(payer_data.payer_email, "");
     EXPECT_EQ(payer_data.payer_phone, "");
@@ -167,22 +155,8 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   EXPECT_CALL(*mock_authenticator, SetEffectiveOrigin(Eq(url::Origin::Create(
                                        GURL("https://effective_rp.example")))));
 
-  std::vector<uint8_t> expected_bytes;
-  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)) {
-    expected_bytes = std::vector<uint8_t>(network_data_bytes_.begin(),
-                                          network_data_bytes_.end());
-  } else {
-    // This is the SHA-256 hash of the serialized JSON string:
-    // {"merchantData":{"merchantOrigin":"https://merchant.example","total":
-    // {"currency":"USD","value":"1.25"}},"networkData":"aaaa"}
-    //
-    // To update the test expectation, open
-    // components/test/data/payments/secure_payment_confirmation_debug.html in
-    // a browser and follow the instructions.
-    expected_bytes = {240, 123, 37,  51,  16,  34,  244, 220, 166, 179, 139,
-                      85,  229, 152, 242, 133, 88,  44,  222, 133, 49,  97,
-                      146, 20,  207, 119, 43,  142, 171, 239, 125, 250};
-  }
+  std::vector<uint8_t> expected_bytes = std::vector<uint8_t>(
+      network_data_bytes_.begin(), network_data_bytes_.end());
 
   EXPECT_CALL(*mock_authenticator, VerifyChallenge(Eq(expected_bytes)));
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());

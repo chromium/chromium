@@ -484,10 +484,6 @@ void WebRuntimeFeatures::EnableRestrictAutomaticLazyImageLoadingToDataSaver(
       SetRestrictAutomaticLazyImageLoadingToDataSaverEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableSecurePaymentConfirmationAPIV2(bool enable) {
-  RuntimeEnabledFeatures::SetSecurePaymentConfirmationAPIV2Enabled(enable);
-}
-
 void WebRuntimeFeatures::EnableSecurePaymentConfirmationAPIV3(bool enable) {
   RuntimeEnabledFeatures::SetSecurePaymentConfirmationAPIV3Enabled(enable);
 }
