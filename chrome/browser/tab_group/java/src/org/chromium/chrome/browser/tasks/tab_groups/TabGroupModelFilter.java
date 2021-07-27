@@ -531,7 +531,10 @@ public class TabGroupModelFilter extends TabModelFilter {
                 && (mGroupAutoCreation
                         || (tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
                                 || tab.getLaunchType()
-                                        == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP))) {
+                                        == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                                // TODO(https://crbug.com/1194287): Investigates a better solution
+                                // without adding the TabLaunchType.FROM_START_SURFACE.
+                                || tab.getLaunchType() == TabLaunchType.FROM_START_SURFACE))) {
             Tab parentTab = TabModelUtils.getTabById(
                     getTabModel(), CriticalPersistedTabData.from(tab).getParentId());
             if (parentTab != null) {
