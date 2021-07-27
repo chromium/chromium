@@ -2651,6 +2651,7 @@
 
     'release_bot_fuchsia': [
       'release_bot', 'fuchsia', 'blink_disable_generated_code_formatting',
+      'dcheck_always_on',
     ],
 
     'release_bot_fuchsia_cast': [
