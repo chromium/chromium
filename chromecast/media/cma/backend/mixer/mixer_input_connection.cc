@@ -1221,7 +1221,7 @@ int MixerInputConnection::FillTimestampedAudio(int num_frames,
         queued_frames_ -= frames_to_crop;
       }
 
-      if (!after_silence) {
+      if (!after_silence && !never_crop_) {
         timestamped_fader_->AddSilence(0);
         return filled;  // Fade out.
       }
