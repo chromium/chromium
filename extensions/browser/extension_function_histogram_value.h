@@ -1625,7 +1625,6 @@ enum HistogramValue {
   WMDESKSPRIVATE_LAUNCHDESKTEMPLATE = 1562,
   AUTOTESTPRIVATE_SETSHELFICONPIN = 1563,
   SCRIPTING_GETREGISTEREDCONTENTSCRIPTS = 1564,
-  OS_TELEMETRY_GETVPDINFO = 1565,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

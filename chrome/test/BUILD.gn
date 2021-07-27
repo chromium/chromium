@@ -2825,10 +2825,7 @@ if (!is_android) {
           "../browser/extensions/api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
         ]
 
-        deps += [
-          "../browser/chromeos/extensions/telemetry/api:browser_tests",
-          "//chrome/browser/error_reporting:test_support",
-        ]
+        deps += [ "//chrome/browser/error_reporting:test_support" ]
       }
 
       deps += [
