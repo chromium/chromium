@@ -927,7 +927,7 @@
   {
     "name": "darken-websites-checkbox-in-themes-setting",
     "owners": [ "lazzzis@google.com", "twellington" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 98
   },
   {
     "name": "dcheck-is-fatal",
