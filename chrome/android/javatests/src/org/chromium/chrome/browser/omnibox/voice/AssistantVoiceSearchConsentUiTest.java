@@ -35,6 +35,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
@@ -199,5 +200,57 @@ public class AssistantVoiceSearchConsentUiTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_DISMISS));
+    }
+
+    // Helper method for ASSISTANT_CONSENT_V2 flows.
+    private void verifyBackingOffConsent(boolean expectedConsentValue, int expectedHistogramCount) {
+        showConsentUi();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBottomSheetTestSupport.forceClickOutsideTheSheet(); });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mSharedPreferencesManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED),
+                    is(expectedConsentValue));
+        });
+
+        Mockito.verify(mCallback).onResult(false);
+
+        Assert.assertEquals(expectedHistogramCount,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_DISMISS));
+
+        Mockito.reset(mCallback);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
+    public void testDialogInteractivity_tappingOutsideDialog() {
+        verifyBackingOffConsent(/*expectedConsentValue=*/false, /*expectedHistogramCount=*/0);
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.ASSISTANT_CONSENT_V2 + "<Study",
+            "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:count/3"})
+    @Feature({"AssistantConsentV2"})
+    public void
+    testDialogInteractivity_tapsCounter() {
+        int max_taps_ignored = 3;
+        for (int i = 0; i < max_taps_ignored; i++) {
+            verifyBackingOffConsent(/*expectedConsentValue=*/false, /*expectedHistogramCount=*/0);
+            // Successful showing of the consent calls destroy(). Need to recreate the new
+            // instance to set up the state again.
+            mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
+                    mActivityTestRule.getActivity().getWindowAndroid(),
+                    mActivityTestRule.getActivity(), mSharedPreferencesManager, () -> {
+                        AutofillAssistantPreferenceFragment.launchSettings(
+                                mActivityTestRule.getActivity());
+                    }, mBottomSheetController);
+        }
+
+        // But the max_taps_ignored+1-th will be treated as a rejection.
+        verifyBackingOffConsent(/*expectedConsentValue=*/true, /*expectedHistogramCount=*/1);
     }
 }
