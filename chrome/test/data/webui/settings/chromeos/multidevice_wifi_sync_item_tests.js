@@ -20,7 +20,7 @@ function getPrefs() {
   };
 }
 
-suite('Multidevice_WifiSyncItem_SplitSettingsDisabled', function() {
+suite('Multidevice_WifiSyncItem_CategorizationDisabled', function() {
   let wifiSyncItem;
 
   setup(function() {
@@ -29,7 +29,7 @@ suite('Multidevice_WifiSyncItem_SplitSettingsDisabled', function() {
 
     PolymerTest.clearBody();
     loadTimeData.overrideValues({
-      splitSettingsSyncEnabled: false,
+      syncSettingsCategorizationEnabled: false,
     });
 
     wifiSyncItem =
@@ -81,7 +81,7 @@ class TestOsSyncBrowserProxy extends TestBrowserProxy {
   }
 }
 
-suite('Multidevice_WifiSyncItem_SplitSettingsEnabled', function() {
+suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   let wifiSyncItem;
 
   setup(function() {
@@ -90,7 +90,7 @@ suite('Multidevice_WifiSyncItem_SplitSettingsEnabled', function() {
 
     PolymerTest.clearBody();
     loadTimeData.overrideValues({
-      splitSettingsSyncEnabled: true,
+      syncSettingsCategorizationEnabled: true,
     });
 
     wifiSyncItem =

@@ -47,7 +47,7 @@ suite('Multidevice', function() {
     chromeSyncLink.click();
     Polymer.dom.flush();
 
-    if (loadTimeData.getBoolean('splitSettingsSyncEnabled')) {
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
       assertEquals(
           settings.Router.getInstance().getCurrentRoute(),
           settings.routes.OS_SYNC);
