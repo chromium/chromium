@@ -244,6 +244,11 @@ void PaintOpReader::Read(SkPath* path) {
       }
       if (entry_state == PaintCacheEntryState::kInlined) {
         options_.paint_cache->PutPath(path_id, *path);
+      } else {
+        // If we know that this path will only be drawn once, which is
+        // implied by kInlinedDoNotCache, we signal to skia that it should not
+        // do any caching either.
+        path->setIsVolatile(true);
       }
       memory_ += path_bytes;
       remaining_bytes_ -= path_bytes;
