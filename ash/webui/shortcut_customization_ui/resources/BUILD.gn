@@ -39,6 +39,26 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
 
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":accelerator_edit_dialog",
+    ":accelerator_edit_view",
+    ":accelerator_row",
+    ":accelerator_view",
+    ":accessibility_shortcuts_page",
+    ":android_shortcuts_page",
+    ":browser_shortcuts_page",
+    ":chromeos_shortcuts_page",
+    ":icons",
+    ":input_key",
+    ":shortcut_customization_app",
+    ":shortcut_customization_fonts_css",
+    ":shortcut_input",
+  ]
+}
+
 js_library("accelerator_edit_dialog") {
   deps = [
     ":accelerator_view",
@@ -98,12 +118,6 @@ js_library("chromeos_shortcuts_page") {
     ":shortcut_input",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args
-  deps = [ ":shortcut_customization_app" ]
 }
 
 js_library("icons") {
