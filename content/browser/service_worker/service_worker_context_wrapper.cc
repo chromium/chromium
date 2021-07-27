@@ -395,9 +395,13 @@ void ServiceWorkerContextWrapper::OnStarted(
     const blink::ServiceWorkerToken& token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // TODO(crbug.com/1199077): Update this when ServiceWorkerContextCoreObserver
+  // implements StorageKey.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
       version_id,
-      ServiceWorkerRunningInfo(script_url, scope, process_id, token)));
+      ServiceWorkerRunningInfo(script_url, scope,
+                               blink::StorageKey(url::Origin::Create(scope)),
+                               process_id, token)));
   DCHECK(insertion_result.second);
 
   const auto& running_info = insertion_result.first->second;

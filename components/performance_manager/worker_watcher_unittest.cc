@@ -31,6 +31,7 @@
 #include "content/public/test/fake_service_worker_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -411,8 +412,9 @@ void TestServiceWorkerContext::StartServiceWorker(int64_t version_id,
   for (auto& observer : observer_list_) {
     observer.OnVersionStartedRunning(
         version_id, content::ServiceWorkerRunningInfo(
-                        worker_url, scope_url, worker_process_id,
-                        blink::ServiceWorkerToken()));
+                        worker_url, scope_url,
+                        blink::StorageKey(url::Origin::Create(scope_url)),
+                        worker_process_id, blink::ServiceWorkerToken()));
   }
 }
 
