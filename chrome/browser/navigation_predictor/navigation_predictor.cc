@@ -46,6 +46,7 @@ NavigationPredictor::NavigationPredictor(
           render_frame_host,
           std::move(receiver)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(render_frame_host->GetPage().IsPrimary());
 
   ukm_recorder_ = ukm::UkmRecorder::Get();
   ukm_source_id_ = render_frame_host->GetMainFrame()->GetPageUkmSourceId();
@@ -59,6 +60,7 @@ void NavigationPredictor::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
+  DCHECK(render_frame_host->GetPage().IsPrimary());
 
   // Only valid for the main frame.
   if (render_frame_host->GetParent())
@@ -95,6 +97,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     std::vector<blink::mojom::AnchorElementMetricsPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
+  DCHECK(render_frame_host()->GetPage().IsPrimary());
 
   // Create the AnchorsData object for this WebContents if it doesn't already
   // exist. Note that NavigationPredictor only runs on the main frame, but get
@@ -164,6 +167,7 @@ void NavigationPredictor::ReportAnchorElementClick(
     blink::mojom::AnchorElementClickPtr click) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
+  DCHECK(render_frame_host()->GetPage().IsPrimary());
 
   clicked_count_++;
   if (clicked_count_ > kMaxClicksTracked)
@@ -194,6 +198,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     std::vector<blink::mojom::AnchorElementEnteredViewportPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
+  DCHECK(render_frame_host()->GetPage().IsPrimary());
 
   if (elements.empty()) {
     return;

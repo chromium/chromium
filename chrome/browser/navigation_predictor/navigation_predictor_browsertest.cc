@@ -28,6 +28,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -602,6 +603,86 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Incognito) {
       NavigationPredictorKeyedServiceFactory::GetForProfile(
           incognito->profile());
   EXPECT_EQ(nullptr, incognito_service);
+}
+
+class NavigationPredictorPrerenderBrowserTest
+    : public NavigationPredictorBrowserTest {
+ public:
+  NavigationPredictorPrerenderBrowserTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &NavigationPredictorPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~NavigationPredictorPrerenderBrowserTest() override = default;
+  NavigationPredictorPrerenderBrowserTest(
+      const NavigationPredictorPrerenderBrowserTest&) = delete;
+
+  NavigationPredictorPrerenderBrowserTest& operator=(
+      const NavigationPredictorPrerenderBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    test_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    test_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/navigation_predictor");
+    test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    prerender_test_helper_.SetUpOnMainThread(&test_server_);
+    ASSERT_TRUE(test_server_.Start());
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::EmbeddedTestServer* test_server() { return &test_server_; }
+
+ private:
+  net::EmbeddedTestServer test_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+// Test that prerendering doesn't create a predictor object and doesn't affect
+// the primary page's behavior.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorPrerenderBrowserTest,
+                       PrerenderingDontCreatePredictor) {
+  auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  ResetUKM();
+
+  // Navigate to an initial page.
+  const GURL& url = test_server()->GetURL("/simple_page_with_anchors.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  WaitLinkEnteredViewport(1);
+
+  using AnchorEntry = ukm::builders::NavigationPredictorAnchorElementMetrics;
+  auto anchor_entries =
+      test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
+
+  // Start prerendering. This shouldn't create a NavigationPredictor instance.
+  // If it happens, the constructor of NavigationPredictor is called for the
+  // non-primary page and the DCHECK there should fail.
+  int host_id = prerender_test_helper().AddPrerender(url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // Make sure the prerendering doesn't log any anchors.
+  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(2u, anchor_entries.size());
+
+  ResetUKM();
+
+  // Activate the prerendered frame.
+  prerender_test_helper().NavigatePrimaryPage(url);
+  EXPECT_TRUE(host_observer.was_activated());
+  WaitLinkEnteredViewport(1);
+
+  // Make sure the activating logs anchors correctly.
+  anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);
+  EXPECT_EQ(4u, anchor_entries.size());
 }
 
 }  // namespace
