@@ -9167,6 +9167,21 @@
             ]
         }
     ],
+    "WebAuthenticationCableSecondFactorV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAuthenticationCableSecondFactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebNotesStylize": [
         {
             "platforms": [
