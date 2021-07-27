@@ -30,13 +30,15 @@ def _get_bots(swarming_server, pool, cache):
   return [bot['bot_id'] for bot in json.loads(subprocess.check_output(cmd))]
 
 
-def _trigger_clobber(swarming_server, pool, cache, bot, mount_rel_path,
+def _trigger_clobber(swarming_server, pool, realm, cache, bot, mount_rel_path,
                      dry_run):
   cmd = [
       _SWARMING_CLIENT,
       'trigger',
       '-S',
       swarming_server,
+      '-realm',
+      realm,
       '-dimension',
       'pool=' + pool,
       '-dimension',
@@ -84,6 +86,7 @@ def add_common_args(argument_parser):
 
 def clobber_caches(swarming_server,
                    pool,
+                   realm,
                    cache,
                    mount_rel_path,
                    dry_run,
@@ -100,6 +103,7 @@ def clobber_caches(swarming_server,
     * swarming_server - The swarming_server instance to lookup bots to clobber
       caches on.
     * pool - The pool of machines to lookup bots to clobber caches on.
+    * realm - The realm to trigger tasks into.
     * cache - The name of the cache to clobber.
     * mount_rel_path - The relative path to mount the cache to when clobbering.
     * dry_run - Whether a dry-run should be performed where the commands that
@@ -123,4 +127,5 @@ def clobber_caches(swarming_server,
     return 1
 
   for bot in bots:
-    _trigger_clobber(swarming_server, pool, cache, bot, mount_rel_path, dry_run)
+    _trigger_clobber(swarming_server, pool, realm, cache, bot, mount_rel_path,
+                     dry_run)
