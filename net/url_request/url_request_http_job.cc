@@ -398,15 +398,10 @@ void URLRequestHttpJob::StartTransaction() {
   if (network_delegate) {
     OnCallToDelegate(
         NetLogEventType::NETWORK_DELEGATE_BEFORE_START_TRANSACTION);
-    // The NetworkDelegate must watch for OnRequestDestroyed and not modify
-    // |extra_headers| after it's called.
-    // TODO(mattm): change the API to remove the out-params and take the
-    // results as params of the callback.
     int rv = network_delegate->NotifyBeforeStartTransaction(
-        request_,
+        request_, request_info_.extra_headers,
         base::BindOnce(&URLRequestHttpJob::NotifyBeforeStartTransactionCallback,
-                       weak_factory_.GetWeakPtr()),
-        &request_info_.extra_headers);
+                       weak_factory_.GetWeakPtr()));
     // If an extension blocks the request, we rely on the callback to
     // MaybeStartTransactionInternal().
     if (rv == ERR_IO_PENDING)
@@ -417,10 +412,14 @@ void URLRequestHttpJob::StartTransaction() {
   StartTransactionInternal();
 }
 
-void URLRequestHttpJob::NotifyBeforeStartTransactionCallback(int result) {
+void URLRequestHttpJob::NotifyBeforeStartTransactionCallback(
+    int result,
+    const absl::optional<HttpRequestHeaders>& headers) {
   // The request should not have been cancelled or have already completed.
   DCHECK(!is_done());
 
+  if (headers)
+    request_info_.extra_headers = headers.value();
   MaybeStartTransactionInternal(result);
 }
 

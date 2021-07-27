@@ -437,9 +437,10 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
                          CompletionOnceCallback callback,
                          GURL* new_url) override;
 
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
 
   int OnHeadersReceived(
       URLRequest* request,
@@ -538,13 +539,19 @@ int BlockingNetworkDelegate::OnBeforeURLRequest(URLRequest* request,
 
 int BlockingNetworkDelegate::OnBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   // TestNetworkDelegate always completes synchronously.
   CHECK_NE(ERR_IO_PENDING, TestNetworkDelegate::OnBeforeStartTransaction(
-                               request, base::NullCallback(), headers));
+                               request, headers, base::NullCallback()));
 
-  return MaybeBlockStage(ON_BEFORE_SEND_HEADERS, std::move(callback));
+  return MaybeBlockStage(
+      ON_BEFORE_SEND_HEADERS,
+      base::BindOnce(
+          [](OnBeforeStartTransactionCallback callback, int result) {
+            std::move(callback).Run(result, absl::nullopt);
+          },
+          std::move(callback)));
 }
 
 int BlockingNetworkDelegate::OnHeadersReceived(
@@ -4793,13 +4800,19 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
     return RunCallbackAsynchronously(request, std::move(callback));
   }
 
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override {
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override {
     // TestNetworkDelegate always completes synchronously.
     CHECK_NE(ERR_IO_PENDING, TestNetworkDelegate::OnBeforeStartTransaction(
-                                 request, base::NullCallback(), headers));
-    return RunCallbackAsynchronously(request, std::move(callback));
+                                 request, headers, base::NullCallback()));
+    return RunCallbackAsynchronously(
+        request, base::BindOnce(
+                     [](OnBeforeStartTransactionCallback callback, int result) {
+                       std::move(callback).Run(result, absl::nullopt);
+                     },
+                     std::move(callback)));
   }
 
   int OnHeadersReceived(
