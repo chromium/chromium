@@ -849,8 +849,6 @@ Channel::DispatchResult Channel::TryDispatchMessage(
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
               "Mojo dispatch message");
 
-  bool did_consume_message = false;
-
   // We have at least enough data available for a LegacyHeader.
   const Message::LegacyHeader* legacy_header =
       reinterpret_cast<const Message::LegacyHeader*>(buffer.data());
@@ -925,12 +923,8 @@ Channel::DispatchResult Channel::TryDispatchMessage(
                           std::move(handles))) {
       return DispatchResult::kError;
     }
-    did_consume_message = true;
-  } else if (deferred) {
-    did_consume_message = true;
-  } else if (delegate_) {
+  } else if (!deferred && delegate_) {
     delegate_->OnChannelMessage(payload, payload_size, std::move(handles));
-    did_consume_message = true;
   }
 
   *size_hint = legacy_header->num_bytes;
