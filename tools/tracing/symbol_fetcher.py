@@ -16,6 +16,13 @@ import metadata_extractor
 from metadata_extractor import OSName
 
 
+ANDROID_86_FOLDERS = {'x86', 'x86_64', 'next-x86', 'next-x86_64'}
+ANDROID_ARM_FOLDERS = {'arm', 'arm_64', 'next-arm', 'next-arm_64'}
+GCS_SYMBOLS = {
+    'symbols.zip', 'Monochrome_symbols.zip', 'Monochrome_symbols-secondary.zip'
+}
+
+
 def GetTraceBreakpadSymbols(cloud_storage_bucket, metadata,
                             breakpad_output_dir):
   """Fetch trace symbols from GCS and convert to breakpad format, if needed.
@@ -40,11 +47,11 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket, metadata,
     raise Exception('Failed to extract trace version number: ' +
                     metadata.trace_file)
 
-  # Extract symbols by platform.
+  # Obtain breakpad symbols by platform.
   if metadata.os_name == OSName.ANDROID:
-    _FetchAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
+    _GetAndroidBreakpad(cloud_storage_bucket, metadata, breakpad_output_dir)
   elif metadata.os_name == OSName.WINDOWS:
-    _FetchWindowsSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
+    _GetWindowsBreakpad(cloud_storage_bucket, metadata, breakpad_output_dir)
   elif metadata.os_name == OSName.LINUX or metadata.os_name == OSName.MAC:
     _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
   else:
@@ -55,11 +62,101 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket, metadata,
                os.path.abspath(breakpad_output_dir))
 
 
-def _FetchAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
-  """Fetch and extract Android symbolization file.
+def _GetAndroidBreakpad(cloud_storage_bucket, metadata, breakpad_output_dir):
+  """Fetch Android symbols from GCS and convert them to breakpad format.
+
+  Args:
+    cloud_storage_bucket: bucket in cloud storage where symbols reside.
+    metadata: MetadataExtractor class that contains necessary trace file
+      metadata for fetching its symbol file.
+    breakpad_output_dir: local path to store trace symbol breakpad file.
+
+  Raises:
+    Exception: if fails to extract architecture or version code from trace.
+    RuntimeError: if fails to determine correct GCS folder.
   """
-  # TODO(rhuckleberry): Implement android fetching.
-  raise Exception('Android platform is not currently supported.')
+  if metadata.architecture is None:
+    raise Exception('Failed to extract architecture: ' + metadata._trace_file)
+  # Version code should exist for official builds.
+  if metadata.version_code is None:
+    raise Exception('Failed to extract version code: ' + metadata._trace_file)
+
+  # Determine GCS folder.
+  logging.debug('Determining Android GCS folder.')
+  possible_arch_folders = set()
+  if 'arm' in metadata.architecture:
+    possible_arch_folders = ANDROID_ARM_FOLDERS
+  else:
+    possible_arch_folders = ANDROID_86_FOLDERS
+
+  gcs_folder = None
+  for arch_folder in possible_arch_folders:
+    possible_gcs_folder = ('android-B0urB0N/' + metadata.version_number + '/' +
+                           arch_folder)
+    # The correct folder's 'version_codes.txt' file, which contains all the
+    # folder's Chrome release version codes, will match the trace's version
+    # code.
+    if _IsAndroidVersionCodeInFile(cloud_storage_bucket, metadata.version_code,
+                                   possible_gcs_folder, breakpad_output_dir):
+      gcs_folder = possible_gcs_folder
+      break
+
+  if gcs_folder is None:
+    raise RuntimeError('Failed to determine architecture folder: ' +
+                       metadata._trace_file)
+  logging.debug('Determined correct architecture folder is: ' + gcs_folder)
+
+  # Fetch and unzip GCS symbol files.
+  logging.info('Fetching Android symbols from GCS.')
+  did_fetch_symbol_file = False
+  for symbol in GCS_SYMBOLS:
+    # Explicitly use backslashes for GCS paths to ensure that they are valid
+    # on windows machines that use forward slashes. Local paths use python
+    # |os.path.join| to utilize the correct slash for the system.
+    gcs_symbol_file = gcs_folder + '/' + symbol
+    symbol_zip_file = os.path.join(breakpad_output_dir, symbol)
+    if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_symbol_file,
+                                 symbol_zip_file, breakpad_output_dir):
+      logging.warning('Failed to find symbols on GCS: ' + gcs_symbol_file)
+    else:
+      did_fetch_symbol_file = True
+
+  if not did_fetch_symbol_file:
+    raise Exception('No symbol files could be found on GCS:' + gcs_folder)
+
+
+def _IsAndroidVersionCodeInFile(cloud_storage_bucket, version_code,
+                                possible_gcs_folder, local_folder):
+  """Determines if Android version code is in GCS 'version_codes.txt' file.
+
+  The 'version_codes.txt' files contains all the version codes of the Chrome
+  releases that were created from the current build directory. We determine
+  the correct build directory to download symbols from by checking if the
+  trace's version code matches any version code's in the build directory's
+  'version_codes.txt' file. The trace's version code should uniquely match
+  to one build directory.
+
+  Args:
+    cloud_storage_bucket: bucket in cloud storage where symbols reside.
+    version_code: trace's version code.
+    possible_gcs_folder: GCS build directory containing 'version_codes.txt'
+      file.
+    local_folder: local folder to download 'version_codes.txt' file to.
+
+  Returns:
+    True if version code in gcs folder's 'version_codes.txt' file;
+    false otherwise.
+  """
+  gcs_version_code_file = possible_gcs_folder + '/version_codes.txt'
+  local_version_code_file = os.path.join(local_folder, 'version_codes.txt')
+  if not _FetchGCSFile(cloud_storage_bucket, gcs_version_code_file,
+                       local_version_code_file):
+    logging.debug('Failed to download version code file: ' +
+                  gcs_version_code_file)
+    return False
+
+  with open(local_version_code_file) as version_file:
+    return version_code in version_file.read()
 
 
 def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
@@ -77,6 +174,7 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
     ValueError: if linux trace is of 32 bit bitness.
   """
   # Determine GCS folder.
+  folder = None
   if metadata.os_name == OSName.LINUX:
     if metadata.bitness == '32':
       raise ValueError('32 bit Linux traces are not supported.')
@@ -94,29 +192,48 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
                     (metadata.os_name, metadata.trace_file))
 
   # Build Google Cloud Storage path to the symbols.
-  gsc_folder = 'desktop-*/' + metadata.version_number + '/' + folder
-  gcs_file = gsc_folder + '/breakpad-info'
+  assert folder is not None
+  gcs_folder = 'desktop-*/' + metadata.version_number + '/' + folder
+  gcs_file = gcs_folder + '/breakpad-info'
   gcs_zip_file = gcs_file + '.zip'
 
   # Local path to downloaded symbols.
-  breakpad_zip_file = breakpad_output_dir + '/breakpad-info.zip'
+  breakpad_zip = os.path.join(breakpad_output_dir, 'breakpad-info.zip')
 
-  # Fetch symbol files from GCS.
-  # Some version, like mac, don't have the .zip extension on GCS.
-  if not _FetchGCSFile(cloud_storage_bucket, gcs_zip_file, breakpad_zip_file):
-    if not _FetchGCSFile(cloud_storage_bucket, gcs_file, breakpad_zip_file):
-      raise Exception('Failed to find symbols on GCS: ' + gcs_file + '[.zip]')
+  # Fetch and unzip symbol files from GCS. Some version, like mac,
+  # don't have the .zip extension on GCS. Assumes that 'breakpad-info'
+  # file (without .zip extension) from GCS is a zip file.
+  if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_zip_file, breakpad_zip,
+                               breakpad_output_dir):
+    if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_file, breakpad_zip,
+                                 breakpad_output_dir):
+      raise Exception('Failed to find symbols on GCS: %s[.zip].' % (gcs_file))
 
-  # Assumes that 'breakpad-info' file (without .zip extension) from GCS
-  # is a zip file.
-  _UnzipAndRenameBreakpadFiles(breakpad_zip_file, breakpad_output_dir)
+  RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
 
 
-def _FetchWindowsSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
+def _GetWindowsBreakpad(cloud_storage_bucket, metadata, breakpad_output_dir):
   """Fetch and extract Windows symbolization file.
   """
   # TODO(rhuckleberry): Implement windows fetching.
-  raise Exception('Windows platform is not currently supported.')
+  raise Exception(
+      'Windows platform is not currently supported for symbolization.')
+
+
+def _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_file, gcs_output,
+                          output_dir):
+  """Fetch file from GCS to local |gcs_output|, then unzip it into |output_dir|.
+
+  Returns:
+    True if successfully fetches and unzips file; false, otherwise.
+
+  Raises:
+    zipfile.BadZipfile: if file is not a zip file
+  """
+  if _FetchGCSFile(cloud_storage_bucket, gcs_file, gcs_output):
+    _UnzipFile(gcs_output, output_dir)
+    return True
+  return False
 
 
 def _FetchGCSFile(cloud_storage_bucket, gcs_file, output_file):
@@ -138,20 +255,14 @@ def _FetchGCSFile(cloud_storage_bucket, gcs_file, output_file):
   return False
 
 
-def _UnzipAndRenameBreakpadFiles(breakpad_zip_file, breakpad_output_dir):
-  """Unzips and renames breakpad files.
+def _UnzipFile(zip_file, output_dir):
+  """Unzips file into provided output directory.
 
-  Args:
-    breakpad_zip_file: local symbol zip file.
-    breakpad_output_dir: local path to store trace symbol breakpad file.
+  Raises:
+    zipfile.BadZipfile: if file is not a zip file
   """
-  # Unzip the breakpad file to |breakpad_dir|.
-  breakpad_dir = os.path.dirname(breakpad_zip_file)
-  with zipfile.ZipFile(breakpad_zip_file, 'r') as zip_file:
-    zip_file.extractall(breakpad_dir)
-
-  # Rename breakpad files.
-  RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
+  with zipfile.ZipFile(zip_file, 'r') as zip_f:
+    zip_f.extractall(output_dir)
 
 
 def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
@@ -172,9 +283,13 @@ def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
     AssertionError: if a file's module_id is None or repeated by
       another file.
   """
+  # TODO(rhuckleberry): Move this function to the script
+  # |breakpad_file_extractor_unittests.py|.
+
   # Runs on every directory in the subtree. Scans directories from top-down
   # (root to leaves) so that we don't rename files multiple times in the common
   # case where |breakpad_dir| = |breakpad_output_dir|.
+  logging.debug('Renaming breakpad files.')
   for subdir_path, _, filenames in os.walk(breakpad_dir, topdown=True):
     for filename in filenames:
       file_path = os.path.abspath(os.path.join(subdir_path, filename))
@@ -226,6 +341,9 @@ def _ExtractModuleIdIfValidBreakpad(file_path):
   Returns:
     Module id if file is a valid breakpad file; None, otherwise.
   """
+  # TODO(rhuckleberry): Move this function to the script
+  # |breakpad_file_extractor_unittests.py|.
+
   module_id = None
   with open(file_path, 'r') as file_handle:
     # Reads a maximum of 200 bytes/characters. Malformed file or binary will

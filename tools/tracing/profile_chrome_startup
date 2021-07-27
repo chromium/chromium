@@ -57,6 +57,11 @@ def _CreateOptionParser():
 
   parser.add_option_group(chrome_startup_tracing_agent.add_options(parser))
   parser.add_option_group(flags.OutputOptions(parser))
+  # TODO(rhuckleberry): Clean up flags. Move the tracing flags into an option
+  # group in flag_utils. Move catapult flags.py flags into flag_utils and stop
+  # calling flags.py. Rename |AddLoggingOptions| in flag_utils to a more
+  # general name to hold the view and output file flags. Add flag for whether
+  # we should symbolize the trace or not.
   parser.add_option_group(flag_utils.SymbolizeOptions(parser))
 
   return parser
