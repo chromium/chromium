@@ -645,8 +645,7 @@ void MainUIWindow::InsertLineInListView(wchar_t* debug_message) {
   struct tm time = {0};
   localtime_s(&time, &time_temp);
 
-  size_t return_code;
-  return_code = wcsftime(message_time, kSizeTime, L"[%H:%M:%S] ", &time);
+  wcsftime(message_time, kSizeTime, L"[%H:%M:%S] ", &time);
 
   wcscat_s(message_time, size_message_with_time, debug_message);
 
