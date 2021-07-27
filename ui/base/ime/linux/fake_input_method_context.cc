@@ -15,6 +15,10 @@ bool FakeInputMethodContext::DispatchKeyEvent(
   return false;
 }
 
+bool FakeInputMethodContext::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
+  return false;
+}
+
 void FakeInputMethodContext::Reset() {
 }
 

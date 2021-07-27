@@ -28,6 +28,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
 
   // Overridden from ui::LinuxInputMethodContext
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
+  bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
   void Reset() override;
   void Focus() override;

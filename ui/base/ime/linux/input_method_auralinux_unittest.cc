@@ -17,6 +17,7 @@
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/events/event.h"
+#include "ui/events/event_utils.h"
 
 namespace ui {
 namespace {
@@ -109,6 +110,19 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
     actions_.clear();
     return eat_key_;
+  }
+
+  bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override {
+    const auto* properties = key_event.properties();
+    // For the purposes of tests if kPropertyKeyboardImeFlag is not
+    // explicitly set assume the event is not a key event.
+    if (!properties)
+      return false;
+    auto it = properties->find(kPropertyKeyboardImeFlag);
+    if (it == properties->end()) {
+      return false;
+    }
+    return !(it->second[0] & kPropertyKeyboardImeIgnoredFlag);
   }
 
   void Reset() override {}
@@ -519,6 +533,24 @@ TEST_F(InputMethodAuraLinuxTest, DeadKeyTest) {
 TEST_F(InputMethodAuraLinuxTest, DeadKeySimpleContextTest) {
   DeadKeyTest(TEXT_INPUT_TYPE_NONE, input_method_auralinux_, context_simple_,
               test_result_);
+}
+
+// Wayland may send both a peek key event and a key event for key events not
+// consumed by IME. In that case, the peek key should not be dispatched.
+TEST_F(InputMethodAuraLinuxTest, MockWaylandEventsTest) {
+  KeyEvent peek_key(ET_KEY_PRESSED, VKEY_TAB, 0);
+  ui::Event::Properties properties;
+  properties[ui::kPropertyKeyboardImeFlag] =
+      std::vector<uint8_t>(ui::kPropertyKeyboardImeIgnoredFlag);
+  peek_key.SetProperties(properties);
+  input_method_auralinux_->DispatchKeyEvent(&peek_key);
+  // No expected action for peek key events.
+  test_result_->Verify();
+
+  KeyEvent key(ET_KEY_PRESSED, VKEY_TAB, 0);
+  input_method_auralinux_->DispatchKeyEvent(&key);
+  test_result_->ExpectAction("keydown:9");
+  test_result_->Verify();
 }
 
 TEST_F(InputMethodAuraLinuxTest, MultiCommitsTest) {

@@ -88,18 +88,6 @@ bool IsImeEnabled() {
   return false;
 }
 
-// Returns true if this event comes from extended_keyboard::peek_key.
-// See also WaylandEventSource::OnKeyboardKeyEvent about how the flag is set.
-bool IsPeekKeyEvent(const ui::KeyEvent& key_event) {
-  const auto* properties = key_event.properties();
-  if (!properties)
-    return true;
-  auto it = properties->find(kPropertyKeyboardImeFlag);
-  if (it == properties->end())
-    return true;
-  return !(it->second[0] & kPropertyKeyboardImeIgnoredFlag);
-}
-
 }  // namespace
 
 WaylandInputMethodContext::WaylandInputMethodContext(
@@ -157,6 +145,16 @@ bool WaylandInputMethodContext::DispatchKeyEvent(
   if (!composed.empty())
     ime_delegate_->OnCommit(composed);
   return true;
+}
+
+bool WaylandInputMethodContext::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
+  const auto* properties = key_event.properties();
+  if (!properties)
+    return true;
+  auto it = properties->find(kPropertyKeyboardImeFlag);
+  if (it == properties->end())
+    return true;
+  return !(it->second[0] & kPropertyKeyboardImeIgnoredFlag);
 }
 
 void WaylandInputMethodContext::UpdatePreeditText(

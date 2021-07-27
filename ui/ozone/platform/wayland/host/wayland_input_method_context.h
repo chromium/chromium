@@ -39,6 +39,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // LinuxInputMethodContext overrides:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
+  // Returns true if this event comes from extended_keyboard::peek_key.
+  // See also WaylandEventSource::OnKeyboardKeyEvent about how the flag is set.
+  bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;

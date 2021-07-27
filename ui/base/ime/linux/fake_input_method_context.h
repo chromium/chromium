@@ -19,6 +19,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
 
   // Overriden from ui::LinuxInputMethodContext
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override;
+  bool IsPeekKeyEvent(const ui::KeyEvent& key_event) override;
   void Reset() override;
   void Focus() override;
   void Blur() override;

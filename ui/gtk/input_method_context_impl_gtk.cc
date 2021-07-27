@@ -157,6 +157,12 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
                                    keycode, state, group);
 }
 
+bool InputMethodContextImplGtk::IsPeekKeyEvent(const ui::KeyEvent& key_event) {
+  // Peek events are only sent to make Lacros work with Wayland. Gtk does not
+  // send peek events.
+  return false;
+}
+
 void InputMethodContextImplGtk::Reset() {
   gtk_im_context_reset(gtk_context_);
 

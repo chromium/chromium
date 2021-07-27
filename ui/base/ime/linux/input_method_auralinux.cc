@@ -106,9 +106,23 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   }
   ime_filtered_key_event_.reset();
 
-  // If no text input client, do nothing.
-  if (!GetTextInputClient())
+  LinuxInputMethodContext* context =
+      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
+              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
+          ? context_.get()
+          : context_simple_.get();
+
+  // If no text input client, dispatch immediately.
+  if (!GetTextInputClient()) {
+    // For Wayland, wl_keyboard::key will be sent following the peek key event
+    // if the event is not consumed by IME, so peek key events should not be
+    // dispatched. crbug.com/1225747
+    if (context->IsPeekKeyEvent(*event)) {
+      ime_filtered_key_event_ = std::move(*event);
+      return ui::EventDispatchDetails();
+    }
     return DispatchKeyEventPostIME(event);
+  }
 
   if (IsEventFromVK(*event)) {
     // Faked key events that are sent from input.ime.sendKeyEvents.
@@ -130,11 +144,6 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     suppress_non_key_input_until_ = base::TimeTicks::UnixEpoch();
     composition_changed_ = false;
     result_text_.clear();
-    LinuxInputMethodContext* context =
-        text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-                text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
-            ? context_.get()
-            : context_simple_.get();
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
     filtered = context->DispatchKeyEvent(*event);
   }
