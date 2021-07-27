@@ -4671,6 +4671,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHandwritingGestureEditingName,
      flag_descriptions::kHandwritingGestureEditingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kHandwritingGestureEditing)},
+    {"handwriting-legacy-recognition",
+     flag_descriptions::kHandwritingLegacyRecognitionName,
+     flag_descriptions::kHandwritingLegacyRecognitionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kHandwritingLegacyRecognition)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"block-insecure-private-network-requests",

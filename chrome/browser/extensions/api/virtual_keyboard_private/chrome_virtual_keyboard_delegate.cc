@@ -522,6 +522,10 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
                           base::FeatureList::IsEnabled(
                               chromeos::features::kHandwritingGestureEditing)));
   features.Append(GenerateFeatureFlag(
+      "handwritinglegacyrecognition",
+      base::FeatureList::IsEnabled(
+          chromeos::features::kHandwritingLegacyRecognition)));
+  features.Append(GenerateFeatureFlag(
       "multiword", chromeos::features::IsAssistiveMultiWordEnabled()));
   features.Append(GenerateFeatureFlag(
       "floatingkeyboarddefault",

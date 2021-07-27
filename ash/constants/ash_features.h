@@ -210,6 +210,8 @@ extern const base::Feature kGesturePropertiesDBusService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHandwritingGestureEditing;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHandwritingLegacyRecognition;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppBackgroundPage;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kHelpAppDiscoverTab;
 COMPONENT_EXPORT(ASH_CONSTANTS)

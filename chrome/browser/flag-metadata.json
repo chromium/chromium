@@ -3334,6 +3334,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "handwriting-legacy-recognition",
+    "owners": [ "essential-inputs-team@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "happiness-tracking-surveys-for-desktop-demo",
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI

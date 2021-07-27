@@ -1409,6 +1409,11 @@ const char kHandwritingGestureEditingName[] = "Handwriting Gestures Editing";
 const char kHandwritingGestureEditingDescription[] =
     "Enables editing with handwriting gestures within the virtual keyboard.";
 
+const char kHandwritingLegacyRecognitionName[] =
+    "Handwriting Legacy Recognition";
+const char kHandwritingLegacyRecognitionDescription[] =
+    "Enables new on-device recognition for handwriting legacy paths.";
+
 const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
 const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "

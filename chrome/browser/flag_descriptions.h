@@ -814,6 +814,9 @@ extern const char kGpuRasterizationDescription[];
 extern const char kHandwritingGestureEditingName[];
 extern const char kHandwritingGestureEditingDescription[];
 
+extern const char kHandwritingLegacyRecognitionName[];
+extern const char kHandwritingLegacyRecognitionDescription[];
+
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 
