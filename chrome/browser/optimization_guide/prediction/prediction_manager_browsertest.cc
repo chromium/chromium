@@ -171,7 +171,9 @@ enum class PredictionModelsFetcherRemoteResponseType {
   kSuccessfulWithModelsAndNoFeatures = 2,
   kSuccessfulWithValidModelFile = 3,
   kSuccessfulWithInvalidModelFile = 4,
-  kUnsuccessful = 5,
+  kSuccessfulWithValidModelFileAndInvalidAdditionalFiles = 5,
+  kSuccessfulWithValidModelFileAndValidAdditionalFiles = 6,
+  kUnsuccessful = 7,
 };
 
 // A WebContentsObserver that asks whether an optimization target can be
@@ -251,6 +253,10 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     https_url_with_content_ = https_server_->GetURL("/english_page.html");
     https_url_without_content_ = https_server_->GetURL("/empty.html");
     model_file_url_ = models_server_->GetURL("/signed_valid_model.crx3");
+    model_file_with_good_additional_file_url_ =
+        models_server_->GetURL("/additional_file_exists.crx3");
+    model_file_with_nonexistent_additional_file_url_ =
+        models_server_->GetURL("/additional_file_doesnt_exist.crx3");
 
     // Set up an OptimizationGuideKeyedService consumer.
     consumer_ = std::make_unique<OptimizationGuideConsumerWebContentsObserver>(
@@ -334,7 +340,13 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleGetModelsRequest(
       const net::test_server::HttpRequest& request) {
+    // Returning nullptr will cause the test server to fallback to serving the
+    // file from the test data directory.
     if (request.GetURL() == model_file_url_)
+      return nullptr;
+    if (request.GetURL() == model_file_with_good_additional_file_url_)
+      return nullptr;
+    if (request.GetURL() == model_file_with_nonexistent_additional_file_url_)
       return nullptr;
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
@@ -377,6 +389,16 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
       get_models_response->mutable_models(0)->mutable_model()->set_download_url(
           model_file_url_.spec());
     } else if (response_type_ ==
+               PredictionModelsFetcherRemoteResponseType::
+                   kSuccessfulWithValidModelFileAndInvalidAdditionalFiles) {
+      get_models_response->mutable_models(0)->mutable_model()->set_download_url(
+          model_file_with_nonexistent_additional_file_url_.spec());
+    } else if (response_type_ ==
+               PredictionModelsFetcherRemoteResponseType::
+                   kSuccessfulWithValidModelFileAndValidAdditionalFiles) {
+      get_models_response->mutable_models(0)->mutable_model()->set_download_url(
+          model_file_with_good_additional_file_url_.spec());
+    } else if (response_type_ ==
                PredictionModelsFetcherRemoteResponseType::kUnsuccessful) {
       response->set_code(net::HTTP_NOT_FOUND);
     }
@@ -388,6 +410,8 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   }
 
   GURL model_file_url_;
+  GURL model_file_with_good_additional_file_url_;
+  GURL model_file_with_nonexistent_additional_file_url_;
   GURL https_url_with_content_, https_url_without_content_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
@@ -758,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   model_file_observer()->set_model_file_received_callback(base::BindOnce(
       [](base::RunLoop* run_loop, proto::OptimizationTarget optimization_target,
-         const ModelInfo& model_file) {
+         const ModelInfo& model_info) {
         EXPECT_EQ(optimization_target,
                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
         run_loop->Quit();
@@ -788,6 +812,92 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
+                       TestSuccessfulModelFileFlowWithAdditionalFile) {
+  base::HistogramTester histogram_tester;
+
+  SetResponseType(PredictionModelsFetcherRemoteResponseType::
+                      kSuccessfulWithValidModelFileAndValidAdditionalFiles);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  model_file_observer()->set_model_file_received_callback(base::BindOnce(
+      [](base::RunLoop* run_loop, proto::OptimizationTarget optimization_target,
+         const ModelInfo& model_info) {
+        EXPECT_EQ(optimization_target,
+                  proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+        ASSERT_EQ(1U, model_info.GetAdditionalFiles().size());
+        EXPECT_TRUE(model_info.GetAdditionalFiles().begin()->IsAbsolute());
+        EXPECT_EQ(FILE_PATH_LITERAL("good_additional_file.txt"),
+                  model_info.GetAdditionalFiles().begin()->BaseName().value());
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  // Registering should initiate the fetch and receive a response with a model
+  // containing a download URL and then subsequently downloaded.
+  RegisterModelFileObserverWithKeyedService();
+
+  // Wait until the observer receives the file. We increase the timeout to 60
+  // seconds here since the file is on the larger side.
+  {
+    base::test::ScopedRunLoopTimeout file_download_timeout(
+        FROM_HERE, base::TimeDelta::FromSeconds(60));
+    run_loop->Run();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kSuccess, 1);
+
+  // No error when moving the file so there will be no record.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
+                       TestSuccessfulModelFileFlowWithInvalidAdditionalFile) {
+  base::HistogramTester histogram_tester;
+
+  SetResponseType(PredictionModelsFetcherRemoteResponseType::
+                      kSuccessfulWithValidModelFileAndInvalidAdditionalFiles);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  model_file_observer()->set_model_file_received_callback(
+      base::BindOnce([](proto::OptimizationTarget optimization_target,
+                        const ModelInfo& model_info) {
+        // Since the model's additional file is invalid, this callback should
+        // never be run.
+        FAIL();
+      }));
+
+  // Registering should initiate the fetch and receive a response with a model
+  // containing a download URL and then subsequently downloaded.
+  RegisterModelFileObserverWithKeyedService();
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 1);
+  base::RunLoop().RunUntilIdle();
+
+  // The additional file should not have been able to be moved, since it doesn't
+  // exist.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
+      PredictionModelDownloadStatus::kFailedModelFileOtherError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError",
+      std::abs(base::File::Error::FILE_ERROR_NOT_FOUND), 1);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,

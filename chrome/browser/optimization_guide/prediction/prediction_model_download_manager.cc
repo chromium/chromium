@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
@@ -360,14 +361,33 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
   std::vector<std::pair<base::FilePath, base::FilePath>> files_to_move;
   files_to_move.emplace_back(std::make_pair(temp_model_path, store_model_path));
 
+  // Ensure that the attached additional files are actually a set. The
+  // conversion to a set also happens later during processing, but at the very
+  // end. Eliminating duplicates here helps eliminate unneeded file operations
+  // in the next step of processing.
+  base::flat_set<std::string> additional_files_set;
   for (const proto::AdditionalModelFile& add_file :
        model_info.additional_files()) {
+    additional_files_set.insert(add_file.file_path());
+  }
+
+  // Clear all the additional files set by the server so they they can be fully
+  // replaced by absolute paths.
+  model.mutable_model_info()->clear_additional_files();
+
+  for (const std::string& additional_file_path : additional_files_set) {
     base::FilePath temp_add_file_path =
-        unzipped_dir_path.AppendASCII(add_file.file_path());
+        unzipped_dir_path.AppendASCII(additional_file_path);
     base::FilePath store_add_file_path =
-        store_dir.AppendASCII(add_file.file_path());
+        store_dir.AppendASCII(additional_file_path);
+
+    // Make sure the additional file gets moved.
     files_to_move.emplace_back(
         std::make_pair(temp_add_file_path, store_add_file_path));
+
+    // And put its new path in the proto.
+    model.mutable_model_info()->add_additional_files()->set_file_path(
+        FilePathToString(store_add_file_path));
   }
 
   PredictionModelDownloadStatus status =

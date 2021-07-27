@@ -732,11 +732,17 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
                        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                    .has_value());
 
+  base::FilePath additional_file_path =
+      temp_dir().AppendASCII("whatever").AppendASCII("additional_file.txt");
   proto::ModelInfo model_info;
   model_info.set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model_info.set_version(1);
   model_info.mutable_model_metadata()->set_type_url("sometypeurl");
+  model_info.add_additional_files()->set_file_path(
+      FilePathToString(additional_file_path));
+  // An empty file path should be be ignored.
+  model_info.add_additional_files()->set_file_path("");
 
   // Ensure observer is hooked up.
   proto::PredictionModel model1;
@@ -752,6 +758,8 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
   EXPECT_EQ(received_model->GetModelMetadata()->type_url(), "sometypeurl");
   EXPECT_EQ(received_model->GetModelFilePath().BaseName().value(),
             FILE_PATH_LITERAL("whatever"));
+  EXPECT_EQ(received_model->GetAdditionalFiles(),
+            base::flat_set<base::FilePath>{additional_file_path});
 
   // Reset fetcher and make sure version is sent in the new request and not
   // counted as re-loaded or updated.
