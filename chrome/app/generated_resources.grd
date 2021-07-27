@@ -5345,7 +5345,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- Experimental Lacros Infobar-->
       <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE" desc="Message shown when user launches Lacros, an experimental feature.">
-        Experimental browser! May lose data or compromise privacy or security. Please report issues with: Help > "Report an issue...".
+        Experimental (alpha-quality) browser! Some features missing or incomplete. Report issues with: Help > "Report an issue...".
       </message>
 
       <message name="IDS_EXPERIMENTAL_LACROS_WARNING_MESSAGE_PRIMARY" desc="Addendum which is sometimes added to the initial warning message.">
