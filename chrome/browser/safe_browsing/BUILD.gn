@@ -202,6 +202,8 @@ static_library("safe_browsing") {
         "cloud_content_scanning/deep_scanning_utils.h",
         "cloud_content_scanning/file_analysis_request.cc",
         "cloud_content_scanning/file_analysis_request.h",
+        "cloud_content_scanning/file_opening_job.cc",
+        "cloud_content_scanning/file_opening_job.h",
         "cloud_content_scanning/multipart_data_pipe_getter.cc",
         "cloud_content_scanning/multipart_data_pipe_getter.h",
         "cloud_content_scanning/multipart_uploader.cc",

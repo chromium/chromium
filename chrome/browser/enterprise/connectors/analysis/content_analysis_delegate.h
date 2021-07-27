@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_DELEGATE_H_
 
-#include <atomic>
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/post_job.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -24,6 +21,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -137,38 +135,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // keep track of size for large files.
     int64_t size = 0;
     std::string sha256;
-  };
-
-  // Struct to store information required by a synchronized file opening task.
-  struct FileOpeningTask {
-    FileOpeningTask();
-    ~FileOpeningTask();
-
-    safe_browsing::FileAnalysisRequest* request = nullptr;
-    std::atomic_bool taken{false};
-  };
-
-  // Class to encapsulate the process of opening multiple files in parallel.
-  class FileOpeningJob {
-   public:
-    explicit FileOpeningJob(std::vector<FileOpeningTask> tasks);
-    ~FileOpeningJob();
-
-    // Synchronized getter method to read |num_unopened_files_|.
-    size_t num_unopened_files();
-
-    // Processes the next file opening task that hasn't been taken so far.
-    void ProcessNextTask(base::JobDelegate* job_delegate);
-
-    // Returns the maximum number of threads that should be opening files. This
-    // is dependant on the corresponding flags and on the number of remaining
-    // files to open.
-    size_t MaxConcurrentThreads(size_t /*worker_count*/);
-
-   private:
-    std::atomic_size_t num_unopened_files_;
-    std::vector<FileOpeningTask> tasks_;
-    size_t max_threads_flag_;
   };
 
   // Callback used with CreateForWebContents() that informs caller of verdict
@@ -387,10 +353,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
 
   // Owner of the FileOpeningJob responsible for opening files on parallel
   // threads. Always nullptr for non-file content scanning.
-  std::unique_ptr<FileOpeningJob> file_opening_job_;
-
-  // Points to a job initialized with |file_opening_job_| if it is not null.
-  base::JobHandle file_opening_job_handle_;
+  std::unique_ptr<safe_browsing::FileOpeningJob> file_opening_job_;
 
   base::TimeTicks upload_start_time_;
 

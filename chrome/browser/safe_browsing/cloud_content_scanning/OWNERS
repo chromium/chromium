@@ -4,5 +4,6 @@ per-file deep_scanning_utils*=domfc@chromium.org
 per-file deep_scanning_test_utils*=rogerta@chromium.org
 per-file deep_scanning_test_utils*=domfc@chromium.org
 per-file multipart_data_pipe_getter*=domfc@chromium.org
+per-file file_opening_job*=domfc@chromium.org
 
 drubery@chromium.org
