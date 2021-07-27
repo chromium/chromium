@@ -1909,6 +1909,10 @@ crbug.com/957181 external/wpt/resource-timing/nested-context-navigations-iframe.
 # through wpt.fyi
 crbug.com/1218565 external/wpt/resource-timing/TAO-match.html [ Failure Timeout ]
 
+# During work on crbug.com/1171767, we discovered a bug demonstrable through
+# WPT. Marking as a failing test until we update our implementation.
+crbug.com/1223118 external/wpt/resource-timing/initiator-type/link.html [ Failure ]
+
 # Chrome touch-action computation ignores div transforms.
 crbug.com/715148 external/wpt/pointerevents/pointerevent_touch-action-rotated-divs_touch-manual.html [ Skip ]
 
