@@ -57,6 +57,7 @@ group("resources") {
       ":internet_detail_dialog_resources",
       "chromeos:multidevice_setup_resources",
       "chromeos/accessibility:build",
+      "chromeos/audio:resources",
       "chromeos/emoji_picker:resources",
       "chromeos/enterprise_casting:resources",
       "chromeos/launcher_internals:resources",

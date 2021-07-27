@@ -197,6 +197,7 @@
 #include "chrome/browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
+#include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
@@ -782,6 +783,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::AccountMigrationWelcomeUI>;
   if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
     return &NewWebUI<chromeos::AddSupervisionUI>;
+  if (url.host_piece() == chrome::kChromeUIAudioHost)
+    return &NewWebUI<AudioUI>;
   if (url.host_piece() == chrome::kChromeUIBluetoothPairingHost)
     return &NewWebUI<chromeos::BluetoothPairingDialogUI>;
 // TODO(crbug.com/1147032): The certificates settings page is temporarily

@@ -2279,6 +2279,8 @@ static_library("ui") {
       "webui/chromeos/assistant_optin/assistant_optin_ui.h",
       "webui/chromeos/assistant_optin/assistant_optin_utils.cc",
       "webui/chromeos/assistant_optin/assistant_optin_utils.h",
+      "webui/chromeos/audio/audio_ui.cc",
+      "webui/chromeos/audio/audio_ui.h",
       "webui/chromeos/bluetooth_pairing_dialog.cc",
       "webui/chromeos/bluetooth_pairing_dialog.h",
       "webui/chromeos/bluetooth_shared_load_time_data_provider.cc",

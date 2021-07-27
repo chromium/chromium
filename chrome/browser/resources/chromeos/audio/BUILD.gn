@@ -1,0 +1,39 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+ts_library("build_ts") {
+  deps = [ "//third_party/polymer/v3_0:library" ]
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [ "audio.ts" ]
+}
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+generate_grd("build_grd") {
+  deps = [ ":build_ts" ]
+  input_files = [ "audio.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+
+  grd_prefix = "audio"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/audio_resources.h",
+    "grit/audio_resources_map.cc",
+    "grit/audio_resources_map.h",
+    "audio_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
