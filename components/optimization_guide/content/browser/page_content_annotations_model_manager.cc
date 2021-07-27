@@ -9,10 +9,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
-
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-#include "components/optimization_guide/internal/page_entities_annotator.h"
-#endif
+#include "components/optimization_guide/core/page_entities_model_executor.h"
 
 namespace optimization_guide {
 
@@ -47,10 +44,9 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
           proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  page_entities_annotator_ = std::make_unique<PageEntitiesAnnotator>(
-      optimization_guide_model_provider);
-#endif
+  // TODO(crbug/1228790): Create page entities model executor based on internal
+  // once the internal executor implements the PageEntitiesModelExecutor
+  // interface.
 }
 
 PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
