@@ -5482,11 +5482,6 @@ const char kPaintPreviewStartupDescription[] =
 const char kWebUITabStripName[] = "WebUI tab strip";
 const char kWebUITabStripDescription[] =
     "When enabled makes use of a WebUI-based tab strip.";
-
-const char kWebUITabStripNTBInTabStripName[] =
-    "WebUI tab strip NTB in tab strip";
-const char kWebUITabStripNTBInTabStripDescription[] =
-    "Whether the new tab button is in the WebUI tab strip or in the toolbar.";
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)

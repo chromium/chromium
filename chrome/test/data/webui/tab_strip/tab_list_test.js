@@ -974,11 +974,6 @@ suite('TabList', () => {
     assertEquals(tabList.scrollLeft, 0);
   });
 
-  test('clicking on new tab button opens a new tab', async () => {
-    tabList.shadowRoot.querySelector('#newTabButton').click();
-    await testTabsApiProxy.whenCalled('createNewTab');
-  });
-
   test('PreventsDraggingWhenOnlyOneTab', () => {
     assertFalse(tabList.shouldPreventDrag());
     const tabElements = getUnpinnedTabs();

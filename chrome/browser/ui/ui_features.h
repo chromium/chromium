@@ -168,8 +168,6 @@ extern const base::Feature kWebUIDownloadShelf;
 
 extern const base::Feature kWebUITabStrip;
 
-extern const base::Feature kWebUITabStripNewTabButtonInTabStrip;
-
 extern const base::Feature kWebUIFeedback;
 
 #if defined(OS_CHROMEOS)

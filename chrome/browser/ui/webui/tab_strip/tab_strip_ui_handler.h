@@ -73,7 +73,6 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(TabStripUIHandlerTest, UngroupTab);
 
   void OnLongPressTimer();
-  void HandleCreateNewTab(const base::ListValue* args);
   base::DictionaryValue GetTabData(content::WebContents* contents, int index);
   base::DictionaryValue GetTabGroupData(TabGroup* group);
   void HandleGetTabs(const base::ListValue* args);

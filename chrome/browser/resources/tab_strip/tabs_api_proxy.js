@@ -86,8 +86,6 @@ export class TabsApiProxy {
    */
   activateTab(tabId) {}
 
-  createNewTab() {}
-
   /**
    * @return {!Promise<!Object<!TabGroupVisualData>>} Object of group IDs as
    *     strings mapped to their visual data.
@@ -140,11 +138,6 @@ export class TabsApiProxyImpl {
     return new Promise(resolve => {
       chrome.tabs.update(tabId, {active: true}, resolve);
     });
-  }
-
-  /** @override */
-  createNewTab() {
-    chrome.send('createNewTab');
   }
 
   /** @override */

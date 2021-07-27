@@ -12,7 +12,6 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     super([
       'activateTab',
       'closeTab',
-      'createNewTab',
       'getGroupVisualData',
       'getTabs',
       'groupTab',
@@ -42,11 +41,6 @@ export class TestTabsApiProxy extends TestBrowserProxy {
   /** @override */
   closeTab(tabId, closeTabAction) {
     this.methodCalled('closeTab', [tabId, closeTabAction]);
-  }
-
-  /** @override */
-  createNewTab() {
-    this.methodCalled('createNewTab');
   }
 
   /** @override */

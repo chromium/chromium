@@ -65,7 +65,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
                              tp.GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)));
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"newTab", IDS_TOOLTIP_NEW_TAB},
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},
       {"closeTab", IDS_ACCNAME_CLOSE},
       {"defaultTabTitle", IDS_DEFAULT_TAB_TITLE},
@@ -87,9 +86,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"namedGroupLabel", IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT},
   };
   html_source->AddLocalizedStrings(kStrings);
-  html_source->AddBoolean("newTabButtonEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kWebUITabStripNewTabButtonInTabStrip));
   content::WebUIDataSource::Add(profile, html_source);
 
   content::URLDataSource::Add(

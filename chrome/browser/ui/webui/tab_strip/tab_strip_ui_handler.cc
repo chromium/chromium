@@ -462,10 +462,6 @@ bool TabStripUIHandler::PreHandleGestureEvent(
 // content::WebUIMessageHandler:
 void TabStripUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "createNewTab",
-      base::BindRepeating(&TabStripUIHandler::HandleCreateNewTab,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getTabs", base::BindRepeating(&TabStripUIHandler::HandleGetTabs,
                                      base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
@@ -533,13 +529,6 @@ void TabStripUIHandler::OnLongPressTimer() {
   if (!IsJavascriptAllowed())
     return;
   FireWebUIListener("long-press");
-}
-
-void TabStripUIHandler::HandleCreateNewTab(const base::ListValue* args) {
-  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
-                            TabStripModel::NEW_TAB_BUTTON_IN_WEBUI_TAB_STRIP,
-                            TabStripModel::NEW_TAB_ENUM_COUNT);
-  chrome::ExecuteCommand(browser_, IDC_NEW_TAB);
 }
 
 base::DictionaryValue TabStripUIHandler::GetTabData(

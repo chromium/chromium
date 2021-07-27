@@ -4,15 +4,12 @@
 
 import './strings.m.js';
 import './tab.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
@@ -61,8 +58,6 @@ export function setScrollAnimationEnabledForTesting(enabled) {
  */
 const LayoutVariable = {
   VIEWPORT_WIDTH: '--tabstrip-viewport-width',
-  NEW_TAB_BUTTON_MARGIN: '--tabstrip-new-tab-button-margin',
-  NEW_TAB_BUTTON_WIDTH: '--tabstrip-new-tab-button-width',
   TAB_WIDTH: '--tabstrip-tab-thumbnail-width',
 };
 
@@ -234,10 +229,6 @@ export class TabListElement extends CustomElement {
     this.lastTouchPoint_;
 
     /** @private {!Element} */
-    this.newTabButtonElement_ =
-        /** @type {!Element} */ (this.$('#newTabButton'));
-
-    /** @private {!Element} */
     this.pinnedTabsElement_ = /** @type {!Element} */ (this.$('#pinnedTabs'));
 
     /** @private {!TabStripEmbedderProxy} */
@@ -305,17 +296,8 @@ export class TabListElement extends CustomElement {
     this.addWebUIListener_(
         'received-keyboard-focus', () => this.onReceivedKeyboardFocus_());
 
-    this.newTabButtonElement_.addEventListener('click', () => {
-      this.tabsApi_.createNewTab();
-    });
-
     const dragManager = new DragManager(this);
     dragManager.startObserving();
-
-    if (!loadTimeData.getBoolean('newTabButtonEnabled')) {
-      this.style.setProperty(LayoutVariable.NEW_TAB_BUTTON_MARGIN, '0');
-      this.style.setProperty(LayoutVariable.NEW_TAB_BUTTON_WIDTH, '0');
-    }
   }
 
   /**
@@ -937,12 +919,7 @@ export class TabListElement extends CustomElement {
     // fully scaled to the left yet.
     const tabElementLeft =
         isRTL() ? tabElementRect.right - tabElementWidth : tabElementRect.left;
-
-    const newTabButtonSpace =
-        this.getLayoutVariable_(LayoutVariable.NEW_TAB_BUTTON_WIDTH) +
-        this.getLayoutVariable_(LayoutVariable.NEW_TAB_BUTTON_MARGIN);
-    const leftBoundary =
-        isRTL() ? SCROLL_PADDING + newTabButtonSpace : SCROLL_PADDING;
+    const leftBoundary = SCROLL_PADDING;
 
     let scrollBy = 0;
     if (tabElementLeft === leftBoundary) {
@@ -954,12 +931,9 @@ export class TabListElement extends CustomElement {
       scrollBy = tabElementLeft - leftBoundary;
     } else {
       const tabElementRight = tabElementLeft + tabElementWidth;
-      const rightBoundary = isRTL() ?
+      const rightBoundary =
           this.getLayoutVariable_(LayoutVariable.VIEWPORT_WIDTH) -
-              SCROLL_PADDING :
-          this.getLayoutVariable_(LayoutVariable.VIEWPORT_WIDTH) -
-              SCROLL_PADDING - newTabButtonSpace;
-
+          SCROLL_PADDING;
       if (tabElementRight > rightBoundary) {
         scrollBy = (tabElementRight) - rightBoundary;
       } else {
