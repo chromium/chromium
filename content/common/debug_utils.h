@@ -41,9 +41,12 @@ enum class DebugScenario {
   // evicted from cache, but the frame is no longer in the cache.
   kDebugBackForwardCacheEvictRestoreRace = 5,
 
+  // HTTP response_head was unexpectedly nullptr even for HTTP or HTTPS schemes.
+  kDebugNoResponseHeadForHttpOrHttps = 6,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugBackForwardCacheEvictRestoreRace
+  kMaxValue = kDebugNoResponseHeadForHttpOrHttps,
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be

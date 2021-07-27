@@ -7753,6 +7753,7 @@ domain Page
       CacheControlNoStore
       CacheControlNoStoreCookieModified
       CacheControlNoStoreHTTPOnlyCookieModified
+      NoResponseHead
       #Blocklisted features
       WebSocket
       WebRTC

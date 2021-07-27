@@ -33,6 +33,10 @@ Test that back/forward navigations report the bfcache status
             reason : BrowsingInstanceNotSwapped
             type : Circumstantial
         }
+        [3] : {
+            reason : NoResponseHead
+            type : Circumstantial
+        }
     ]
 }
 

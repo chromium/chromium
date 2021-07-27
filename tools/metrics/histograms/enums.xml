@@ -7089,6 +7089,8 @@ others/histograms.xml -->
   <int value="51"
       label="Unload handler exists in a sub frame, and the current
              experimental config doesn't permit it to be BFCached."/>
+  <int value="52" label="ServiceWorker is unregistered"/>
+  <int value="53" label="No valid HTTP response header"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">
@@ -18870,6 +18872,7 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="kDebugBackForwardCacheMetricsMismatch"/>
   <int value="4" label="kDebugBrowserVsRendererOriginToCommit"/>
   <int value="5" label="kDebugBackForwardCacheEvictRestoreRace"/>
+  <int value="6" label="kDebugNoResponseHeadForHttpOrHttps"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">

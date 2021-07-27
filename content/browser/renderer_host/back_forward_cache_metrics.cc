@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
@@ -294,8 +295,18 @@ void BackForwardCacheMetrics::MarkNotRestoredWithReason(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   page_store_result_->AddReasonsFrom(can_store);
 
-  if (can_store.HasNotStoredReason(NotRestoredReason::kRendererProcessKilled)) {
+  const BackForwardCacheCanStoreDocumentResult::NotStoredReasons&
+      not_stored_reasons = can_store.not_stored_reasons();
+
+  if (not_stored_reasons.Has(NotRestoredReason::kRendererProcessKilled)) {
     renderer_killed_timestamp_ = Now();
+  }
+  if (!not_stored_reasons.Has(NotRestoredReason::kHTTPStatusNotOK) &&
+      !not_stored_reasons.Has(NotRestoredReason::kSchemeNotHTTPOrHTTPS) &&
+      not_stored_reasons.Has(NotRestoredReason::kNoResponseHead)) {
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugNoResponseHeadForHttpOrHttps);
+    base::debug::DumpWithoutCrashing();
   }
 }
 

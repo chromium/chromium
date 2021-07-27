@@ -3666,12 +3666,8 @@ void NavigationRequest::OnStartChecksComplete(
   if (IsServedFromBackForwardCache()) {
     loader_type = NavigationURLLoader::LoaderType::kNoopForBackForwardCache;
     DCHECK(rfh_restored_from_back_forward_cache_);
-    const network::mojom::URLResponseHeadPtr& last_response_head =
-        rfh_restored_from_back_forward_cache_->last_response_head();
-    // `last_response_head` may be nullptr if the page wasn't served from
-    // http(s).
-    if (last_response_head)
-      cached_response_head = last_response_head->Clone();
+    cached_response_head =
+        rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
   } else if (IsPrerenderedPageActivation()) {
     loader_type = NavigationURLLoader::LoaderType::kNoopForPrerender;
     DCHECK(prerender_frame_tree_node_id_.has_value());
@@ -3681,15 +3677,13 @@ void NavigationRequest::OnStartChecksComplete(
             ->last_response_head();
     // TODO(https://crbug.com/1216997): Support the case the initial navigation
     // haven't received the response head at this point.
-    if (last_response_head)
+    if (last_response_head) {
       cached_response_head = last_response_head->Clone();
-  }
-  if ((loader_type ==
-           NavigationURLLoader::LoaderType::kNoopForBackForwardCache ||
-       loader_type == NavigationURLLoader::LoaderType::kNoopForPrerender) &&
-      !cached_response_head) {
-    cached_response_head = network::mojom::URLResponseHead::New();
-    cached_response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+    } else {
+      cached_response_head = network::mojom::URLResponseHead::New();
+      cached_response_head->parsed_headers =
+          network::mojom::ParsedHeaders::New();
+    }
   }
 
   loader_ = NavigationURLLoader::Create(

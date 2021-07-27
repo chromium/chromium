@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/debug_utils.h"
@@ -84,6 +85,20 @@ bool BackForwardCacheCanStoreDocumentResult::HasNotStoredReason(
 void BackForwardCacheCanStoreDocumentResult::AddNotStoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   not_stored_reasons_.Put(reason);
+  if (reason == BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead ||
+      reason ==
+          BackForwardCacheMetrics::NotRestoredReason::kSchemeNotHTTPOrHTTPS) {
+    if (not_stored_reasons_.Has(
+            BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead) &&
+        not_stored_reasons_.Has(BackForwardCacheMetrics::NotRestoredReason::
+                                    kSchemeNotHTTPOrHTTPS) &&
+        !not_stored_reasons_.Has(
+            BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK)) {
+      CaptureTraceForNavigationDebugScenario(
+          DebugScenario::kDebugNoResponseHeadForHttpOrHttps);
+      base::debug::DumpWithoutCrashing();
+    }
+  }
 }
 
 bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
@@ -233,6 +248,9 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Pages with cache-control:no-store went into bfcache temporarily "
              "because of the flag, and while in bfcache the HTTP-only cookie"
              "was modified or deleted and thus evicted.";
+    case Reason::kNoResponseHead:
+      return "main RenderFrameHost doesn't have response headers set, probably "
+             "due not having successfully committed a navigation.";
   }
 }
 
