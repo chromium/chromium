@@ -6,7 +6,7 @@ import 'chrome://diagnostics/wifi_info.js';
 import {Network, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import {assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
@@ -102,6 +102,14 @@ export function wifiInfoTestSuite() {
       assertTextContains(
           getDataPointValue(wifiInfoElement, '#channel'),
           `? (${expectedGhz} GHz)`);
+    });
+  });
+
+  test('FrequencyZeroDisplaysEmptyString', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({frequency: 0}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      assertEquals(getDataPointValue(wifiInfoElement, '#channel'), '');
     });
   });
 }

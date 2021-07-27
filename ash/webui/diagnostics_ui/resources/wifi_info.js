@@ -29,14 +29,18 @@ Polymer({
   },
 
   /**
-   * Builds channel text based frequency conversion. If value returned by
-   * conversion function is null then we display a question mark for channel
-   * value. Frequency used to calculate converted from MHz to GHz for display.
+   * Builds channel text based frequency conversion. If value of frequency is
+   * zero, then an empty string is returned. Otherwise, if value returned by
+   * conversion function is null, then we display a question mark for channel
+   * value. Frequency used to calculate converted from MHz to  GHz for display.
    * @protected
    * @param {number} frequency Given in MHz.
    * @return {string}
    */
   getChannelDescription_(frequency) {
+    if (frequency === 0) {
+      return '';
+    }
     const channel = convertFrequencyToChannel(frequency);
     const ghz = (frequency / 1000).toFixed(3);
     return `${channel || '?'} (${ghz} GHz)`;
