@@ -1119,8 +1119,10 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, GestureCleanedUpBeforeActivation) {
 #endif
 
 // Touch input transfer is only implemented in the content layer for Aura.
+// TODO(crbug.com/1233183): Flaky on all aura platforms.
 #if defined(USE_AURA)
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, TouchInputTransferAcrossActivation) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DISABLED_TouchInputTransferAcrossActivation) {
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("portal.test", "/portals/scroll.html")));
