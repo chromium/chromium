@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/paint_recorder.h"
@@ -61,6 +62,9 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   if (screen_capture_layer_)
     return;
 
+#if defined(OS_MAC)
+  return;
+#else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
 
   screen_capture_layer_ =
@@ -80,12 +84,16 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   // TODO(skare): We should exit from this mode when moving between tabs,
   // clicking on browser chrome, etc.
   native_window->AddPreTargetHandler(this);
+#endif
 }
 
 void ScreenshotFlow::RemoveUIOverlay() {
   if (!web_contents_ || !screen_capture_layer_)
     return;
 
+#if defined(OS_MAC)
+  return;
+#else
   // TODO(skare): Fix case of web_contents_ going away.
   // Otherwise we can crash on shutdown while the capture mode is active.
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
@@ -95,9 +103,13 @@ void ScreenshotFlow::RemoveUIOverlay() {
   native_window_layer->Remove(screen_capture_layer_.get());
   screen_capture_layer_->set_delegate(nullptr);
   screen_capture_layer_.reset();
+#endif
 }
 
 void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
+#if defined(OS_MAC)
+  return;
+#else
   flow_callback_ = std::move(flow_callback);
   // Start the capture process by capturing the entire window, then allow
   // the user to drag out a selection mask.
@@ -111,6 +123,7 @@ void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
   ui::GrabWindowSnapshotAsync(native_window,
                               gfx::Rect(web_contents_->GetSize()),
                               std::move(screenshot_callback));
+#endif
 }
 
 void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {

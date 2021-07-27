@@ -7821,6 +7821,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Share link to
       </message>
 
+      <!-- Desktop screenshot -->
+      <message name="IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE"
+          desc="Title for the dialog shown after a screenshot is captured.">
+       Screenshot copied to clipboard
+      </message>
+      <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_DOWNLOAD_BUTTON_LABEL"
+          desc="Button text for the Screenshot dialog download button.">
+        Download
+      </message>
+      <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL"
+          desc="Button text for the Screenshot dialog edit button.">
+        Edit
+      </message>
+      <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SHARE_BUTTON_LABEL"
+          desc="Button text for the Screenshot dialog share button.">
+        Share
+      </message>
+
       <!-- Clipboard History Menu feature. -->
       <message name="IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU"
           desc="Show the clipboard history menu.">

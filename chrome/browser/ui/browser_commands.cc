@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/sharing_hub/screenshot/screenshot_captured_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -1294,6 +1295,14 @@ void SharingHubFromPageAction(Browser* browser) {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           web_contents);
   controller->ShowBubble();
+}
+
+void ScreenshotCaptureFromPageAction(Browser* browser) {
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  sharing_hub::ScreenshotCapturedBubbleController* controller =
+      sharing_hub::ScreenshotCapturedBubbleController::Get(web_contents);
+  controller->Capture(browser);
 }
 
 void SavePage(Browser* browser) {

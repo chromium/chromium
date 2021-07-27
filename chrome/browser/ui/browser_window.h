@@ -75,6 +75,8 @@ class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
 namespace sharing_hub {
+class ScreenshotCapturedBubbleController;
+class ScreenshotCapturedBubble;
 class SharingHubBubbleController;
 class SharingHubBubbleView;
 }  // namespace sharing_hub
@@ -386,6 +388,12 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Bookmark bubble. |url| is the URL being bookmarked,
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
+
+  // Shows the Screenshot bubble.
+  virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
+      content::WebContents* contents,
+      const gfx::Image& image,
+      sharing_hub::ScreenshotCapturedBubbleController* controller) = 0;
 
   // Shows the QR Code generator bubble. |url| is the URL for the initial code.
   virtual qrcode_generator::QRCodeGeneratorBubbleView*

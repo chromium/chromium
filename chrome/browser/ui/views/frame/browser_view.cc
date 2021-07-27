@@ -120,6 +120,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view_impl.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
+#include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
@@ -1859,6 +1860,22 @@ BrowserView::ShowQRCodeGeneratorBubble(
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show();
 
+  return bubble;
+}
+
+sharing_hub::ScreenshotCapturedBubble*
+BrowserView::ShowScreenshotCapturedBubble(
+    content::WebContents* contents,
+    const gfx::Image& image,
+    sharing_hub::ScreenshotCapturedBubbleController* controller) {
+  sharing_hub::ScreenshotCapturedBubble* bubble =
+      new sharing_hub::ScreenshotCapturedBubble(
+          toolbar_button_provider()->GetAnchorView(
+              PageActionIconType::kSharingHub),
+          contents, image);
+
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
   return bubble;
 }
 

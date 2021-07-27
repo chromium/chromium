@@ -580,6 +580,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHARING_HUB:
       SharingHubFromPageAction(browser_);
       break;
+    case IDC_SHARING_HUB_SCREENSHOT:
+      ScreenshotCaptureFromPageAction(browser_);
+      break;
 
     // Clipboard commands
     case IDC_CUT:
@@ -1405,6 +1408,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
 #endif
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHARING_HUB, show_main_ui);
+  command_updater_.UpdateCommandEnabled(IDC_SHARING_HUB_SCREENSHOT,
+                                        show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_APP_MENU, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,

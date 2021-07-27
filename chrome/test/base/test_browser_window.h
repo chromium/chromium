@@ -143,6 +143,10 @@ class TestBrowserWindow : public BrowserWindow {
       qrcode_generator::QRCodeGeneratorBubbleController* controller,
       const GURL& url) override;
 #if !defined(OS_ANDROID)
+  sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
+      content::WebContents* contents,
+      const gfx::Image& image,
+      sharing_hub::ScreenshotCapturedBubbleController* controller) override;
   void ShowIntentPickerBubble(
       std::vector<apps::IntentPickerAppInfo> app_info,
       bool show_stay_in_chrome,

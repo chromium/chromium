@@ -232,6 +232,16 @@ SharingDialog* TestBrowserWindow::ShowSharingDialog(
   return nullptr;
 }
 
+#if !defined(OS_ANDROID)
+sharing_hub::ScreenshotCapturedBubble*
+TestBrowserWindow::ShowScreenshotCapturedBubble(
+    content::WebContents* contents,
+    const gfx::Image& image,
+    sharing_hub::ScreenshotCapturedBubbleController* controller) {
+  return nullptr;
+}
+#endif
+
 send_tab_to_self::SendTabToSelfBubbleView*
 TestBrowserWindow::ShowSendTabToSelfBubble(
     content::WebContents* contents,
