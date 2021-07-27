@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/external_data/user_cloud_external_data_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -249,8 +249,8 @@ void CreateConfigurationPolicyProvider(
   const base::FilePath policy_key_dir =
       base::PathService::CheckedGet(chromeos::dbus_paths::DIR_USER_POLICY_KEYS);
 
-  std::unique_ptr<UserCloudPolicyStoreChromeOS> store =
-      std::make_unique<UserCloudPolicyStoreChromeOS>(
+  std::unique_ptr<UserCloudPolicyStoreAsh> store =
+      std::make_unique<UserCloudPolicyStoreAsh>(
           chromeos::CryptohomeMiscClient::Get(),
           chromeos::SessionManagerClient::Get(), background_task_runner,
           account_id, policy_key_dir, is_active_directory);

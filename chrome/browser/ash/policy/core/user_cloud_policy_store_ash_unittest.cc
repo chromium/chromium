@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/user_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
 
 #include <stdint.h>
 
@@ -75,7 +75,7 @@ bool StoreUserPolicyKey(const base::FilePath& user_policy_dir,
   return base::WriteFile(user_policy_key_file, public_key);
 }
 
-// For detailed test for UserCloudPOlicyStoreChromeOS, this supports
+// For detailed test for UserCloudPolicyStoreAsh, this supports
 // public key file update emulation.
 class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
  public:
@@ -117,9 +117,9 @@ class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
   DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);
 };
 
-class UserCloudPolicyStoreChromeOSTest : public testing::Test {
+class UserCloudPolicyStoreAshTest : public testing::Test {
  protected:
-  UserCloudPolicyStoreChromeOSTest()
+  UserCloudPolicyStoreAshTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
@@ -127,7 +127,7 @@ class UserCloudPolicyStoreChromeOSTest : public testing::Test {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
     session_manager_client_ =
         std::make_unique<FakeSessionManagerClient>(user_policy_dir());
-    store_ = std::make_unique<UserCloudPolicyStoreChromeOS>(
+    store_ = std::make_unique<UserCloudPolicyStoreAsh>(
         &cryptohome_misc_client_, session_manager_client_.get(),
         base::ThreadTaskRunnerHandle::Get(), account_id_, user_policy_dir(),
         false /* is_active_directory */);
@@ -241,7 +241,7 @@ class UserCloudPolicyStoreChromeOSTest : public testing::Test {
   std::unique_ptr<FakeSessionManagerClient> session_manager_client_;
   UserPolicyBuilder policy_;
   MockCloudPolicyStoreObserver observer_;
-  std::unique_ptr<UserCloudPolicyStoreChromeOS> store_;
+  std::unique_ptr<UserCloudPolicyStoreAsh> store_;
   const AccountId account_id_ =
       AccountId::FromUserEmail(PolicyBuilder::kFakeUsername);
   const cryptohome::AccountIdentifier cryptohome_id_ =
@@ -250,10 +250,10 @@ class UserCloudPolicyStoreChromeOSTest : public testing::Test {
  private:
   base::ScopedTempDir tmp_dir_;
 
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreChromeOSTest);
+  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreAshTest);
 };
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, InitialStore) {
+TEST_F(UserCloudPolicyStoreAshTest, InitialStore) {
   // Start without any public key to trigger the initial key checks.
   ASSERT_TRUE(base::DeleteFile(user_policy_key_file()));
 
@@ -267,7 +267,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, InitialStore) {
   EXPECT_EQ(new_public_key, store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, InitialStoreValidationFail) {
+TEST_F(UserCloudPolicyStoreAshTest, InitialStoreValidationFail) {
   // Start without any public key to trigger the initial key checks.
   ASSERT_TRUE(base::DeleteFile(user_policy_key_file()));
   // Make the policy blob contain a new public key.
@@ -283,7 +283,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, InitialStoreValidationFail) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, InitialStoreMissingSignatureFailure) {
+TEST_F(UserCloudPolicyStoreAshTest, InitialStoreMissingSignatureFailure) {
   // Start without any public key to trigger the initial key checks.
   ASSERT_TRUE(base::DeleteFile(user_policy_key_file()));
   // Make the policy blob contain a new public key.
@@ -298,13 +298,13 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, InitialStoreMissingSignatureFailure) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithExistingKey) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreWithExistingKey) {
   ASSERT_NO_FATAL_FAILURE(PerformStorePolicy(nullptr, kDefaultHomepage));
   EXPECT_EQ(policy_.GetPublicSigningKeyAsString(),
             store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithRotation) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreWithRotation) {
   // Make the policy blob contain a new public key.
   policy_.SetDefaultNewSigningKey();
   policy_.Build();
@@ -315,8 +315,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithRotation) {
   EXPECT_EQ(new_public_key, store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest,
-       StoreWithRotationMissingSignatureError) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreWithRotationMissingSignatureError) {
   // Make the policy blob contain a new public key.
   policy_.SetDefaultNewSigningKey();
   policy_.Build();
@@ -329,7 +328,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest,
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithRotationValidationError) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreWithRotationValidationError) {
   // Make the policy blob contain a new public key.
   policy_.SetDefaultNewSigningKey();
   policy_.Build();
@@ -343,7 +342,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithRotationValidationError) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreFail) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreFail) {
   // Let store policy fail.
   session_manager_client_->ForceStorePolicyFailure(true);
 
@@ -356,7 +355,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreFail) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreValidationError) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreValidationError) {
   policy_.policy_data().clear_policy_type();
   policy_.Build();
 
@@ -367,7 +366,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreValidationError) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreValueValidationError) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreValueValidationError) {
   std::string onc_policy = chromeos::onc::test_utils::ReadTestData(
       "toplevel_with_unknown_fields.onc");
   policy_.payload().mutable_opennetworkconfiguration()->set_value(onc_policy);
@@ -388,7 +387,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreValueValidationError) {
             validation_result->policy_data_signature);
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithoutPolicyKey) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreWithoutPolicyKey) {
   // Make the dbus call to cryptohome fail.
   cryptohome_misc_client_.SetServiceIsAvailable(false);
 
@@ -399,7 +398,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithoutPolicyKey) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithInvalidSignature) {
+TEST_F(UserCloudPolicyStoreAshTest, StoreWithInvalidSignature) {
   // Break the signature.
   policy_.policy().mutable_policy_data_signature()->append("garbage");
 
@@ -410,7 +409,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithInvalidSignature) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, MultipleStoresWithRotation) {
+TEST_F(UserCloudPolicyStoreAshTest, MultipleStoresWithRotation) {
   // Store initial policy signed with the initial public key.
   ASSERT_NO_FATAL_FAILURE(PerformStorePolicy(nullptr, kDefaultHomepage));
   const std::string initial_public_key = policy_.GetPublicSigningKeyAsString();
@@ -440,7 +439,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, MultipleStoresWithRotation) {
             store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, Load) {
+TEST_F(UserCloudPolicyStoreAshTest, Load) {
   ASSERT_NO_FATAL_FAILURE(PerformPolicyLoad(policy_.GetBlob()));
   RunLoopAndExpectLoaded();
 
@@ -454,7 +453,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, Load) {
             store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadNoPolicy) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadNoPolicy) {
   ASSERT_NO_FATAL_FAILURE(PerformPolicyLoad(""));
   RunLoopAndExpectLoaded();
 
@@ -465,7 +464,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadNoPolicy) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadInvalidPolicy) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadInvalidPolicy) {
   ASSERT_NO_FATAL_FAILURE(PerformPolicyLoad("invalid"));
   RunLoopAndExpectError(CloudPolicyStore::STATUS_PARSE_ERROR);
 
@@ -476,7 +475,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadInvalidPolicy) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadValidationError) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadValidationError) {
   policy_.policy_data().clear_policy_type();
   policy_.Build();
 
@@ -486,7 +485,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadValidationError) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadNoKey) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadNoKey) {
   // The loaded policy can't be verified without the public key.
   ASSERT_TRUE(base::DeleteFile(user_policy_key_file()));
   ASSERT_NO_FATAL_FAILURE(PerformPolicyLoad(policy_.GetBlob()));
@@ -495,7 +494,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadNoKey) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadInvalidSignature) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadInvalidSignature) {
   // Break the signature.
   policy_.policy().mutable_policy_data_signature()->append("garbage");
   ASSERT_NO_FATAL_FAILURE(PerformPolicyLoad(policy_.GetBlob()));
@@ -504,7 +503,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadInvalidSignature) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediately) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadImmediately) {
   session_manager_client_->set_user_policy(cryptohome_id_, policy_.GetBlob());
 
   EXPECT_FALSE(store_->policy());
@@ -526,7 +525,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediately) {
             store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyNoPolicy) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadImmediatelyNoPolicy) {
   EXPECT_FALSE(store_->policy());
 
   EXPECT_CALL(observer_, OnStoreLoaded(store_.get()));
@@ -539,7 +538,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyNoPolicy) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyInvalidBlob) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadImmediatelyInvalidBlob) {
   session_manager_client_->set_user_policy(cryptohome_id_, "le blob");
 
   EXPECT_FALSE(store_->policy());
@@ -554,7 +553,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyInvalidBlob) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyDBusFailure) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadImmediatelyDBusFailure) {
   session_manager_client_->set_user_policy(cryptohome_id_, policy_.GetBlob());
 
   // Make the dbus call to cryptohome fail.
@@ -572,7 +571,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyDBusFailure) {
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
 }
 
-TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyNoUserPolicyKey) {
+TEST_F(UserCloudPolicyStoreAshTest, LoadImmediatelyNoUserPolicyKey) {
   session_manager_client_->set_user_policy(cryptohome_id_, policy_.GetBlob());
 
   // Ensure no policy data.

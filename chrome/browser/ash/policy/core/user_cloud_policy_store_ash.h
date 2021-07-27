@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_STORE_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_STORE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_STORE_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_STORE_ASH_H_
 
 #include <memory>
 #include <string>
@@ -37,19 +37,19 @@ class CachedPolicyKeyLoader;
 // policy as well. Also think about whether it would make more sense to keep
 // cloud and AD policy stores separate and to extract the common functionality
 // somewhere else.
-class UserCloudPolicyStoreChromeOS : public UserCloudPolicyStoreBase {
+class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
  public:
   // Policy validation is relaxed when |is_active_directory| is set, most
   // notably signature validation is disabled.  It is essential that this flag
   // is only set when install attributes are locked into Active Directory mode.
-  UserCloudPolicyStoreChromeOS(
+  UserCloudPolicyStoreAsh(
       chromeos::CryptohomeMiscClient* cryptohome_misc_client,
       chromeos::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,
       const base::FilePath& user_policy_key_dir,
       bool is_active_directory);
-  ~UserCloudPolicyStoreChromeOS() override;
+  ~UserCloudPolicyStoreAsh() override;
 
   // CloudPolicyStore:
   void Store(const enterprise_management::PolicyFetchResponse& policy) override;
@@ -99,11 +99,11 @@ class UserCloudPolicyStoreChromeOS : public UserCloudPolicyStoreBase {
   // Used to load the policy key provided by session manager as a file.
   std::unique_ptr<CachedPolicyKeyLoader> cached_policy_key_loader_;
 
-  base::WeakPtrFactory<UserCloudPolicyStoreChromeOS> weak_factory_{this};
+  base::WeakPtrFactory<UserCloudPolicyStoreAsh> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_STORE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_STORE_ASH_H_

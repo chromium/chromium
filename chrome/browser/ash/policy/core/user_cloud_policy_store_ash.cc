@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/user_cloud_policy_store_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
 
 #include <utility>
 
@@ -36,7 +36,7 @@ std::string ExtractDomain(const std::string& username) {
 
 }  // namespace
 
-UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
+UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
     chromeos::CryptohomeMiscClient* cryptohome_misc_client,
     chromeos::SessionManagerClient* session_manager_client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -55,10 +55,9 @@ UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
                                                   account_id,
                                                   user_policy_key_dir)) {}
 
-UserCloudPolicyStoreChromeOS::~UserCloudPolicyStoreChromeOS() {}
+UserCloudPolicyStoreAsh::~UserCloudPolicyStoreAsh() {}
 
-void UserCloudPolicyStoreChromeOS::Store(
-    const em::PolicyFetchResponse& policy) {
+void UserCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_active_directory_);
 
@@ -68,11 +67,11 @@ void UserCloudPolicyStoreChromeOS::Store(
   std::unique_ptr<em::PolicyFetchResponse> response(
       new em::PolicyFetchResponse(policy));
   cached_policy_key_loader_->EnsurePolicyKeyLoaded(
-      base::BindOnce(&UserCloudPolicyStoreChromeOS::ValidatePolicyForStore,
+      base::BindOnce(&UserCloudPolicyStoreAsh::ValidatePolicyForStore,
                      weak_factory_.GetWeakPtr(), std::move(response)));
 }
 
-void UserCloudPolicyStoreChromeOS::Load() {
+void UserCloudPolicyStoreAsh::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Cancel all pending requests.
@@ -80,12 +79,12 @@ void UserCloudPolicyStoreChromeOS::Load() {
 
   session_manager_client_->RetrievePolicyForUser(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
-      base::BindOnce(&UserCloudPolicyStoreChromeOS::OnPolicyRetrieved,
+      base::BindOnce(&UserCloudPolicyStoreAsh::OnPolicyRetrieved,
                      weak_factory_.GetWeakPtr()));
 }
 
 std::unique_ptr<UserCloudPolicyValidator>
-UserCloudPolicyStoreChromeOS::CreateValidator(
+UserCloudPolicyStoreAsh::CreateValidator(
     std::unique_ptr<em::PolicyFetchResponse> policy,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
   auto validator =
@@ -94,7 +93,7 @@ UserCloudPolicyStoreChromeOS::CreateValidator(
   return validator;
 }
 
-void UserCloudPolicyStoreChromeOS::LoadImmediately() {
+void UserCloudPolicyStoreAsh::LoadImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This blocking D-Bus call is in the startup path and will block the UI
@@ -145,7 +144,7 @@ void UserCloudPolicyStoreChromeOS::LoadImmediately() {
   OnRetrievedPolicyValidated(validator.get());
 }
 
-void UserCloudPolicyStoreChromeOS::ValidatePolicyForStore(
+void UserCloudPolicyStoreAsh::ValidatePolicyForStore(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
   DCHECK(!is_active_directory_);
 
@@ -165,11 +164,11 @@ void UserCloudPolicyStoreChromeOS::ValidatePolicyForStore(
   // Start validation.
   UserCloudPolicyValidator::StartValidation(
       std::move(validator),
-      base::BindOnce(&UserCloudPolicyStoreChromeOS::OnPolicyToStoreValidated,
+      base::BindOnce(&UserCloudPolicyStoreAsh::OnPolicyToStoreValidated,
                      weak_factory_.GetWeakPtr()));
 }
 
-void UserCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
+void UserCloudPolicyStoreAsh::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
   DCHECK(!is_active_directory_);
 
@@ -190,11 +189,11 @@ void UserCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
   session_manager_client_->StorePolicyForUser(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
       policy_blob,
-      base::BindOnce(&UserCloudPolicyStoreChromeOS::OnPolicyStored,
+      base::BindOnce(&UserCloudPolicyStoreAsh::OnPolicyStored,
                      weak_factory_.GetWeakPtr()));
 }
 
-void UserCloudPolicyStoreChromeOS::OnPolicyStored(bool success) {
+void UserCloudPolicyStoreAsh::OnPolicyStored(bool success) {
   DCHECK(!is_active_directory_);
 
   if (!success) {
@@ -205,11 +204,11 @@ void UserCloudPolicyStoreChromeOS::OnPolicyStored(bool success) {
     // the session manager. An additional validation is performed after the
     // load; reload the key for that validation too, in case it was rotated.
     cached_policy_key_loader_->ReloadPolicyKey(base::BindOnce(
-        &UserCloudPolicyStoreChromeOS::Load, weak_factory_.GetWeakPtr()));
+        &UserCloudPolicyStoreAsh::Load, weak_factory_.GetWeakPtr()));
   }
 }
 
-void UserCloudPolicyStoreChromeOS::OnPolicyRetrieved(
+void UserCloudPolicyStoreAsh::OnPolicyRetrieved(
     RetrievePolicyResponseType response_type,
     const std::string& policy_blob) {
   // Disallow the sign in when the Chrome OS user session has not started, which
@@ -247,20 +246,20 @@ void UserCloudPolicyStoreChromeOS::OnPolicyRetrieved(
     ValidateRetrievedPolicy(std::move(policy));
   } else {
     cached_policy_key_loader_->EnsurePolicyKeyLoaded(
-        base::BindOnce(&UserCloudPolicyStoreChromeOS::ValidateRetrievedPolicy,
+        base::BindOnce(&UserCloudPolicyStoreAsh::ValidateRetrievedPolicy,
                        weak_factory_.GetWeakPtr(), std::move(policy)));
   }
 }
 
-void UserCloudPolicyStoreChromeOS::ValidateRetrievedPolicy(
+void UserCloudPolicyStoreAsh::ValidateRetrievedPolicy(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
   UserCloudPolicyValidator::StartValidation(
       CreateValidatorForLoad(std::move(policy)),
-      base::BindOnce(&UserCloudPolicyStoreChromeOS::OnRetrievedPolicyValidated,
+      base::BindOnce(&UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated,
                      weak_factory_.GetWeakPtr()));
 }
 
-void UserCloudPolicyStoreChromeOS::OnRetrievedPolicyValidated(
+void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
     UserCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
@@ -279,7 +278,7 @@ void UserCloudPolicyStoreChromeOS::OnRetrievedPolicyValidated(
 }
 
 std::unique_ptr<UserCloudPolicyValidator>
-UserCloudPolicyStoreChromeOS::CreateValidatorForLoad(
+UserCloudPolicyStoreAsh::CreateValidatorForLoad(
     std::unique_ptr<em::PolicyFetchResponse> policy) {
   std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
       std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
