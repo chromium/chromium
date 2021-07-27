@@ -423,7 +423,7 @@ class StartSurfaceToolbarMediator {
         mPropertyModel.set(HOME_BUTTON_IS_VISIBLE, shouldShow);
 
         // If the home button is shown, maybe show the IPH.
-        if (shouldShow) {
+        if (mHomeButtonView != null && shouldShow) {
             if (mStartSurfaceHomeButtonIPHController == null) {
                 mStartSurfaceHomeButtonIPHController = new StartSurfaceHomeButtonIPHController(
                         mUserEducationHelper, mHomeButtonView);
@@ -470,5 +470,10 @@ class StartSurfaceToolbarMediator {
     void setStartSurfaceHomeButtonIPHControllerForTesting(
             StartSurfaceHomeButtonIPHController startSurfaceHomeButtonIPHController) {
         mStartSurfaceHomeButtonIPHController = startSurfaceHomeButtonIPHController;
+    }
+
+    @VisibleForTesting
+    void setHomeButtonViewForTesting(View homeButtonView) {
+        mHomeButtonView = homeButtonView;
     }
 }
