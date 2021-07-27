@@ -149,8 +149,8 @@ class NonPersistentExtensionTabsTest
 // Crashes on Lacros only. http://crbug.com/1150133
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
-// Flakes on Linux Tests (Release Only). http://crbug.com/1162432
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(NDEBUG)
+// Flakes on Linux Tests. http://crbug.com/1162432
+#elif defined(OS_LINUX)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
 #else
 #define MAYBE_TabCurrentWindow TabCurrentWindow
