@@ -2052,6 +2052,10 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, MAYBE_RemoteDebugger) {
   ASSERT_TRUE(RunExtensionTest("target_list")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
+  ASSERT_TRUE(RunExtensionTest("discovery_page")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
