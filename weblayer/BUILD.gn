@@ -659,6 +659,8 @@ source_set("weblayer_lib_base") {
       "browser/safe_browsing/safe_browsing_ui_manager.h",
       "browser/safe_browsing/url_checker_delegate_impl.cc",
       "browser/safe_browsing/url_checker_delegate_impl.h",
+      "browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.cc",
+      "browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h",
       "browser/tab_callback_proxy.cc",
       "browser/tab_callback_proxy.h",
       "browser/translate_compact_infobar.cc",

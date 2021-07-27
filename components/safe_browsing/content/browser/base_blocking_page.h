@@ -53,6 +53,17 @@ class BaseBlockingPage
   static security_interstitials::MetricsHelper::ReportDetails GetReportingInfo(
       const UnsafeResourceList& unsafe_resources);
 
+  // Can be used by implementations of SafeBrowsingBlockingPageFactory.
+  static std::unique_ptr<
+      security_interstitials::SecurityInterstitialControllerClient>
+  CreateControllerClient(
+      content::WebContents* web_contents,
+      const UnsafeResourceList& unsafe_resources,
+      BaseUIManager* ui_manager,
+      PrefService* pref_service,
+      std::unique_ptr<security_interstitials::SettingsPageHelper>
+          settings_page_helper);
+
  protected:
   // Don't instantiate this class directly, use ShowBlockingPage instead.
   BaseBlockingPage(
@@ -107,16 +118,6 @@ class BaseBlockingPage
   void set_proceeded(bool proceeded);
 
   void SetThreatDetailsProceedDelayForTesting(int64_t delay);
-
-  static std::unique_ptr<
-      security_interstitials::SecurityInterstitialControllerClient>
-  CreateControllerClient(
-      content::WebContents* web_contents,
-      const UnsafeResourceList& unsafe_resources,
-      BaseUIManager* ui_manager,
-      PrefService* pref_service,
-      std::unique_ptr<security_interstitials::SettingsPageHelper>
-          settings_page_helper);
 
   int GetHTMLTemplateId() override;
 

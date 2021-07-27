@@ -6,9 +6,9 @@
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_subresource_helper.h"
+#include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
 
 using content::BrowserThread;
 
@@ -56,9 +56,9 @@ SafeBrowsingUIManager::CreateBlockingPageForSubresource(
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource) {
   SafeBrowsingSubresourceHelper::CreateForWebContents(contents, this);
-  SafeBrowsingBlockingPage* blocking_page =
-      SafeBrowsingBlockingPage::CreateBlockingPage(this, contents, blocked_url,
-                                                   unsafe_resource);
+  WebLayerSafeBrowsingBlockingPageFactory factory;
+  SafeBrowsingBlockingPage* blocking_page = factory.CreateSafeBrowsingPage(
+      this, contents, blocked_url, unsafe_resource);
   return blocking_page;
 }
 

@@ -8,9 +8,9 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_handle.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
+#include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
 
 namespace weblayer {
 
@@ -29,10 +29,9 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
     security_interstitials::UnsafeResource resource;
     content::NavigationHandle* handle = navigation_handle();
     if (ui_manager_->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
-      SafeBrowsingBlockingPage* blocking_page =
-          SafeBrowsingBlockingPage::CreateBlockingPage(
-              ui_manager_, handle->GetWebContents(), handle->GetURL(),
-              resource);
+      WebLayerSafeBrowsingBlockingPageFactory factory;
+      SafeBrowsingBlockingPage* blocking_page = factory.CreateSafeBrowsingPage(
+          ui_manager_, handle->GetWebContents(), handle->GetURL(), resource);
       std::string error_page_content = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(handle->GetWebContents(),

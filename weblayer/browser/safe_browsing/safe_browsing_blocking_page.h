@@ -27,17 +27,10 @@ class SafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
 
-  static SafeBrowsingBlockingPage* CreateBlockingPage(
-      SafeBrowsingUIManager* ui_manager,
-      content::WebContents* web_contents,
-      const GURL& main_frame_url,
-      const UnsafeResource& unsafe_resource);
-
   // InterstitialPageDelegate methods:
   security_interstitials::SecurityInterstitialPage::TypeID GetTypeForTesting()
       override;
 
- private:
   SafeBrowsingBlockingPage(
       SafeBrowsingUIManager* ui_manager,
       content::WebContents* web_contents,
