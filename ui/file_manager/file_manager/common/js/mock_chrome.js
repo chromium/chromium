@@ -58,7 +58,10 @@ export class MockChromeStorageAPI {
       local: {
         get: this.get_.bind(this),
         set: this.set_.bind(this),
-      }
+      },
+      onChanged: {
+        addListener: function() {},
+      },
     };
   }
 

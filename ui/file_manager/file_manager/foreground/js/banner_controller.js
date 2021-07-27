@@ -4,7 +4,20 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
+
+/**
+ * Local storage key suffix for how many times a banner was shown.
+ * @type {string}
+ */
+const VIEW_COUNTER_SUFFIX = '_VIEW_COUNTER';
+
+/**
+ * Local storage key suffix for the last Date a banner was dismissed.
+ * @type {string}
+ */
+const LAST_DISMISSED_SUFFIX = '_LAST_DISMISSED';
 
 /**
  * The central component to the Banners Framework. The controller maintains the
@@ -16,9 +29,86 @@ export class BannerController extends EventTarget {
   constructor() {
     super();
 
-    /** @type {!Array<!Banner>} */
+    /**
+     * Warning banners ordered by priority. Index 0 is the highest priority.
+     * @private {!Array<!Banner|!HTMLElement>}
+     */
     this.warningBanners_ = [];
-    /** @type {!Array<!Banner>} */
+    /**
+     * Educational banners ordered by priority. Index 0 is the highest
+     * priority.
+     * @private {!Array<!Banner|!HTMLElement>}
+     */
     this.educationalBanners_ = [];
+
+    /**
+     * Stores the state of each banner, such as view count or last dismissed
+     * time. This is kept in sync with local storage.
+     * @private {!Object<string, number>}
+     */
+    this.localStorageCache_ = {};
+
+    xfm.storage.onChanged.addListener(this.onStorageChanged_.bind(this));
+  }
+
+  /**
+   * Ensure all banners are in priority order and any existing local storage
+   * values are retrieved.
+   * @return {Promise<void>}
+   */
+  async initialize() {
+    // TODO(benreich): Initialize banners in their priority order when
+    // implemented.
+
+    for (const banner of this.warningBanners_) {
+      this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
+      this.localStorageCache_[`${banner.tagName}_${LAST_DISMISSED_SUFFIX}`] = 0;
+    }
+
+    for (const banner of this.educationalBanners_) {
+      this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
+    }
+
+    const cacheKeys = Object.keys(this.localStorageCache_);
+
+    // TODO(crbug.com/1233372): Update xfm.storage.local.get method to async
+    // friendly syntax once implemented.
+    return new Promise((resolve, reject) => {
+      xfm.storage.local.get(cacheKeys, values => {
+        if (chrome.runtime.lastError) {
+          reject(
+              'Failed to load banner data from storage: ' +
+              chrome.runtime.lastError.message);
+          return;
+        }
+        for (const key of cacheKeys) {
+          const storedValue = parseInt(values[key], 10);
+          if (storedValue) {
+            this.localStorageCache_[key] = storedValue;
+          }
+        }
+        // TODO(benreich): Call the reconcile method here once the method has
+        // been implemented.
+        resolve();
+      });
+    });
+  }
+
+  /**
+   * Listens for localStorage changes to ensure instance cache is in sync.
+   * @param {!Object<string, !StorageChange>} changes Changes that occurred.
+   * @param {string} areaName One of "sync"|"local"|"managed".
+   * @private
+   */
+  onStorageChanged_(changes, areaName) {
+    if (areaName != 'local') {
+      return;
+    }
+
+    for (const key in changes) {
+      if (this.localStorageCache_.hasOwnProperty(key)) {
+        this.localStorageCache_[key] = changes[key].newValue;
+      }
+    }
   }
 }

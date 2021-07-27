@@ -196,8 +196,17 @@ js_library("actions_model") {
 
 js_library("banner_controller") {
   deps = [
+    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:banner",
     "//ui/webui/resources/js/cr:event_target.m",
+  ]
+}
+
+js_unittest("banner_controller_unittest.m") {
+  deps = [
+    ":banner_controller",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:xfm",
   ]
 }
 
@@ -1235,6 +1244,7 @@ js_test_gen_html("js_test_gen_html_modules") {
   is_polymer3 = true
   deps = [
     ":actions_model_unittest.m",
+    ":banner_controller_unittest.m",
     ":directory_contents_unittest.m",
     ":file_list_model_unittest.m",
     ":file_manager_commands_unittest.m",
