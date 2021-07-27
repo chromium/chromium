@@ -50,6 +50,7 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   bool CreatesNewFormattingContext() const override;
 
   // LayoutBlock override:
+  void Paint(const PaintInfo&) const override;
   void UpdateBlockLayout(bool relayout_children) override;
 
   void UpdateFont();

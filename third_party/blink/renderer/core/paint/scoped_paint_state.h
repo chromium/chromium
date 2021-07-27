@@ -51,11 +51,6 @@ class ScopedPaintState {
     if (properties->PaintOffsetTranslation()) {
       AdjustForPaintOffsetTranslation(object,
                                       *properties->PaintOffsetTranslation());
-    } else if (object.IsNGSVGText()) {
-      if (const auto* transform = properties->Transform()) {
-        adjusted_paint_info_.emplace(paint_info);
-        adjusted_paint_info_->TransformCullRect(*transform);
-      }
     }
   }
 

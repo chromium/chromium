@@ -1244,8 +1244,16 @@ void NGPhysicalBoxFragment::AddOutlineRects(
   DCHECK(IsOutlineOwner());
 
   // For anonymous blocks, the children add outline rects.
-  if (!IsAnonymousBlock())
-    outline_rects->emplace_back(additional_offset, Size().ToLayoutSize());
+  if (!IsAnonymousBlock()) {
+    if (IsSvgText()) {
+      if (const NGFragmentItems* items = Items()) {
+        outline_rects->emplace_back(PhysicalRect::EnclosingRect(
+            GetLayoutObject()->ObjectBoundingBox()));
+      }
+    } else {
+      outline_rects->emplace_back(additional_offset, Size().ToLayoutSize());
+    }
+  }
 
   if (outline_type == NGOutlineType::kIncludeBlockVisualOverflow &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
@@ -1307,7 +1315,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
 #if DCHECK_IS_ON()
     has_this_fragment = has_this_fragment || current.BoxFragment() == this;
 #endif
-    if (!current.Size().IsZero())
+    if (!current.Size().IsZero() && !current.GetLayoutObject()->IsSVG())
       rects->push_back(current.RectInContainerFragment());
 
     // Add descendants if any, in the container-relative coordinate.

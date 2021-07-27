@@ -13,6 +13,9 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
+#include "third_party/blink/renderer/core/paint/svg_model_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 
 namespace blink {
@@ -89,6 +92,35 @@ void LayoutNGSVGText::UpdateFont() {
        descendant = descendant->NextInPreOrder(this)) {
     if (auto* text = DynamicTo<LayoutSVGInlineText>(descendant))
       text->UpdateScaledFont();
+  }
+}
+
+void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
+  if (paint_info.phase != PaintPhase::kForeground &&
+      paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
+      paint_info.phase != PaintPhase::kSelectionDragImage) {
+    return;
+  }
+
+  PaintInfo block_info(paint_info);
+  if (const auto* properties = FirstFragment().PaintProperties()) {
+    if (const auto* transform = properties->Transform())
+      block_info.TransformCullRect(*transform);
+  }
+  ScopedSVGTransformState transform_state(block_info, *this);
+
+  if (block_info.phase == PaintPhase::kForeground)
+    SVGModelObjectPainter::RecordHitTestData(*this, block_info);
+
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::Paint(block_info);
+
+  // Svg doesn't follow HTML PaintPhases, but is implemented with HTML classes.
+  // The nearest self-painting layer is the containing <svg> element which is
+  // painted using ReplacedPainter and ignores kDescendantOutlinesOnly.
+  // Begin a fake kOutline to paint outlines, if any.
+  if (paint_info.phase == PaintPhase::kForeground) {
+    block_info.phase = PaintPhase::kOutline;
+    LayoutNGBlockFlowMixin<LayoutSVGBlock>::Paint(block_info);
   }
 }
 
