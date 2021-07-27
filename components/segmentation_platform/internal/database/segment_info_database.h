@@ -67,7 +67,7 @@ class SegmentInfoDatabase {
   // first read the currently stored result, and then overwrite it with
   // |result|. If |result| is null, the existing result will be deleted.
   virtual void SaveSegmentResult(OptimizationTarget segment_id,
-                                 proto::PredictionResult* result,
+                                 absl::optional<proto::PredictionResult> result,
                                  SuccessCallback callback);
 
  private:
@@ -81,7 +81,7 @@ class SegmentInfoDatabase {
                         bool success,
                         std::unique_ptr<proto::SegmentInfo> info);
   void OnGetSegmentInfoForUpdatingResults(
-      proto::PredictionResult* result,
+      absl::optional<proto::PredictionResult> result,
       SuccessCallback callback,
       absl::optional<proto::SegmentInfo> segment_info);
 

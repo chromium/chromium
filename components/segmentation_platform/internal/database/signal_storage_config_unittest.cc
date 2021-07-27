@@ -4,10 +4,13 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
+#include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "components/segmentation_platform/internal/proto/aggregation.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using InitStatus = leveldb_proto::Enums::InitStatus;
@@ -54,7 +57,9 @@ TEST_F(SignalStorageConfigTest,
        CheckMeetsSignalCollectionRequirementWithMultipleModels) {
   // Start with empty DB.
   SetUpDB();
-  signal_storage_config_->InitAndLoad(base::DoNothing());
+  base::MockCallback<SignalStorageConfig::SuccessCallback> init_callback;
+  EXPECT_CALL(init_callback, Run(true)).Times(1);
+  signal_storage_config_->InitAndLoad(init_callback.Get());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   db_->LoadCallback(true);
   EXPECT_EQ(0u, db_entries_.size());
@@ -76,9 +81,15 @@ TEST_F(SignalStorageConfigTest,
   uint64_t name_hash = 234;
   feature->set_type(proto::SignalType::USER_ACTION);
   feature->set_name_hash(name_hash);
+  feature->set_bucket_count(1);
+  feature->set_tensor_length(1);
+  feature->set_aggregation(proto::Aggregation::COUNT);
   proto::Feature* feature2 = metadata2.add_features();
   feature2->set_type(proto::SignalType::USER_ACTION);
   feature2->set_name_hash(name_hash);
+  feature2->set_bucket_count(1);
+  feature2->set_tensor_length(1);
+  feature2->set_aggregation(proto::Aggregation::COUNT);
 
   // The DB should be empty before the model is added.
   EXPECT_EQ(0u, db_entries_.size());
@@ -101,7 +112,7 @@ TEST_F(SignalStorageConfigTest,
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
   EXPECT_EQ(base::TimeDelta::FromDays(2).InSeconds(),
             signal_config.storage_length_s());
-  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+  EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Add the second model. It should do a overwrite of previous value.
   signal_storage_config_->OnSignalCollectionStarted(metadata2);
@@ -118,7 +129,7 @@ TEST_F(SignalStorageConfigTest,
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
   EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
             signal_config.storage_length_s());
-  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+  EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Signal collection shouldn't satisfy.
   EXPECT_FALSE(
@@ -131,14 +142,14 @@ TEST_F(SignalStorageConfigTest,
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
   EXPECT_FALSE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata2));
-  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+  EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // Advance clock by 2 days. Signal collection should be sufficient for the
   // first model.
   test_clock_.Advance(base::TimeDelta::FromDays(2));
   EXPECT_TRUE(
       signal_storage_config_->MeetsSignalCollectionRequirement(metadata));
-  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+  EXPECT_NE(0, signal_config.collection_start_time_s());
 
   // The second model shouldn't satisfy yet.
   EXPECT_FALSE(
@@ -159,7 +170,7 @@ TEST_F(SignalStorageConfigTest,
   EXPECT_EQ(proto::SignalType::USER_ACTION, signal_config.signal_type());
   EXPECT_EQ(base::TimeDelta::FromDays(6).InSeconds(),
             signal_config.storage_length_s());
-  EXPECT_TRUE(signal_config.has_collection_start_time_s());
+  EXPECT_NE(0, signal_config.collection_start_time_s());
 }
 
 TEST_F(SignalStorageConfigTest, CleanupSignals) {
@@ -198,9 +209,11 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
           .InSeconds());
   signal3->set_storage_length_s(base::TimeDelta::FromDays(5).InSeconds());
 
-  // Initialize DB.
+  // Initialize non-empty DB.
   db_entries_.insert({kDatabaseKey, config});
-  signal_storage_config_->InitAndLoad(base::DoNothing());
+  base::MockCallback<SignalStorageConfig::SuccessCallback> init_callback;
+  EXPECT_CALL(init_callback, Run(true)).Times(1);
+  signal_storage_config_->InitAndLoad(init_callback.Get());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   db_->LoadCallback(true);
   EXPECT_EQ(1u, db_entries_.size());

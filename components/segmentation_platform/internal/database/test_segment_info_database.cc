@@ -100,11 +100,12 @@ void TestSegmentInfoDatabase::UpdateSegment(
   std::move(callback).Run(true);
 }
 
-void TestSegmentInfoDatabase::SaveSegmentResult(OptimizationTarget segment_id,
-                                                proto::PredictionResult* result,
-                                                SuccessCallback callback) {
+void TestSegmentInfoDatabase::SaveSegmentResult(
+    OptimizationTarget segment_id,
+    absl::optional<proto::PredictionResult> result,
+    SuccessCallback callback) {
   proto::SegmentInfo* info = FindOrCreateSegment(segment_id);
-  if (result == nullptr) {
+  if (!result.has_value()) {
     info->clear_prediction_result();
   } else {
     auto* mutable_result = info->mutable_prediction_result();

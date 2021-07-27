@@ -51,11 +51,8 @@ int64_t SumValues(proto::SignalType signal_type,
     return base::saturated_cast<int64_t>(samples.size());
 
   int64_t sum = 0;
-  for (auto& sample : samples) {
-    // Assume no-value for histograms are 0-values.
-    if (sample.second.has_value())
-      sum = base::ClampAdd(sum, sample.second.value());
-  }
+  for (auto& sample : samples)
+    sum = base::ClampAdd(sum, sample.second);
 
   return sum;
 }
@@ -278,10 +275,9 @@ void FeatureAggregatorImpl::FilterEnumSamples(
 
   auto new_end = std::remove_if(
       samples.begin(), samples.end(), [&accepted_enum_ids](Sample sample) {
-        DCHECK(sample.second.has_value());
         auto found =
             std::find(accepted_enum_ids.begin(), accepted_enum_ids.end(),
-                      sample.second.value()) != accepted_enum_ids.end();
+                      sample.second) != accepted_enum_ids.end();
         return !found;
       });
   samples.erase(new_end, samples.end());

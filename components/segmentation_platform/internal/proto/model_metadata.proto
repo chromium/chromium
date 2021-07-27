@@ -58,24 +58,22 @@ message SegmentationModelMetadata {
   repeated Feature features = 1;
 
   // The time unit to be used for the rest of this proto.
-  optional TimeUnit time_unit = 2 [default = DAY];
+  optional TimeUnit time_unit = 2;
 
   // The size of each interval the data should be aggregated over.
-  // This defaults to 1 day.
-  optional uint64 bucket_duration = 3 [default = 1];
+  optional uint64 bucket_duration = 3;
 
-  // For how long should data be stored for this model. Default is 28 days.
-  optional int64 signal_storage_length = 4 [default = 28];
+  // For how long should data be stored for this model.
+  optional int64 signal_storage_length = 4;
 
   // For how long do we have to have captured data for this model. If the
   // relevant signals have been captured for a shorter amount of time than this,
-  // this model can never be selected. Default is 14 days.
-  optional int64 min_signal_collection_length = 5 [default = 14];
+  // this model can never be selected.
+  optional int64 min_signal_collection_length = 5;
 
   // Describes how long after a valid result has been calculated for this model
   // it is OK to cache the result without recalculating with updated data.
-  // Default is 7 days.
-  optional int64 result_time_to_live = 6 [default = 7];
+  optional int64 result_time_to_live = 6;
 
   message DiscreteMapping {
     // A mapping result from the raw continuous result to a discrete and
