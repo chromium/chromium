@@ -96,7 +96,6 @@ bool IsValidBufferFormat(uint32_t current_format) {
     default:
       return false;
   }
-  return false;
 }
 
 }  // namespace ui

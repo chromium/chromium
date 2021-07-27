@@ -46,9 +46,10 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
   }
   return std::make_unique<BrowserFrameViewLinux>(
       frame, browser_view, new BrowserFrameViewLayoutLinux());
-#endif
+#else
   return std::make_unique<OpaqueBrowserFrameView>(
       frame, browser_view, new OpaqueBrowserFrameViewLayout());
+#endif
 }
 
 }  // namespace

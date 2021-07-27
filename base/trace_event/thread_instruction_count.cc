@@ -92,8 +92,9 @@ bool ThreadInstructionCount::IsSupported() {
     return false;
 
   return true;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#else
   return false;
+#endif
 }
 
 ThreadInstructionCount ThreadInstructionCount::Now() {

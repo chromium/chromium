@@ -56,9 +56,9 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
 
 #if defined(OS_MAC)
   return ui::WindowResizeHelperMac::Get()->task_runner();
-#endif
-
+#else
   return GetUIThreadTaskRunner({});
+#endif
 }
 
 }  // namespace

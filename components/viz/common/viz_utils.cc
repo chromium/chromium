@@ -21,8 +21,9 @@ namespace viz {
 bool PreferRGB565ResourcesForDisplay() {
 #if defined(OS_ANDROID)
   return base::SysInfo::AmountOfPhysicalMemoryMB() <= 512;
-#endif
+#else
   return false;
+#endif
 }
 
 #if defined(OS_ANDROID)

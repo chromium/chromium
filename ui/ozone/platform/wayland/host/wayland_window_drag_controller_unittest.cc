@@ -206,7 +206,6 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
         FAIL() << " event=" << event->GetName()
                << " state=" << drag_controller()->state()
                << " step=" << static_cast<int>(test_step);
-        return;
     }
   });
 
@@ -294,7 +293,6 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
         FAIL() << " event=" << event->GetName()
                << " state=" << drag_controller()->state()
                << " step=" << static_cast<int>(test_step);
-        return;
     }
   });
 
@@ -384,7 +382,6 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
         FAIL() << " event=" << event->GetName()
                << " state=" << drag_controller()->state()
                << " step=" << static_cast<int>(test_step);
-        return;
     }
   });
 
@@ -492,7 +489,6 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
         FAIL() << " event=" << event->GetName()
                << " state=" << drag_controller()->state()
                << " step=" << static_cast<int>(test_step);
-        return;
     }
   });
 
@@ -555,7 +551,6 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
         FAIL() << " event=" << event->GetName()
                << " state=" << drag_controller()->state()
                << " step=" << static_cast<int>(test_step);
-        return;
     }
   });
   Sync();
@@ -718,7 +713,6 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         FAIL() << " event=" << event->ToString()
                << " state=" << drag_controller()->state()
                << " step=" << static_cast<int>(test_step);
-        return;
     }
   });
 

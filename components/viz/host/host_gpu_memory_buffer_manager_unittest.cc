@@ -52,8 +52,9 @@ bool MustSignalGmbConfigReadyForTest() {
   // X11 requires GPU process initialization to determine GMB support.
   DCHECK(!features::IsUsingOzonePlatform());
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 class TestGpuService : public mojom::GpuService {

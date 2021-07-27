@@ -53,8 +53,9 @@ bool WillGetGmbConfigFromGpu() {
   // non-Ozone/X11 must always get native configs on gpu.
   DCHECK(!features::IsUsingOzonePlatform());
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace

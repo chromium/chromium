@@ -192,26 +192,27 @@ scoped_refptr<VideoFrame> ImageProcessorClient::CreateOutputFrame(
     return VideoFrame::CreateFrameWithLayout(
         *output_layout, gfx::Rect(output_image.Size()), output_image.Size(),
         base::TimeDelta(), false /* zero_initialize_memory*/);
-  } else {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    ASSERT_TRUE_OR_RETURN_NULLPTR(
-        output_storage_type == VideoFrame::STORAGE_DMABUFS ||
-        output_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-    scoped_refptr<VideoFrame> output_frame = CreatePlatformVideoFrame(
-        gpu_memory_buffer_factory_.get(), output_layout->format(),
-        output_layout->coded_size(), gfx::Rect(output_image.Size()),
-        output_image.Size(), base::TimeDelta(),
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-
-    if (output_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-      output_frame = CreateGpuMemoryBufferVideoFrame(
-          gpu_memory_buffer_factory_.get(), output_frame.get(),
-          gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-    }
-    return output_frame;
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    return nullptr;
   }
+
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+  ASSERT_TRUE_OR_RETURN_NULLPTR(
+      output_storage_type == VideoFrame::STORAGE_DMABUFS ||
+      output_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  scoped_refptr<VideoFrame> output_frame = CreatePlatformVideoFrame(
+      gpu_memory_buffer_factory_.get(), output_layout->format(),
+      output_layout->coded_size(), gfx::Rect(output_image.Size()),
+      output_image.Size(), base::TimeDelta(),
+      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+
+  if (output_storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    output_frame = CreateGpuMemoryBufferVideoFrame(
+        gpu_memory_buffer_factory_.get(), output_frame.get(),
+        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+  }
+  return output_frame;
+#else
+  return nullptr;
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 }
 
 void ImageProcessorClient::FrameReady(size_t frame_index,

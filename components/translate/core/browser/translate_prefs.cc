@@ -766,8 +766,9 @@ bool TranslatePrefs::IsDetailedLanguageSettingsEnabled() {
 #elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   return base::FeatureList::IsEnabled(
       language::kDesktopDetailedLanguageSettings);
-#endif
+#else
   return false;
+#endif
 }
 
 bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece source_language,

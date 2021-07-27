@@ -40,8 +40,9 @@ bool GetCustomFramePrefDefault() {
 #endif  // defined(USE_OZONE)
 #if defined(USE_X11)
   return ui::GetCustomFramePrefDefault();
-#endif  // defined(USE_X11)
+#else
   return false;
+#endif  // defined(USE_X11)
 }
 #endif
 

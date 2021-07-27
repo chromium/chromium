@@ -53,13 +53,10 @@ bool ShouldHonorPolicies() {
                base::MacDeviceManagementStateNew::kLimitedMDMEnrollment ||
            mdm_state == base::MacDeviceManagementStateNew::kFullMDMEnrollment ||
            mdm_state == base::MacDeviceManagementStateNew::kDEPMDMEnrollment;
-  } else {
-    base::MacDeviceManagementStateOld mdm_state =
-        base::IsDeviceRegisteredWithManagementOld();
-    return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
   }
-
-  return false;
+  base::MacDeviceManagementStateOld mdm_state =
+      base::IsDeviceRegisteredWithManagementOld();
+  return mdm_state == base::MacDeviceManagementStateOld::kMDMEnrollment;
 }
 
 }  // namespace

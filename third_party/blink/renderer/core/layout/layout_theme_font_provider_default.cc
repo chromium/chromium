@@ -65,7 +65,6 @@ float LayoutThemeFontProvider::SystemFontSize(CSSValueID system_font_id,
       static const float kPixelsPerInch = 96.0f;
       return DefaultFontSize(document) -
              (2.0f / kPointsPerInch) * kPixelsPerInch;
-      break;
     default:
       return DefaultFontSize(document);
   }

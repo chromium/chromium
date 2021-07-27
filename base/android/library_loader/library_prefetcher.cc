@@ -240,7 +240,6 @@ PrefetchStatus ForkAndPrefetch(bool ordered_only) {
           case SIGSEGV:
           case SIGBUS:
             return PrefetchStatus::kChildProcessCrashed;
-            break;
           case SIGKILL:
           case SIGTERM:
           default:

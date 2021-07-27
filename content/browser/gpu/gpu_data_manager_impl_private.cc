@@ -113,8 +113,9 @@ bool CanUpdateGmbGpuPreferences() {
 #if defined(USE_X11)
   DCHECK(!features::IsUsingOzonePlatform());
   return false;
-#endif
+#else
   return true;
+#endif
 }
 
 #if defined(OS_ANDROID)

@@ -43,8 +43,9 @@ std::string ToDBusKeySym(ui::KeyboardCode code) {
   return base::UTF16ToUTF8(
       std::u16string(1, ui::GetUnicodeCharacterFromXKeySym(
                             XKeysymForWindowsKeyCode(code, false))));
-#endif
+#else
   return {};
+#endif
 }
 
 std::vector<DbusString> GetDbusMenuShortcut(ui::Accelerator accelerator) {

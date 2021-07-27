@@ -475,8 +475,9 @@ bool PosixSystemProducer::SkipIfOnAndroidAndPreAndroidPie() const {
   return disallow_pre_android_pie_ &&
          base::android::BuildInfo::GetInstance()->sdk_int() <
              base::android::SDK_VERSION_P;
-#endif  // defined(OS_ANDROID)
+#else
   return false;
+#endif  // defined(OS_ANDROID)
 }
 
 void PosixSystemProducer::InvokeStoredOnDisconnectCallbacks() {

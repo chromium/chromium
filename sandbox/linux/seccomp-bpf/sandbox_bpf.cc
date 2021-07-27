@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -171,7 +172,6 @@ bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level, bool enable_ibpb) {
     if (!supports_tsync) {
       SANDBOX_DIE("Cannot start sandbox; kernel does not support synchronizing "
                   "filters for a threadgroup");
-      return false;
     }
   }
 

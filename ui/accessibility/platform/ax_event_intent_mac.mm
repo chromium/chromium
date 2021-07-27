@@ -172,7 +172,6 @@ AXTextStateChangeIntent FromEventIntent(const AXEventIntent& event_intent) {
         default:
           return AXTextStateChangeIntent(AXTextEditType::kDelete);
       }
-      break;
     case ax::mojom::Command::kDictate:
       return AXTextStateChangeIntent(AXTextEditType::kDictation);
     case ax::mojom::Command::kExtendSelection:
@@ -198,7 +197,6 @@ AXTextStateChangeIntent FromEventIntent(const AXEventIntent& event_intent) {
         default:
           return AXTextStateChangeIntent(AXTextEditType::kInsert);
       }
-      break;
     case ax::mojom::Command::kMarker:
       return AXTextStateChangeIntent();  // Not currently implemented on Mac.
     case ax::mojom::Command::kMoveSelection:

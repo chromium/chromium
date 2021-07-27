@@ -37,7 +37,6 @@ BluetoothAdvertisementMonitorServiceProvider::Create(
   return std::make_unique<FakeBluetoothAdvertisementMonitorServiceProvider>(
       object_path, delegate);
 #endif  // defined(USE_REAL_DBUS_CLIENTS)
-  return nullptr;
 }
 
 }  // namespace bluez

@@ -45,7 +45,6 @@ bool IsNonClientComponent(int hittest) {
     default:
       return false;
   }
-  return true;
 }
 
 #if defined(USE_X11)

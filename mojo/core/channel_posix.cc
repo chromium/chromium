@@ -709,15 +709,14 @@ scoped_refptr<Channel> Channel::Create(
     ConnectionParams connection_params,
     HandlePolicy handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
-#if !defined(OS_NACL)
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+#if !defined(OS_NACL) && \
+    (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
   return new ChannelLinux(delegate, std::move(connection_params), handle_policy,
                           io_task_runner);
-#endif
-#endif
-
+#else
   return new ChannelPosix(delegate, std::move(connection_params), handle_policy,
                           io_task_runner);
+#endif
 }
 
 #if !defined(OS_NACL)

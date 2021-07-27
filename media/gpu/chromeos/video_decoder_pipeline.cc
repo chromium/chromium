@@ -190,8 +190,9 @@ VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
   return VideoDecoderType::kVaapi;
 #elif BUILDFLAG(USE_V4L2_CODEC)
   return VideoDecoderType::kV4L2;
-#endif
+#else
   return VideoDecoderType::kUnknown;
+#endif
 }
 
 bool VideoDecoderPipeline::IsPlatformDecoder() const {

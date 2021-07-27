@@ -38,8 +38,6 @@ bool GetThreadContextImpl(thread_act_t target_thread, RegisterContext* state) {
   return thread_get_state(target_thread, kThreadStateFlavor,
                           reinterpret_cast<thread_state_t>(state),
                           &count) == KERN_SUCCESS;
-
-  return false;
 }
 
 }  // namespace

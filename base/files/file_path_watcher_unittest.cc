@@ -4,13 +4,6 @@
 
 #include "base/files/file_path_watcher.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#include <aclapi.h>
-#elif defined(OS_POSIX)
-#include <sys/stat.h>
-#endif
-
 #include <memory>
 #include <set>
 #include <string>
@@ -36,6 +29,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if defined(OS_WIN)
+#include <windows.h>
+#include <aclapi.h>
+#elif defined(OS_POSIX)
+#include <sys/stat.h>
+#endif
 
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
@@ -833,10 +833,8 @@ TEST_F(FilePathWatcherTest, LinkedDirectoryPart3) {
 // `g_inotify_reader` due to a race in recursive watch.
 // See https://crbug.com/990004.
 TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
-  if (!FilePathWatcher::RecursiveWatchAvailable()) {
+  if (!FilePathWatcher::RecursiveWatchAvailable())
     GTEST_SKIP();
-    return;
-  }
 
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
 

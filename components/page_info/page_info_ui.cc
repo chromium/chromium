@@ -643,7 +643,6 @@ std::u16string PageInfoUI::PermissionStateToUIString(
       break;
     case CONTENT_SETTING_ASK:
       return GetPermissionAskStateString(permission.type);
-      break;
     default:
       NOTREACHED();
   }

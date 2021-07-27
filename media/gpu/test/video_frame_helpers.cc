@@ -198,7 +198,6 @@ bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,
                                 src_frame->visible_data(VideoFrame::kUPlane),
                                 src_frame->stride(VideoFrame::kUPlane),
                                 dst_argb, dst_stride, width, height) == 0;
-      break;
     default:
       LOG(ERROR) << "Unsupported input format: " << src_frame->format();
       return false;

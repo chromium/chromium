@@ -173,8 +173,9 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 GLImplementationParts GetSoftwareGLForTestsImplementation() {
 #if defined(OS_WIN) || defined(OS_LINUX)
   return GetSoftwareGLImplementation();
-#endif
+#else
   return GetLegacySoftwareGLImplementation();
+#endif
 }
 
 GLImplementationParts GetSoftwareGLForHeadlessImplementation() {

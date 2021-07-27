@@ -45,9 +45,9 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
 
 #if BUILDFLAG(USE_VAAPI)
   return VaapiDmaBufVideoFrameMapper::Create(format);
-#endif  // BUILDFLAG(USE_VAAPI)
-
+#else
   return nullptr;
+#endif  // BUILDFLAG(USE_VAAPI)
 }
 
 }  // namespace media

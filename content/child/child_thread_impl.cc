@@ -223,13 +223,11 @@ mojo::IncomingInvitation InitializeMojoIPCChannel() {
   if (!client) {
     LOG(ERROR) << "Mach rendezvous failed, terminating process (parent died?)";
     base::Process::TerminateCurrentProcessImmediately(0);
-    return {};
   }
   auto receive = client->TakeReceiveRight('mojo');
   if (!receive.is_valid()) {
     LOG(ERROR) << "Invalid PlatformChannel receive right";
     base::Process::TerminateCurrentProcessImmediately(0);
-    return {};
   }
   endpoint =
       mojo::PlatformChannelEndpoint(mojo::PlatformHandle(std::move(receive)));
@@ -585,7 +583,6 @@ void ChildThreadImpl::Init(const Options& options) {
     if (!invitation.is_valid()) {
       LOG(ERROR) << "Child process could not find its Mojo invitation";
       base::Process::TerminateCurrentProcessImmediately(0);
-      return;
     }
     child_process_pipe_for_receiver =
         invitation.ExtractMessagePipe(kChildProcessReceiverAttachmentName);

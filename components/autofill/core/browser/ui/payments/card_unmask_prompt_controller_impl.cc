@@ -330,8 +330,9 @@ bool CardUnmaskPromptControllerImpl::ShouldDismissUnmaskPromptUponResult(
   // instead show a different error dialog.
   return result == AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE ||
          result == AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
-#endif  // OS_ANDROID
+#else
   return false;
+#endif  // OS_ANDROID
 }
 
 void CardUnmaskPromptControllerImpl::LogOnCloseEvents() {

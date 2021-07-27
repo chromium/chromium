@@ -1998,7 +1998,6 @@ Profile* RunInSafeProfileHelper::GetSafeProfile(Profile* loaded_profile,
       FALLTHROUGH;
     case Profile::CREATE_STATUS_LOCAL_FAIL:
       return nullptr;
-      break;
   }
   AppController* controller =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);

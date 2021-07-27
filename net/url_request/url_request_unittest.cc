@@ -10439,11 +10439,13 @@ class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
 static bool UsingBuiltinCertVerifier() {
 #if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   return true;
-#elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+#else
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature))
     return true;
 #endif
   return false;
+#endif
 }
 
 // SystemSupportsHardFailRevocationChecking returns true iff the current

@@ -36,8 +36,9 @@ std::unique_ptr<views::LinuxUI> BuildLinuxUI() {
   // GtkUi is the only LinuxUI implementation for now.
 #if BUILDFLAG(USE_GTK)
   return BuildGtkUi();
-#endif
+#else
   return nullptr;
+#endif
 }
 
 }  // namespace

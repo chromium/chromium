@@ -127,8 +127,9 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForVariations() {
 sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForSbix() {
 #if defined(OS_MAC)
   return DefaultFontManager();
-#endif
+#else
   return FreeTypeFontManager();
+#endif
 }
 
 sk_sp<SkFontMgr> WebFontTypefaceFactory::DefaultFontManager() {

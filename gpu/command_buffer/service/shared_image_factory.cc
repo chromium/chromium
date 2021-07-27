@@ -84,8 +84,9 @@ bool ShouldUseExternalVulkanImageFactory() {
 #endif
 #if defined(USE_X11)
   return true;
-#endif
+#else
   return false;
+#endif
 }
 
 }  // namespace

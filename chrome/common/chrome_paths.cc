@@ -341,7 +341,6 @@ bool PathProvider(int key, base::FilePath* result) {
       cur = base::mac::FrameworkBundlePath();
       cur = cur.Append(FILE_PATH_LITERAL("Resources"))
                .Append(FILE_PATH_LITERAL("resources.pak"));
-      break;
 #elif defined(OS_ANDROID)
       if (!base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &cur))
         return false;
