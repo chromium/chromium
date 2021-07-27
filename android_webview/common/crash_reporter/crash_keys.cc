@@ -57,9 +57,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // Navigation
     "VerifyDidCommit-prev_ldwb",
     "VerifyDidCommit-prev_ldwbu",
-    "VerifyDidCommit-base_url_fdu_empty",
+    "VerifyDidCommit-base_url_fdu_type",
     "VerifyDidCommit-data_url_empty",
-    "VerifyDidCommit-history_url_fdu_empty",
+    "VerifyDidCommit-history_url_fdu_type",
 
     "VerifyDidCommit-intended_browser",
     "VerifyDidCommit-intended_renderer",
@@ -90,6 +90,10 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "VerifyDidCommit-replace_browser",
     "VerifyDidCommit-replace_renderer",
 
+    "VerifyDidCommit-url_relation",
+    "VerifyDidCommit-url_browser_type",
+    "VerifyDidCommit-url_renderer_type",
+
     "VerifyDidCommit-is_same_document",
     "VerifyDidCommit-is_history_api",
     "VerifyDidCommit-renderer_initiated",
@@ -113,18 +117,10 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "VerifyDidCommit-has_gesture",
     "VerifyDidCommit-was_click",
 
-    "VerifyDidCommit-nav_url_blank",
-    "VerifyDidCommit-nav_url_srcdoc",
-    "VerifyDidCommit-nav_url_blocked",
-    "VerifyDidCommit-nav_url_error",
-
     "VerifyDidCommit-original_same_doc",
 
     "VerifyDidCommit-committed_real_load",
-    "VerifyDidCommit-last_url_empty",
-    "VerifyDidCommit-last_url_blank",
-    "VerifyDidCommit-last_url_srcdoc",
-    "VerifyDidCommit-last_url_error",
+    "VerifyDidCommit-last_url_type",
 
     "VerifyDidCommit-last_method",
     "VerifyDidCommit-last_code",
