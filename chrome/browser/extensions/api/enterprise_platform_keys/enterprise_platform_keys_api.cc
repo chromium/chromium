@@ -325,20 +325,20 @@ ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGetTokensFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetList().empty());
 
-  std::string error = ValidateCrosapi(KeystoreService::kGetKeyStoresMinVersion,
-                                      browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kDEPRECATED_GetKeyStoresMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
 
   auto c = base::BindOnce(
       &EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores, this);
-  GetKeystoreService(browser_context())->GetKeyStores(std::move(c));
+  GetKeystoreService(browser_context())->DEPRECATED_GetKeyStores(std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysInternalGetTokensFunction::OnGetKeyStores(
-    crosapi::mojom::GetKeyStoresResultPtr result) {
+    crosapi::mojom::DEPRECATED_GetKeyStoresResultPtr result) {
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;

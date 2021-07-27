@@ -63,7 +63,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       mojom::KeystoreType type,
       bool migrate,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
-  void GetKeyStores(GetKeyStoresCallback callback) override;
+  void DEPRECATED_GetKeyStores(
+      DEPRECATED_GetKeyStoresCallback callback) override;
   void SelectClientCertificates(
       const std::vector<std::vector<uint8_t>>& certificate_authorities,
       SelectClientCertificatesCallback callback) override;
@@ -138,8 +139,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge,
       const ash::attestation::TpmChallengeKeyResult& result);
-  static void DidGetKeyStores(
-      GetKeyStoresCallback callback,
+  static void DEPRECATED_DidGetKeyStores(
+      DEPRECATED_GetKeyStoresCallback callback,
       std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
           platform_keys_token_ids,
       chromeos::platform_keys::Status status);

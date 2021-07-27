@@ -87,7 +87,7 @@ class EnterprisePlatformKeysInternalGetTokensFunction
   ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
   ResponseAction Run() override;
 
-  void OnGetKeyStores(crosapi::mojom::GetKeyStoresResultPtr result);
+  void OnGetKeyStores(crosapi::mojom::DEPRECATED_GetKeyStoresResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
 };
