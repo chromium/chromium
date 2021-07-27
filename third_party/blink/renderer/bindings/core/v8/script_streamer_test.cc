@@ -359,7 +359,10 @@ TEST_F(ScriptStreamingTest, DISABLED_SuppressingStreaming) {
   SingleCachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
   cache_handler->DisableSendToPlatformForTesting();
-  cache_handler->SetCachedMetadata(V8CodeCache::TagForCodeCache(cache_handler),
+  // CodeCacheHost can be nullptr since we disabled sending data to
+  // GeneratedCodeCacheHost for testing.
+  cache_handler->SetCachedMetadata(/*code_cache_host*/ nullptr,
+                                   V8CodeCache::TagForCodeCache(cache_handler),
                                    reinterpret_cast<const uint8_t*>("X"), 1);
 
   AppendData("function foo() {");

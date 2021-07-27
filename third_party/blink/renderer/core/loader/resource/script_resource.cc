@@ -202,8 +202,10 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
 
 void ScriptResource::DestroyDecodedDataIfPossible() {
   if (cached_metadata_handler_) {
+    // Since we are clearing locally we don't need a CodeCacheHost interface
+    // here. It just clears the data in the cached_metadata_handler.
     cached_metadata_handler_->ClearCachedMetadata(
-        CachedMetadataHandler::kClearLocally);
+        /*code_cache_host*/ nullptr, CachedMetadataHandler::kClearLocally);
   }
 }
 

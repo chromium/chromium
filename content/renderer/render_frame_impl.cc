@@ -3858,10 +3858,14 @@ void RenderFrameImpl::DidCommitNavigation(
   ui::PageTransition transition =
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
 
-  if (pending_code_cache_host_) {
-    frame_->GetDocumentLoader()->SetCodeCacheHost(
-        std::move(pending_code_cache_host_));
-  }
+  // When NavigationThreadingOptimizations feature is not enabled
+  // pending_code_cache_host_ could be nullptr. In such cases the code cache
+  // host interface is requested lazily via BrowserInterfaceBroker when
+  // required. When pending_code_cache_host_ is nullptr this method just resets
+  // any earlier code cache host interface. Since we are committing a new
+  // navigation any interfaces requested prior to this point should not be used.
+  frame_->GetDocumentLoader()->SetCodeCacheHost(
+      std::move(pending_code_cache_host_));
 
   DidCommitNavigationInternal(
       commit_type, transition, permissions_policy_header,

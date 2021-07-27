@@ -2748,7 +2748,11 @@ blink::mojom::CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
     if (GetDisableCodeCacheForTesting()) {
       return nullptr;
     }
-    GetFrame()->Client()->GetBrowserInterfaceBroker().GetInterface(
+    // TODO(crbug.com/1083097) When NavigationThreadingOptimizations feature is
+    // enabled by default CodeCacheHost interface will be sent along with
+    // CommitNavigation message and the following code would not be required and
+    // we should just return nullptr here.
+    GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
         code_cache_host_.BindNewPipeAndPassReceiver());
     code_cache_host_.set_disconnect_handler(WTF::Bind(
         &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
@@ -2763,9 +2767,14 @@ void DocumentLoader::OnCodeCacheHostClosed() {
 void DocumentLoader::SetCodeCacheHost(
     mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
   code_cache_host_.reset();
-  code_cache_host_.Bind(std::move(code_cache_host));
-  code_cache_host_.set_disconnect_handler(WTF::Bind(
-      &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
+  // When NavigationThreadingOptimizations feature is disabled, code_cache_host
+  // can be a nullptr. When this feature is turned off the CodeCacheHost
+  // interface is requested via BrowserBrokerInterface when required.
+  if (code_cache_host) {
+    code_cache_host_.Bind(std::move(code_cache_host));
+    code_cache_host_.set_disconnect_handler(WTF::Bind(
+        &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
+  }
 }
 
 // static

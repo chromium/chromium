@@ -19,9 +19,9 @@
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 using ::testing::_;
@@ -51,7 +51,8 @@ class MockCachedMetadataSender : public CachedMetadataSender {
  public:
   MockCachedMetadataSender() = default;
 
-  MOCK_METHOD2(Send, void(const uint8_t*, size_t));
+  MOCK_METHOD3(Send,
+               void(blink::mojom::CodeCacheHost*, const uint8_t*, size_t));
   bool IsServedFromCacheStorage() override { return false; }
 };
 
@@ -179,7 +180,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
         break;
 
       case 1:
@@ -189,7 +190,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
         break;
 
       case 2:
@@ -234,7 +235,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
 
   // As code cache is mismatched and rejected by V8, the CachedMetadata are
   // cleared and notified to Platform.
-  EXPECT_CALL(*sender_ptr, Send(_, _));
+  EXPECT_CALL(*sender_ptr, Send(_, _, _));
   EXPECT_CALL(checkpoint, Call(4));
 
   // In actual cases CachedMetadataHandler and its code cache data are passed
@@ -303,7 +304,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kSetTimeStamp,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
         break;
 
       case 1:
@@ -313,7 +314,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
         EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
         EXPECT_EQ(V8CodeCache::ProduceCacheOptions::kProduceCodeCache,
                   GetProduceCacheOptions(module_script));
-        EXPECT_CALL(*sender_ptr, Send(_, _));
+        EXPECT_CALL(*sender_ptr, Send(_, _, _));
         break;
 
       case 2:

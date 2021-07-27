@@ -250,9 +250,17 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     if (serialized_data.size() < serialized_module.size)
       return;
 
-    Platform::Current()->CacheMetadata(
-        mojom::CodeCacheType::kWebAssembly, KURL(response_url_), response_time_,
-        serialized_data.data(), serialized_data.size());
+    // TODO(mythria): Also support using context specific code cache host here.
+    // When we pass nullptr for CodeCacheHost we use per-process interface.
+    // Currently this code is run on a thread started via a Platform::PostJob.
+    // So it isn't safe to use CodeCacheHost interface that was bound on the
+    // frame / worker threads. We should instead post a task back to the frame /
+    // worker threads with the required data which can then write to generated
+    // code caches.
+    CachedMetadataSender::SendToCodeCacheHost(
+        /*code_cache_host*/ nullptr, mojom::blink::CodeCacheType::kWebAssembly,
+        response_url_, response_time_, serialized_data.data(),
+        serialized_data.size());
   }
 
   void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
@@ -350,7 +358,15 @@ void StreamFromResponseCallback(
         TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                              "v8.wasm.moduleCacheInvalid",
                              TRACE_EVENT_SCOPE_THREAD);
+        // TODO(mythria): Also support using context specific code cache host
+        // here. When we pass nullptr for CodeCacheHost we use per-process
+        // interface. Currently this code is run on a thread started via a
+        // Platform::PostJob. So it isn't safe to use CodeCacheHost interface
+        // that was bound on the frame / worker threads. We should instead post
+        // a task back to the frame / worker threads with the required data
+        // which can then write to generated code caches.
         cache_handler->ClearCachedMetadata(
+            /*code_cache_host*/ nullptr,
             CachedMetadataHandler::kClearPersistentStorage);
       }
     }

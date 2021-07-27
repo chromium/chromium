@@ -187,6 +187,7 @@ namespace content {
 class ServiceWorkerContainerHost;
 class AgentSchedulingGroupHost;
 class AppCacheNavigationHandle;
+class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
 class FeatureObserver;
 class FrameTree;
@@ -276,6 +277,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Clears the all prefetched cached signed exchanges.
   static void ClearAllPrefetchedSignedExchangeCache();
+
+  // TODO(crbug.com/1213818): Get/SetCodeCacheHostReceiverHandler are used only
+  // for a test in content/browser/service_worker/service_worker_browsertest
+  // that tests a bad message is returned on an incorrect origin. Try to find a
+  // way to test this without adding these additional methods.
+  // Allows external code to supply a callback that is invoked immediately
+  // after the CodeCacheHostImpl is created and bound.  Used for swapping
+  // the binding for a test version of the service.
+  using CodeCacheHostReceiverHandler = base::RepeatingCallback<void(
+      CodeCacheHostImpl*,
+      mojo::ReceiverId,
+      mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>&)>;
+  static void SetCodeCacheHostReceiverHandlerForTesting(
+      CodeCacheHostReceiverHandler handler);
 
   ~RenderFrameHostImpl() override;
 

@@ -1362,6 +1362,23 @@ void RenderFrameHostImpl::ClearAllPrefetchedSignedExchangeCache() {
     it.second->ClearPrefetchedSignedExchangeCache();
 }
 
+// TODO(crbug.com/1213818): Get/SetCodeCacheHostReceiverHandler are used only
+// for a test in content/browser/service_worker/service_worker_browsertest
+// that tests a bad message is returned on an incorrect origin. Try to find a
+// way to test this without adding these additional methods.
+RenderFrameHostImpl::CodeCacheHostReceiverHandler&
+GetCodeCacheHostReceiverHandler() {
+  static base::NoDestructor<RenderFrameHostImpl::CodeCacheHostReceiverHandler>
+      instance;
+  return *instance;
+}
+
+// static
+void RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
+    CodeCacheHostReceiverHandler handler) {
+  GetCodeCacheHostReceiverHandler() = handler;
+}
+
 RenderFrameHostImpl::RenderFrameHostImpl(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> render_view_host,
@@ -8941,7 +8958,8 @@ void RenderFrameHostImpl::CreateInstalledAppProvider(
 void RenderFrameHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(GetProcess()->GetID(), std::move(receiver));
+  code_cache_host_receivers_.Add(GetProcess()->GetID(), std::move(receiver),
+                                 GetCodeCacheHostReceiverHandler());
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(

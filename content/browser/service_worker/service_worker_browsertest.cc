@@ -34,7 +34,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
@@ -2418,7 +2417,7 @@ class CodeCacheHostInterceptor
 
  private:
   // These can be held as raw pointers since we use the
-  // RenderProcessHostObserver interface to clear them before they are
+  // RenderFrameHostObserver interface to clear them before they are
   // destroyed.
   CodeCacheHostImpl* code_cache_host_impl_;
 };
@@ -2466,7 +2465,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
       : cache_storage_control_(
             std::make_unique<CacheStorageControlForBadOrigin>()) {
     // Register a callback to be notified of new CodeCacheHostImpl objects.
-    RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
+    RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
         base::BindRepeating(
             &ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest::
                 CreateTestCodeCacheHost,
@@ -2484,8 +2483,8 @@ class ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest
 
   ~ServiceWorkerV8CodeCacheForCacheStorageBadOriginTest() override {
     // Disable the callback now that this object is being destroyed.
-    RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
-        RenderProcessHostImpl::CodeCacheHostReceiverHandler());
+    RenderFrameHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
+        RenderFrameHostImpl::CodeCacheHostReceiverHandler());
   }
 
   void CreateTestCodeCacheHost(

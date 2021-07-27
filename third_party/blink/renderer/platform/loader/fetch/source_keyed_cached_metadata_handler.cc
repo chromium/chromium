@@ -25,22 +25,24 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   SingleKeyHandler(SourceKeyedCachedMetadataHandler* parent, Key key)
       : parent_(parent), key_(key) {}
 
-  void SetCachedMetadata(uint32_t data_type_id,
+  void SetCachedMetadata(blink::mojom::CodeCacheHost* code_cache_host,
+                         uint32_t data_type_id,
                          const uint8_t* data,
                          size_t size) override {
     DCHECK(!parent_->cached_metadata_map_.Contains(key_));
     parent_->cached_metadata_map_.insert(
         key_, CachedMetadata::Create(data_type_id, data, size));
     if (!disable_send_to_platform_for_testing_)
-      parent_->SendToPlatform();
+      parent_->SendToPlatform(code_cache_host);
   }
 
-  void ClearCachedMetadata(ClearCacheType cache_type) override {
+  void ClearCachedMetadata(blink::mojom::CodeCacheHost* code_cache_host,
+                           ClearCacheType cache_type) override {
     if (cache_type == kDiscardLocally)
       return;
     parent_->cached_metadata_map_.erase(key_);
     if (cache_type == CachedMetadataHandler::kClearPersistentStorage)
-      parent_->SendToPlatform();
+      parent_->SendToPlatform(code_cache_host);
   }
 
   scoped_refptr<CachedMetadata> GetCachedMetadata(
@@ -104,12 +106,13 @@ SingleCachedMetadataHandler* SourceKeyedCachedMetadataHandler::HandlerForSource(
 }
 
 void SourceKeyedCachedMetadataHandler::ClearCachedMetadata(
+    blink::mojom::CodeCacheHost* code_cache_host,
     CachedMetadataHandler::ClearCacheType cache_type) {
   if (cache_type == kDiscardLocally)
     return;
   cached_metadata_map_.clear();
   if (cache_type == CachedMetadataHandler::kClearPersistentStorage)
-    SendToPlatform();
+    SendToPlatform(code_cache_host);
 }
 
 String SourceKeyedCachedMetadataHandler::Encoding() const {
@@ -225,12 +228,13 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
   }
 }
 
-void SourceKeyedCachedMetadataHandler::SendToPlatform() {
+void SourceKeyedCachedMetadataHandler::SendToPlatform(
+    blink::mojom::CodeCacheHost* code_cache_host) {
   if (!sender_)
     return;
 
   if (cached_metadata_map_.IsEmpty()) {
-    sender_->Send(nullptr, 0);
+    sender_->Send(code_cache_host, nullptr, 0);
   } else {
     Vector<uint8_t> serialized_data;
     uint32_t marker = CachedMetadataHandler::kSourceKeyedMap;
@@ -246,7 +250,8 @@ void SourceKeyedCachedMetadataHandler::SendToPlatform() {
                              sizeof(entry_size));
       serialized_data.Append(data.data(), data.size());
     }
-    sender_->Send(serialized_data.data(), serialized_data.size());
+    sender_->Send(code_cache_host, serialized_data.data(),
+                  serialized_data.size());
   }
 }
 
