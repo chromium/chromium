@@ -40,7 +40,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.Android.CachedFeedVisibilityConsistency"
-    enum="BooleanConsistent" expires_after="2021-08-09">
+    enum="BooleanConsistent" expires_after="2022-08-09">
   <owner>hanxi@chromium.org</owner>
   <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Startup.Android.FeedStreamCreatedTime" units="ms"
-    expires_after="2021-08-09">
+    expires_after="2022-08-09">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
