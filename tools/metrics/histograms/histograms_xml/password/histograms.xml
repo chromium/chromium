@@ -2586,6 +2586,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchErrorCode"
     enum="NetErrorCodes" expires_after="2021-09-05">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2596,6 +2599,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PasswordManager.WellKnownChangePassword.GstaticFetchHttpResponseCode"
     enum="HttpResponseCode" expires_after="2021-09-05">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2605,6 +2611,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchResult"
     enum="ChangePasswordUrlFetchResult" expires_after="2021-12-12">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2615,6 +2624,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchTime"
     units="ms" expires_after="2021-12-12">
+  <obsolete>
+    Obsolete since M93.
+  </obsolete>
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>Logs the loading time for the gstatic file request.</summary>
