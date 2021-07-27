@@ -398,16 +398,7 @@ void PasswordStore::ShutdownOnUIThread() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStore::CreateSyncControllerDelegate() {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  // Note that a callback is bound for
-  // GetSyncControllerDelegateOnBackgroundSequence() because this getter itself
-  // must also run in the backend sequence, and the proxy object below will take
-  // care of that.
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
-      background_task_runner_,
-      base::BindRepeating(
-          &PasswordStore::GetSyncControllerDelegateOnBackgroundSequence,
-          base::Unretained(this)));
+  return backend_->CreateSyncControllerDelegateFactory();
 }
 
 PasswordStore::~PasswordStore() {
@@ -455,12 +446,6 @@ PasswordStore::GetMatchingInsecureCredentialsImpl(
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
   LOG(ERROR) << "Called function without implementation: " << __func__;
   return std::vector<InsecureCredential>();
-}
-
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-PasswordStore::GetSyncControllerDelegateOnBackgroundSequence() {
-  NOTREACHED() << "Platform doesn't support sync!";
-  return nullptr;
 }
 
 void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(

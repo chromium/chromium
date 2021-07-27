@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
+#include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
 
@@ -96,6 +97,12 @@ SmartBubbleStatsStore* FakePasswordStoreBackend::GetSmartBubbleStatsStore() {
 }
 
 FieldInfoStore* FakePasswordStoreBackend::GetFieldInfoStore() {
+  return nullptr;
+}
+
+std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+FakePasswordStoreBackend::CreateSyncControllerDelegateFactory() {
+  NOTIMPLEMENTED();
   return nullptr;
 }
 

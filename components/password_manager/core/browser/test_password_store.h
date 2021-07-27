@@ -71,9 +71,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   // have entries of size 0.
   bool IsEmpty() const;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegateOnBackgroundSequence() override;
-
   int fill_matching_logins_calls() const { return fill_matching_logins_calls_; }
 
   bool IsAccountStore() const;
@@ -114,6 +111,8 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
+  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateSyncControllerDelegateFactory() override;
 
   // Unused portions of PasswordStore interface
   void ReportMetricsImpl(const std::string& sync_username,
@@ -128,6 +127,7 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
   std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
+
  private:
   LoginsResult GetAllLoginsInternal();
   LoginsResult GetAutofillableLoginsInternal();

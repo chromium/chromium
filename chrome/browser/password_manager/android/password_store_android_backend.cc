@@ -7,12 +7,21 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
 
 using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
+
+PasswordStoreAndroidBackend::SyncModelTypeControllerDelegate::
+    SyncModelTypeControllerDelegate() = default;
+PasswordStoreAndroidBackend::SyncModelTypeControllerDelegate::
+    ~SyncModelTypeControllerDelegate() = default;
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge)
@@ -85,18 +94,32 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
   // TODO(https://crbug.com/1229655):Implement.
 }
 
-void PasswordStoreAndroidBackend::OnCompleteWithLogins(
-    TaskId task_id,
-    std::vector<PasswordForm> passwords) {
-  // TODO(https://crbug.com/1229654): Implement.
-}
-
 SmartBubbleStatsStore* PasswordStoreAndroidBackend::GetSmartBubbleStatsStore() {
   return nullptr;
 }
 
 FieldInfoStore* PasswordStoreAndroidBackend::GetFieldInfoStore() {
   return nullptr;
+}
+
+std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+PasswordStoreAndroidBackend::CreateSyncControllerDelegateFactory() {
+  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindRepeating(
+          &PasswordStoreAndroidBackend::GetSyncControllerDelegate,
+          base::Unretained(this)));
+}
+
+void PasswordStoreAndroidBackend::OnCompleteWithLogins(
+    TaskId task_id,
+    std::vector<PasswordForm> passwords) {
+  // TODO(https://crbug.com/1229654): Implement.
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+PasswordStoreAndroidBackend::GetSyncControllerDelegate() {
+  return sync_controller_delegate_.GetWeakPtr();
 }
 
 }  // namespace password_manager

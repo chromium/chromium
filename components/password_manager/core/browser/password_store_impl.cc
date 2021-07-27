@@ -16,6 +16,8 @@
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/proxy_model_type_controller_delegate.h"
 
 namespace password_manager {
 
@@ -445,6 +447,20 @@ SmartBubbleStatsStore* PasswordStoreImpl::GetSmartBubbleStatsStore() {
 
 FieldInfoStore* PasswordStoreImpl::GetFieldInfoStore() {
   return this;
+}
+
+std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+PasswordStoreImpl::CreateSyncControllerDelegateFactory() {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  // Note that a callback is bound for
+  // GetSyncControllerDelegateOnBackgroundSequence() because this getter itself
+  // must also run in the backend sequence, and the proxy object below will take
+  // care of that.
+  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+      background_task_runner(),
+      base::BindRepeating(
+          &PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence,
+          base::Unretained(this)));
 }
 
 void PasswordStoreImpl::AddSiteStats(const InteractionsStats& stats) {

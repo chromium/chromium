@@ -9,6 +9,11 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/sync/model/model_type_controller_delegate.h"
+
+namespace syncer {
+class ModelTypeControllerDelegate;
+}  // namespace syncer
 
 namespace password_manager {
 
@@ -28,6 +33,39 @@ class PasswordStoreAndroidBackend
   ~PasswordStoreAndroidBackend() override;
 
  private:
+  // Stub class for handling sync events.
+  class SyncModelTypeControllerDelegate
+      : public syncer::ModelTypeControllerDelegate {
+   public:
+    SyncModelTypeControllerDelegate();
+    SyncModelTypeControllerDelegate(const SyncModelTypeControllerDelegate&) =
+        delete;
+    SyncModelTypeControllerDelegate(SyncModelTypeControllerDelegate&&) = delete;
+    SyncModelTypeControllerDelegate& operator=(
+        const SyncModelTypeControllerDelegate&) = delete;
+    SyncModelTypeControllerDelegate& operator=(
+        SyncModelTypeControllerDelegate&&) = delete;
+    ~SyncModelTypeControllerDelegate() override;
+
+    base::WeakPtr<SyncModelTypeControllerDelegate> GetWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
+   private:
+    // syncer::ModelTypeControllerDelegate implementation
+    void OnSyncStarting(const syncer::DataTypeActivationRequest& request,
+                        StartCallback callback) override {}
+    void OnSyncStopping(syncer::SyncStopMetadataFate metadata_fate) override {}
+    void GetAllNodesForDebugging(AllNodesCallback callback) override {}
+    void GetTypeEntitiesCountForDebugging(
+        base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
+        const override {}
+    void RecordMemoryUsageAndCountsHistograms() override {}
+
+    base::WeakPtrFactory<SyncModelTypeControllerDelegate> weak_ptr_factory_{
+        this};
+  };
+
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
@@ -56,16 +94,23 @@ class PasswordStoreAndroidBackend
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
+  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+  FieldInfoStore* GetFieldInfoStore() override;
+  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateSyncControllerDelegateFactory() override;
 
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::TaskId task_id,
                             std::vector<PasswordForm> passwords) override;
 
-  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  FieldInfoStore* GetFieldInfoStore() override;
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegate();
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;
+
+  // Delegate to handle sync events.
+  SyncModelTypeControllerDelegate sync_controller_delegate_;
 
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;

@@ -8,6 +8,7 @@
 
 #include "base/callback_forward.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +45,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
     bridge_ = unique_bridge.get();
     return unique_bridge;
   }
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
   StrictMock<MockPasswordStoreAndroidBackendBridge>* bridge_;

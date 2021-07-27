@@ -14,6 +14,10 @@
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store.h"
 
+namespace syncer {
+class ModelTypeControllerDelegate;
+}  // namespace syncer
+
 namespace password_manager {
 
 class PasswordSyncBridge;
@@ -57,9 +61,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
   std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm) override;
-
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegateOnBackgroundSequence() override;
 
   // Implements PasswordStoreSync interface.
   PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
@@ -117,6 +118,8 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   FieldInfoStore* GetFieldInfoStore() override;
+  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  CreateSyncControllerDelegateFactory() override;
 
   // SmartBubbleStatsStore:
   void AddSiteStats(const InteractionsStats& stats) override;
@@ -181,6 +184,9 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   std::vector<FieldInfo> GetAllFieldInfoInternal();
   void RemoveFieldInfoByTimeInternal(base::Time remove_begin,
                                      base::Time remove_end);
+
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegateOnBackgroundSequence();
 
   // The login SQL database. The LoginDatabase instance is received via the
   // in an uninitialized state, so as to allow injecting mocks, then Init() is

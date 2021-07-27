@@ -35,7 +35,6 @@
 class PrefService;
 
 namespace syncer {
-class ModelTypeControllerDelegate;
 class ProxyModelTypeControllerDelegate;
 }  // namespace syncer
 
@@ -208,13 +207,6 @@ class PasswordStore : public PasswordStoreInterface {
   virtual std::vector<InsecureCredential> GetAllInsecureCredentialsImpl();
   virtual std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
       const std::string& signon_realm);
-
-  // Returns the sync controller delegate for syncing passwords. It must be
-  // called on the background sequence.
-  // TODO(crbug.bom/1226042): Remove this after fully switching to the
-  // PasswordStoreInterface.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegateOnBackgroundSequence();
 
   // Invokes callback and notifies observers if there was a change to the list
   // of insecure passwords. It also informs Sync about the updated password
