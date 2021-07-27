@@ -145,7 +145,9 @@ void ParentalHandoffScreenBrowserTest::HandleScreenExit(
 }
 
 IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenBrowserTest, RegularUserLogin) {
+  OobeScreenExitWaiter signin_screen_exit_waiter(GetFirstSigninScreen());
   login_manager_mixin().LoginAsNewRegularUser();
+  signin_screen_exit_waiter.Wait();
   SkipToParentalHandoffScreen();
 
   // Wait for exit from parental handoff screen.

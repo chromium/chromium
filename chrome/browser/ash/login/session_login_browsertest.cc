@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -28,7 +29,9 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/focus/focus_manager.h"
@@ -36,6 +39,10 @@
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
+
+namespace {
+constexpr char kOnboardingBackfillVersion[] = "0.0.0.0";
+}
 
 class BrowserLoginTest : public chromeos::LoginManagerTest {
  public:
@@ -111,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
   EXPECT_TRUE(config.voice_input);
 }
 
-class OnboardingUserActivityTest : public LoginManagerTest {
+class OnboardingTest : public LoginManagerTest {
  protected:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
@@ -122,7 +129,7 @@ class OnboardingUserActivityTest : public LoginManagerTest {
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
 };
 
-IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, PRE_RegularUser) {
+IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   LoginManagerMixin::TestUserInfo test_user(regular_user_);
   login_mixin_.LoginWithDefaultContext(test_user);
@@ -131,9 +138,11 @@ IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, PRE_RegularUser) {
   ash::test::UserSessionManagerTestApi test_api(
       ash::UserSessionManager::GetInstance());
   ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
+  chromeos::WizardController::SkipPostLoginScreensForTesting();
 }
 
-IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, RegularUser) {
+IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityRegularUser) {
+  login_mixin_.LoginAsNewRegularUser();
   ash::LoginScreenTestApi::SubmitPassword(regular_user_, "password",
                                           /*check_if_submittable=*/false);
   login_mixin_.WaitForActiveSession();
@@ -144,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, RegularUser) {
 }
 
 // Verifies that counter is not started for child user.
-IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, ChildUser) {
+IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityChildUser) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   login_mixin_.LoginAsNewChildUser();
   OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
@@ -152,6 +161,50 @@ IN_PROC_BROWSER_TEST_F(OnboardingUserActivityTest, ChildUser) {
   ash::test::UserSessionManagerTestApi test_api(
       ash::UserSessionManager::GetInstance());
   ASSERT_FALSE(test_api.get_onboarding_user_activity_counter());
+}
+
+// Verifies that OnboardingCompletedVersion is stored for new users.
+IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersion) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
+  login_mixin_.LoginAsNewRegularUser();
+  user_creation_exit_waiter.Wait();
+  chromeos::WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.WaitForActiveSession();
+
+  AccountId account_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  EXPECT_EQ(user_manager::KnownUser(g_browser_process->local_state())
+                .GetOnboardingCompletedVersion(account_id),
+            version_info::GetVersion());
+}
+
+// Verifies that OnboardingCompletedVersion is backfilled.
+IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingCompletedVersionBackfill) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  LoginManagerMixin::TestUserInfo test_user(regular_user_);
+  OobeScreenExitWaiter user_creation_exit_waiter(UserCreationView::kScreenId);
+  login_mixin_.LoginWithDefaultContext(test_user);
+  user_creation_exit_waiter.Wait();
+  chromeos::WizardController::SkipPostLoginScreensForTesting();
+  login_mixin_.WaitForActiveSession();
+
+  AccountId account_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  user_manager::KnownUser(g_browser_process->local_state())
+      .RemoveOnboardingCompletedVersionForTests(account_id);
+}
+
+IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersionBackfill) {
+  ash::LoginScreenTestApi::SubmitPassword(regular_user_, "password",
+                                          /*check_if_submittable=*/false);
+  login_mixin_.WaitForActiveSession();
+
+  AccountId account_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  EXPECT_EQ(user_manager::KnownUser(g_browser_process->local_state())
+                .GetOnboardingCompletedVersion(account_id),
+            base::Version(kOnboardingBackfillVersion));
 }
 
 class LockOnSuspendUsageTest : public LoginManagerTest {

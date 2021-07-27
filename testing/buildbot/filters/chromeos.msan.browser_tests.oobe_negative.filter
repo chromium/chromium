@@ -169,6 +169,7 @@
 -WizardControllerEnableDebuggingTest.*
 -WizardControllerFlowTest.*
 -WizardControllerKioskFlowTest.*
+-WizardControllerOnboardingResumeTest.*
 -WizardControllerOobeConfigurationTest.*
 -WizardControllerOobeResumeTest.*
 -WizardControllerProxyAuthOnSigninTest.*

@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,6 +44,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -795,7 +797,6 @@ TEST_F(ArcOobeTest, TermsOfServiceOobeNegotiationNeededForManagedUser) {
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId));
 
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
 
@@ -845,7 +846,6 @@ TEST_F(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
                     AccountId::FromUserEmailGaiaId(
                         profile()->GetProfileUserName(), kTestGaiaId));
 
-  GetFakeUserManager()->set_current_user_new(true);
   CreateLoginDisplayHost();
   EXPECT_TRUE(IsArcOobeOptInActive());
 
@@ -881,20 +881,27 @@ TEST_F(ArcOobeTest, ShouldStartArcSilentlyForManagedProfile) {
   EXPECT_TRUE(ShouldStartArcSilentlyForManagedProfile(profile()));
 }
 
-using ArcOobeOpaOptInActiveInTest = ArcOobeTest;
+using ArcOobeOptInActiveInTest = ArcOobeTest;
 
-TEST_F(ArcOobeOpaOptInActiveInTest, OobeOptInActive) {
+TEST_F(ArcOobeOptInActiveInTest, OobeOptInActive) {
   // OOBE OptIn is active in case of OOBE controller is alive and the ARC ToS
   // screen is currently showing.
+  LogIn();
   EXPECT_FALSE(IsArcOobeOptInActive());
   CreateLoginDisplayHost();
-  EXPECT_FALSE(IsArcOobeOptInActive());
-  GetFakeUserManager()->set_current_user_new(true);
+
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile()->GetProfileUserName(), kTestGaiaId);
+
+  // OOBE OptIn can only start if Onobarding is not completed yet.
   EXPECT_TRUE(IsArcOobeOptInActive());
-  // OOBE OptIn can be started only for new user flow.
-  GetFakeUserManager()->set_current_user_new(false);
+
+  // Set a version for the Onboarding to indicate that the user completed the
+  // onboarding flow.
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SetOnboardingCompletedVersion(account_id, version_info::GetVersion());
   EXPECT_FALSE(IsArcOobeOptInActive());
-  // ARC ToS wizard but not for new user.
+  // ARC ToS wizard but Onboarding flow completed.
   login_display_host()->StartWizard(
       chromeos::ArcTermsOfServiceScreenView::kScreenId);
   EXPECT_FALSE(IsArcOobeOptInActive());

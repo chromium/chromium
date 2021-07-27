@@ -329,7 +329,6 @@ class ArcProvisionNotificationServiceOobeTest
     ArcProvisionNotificationServiceTest::SetUpInternal(
         /*should_create_session_manager=*/false);
 
-    GetFakeUserManager()->set_current_user_new(true);
     CreateLoginDisplayHost();
   }
 

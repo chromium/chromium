@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -431,9 +432,13 @@ bool IsArcOobeOptInActive() {
   if (!ash::LoginDisplayHost::default_host())
     return false;
 
-  // Use the legacy logic for first sign-in OOBE OptIn flow. Make sure the user
-  // is new.
-  return user_manager::UserManager::Get()->IsCurrentUserNew();
+  // ARC OOBE opt-in will only be active if the user did not complete the
+  // onboarding flow yet. The OnboardingCompletedVersion preference will only be
+  // saved after the onboarding flow is completed.
+  AccountId account_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return !known_user.GetOnboardingCompletedVersion(account_id).has_value();
 }
 
 bool IsArcOobeOptInConfigurationBased() {

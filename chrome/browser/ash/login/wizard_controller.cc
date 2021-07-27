@@ -188,7 +188,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_types.h"
@@ -214,20 +216,22 @@ constexpr const char kResetScreenExitReason[] = "Cancel";
 constexpr char kLegacyUpdateScreenName[] = "update";
 
 // Stores the list of all screens that should be shown when resuming OOBE.
-const chromeos::StaticOobeScreenId kResumableScreens[] = {
+const chromeos::StaticOobeScreenId kResumableOobeScreens[] = {
     chromeos::WelcomeView::kScreenId,
     chromeos::NetworkScreenView::kScreenId,
     chromeos::UpdateView::kScreenId,
     chromeos::EulaView::kScreenId,
     chromeos::EnrollmentScreenView::kScreenId,
+    chromeos::AutoEnrollmentCheckScreenView::kScreenId,
+};
+
+const chromeos::StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::TermsOfServiceScreenView::kScreenId,
     chromeos::SyncConsentScreenView::kScreenId,
     chromeos::FingerprintSetupScreenView::kScreenId,
     chromeos::GestureNavigationScreenView::kScreenId,
     chromeos::ArcTermsOfServiceScreenView::kScreenId,
-    chromeos::AutoEnrollmentCheckScreenView::kScreenId,
     chromeos::RecommendAppsScreenView::kScreenId,
-    chromeos::AppDownloadingScreenView::kScreenId,
     chromeos::PinSetupScreenView::kScreenId,
     chromeos::MarketingOptInScreenView::kScreenId,
     chromeos::MultiDeviceSetupScreenView::kScreenId,
@@ -256,8 +260,16 @@ bool CanShowHIDDetectionScreen() {
   }
 }
 
-bool IsResumableScreen(chromeos::OobeScreenId screen_id) {
-  for (const auto& resumable_screen : kResumableScreens) {
+bool IsResumableOobeScreen(chromeos::OobeScreenId screen_id) {
+  for (const auto& resumable_screen : kResumableOobeScreens) {
+    if (screen_id == resumable_screen)
+      return true;
+  }
+  return false;
+}
+
+bool IsResumablePostLoginScreen(chromeos::OobeScreenId screen_id) {
+  for (const auto& resumable_screen : kResumablePostLoginScreens) {
     if (screen_id == resumable_screen)
       return true;
   }
@@ -1610,6 +1622,13 @@ void WizardController::OnPackagedLicenseScreenExit(
 void WizardController::OnOobeFlowFinished() {
   SetCurrentScreen(nullptr);
 
+  user_manager::KnownUser known_user(GetLocalState());
+  const AccountId account_id =
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  known_user.SetOnboardingCompletedVersion(account_id,
+                                           version_info::GetVersion());
+  known_user.RemovePendingOnboardingScreen(account_id);
+
   // Launch browser and delete login host controller.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&UserSessionManager::DoBrowserLaunch,
@@ -1782,8 +1801,14 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
 
   // First remember how far have we reached so that we can resume if needed.
   if (is_out_of_box_ && !demo_setup_controller_ &&
-      IsResumableScreen(current_screen_->screen_id())) {
+      IsResumableOobeScreen(current_screen_->screen_id())) {
     StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
+  } else if (!demo_setup_controller_ &&
+             IsResumablePostLoginScreen(current_screen_->screen_id())) {
+    user_manager::KnownUser(GetLocalState())
+        .SetPendingOnboardingScreen(
+            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
+            current_screen_->screen_id().name);
   }
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
@@ -1975,6 +2000,10 @@ void WizardController::SetAuthSessionForOnboarding(
     const UserContext& auth_session) {
   wizard_context_->extra_factors_auth_session =
       std::make_unique<UserContext>(auth_session);
+}
+
+void WizardController::ClearOnboardingAuthSession() {
+  wizard_context_->extra_factors_auth_session.reset();
 }
 
 void WizardController::ShowErrorScreen() {

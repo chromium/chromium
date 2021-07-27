@@ -7,7 +7,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
@@ -68,9 +70,16 @@ class FingerprintSetupTest : public OobeBaseTest {
   }
 
   void ShowFingerprintScreen() {
+    PerformLogin();
     WizardController::default_controller()->AdvanceToScreen(
         FingerprintSetupScreenView::kScreenId);
     OobeScreenWaiter(FingerprintSetupScreenView::kScreenId).Wait();
+  }
+
+  void PerformLogin() {
+    OobeScreenExitWaiter signin_screen_exit_waiter(GetFirstSigninScreen());
+    login_manager_.LoginAsNewRegularUser();
+    signin_screen_exit_waiter.Wait();
   }
 
   void WaitForScreenExit() {
@@ -133,6 +142,7 @@ class FingerprintSetupTest : public OobeBaseTest {
   base::HistogramTester histogram_tester_;
   FingerprintSetupScreen::ScreenExitCallback original_callback_;
   base::RepeatingClosure screen_exit_callback_;
+  LoginManagerMixin login_manager_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollHalf) {
@@ -198,6 +208,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, MAYBE_FingerprintEnrollLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintDisabled) {
+  PerformLogin();
+
   // Disable fingerprint
   quick_unlock::EnabledForTesting(false);
 

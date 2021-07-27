@@ -100,6 +100,12 @@ const char kPinAutosubmitBackfillNeeded[] = "pin_autosubmit_backfill_needed";
 // Sync token for SAML password multi-device sync
 const char kPasswordSyncToken[] = "password_sync_token";
 
+// Major version in which the user completed the onboarding flow.
+const char kOnboardingCompletedVersion[] = "onboarding_completed_version";
+
+// Last screen shown in the onboarding flow.
+const char kPendingOnboardingScreen[] = "onboarding_screen_pending";
+
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -121,7 +127,9 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kLastInputMethod,
                                kPinAutosubmitLength,
                                kPinAutosubmitBackfillNeeded,
-                               kPasswordSyncToken};
+                               kPasswordSyncToken,
+                               kOnboardingCompletedVersion,
+                               kPendingOnboardingScreen};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
@@ -716,6 +724,51 @@ std::string KnownUser::GetPasswordSyncToken(const AccountId& account_id) {
   if (GetStringPref(account_id, kPasswordSyncToken, &token))
     return token;
   // Return empty string if sync token was not set for the account yet.
+  return std::string();
+}
+
+void KnownUser::SetOnboardingCompletedVersion(
+    const AccountId& account_id,
+    const absl::optional<base::Version> version) {
+  if (!version) {
+    ClearPref(account_id, kOnboardingCompletedVersion);
+  } else {
+    SetStringPref(account_id, kOnboardingCompletedVersion,
+                  version.value().GetString());
+  }
+}
+
+absl::optional<base::Version> KnownUser::GetOnboardingCompletedVersion(
+    const AccountId& account_id) {
+  std::string str_version;
+  if (!GetStringPref(account_id, kOnboardingCompletedVersion, &str_version))
+    return absl::nullopt;
+
+  base::Version version = base::Version(str_version);
+  if (!version.IsValid())
+    return absl::nullopt;
+  return version;
+}
+
+void KnownUser::RemoveOnboardingCompletedVersionForTests(
+    const AccountId& account_id) {
+  ClearPref(account_id, kOnboardingCompletedVersion);
+}
+
+void KnownUser::SetPendingOnboardingScreen(const AccountId& account_id,
+                                           const std::string& screen) {
+  SetStringPref(account_id, kPendingOnboardingScreen, screen);
+}
+
+void KnownUser::RemovePendingOnboardingScreen(const AccountId& account_id) {
+  ClearPref(account_id, kPendingOnboardingScreen);
+}
+
+std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
+  std::string screen;
+  if (GetStringPref(account_id, kPendingOnboardingScreen, &screen))
+    return screen;
+  // Return empty string if no screen is pending.
   return std::string();
 }
 

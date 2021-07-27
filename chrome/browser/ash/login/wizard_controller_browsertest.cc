@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
@@ -2720,6 +2721,36 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeResumeTest,
                        ControlFlowResumeInterruptedOobe) {
   EXPECT_EQ(EnrollmentScreenView::kScreenId.AsId(),
             WizardController::default_controller()->first_screen_for_testing());
+}
+
+class WizardControllerOnboardingResumeTest : public WizardControllerTest {
+ protected:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_, embedded_test_server()};
+  LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
+                                 &gaia_mixin_};
+  AccountId user_{
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
+                       PRE_ControlFlowResumeInterruptedOnboarding) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  LoginManagerMixin::TestUserInfo test_user(user_);
+  login_mixin_.LoginWithDefaultContext(test_user);
+  OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
+  WizardController::default_controller()->AdvanceToScreen(
+      MarketingOptInScreenView::kScreenId);
+  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerOnboardingResumeTest,
+                       ControlFlowResumeInterruptedOnboarding) {
+  login_mixin_.LoginAsNewRegularUser();
+  ash::LoginScreenTestApi::SubmitPassword(user_, "password",
+                                          /*check_if_submittable=*/false);
+  OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
 }
 
 class WizardControllerCellularFirstTest : public WizardControllerFlowTest {

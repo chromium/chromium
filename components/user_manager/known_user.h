@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "components/user_manager/user_manager_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -244,6 +245,24 @@ class USER_MANAGER_EXPORT KnownUser final {
                             const std::string& token);
 
   std::string GetPasswordSyncToken(const AccountId& account_id);
+
+  // Saves the current major version as the version in which the user completed
+  // the onboarding flow.
+  void SetOnboardingCompletedVersion(
+      const AccountId& account_id,
+      const absl::optional<base::Version> version);
+  absl::optional<base::Version> GetOnboardingCompletedVersion(
+      const AccountId& account_id);
+  void RemoveOnboardingCompletedVersionForTests(const AccountId& account_id);
+
+  // Setter and getter for the last screen shown in the onboarding flow. This
+  // is used to resume the onboarding flow if it's not completed yet.
+  void SetPendingOnboardingScreen(const AccountId& account_id,
+                                  const std::string& screen);
+
+  void RemovePendingOnboardingScreen(const AccountId& account_id);
+
+  std::string GetPendingOnboardingScreen(const AccountId& account_id);
 
   // Register known user prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);

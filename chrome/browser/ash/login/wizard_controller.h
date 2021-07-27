@@ -173,6 +173,10 @@ class WizardController {
   // during user onboarding.
   void SetAuthSessionForOnboarding(const UserContext& auth_session);
 
+  // Clears authorization data that were stored to be used to configure extra
+  // auth factors during user onboarding.
+  void ClearOnboardingAuthSession();
+
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();
 
@@ -498,6 +502,7 @@ class WizardController {
   friend class WizardControllerFlowTest;
   friend class WizardControllerOobeConfigurationTest;
   friend class WizardControllerOobeResumeTest;
+  friend class WizardControllerOnboardingResumeTest;
   friend class WizardControllerScreenPriorityTest;
   friend class WizardControllerManagementTransitionOobeTest;
 

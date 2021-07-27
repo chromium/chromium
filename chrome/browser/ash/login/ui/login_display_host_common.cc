@@ -411,6 +411,10 @@ void LoginDisplayHostCommon::StartUserOnboarding() {
   StartWizard(LocaleSwitchView::kScreenId);
 }
 
+void LoginDisplayHostCommon::ResumeUserOnboarding(OobeScreenId screen_id) {
+  StartWizard(screen_id);
+}
+
 void LoginDisplayHostCommon::StartManagementTransition() {
   StartWizard(ManagementTransitionScreenView::kScreenId);
 }
@@ -427,6 +431,11 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
   // WizardController may not be initialized in the WebUI login display host.
   if (GetWizardController())
     GetWizardController()->SetAuthSessionForOnboarding(user_context);
+}
+
+void LoginDisplayHostCommon::ClearOnboardingAuthSession() {
+  if (GetWizardController())
+    GetWizardController()->ClearOnboardingAuthSession();
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(

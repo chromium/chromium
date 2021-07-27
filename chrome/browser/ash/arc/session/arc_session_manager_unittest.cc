@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -67,6 +68,7 @@
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -1279,14 +1281,16 @@ class ArcSessionManagerPolicyTest
     GetFakeUserManager()->LoginUser(account_id);
     // Mocks OOBE environment so that IsArcOobeOptInActive() returns true.
     if (is_oobe_optin()) {
-      GetFakeUserManager()->set_current_user_new(true);
       CreateLoginDisplayHost();
+      TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
+      user_manager::KnownUser::RegisterPrefs(pref_service_.registry());
     }
   }
 
   void TearDown() override {
     if (is_oobe_optin()) {
       fake_login_display_host_.reset();
+      TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     }
     ArcSessionManagerTestBase::TearDown();
   }
@@ -1329,6 +1333,7 @@ class ArcSessionManagerPolicyTest
   }
 
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_P(ArcSessionManagerPolicyTest, SkippingTerms) {
@@ -1534,8 +1539,6 @@ class ArcSessionOobeOptInNegotiatorTest
     ArcTermsOfServiceOobeNegotiator::SetArcTermsOfServiceScreenViewForTesting(
         this);
 
-    GetFakeUserManager()->set_current_user_new(true);
-
     CreateLoginDisplayHost();
 
     if (IsManagedUser()) {
@@ -1550,6 +1553,9 @@ class ArcSessionOobeOptInNegotiatorTest
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
 
+    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
+    user_manager::KnownUser::RegisterPrefs(pref_service_.registry());
+
     if (IsArcPlayStoreEnabledForProfile(profile()))
       arc_session_manager()->RequestEnable();
   }
@@ -1562,6 +1568,7 @@ class ArcSessionOobeOptInNegotiatorTest
         nullptr);
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         false);
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
 
     ArcSessionManagerTest::TearDown();
   }
@@ -1620,6 +1627,7 @@ class ArcSessionOobeOptInNegotiatorTest
   base::ObserverList<chromeos::ArcTermsOfServiceScreenViewObserver>::Unchecked
       observer_list_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
+  TestingPrefServiceSimple pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcSessionOobeOptInNegotiatorTest);
 };

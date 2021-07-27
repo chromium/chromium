@@ -35,6 +35,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_migrator.h"
@@ -216,6 +217,11 @@ constexpr char kEventInitUserDesktop[] = "InitUserDesktop";
 
 constexpr base::TimeDelta kActivityTimeBeforeOnboardingSurvey =
     base::TimeDelta::FromHours(1);
+
+// A special version used to backfill the OnboardingCompletedVersion for
+// existing users to indicate that they are already completed the onboarding
+// flow in unknown past version.
+constexpr char kOnboardingBackfillVersion[] = "0.0.0.0";
 
 base::TimeDelta GetActivityTimeBeforeOnboardingSurvey() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -1316,7 +1322,12 @@ void UserSessionManager::InitProfilePreferences(
   if (is_new_profile) {
     SetFirstLoginPrefs(profile, user_context.GetPublicSessionLocale(),
                        user_context.GetPublicSessionInputMethod());
+  }
 
+  absl::optional<base::Version> onboarding_completed_version =
+      user_manager::KnownUser(g_browser_process->local_state())
+          .GetOnboardingCompletedVersion(user->GetAccountId());
+  if (!onboarding_completed_version.has_value()) {
     // Kiosks do not have onboarding.
     if (user_manager->GetPrimaryUser() == user &&
         !user_manager->IsUserNonCryptohomeDataEphemeral(user->GetAccountId()) &&
@@ -1783,6 +1794,23 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
         (wizard_controller && wizard_controller->skip_post_login_screens()) ||
         cmdline->HasSwitch(switches::kOobeSkipPostLogin);
 
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    const user_manager::User* user =
+        ProfileHelper::Get()->GetUserByProfile(profile);
+    std::string pending_screen =
+        known_user.GetPendingOnboardingScreen(user->GetAccountId());
+    absl::optional<base::Version> onboarding_completed_version =
+        known_user.GetOnboardingCompletedVersion(user->GetAccountId());
+
+    if (!user_manager->IsCurrentUserNew() && pending_screen.empty() &&
+        !onboarding_completed_version.has_value()) {
+      known_user.SetOnboardingCompletedVersion(
+          user->GetAccountId(), base::Version(kOnboardingBackfillVersion));
+      LoginDisplayHost::default_host()
+          ->GetSigninUI()
+          ->ClearOnboardingAuthSession();
+    }
+
     if (user_manager->IsCurrentUserNew() && !skip_post_login_screens) {
       profile->GetPrefs()->SetTime(prefs::kOobeOnboardingTime,
                                    base::Time::Now());
@@ -1805,17 +1833,23 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
       OnboardingUserActivityCounter::MaybeMarkForStart(profile);
 
       return false;
-    } else if (!user_manager->IsCurrentUserNew() &&
-               arc::GetManagementTransition(profile) !=
-                   arc::ArcManagementTransition::NO_TRANSITION) {
+    }
+    if (!user_manager->IsCurrentUserNew() && !pending_screen.empty()) {
+      LoginDisplayHost::default_host()->GetSigninUI()->ResumeUserOnboarding(
+          chromeos::OobeScreenId(pending_screen));
+      return false;
+    }
+    if (!user_manager->IsCurrentUserNew() &&
+        arc::GetManagementTransition(profile) !=
+            arc::ArcManagementTransition::NO_TRANSITION) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->StartManagementTransition();
       return false;
-    } else if (features::IsManagedTermsOfServiceEnabled() &&
-               !user_manager->IsCurrentUserNew() &&
-               profile->GetPrefs()->IsManagedPreference(
-                   ::prefs::kTermsOfServiceURL)) {
+    }
+    if (features::IsManagedTermsOfServiceEnabled() &&
+        !user_manager->IsCurrentUserNew() &&
+        profile->GetPrefs()->IsManagedPreference(::prefs::kTermsOfServiceURL)) {
       LoginDisplayHost::default_host()->GetSigninUI()->ShowTosForExistingUser();
       return false;
     }
