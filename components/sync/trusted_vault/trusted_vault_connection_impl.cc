@@ -131,6 +131,11 @@ void ProcessJoinSecurityDomainsResponse(
       std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
                               /*last_key_version=*/0);
       return;
+    case TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure:
+      std::move(callback).Run(
+          TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure,
+          /*last_key_version=*/0);
+      return;
     case TrustedVaultRequest::HttpStatus::kNotFound:
     case TrustedVaultRequest::HttpStatus::kBadRequest:
       // Local trusted vault keys are outdated.
@@ -194,6 +199,7 @@ void ProcessDownloadIsRecoverabilityDegradedResponse(
     case TrustedVaultRequest::HttpStatus::kNotFound:
     case TrustedVaultRequest::HttpStatus::kBadRequest:
     case TrustedVaultRequest::HttpStatus::kConflict:
+    case TrustedVaultRequest::HttpStatus::kAccessTokenFetchingFailure:
       std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
       return;
   }

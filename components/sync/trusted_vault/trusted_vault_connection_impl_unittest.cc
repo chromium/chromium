@@ -548,7 +548,9 @@ TEST_F(
 
   // |callback| is called immediately after RegisterAuthenticationFactor(),
   // because there is no access token.
-  EXPECT_CALL(callback, Run(Eq(TrustedVaultRegistrationStatus::kOtherError)));
+  EXPECT_CALL(
+      callback,
+      Run(Eq(TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure)));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->RegisterAuthenticationFactor(
           /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
@@ -637,8 +639,10 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   // |callback| is called immediately after DownloadNewKeys(), because there is
   // no access token.
-  EXPECT_CALL(callback,
-              Run(Eq(TrustedVaultDownloadKeysStatus::kOtherError), _, _));
+  EXPECT_CALL(
+      callback,
+      Run(Eq(TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure), _,
+          _));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->DownloadNewKeys(
           /*account_info=*/CoreAccountInfo(),
