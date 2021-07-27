@@ -231,7 +231,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
   views::ToggleButton* toggle =
       (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
-  EXPECT_FALSE(toggle->GetIsOn());
+  EXPECT_TRUE(toggle->GetIsOn());
 }
 
 TEST_F(UnifiedAudioDetailedViewControllerTest,
@@ -239,7 +239,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   scoped_feature_list_.InitAndEnableFeature(
       features::kEnableInputNoiseCancellationUi);
 
-  audio_pref_handler_->SetNoiseCancellationState(true);
+  audio_pref_handler_->SetNoiseCancellationState(false);
 
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack, kFrontMic, kRearMic}));
@@ -258,8 +258,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   widget->SetContentsView(toggle);
 
   // The toggle loaded the pref correctly.
-  EXPECT_TRUE(toggle->GetIsOn());
-  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
+  EXPECT_FALSE(toggle->GetIsOn());
+  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
 
   ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
@@ -268,11 +268,11 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   // Flipping the toggle.
   views::test::ButtonTestApi(toggle).NotifyClick(press);
   // The new state of the toggle must be saved to the prefs.
-  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
 
   // Flipping back and checking the prefs again.
   views::test::ButtonTestApi(toggle).NotifyClick(press);
-  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
+  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
 }
 
 // TODO(1205197): Remove this test once the flag is removed.
