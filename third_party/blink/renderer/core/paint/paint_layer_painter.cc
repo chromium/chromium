@@ -213,15 +213,29 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
 
   if (const auto* properties =
           paint_layer_.GetLayoutObject().FirstFragment().PaintProperties()) {
+    // Cull rect mapping doesn't work under perspective in some cases.
+    // See http://crbug.com/887558 for details.
     if (properties->Perspective())
       return true;
     if (for_cull_rect_update) {
-      // A CSS transform can also have perspective like
-      // "transform: perspective(100px) rotateY(45deg)".
       if (const auto* transform = properties->Transform()) {
+        // A CSS transform can also have perspective like
+        // "transform: perspective(100px) rotateY(45deg)". In these cases, we
+        // also want to skip cull rect mapping. See http://crbug.com/887558 for
+        // details.
         if (!transform->IsIdentityOr2DTranslation() &&
-            transform->Matrix().HasPerspective())
+            transform->Matrix().HasPerspective()) {
           return true;
+        }
+
+        // As an optimization, skip cull rect updating for non-composited
+        // transforms which have already been painted. This is because the cull
+        // rect update, which needs to do complex mapping of the cull rect, can
+        // be more expensive than over-painting.
+        if (!transform->HasDirectCompositingReasons() &&
+            paint_layer_.PreviousPaintResult() == kFullyPainted) {
+          return true;
+        }
       }
     }
   }

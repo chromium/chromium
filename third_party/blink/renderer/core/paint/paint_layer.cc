@@ -197,7 +197,7 @@ PaintLayer::PaintLayer(LayoutBoxModelObject& layout_object)
       needs_cull_rect_update_(false),
       forces_children_cull_rect_update_(false),
       descendant_needs_cull_rect_update_(false),
-      previous_paint_result_(kFullyPainted),
+      previous_paint_result_(kMayBeClippedByCullRect),
       needs_paint_phase_descendant_outlines_(false),
       needs_paint_phase_float_(false),
       has_non_isolated_descendant_with_blend_mode_(false),

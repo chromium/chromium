@@ -67,7 +67,7 @@ class CORE_EXPORT LayoutTableBoxComponent : public LayoutBox {
 
  protected:
   explicit LayoutTableBoxComponent(Element* element)
-      : LayoutBox(element), last_paint_result_(kFullyPainted) {
+      : LayoutBox(element), last_paint_result_(kMayBeClippedByCullRect) {
     NOT_DESTROYED();
   }
 

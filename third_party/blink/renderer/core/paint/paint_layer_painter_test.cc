@@ -392,7 +392,6 @@ TEST_P(PaintLayerPainterTest,
   PaintController::CounterForTesting counter;
   PaintContents(IntRect(0, 0, 50, 300));
   EXPECT_EQ(4u, counter.num_cached_items);
-  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
@@ -1057,6 +1056,33 @@ TEST_P(PaintLayerPainterTestCAP, ScaledAndRotatedCullRect) {
   // The expansion 6599 is 4000 * max_dimension(1x1 rect projected from screen
   // to local).
   EXPECT_EQ(IntRect(0, 0, 6799, 6899),
+            GetCullRect(*GetPaintLayerByElementId("target")).Rect());
+}
+
+// This is a testcase for https://crbug.com/1227907 where repeated cull rect
+// updates are expensive on the motionmark microbenchmark.
+TEST_P(PaintLayerPainterTestCAP, OptimizeNonCompositedTransformUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target {
+        width: 50px;
+        height: 50px;
+        background: green;
+        transform: translate(-8px, -8px);
+      }
+    </style>
+    <div id='target'></div>
+  )HTML");
+
+  // The cull rect should be correctly calculated on first paint.
+  EXPECT_EQ(IntRect(0, 0, 800, 600),
+            GetCullRect(*GetPaintLayerByElementId("target")).Rect());
+
+  // On subsequent paints, fall back to an infinite cull rect.
+  GetDocument().getElementById("target")->setAttribute(
+      html_names::kStyleAttr, "transform: rotate(10deg);");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(CullRect::Infinite().Rect(),
             GetCullRect(*GetPaintLayerByElementId("target")).Rect());
 }
 
