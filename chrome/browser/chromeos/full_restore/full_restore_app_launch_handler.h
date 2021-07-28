@@ -54,6 +54,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
 
   // AppLaunchHandler:
   void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
 
   // Force launch browser for testing.
   void ForceLaunchBrowserForTesting();
@@ -75,6 +76,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // true, launches apps based on the restore data when apps are ready.
   void MaybeRestore();
 
+  // Returns true if the browser can be restored. Otherwise, returns false.
+  bool CanLaunchBrowser();
+
   // Goes through the normal startup browser session restore flow for launching
   // browsers.
   void LaunchBrowser();
@@ -83,6 +87,8 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
   bool should_restore_ = false;
+
+  bool are_web_apps_initialized_ = false;
 
   // The time when `should_restore_` has been set to true.
   base::TimeTicks restore_start_time_;

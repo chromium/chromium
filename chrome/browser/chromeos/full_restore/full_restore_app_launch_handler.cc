@@ -62,7 +62,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady() {
 
   // If the restore data has been loaded, and the user has chosen to restore,
   // launch the browser.
-  if (should_restore_ && restore_data_) {
+  if (CanLaunchBrowser()) {
     LaunchBrowser();
 
     // OS Setting should be launched after browser to have OS setting window in
@@ -89,6 +89,18 @@ void FullRestoreAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   // restoration.
   if (should_restore_)
     AppLaunchHandler::OnAppUpdate(update);
+}
+
+void FullRestoreAppLaunchHandler::OnAppTypeInitialized(
+    apps::mojom::AppType app_type) {
+  if (app_type != apps::mojom::AppType::kWeb)
+    return;
+
+  are_web_apps_initialized_ = true;
+  if (should_launch_browser_ && CanLaunchBrowser()) {
+    LaunchBrowser();
+    should_launch_browser_ = false;
+  }
 }
 
 void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
@@ -147,7 +159,7 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
   ::full_restore::FullRestoreReadHandler::GetInstance()->SetCheckRestoreData(
       profile_->GetPath());
 
-  if (should_launch_browser_) {
+  if (should_launch_browser_ && CanLaunchBrowser()) {
     LaunchBrowser();
     should_launch_browser_ = false;
   }
@@ -159,6 +171,11 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
   }
 
   LaunchApps();
+}
+
+bool FullRestoreAppLaunchHandler::CanLaunchBrowser() {
+  return should_restore_ && restore_data_ &&
+         (!restore_data_->HasAppTypeBrowser() || are_web_apps_initialized_);
 }
 
 void FullRestoreAppLaunchHandler::LaunchBrowser() {

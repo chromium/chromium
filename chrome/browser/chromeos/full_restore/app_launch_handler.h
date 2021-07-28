@@ -33,6 +33,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppTypeInitialized(apps::mojom::AppType app_type) override {}
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
