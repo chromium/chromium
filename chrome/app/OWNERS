@@ -47,7 +47,7 @@ per-file vr_strings.grdp=file://chrome/browser/vr/OWNERS
 # Non-GRD rules.
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 
 per-file *.plist=file://chrome/browser/ui/cocoa/OWNERS
 

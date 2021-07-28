@@ -56,4 +56,4 @@ per-file *.mm=rsesek@chromium.org
 per-file *.mm=tapted@chromium.org
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

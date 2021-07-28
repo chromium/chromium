@@ -28,4 +28,4 @@ dpranke@google.com
 per-file .gitignore=*
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

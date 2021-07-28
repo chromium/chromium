@@ -11,7 +11,7 @@ ccameron@chromium.org
 per-file BUILD.gn=*
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 
 # For Fuchsia-specific changes:
 per-file *fuchsia*=file://build/fuchsia/OWNERS

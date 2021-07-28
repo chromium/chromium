@@ -12,7 +12,7 @@ per-file about_flags_browsertest.cc=file://components/flags_ui/OWNERS
 per-file BUILD.gn=*
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
 
 per-file *_android.*=file://chrome/browser/android/OWNERS
 per-file *.java=file://chrome/browser/android/OWNERS
