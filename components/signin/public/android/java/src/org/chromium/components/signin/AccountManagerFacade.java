@@ -120,18 +120,6 @@ public interface AccountManagerFacade {
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Gets profile data source.
-     * @return {@link ProfileDataSource} if it is supported by implementation, null otherwise.
-     *
-     * This method is deprecated. The {@link ProfileDataSource} is going to be removed soon.
-     * Use {@link AccountInfoService} for account information instead.
-     */
-    @Deprecated
-    @MainThread
-    @Nullable
-    ProfileDataSource getProfileDataSource();
-
-    /**
      * Returns the Gaia id for the account associated with the given email address.
      * If an account with the given email address is not installed on the device
      * then null is returned.

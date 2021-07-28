@@ -28,11 +28,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoService;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -44,7 +41,7 @@ import java.util.Map;
  * Fetches and caches Google Account profile images and full names for the accounts on the device.
  */
 @MainThread
-public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfoService.Observer {
+public class ProfileDataCache implements AccountInfoService.Observer {
     /**
      * Observer to get notifications about changes in profile data.
      */
@@ -101,7 +98,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
-    private final @Nullable ProfileDataSource mProfileDataSource;
 
     @VisibleForTesting
     ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
@@ -109,9 +105,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         mImageSize = imageSize;
         mBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        mProfileDataSource = ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
-                ? null
-                : AccountManagerFacadeProvider.getInstance().getProfileDataSource();
         AccountInfoServiceProvider.getPromise().then(this::populateCache);
     }
 
@@ -170,10 +163,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     public void addObserver(Observer observer) {
         ThreadUtils.assertOnUiThread();
         if (mObservers.isEmpty()) {
-            if (mProfileDataSource != null) {
-                mProfileDataSource.addObserver(this);
-                populateCacheLegacy();
-            }
             AccountInfoServiceProvider.getPromise().then(
                     accountInfoService -> { accountInfoService.addObserver(this); });
         }
@@ -187,33 +176,11 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         ThreadUtils.assertOnUiThread();
         mObservers.removeObserver(observer);
         if (mObservers.isEmpty()) {
-            if (mProfileDataSource != null) {
-                mProfileDataSource.removeObserver(this);
-            }
             AccountInfoServiceProvider.getPromise().then(
                     accountInfoService -> { accountInfoService.removeObserver(this); });
         }
     }
 
-    @Override
-    @Deprecated
-    public void onProfileDataUpdated(ProfileDataSource.ProfileData profileData) {
-        ThreadUtils.assertOnUiThread();
-        final String email = profileData.getAccountEmail();
-        Bitmap avatar = profileData.getAvatar();
-        if (avatar == null) {
-            // If the avatar is null, try to fetch the monogram from IdentityManager
-            AccountInfoServiceProvider.get().getAccountInfoByEmail(email).then(accountInfo -> {
-                updateCacheAndNotifyObservers(email,
-                        accountInfo != null ? accountInfo.getAccountImage() : null,
-                        profileData.getFullName(), profileData.getGivenName());
-            });
-        }
-        updateCacheAndNotifyObservers(
-                email, avatar, profileData.getFullName(), profileData.getGivenName());
-    }
-
-    @Override
     public void removeProfileData(String accountEmail) {
         mCachedProfileData.remove(accountEmail);
         notifyObservers(accountEmail);
@@ -235,19 +202,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
             for (Account account : accounts) {
                 accountInfoService.getAccountInfoByEmail(account.name)
                         .then(this::onAccountInfoUpdated);
-            }
-        });
-    }
-
-    private void populateCacheLegacy() {
-        assert mProfileDataSource
-                != null : "This only populates cache with the Legacy profile data source.";
-        AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            for (Account account : accounts) {
-                ProfileData profileData = mProfileDataSource.getProfileDataForAccount(account.name);
-                if (profileData != null) {
-                    onProfileDataUpdated(profileData);
-                }
             }
         });
     }

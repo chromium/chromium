@@ -20,7 +20,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.ProfileDataSource;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -43,12 +42,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * Creates an object of FakeAccountManagerFacade.
      */
     public FakeAccountManagerFacade() {}
-
-    @Override
-    @Nullable
-    public ProfileDataSource getProfileDataSource() {
-        return null;
-    }
 
     @MainThread
     @Override
