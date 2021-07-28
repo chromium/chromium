@@ -121,6 +121,12 @@ ArcPowerBridge* ArcPowerBridge::GetForBrowserContext(
   return ArcPowerBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcPowerBridge* ArcPowerBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcPowerBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcPowerBridge::ArcPowerBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {

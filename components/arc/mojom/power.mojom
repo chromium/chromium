@@ -2,9 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module arc.mojom;
+
+// Enumerates the modes of CPU restrictions.
+// This enum should be synced with CpuRestrictionState in
+// src/third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto
+[Extensible]
+enum CpuRestrictionState {
+  // The CPU usage is relaxed.
+  CPU_RESTRICTION_FOREGROUND = 0,
+  // The CPU usage is tightly restricted.
+  CPU_RESTRICTION_BACKGROUND = 1,
+};
 
 // Enumerates the types of wake lock the ARC instance can request from the
 // host.
@@ -63,7 +74,7 @@ interface PowerHost {
   [MinVersion=3] OnScreenBrightnessUpdateRequest@3(double percent);
 };
 
-// Next method ID: 8
+// Next method ID: 9
 interface PowerInstance {
   // DEPRECATED: Please use Init@5 instead.
   InitDeprecated@0(pending_remote<PowerHost> host_remote);
@@ -92,4 +103,9 @@ interface PowerInstance {
 
   // Requests current wakefulness mode.
   [MinVersion=6] GetWakefulnessMode@7() => (WakefulnessMode mode);
+
+  // Notifies that CPU restriction was changed. This message is sent from
+  // Chrome in response to ARC CPU group is changed event. The destination
+  // is ARC handler that resides in Android system server process.
+  [MinVersion=7] OnCpuRestrictionChanged@8(CpuRestrictionState state);
 };
