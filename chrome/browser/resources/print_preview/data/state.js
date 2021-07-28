@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {number} */
 export const State = {
@@ -30,26 +30,34 @@ export const Error = {
   CLOUD_PRINT_ERROR: 8,
 };
 
-Polymer({
-  is: 'print-preview-state',
 
-  _template: null,
+/** @polymer */
+class PrintPreviewStateElement extends PolymerElement {
+  static get is() {
+    return 'print-preview-state';
+  }
 
-  properties: {
-    /** @type {!State} */
-    state: {
-      type: Number,
-      notify: true,
-      value: State.NOT_READY,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {!Error} */
-    error: {
-      type: Number,
-      notify: true,
-      value: Error.NONE,
-    },
-  },
+  static get properties() {
+    return {
+      /** @type {!State} */
+      state: {
+        type: Number,
+        notify: true,
+        value: State.NOT_READY,
+      },
+
+      /** @type {!Error} */
+      error: {
+        type: Number,
+        notify: true,
+        value: Error.NONE,
+      },
+    };
+  }
 
   /** @param {State} newState The state to transition to. */
   transitTo(newState) {
@@ -88,5 +96,7 @@ Polymer({
     if (newState !== State.ERROR && newState !== State.FATAL_ERROR) {
       this.error = Error.NONE;
     }
-  },
-});
+  }
+}
+
+customElements.define(PrintPreviewStateElement.is, PrintPreviewStateElement);
