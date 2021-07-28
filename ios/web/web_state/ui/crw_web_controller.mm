@@ -826,22 +826,15 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 - (void)takeSnapshotWithRect:(CGRect)rect
                   completion:(void (^)(UIImage*))completion {
-  if (!self.webView) {
+  // On iOS 15, web process will die if a snapshot is taken on a PDF file.
+  // TODO(crbug.com/1233014): reenable PDF snapshots.
+  if (!self.webView ||
+      (![self contentIsHTML] &&
+       !web::features::ShouldTakeScreenshotOnNonHTMLContent())) {
     dispatch_async(dispatch_get_main_queue(), ^{
       completion(nil);
     });
     return;
-  }
-
-  if (@available(iOS 15, *)) {
-    if (![self contentIsHTML]) {
-      // On iOS 15, web process will die if a snapshot is takent on a PDF file.
-      // TODO(crbug.com/1233014): reenable PDF snapshots.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        completion(nil);
-      });
-      return;
-    }
   }
 
   WKSnapshotConfiguration* configuration =

@@ -60,6 +60,9 @@ extern const base::Feature kRecordSnapshotSize;
 // that supports it.
 extern const base::Feature kWebViewNativeContextMenu;
 
+// Disables the screenshots of non-HTML pages on iOS15.
+extern const base::Feature kDisableNonHTMLScreenshotOnIOS15;
+
 // Parameter name and values for the native context menu.
 extern const char kWebViewNativeContextMenuName[];
 extern const char kWebViewNativeContextMenuParameterSystem[];
@@ -76,6 +79,9 @@ bool UseWebViewNativeContextMenuWeb();
 // When true, the custom implementation of context menu using native ContextMenu
 // for the web content is used.
 bool UseWebViewNativeContextMenuSystem();
+
+// When true, screenshots of non-HTML (e.g. PDF) pages should be taken.
+bool ShouldTakeScreenshotOnNonHTMLContent();
 
 // Feature flag that enable Shared Highlighting color change in iOS.
 extern const base::Feature kIOSSharedHighlightingColorChange;

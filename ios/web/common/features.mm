@@ -49,6 +49,9 @@ const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
 const base::Feature kWebViewNativeContextMenu{"WebViewNativeContextMenu",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kDisableNonHTMLScreenshotOnIOS15{
+    "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const char kWebViewNativeContextMenuName[] = "type";
 const char kWebViewNativeContextMenuParameterSystem[] = "system";
 const char kWebViewNativeContextMenuParameterWeb[] = "web";
@@ -81,6 +84,13 @@ bool UseWebViewNativeContextMenuSystem() {
            field_trial_param == kWebViewNativeContextMenuParameterSystem;
   }
   return false;
+}
+
+bool ShouldTakeScreenshotOnNonHTMLContent() {
+  if (@available(iOS 15, *)) {
+    return !base::FeatureList::IsEnabled(kDisableNonHTMLScreenshotOnIOS15);
+  }
+  return true;
 }
 
 const base::Feature kIOSSharedHighlightingColorChange{
