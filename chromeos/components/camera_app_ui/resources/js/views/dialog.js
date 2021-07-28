@@ -26,11 +26,14 @@ export class Dialog extends View {
         dom.getFrom(this.root, '.dialog-positive-button', HTMLButtonElement);
 
     /**
-     * @type {!HTMLButtonElement}
+     * @type {?HTMLButtonElement}
      * @private
      */
-    this.negativeButton_ =
-        dom.getFrom(this.root, '.dialog-negative-button', HTMLButtonElement);
+    this.negativeButton_ = (() => {
+      const btn = dom.getAllFrom(
+          this.root, '.dialog-negative-button', HTMLButtonElement)[0];
+      return btn || null;
+    })();
 
     /**
      * @type {!HTMLElement}
@@ -40,7 +43,7 @@ export class Dialog extends View {
         dom.getFrom(this.root, '.dialog-msg-holder', HTMLElement);
 
     this.positiveButton_.addEventListener('click', () => this.leave(true));
-    if (this.negativeButton_) {
+    if (this.negativeButton_ !== null) {
       this.negativeButton_.addEventListener('click', () => this.leave());
     }
   }
@@ -49,9 +52,10 @@ export class Dialog extends View {
    * @override
    */
   entering({message, cancellable = false} = {}) {
-    message = assertString(message);
-    this.messageHolder_.textContent = message;
-    if (this.negativeButton_) {
+    if (message !== undefined) {
+      this.messageHolder_.textContent = assertString(message);
+    }
+    if (this.negativeButton_ !== null) {
       this.negativeButton_.hidden = !cancellable;
     }
   }

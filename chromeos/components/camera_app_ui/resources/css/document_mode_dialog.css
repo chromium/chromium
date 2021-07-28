@@ -1,0 +1,142 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#view-document-mode-dialog {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+#dim-preview {
+  background: rgba(0, 0, 0, 0.6);
+  bottom: calc(var(--bottom-line) * 2);
+  left: calc(var(--left-line) * 2);
+  position: absolute;
+  right: calc(var(--right-line) * 2);
+  top: 0;
+}
+
+#view-document-mode-dialog .dialog-popup {
+  align-items: center;
+  background: var(--grey-900);
+  display: inline-flex;
+  padding: 31px 21px 29px 21px;
+}
+
+#icon-scan-area {
+  --scan-corner-border: 3px solid var(--blue-300);
+  --scan-corner-border-radius: 8px;
+  --scan-corner-height: 20%;
+  --scan-corner-width: 20%;
+
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  height: 94px;
+  justify-content: center;
+  position: relative;
+  width: 72px;
+}
+
+.scan-corner {
+  height: var(--scan-corner-height);
+  position: absolute;
+  width: var(--scan-corner-width);
+}
+
+.scan-corner.left {
+  border-left: var(--scan-corner-border); /* csschecker-disable-line left-right */
+  left: 0;
+}
+
+.scan-corner.right {
+  border-right: var(--scan-corner-border); /* csschecker-disable-line left-right */
+  right: 0;
+}
+
+.scan-corner.bottom {
+  border-bottom: var(--scan-corner-border);
+  bottom: 0;
+}
+
+.scan-corner.top {
+  border-top: var(--scan-corner-border);
+  top: 0;
+}
+
+.scan-corner.top.left {
+  border-top-left-radius: var(--scan-corner-border-radius);
+}
+
+.scan-corner.top.right {
+  border-top-right-radius: var(--scan-corner-border-radius);
+}
+
+.scan-corner.bottom.left {
+  border-bottom-left-radius: var(--scan-corner-border-radius);
+}
+
+.scan-corner.bottom.right {
+  border-bottom-right-radius: var(--scan-corner-border-radius);
+}
+
+.scan-line {
+  background: var(--yellow-300);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  height: 2px;
+  left: 50%;
+  position: absolute;
+  top: 25%;
+  transform: translateX(-50%);
+  width: calc(100% + 6px);
+}
+
+#icon-document-area {
+  align-items: center;
+  border: 1px solid var(--blue-300);
+  border-radius: 8px;
+  display: flex;
+  height: 82px;
+  justify-content: center;
+  width: 60px;
+}
+
+#icon-document-g {
+  background: url(/images/document_mode_dialog_icon.svg);
+  height: 27px;
+  width: 28px;
+}
+
+#view-document-mode-dialog .dialog-title {
+  color: var(--grey-200);
+  font-family: var(--default-font-family);
+  font-size: 16px;
+  line-height: 24px;
+  margin-top: 24px;
+  text-align: center;
+}
+
+#view-document-mode-dialog .dialog-msg-holder {
+  color: var(--grey-500);
+  font-family: 'Roboto';
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-top: 10px;
+  max-width: 278px;
+}
+
+#view-document-mode-dialog button.dialog-positive-button {
+  background: var(--blue-300);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  color: var(--grey-900);
+  display: inline-block;
+  font-family: 'Roboto';
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  margin-top: 20px;
+  padding: 6px 16px;
+  text-align: center;
+}

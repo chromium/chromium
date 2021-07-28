@@ -250,6 +250,13 @@ export class DocumentCornerOverlay {
   }
 
   /**
+   * @return {boolean}
+   */
+  isEnabled() {
+    return this.detectorId_ !== null;
+  }
+
+  /**
    * @param {!Array<!Point>} corners
    */
   setCorners_(corners) {

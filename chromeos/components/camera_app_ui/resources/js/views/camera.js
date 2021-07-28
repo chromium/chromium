@@ -59,6 +59,7 @@ import {Preview} from './camera/preview.js';
 import {ScannerOptions} from './camera/scanner_options.js';
 import * as timertick from './camera/timertick.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
+import {Dialog} from './dialog.js';
 import {PTZPanel} from './ptz_panel.js';
 import {ReviewDocument} from './review_document.js';
 import {PrimarySettings} from './settings.js';
@@ -123,6 +124,12 @@ export class Camera extends View {
     this.reviewDocumentView_ = new ReviewDocument();
 
     /**
+     * @type {!Dialog}
+     * @private
+     */
+    this.docModeDialogView_ = new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
+
+    /**
      * @const {!Array<!View>}
      * @private
      */
@@ -130,6 +137,7 @@ export class Camera extends View {
       new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
       new PTZPanel(),
       this.reviewDocumentView_,
+      this.docModeDialogView_,
       new View(ViewName.FLASH),
     ];
 
@@ -500,6 +508,20 @@ export class Camera extends View {
     } else {
       state.addObserver(state.State.SHOW_SCANNER_MODE, checkShowToast);
     }
+
+    const docModeDialogKey = 'isDocModeDialogShown';
+    if (!localStorage.getBool(docModeDialogKey)) {
+      const checkShowDialog = () => {
+        if (!state.get(Mode.SCANNER) ||
+            !this.scannerOptions_.isDocumentModeEanbled()) {
+          return;
+        }
+        this.removeConfigureCompleteListener_(checkShowDialog);
+        localStorage.set(docModeDialogKey, true);
+        nav.open(ViewName.DOCUMENT_MODE_DIALOG);
+      };
+      this.addConfigureCompleteListener_(checkShowDialog);
+    }
   }
 
   /**
@@ -508,6 +530,14 @@ export class Camera extends View {
    */
   addConfigureCompleteListener_(listener) {
     this.configureCompleteListener_.add(listener);
+  }
+
+  /**
+   * @param {function(): *} listener
+   * @private
+   */
+  removeConfigureCompleteListener_(listener) {
+    this.configureCompleteListener_.delete(listener);
   }
 
   /**

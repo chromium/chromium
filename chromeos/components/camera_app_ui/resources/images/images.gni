@@ -42,6 +42,7 @@ in_app_images = [
   "camera_shutter_photo_stop_hover.svg",
   "camera_shutter_photo_stop.svg",
   "camera_shutter_video_pause.svg",
+  "document_mode_dialog_icon.svg",
   "new_feature_toast_icon.svg",
   "ptz_pan_left.svg",
   "ptz_pan_right.svg",

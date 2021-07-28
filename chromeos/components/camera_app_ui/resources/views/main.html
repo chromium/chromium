@@ -8,6 +8,7 @@
     <meta charset="utf-8">
     <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/document_mode_dialog.css">
     <link rel="stylesheet" href="/css/focus_ring.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/new_feature_toast.css">
@@ -305,6 +306,27 @@
         </div>
       </div>
     </div>
+    <div id="view-document-mode-dialog">
+      <div id="dim-preview"></div>
+      <div class="dialog-popup" role="dialog" aria-labelledby="dialog-msg">
+        <div id="icon-scan-area">
+          <div class="scan-line"></div>
+          <div class="scan-corner top left"></div>
+          <div class="scan-corner top right"></div>
+          <div class="scan-corner bottom right"></div>
+          <div class="scan-corner bottom left"></div>
+          <div id="icon-document-area">
+            <div id="icon-document-g"></div>
+          </div>
+        </div>
+        <div class="dialog-title" i18n-text="document_mode_dialog_title"></div>
+        <div class="dialog-msg-holder" i18n-text="document_mode_dialog_msg">
+        </div>
+        <button class="dialog-positive-button" tabindex="0"
+                i18n-text="document_mode_dialog_got_it"></button>
+      </div>
+    </div>
+
     <div id="view-settings">
       <div class="menu">
         <div class="menu-header circle">

@@ -203,6 +203,13 @@ export class ScannerOptions {
   }
 
   /**
+   * @return {boolean}
+   */
+  isDocumentModeEanbled() {
+    return this.documentCornerOverylay_.isEnabled();
+  }
+
+  /**
    * @param {?ScanType} scanType Scan type to be enabled, null for no type is
    *     enabled.
    * @private
