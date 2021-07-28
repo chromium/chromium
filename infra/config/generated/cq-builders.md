@@ -55,8 +55,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [linux-chromeos-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-chromeos-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-chromeos-rel))
 
-* [linux-lacros-rel](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-lacros-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-lacros-rel))
-
 * [linux-libfuzzer-asan-rel](https://ci.chromium.org/p/chromium/builders/try/linux-libfuzzer-asan-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-libfuzzer-asan-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-libfuzzer-asan-rel))
 
 * [linux-ozone-rel](https://ci.chromium.org/p/chromium/builders/try/linux-ozone-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-ozone-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-ozone-rel))
@@ -427,6 +425,9 @@ builder.
 These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
+
+These builders are currently disabled due to the cq_disable_experiments outages
+setting. See //infra/config/outages/README.md for more information.
 
 * [android-marshmallow-x86-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-marshmallow-x86-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-marshmallow-x86-rel-rts))
   * Experiment percentage: 5.0

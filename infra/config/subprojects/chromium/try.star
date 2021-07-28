@@ -874,7 +874,8 @@ try_.chromium_chromiumos_builder(
     ssd = True,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
-    tryjob = try_.job(),
+    # TODO(martiniss): Re-enable this once the test pool has calmed down
+    # tryjob = try_.job(),
     os = os.LINUX_BIONIC_REMOVE,
 )
 
