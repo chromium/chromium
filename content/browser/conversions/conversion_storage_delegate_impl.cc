@@ -84,6 +84,18 @@ uint64_t ConversionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
       base::RandUint64());
 }
 
+base::TimeDelta
+ConversionStorageDelegateImpl::GetDeleteExpiredImpressionsFrequency() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::TimeDelta::FromMinutes(5);
+}
+
+base::TimeDelta
+ConversionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::TimeDelta::FromMinutes(5);
+}
+
 base::Time ConversionStorageDelegateImpl::GetReportTime(
     const ConversionReport& report) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

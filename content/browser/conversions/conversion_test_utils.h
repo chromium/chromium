@@ -91,6 +91,8 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
       const StorableImpression& impression) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
   uint64_t GetFakeEventSourceTriggerData() const override;
+  base::TimeDelta GetDeleteExpiredImpressionsFrequency() const override;
+  base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
 
   void set_max_conversions_per_impression(int max) {
     max_conversions_per_impression_ = max;
@@ -119,6 +121,14 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
     fake_event_source_trigger_data_ = data;
   }
 
+  void set_delete_expired_impressions_frequency(base::TimeDelta frequency) {
+    delete_expired_impressions_frequency_ = frequency;
+  }
+
+  void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency) {
+    delete_expired_rate_limits_frequency_ = frequency;
+  }
+
   void set_report_time_ms(int report_time_ms) {
     report_time_ms_ = report_time_ms;
   }
@@ -138,6 +148,9 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
       StorableImpression::AttributionLogic::kTruthfully;
 
   uint64_t fake_event_source_trigger_data_ = 0;
+
+  base::TimeDelta delete_expired_impressions_frequency_;
+  base::TimeDelta delete_expired_rate_limits_frequency_;
 
   int report_time_ms_ = 0;
 };

@@ -103,8 +103,9 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Deletes all impressions that have expired and have no pending conversion
-  // reports.
-  void DeleteExpiredImpressions() VALID_CONTEXT_REQUIRED(sequence_checker_);
+  // reports. Returns false on failure.
+  bool DeleteExpiredImpressions()
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Deletes the conversion with `conversion_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
@@ -191,6 +192,11 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   const base::Clock* clock_;
 
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Time at which `DeleteExpiredImpressions()` was last called. Initialized to
+  // the NULL time.
+  base::Time last_deleted_expired_impressions_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ConversionStorageSql> weak_factory_;

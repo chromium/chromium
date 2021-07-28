@@ -80,14 +80,16 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(report.impression.impression_id().has_value());
 
-  // Only delete expired rate limits every X minutes to avoid excessive DB
+  // Only delete expired rate limits periodically to avoid excessive DB
   // operations.
-  const base::TimeDelta kDeleteFrequency = base::TimeDelta::FromMinutes(5);
-  base::Time now = clock_->Now();
-  if (now - last_cleared_ >= kDeleteFrequency) {
-    last_cleared_ = now;
+  const base::TimeDelta delete_frequency =
+      delegate_->GetDeleteExpiredRateLimitsFrequency();
+  DCHECK_GE(delete_frequency, base::TimeDelta());
+  const base::Time now = clock_->Now();
+  if (now - last_cleared_ >= delete_frequency) {
     if (!DeleteExpiredRateLimits(db))
       return false;
+    last_cleared_ = now;
   }
 
   static constexpr char kStoreRateLimitSql[] =

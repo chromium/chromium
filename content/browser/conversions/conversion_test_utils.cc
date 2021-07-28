@@ -90,31 +90,48 @@ base::Time ConfigurableStorageDelegate::GetReportTime(
   return report.impression.impression_time() +
          base::TimeDelta::FromMilliseconds(report_time_ms_);
 }
+
 int ConfigurableStorageDelegate::GetMaxConversionsPerImpression(
     StorableImpression::SourceType source_type) const {
   return max_conversions_per_impression_;
 }
+
 int ConfigurableStorageDelegate::GetMaxImpressionsPerOrigin() const {
   return max_impressions_per_origin_;
 }
+
 int ConfigurableStorageDelegate::GetMaxConversionsPerOrigin() const {
   return max_conversions_per_origin_;
 }
+
 int ConfigurableStorageDelegate::GetMaxAttributionDestinationsPerEventSource()
     const {
   return max_attribution_destinations_per_event_source_;
 }
+
 ConversionStorage::Delegate::RateLimitConfig
 ConfigurableStorageDelegate::GetRateLimits() const {
   return rate_limits_;
 }
+
 StorableImpression::AttributionLogic
 ConfigurableStorageDelegate::SelectAttributionLogic(
     const StorableImpression& impression) const {
   return attribution_logic_;
 }
+
 uint64_t ConfigurableStorageDelegate::GetFakeEventSourceTriggerData() const {
   return fake_event_source_trigger_data_;
+}
+
+base::TimeDelta
+ConfigurableStorageDelegate::GetDeleteExpiredImpressionsFrequency() const {
+  return delete_expired_impressions_frequency_;
+}
+
+base::TimeDelta
+ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
+  return delete_expired_rate_limits_frequency_;
 }
 
 ConversionManager* TestManagerProvider::GetManager(

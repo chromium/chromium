@@ -97,6 +97,16 @@ class ConversionStorage {
     // `ConversionPolicy::GetNoisedEventSourceTriggerData()`.
     virtual uint64_t GetFakeEventSourceTriggerData() const
         WARN_UNUSED_RESULT = 0;
+
+    // Returns the maximum frequency at which to delete expired impressions.
+    // Must be positive.
+    virtual base::TimeDelta GetDeleteExpiredImpressionsFrequency() const
+        WARN_UNUSED_RESULT = 0;
+
+    // Returns the maximum frequency at which to delete expired rate limits.
+    // Must be positive.
+    virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const
+        WARN_UNUSED_RESULT = 0;
   };
   virtual ~ConversionStorage() = default;
 

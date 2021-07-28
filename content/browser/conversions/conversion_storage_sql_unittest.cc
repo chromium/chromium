@@ -535,6 +535,27 @@ TEST_F(ConversionStorageSqlTest, ImpressionExpired_Deleted) {
   ExpectImpressionRows(1u);
 }
 
+TEST_F(ConversionStorageSqlTest, ImpressionExpired_TooFrequent_NotDeleted) {
+  OpenDatabase();
+
+  delegate()->set_delete_expired_impressions_frequency(
+      base::TimeDelta::FromMilliseconds(4));
+
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
+          .Build());
+  clock()->Advance(base::TimeDelta::FromMilliseconds(3));
+  // Store another impression to trigger the expiry logic.
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetExpiry(base::TimeDelta::FromMilliseconds(3))
+          .Build());
+
+  CloseDatabase();
+  ExpectImpressionRows(2u);
+}
+
 TEST_F(ConversionStorageSqlTest,
        ExpiredImpressionWithPendingConversion_NotDeleted) {
   OpenDatabase();

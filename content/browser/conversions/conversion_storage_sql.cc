@@ -201,11 +201,17 @@ void ConversionStorageSql::StoreImpression(
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent))
     return;
 
-  // Cleanup any impression that may be expired by this point. This is done when
-  // an impression is added to prevent additional logic for cleaning the table
-  // while providing a guarantee that the size of the table is proportional to
-  // the number of active impression.
-  DeleteExpiredImpressions();
+  // Only delete expired impressions periodically to avoid excessive DB
+  // operations.
+  const base::TimeDelta delete_frequency =
+      delegate_->GetDeleteExpiredImpressionsFrequency();
+  DCHECK_GE(delete_frequency, base::TimeDelta());
+  const base::Time now = clock_->Now();
+  if (now - last_deleted_expired_impressions_ >= delete_frequency) {
+    if (!DeleteExpiredImpressions())
+      return;
+    last_deleted_expired_impressions_ = now;
+  }
 
   // TODO(csharrison): Thread this failure to the caller and report a console
   // error.
@@ -679,7 +685,7 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
   return conversions;
 }
 
-void ConversionStorageSql::DeleteExpiredImpressions() {
+bool ConversionStorageSql::DeleteExpiredImpressions() {
   const int kMaxDeletesPerBatch = 100;
 
   auto delete_impressions_from_paged_select =
@@ -714,7 +720,7 @@ void ConversionStorageSql::DeleteExpiredImpressions() {
   select_expired_statement.BindTime(0, clock_->Now());
   select_expired_statement.BindInt(1, kMaxDeletesPerBatch);
   if (!delete_impressions_from_paged_select(select_expired_statement))
-    return;
+    return false;
 
   // Delete all impressions that have no associated conversions and are
   // inactive. This is done in a separate statement from
@@ -727,8 +733,7 @@ void ConversionStorageSql::DeleteExpiredImpressions() {
   sql::Statement select_inactive_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectInactiveImpressionsSql));
   select_inactive_statement.BindInt(0, kMaxDeletesPerBatch);
-  if (!delete_impressions_from_paged_select(select_inactive_statement))
-    return;
+  return delete_impressions_from_paged_select(select_inactive_statement);
 }
 
 bool ConversionStorageSql::DeleteConversion(int64_t conversion_id) {

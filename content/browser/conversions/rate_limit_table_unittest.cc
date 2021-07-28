@@ -435,6 +435,9 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 }
 
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRateLimits) {
+  delegate()->set_delete_expired_rate_limits_frequency(
+      base::TimeDelta::FromMinutes(5));
+
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_TRUE(table()->CreateTable(&db));
