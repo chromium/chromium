@@ -26,6 +26,7 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
   wayland_overlay_config->bounds_rect = input.display_bounds;
   wayland_overlay_config->crop_rect = input.crop_rect;
   wayland_overlay_config->enable_blend = input.enable_blend;
+  wayland_overlay_config->damage_region = input.damage_rect;
   wayland_overlay_config->access_fence_handle =
       !input.gpu_fence || input.gpu_fence->GetGpuFenceHandle().is_null()
           ? gfx::GpuFenceHandle()

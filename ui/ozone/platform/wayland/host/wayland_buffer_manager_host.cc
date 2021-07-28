@@ -356,16 +356,7 @@ class WaylandBufferManagerHost::Surface {
 
   void DamageBuffer(WaylandBuffer* buffer) {
     DCHECK(wayland_surface_);
-
-    gfx::Rect pending_damage_region = buffer->damage_region;
-    // If the size of the damage region is empty, wl_surface_damage must be
-    // supplied with the actual size of the buffer, which is going to be
-    // committed.
-    if (pending_damage_region.size().IsEmpty())
-      pending_damage_region.set_size(buffer->size);
-    DCHECK(!pending_damage_region.size().IsEmpty());
-
-    wayland_surface_->UpdateBufferDamageRegion(pending_damage_region,
+    wayland_surface_->UpdateBufferDamageRegion(buffer->damage_region,
                                                buffer->size);
   }
 
