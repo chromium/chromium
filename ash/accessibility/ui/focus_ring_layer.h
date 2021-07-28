@@ -22,7 +22,6 @@ class FocusRingLayer : public AccessibilityLayer {
   ~FocusRingLayer() override;
 
   // AccessibilityLayer overrides:
-  bool NeedToAnimate() const override;
   int GetInset() const override;
 
   // Set a custom color, or reset to the default.
