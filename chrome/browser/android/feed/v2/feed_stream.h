@@ -113,6 +113,9 @@ class FeedStream : public ::feed::FeedStreamSurface {
   int GetSurfaceId(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj);
 
+  jlong GetLastFetchTimeMs(JNIEnv* env,
+                           const base::android::JavaParamRef<jobject>& obj);
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   FeedApi* feed_stream_api_;

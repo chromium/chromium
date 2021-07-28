@@ -101,6 +101,11 @@ public interface Stream {
         return result;
     }
 
+    /** Returns the last content fetch time. */
+    default long getLastFetchTimeMs() {
+        return 0;
+    }
+
     /**
      * Binds the feed to a particular view, manager, and scope.
      * When bound, the feed actively updates views and content. Assumes that whatever

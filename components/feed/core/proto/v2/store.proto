@@ -86,6 +86,14 @@ message Metadata {
     // has already seen a stored stream's data.
     repeated int64 view_content_ids = 4;
 
+    message ContentLifetime {
+      int64 stale_age_ms = 1;
+      int64 invalid_age_ms = 2;
+    }
+    ContentLifetime content_lifetime = 5;
+    // The unix timestamp in milliseconds that the stream was fetched last time.
+    int64 last_fetch_time_millis = 6;
+
     reserved 2;
   }
 

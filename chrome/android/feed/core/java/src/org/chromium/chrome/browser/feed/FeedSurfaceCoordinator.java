@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -83,7 +84,7 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
+public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDelegate {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
@@ -100,6 +101,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final BottomSheetController mBottomSheetController;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
+    private final Handler mHandler;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -142,6 +144,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable ScrollableContainerDelegate mScrollableContainerDelegate;
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
+    private @Nullable RefreshIphScrollListener mRefreshIphScrollListener;
 
     private final FeedLaunchReliabilityLoggingState mLaunchReliabilityLoggingState;
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
@@ -283,6 +286,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, resources.getDimensionPixelOffset(R.dimen.tab_strip_height), 0, 0);
         mUiConfig = new UiConfig(mRootView);
+
+        mHandler = new Handler(Looper.getMainLooper());
 
         if (isEnhancedProtectionPromoEnabled()) {
             mEnhancedProtectionPromoController =
@@ -771,38 +776,28 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mScrollableContainerDelegate = new ScrollableContainerDelegateImpl();
         }
 
-        FeedSurfaceCoordinator coordinator = this;
-        HeaderIphScrollListener.Delegate delegate = new HeaderIphScrollListener.Delegate() {
-            @Override
-            public Tracker getFeatureEngagementTracker() {
-                return TrackerFactory.getTrackerForProfile(mProfile);
-            }
-            @Override
-            public void showMenuIph() {
-                UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
-                mSectionHeaderView.showMenuIph(helper);
-            }
-            @Override
-            public boolean isFeedExpanded() {
-                return mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
-            }
-            @Override
-            public boolean isSignedIn() {
-                return IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .getIdentityManager()
-                        .hasPrimaryAccount();
-            }
-            @Override
-            public boolean isFeedHeaderPositionInContainerSuitableForIPH(
-                    float headerMaxPosFraction) {
-                return coordinator.isFeedHeaderPositionInContainerSuitableForIPH(
-                        headerMaxPosFraction);
-            }
-        };
+        createHeaderIphScrollListener();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
+            createRefreshIphScrollListener();
+        }
+    }
+
+    private void createHeaderIphScrollListener() {
         mHeaderIphScrollListener =
-                new HeaderIphScrollListener(delegate, mScrollableContainerDelegate);
+                new HeaderIphScrollListener(this, mScrollableContainerDelegate, () -> {
+                    UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
+                    mSectionHeaderView.showMenuIph(helper);
+                });
         mScrollableContainerDelegate.addScrollListener(mHeaderIphScrollListener);
+    }
+
+    private void createRefreshIphScrollListener() {
+        mRefreshIphScrollListener =
+                new RefreshIphScrollListener(this, mScrollableContainerDelegate, () -> {
+                    UserEducationHelper helper = new UserEducationHelper(mActivity, mHandler);
+                    mSwipeRefreshLayout.showIPH(helper);
+                });
+        mScrollableContainerDelegate.addScrollListener(mRefreshIphScrollListener);
     }
 
     /**
@@ -813,13 +808,38 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     void stopIph() {
         if (mStream != null && mScrollableContainerDelegate != null
                 && mHeaderIphScrollListener != null) {
-            mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
+            if (mHeaderIphScrollListener != null) {
+                mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
+                mHeaderIphScrollListener = null;
+            }
+            if (mRefreshIphScrollListener != null) {
+                mScrollableContainerDelegate.removeScrollListener(mRefreshIphScrollListener);
+                mRefreshIphScrollListener = null;
+            }
         }
-        mHeaderIphScrollListener = null;
         mScrollableContainerDelegate = null;
     }
 
-    private boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction) {
+    @Override
+    public Tracker getFeatureEngagementTracker() {
+        return TrackerFactory.getTrackerForProfile(mProfile);
+    }
+
+    @Override
+    public boolean isFeedExpanded() {
+        return mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
+    }
+
+    @Override
+    public boolean isSignedIn() {
+        return IdentityServicesProvider.get()
+                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .getIdentityManager()
+                .hasPrimaryAccount();
+    }
+
+    @Override
+    public boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction) {
         assert headerMaxPosFraction >= 0.0f
                 && headerMaxPosFraction <= 1.0f
             : "Max position fraction should be ranging between 0.0 and 1.0";
@@ -833,6 +853,21 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         return true;
+    }
+
+    @Override
+    public long getCurrentTimeMs() {
+        return System.currentTimeMillis();
+    }
+
+    @Override
+    public long getLastFetchTimeMs() {
+        return (mStream == null) ? 0 : mStream.getLastFetchTimeMs();
+    }
+
+    @Override
+    public boolean canScrollUp() {
+        return mRecyclerView.canScrollVertically(-1);
     }
 
     private boolean isReliabilityLoggingEnabled() {

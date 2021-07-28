@@ -254,5 +254,11 @@ int FeedStream::GetSurfaceId(JNIEnv* env,
   return FeedStreamSurface::GetSurfaceId().GetUnsafeValue();
 }
 
+jlong FeedStream::GetLastFetchTimeMs(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  return feed_stream_api_->GetLastFetchTime(GetStreamType()).ToDoubleT() * 1000;
+}
+
 }  // namespace android
 }  // namespace feed

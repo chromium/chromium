@@ -58,4 +58,8 @@ std::string StubFeedApi::DumpStateForDebugging() {
   return {};
 }
 
+base::Time StubFeedApi::GetLastFetchTime(const StreamType& stream_type) {
+  return base::Time();
+}
+
 }  // namespace feed

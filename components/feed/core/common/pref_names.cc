@@ -13,8 +13,6 @@ namespace feed {
 
 namespace prefs {
 
-const char kLastFetchAttemptTime[] = "feed.last_fetch_attempt";
-
 const char kHostOverrideHost[] = "feed.host_override.host";
 const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
 
@@ -92,7 +90,6 @@ void RegisterObsoletePrefsJune_2021(PrefRegistrySimple* registry) {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(feed::prefs::kHostOverrideHost, "");
   registry->RegisterStringPref(feed::prefs::kHostOverrideBlessNonce, "");
-  registry->RegisterTimePref(prefs::kLastFetchAttemptTime, base::Time());
   registry->RegisterListPref(feed::prefs::kThrottlerRequestCountListPrefName);
   registry->RegisterTimePref(feed::prefs::kThrottlerLastRequestTime,
                              base::Time());

@@ -8091,6 +8091,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In product help feed card menu on NTP."/>
   <suffix name="IPH_FeedHeaderMenu"
       label="In product help feed header menu on NTP."/>
+  <suffix name="IPH_FeedSwipeRefresh"
+      label="In product help for swipe refreshing feeds on NTP."/>
   <suffix name="IPH_GlobalMediaControls"
       label="In product help for the Global Media Controls."/>
   <suffix name="IPH_HomePageButton" label="In product help home page button.">

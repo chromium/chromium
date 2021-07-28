@@ -355,12 +355,10 @@ void LoadStreamTask::ProcessNetworkResponse(
 
   MetricsReporter::NoticeCardFulfilled(*fetched_content_has_notice_card_);
 
-  absl::optional<feedstore::Metadata> updated_metadata =
-      feedstore::MaybeUpdateSessionId(stream_.GetMetadata(),
-                                      response_data.session_id);
-  if (updated_metadata) {
-    stream_.SetMetadata(std::move(*updated_metadata));
-  }
+  auto updated_metadata = stream_.GetMetadata();
+  SetLastFetchTime(updated_metadata, options_.stream_type, base::Time::Now());
+  feedstore::MaybeUpdateSessionId(updated_metadata, response_data.session_id);
+  stream_.SetMetadata(std::move(updated_metadata));
   if (response_data.experiments)
     experiments_ = *response_data.experiments;
 

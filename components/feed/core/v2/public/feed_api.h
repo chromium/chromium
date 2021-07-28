@@ -182,6 +182,8 @@ class FeedApi {
   // Forces to render a StreamUpdate on all subsequent surface attaches.
   virtual void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) = 0;
+  // Returns the time of the last successful content fetch.
+  virtual base::Time GetLastFetchTime(const StreamType& stream_type) = 0;
 };
 
 }  // namespace feed

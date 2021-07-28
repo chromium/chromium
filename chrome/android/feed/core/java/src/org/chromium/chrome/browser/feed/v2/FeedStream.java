@@ -691,6 +691,11 @@ public class FeedStream implements Stream {
                                               : Stream.super.hasUnreadContent();
     }
 
+    @Override
+    public long getLastFetchTimeMs() {
+        return FeedStreamJni.get().getLastFetchTimeMs(mNativeFeedStream, FeedStream.this);
+    }
+
     /**
      * Attempts to load more content if it can be triggered.
      * @return true if loading more content can be triggered.
@@ -1048,5 +1053,6 @@ public class FeedStream implements Stream {
         void surfaceOpened(long nativeFeedStream, FeedStream caller);
         void surfaceClosed(long nativeFeedStream, FeedStream caller);
         int getSurfaceId(long nativeFeedStream, FeedStream caller);
+        long getLastFetchTimeMs(long nativeFeedStream, FeedStream caller);
     }
 }
