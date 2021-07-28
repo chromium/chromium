@@ -34,6 +34,7 @@ class CORE_EXPORT CachedTextInputInfo final {
   bool IsValidFor(const ContainerNode& element) const;
 
   // For cache invalidation
+  void DidChangeVisibility(const LayoutObject& layout_object);
   void DidLayoutSubtree(const LayoutObject& layout_object);
   void DidUpdateLayout(const LayoutObject& layout_object);
   void LayoutObjectWillBeDestroyed(const LayoutObject& layout_object);

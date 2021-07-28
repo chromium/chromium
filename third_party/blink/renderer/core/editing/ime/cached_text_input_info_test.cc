@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/ime/cached_text_input_info.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -95,6 +96,46 @@ TEST_F(CachedTextInputInfoTest, RelayoutBoundary) {
   EXPECT_EQ(PlainTextRange(0, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abX", GetCachedTextInputInfo().GetText());
+}
+
+// http://crbug.com/1228635
+TEST_F(CachedTextInputInfoTest, VisibilityHiddenToVisible) {
+  GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(
+      "<div contenteditable id=sample>"
+      "<b id=target style='visibility: hidden'>A</b><b>^Z|</b></div>"));
+
+  EXPECT_EQ(PlainTextRange(0, 1),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("Z", GetCachedTextInputInfo().GetText())
+      << "Texts within visibility:hidden are excluded";
+
+  Element& target = *GetElementById("target");
+  target.style()->setProperty(GetDocument().GetExecutionContext(), "visibility",
+                              "visible", "", ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(PlainTextRange(1, 2),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("AZ", GetCachedTextInputInfo().GetText());
+}
+
+// http://crbug.com/1228635
+TEST_F(CachedTextInputInfoTest, VisibilityVisibleToHidden) {
+  GetFrame().Selection().SetSelectionAndEndTyping(SetSelectionTextToBody(
+      "<div contenteditable id=sample>"
+      "<b id=target style='visibility: visible'>A</b><b>^Z|</b></div>"));
+
+  EXPECT_EQ(PlainTextRange(1, 2),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("AZ", GetCachedTextInputInfo().GetText());
+
+  Element& target = *GetElementById("target");
+  target.style()->setProperty(GetDocument().GetExecutionContext(), "visibility",
+                              "hidden", "", ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(PlainTextRange(0, 1),
+            GetInputMethodController().GetSelectionOffsets());
+  EXPECT_EQ("Z", GetCachedTextInputInfo().GetText())
+      << "Texts within visibility:hidden are excluded";
 }
 
 }  // namespace blink

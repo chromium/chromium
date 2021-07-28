@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/layout_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
@@ -2739,6 +2740,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         layer->DirtyVisibleContentStatus();
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
         cache->ChildrenChanged(this);
+      GetDocument().GetFrame()->GetInputMethodController().DidChangeVisibility(
+          *this);
     }
 
     if (IsFloating() &&

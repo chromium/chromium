@@ -1523,6 +1523,11 @@ void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
   *control_bounds = element->BoundsInViewport();
 }
 
+void InputMethodController::DidChangeVisibility(
+    const LayoutObject& layout_object) {
+  cached_text_input_info_.DidChangeVisibility(layout_object);
+}
+
 void InputMethodController::DidLayoutSubtree(
     const LayoutObject& layout_object) {
   cached_text_input_info_.DidLayoutSubtree(layout_object);

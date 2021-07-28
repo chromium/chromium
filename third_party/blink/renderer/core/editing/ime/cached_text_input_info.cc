@@ -61,6 +61,11 @@ void CachedTextInputInfo::ClearIfNeeded(const LayoutObject& layout_object) {
   offset_map_.clear();
 }
 
+void CachedTextInputInfo::DidChangeVisibility(
+    const LayoutObject& layout_object) {
+  DidLayoutSubtree(layout_object);
+}
+
 void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
   // <div style="contain:strict; ...">abc</div> reaches here.
   if (!container_)
