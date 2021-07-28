@@ -108,25 +108,6 @@ public class PriceTrackingUtilitiesTest {
     @Test
     @SmallTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
-    public void testIsPriceTrackingEligibleSyncDisabled() {
-        setTabSyncStatus(false, false);
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
-    }
-
-    @UiThreadTest
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
-
-    public void testIsPriceTrackingEligibleNoSyncedTabs() {
-        setTabSyncStatus(true, false);
-        Assert.assertFalse(PriceTrackingUtilities.isPriceTrackingEligible());
-    }
-
-    @UiThreadTest
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
 
     public void testIsPriceTrackingEligibleNoMbb() {
         setMbbStatus(false);
