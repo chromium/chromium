@@ -74,7 +74,7 @@ class SafeBrowsingUIManager : public BaseUIManager {
     // defined in BCP 47. The region subtag is not included when it adds no
     // distinguishing information to the language tag (e.g. both "en-US" and
     // "fr" are correct here).
-    virtual const std::string& GetApplicationLocale() = 0;
+    virtual std::string GetApplicationLocale() = 0;
 
     // Notifies the embedder that given events occurred so that the embedder can
     // trigger corresponding extension events if desired. This triggering is

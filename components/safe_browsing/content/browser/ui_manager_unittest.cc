@@ -157,7 +157,7 @@ class TestSafeBrowsingUIManagerDelegate
   ~TestSafeBrowsingUIManagerDelegate() override = default;
 
   // SafeBrowsingUIManager::Delegate:
-  const std::string& GetApplicationLocale() override { return app_locale_; }
+  std::string GetApplicationLocale() override { return "en-us"; }
   void TriggerSecurityInterstitialShownExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,
@@ -196,7 +196,6 @@ class TestSafeBrowsingUIManagerDelegate
   }
 
  private:
-  std::string app_locale_ = "en-us";
   bool is_hosting_extension_ = false;
   TestingPrefServiceSimple pref_service_;
 };

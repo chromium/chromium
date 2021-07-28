@@ -22,7 +22,7 @@ class ChromeSafeBrowsingUIManagerDelegate
       const ChromeSafeBrowsingUIManagerDelegate&) = delete;
 
   // SafeBrowsingUIManager::Delegate:
-  const std::string& GetApplicationLocale() override;
+  std::string GetApplicationLocale() override;
   void TriggerSecurityInterstitialShownExtensionEventIfDesired(
       content::WebContents* web_contents,
       const GURL& page_url,

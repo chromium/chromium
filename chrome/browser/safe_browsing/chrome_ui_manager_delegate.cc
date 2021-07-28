@@ -25,7 +25,7 @@ ChromeSafeBrowsingUIManagerDelegate::ChromeSafeBrowsingUIManagerDelegate() =
 ChromeSafeBrowsingUIManagerDelegate::~ChromeSafeBrowsingUIManagerDelegate() =
     default;
 
-const std::string& ChromeSafeBrowsingUIManagerDelegate::GetApplicationLocale() {
+std::string ChromeSafeBrowsingUIManagerDelegate::GetApplicationLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
