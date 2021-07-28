@@ -385,46 +385,33 @@ void FuchsiaAudioOutputDevice::SchedulePumpSamples() {
 
   base::TimeTicks now = base::TimeTicks::Now();
 
-  int skipped_frames = 0;
-
   // Target time for when PumpSamples() should run.
   base::TimeTicks target_time = playback_time - min_lead_time_ - kLeadTimeExtra;
-
-  // Check if it's too late to send the next packet. If it is, then advance
-  // current stream position, adding kLeadTimeExtra to ensure the next packet
-  // doesn't miss the deadline.
-  auto lead_time = playback_time - now;
-  if (lead_time < min_lead_time_) {
-    auto new_playback_time = now + min_lead_time_ + kLeadTimeExtra;
-    auto skipped_time = new_playback_time - playback_time;
-    skipped_frames =
-        AudioTimestampHelper::TimeToFrames(skipped_time, params_.sample_rate());
-    media_pos_frames_ += skipped_frames;
-    target_time = now;
-    playback_time += skipped_time;
-  }
 
   base::TimeDelta delay = target_time - now;
   pump_samples_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(&FuchsiaAudioOutputDevice::PumpSamples, this,
-                     playback_time, skipped_frames));
+                     playback_time));
 }
 
-void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time,
-                                           int frames_skipped) {
+void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
   DCHECK(CurrentThreadIsRenderingThread());
 
   auto now = base::TimeTicks::Now();
 
-  // Check if the timer has missed the deadline. It doesn't make sense to try
-  // sending the packet in that case (it's likely to arrive too late).
-  // Reschedule the timer. In this case SchedulePumpSamples() is expected to
-  // schedule PumpSamples() to run immediately with frames_skipped > 0.
+  int skipped_frames = 0;
+
+  // Check if it's too late to send the next packet. If it is, then advance
+  // current stream position.
   auto lead_time = playback_time - now;
   if (lead_time < min_lead_time_) {
-    SchedulePumpSamples();
-    return;
+    auto new_playback_time = now + min_lead_time_;
+    auto skipped_time = new_playback_time - playback_time;
+    skipped_frames =
+        AudioTimestampHelper::TimeToFrames(skipped_time, params_.sample_rate());
+    media_pos_frames_ += skipped_frames;
+    playback_time += skipped_time;
   }
 
   int frames_filled;
@@ -436,7 +423,7 @@ void FuchsiaAudioOutputDevice::PumpSamples(base::TimeTicks playback_time,
     if (!callback_)
       return;
 
-    frames_filled = callback_->Render(playback_time - now, now, frames_skipped,
+    frames_filled = callback_->Render(playback_time - now, now, skipped_frames,
                                       audio_bus_.get());
   }
 

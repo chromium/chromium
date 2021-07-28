@@ -98,8 +98,8 @@ class FuchsiaAudioOutputDeviceTest : public testing::Test {
   }
 
   void CallPumpSamples() {
-    output_device_->PumpSamples(
-        base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(200), 0);
+    output_device_->PumpSamples(base::TimeTicks::Now() +
+                                base::TimeDelta::FromMilliseconds(200));
   }
 
   void ValidatePresentationTime() {
@@ -194,8 +194,8 @@ TEST_F(FuchsiaAudioOutputDeviceTest, Underflow) {
   // Advance time by 100ms, causing some frames to be skipped.
   task_environment_.AdvanceClock(kPeriod * 10);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod);
-  EXPECT_EQ(renderer_.frames_skipped(), kFramesPerPeriod * 9);
+  EXPECT_EQ(renderer_.frames_rendered(), kFramesPerPeriod * 3);
+  EXPECT_EQ(renderer_.frames_skipped(), kFramesPerPeriod * 7);
   renderer_.reset_frames_rendered();
 
   ValidatePresentationTime();

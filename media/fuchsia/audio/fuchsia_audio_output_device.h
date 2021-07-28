@@ -96,7 +96,7 @@ class MEDIA_EXPORT FuchsiaAudioOutputDevice : public AudioRendererSink {
 
   // Pumps a single packet to AudioConsumer and calls SchedulePumpSamples() to
   // pump the next packet.
-  void PumpSamples(base::TimeTicks playback_time, int frames_skipped);
+  void PumpSamples(base::TimeTicks playback_time);
 
   // Callback for StreamSink::SendPacket().
   void OnStreamSendDone(size_t buffer_index);
