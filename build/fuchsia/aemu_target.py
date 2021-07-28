@@ -20,19 +20,10 @@ def GetTargetType():
 class AemuTarget(qemu_target.QemuTarget):
   EMULATOR_NAME = 'aemu'
 
-  def __init__(self,
-               out_dir,
-               target_cpu,
-               system_log_file,
-               cpu_cores,
-               require_kvm,
-               ram_size_mb,
-               enable_graphics,
-               hardware_gpu,
-               fuchsia_out_dir=None):
-    super(AemuTarget,
-          self).__init__(out_dir, target_cpu, system_log_file, cpu_cores,
-                         require_kvm, ram_size_mb, fuchsia_out_dir)
+  def __init__(self, out_dir, target_cpu, system_log_file, cpu_cores,
+               require_kvm, ram_size_mb, enable_graphics, hardware_gpu):
+    super(AemuTarget, self).__init__(out_dir, target_cpu, system_log_file,
+                                     cpu_cores, require_kvm, ram_size_mb)
 
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
@@ -41,8 +32,7 @@ class AemuTarget(qemu_target.QemuTarget):
   def CreateFromArgs(args):
     return AemuTarget(args.out_dir, args.target_cpu, args.system_log_file,
                       args.cpu_cores, args.require_kvm, args.ram_size_mb,
-                      args.enable_graphics, args.hardware_gpu,
-                      args.fuchsia_out_dir)
+                      args.enable_graphics, args.hardware_gpu)
 
   @staticmethod
   def RegisterArgs(arg_parser):

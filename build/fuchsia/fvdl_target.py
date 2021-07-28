@@ -8,34 +8,37 @@ import common
 import emu_target
 import logging
 import os
+import re
 import subprocess
 import tempfile
 
 _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 _SSH_KEY_DIR = os.path.expanduser('~/.ssh')
+_DEFAULT_SSH_PORT = 22
 
 
 def GetTargetType():
   return FvdlTarget
 
 
+class EmulatorNetworkNotFoundError(Exception):
+  """Raised when emulator's address cannot be found"""
+  pass
+
+
 class FvdlTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'fvdl'
 
-  def __init__(self,
-               out_dir,
-               target_cpu,
-               system_log_file,
-               require_kvm,
-               enable_graphics,
-               hardware_gpu,
-               fuchsia_out_dir=None):
-    super(FvdlTarget, self).__init__(out_dir, target_cpu, system_log_file,
-                                     fuchsia_out_dir)
+  def __init__(self, out_dir, target_cpu, system_log_file, require_kvm,
+               enable_graphics, hardware_gpu, with_network):
+    super(FvdlTarget, self).__init__(out_dir, target_cpu, system_log_file)
     self._require_kvm = require_kvm
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
-    self._emulator_pid = None
+    self._with_network = with_network
+
+    self._host = None
+    self._pid = None
 
     # Use a temp file for vdl output.
     self._vdl_output_file = tempfile.NamedTemporaryFile()
@@ -43,8 +46,16 @@ class FvdlTarget(emu_target.EmuTarget):
   @staticmethod
   def CreateFromArgs(args):
     return FvdlTarget(args.out_dir, args.target_cpu, args.system_log_file,
-                      args.require_kvm, args.enable_graphics,
-                      args.hardware_gpu, args.fuchsia_out_dir)
+                      args.require_kvm, args.enable_graphics, args.hardware_gpu,
+                      args.with_network)
+
+  @staticmethod
+  def RegisterArgs(arg_parser):
+    fvdl_args = arg_parser.add_argument_group('fvdl', 'FVDL arguments')
+    fvdl_args.add_argument('--with-network',
+                           action='store_true',
+                           default=False,
+                           help='Run emulator with emulated nic via tun/tap.')
 
   def _BuildCommand(self):
     boot_data.ProvisionSSH(_SSH_KEY_DIR)
@@ -72,12 +83,56 @@ class FvdlTarget(emu_target.EmuTarget):
       emu_command.append('--headless')
     if self._hardware_gpu:
       emu_command.append('--host-gpu')
+    if self._with_network:
+      emu_command.append('-N')
     logging.info(emu_command)
 
     return emu_command
 
+  def _WaitUntilReady(self):
+    # Indicates the FVDL command finished running.
+    self._emu_process.communicate()
+    super(FvdlTarget, self)._WaitUntilReady()
+
+  def _IsEmuStillRunning(self):
+    if not self._pid:
+      try:
+        with open(self._vdl_output_file.name) as vdl_file:
+          for line in vdl_file:
+            if 'pid' in line:
+              match = re.match(r'.*pid:\s*(\d*).*', line)
+              if match:
+                self._pid = match.group(1)
+      except IOError:
+        logging.error('vdl_output file no longer found. '
+                      'Cannot get emulator pid.')
+        return False
+    if subprocess.check_output(['ps', '-p', self._pid, 'o', 'comm=']):
+      return True
+    logging.error('Emulator pid no longer found. Emulator must be down.')
+    return False
+
   def _GetEndpoint(self):
+    if self._with_network:
+      return self._GetNetworkAddress()
     return ('localhost', self._host_ssh_port)
+
+  def _GetNetworkAddress(self):
+    if self._host:
+      return (self._host, _DEFAULT_SSH_PORT)
+    try:
+      with open(self._vdl_output_file.name) as vdl_file:
+        for line in vdl_file:
+          if 'network_address' in line:
+            address = re.match(r'.*network_address:\s*"\[(.*)\]".*', line)
+            if address:
+              self._host = address.group(1)
+              return (self._host, _DEFAULT_SSH_PORT)
+        logging.error('Network address not found.')
+        raise EmulatorNetworkNotFoundError()
+    except IOError as e:
+      logging.error('vdl_output file not found. Cannot get network address.')
+      raise
 
   def Shutdown(self):
     if not self._emu_process:

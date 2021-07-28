@@ -34,6 +34,7 @@ import subprocess
 import sys
 import threading
 
+from argparse import Namespace
 from blinkpy.common import exit_codes
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.path_finder import get_chromium_src_dir
@@ -62,6 +63,8 @@ def _import_fuchsia_runner():
     # pylint: disable=redefined-outer-name
     global aemu_target
     import aemu_target
+    global _GetPathToBuiltinTarget, _LoadTargetClass
+    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass
     global device_target
     import device_target
     global fuchsia_target
@@ -240,39 +243,24 @@ class FuchsiaPort(base.Port):
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
-            target_args = {
-                'out_dir': self._build_path(),
-                'system_log_file': None,
-                'fuchsia_out_dir': self.get_option('fuchsia_out_dir')
-            }
-            if self._target_device == 'device':
-                additional_args = {
-                    'target_cpu': self.get_option('fuchsia_target_cpu'),
-                    'ssh_config': self.get_option('fuchsia_ssh_config'),
-                    'os_check': 'ignore',
-                    'host': self.get_option('fuchsia_host'),
-                    'port': self.get_option('fuchsia_port'),
-                    'node_name': self.get_option('fuchsia_node_name')
-                }
-                target_args.update(additional_args)
-                target = device_target.DeviceTarget(**target_args)
-            else:
-                additional_args = {
-                    'target_cpu': 'x64',
-                    'cpu_cores': CPU_CORES,
-                    'require_kvm': True,
-                    'ram_size_mb': 8192
-                }
-                if self._target_device == 'qemu':
-                    target_args.update(additional_args)
-                    target = qemu_target.QemuTarget(**target_args)
-                else:
-                    additional_args.update({
-                        'enable_graphics': False,
-                        'hardware_gpu': False
-                    })
-                    target_args.update(additional_args)
-                    target = aemu_target.AemuTarget(**target_args)
+            target_args = Namespace(
+                out_dir=self._build_path(),
+                system_log_file=None,
+                fuchsia_out_dir=self.get_option('fuchsia_out_dir'),
+                target_cpu=self.get_option('fuchsia_target_cpu'),
+                ssh_config=self.get_option('fuchsia_ssh_config'),
+                os_check='ignore',
+                host=self.get_option('fuchsia_host'),
+                port=self.get_option('fuchsia_port'),
+                node_name=self.get_option('fuchsia_node_name'),
+                cpu_cores=CPU_CORES,
+                require_kvm=True,
+                ram_size_mb=8192,
+                enable_graphics=False,
+                hardware_gpu=False)
+            target = _LoadTargetClass(
+                _GetPathToBuiltinTarget(
+                    self._target_device)).CreateFromArgs(target_args)
             self._target_host = _TargetHost(self._build_path(),
                                             self.get_build_ids_path(),
                                             self.SERVER_PORTS, target,

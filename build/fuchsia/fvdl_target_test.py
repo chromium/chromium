@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -12,11 +13,6 @@ import sys
 import tempfile
 import unittest
 
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
-
 
 class TestBuildCommandFvdlTarget(unittest.TestCase):
   def setUp(self):
@@ -25,7 +21,9 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
                                          system_log_file=None,
                                          require_kvm=True,
                                          enable_graphics=False,
-                                         hardware_gpu=False)
+                                         hardware_gpu=False,
+                                         with_network=False,
+                                         host=None)
 
   def testBasicEmuCommand(self):
     build_command = self.target._BuildCommand()
@@ -56,6 +54,12 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
     self.assertNotIn('--host-gpu', self.target._BuildCommand())
     self.target._hardware_gpu = True
     self.assertIn('--host-gpu', self.target._BuildCommand())
+
+  def testBuildCommandCheckIfWithNetworkSetTunTap(self):
+    self.target._with_network = False
+    self.assertNotIn('-N', self.target._BuildCommand())
+    self.target._with_network = True
+    self.assertIn('-N', self.target._BuildCommand())
 
 
 if __name__ == '__main__':

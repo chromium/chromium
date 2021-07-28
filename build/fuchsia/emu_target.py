@@ -16,14 +16,11 @@ import tempfile
 
 
 class EmuTarget(target.Target):
-  def __init__(self, out_dir, target_cpu, system_log_file, fuchsia_out_dir):
+  def __init__(self, out_dir, target_cpu, system_log_file):
     """out_dir: The directory which will contain the files that are
                    generated to support the emulator deployment.
     target_cpu: The emulated target CPU architecture.
                 Can be 'x64' or 'arm64'."""
-
-    # fuchsia_out_dir is unused by emulator targets.
-    del fuchsia_out_dir
 
     super(EmuTarget, self).__init__(out_dir, target_cpu)
     self._emu_process = None
