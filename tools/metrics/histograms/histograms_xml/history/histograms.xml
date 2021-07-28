@@ -644,7 +644,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.InMemoryDBItemCount" units="typed URLs"
-    expires_after="2021-07-30">
+    expires_after="2022-07-30">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -676,7 +676,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.InMemoryDBPopulate" units="ms"
-    expires_after="2021-07-30">
+    expires_after="2022-07-30">
   <owner>sky@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
