@@ -22,7 +22,6 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/engine/sync_string_conversions.h"
-#include "components/sync/model/time.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
