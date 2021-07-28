@@ -5335,9 +5335,23 @@
           ]
         },
         "prefs": {
-          "securitykey.permit_attestation": {}
+          "securitykey.permit_attestation": {
+            "value": [
+              "https://example.com",
+              "example.net"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "securitykey.permit_attestation": {
+            "default_value": []
+          }
         }
       }
+
     ]
   },
   "ImportBookmarks": {
