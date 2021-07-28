@@ -5,7 +5,6 @@
 #include "components/mirroring/service/receiver_setup_querier.h"
 
 #include <string>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
