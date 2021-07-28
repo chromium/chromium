@@ -11640,6 +11640,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Tab Search experiment">
       Enable a popup bubble in Top Chrome UI to search over currently open tabs.
     </message>
+    <!-- ChromeLabs Lens Region Search-->
+    <message name="IDS_LENS_REGION_SEARCH_EXPERIMENT_NAME" desc="Name for Lens Region Search experiment">
+      Search your screen with Google Lens
+    </message>
+    <message name="IDS_LENS_REGION_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Lens Region Search experiment">
+      Right click and select “Search part of the page with Google Lens” to search any region of the site to learn more about the visual content you see while you browse and shop on the web.
+    </message>
   </messages>
 </release>
 </grit>

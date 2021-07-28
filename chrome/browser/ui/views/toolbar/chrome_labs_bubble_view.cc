@@ -49,7 +49,8 @@ enum class ChromeLabsSelectedLab {
   // kTabSearchSelected = 2,
   kTabScrollingSelected = 3,
   kSidePanelSelected = 4,
-  kMaxValue = kSidePanelSelected,
+  kLensRegionSearchSelected = 5,
+  kMaxValue = kLensRegionSearchSelected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -76,6 +77,9 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
       return ChromeLabsSelectedLab::kTabScrollingSelected;
     } else if (internal_name == flag_descriptions::kSidePanelFlagId) {
       return ChromeLabsSelectedLab::kSidePanelSelected;
+    } else if (internal_name ==
+               flag_descriptions::kEnableLensRegionSearchFlagId) {
+      return ChromeLabsSelectedLab::kLensRegionSearchSelected;
     } else {
       return ChromeLabsSelectedLab::kUnspecifiedSelected;
     }
