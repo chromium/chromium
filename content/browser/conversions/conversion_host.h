@@ -13,8 +13,8 @@
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/storable_impression.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
@@ -39,6 +39,10 @@ class CONTENT_EXPORT ConversionHost
   ConversionHost& operator=(ConversionHost&& other) = delete;
   ~ConversionHost() override;
 
+  static void BindReceiver(
+      mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
+      RenderFrameHost* rfh);
+
   static absl::optional<blink::Impression> ParseImpressionFromApp(
       const std::string& attribution_source_event_id,
       const std::string& attribution_destination,
@@ -47,6 +51,9 @@ class CONTENT_EXPORT ConversionHost
 
   static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
       const blink::Impression& impression) WARN_UNUSED_RESULT;
+
+  // Overrides the target object to bind |receiver| to in BindReceiver().
+  static void SetReceiverImplForTesting(ConversionHost* impl);
 
  private:
   friend class ConversionHostTestPeer;
@@ -100,7 +107,7 @@ class CONTENT_EXPORT ConversionHost
   // Excludes the initial about:blank document.
   std::unique_ptr<ConversionPageMetrics> conversion_page_metrics_;
 
-  WebContentsFrameReceiverSet<blink::mojom::ConversionHost> receiver_;
+  RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -42,7 +42,7 @@ class ConversionHostTestPeer {
   static void SetCurrentTargetFrameForTesting(
       ConversionHost* conversion_host,
       RenderFrameHost* render_frame_host) {
-    conversion_host->receiver_.SetCurrentTargetFrameForTesting(
+    conversion_host->receivers_.SetCurrentTargetFrameForTesting(
         render_frame_host);
   }
 };

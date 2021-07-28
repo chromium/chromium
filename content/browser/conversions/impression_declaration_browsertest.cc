@@ -89,15 +89,12 @@ class ImpressionObserver : public TestNavigationObserver {
 // mojo message is received. Tracks the last seen impression data.
 class TestConversionHost : public ConversionHost {
  public:
-  static std::unique_ptr<TestConversionHost> ReplaceAndGetConversionHost(
-      WebContents* contents) {
-    static_cast<WebContentsImpl*>(contents)->RemoveReceiverSetForTesting(
-        blink::mojom::ConversionHost::Name_);
-    return std::make_unique<TestConversionHost>(contents);
+  explicit TestConversionHost(WebContents* contents)
+      : ConversionHost(contents) {
+    SetReceiverImplForTesting(this);
   }
 
-  explicit TestConversionHost(WebContents* contents)
-      : ConversionHost(contents) {}
+  ~TestConversionHost() override { SetReceiverImplForTesting(nullptr); }
 
   void RegisterImpression(const blink::Impression& impression) override {
     last_impression_data_ = impression.impression_data;
@@ -734,8 +731,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag({id: 'link',
@@ -744,10 +740,10 @@ IN_PROC_BROWSER_TEST_F(
                         destination: 'https://a.com',
                         registerAttributionSource: true});)"));
 
-  EXPECT_EQ(200UL, host->WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host->num_impressions());
+  EXPECT_EQ(200UL, host.WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host.num_impressions());
 
-  host->ResetImpressionWaitData();
+  host.ResetImpressionWaitData();
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     document.getElementById("link").removeAttribute("registerattributionsource");)"));
@@ -757,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(
   // navigation message, it would be observed before the NavigateToURL() call
   // finishes.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host->num_impressions());
+  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -767,8 +763,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag({id: 'link',
@@ -777,10 +772,10 @@ IN_PROC_BROWSER_TEST_F(
                         destination: 'https://a.com',
                         registerAttributionSource: true});)"));
 
-  EXPECT_EQ(200UL, host->WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host->num_impressions());
+  EXPECT_EQ(200UL, host.WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host.num_impressions());
 
-  host->ResetImpressionWaitData();
+  host.ResetImpressionWaitData();
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     let link = document.getElementById("link");
@@ -788,8 +783,8 @@ IN_PROC_BROWSER_TEST_F(
     link.setAttribute("attributionsourceeventid", "300");
     link.setAttribute("registerattributionsource", "");)"));
 
-  EXPECT_EQ(300UL, host->WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host->num_impressions());
+  EXPECT_EQ(300UL, host.WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -802,8 +797,7 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
   EXPECT_TRUE(ExecJs(subframe, R"(
@@ -814,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(
                         registerAttributionSource: true});)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host->num_impressions());
+  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
@@ -940,8 +934,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -949,8 +942,8 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
       attributionDestination: "https://a.com",
     });)"));
 
-  EXPECT_EQ(200UL, host->WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host->num_impressions());
+  EXPECT_EQ(200UL, host.WaitForNumImpressions(1));
+  EXPECT_EQ(1u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -960,8 +953,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -969,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(
     });)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host->num_impressions());
+  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -979,8 +971,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -988,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(
     });)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host->num_impressions());
+  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -998,8 +989,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+  TestConversionHost host(web_contents());
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -1008,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(
     });)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host->num_impressions());
+  EXPECT_EQ(0u, host.num_impressions());
 }
 
 }  // namespace content

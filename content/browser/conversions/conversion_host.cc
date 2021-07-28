@@ -41,6 +41,8 @@ namespace content {
 
 namespace {
 
+ConversionHost* g_receiver_for_testing = nullptr;
+
 // Abstraction that wraps an iterator to a map. When this goes out of the scope,
 // the underlying iterator is erased from the map. This is useful for control
 // flows where map cleanup needs to occur regardless of additional early exit
@@ -91,9 +93,7 @@ ConversionHost::ConversionHost(
     std::unique_ptr<ConversionManager::Provider> conversion_manager_provider)
     : WebContentsObserver(web_contents),
       conversion_manager_provider_(std::move(conversion_manager_provider)),
-      receiver_(web_contents,
-                this,
-                content::WebContentsFrameReceiverSetPassKey()) {
+      receivers_(web_contents, this) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
   // that the kConversionMeasurement feature is enabled.
 }
@@ -263,7 +263,7 @@ void ConversionHost::VerifyAndStoreImpression(
 void ConversionHost::RegisterConversion(
     blink::mojom::ConversionPtr conversion) {
   content::RenderFrameHost* render_frame_host =
-      receiver_.GetCurrentTargetFrame();
+      receivers_.GetCurrentTargetFrame();
 
   // If there is no conversion manager available, ignore any conversion
   // registrations.
@@ -331,11 +331,29 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
       conversion_manager_provider_->GetManager(web_contents());
   if (!conversion_manager)
     return;
-  const url::Origin& impression_origin = receiver_.GetCurrentTargetFrame()
+  const url::Origin& impression_origin = receivers_.GetCurrentTargetFrame()
                                              ->GetMainFrame()
                                              ->GetLastCommittedOrigin();
   VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
                            impression_origin, impression, *conversion_manager);
+}
+
+// static
+void ConversionHost::BindReceiver(
+    mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
+    RenderFrameHost* rfh) {
+  if (g_receiver_for_testing) {
+    g_receiver_for_testing->receivers_.Bind(rfh, std::move(receiver));
+    return;
+  }
+
+  auto* web_contents = WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* conversion_host = ConversionHost::FromWebContents(web_contents);
+  if (!conversion_host)
+    return;
+  conversion_host->receivers_.Bind(rfh, std::move(receiver));
 }
 
 // static
@@ -375,6 +393,11 @@ blink::mojom::ImpressionPtr ConversionHost::MojoImpressionFromImpression(
   return blink::mojom::Impression::New(
       impression.conversion_destination, impression.reporting_origin,
       impression.impression_data, impression.expiry, impression.priority);
+}
+
+// static
+void ConversionHost::SetReceiverImplForTesting(ConversionHost* impl) {
+  g_receiver_for_testing = impl;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ConversionHost)

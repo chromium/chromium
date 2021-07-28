@@ -52,6 +52,7 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/compute_pressure/compute_pressure_manager.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
+#include "content/browser/conversions/conversion_host.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
@@ -8022,6 +8023,14 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
          mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost>
              receiver) {
         impl->delegate()->BindDisplayCutoutHost(impl, std::move(receiver));
+      },
+      base::Unretained(this)));
+
+  associated_registry_->AddInterface(base::BindRepeating(
+      [](RenderFrameHostImpl* impl,
+         mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost>
+             receiver) {
+        ConversionHost::BindReceiver(std::move(receiver), impl);
       },
       base::Unretained(this)));
 
