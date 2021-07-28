@@ -111,7 +111,10 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x86 emulator.
     'Android SDK built for x86': [23],
-    'Pixel 2': [28],
+    # We would like this to be supported, but it is currently too prone to
+    # introducing flakiness due to a combination of Gold and Chromium issues.
+    # See crbug.com/1233700 and skbug.com/12149 for more information.
+    # 'Pixel 2': [28],
 }
 
 _BATCH_SUFFIX = '_batch'
