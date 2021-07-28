@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview NetworkErrorElement displays a network error svg. This is done
- * in-line instead of using iron-iconset-svg because iron-iconset-svg is
- * designed for small square icons that may have multiple sizes, not large
- * rectangular svgs.
+ * @fileoverview WallpaperErrorElement displays an error svg when wallpaper
+ * collections fail to load. This is done in-line instead of using
+ * iron-iconset-svg because iron-iconset-svg is designed for small square icons
+ * that may have multiple sizes, not large rectangular svgs.
  */
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
