@@ -244,6 +244,9 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="depth-only";type1="render-target";* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="stencil-only";type1="render-target";* [ Failure ]
 
+# Currently drawIndexedIndirect is disallowed due to missing of index buffer OOB validation. Skip the related tests.
+crbug.com/dawn/809 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=true;* [ Skip ]
+
 ###
 ### Mac (Metal) specific
 ###
