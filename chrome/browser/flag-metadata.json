@@ -1033,7 +1033,7 @@
   {
     "name": "detected-source-language-option",
     "owners": [ "cuianthony", "chrome-language@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 97
   },
   {
     "name": "device-discovery-notifications",
