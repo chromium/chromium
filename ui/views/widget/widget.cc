@@ -1222,6 +1222,12 @@ bool Widget::ShouldPaintAsActive() const {
 
 void Widget::OnParentShouldPaintAsActiveChanged() {
   DCHECK(parent());
+  // |native_widget_| has already been deleted and |this| is being deleted so
+  // that we don't have to handle the event and also it's unsafe to reference
+  // |native_widget_| in this case.
+  if (native_widget_destroyed_)
+    return;
+
   // |native_widget_active| is being updated in
   // OnNativeWidgetActivationChanged(). Notification will be handled there.
   if (native_widget_active_ != native_widget_->IsActive())
