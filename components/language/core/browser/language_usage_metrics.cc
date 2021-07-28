@@ -39,7 +39,7 @@ void LanguageUsageMetrics::RecordPageLanguages(
       continue;
     }
 
-    const int language_code = ToLanguageCode(language_info.language_code);
+    const int language_code = ToLanguageCodeHash(language_info.language_code);
     if (language_code != 0) {
       base::UmaHistogramSparse("LanguageUsage.MostFrequentPageLanguages",
                                language_code);
@@ -50,7 +50,7 @@ void LanguageUsageMetrics::RecordPageLanguages(
 // static
 void LanguageUsageMetrics::RecordApplicationLanguage(
     base::StringPiece application_locale) {
-  const int language_code = ToLanguageCode(application_locale);
+  const int language_code = ToLanguageCodeHash(application_locale);
   if (language_code != 0) {
     base::UmaHistogramSparse("LanguageUsage.ApplicationLanguage",
                              language_code);
@@ -58,7 +58,7 @@ void LanguageUsageMetrics::RecordApplicationLanguage(
 }
 
 // static
-int LanguageUsageMetrics::ToLanguageCode(base::StringPiece locale) {
+int LanguageUsageMetrics::ToLanguageCodeHash(base::StringPiece locale) {
   base::StringPiece language_part =
       locale.substr(0U, locale.find_first_of("-_"));
 
@@ -96,7 +96,7 @@ void LanguageUsageMetrics::ParseAcceptLanguages(
       accept_languages.data(),
       accept_languages.data() + accept_languages.size(), ",");
   while (locales.GetNext()) {
-    const int language_code = ToLanguageCode(locales.token_piece());
+    const int language_code = ToLanguageCodeHash(locales.token_piece());
     if (language_code != 0)
       languages->insert(language_code);
   }

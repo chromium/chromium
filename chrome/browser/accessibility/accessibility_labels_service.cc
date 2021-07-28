@@ -108,10 +108,10 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
                              const std::string& requested_language) override {
     base::UmaHistogramSparse(
         "Accessibility.ImageLabels.PageLanguage",
-        language::LanguageUsageMetrics::ToLanguageCode(page_language));
+        language::LanguageUsageMetrics::ToLanguageCodeHash(page_language));
     base::UmaHistogramSparse(
         "Accessibility.ImageLabels.RequestLanguage",
-        language::LanguageUsageMetrics::ToLanguageCode(requested_language));
+        language::LanguageUsageMetrics::ToLanguageCodeHash(requested_language));
   }
 
  private:

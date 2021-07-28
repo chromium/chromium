@@ -2778,7 +2778,7 @@ void AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
     base::StringPiece locale) {
   base::UmaHistogramSparse(
       "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage",
-      language::LanguageUsageMetrics::ToLanguageCode(locale));
+      language::LanguageUsageMetrics::ToLanguageCodeHash(locale));
 }
 
 // static
