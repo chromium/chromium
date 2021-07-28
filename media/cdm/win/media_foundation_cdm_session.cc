@@ -95,14 +95,14 @@ CdmKeysInfo ToCdmKeysInfo(const MFMediaKeyStatus* key_statuses, int count) {
   return keys_info;
 }
 
-class SessionCallbacks
+class SessionCallbacks final
     : public RuntimeClass<RuntimeClassFlags<ClassicCom>,
                           IMFContentDecryptionModuleSessionCallbacks> {
  public:
   SessionCallbacks() { DVLOG_FUNC(1); }
   SessionCallbacks(const SessionCallbacks&) = delete;
   SessionCallbacks& operator=(const SessionCallbacks&) = delete;
-  ~SessionCallbacks() final { DVLOG_FUNC(1); }
+  ~SessionCallbacks() override { DVLOG_FUNC(1); }
 
   using MessageCB =
       base::RepeatingCallback<void(CdmMessageType message_type,

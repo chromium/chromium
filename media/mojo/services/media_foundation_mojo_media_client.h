@@ -15,19 +15,19 @@ namespace media {
 // MediaFoundation-specific MojoMediaClient implementation for
 // MediaFoundationService running in the "Media Foundation Service" utility
 // process hosting MediaFoundationRenderer and MediaFoundationCdm.
-class MediaFoundationMojoMediaClient : public MojoMediaClient {
+class MediaFoundationMojoMediaClient final : public MojoMediaClient {
  public:
   explicit MediaFoundationMojoMediaClient(const base::FilePath& user_data_dir);
-  ~MediaFoundationMojoMediaClient() final;
+  ~MediaFoundationMojoMediaClient() override;
 
   // MojoMediaClient implementation.
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojom::FrameInterfaceFactory* frame_interfaces,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver) final;
+          renderer_extension_receiver) override;
   std::unique_ptr<CdmFactory> CreateCdmFactory(
-      mojom::FrameInterfaceFactory* frame_interfaces) final;
+      mojom::FrameInterfaceFactory* frame_interfaces) override;
 
  private:
   base::FilePath user_data_dir_;

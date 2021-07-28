@@ -24,8 +24,8 @@ class MediaFoundationCdmSession;
 
 // A CDM implementation based on Media Foundation IMFContentDecryptionModule on
 // Windows.
-class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
-                                        public CdmContext {
+class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
+                                              public CdmContext {
  public:
   // Checks whether MediaFoundationCdm is available based on OS version. Further
   // checks need to be made to determine the usability and the capabilities.
@@ -62,33 +62,34 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
-                            std::unique_ptr<SimpleCdmPromise> promise) final;
-  void GetStatusForPolicy(HdcpVersion min_hdcp_version,
-                          std::unique_ptr<KeyStatusCdmPromise> promise) final;
+                            std::unique_ptr<SimpleCdmPromise> promise) override;
+  void GetStatusForPolicy(
+      HdcpVersion min_hdcp_version,
+      std::unique_ptr<KeyStatusCdmPromise> promise) override;
   void CreateSessionAndGenerateRequest(
       CdmSessionType session_type,
       EmeInitDataType init_data_type,
       const std::vector<uint8_t>& init_data,
-      std::unique_ptr<NewSessionCdmPromise> promise) final;
+      std::unique_ptr<NewSessionCdmPromise> promise) override;
   void LoadSession(CdmSessionType session_type,
                    const std::string& session_id,
-                   std::unique_ptr<NewSessionCdmPromise> promise) final;
+                   std::unique_ptr<NewSessionCdmPromise> promise) override;
   void UpdateSession(const std::string& session_id,
                      const std::vector<uint8_t>& response,
-                     std::unique_ptr<SimpleCdmPromise> promise) final;
+                     std::unique_ptr<SimpleCdmPromise> promise) override;
   void CloseSession(const std::string& session_id,
-                    std::unique_ptr<SimpleCdmPromise> promise) final;
+                    std::unique_ptr<SimpleCdmPromise> promise) override;
   void RemoveSession(const std::string& session_id,
-                     std::unique_ptr<SimpleCdmPromise> promise) final;
-  CdmContext* GetCdmContext() final;
+                     std::unique_ptr<SimpleCdmPromise> promise) override;
+  CdmContext* GetCdmContext() override;
 
   // CdmContext implementation.
-  bool RequiresMediaFoundationRenderer() final;
+  bool RequiresMediaFoundationRenderer() override;
   bool GetMediaFoundationCdmProxy(
-      GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) final;
+      GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) override;
 
  private:
-  ~MediaFoundationCdm() final;
+  ~MediaFoundationCdm() override;
 
   // Returns whether the |session_id| is accepted by the |this|.
   bool OnSessionId(int session_token,

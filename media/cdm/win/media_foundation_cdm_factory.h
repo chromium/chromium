@@ -24,14 +24,14 @@
 
 namespace media {
 
-class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
+class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
  public:
   MediaFoundationCdmFactory(std::unique_ptr<CdmAuxiliaryHelper> helper,
                             const base::FilePath& user_data_dir);
   MediaFoundationCdmFactory(const MediaFoundationCdmFactory&) = delete;
   MediaFoundationCdmFactory& operator=(const MediaFoundationCdmFactory&) =
       delete;
-  ~MediaFoundationCdmFactory() final;
+  ~MediaFoundationCdmFactory() override;
 
   // Provides a way to customize IMFContentDecryptionModuleFactory creation to
   // support different key systems and for testing.
@@ -48,7 +48,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
-              CdmCreatedCB cdm_created_cb) final;
+              CdmCreatedCB cdm_created_cb) override;
 
  private:
   // Callback to MediaFoundationCDM to resolve the promise.

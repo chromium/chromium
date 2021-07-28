@@ -19,14 +19,14 @@ namespace {
 constexpr size_t kFramesPerPacket = 480;
 constexpr uint32_t kBufferId = 0;
 
-class TestAudioCapturer
+class TestAudioCapturer final
     : public fuchsia::media::testing::AudioCapturer_TestBase {
  public:
   TestAudioCapturer(
       fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request)
       : binding_(this, std::move(request)) {}
 
-  ~TestAudioCapturer() final = default;
+  ~TestAudioCapturer() override = default;
 
   TestAudioCapturer(const TestAudioCapturer&) = delete;
   TestAudioCapturer& operator=(const TestAudioCapturer&) = delete;
@@ -68,7 +68,7 @@ class TestAudioCapturer
   }
 
   // fuchsia::media::AudioCapturer implementation.
-  void SetPcmStreamType(fuchsia::media::AudioStreamType stream_type) final {
+  void SetPcmStreamType(fuchsia::media::AudioStreamType stream_type) override {
     ASSERT_FALSE(stream_type_.has_value());
     ASSERT_EQ(stream_type.sample_format,
               fuchsia::media::AudioSampleFormat::FLOAT);
@@ -76,7 +76,7 @@ class TestAudioCapturer
     stream_type_ = std::move(stream_type);
   }
 
-  void AddPayloadBuffer(uint32_t id, zx::vmo payload_buffer) final {
+  void AddPayloadBuffer(uint32_t id, zx::vmo payload_buffer) override {
     ASSERT_EQ(id, kBufferId);
     ASSERT_FALSE(buffer_vmo_);
     ASSERT_TRUE(stream_type_.has_value());
@@ -86,7 +86,7 @@ class TestAudioCapturer
     ZX_CHECK(status == ZX_OK, status);
   }
 
-  void StartAsyncCapture(uint32_t frames_per_packet) final {
+  void StartAsyncCapture(uint32_t frames_per_packet) override {
     ASSERT_TRUE(buffer_vmo_);
     ASSERT_FALSE(is_active_);
 
@@ -102,7 +102,7 @@ class TestAudioCapturer
     packets_usage_.resize(num_packets, false);
   }
 
-  void ReleasePacket(fuchsia::media::StreamPacket packet) final {
+  void ReleasePacket(fuchsia::media::StreamPacket packet) override {
     ASSERT_EQ(packet.payload_buffer_id, kBufferId);
     ASSERT_EQ(packet.payload_offset % packet_size(), 0U);
     size_t buffer_index = packet.payload_offset / packet_size();
@@ -112,7 +112,7 @@ class TestAudioCapturer
   }
 
   // No other methods are expected to be called.
-  void NotImplemented_(const std::string& name) final {
+  void NotImplemented_(const std::string& name) override {
     FAIL() << ": " << name;
   }
 
@@ -127,10 +127,10 @@ class TestAudioCapturer
   std::vector<bool> packets_usage_;
 };
 
-class TestCaptureCallback : public AudioCapturerSource::CaptureCallback {
+class TestCaptureCallback final : public AudioCapturerSource::CaptureCallback {
  public:
   TestCaptureCallback() = default;
-  ~TestCaptureCallback() final = default;
+  ~TestCaptureCallback() override = default;
 
   TestCaptureCallback(const TestCaptureCallback&) = delete;
   TestCaptureCallback& operator=(const TestCaptureCallback&) = delete;
@@ -143,12 +143,12 @@ class TestCaptureCallback : public AudioCapturerSource::CaptureCallback {
   }
 
   // AudioCapturerSource::CaptureCallback implementation.
-  void OnCaptureStarted() final { is_started_ = true; }
+  void OnCaptureStarted() override { is_started_ = true; }
 
   void Capture(const AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
                double volume,
-               bool key_pressed) final {
+               bool key_pressed) override {
     EXPECT_TRUE(is_started_);
     auto bus =
         AudioBus::Create(audio_source->channels(), audio_source->frames());
@@ -157,14 +157,14 @@ class TestCaptureCallback : public AudioCapturerSource::CaptureCallback {
   }
 
   void OnCaptureError(AudioCapturerSource::ErrorCode code,
-                      const std::string& message) final {
+                      const std::string& message) override {
     EXPECT_FALSE(have_error_);
     have_error_ = true;
   }
 
-  void OnCaptureMuted(bool is_muted) final { FAIL(); }
+  void OnCaptureMuted(bool is_muted) override { FAIL(); }
 
-  void OnCaptureProcessorCreated(AudioProcessorControls* controls) final {
+  void OnCaptureProcessorCreated(AudioProcessorControls* controls) override {
     FAIL();
   }
 

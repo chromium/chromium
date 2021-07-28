@@ -22,7 +22,7 @@ namespace media {
 
 // Wrap media::MediaFoundationRenderer to remove its dependence on
 // media::mojom::MediaFoundationRendererExtension interface.
-class MediaFoundationRendererWrapper
+class MediaFoundationRendererWrapper final
     : public Renderer,
       public mojom::MediaFoundationRendererExtension,
       public mojom::MuteStateObserver {
@@ -37,7 +37,7 @@ class MediaFoundationRendererWrapper
       delete;
   MediaFoundationRendererWrapper operator=(
       const MediaFoundationRendererWrapper&) = delete;
-  ~MediaFoundationRendererWrapper() final;
+  ~MediaFoundationRendererWrapper() override;
 
   // Renderer implementation.
   void Initialize(MediaResource* media_resource,
@@ -52,13 +52,13 @@ class MediaFoundationRendererWrapper
   base::TimeDelta GetMediaTime() override;
 
   // mojom::MediaFoundationRendererExtension implementation.
-  void SetDCOMPMode(bool enabled, SetDCOMPModeCallback callback) final;
-  void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) final;
-  void SetVideoStreamEnabled(bool enabled) final;
-  void SetOutputParams(const gfx::Rect& output_rect) final;
+  void SetDCOMPMode(bool enabled, SetDCOMPModeCallback callback) override;
+  void GetDCOMPSurface(GetDCOMPSurfaceCallback callback) override;
+  void SetVideoStreamEnabled(bool enabled) override;
+  void SetOutputParams(const gfx::Rect& output_rect) override;
 
   // mojom::MuteStateObserver implementation.
-  void OnMuteStateChange(bool muted) final;
+  void OnMuteStateChange(bool muted) override;
 
  private:
   void OnReceiveDCOMPSurface(HANDLE handle);

@@ -38,10 +38,10 @@ namespace {
 const int kVideoWidth = 1280;
 const int kVideoHeight = 720;
 
-class MediaTestSuite : public base::TestSuite {
+class MediaTestSuite final : public base::TestSuite {
  public:
   MediaTestSuite(int argc, char** argv) : TestSuite(argc, argv) {}
-  ~MediaTestSuite() final {}
+  ~MediaTestSuite() override = default;
 
  protected:
   void Initialize() final;

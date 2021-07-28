@@ -30,36 +30,38 @@ class MediaLog;
 // AudioRenderer implementation that output audio to AudioConsumer interface on
 // Fuchsia. Unlike the default AudioRendererImpl it doesn't decode audio and
 // sends encoded stream directly to AudioConsumer provided by the platform.
-class MEDIA_EXPORT FuchsiaAudioRenderer : public AudioRenderer,
-                                          public TimeSource,
-                                          public SysmemBufferStream::Sink {
+class MEDIA_EXPORT FuchsiaAudioRenderer final
+    : public AudioRenderer,
+      public TimeSource,
+      public SysmemBufferStream::Sink {
  public:
   FuchsiaAudioRenderer(MediaLog* media_log,
                        fidl::InterfaceHandle<fuchsia::media::AudioConsumer>
                            audio_consumer_handle);
-  ~FuchsiaAudioRenderer() final;
+  ~FuchsiaAudioRenderer() override;
 
   // AudioRenderer implementation.
   void Initialize(DemuxerStream* stream,
                   CdmContext* cdm_context,
                   RendererClient* client,
-                  PipelineStatusCallback init_cb) final;
-  TimeSource* GetTimeSource() final;
-  void Flush(base::OnceClosure callback) final;
-  void StartPlaying() final;
-  void SetVolume(float volume) final;
-  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
-  void SetPreservesPitch(bool preserves_pitch) final;
-  void SetAutoplayInitiated(bool autoplay_initiated) final;
+                  PipelineStatusCallback init_cb) override;
+  TimeSource* GetTimeSource() override;
+  void Flush(base::OnceClosure callback) override;
+  void StartPlaying() override;
+  void SetVolume(float volume) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
+  void SetPreservesPitch(bool preserves_pitch) override;
+  void SetAutoplayInitiated(bool autoplay_initiated) override;
 
   // TimeSource implementation.
-  void StartTicking() final;
-  void StopTicking() final;
-  void SetPlaybackRate(double playback_rate) final;
-  void SetMediaTime(base::TimeDelta time) final;
-  base::TimeDelta CurrentMediaTime() final;
-  bool GetWallClockTimes(const std::vector<base::TimeDelta>& media_timestamps,
-                         std::vector<base::TimeTicks>* wall_clock_times) final;
+  void StartTicking() override;
+  void StopTicking() override;
+  void SetPlaybackRate(double playback_rate) override;
+  void SetMediaTime(base::TimeDelta time) override;
+  base::TimeDelta CurrentMediaTime() override;
+  bool GetWallClockTimes(
+      const std::vector<base::TimeDelta>& media_timestamps,
+      std::vector<base::TimeTicks>* wall_clock_times) override;
 
  private:
   enum class PlaybackState {

@@ -21,11 +21,11 @@ namespace media {
 
 struct CdmConfig;
 
-class MEDIA_EXPORT AndroidCdmFactory : public CdmFactory {
+class MEDIA_EXPORT AndroidCdmFactory final : public CdmFactory {
  public:
   AndroidCdmFactory(CreateFetcherCB create_fetcher_cb,
                     CreateStorageCB create_storage_cb);
-  ~AndroidCdmFactory() final;
+  ~AndroidCdmFactory() override;
 
   // CdmFactory implementation.
   void Create(const std::string& key_system,
@@ -34,7 +34,7 @@ class MEDIA_EXPORT AndroidCdmFactory : public CdmFactory {
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
-              CdmCreatedCB cdm_created_cb) final;
+              CdmCreatedCB cdm_created_cb) override;
 
  private:
   // Callback for MediaDrmBridgeFactory::Create().

@@ -15,7 +15,7 @@
 
 namespace media {
 
-class TestCdmBuffer : public cdm::Buffer {
+class TestCdmBuffer final : public cdm::Buffer {
  public:
   static TestCdmBuffer* Create(uint32_t capacity) {
     return new TestCdmBuffer(capacity);
@@ -36,7 +36,7 @@ class TestCdmBuffer : public cdm::Buffer {
     // Verify that Destroy() is called on this object.
     EXPECT_CALL(*this, DestroyCalled());
   }
-  ~TestCdmBuffer() final = default;
+  ~TestCdmBuffer() override = default;
 
   MOCK_METHOD0(DestroyCalled, void());
 

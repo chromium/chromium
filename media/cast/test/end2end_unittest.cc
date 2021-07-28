@@ -147,15 +147,15 @@ std::map<uint16_t, LoggingEventCounts> GetEventCountsForPacketEvents(
 
 // Shim that turns forwards packets from a test::PacketPipe to a
 // PacketReceiverCallback.
-class LoopBackPacketPipe : public test::PacketPipe {
+class LoopBackPacketPipe final : public test::PacketPipe {
  public:
   explicit LoopBackPacketPipe(const PacketReceiverCallback& packet_receiver)
       : packet_receiver_(packet_receiver) {}
 
-  ~LoopBackPacketPipe() final = default;
+  ~LoopBackPacketPipe() override = default;
 
   // PacketPipe implementations.
-  void Send(std::unique_ptr<Packet> packet) final {
+  void Send(std::unique_ptr<Packet> packet) override {
     packet_receiver_.Run(std::move(packet));
   }
 

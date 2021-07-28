@@ -46,10 +46,10 @@ class FakeDemuxerStream : public DemuxerStream {
 };
 
 // Audio only demuxer stream provider
-class FakeMediaResource : public MediaResource {
+class FakeMediaResource final : public MediaResource {
  public:
   FakeMediaResource();
-  ~FakeMediaResource() final;
+  ~FakeMediaResource() override;
 
   // MediaResource implementation.
   std::vector<DemuxerStream*> GetAllStreams() override;

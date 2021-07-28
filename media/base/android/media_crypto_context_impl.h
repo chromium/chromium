@@ -20,15 +20,15 @@ class MediaDrmBridge;
 //
 // The registered callbacks will be fired on the thread |media_drm_bridge_| is
 // running on.
-class MEDIA_EXPORT MediaCryptoContextImpl : public MediaCryptoContext {
+class MEDIA_EXPORT MediaCryptoContextImpl final : public MediaCryptoContext {
  public:
   // The |media_drm_bridge| owns |this| and is guaranteed to outlive |this|.
   explicit MediaCryptoContextImpl(MediaDrmBridge* media_drm_bridge);
 
-  ~MediaCryptoContextImpl() final;
+  ~MediaCryptoContextImpl() override;
 
   // MediaCryptoContext implementation.
-  void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb) final;
+  void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb) override;
 
  private:
   MediaDrmBridge* const media_drm_bridge_;

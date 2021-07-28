@@ -330,7 +330,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
 #endif
 
 #if defined(OS_MAC)
-class AudioEncoder::AppleAacImpl : public AudioEncoder::ImplBase {
+class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // AAC-LC has two access unit sizes (960 and 1024). The Apple encoder only
   // supports the latter.
   static const int kAccessUnitSamples = 1024;
@@ -369,7 +369,7 @@ class AudioEncoder::AppleAacImpl : public AudioEncoder::ImplBase {
   }
 
  private:
-  ~AppleAacImpl() final { Teardown(); }
+  ~AppleAacImpl() override { Teardown(); }
 
   // Destroys the existing audio converter and file, if any.
   void Teardown() {

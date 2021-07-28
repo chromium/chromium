@@ -80,22 +80,22 @@ class CAPTURE_EXPORT CameraActiveClientObserver : public base::CheckedObserver {
 // it from handling authentication failures.
 // TODO(b/170075468): Modify RegisterServerWithToken to return an optional
 // CameraHalServerCallbacks instead.
-class FailedCameraHalServerCallbacks
+class FailedCameraHalServerCallbacks final
     : public cros::mojom::CameraHalServerCallbacks {
  private:
   friend class CameraHalDispatcherImpl;
 
   FailedCameraHalServerCallbacks();
-  ~FailedCameraHalServerCallbacks() final;
+  ~FailedCameraHalServerCallbacks() override;
 
   mojo::PendingRemote<cros::mojom::CameraHalServerCallbacks> GetRemote();
 
   // CameraHalServerCallbacks implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
                                   bool opened,
-                                  cros::mojom::CameraClientType type) final;
+                                  cros::mojom::CameraClientType type) override;
   void CameraPrivacySwitchStateChange(
-      cros::mojom::CameraPrivacySwitchState state) final;
+      cros::mojom::CameraPrivacySwitchState state) override;
 
   mojo::Receiver<cros::mojom::CameraHalServerCallbacks> callbacks_;
 };

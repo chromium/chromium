@@ -19,23 +19,23 @@
 namespace media {
 
 // A MediaDrmStorage that proxies to a Remote<mojom::MediaDrmStorage>.
-class MEDIA_MOJO_EXPORT MojoMediaDrmStorage : public MediaDrmStorage {
+class MEDIA_MOJO_EXPORT MojoMediaDrmStorage final : public MediaDrmStorage {
  public:
   explicit MojoMediaDrmStorage(
       mojo::PendingRemote<mojom::MediaDrmStorage> media_drm_storage);
-  ~MojoMediaDrmStorage() final;
+  ~MojoMediaDrmStorage() override;
 
   // MediaDrmStorage implementation:
-  void Initialize(InitCB init_cb) final;
-  void OnProvisioned(ResultCB result_cb) final;
+  void Initialize(InitCB init_cb) override;
+  void OnProvisioned(ResultCB result_cb) override;
   void SavePersistentSession(const std::string& session_id,
                              const SessionData& session_data,
-                             ResultCB result_cb) final;
+                             ResultCB result_cb) override;
   void LoadPersistentSession(
       const std::string& session_id,
-      LoadPersistentSessionCB load_persistent_session_cb) final;
+      LoadPersistentSessionCB load_persistent_session_cb) override;
   void RemovePersistentSession(const std::string& session_id,
-                               ResultCB result_cb) final;
+                               ResultCB result_cb) override;
 
  private:
   void OnPersistentSessionLoaded(

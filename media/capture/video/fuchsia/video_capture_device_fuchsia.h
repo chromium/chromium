@@ -18,7 +18,8 @@
 
 namespace media {
 
-class CAPTURE_EXPORT VideoCaptureDeviceFuchsia : public VideoCaptureDevice {
+class CAPTURE_EXPORT VideoCaptureDeviceFuchsia final
+    : public VideoCaptureDevice {
  public:
   // Returns pixel format to which video frames in the specified sysmem pixel
   // |format| will be converted. PIXEL_FORMAT_UNKNOWN is returned for
@@ -30,7 +31,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFuchsia : public VideoCaptureDevice {
 
   explicit VideoCaptureDeviceFuchsia(
       fidl::InterfaceHandle<fuchsia::camera3::Device> device);
-  ~VideoCaptureDeviceFuchsia() final;
+  ~VideoCaptureDeviceFuchsia() override;
 
   VideoCaptureDeviceFuchsia(const VideoCaptureDeviceFuchsia&) = delete;
   VideoCaptureDeviceFuchsia& operator=(const VideoCaptureDeviceFuchsia&) =
@@ -38,8 +39,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFuchsia : public VideoCaptureDevice {
 
   // VideoCaptureDevice implementation.
   void AllocateAndStart(const VideoCaptureParams& params,
-                        std::unique_ptr<Client> client) final;
-  void StopAndDeAllocate() final;
+                        std::unique_ptr<Client> client) override;
+  void StopAndDeAllocate() override;
 
  private:
   // Disconnects the |stream_| and resets related state.

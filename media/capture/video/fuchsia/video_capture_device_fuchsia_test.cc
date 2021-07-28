@@ -59,18 +59,18 @@ class HeapBufferHandle : public VideoCaptureBufferHandle {
 
 // VideoCaptureDevice::Client::Buffer::HandleProvider implementation that
 // allocates memory on the heap.
-class HeapBufferHandleProvider
+class HeapBufferHandleProvider final
     : public VideoCaptureDevice::Client::Buffer::HandleProvider {
  public:
   HeapBufferHandleProvider(size_t size) : data_(size) {}
-  ~HeapBufferHandleProvider() final = default;
+  ~HeapBufferHandleProvider() override = default;
 
-  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() final {
+  base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
     NOTREACHED();
     return {};
   }
 
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() final {
+  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
     NOTREACHED();
     return {};
   }
@@ -88,9 +88,9 @@ class HeapBufferHandleProvider
   std::vector<uint8_t> data_;
 };
 
-class TestVideoCaptureClient : public VideoCaptureDevice::Client {
+class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
  public:
-  ~TestVideoCaptureClient() final = default;
+  ~TestVideoCaptureClient() override = default;
 
   void WaitFrame() {
     EXPECT_FALSE(wait_frame_run_loop_);
@@ -114,7 +114,7 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
   ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
                                     VideoPixelFormat format,
                                     int frame_feedback_id,
-                                    Buffer* buffer) final {
+                                    Buffer* buffer) override {
     EXPECT_TRUE(started_);
     EXPECT_EQ(format, PIXEL_FORMAT_I420);
     EXPECT_EQ(dimensions.width() % 2, 0);
@@ -132,7 +132,7 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       gfx::Rect visible_rect,
-      const VideoFrameMetadata& additional_metadata) final {
+      const VideoFrameMetadata& additional_metadata) override {
     EXPECT_TRUE(started_);
 
     received_frames_.push_back(ReceivedFrame{std::move(buffer), format,
@@ -151,7 +151,7 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
                               bool flip_y,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
-                              int frame_feedback_id) final {
+                              int frame_feedback_id) override {
     NOTREACHED();
   }
   void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
@@ -159,7 +159,7 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
                                    int clockwise_rotation,
                                    base::TimeTicks reference_time,
                                    base::TimeDelta timestamp,
-                                   int frame_feedback_id) final {
+                                   int frame_feedback_id) override {
     NOTREACHED();
   }
   void OnIncomingCapturedExternalBuffer(
@@ -172,19 +172,19 @@ class TestVideoCaptureClient : public VideoCaptureDevice::Client {
   void OnIncomingCapturedBuffer(Buffer buffer,
                                 const VideoCaptureFormat& format,
                                 base::TimeTicks reference_time,
-                                base::TimeDelta timestamp) final {
+                                base::TimeDelta timestamp) override {
     NOTREACHED();
   }
   void OnError(VideoCaptureError error,
                const base::Location& from_here,
-               const std::string& reason) final {
+               const std::string& reason) override {
     NOTREACHED();
   }
-  void OnFrameDropped(VideoCaptureFrameDropReason reason) final {
+  void OnFrameDropped(VideoCaptureFrameDropReason reason) override {
     NOTREACHED();
   }
-  void OnLog(const std::string& message) final { NOTREACHED(); }
-  double GetBufferPoolUtilization() const final {
+  void OnLog(const std::string& message) override { NOTREACHED(); }
+  double GetBufferPoolUtilization() const override {
     NOTREACHED();
     return 0;
   }

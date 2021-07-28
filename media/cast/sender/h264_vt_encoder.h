@@ -23,8 +23,8 @@ namespace cast {
 // pinned to the thread on which it is constructed. Supports changing frame
 // sizes directly. Implements the base::PowerObserver interface to reset the
 // compression session when the host process is suspended.
-class H264VideoToolboxEncoder : public VideoEncoder,
-                                public base::PowerSuspendObserver {
+class H264VideoToolboxEncoder final : public VideoEncoder,
+                                      public base::PowerSuspendObserver {
  public:
   // Returns true if the current platform and system configuration supports
   // using H264VideoToolboxEncoder with the given |video_config|.
@@ -34,20 +34,20 @@ class H264VideoToolboxEncoder : public VideoEncoder,
       const scoped_refptr<CastEnvironment>& cast_environment,
       const FrameSenderConfig& video_config,
       StatusChangeCallback status_change_cb);
-  ~H264VideoToolboxEncoder() final;
+  ~H264VideoToolboxEncoder() override;
 
   // media::cast::VideoEncoder implementation
   bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                         base::TimeTicks reference_time,
-                        FrameEncodedCallback frame_encoded_callback) final;
-  void SetBitRate(int new_bit_rate) final;
-  void GenerateKeyFrame() final;
-  std::unique_ptr<VideoFrameFactory> CreateVideoFrameFactory() final;
-  void EmitFrames() final;
+                        FrameEncodedCallback frame_encoded_callback) override;
+  void SetBitRate(int new_bit_rate) override;
+  void GenerateKeyFrame() override;
+  std::unique_ptr<VideoFrameFactory> CreateVideoFrameFactory() override;
+  void EmitFrames() override;
 
   // base::PowerSuspendObserver
-  void OnSuspend() final;
-  void OnResume() final;
+  void OnSuspend() override;
+  void OnResume() override;
 
  private:
   // VideoFrameFactory tied to the VideoToolbox encoder.

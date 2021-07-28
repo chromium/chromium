@@ -170,15 +170,15 @@ class TransportClient : public CastTransport::Client {
 // If a video frame is detected to be encoded it transfers a frame
 // from FakeMediaSource to its internal queue. Otherwise it drops a
 // frame from FakeMediaSource.
-class EncodedVideoFrameTracker : public RawEventSubscriber {
+class EncodedVideoFrameTracker final : public RawEventSubscriber {
  public:
   EncodedVideoFrameTracker(FakeMediaSource* media_source)
       : media_source_(media_source),
         last_frame_event_type_(UNKNOWN) {}
-  ~EncodedVideoFrameTracker() final {}
+  ~EncodedVideoFrameTracker() override = default;
 
   // RawEventSubscriber implementations.
-  void OnReceiveFrameEvent(const FrameEvent& frame_event) final {
+  void OnReceiveFrameEvent(const FrameEvent& frame_event) override {
     // This method only cares about video FRAME_CAPTURE_END and
     // FRAME_ENCODED events.
     if (frame_event.media_type != VIDEO_EVENT) {
@@ -200,7 +200,7 @@ class EncodedVideoFrameTracker : public RawEventSubscriber {
     last_frame_event_type_ = frame_event.type;
   }
 
-  void OnReceivePacketEvent(const PacketEvent& packet_event) final {
+  void OnReceivePacketEvent(const PacketEvent& packet_event) override {
     // Don't care.
   }
 

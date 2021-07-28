@@ -17,14 +17,14 @@ namespace media {
 
 namespace {
 
-class SimpleCdmVideoFrame : public VideoFrameImpl {
+class SimpleCdmVideoFrame final : public VideoFrameImpl {
  public:
   SimpleCdmVideoFrame() = default;
-  ~SimpleCdmVideoFrame() final = default;
+  ~SimpleCdmVideoFrame() override = default;
 
   // VideoFrameImpl implementation.
   scoped_refptr<media::VideoFrame> TransformToVideoFrame(
-      gfx::Size natural_size) final {
+      gfx::Size natural_size) override {
     DCHECK(FrameBuffer());
 
     cdm::Buffer* buffer = FrameBuffer();
