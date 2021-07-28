@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/macros.h"
