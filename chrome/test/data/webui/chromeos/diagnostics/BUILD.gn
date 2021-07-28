@@ -30,6 +30,7 @@ js_type_check("closure_compile") {
     ":network_card_test",
     ":network_info_test",
     ":network_list_test",
+    ":network_troubleshooting_test",
     ":overview_card_test",
     ":percent_bar_chart_test",
     ":realtime_cpu_chart_test",
@@ -245,6 +246,15 @@ js_library("network_list_test") {
     "//ash/webui/diagnostics_ui/resources:fake_network_health_provider",
     "//ash/webui/diagnostics_ui/resources:mojo_interface_provider",
     "//ash/webui/diagnostics_ui/resources:network_list",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("network_troubleshooting_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//ash/webui/diagnostics_ui/resources:network_troubleshooting",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

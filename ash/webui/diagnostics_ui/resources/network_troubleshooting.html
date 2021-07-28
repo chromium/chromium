@@ -1,0 +1,29 @@
+<style include="diagnostics-shared diagnostics-fonts">
+  #troubleConnectingText {
+    @apply --diagnostics-no-ethernet-font;
+  }
+
+  #troubleConnectingContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px 0;
+    padding-top: 22px;
+  }
+
+  #troubleConnectingLinkText {
+    @apply --diagnostics-connecting-link-font;
+    margin-top: 8px;
+  }
+</style>
+
+<div id="troubleConnectingContainer" class="grey-container">
+  <span id="troubleConnectingText">
+    [[computeTroubleConnectingText_(networkType)]]
+  </span>
+  <span id="troubleConnectingLinkText" class="link-text"
+      on-click="onTroubleConnectingClicked_">
+    [[i18n('troubleConnecting')]]
+  </span>
+</div>

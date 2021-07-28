@@ -7,6 +7,7 @@ import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './ip_config_info_drawer.js';
 import './network_info.js';
+import './network_troubleshooting.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -63,7 +63,7 @@ export function networkCardTestSuite() {
    */
   function getTroubleConnectingElement() {
     return /** @type {!HTMLElement} */ (
-        networkCardElement.$$('#troubleConnectingContainer'));
+        networkCardElement.$$('#networkTroubleshooting'));
   }
 
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {

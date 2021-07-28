@@ -34,6 +34,7 @@ js_type_check("closure_compile_module") {
     ":network_card",
     ":network_info",
     ":network_list",
+    ":network_troubleshooting",
     ":overview_card",
     ":percent_bar_chart",
     ":realtime_cpu_chart",
@@ -220,6 +221,7 @@ js_library("network_card") {
     ":diagnostics_types",
     ":ip_config_info_drawer",
     ":network_info",
+    ":network_troubleshooting",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -243,6 +245,15 @@ js_library("network_list") {
     ":mojo_interface_provider",
     ":network_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("network_troubleshooting") {
+  deps = [
+    ":diagnostics_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -348,6 +359,7 @@ html_to_js("web_components") {
     "network_card.js",
     "network_info.js",
     "network_list.js",
+    "network_troubleshooting.js",
     "overview_card.js",
     "percent_bar_chart.js",
     "realtime_cpu_chart.js",

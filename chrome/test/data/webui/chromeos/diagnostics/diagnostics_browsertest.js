@@ -97,6 +97,7 @@ const debug_suites_list = [
   'NetworkCard',
   'NetworkInfo',
   'NetworkList',
+  'NetworkTroubleshooting',
   'OverviewCard',
   'PercentBarChart',
   'RealtimeCpuChart',

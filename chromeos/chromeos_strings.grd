@@ -932,8 +932,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_TROUBLE_CONNECTING" desc="The label for the text link that leads to a help support article to learn more about connecting to Ethernet networks.">
         Having trouble connecting?
       </message>
-      <message name="IDS_DIAGNOSTICS_NO_ETHERNET" desc="The label for the text displayed when a dongle is connected to a device but an Ethernet connection is not detected.">
-        No Ethernet connection detected
+      <message name="IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT" desc="The label for the text displayed when an internet network is not in a connected or connecting state.">
+        No <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph> connection detected
       </message>
       <message name="IDS_DIAGNOSTICS_OVERVIEW" desc="The label for the overview navigation panel item.">
         Overview
