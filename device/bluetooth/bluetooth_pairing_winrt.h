@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -87,6 +88,8 @@ class BluetoothPairingWinrt {
   Microsoft::WRL::ComPtr<
       ABI::Windows::Devices::Enumeration::IDevicePairingRequestedEventArgs>
       pairing_requested_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BluetoothPairingWinrt> weak_ptr_factory_{this};
 

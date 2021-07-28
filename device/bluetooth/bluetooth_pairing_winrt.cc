@@ -67,6 +67,7 @@ BluetoothPairingWinrt::BluetoothPairingWinrt(
 }
 
 BluetoothPairingWinrt::~BluetoothPairingWinrt() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pairing_requested_token_)
     return;
 
@@ -79,6 +80,7 @@ BluetoothPairingWinrt::~BluetoothPairingWinrt() {
 }
 
 void BluetoothPairingWinrt::StartPairing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pairing_requested_token_ = AddTypedEventHandler(
       custom_pairing_.Get(),
       &IDeviceInformationCustomPairing::add_PairingRequested,
@@ -116,10 +118,12 @@ void BluetoothPairingWinrt::StartPairing() {
 }
 
 bool BluetoothPairingWinrt::ExpectingPinCode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return expecting_pin_code_;
 }
 
 void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::SetPinCode(" << pin_code << ")";
   auto pin_hstring = base::win::ScopedHString::Create(pin_code);
   DCHECK(expecting_pin_code_);
@@ -143,6 +147,7 @@ void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
 }
 
 void BluetoothPairingWinrt::RejectPairing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::RejectPairing()";
   DCHECK(pairing_deferral_);
   HRESULT hr = pairing_deferral_->Complete();
@@ -158,6 +163,7 @@ void BluetoothPairingWinrt::RejectPairing() {
 }
 
 void BluetoothPairingWinrt::CancelPairing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::CancelPairing()";
   DCHECK(pairing_deferral_);
   HRESULT hr = pairing_deferral_->Complete();
@@ -175,6 +181,7 @@ void BluetoothPairingWinrt::CancelPairing() {
 void BluetoothPairingWinrt::OnPairingRequested(
     IDeviceInformationCustomPairing* custom_pairing,
     IDevicePairingRequestedEventArgs* pairing_requested) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::OnPairingRequested()";
 
   DevicePairingKinds pairing_kind;
@@ -208,6 +215,7 @@ void BluetoothPairingWinrt::OnPairingRequested(
 
 void BluetoothPairingWinrt::OnPair(
     ComPtr<IDevicePairingResult> pairing_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DevicePairingResultStatus status;
   HRESULT hr = pairing_result->get_Status(&status);
   if (FAILED(hr)) {
