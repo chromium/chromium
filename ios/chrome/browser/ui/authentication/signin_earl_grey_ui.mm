@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -331,8 +332,14 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:grey_allOf(confirmationButtonMatcher,
                                                  grey_not(buttonMatcher), nil)]
       performAction:grey_tap()];
-  // Wait until the user is signed out.
-  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Wait until the user is signed out. Use a longer timeout for cases where
+  // sign out also triggers a clear browsing data.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
+                                  timeout:base::test::ios::
+                                              kWaitForClearBrowsingDataTimeout];
+
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedOut];

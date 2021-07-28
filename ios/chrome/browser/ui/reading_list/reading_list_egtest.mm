@@ -1275,19 +1275,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                                             kTableViewIllustratedEmptyViewID)]
         assertWithMatcher:grey_notNil()];
 
-    id<GREYMatcher> noReadingListTitleMatcher = grey_allOf(
-        grey_text(
-            l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_TITLE)),
-        grey_sufficientlyVisible(), nil);
-    [[EarlGrey selectElementWithMatcher:noReadingListTitleMatcher]
-        assertWithMatcher:grey_notNil()];
+    // The dimiss animation takes 2 steps, and without the two waits below this
+    // test will flake.
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_text(l10n_util::GetNSString(
+                            IDS_IOS_READING_LIST_NO_ENTRIES_TITLE))];
 
-    id<GREYMatcher> emptyReadingListMatcher = grey_allOf(
-        grey_text(
-            l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE)),
-        grey_sufficientlyVisible(), /*nil_termination*/ nil);
-    [[EarlGrey selectElementWithMatcher:emptyReadingListMatcher]
-        assertWithMatcher:grey_notNil()];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_text(l10n_util::GetNSString(
+                            IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE))];
 }
 
 - (void)addURLToReadingList:(const GURL&)URL {

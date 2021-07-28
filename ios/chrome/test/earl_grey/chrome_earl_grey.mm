@@ -393,6 +393,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 }
 
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher {
+  [self waitForUIElementToAppearWithMatcher:matcher
+                                    timeout:kWaitForUIElementTimeout];
+}
+
+- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
+                                    timeout:(NSTimeInterval)timeout {
   NSString* errorDescription = [NSString
       stringWithFormat:@"Failed waiting for element with matcher %@ to appear",
                        matcher];
@@ -404,12 +410,17 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
     return error == nil;
   };
 
-  bool matched =
-      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition);
+  bool matched = WaitUntilConditionOrTimeout(timeout, condition);
   GREYAssert(matched, errorDescription);
 }
 
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher {
+  [self waitForUIElementToDisappearWithMatcher:matcher
+                                       timeout:kWaitForUIElementTimeout];
+}
+
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
+                                       timeout:(NSTimeInterval)timeout {
   NSString* errorDescription = [NSString
       stringWithFormat:
           @"Failed waiting for element with matcher %@ to disappear", matcher];
@@ -421,8 +432,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
     return error == nil;
   };
 
-  bool matched =
-      WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition);
+  bool matched = WaitUntilConditionOrTimeout(timeout, condition);
   GREYAssert(matched, errorDescription);
 }
 

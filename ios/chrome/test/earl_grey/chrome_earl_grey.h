@@ -139,8 +139,18 @@ UIWindow* GetAnyKeyWindow();
 // Waits for the matcher to return an element.
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher;
 
+// Waits for the matcher to return an element. If the condition is not met
+// within the given |timeout| a GREYAssert is induced.
+- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
+                                    timeout:(NSTimeInterval)timeout;
+
 // Waits for the matcher to not return any elements.
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for the matcher to not return any elements. If the condition is not met
+// within the given |timeout| a GREYAssert is induced.
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
+                                       timeout:(NSTimeInterval)timeout;
 
 // Waits for there to be |count| number of non-incognito tabs within a timeout,
 // or a GREYAssert is induced.
