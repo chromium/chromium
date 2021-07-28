@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,8 +56,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     model_observer_tracker_.reset();
   }
 
-  void SendPageTopicsModelToExecutor(
-      const absl::optional<proto::Any>& model_metadata) {
+  void SendPageTopicsModelToExecutor(const proto::Any& model_metadata) {
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
     base::FilePath model_file_path =
@@ -75,27 +75,6 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  absl::optional<history::VisitContentModelAnnotations> Annotate(
-      const std::string& text) {
-    absl::optional<history::VisitContentModelAnnotations> content_annotations;
-    base::RunLoop run_loop;
-    model_manager()->Annotate(
-        "sometext",
-        base::BindOnce(
-            [](base::RunLoop* run_loop,
-               absl::optional<history::VisitContentModelAnnotations>*
-                   out_content_annotations,
-               const absl::optional<history::VisitContentModelAnnotations>&
-                   content_annotations) {
-              *out_content_annotations = content_annotations;
-              run_loop->Quit();
-            },
-            &run_loop, &content_annotations));
-    run_loop.Run();
-
-    return content_annotations;
-  }
-
   PageTopicsModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
   }
@@ -107,10 +86,8 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
   history::VisitContentModelAnnotations GetContentModelAnnotationsFromOutput(
       const proto::PageTopicsModelMetadata& metadata,
       const std::vector<tflite::task::core::Category>& model_output) const {
-    history::VisitContentModelAnnotations annotations;
-    model_manager()->PopulateContentModelAnnotationsFromPageTopicsModelOutput(
-        metadata, model_output, &annotations);
-    return annotations;
+    return model_manager()->GetContentModelAnnotationsFromOutput(metadata,
+                                                                 model_output);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -125,6 +102,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
 TEST_F(PageContentAnnotationsModelManagerTest, RegistersCorrectModelMetadata) {
   absl::optional<proto::Any> registered_model_metadata =
       model_observer_tracker()->registered_model_metadata();
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   EXPECT_TRUE(registered_model_metadata.has_value());
   absl::optional<proto::PageTopicsModelMetadata> page_topics_model_metadata =
       ParsedAnyMetadata<proto::PageTopicsModelMetadata>(
@@ -135,6 +113,9 @@ TEST_F(PageContentAnnotationsModelManagerTest, RegistersCorrectModelMetadata) {
       page_topics_model_metadata->supported_output(),
       UnorderedElementsAre(proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED,
                            proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES));
+#else
+  EXPECT_FALSE(registered_model_metadata.has_value());
+#endif
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -337,38 +318,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
                   history::VisitContentModelAnnotations::Category(2, 40)));
   EXPECT_EQ(annotations.floc_protected_score, 0.5);
   EXPECT_EQ(annotations.page_topics_model_version, 123);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest,
-       AnnotateNoModelsFinishedExecuting) {
-  proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-  proto::PageTopicsModelMetadata page_topics_model_metadata;
-  page_topics_model_metadata.set_version(123);
-  page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
-  SendPageTopicsModelToExecutor(any_metadata);
-
-  EXPECT_FALSE(Annotate("sometext").has_value());
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest, AnnotateModelNotAvailable) {
-  EXPECT_FALSE(Annotate("sometext").has_value());
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest,
-       AnnotateWithGoodPageTopicsModel) {
-  proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-  proto::PageTopicsModelMetadata model_metadata;
-  model_metadata.set_version(123);
-  model_metadata.add_supported_output(
-      proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED);
-  model_metadata.SerializeToString(any_metadata.mutable_value());
-  SendPageTopicsModelToExecutor(any_metadata);
-
-  EXPECT_TRUE(Annotate("sometext").has_value());
 }
 
 }  // namespace optimization_guide
