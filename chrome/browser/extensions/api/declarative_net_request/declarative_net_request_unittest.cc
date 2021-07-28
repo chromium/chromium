@@ -1552,6 +1552,71 @@ TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_InvalidRulesetID) {
                                         dnr_api::SESSION_RULESET_ID});
 }
 
+// Ensure we correctly enforce the limit on the maximum number of static
+// rulesets that can be enabled at a time
+TEST_P(MultipleRulesetsTest,
+       UpdateEnabledRulesets_EnabledRulesetCountExceeded) {
+  int kMaxEnabledRulesetCount =
+      api::declarative_net_request::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS;
+
+  std::vector<std::string> ruleset_ids;
+  std::vector<std::string> expected_enabled_ruleset_ids;
+
+  // Create kMaxEnabledRulesetCount + 1 rulesets, with all but the last two
+  // enabled.
+  for (int i = 0; i <= kMaxEnabledRulesetCount; i++) {
+    bool enabled = i < kMaxEnabledRulesetCount - 1;
+    std::string id = base::StringPrintf("%d.json", i);
+    ruleset_ids.push_back(id);
+    if (enabled)
+      expected_enabled_ruleset_ids.push_back(id);
+    AddRuleset(CreateRuleset(id, 10, 10, enabled));
+  }
+
+  std::string first_ruleset_id = ruleset_ids[0];
+  std::string second_last_ruleset_id = ruleset_ids[kMaxEnabledRulesetCount - 1];
+  std::string last_ruleset_id = ruleset_ids[kMaxEnabledRulesetCount];
+
+  RulesetManagerObserver ruleset_waiter(manager());
+  LoadAndExpectSuccess();
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  // Since we're not yet at our limit of enabled rulesets, enabling one more
+  // should succeed.
+  RunUpdateEnabledRulesetsFunction(*extension(), {}, {second_last_ruleset_id},
+                                   absl::nullopt /* expected_error */);
+  expected_enabled_ruleset_ids.push_back(second_last_ruleset_id);
+  VerifyPublicRulesetIDs(*extension(), expected_enabled_ruleset_ids);
+
+  // We're now at our limit of enabled rulesets, so enabling another should
+  // raise an error.
+  RunUpdateEnabledRulesetsFunction(*extension(), {}, {last_ruleset_id},
+                                   kEnabledRulesetCountExceeded);
+  VerifyPublicRulesetIDs(*extension(), expected_enabled_ruleset_ids);
+
+  // Since this ruleset is already enabled, attempting to enable it again
+  // shouldn't raise an error (or do anything).
+  RunUpdateEnabledRulesetsFunction(*extension(), {}, {second_last_ruleset_id},
+                                   absl::nullopt /* expected_error */);
+  VerifyPublicRulesetIDs(*extension(), expected_enabled_ruleset_ids);
+
+  // When enabling and disabling a ruleset at the same time, enabling takes
+  // precedence. Since we're still at the limit, that should raise an error.
+  RunUpdateEnabledRulesetsFunction(*extension(), {last_ruleset_id},
+                                   {last_ruleset_id},
+                                   kEnabledRulesetCountExceeded);
+  VerifyPublicRulesetIDs(*extension(), expected_enabled_ruleset_ids);
+
+  // Since we're disabling one ruleset, enabling another should not exceed the
+  // limit.
+  RunUpdateEnabledRulesetsFunction(*extension(), {first_ruleset_id},
+                                   {last_ruleset_id},
+                                   absl::nullopt /* expected_error */);
+  expected_enabled_ruleset_ids.erase(expected_enabled_ruleset_ids.begin());
+  expected_enabled_ruleset_ids.push_back(last_ruleset_id);
+  VerifyPublicRulesetIDs(*extension(), expected_enabled_ruleset_ids);
+}
+
 TEST_P(MultipleRulesetsTest, UpdateEnabledRulesets_RegexRuleCountExceeded) {
   AddRuleset(CreateRuleset(kId1, 0, 10, false));
   AddRuleset(CreateRuleset(kId2, 0, GetRegexRuleLimit(), true));

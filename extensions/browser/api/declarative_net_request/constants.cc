@@ -117,6 +117,9 @@ const char kEnabledRulesetsRegexRuleCountExceeded[] =
     "The set of enabled rulesets exceeds the regular expression rule count "
     "limit.";
 const char kInternalErrorUpdatingEnabledRulesets[] = "Internal error.";
+const char kEnabledRulesetCountExceeded[] =
+    "The number of enabled static rulesets exceeds the enabled ruleset count "
+    "limit.";
 
 const char kTabNotFoundError[] = "No tab with id: *.";
 const char kIncrementActionCountWithoutUseAsBadgeTextError[] =

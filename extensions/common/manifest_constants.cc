@@ -748,6 +748,9 @@ const char kRulesFileIsInvalid[] =
 const char kRulesetCountExceeded[] =
     "Invalid value for key '*.*': The number of rulesets must be less than or "
     "equal to *.";
+const char kEnabledRulesetCountExceeded[] =
+    "Invalid value for key '*.*': The number of enabled rulesets must be less "
+    "than or equal to *.";
 const char kTransientBackgroundConflictsWithPersistentBackground[] =
     "The 'transientBackground' permission cannot be used with a persistent "
     "background page.";

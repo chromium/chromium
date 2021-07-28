@@ -758,7 +758,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   // at install time (by raising a hard error) to maintain forwards
   // compatibility. Since we iterate based on the order of ruleset ID, we'll
   // give more preference to rulesets occurring first in the manifest.
-  RulesCountPair static_ruleset_count;
+  RulesCountPair static_rule_count;
   bool notify_ruleset_failed_to_load = false;
   bool global_rule_limit_exceeded = false;
 
@@ -788,7 +788,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
       continue;
     }
 
-    RulesCountPair new_ruleset_count = static_ruleset_count + matcher_count;
+    RulesCountPair new_ruleset_count = static_rule_count + matcher_count;
     if (new_ruleset_count.rule_count > static_rule_limit.rule_count) {
       global_rule_limit_exceeded = true;
       continue;
@@ -797,7 +797,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
     if (new_ruleset_count.regex_rule_count > static_rule_limit.regex_rule_count)
       continue;
 
-    static_ruleset_count = new_ruleset_count;
+    static_rule_count = new_ruleset_count;
     matchers.push_back(std::move(matcher));
   }
 
@@ -813,7 +813,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   }
 
   bool allocation_updated = global_rules_tracker_.OnExtensionRuleCountUpdated(
-      load_data.extension_id, static_ruleset_count.rule_count);
+      load_data.extension_id, static_rule_count.rule_count);
   DCHECK(allocation_updated);
 
   AddCompositeMatcher(load_data.extension_id,
@@ -842,12 +842,13 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     return;
   }
 
-  RulesCountPair static_ruleset_count;
+  int static_ruleset_count = 0;
+  RulesCountPair static_rule_count;
   CompositeMatcher* matcher =
       ruleset_manager_.GetMatcherForExtension(load_data.extension_id);
   if (matcher) {
-    // Iterate over the existing matchers to compute |static_rules_count| and
-    // |static_regex_rules_count|.
+    // Iterate over the existing matchers to compute `static_rule_count` and
+    // `static_ruleset_count`.
     for (const std::unique_ptr<RulesetMatcher>& matcher : matcher->matchers()) {
       // Exclude since we are only including static rulesets.
       if (matcher->id() == kDynamicRulesetID)
@@ -862,7 +863,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
       if (base::Contains(ids_to_enable, matcher->id()))
         continue;
 
-      static_ruleset_count += matcher->GetRulesCountPair();
+      static_ruleset_count += 1;
+      static_rule_count += matcher->GetRulesCountPair();
     }
   }
 
@@ -884,11 +886,18 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
               static_cast<size_t>(GetRegexRuleLimit()));
     DCHECK_LE(matcher_count.rule_count, ruleset.source().rule_count_limit());
 
-    static_ruleset_count += matcher_count;
+    static_ruleset_count += 1;
+    static_rule_count += matcher_count;
     new_matchers.push_back(std::move(matcher));
   }
 
-  if (static_ruleset_count.regex_rule_count >
+  if (static_ruleset_count > dnr_api::MAX_NUMBER_OF_ENABLED_STATIC_RULESETS) {
+    std::move(callback).Run(
+        declarative_net_request::kEnabledRulesetCountExceeded);
+    return;
+  }
+
+  if (static_rule_count.regex_rule_count >
       static_cast<size_t>(GetRegexRuleLimit())) {
     std::move(callback).Run(kEnabledRulesetsRegexRuleCountExceeded);
     return;
@@ -898,7 +907,7 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   // be completed without exceeding the global limit, then the update is not
   // applied and an error is returned.
   if (!global_rules_tracker_.OnExtensionRuleCountUpdated(
-          load_data.extension_id, static_ruleset_count.rule_count)) {
+          load_data.extension_id, static_rule_count.rule_count)) {
     std::move(callback).Run(kEnabledRulesetsRuleCountExceeded);
     return;
   }

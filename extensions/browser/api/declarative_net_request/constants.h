@@ -185,6 +185,7 @@ extern const char kInvalidRulesetIDError[];
 extern const char kEnabledRulesetsRuleCountExceeded[];
 extern const char kEnabledRulesetsRegexRuleCountExceeded[];
 extern const char kInternalErrorUpdatingEnabledRulesets[];
+extern const char kEnabledRulesetCountExceeded[];
 
 // setExtensionActionOptions API errors.
 extern const char kTabNotFoundError[];

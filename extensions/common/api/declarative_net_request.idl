@@ -632,7 +632,11 @@ namespace declarativeNetRequest {
 
     // The maximum number of static <code>Rulesets</code> an extension can
     // specify as part of the <code>"rule_resources"</code> manifest key.
-    [value=10] static long MAX_NUMBER_OF_STATIC_RULESETS();
+    [value=50] static long MAX_NUMBER_OF_STATIC_RULESETS();
+
+    // The maximum number of static <code>Rulesets</code> an extension can
+    // enable at any one time.
+    [value=10] static long MAX_NUMBER_OF_ENABLED_STATIC_RULESETS();
 
     // Ruleset ID for the dynamic rules added by the extension.
     [value="_dynamic"] static DOMString DYNAMIC_RULESET_ID();
