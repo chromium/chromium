@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -87,6 +88,11 @@ void SendTabToSelfBubbleViewImpl::DeviceButtonPressed(
 
   controller_->OnDeviceSelected(device_button->device_name(),
                                 device_button->device_guid());
+
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+      IDS_SEND_TAB_TO_SELF_SENDING_ANNOUNCE,
+      base::UTF8ToUTF16(device_button->device_name())));
+
   Hide();
 }
 

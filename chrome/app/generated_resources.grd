@@ -7755,6 +7755,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Open
       </message>
       </if>
+      <message name="IDS_SEND_TAB_TO_SELF_SENDING_ANNOUNCE" desc="Text read by a screenreader when a tab is sent to a target device." is_accessibility_with_no_ui="true">
+        Sending link to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
+      </message>
 
       <!-- Share via QR Code strings -->
       <if expr="not use_titlecase">
