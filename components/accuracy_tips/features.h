@@ -19,6 +19,9 @@ extern const base::FeatureParam<std::string> kSampleUrl;
 // dark-launch and to create a control group.
 extern const base::FeatureParam<bool> kDisableUi;
 
+// URL that the "Learn more" button links to.
+extern const base::FeatureParam<std::string> kLearnMoreUrl;
+
 // Amount of time that has to pass between two accuracy prompts.
 extern const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts;
 

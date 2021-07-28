@@ -18,6 +18,9 @@ const base::FeatureParam<std::string> kSampleUrl{
 const base::FeatureParam<bool> kDisableUi{&safe_browsing::kAccuracyTipsFeature,
                                           "DisableUI", false};
 
+const base::FeatureParam<std::string> kLearnMoreUrl{
+    &safe_browsing::kAccuracyTipsFeature, "LearnMoreUrl", ""};
+
 const base::FeatureParam<base::TimeDelta> kTimeBetweenPrompts{
     &safe_browsing::kAccuracyTipsFeature, "TimeBetweenPrompts",
     base::TimeDelta::FromDays(7)};

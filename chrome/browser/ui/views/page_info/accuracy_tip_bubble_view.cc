@@ -21,6 +21,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
 #include "components/accuracy_tips/accuracy_tip_ui.h"
+#include "components/accuracy_tips/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -190,9 +191,11 @@ void AccuracyTipBubbleView::OpenHelpCenter() {
   // TODO(crbug.com/1210891): Add link to the right info page.
   action_taken_ = AccuracyTipUI::Interaction::kLearnMorePressed;
   web_contents()->OpenURL(content::OpenURLParams(
-      GURL(chrome::kSafetyTipHelpCenterURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-      false /*is_renderer_initiated*/));
+      GURL(accuracy_tips::features::kLearnMoreUrl.Get().empty()
+               ? chrome::kSafetyTipHelpCenterURL
+               : accuracy_tips::features::kLearnMoreUrl.Get()),
+      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, false /*is_renderer_initiated*/));
 }
 
 void AccuracyTipBubbleView::OnDontShowAgainClicked() {
