@@ -1151,10 +1151,6 @@
       status: "experimental",
     },
     {
-      name: "IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
-      status: "stable",
-    },
-    {
       name: "ImplicitRootScroller",
       settable_from_internals: true,
       status: {"Android": "stable"},

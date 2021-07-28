@@ -367,8 +367,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"FledgeInterestGroupAPI", blink::features::kFledgeInterestGroupAPI},
           {"ForceSynchronousHTMLParsing",
            blink::features::kForceSynchronousHTMLParsing},
-          {"IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
-           blink::features::kIgnoreCrossOriginWindowWhenNamedAccessOnWindow},
           {"InterestCohortFeaturePolicy",
            blink::features::kInterestCohortFeaturePolicy},
           {"LangClientHintHeader", blink::features::kLangClientHintHeader},
