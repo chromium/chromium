@@ -194,7 +194,7 @@ public class MainSettings extends PreferenceFragmentCompat
             TemplateUrlServiceFactory.get().load();
         }
 
-        new AdaptiveToolbarStatePredictor().recomputeUiState(uiState -> {
+        new AdaptiveToolbarStatePredictor(null).recomputeUiState(uiState -> {
             // We don't show the toolbar shortcut settings page if disabled from finch.
             // Note, we can still have the old data collection experiment running for which
             // |canShowUi| might be true. In that case, just hide the settings page.
