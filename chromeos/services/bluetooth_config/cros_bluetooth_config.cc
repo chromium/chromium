@@ -30,5 +30,9 @@ void CrosBluetoothConfig::ObserveSystemProperties(
   system_properties_provider_->Observe(std::move(observer));
 }
 
+void CrosBluetoothConfig::SetBluetoothEnabledState(bool enabled) {
+  adapter_state_controller_->SetBluetoothEnabledState(enabled);
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

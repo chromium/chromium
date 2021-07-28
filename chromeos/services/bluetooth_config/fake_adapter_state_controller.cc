@@ -25,5 +25,13 @@ mojom::BluetoothSystemState FakeAdapterStateController::GetAdapterState()
   return system_state_;
 }
 
+void FakeAdapterStateController::SetBluetoothEnabledState(bool enabled) {
+  if (system_state_ == mojom::BluetoothSystemState::kUnavailable)
+    return;
+
+  SetSystemState(enabled ? mojom::BluetoothSystemState::kEnabling
+                         : mojom::BluetoothSystemState::kDisabling);
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

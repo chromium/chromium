@@ -40,6 +40,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   // mojom::CrosBluetoothConfig:
   void ObserveSystemProperties(
       mojo::PendingRemote<mojom::SystemPropertiesObserver> observer) override;
+  void SetBluetoothEnabledState(bool enabled) override;
 
   mojo::ReceiverSet<mojom::CrosBluetoothConfig> receivers_;
 

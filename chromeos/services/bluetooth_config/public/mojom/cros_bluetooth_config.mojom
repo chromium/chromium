@@ -5,7 +5,6 @@
 module chromeos.bluetooth_config.mojom;
 
 // State of Bluetooth on the device.
-// TODO(khorimoto): Add states for enabling and disabling.
 enum BluetoothSystemState {
   // Device does not have access to Bluetooth.
   kUnavailable,
@@ -13,8 +12,14 @@ enum BluetoothSystemState {
   // Bluetooth is turned off.
   kDisabled,
 
+  // Bluetooth is in the process of turning off.
+  kDisabling,
+
   // Bluetooth is turned on.
   kEnabled,
+
+  // Bluetooth is in the process of turning on.
+  kEnabling
 };
 
 // Describes the high-level status of system Bluetooth.
@@ -42,4 +47,8 @@ interface CrosBluetoothConfig {
   // is first added, then again whenever properties are updated. To stop
   // observing, disconnect |observer|.
   ObserveSystemProperties(pending_remote<SystemPropertiesObserver> observer);
+
+  // Turns Bluetooth on or off. If Bluetooth is unavailable or if it is
+  // not currently modifiable, this function is a no-op.
+  SetBluetoothEnabledState(bool enabled);
 };

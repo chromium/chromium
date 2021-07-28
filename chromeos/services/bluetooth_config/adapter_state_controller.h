@@ -12,8 +12,6 @@ namespace bluetooth_config {
 
 // Controls the state of the Bluetooth adapter and serves as the source of truth
 // for the adapter's current state.
-//
-// TODO(khorimoto): Add the ability to turn Bluetooth on and off.
 class AdapterStateController {
  public:
   class Observer : public base::CheckedObserver {
@@ -29,6 +27,10 @@ class AdapterStateController {
 
   // Returns the system state as obtained from the Bluetooth adapter.
   virtual mojom::BluetoothSystemState GetAdapterState() const = 0;
+
+  // Turns Bluetooth on or off. If Bluetooth is unavailable or already in the
+  // desired state, this function is a no-op.
+  virtual void SetBluetoothEnabledState(bool enabled) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -21,6 +21,7 @@ static_library("bluetooth_config") {
   deps = [
     "//base",
     "//chromeos/services/bluetooth_config/public/mojom",
+    "//components/device_event_log",
     "//device/bluetooth",
     "//mojo/public/cpp/bindings",
   ]

@@ -22,6 +22,7 @@ class FakeAdapterStateController : public AdapterStateController {
  private:
   // AdapterStateController:
   mojom::BluetoothSystemState GetAdapterState() const override;
+  void SetBluetoothEnabledState(bool enabled) override;
 
   mojom::BluetoothSystemState system_state_ =
       mojom::BluetoothSystemState::kEnabled;
