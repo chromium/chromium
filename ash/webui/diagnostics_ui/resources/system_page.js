@@ -101,9 +101,9 @@ Polymer({
     },
 
     /** @type {boolean} */
-    showSessionLogButton: {
+    isNetworkingEnabled: {
       type: Boolean,
-      value: !loadTimeData.getBoolean('isNetworkingEnabled'),
+      value: loadTimeData.getBoolean('isNetworkingEnabled'),
     },
   },
 

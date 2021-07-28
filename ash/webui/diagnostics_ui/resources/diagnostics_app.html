@@ -1,19 +1,34 @@
 <style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  page-toolbar {
+    min-height: 56px;
+    position: sticky;
+    top: 0;
+  }
+
   #toast {
    bottom: 0;
    left: 0;
   }
 </style>
 <div id="diagnosticsAppContainer">
-  <navigation-view-panel hidden$="[[!showNavPanel_]]" id="navigationPanel">
-    <div slot="bottom-nav-content" class="session-log-container">
-      <cr-button on-click="onSessionLogClick_" class="session-log-button"
-          hidden="[[!isLoggedIn_]]">
-        <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
-        <span>[[i18n('sessionLog')]]</span>
-      </cr-button>
-    </div>
-  </navigation-view-panel>
+  <div hidden$="[[!showNavPanel_]]">
+    <page-toolbar title="[[i18n('diagnosticsTitle')]]"></page-toolbar>
+    <navigation-view-panel id="navigationPanel">
+      <div slot="bottom-nav-content" class="session-log-container">
+        <cr-button on-click="onSessionLogClick_" class="session-log-button"
+            hidden="[[!isLoggedIn_]]">
+          <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
+          <span>[[i18n('sessionLog')]]</span>
+        </cr-button>
+      </div>
+    </navigation-view-panel>
+  </div>
   <system-page hidden$="[[showNavPanel_]]"></system-page>
   <cr-toast id="toast" duration="2500">
     <span>[[toastText_]]</span>

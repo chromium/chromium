@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/navigation_view_panel.js';
+import 'chrome://resources/ash/common/page_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './input_list.js';
 import './network_list.js';

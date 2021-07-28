@@ -65,7 +65,9 @@
  }
 </style>
 <div id="diagnosticsContainer" hidden="[[!systemInfoReceived_]]">
-  <div id="header">[[i18n('diagnosticsTitle')]]</div>
+  <div id="header" hidden$="[[isNetworkingEnabled]]">
+    [[i18n('diagnosticsTitle')]]
+  </div>
   <div id="banner" hidden="[[!bannerMessage]]" class$="[[scrollingClass_]]">
     <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
     <span id="bannerMsg">[[bannerMessage]]</span>
@@ -98,7 +100,7 @@
       </memory-card>
     </div>
   </div>
-  <template is="dom-if" if="[[showSessionLogButton]]">
+  <template is="dom-if" if="[[!isNetworkingEnabled]]">
     <div class="session-log-container">
       <cr-button on-click="onSessionLogClick_" class="session-log-button"
           hidden="[[!isLoggedIn_]]">
