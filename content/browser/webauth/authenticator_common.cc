@@ -192,7 +192,7 @@ absl::optional<std::string> ProcessAppIdExtension(
 
 // Returns an App ID string if a U2F credential must be made for the request
 // with |options|. This is the case for requests that either originate from
-// cryptotoken or have the googleLegacyAppIdSupport extension set.
+// cryptotoken or have the googleLegacyAppidSupport extension set.
 absl::optional<std::string> MakeCredentialU2fAppIdOverride(
     const url::Origin& caller_origin,
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options) {
@@ -614,7 +614,7 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
 }
 
 // GetU2FTransports is like GetWebAuthnTransports but for requests that
-// originate from Cryptotoken or use googleLegacyAppIdSupport extension.
+// originate from Cryptotoken or use googleLegacyAppidSupport extension.
 base::flat_set<device::FidoTransportProtocol> GetU2FTransports() {
   return base::flat_set<device::FidoTransportProtocol>(
       {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
@@ -1048,7 +1048,7 @@ void AuthenticatorCommon::MakeCredential(
       device::PublicKeyCredentialParams(options->public_key_parameters));
 
   // If the request originates from CryptoToken or carries a valid
-  // googleLegacyAppIdSupport extension, a U2F/CTAP1 credential bound to an
+  // googleLegacyAppidSupport extension, a U2F/CTAP1 credential bound to an
   // AppID will be created.
   absl::optional<std::string> u2f_credential_app_id_override =
       MakeCredentialU2fAppIdOverride(caller_origin, options);

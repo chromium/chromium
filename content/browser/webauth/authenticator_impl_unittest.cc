@@ -3939,7 +3939,7 @@ TEST_F(AuthenticatorImplTest, CredBlob) {
   }
 }
 
-TEST_F(AuthenticatorImplTest, GoogleLegacyAppIdSupport) {
+TEST_F(AuthenticatorImplTest, GoogleLegacyAppidSupport) {
   struct TestCase {
     std::string url;
     bool google_legacy_app_id_support;
@@ -3958,7 +3958,7 @@ TEST_F(AuthenticatorImplTest, GoogleLegacyAppIdSupport) {
           TestCase::kWebAuthn,
           "google.com",
       },
-      // accounts.google.com can exercise googleLegacyAppIdSupport to get a U2F
+      // accounts.google.com can exercise googleLegacyAppidSupport to get a U2F
       // credential with a hard-coded appId.
       {
           "https://accounts.google.com",
@@ -3977,7 +3977,7 @@ TEST_F(AuthenticatorImplTest, GoogleLegacyAppIdSupport) {
           TestCase::kWebAuthn,
           "google.com",
       },
-      // login.corp.google.com also can exercise googleLegacyAppIdSupport,
+      // login.corp.google.com also can exercise googleLegacyAppidSupport,
       // yielding a different appId.
       {
           "https://login.corp.google.com",
@@ -3987,7 +3987,7 @@ TEST_F(AuthenticatorImplTest, GoogleLegacyAppIdSupport) {
           TestCase::kU2f,
           "https://www.gstatic.com/securitykey/a/google.com/origins.json",
       },
-      // On other origins, googleLegacyAppIdSupport has no effect.
+      // On other origins, googleLegacyAppidSupport has no effect.
       {
           "https://example.com",
           true,
@@ -4047,7 +4047,7 @@ TEST_F(AuthenticatorImplTest, GoogleLegacyAppIdSupport) {
                   ->second.is_u2f,
               test_case.credential_type == TestCase::kU2f);
     // Requests use the type key for WebAuthn rather than U2F API registration,
-    // even if googleLegacyAppIdSupport is set.
+    // even if googleLegacyAppidSupport is set.
     EXPECT_TRUE(
         base::StartsWith(client_data_json, R"({"type":"webauthn.create")"))
         << client_data_json;

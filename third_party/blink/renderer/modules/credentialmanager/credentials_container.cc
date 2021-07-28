@@ -1040,10 +1040,10 @@ ScriptPromise CredentialsContainer::get(
           return promise;
         }
       }
-      if (options->publicKey()->extensions()->hasGoogleLegacyAppIdSupport()) {
+      if (options->publicKey()->extensions()->hasGoogleLegacyAppidSupport()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
-            "The 'googleLegacyAppIdSupport' extension is only valid when "
+            "The 'googleLegacyAppidSupport' extension is only valid when "
             "creating a credential"));
         return promise;
       }
@@ -1349,7 +1349,7 @@ ScriptPromise CredentialsContainer::create(
         return promise;
       }
     }
-    if (options->publicKey()->extensions()->hasGoogleLegacyAppIdSupport()) {
+    if (options->publicKey()->extensions()->hasGoogleLegacyAppidSupport()) {
       const auto& rp_id =
           options->publicKey()->rp()->id()
               ? options->publicKey()->rp()->id()
@@ -1359,7 +1359,7 @@ ScriptPromise CredentialsContainer::create(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kJavaScript,
                 mojom::blink::ConsoleMessageLevel::kWarning,
-                "The 'googleLegacyAppIdSupport' extension is ignored for "
+                "The 'googleLegacyAppidSupport' extension is ignored for "
                 "requests with an 'rp.id' not equal to 'google.com'"));
       }
     }
