@@ -164,7 +164,12 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
       return 4;
     case BILLING:
       return 15;
-    default:
+    case ACCURACY_TIPS:
+      return 1000;
+    case CSD_DOWNLOAD_WHITELIST:
+    case POTENTIALLY_HARMFUL_APPLICATION:
+    case SOCIAL_ENGINEERING_PUBLIC:
+    case THREAT_TYPE_UNSPECIFIED:
       NOTREACHED() << "Unexpected ThreatType encountered: "
                    << list_id.threat_type();
       return kLeastSeverity;
