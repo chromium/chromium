@@ -123,7 +123,6 @@ export class TabElement extends CustomElement {
 
   /** @param {!TabData} tab */
   set tab(tab) {
-    assert(this.tab_ !== tab);
     this.toggleAttribute('active', tab.active);
     this.tabEl_.setAttribute('aria-selected', tab.active.toString());
     this.toggleAttribute('hide-icon_', !tab.showIcon);

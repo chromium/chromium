@@ -862,7 +862,8 @@ suite('TabList', () => {
         alertStates: [],
         id: tabs.length + i,
         index: tabs.length + i,
-        title: '',
+        title: `Tab ${tabs.length + i + 1}`,
+        pinned: false,
       });
     }
     await tabList.animationPromises;
@@ -912,9 +913,8 @@ suite('TabList', () => {
   });
 
   test('has custom context menu', async () => {
-    let event = new Event('contextmenu');
-    event.clientX = 1;
-    event.clientY = 2;
+    const event =
+        new PointerEvent('pointerup', {clientX: 1, clientY: 2, button: 2});
     document.dispatchEvent(event);
 
     const contextMenuArgs =
@@ -926,17 +926,11 @@ suite('TabList', () => {
   test('scrolls to active tabs', async () => {
     await tabList.animationPromises;
 
-    const newTabButtonMargin = 15;
-    const newTabButtonWidth = 50;
     const scrollPadding = 32;
     const tabWidth = 200;
     const viewportWidth = 300;
 
     // Mock the width of each tab element.
-    tabList.style.setProperty(
-        '--tabstrip-new-tab-button-margin', `${newTabButtonMargin}px`);
-    tabList.style.setProperty(
-        '--tabstrip-new-tab-button-width', `${newTabButtonWidth}px`);
     tabList.style.setProperty(
         '--tabstrip-tab-thumbnail-width', `${tabWidth}px`);
     tabList.style.setProperty('--tabstrip-tab-spacing', '0px');
@@ -963,8 +957,7 @@ suite('TabList', () => {
     let activeTab = getUnpinnedTabs()[1];
     assertEquals(
         tabList.scrollLeft + tabList.offsetWidth,
-        activeTab.offsetLeft + activeTab.offsetWidth + scrollPadding +
-            newTabButtonMargin + newTabButtonWidth);
+        activeTab.offsetLeft + activeTab.offsetWidth + scrollPadding);
 
     // The 1st tab should be now off-screen to the left, so activating it should
     // scroll so that the element's left edge is aligned with the screen's
