@@ -29,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.weblayer.SettingsTestUtils;
 import org.chromium.weblayer.SiteSettingsActivity;
@@ -106,20 +105,6 @@ public class SiteSettingsTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add("disable-features=ActionableContentSettings")
-    public void testSingleSiteSoundPopupLaunches() throws InterruptedException {
-        // TODO(crbug.com/1165765): Remove test when ActionableContentSettings is enabled.
-        mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
-                mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
-
-        onView(withText("Sound")).perform(click());
-
-        onView(withText("Block")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add("enable-features=ActionableContentSettings")
     public void testSingleSiteSoundToggle() throws InterruptedException {
         mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                 mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
