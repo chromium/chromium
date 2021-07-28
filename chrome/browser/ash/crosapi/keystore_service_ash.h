@@ -58,11 +58,11 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void BindReceiver(mojo::PendingReceiver<mojom::KeystoreService> receiver);
 
   // mojom::KeystoreService:
-  void ChallengeAttestationOnlyKeystore(
+  void DEPRECATED_ChallengeAttestationOnlyKeystore(
       const std::string& challenge,
       mojom::KeystoreType type,
       bool migrate,
-      ChallengeAttestationOnlyKeystoreCallback callback) override;
+      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
   void SelectClientCertificates(
       const std::vector<std::vector<uint8_t>>& certificate_authorities,
@@ -151,8 +151,8 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
 
   // |challenge| is used as a opaque identifier to match against the
   // unique_ptr in outstanding_challenges_. It should not be dereferenced.
-  void DidChallengeAttestationOnlyKeystore(
-      ChallengeAttestationOnlyKeystoreCallback callback,
+  void DEPRECATED_DidChallengeAttestationOnlyKeystore(
+      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge,
       const ash::attestation::TpmChallengeKeyResult& result);
   static void DidGetKeyStores(

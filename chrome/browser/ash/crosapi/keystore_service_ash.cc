@@ -193,15 +193,16 @@ KeyPermissionsService* KeystoreServiceAsh::GetKeyPermissions() {
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
+void KeystoreServiceAsh::DEPRECATED_ChallengeAttestationOnlyKeystore(
     const std::string& challenge,
     mojom::KeystoreType type,
     bool migrate,
-    ChallengeAttestationOnlyKeystoreCallback callback) {
+    DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!crosapi::mojom::IsKnownEnumValue(type)) {
     std::move(callback).Run(
-        mojom::KeystoreStringResult::NewErrorMessage(kUnsupportedKeystoreType));
+        mojom::DEPRECATED_KeystoreStringResult::NewErrorMessage(
+            kUnsupportedKeystoreType));
     return;
   }
 
@@ -229,20 +230,20 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
   outstanding_challenges_.push_back(std::move(challenge_key));
   challenge_key_ptr->BuildResponse(
       key_type, profile,
-      base::BindOnce(&KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     challenge_key_ptr),
+      base::BindOnce(
+          &KeystoreServiceAsh::DEPRECATED_DidChallengeAttestationOnlyKeystore,
+          weak_factory_.GetWeakPtr(), std::move(callback), challenge_key_ptr),
       challenge,
       /*register_key=*/migrate, key_name_for_spkac);
 }
 
-void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
-    ChallengeAttestationOnlyKeystoreCallback callback,
+void KeystoreServiceAsh::DEPRECATED_DidChallengeAttestationOnlyKeystore(
+    DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback,
     void* challenge_key_ptr,
     const ash::attestation::TpmChallengeKeyResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  crosapi::mojom::KeystoreStringResultPtr result_ptr =
-      mojom::KeystoreStringResult::New();
+  crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result_ptr =
+      mojom::DEPRECATED_KeystoreStringResult::New();
   if (result.IsSuccess()) {
     result_ptr->set_challenge_response(result.challenge_response);
   } else {

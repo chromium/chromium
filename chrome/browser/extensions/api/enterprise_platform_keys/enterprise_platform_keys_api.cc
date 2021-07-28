@@ -376,7 +376,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string error = ValidateCrosapi(
-      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      KeystoreService::kDEPRECATED_ChallengeAttestationOnlyKeystoreMinVersion,
       browser_context());
   if (!error.empty())
     return RespondNow(Error(error));
@@ -390,7 +390,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
                               OnChallengeAttestationOnlyKeystore,
                           this);
   GetKeystoreService(browser_context())
-      ->ChallengeAttestationOnlyKeystore(
+      ->DEPRECATED_ChallengeAttestationOnlyKeystore(
           StringFromVector(params->challenge),
           crosapi::mojom::KeystoreType::kDevice,
           /*migrate=*/params->register_key ? *params->register_key : false,
@@ -400,7 +400,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
 
 void EnterprisePlatformKeysChallengeMachineKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::KeystoreStringResultPtr result) {
+        crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result) {
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;
@@ -420,7 +420,7 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const std::string error = ValidateCrosapi(
-      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      KeystoreService::kDEPRECATED_ChallengeAttestationOnlyKeystoreMinVersion,
       browser_context());
   if (!error.empty())
     return RespondNow(Error(error));
@@ -434,16 +434,16 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
                               OnChallengeAttestationOnlyKeystore,
                           this);
   GetKeystoreService(browser_context())
-      ->ChallengeAttestationOnlyKeystore(StringFromVector(params->challenge),
-                                         crosapi::mojom::KeystoreType::kUser,
-                                         /*migrate=*/params->register_key,
-                                         std::move(c));
+      ->DEPRECATED_ChallengeAttestationOnlyKeystore(
+          StringFromVector(params->challenge),
+          crosapi::mojom::KeystoreType::kUser,
+          /*migrate=*/params->register_key, std::move(c));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeUserKeyFunction::
     OnChallengeAttestationOnlyKeystore(
-        crosapi::mojom::KeystoreStringResultPtr result) {
+        crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result) {
   if (result->is_error_message()) {
     Respond(Error(result->get_error_message()));
     return;
