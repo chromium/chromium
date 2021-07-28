@@ -25,9 +25,6 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -76,16 +73,6 @@ using device::BluetoothTransport;
 using device::BluetoothUUID;
 
 namespace {
-
-absl::optional<int> SdkVersion() {
-  constexpr char kVersionKey[] = "CHROMEOS_ARC_ANDROID_SDK_VERSION";
-  int sdk_version;
-  std::string sdk_str;
-  if (!base::SysInfo::GetLsbReleaseValue(kVersionKey, &sdk_str) ||
-      !base::StringToInt(sdk_str, &sdk_version))
-    return absl::nullopt;
-  return sdk_version;
-}
 
 // https://android.googlesource.com/platform/system/bt/+/master/stack/include/gatt_api.h
 constexpr int32_t GATT_CHAR_PROP_BIT_BROADCAST = (1 << 0);
@@ -680,26 +667,13 @@ void ArcBluetoothBridge::DeviceAdvertisementReceived(
   if (!arc_bridge_service_->bluetooth()->IsConnected())
     return;
 
-  constexpr int kAndroidPSdkVersion = 28;
-  absl::optional<int> sdk_version = SdkVersion();
   mojom::BluetoothAddressPtr addr =
       mojom::BluetoothAddress::From(device->GetAddress());
-  if (!sdk_version)
-    return;
-
-  if (sdk_version.value() >= kAndroidPSdkVersion) {
-    auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
-        arc_bridge_service_->bluetooth(), OnLEDeviceFound);
-    if (bluetooth_instance)
-      bluetooth_instance->OnLEDeviceFound(std::move(addr), rssi, eir);
-    return;
-  }
 
   auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->bluetooth(), OnLEDeviceFoundForN);
+      arc_bridge_service_->bluetooth(), OnLEDeviceFound);
   if (bluetooth_instance)
-    bluetooth_instance->OnLEDeviceFoundForN(std::move(addr), rssi,
-                                            GetAdvertisingData(device));
+    bluetooth_instance->OnLEDeviceFound(std::move(addr), rssi, eir);
 }
 
 void ArcBluetoothBridge::DeviceConnectedStateChanged(BluetoothAdapter* adapter,

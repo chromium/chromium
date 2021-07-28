@@ -300,41 +300,6 @@ TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
             fake_bluetooth_instance_->le_device_found_data().back()->rssi());
 }
 
-TEST_F(ArcBluetoothBridgeTest, LEDeviceFoundForN) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_ARC_ANDROID_SDK_VERSION=27", base::Time::Now());
-
-  EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
-  AddTestDevice();
-  EXPECT_EQ(3u, fake_bluetooth_instance_->le_device_found_data().size());
-
-  const auto& le_device_found_data =
-      fake_bluetooth_instance_->le_device_found_data().back();
-  const mojom::BluetoothAddressPtr& addr = le_device_found_data->addr();
-  const std::vector<mojom::BluetoothAdvertisingDataPtr>& adv_data =
-      le_device_found_data->adv_data();
-
-  EXPECT_EQ(std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress),
-            addr->To<std::string>());
-  EXPECT_EQ(2u, adv_data.size());
-
-  EXPECT_TRUE(adv_data[0]->is_local_name());
-  EXPECT_EQ(std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyName),
-            adv_data[0]->get_local_name());
-
-  EXPECT_TRUE(adv_data[1]->is_service_uuids());
-  EXPECT_EQ(1u, adv_data[1]->get_service_uuids().size());
-  EXPECT_EQ(kTestServiceUUID,
-            adv_data[1]->get_service_uuids()[0].canonical_value());
-
-  EXPECT_EQ(kTestRssi, le_device_found_data->rssi());
-
-  ChangeTestDeviceRssi(kTestRssi2);
-  EXPECT_EQ(4u, fake_bluetooth_instance_->le_device_found_data().size());
-  EXPECT_EQ(kTestRssi2,
-            fake_bluetooth_instance_->le_device_found_data().back()->rssi());
-}
-
 // If ARC starts the connection by LEConnect(), OnLEConnectionStateChange()
 // should be invoked when the connection is up/down. OnConnectionStateChanged()
 // should always be invoked when the physical link state changed.
