@@ -1686,11 +1686,6 @@ CommandHandler.COMMANDS_['send-feedback'] = new class extends FilesCommand {
       },
     };
 
-    if (window.isSWA) {
-      console.log('SWA send-feedback command not implemented: ', message);
-      return;
-    }
-
     const kFeedbackExtensionId = 'gfdkimpbcpahaombhbimeihdjnejgicl';
     // On ChromiumOS the feedback extension is not installed, so we just log
     // that filing feedback has failed.

@@ -219,17 +219,25 @@ class FeedbackRequest {
 }
 
 /**
- * Function to determine whether or not a given extension id is allowed to
+ * Function to determine whether or not a given app or extension is allowed to
  * invoke the feedback UI. If it is, the callback to start the Feedback UI will
  * be called.
- * @param {string} id the id of the sender extension.
+ * @param {Object} sender the sender of the feedback request message.
  * @param {Function} startFeedbackCallback The callback function that will
  *     will start the feedback UI.
  * @param {Object} feedbackInfo The feedback info object to pass to the
  *     start feedback UI callback.
  */
-function invokeFeedbackIfPermitted(id, startFeedbackCallback, feedbackInfo) {
-  crypto.subtle.digest('SHA-1', new TextEncoder().encode(id))
+function invokeFeedbackIfPermitted(
+    sender, startFeedbackCallback, feedbackInfo) {
+  // Files app SWA, non-extension user.
+  if (sender.origin === 'chrome://file-manager') {
+    startFeedbackCallback(feedbackInfo);
+    return;
+  }
+
+  // Extensions.
+  crypto.subtle.digest('SHA-1', new TextEncoder().encode(sender.id))
       .then(function(hashBuffer) {
         let hashString = '';
         const hashView = new Uint8Array(hashBuffer);
@@ -258,14 +266,15 @@ function feedbackReadyHandler(request, sender, sendResponse) {
 }
 
 /**
- * Callback which gets notified if another extension is requesting feedback.
+ * Callback which gets notified if another app or extension is
+ * requesting feedback.
  * @param {Object} request The message request object.
  * @param {Object} sender The sender of the message.
  * @param {function(Object)} sendResponse Callback for sending a response.
  */
 function requestFeedbackHandler(request, sender, sendResponse) {
   if (request.requestFeedback) {
-    invokeFeedbackIfPermitted(sender.id, startFeedbackUI, request.feedbackInfo);
+    invokeFeedbackIfPermitted(sender, startFeedbackUI, request.feedbackInfo);
   }
 }
 
