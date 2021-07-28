@@ -5924,6 +5924,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::
              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)},
+
+    {"safe-browsing-password-protection-for-signed-in-users",
+     flag_descriptions::kPasswordProtectionForSignedInUsersName,
+     flag_descriptions::kPasswordProtectionForSignedInUsersDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(safe_browsing::kPasswordProtectionForSignedInUsers)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

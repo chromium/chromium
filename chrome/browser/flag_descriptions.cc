@@ -3370,6 +3370,13 @@ const char kPageInfoHistoryDescription[] =
 extern const char kPageInfoV2DesktopName[];
 extern const char kPageInfoV2DesktopDescription[];
 
+extern const char kPasswordProtectionForSignedInUsersName[] =
+    "Password Protection for Signed-In Users";
+extern const char kPasswordProtectionForSignedInUsersDescription[] =
+    "Enable signed-in (Google account) password protection for signed-in "
+    "users and allows users to change their signed-in password through "
+    "password reuse warnings on phishing or low reputation sites.";
+
 const char kPhotoPickerVideoSupportName[] = "Photo Picker Video Support";
 const char kPhotoPickerVideoSupportDescription[] =
     "Enables video files to be shown in the Photo Picker dialog";
@@ -3538,7 +3545,7 @@ const char kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidName[] =
 const char
     kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidDescription[] =
         "Allows Android Chrome users to change their saved passwords through "
-        "password reuse warning on phishing or low reputation sites.";
+        "password reuse warnings on phishing or low reputation sites.";
 
 const char kEnhancedProtectionPromoAndroidName[] =
     "Enable enhanced protection promo card on Android on the New Tab Page";

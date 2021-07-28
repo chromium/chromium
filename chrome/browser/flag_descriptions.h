@@ -1935,6 +1935,9 @@ extern const char kPageInfoDiscoverabilityDescription[];
 extern const char kPageInfoHistoryName[];
 extern const char kPageInfoHistoryDescription[];
 
+extern const char kPasswordProtectionForSignedInUsersName[];
+extern const char kPasswordProtectionForSignedInUsersDescription[];
+
 extern const char kPhotoPickerVideoSupportName[];
 extern const char kPhotoPickerVideoSupportDescription[];
 

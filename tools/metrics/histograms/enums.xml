@@ -46620,6 +46620,8 @@ from previous Chrome versions.
   <int value="-1983891525" label="DecodeJpeg420ImagesToYUV:disabled"/>
   <int value="-1983569861" label="WebXROrientationSensorDevice:disabled"/>
   <int value="-1982700103" label="EnableAppsGridGapFeature:enabled"/>
+  <int value="-1981692093"
+      label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
   <int value="-1980328793" label="trace-upload-url"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
   <int value="-1975719988" label="GlobalMediaControlsSeamlessTransfer:enabled"/>
@@ -50266,6 +50268,8 @@ from previous Chrome versions.
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
   <int value="983084316" label="SyncUSSNigori:disabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
+  <int value="985127848"
+      label="SafeBrowsingPasswordProtectionForSignedInUsers:disabled"/>
   <int value="986796748" label="AccountConsistency:enabled"/>
   <int value="987690332" label="NearbySharingBackgroundScanning:disabled"/>
   <int value="987843084" label="TerminalSystemApp:enabled"/>
