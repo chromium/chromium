@@ -115,17 +115,10 @@
 
 namespace {
 
-// This limit corresponds to the per-platform 99.9th %ile of the number of
-// WebMediaPlayers used by a single frame, as measured in March 2021. This
-// tries to balance minimizing web platform breakage and preventing abusive
-// API usage. See http://crbug.com/1144736#c49
-constexpr size_t kDefaultMaxWebMediaPlayers =
-#if defined(OS_ANDROID)
-    40;
-#else
-    // All desktop platforms share the same value.
-    75;
-#endif
+// This limit is much higher than it needs to be right now, because the logic
+// is also capping audio-only media streams, and it is quite normal for their
+// to be many of those. See http://crbug.com/1232649
+constexpr size_t kDefaultMaxWebMediaPlayers = 1000;
 
 size_t GetMaxWebMediaPlayers() {
   static const size_t kMaxWebMediaPlayers = []() {
