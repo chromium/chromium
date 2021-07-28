@@ -417,6 +417,15 @@
       },
     },
 
+    'chrome_finch_smoke_tests': {
+      'chrome_finch_smoke_tests': {
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
+    },
+
     'chrome_public_wpt': {
       'chrome_public_wpt': {
         'swarming': {

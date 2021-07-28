@@ -564,6 +564,11 @@
     "label": "//chrome/installer/linux:linux",
     "type": "additional_compile_target",
   },
+  "chrome_finch_smoke_tests": {
+    "label": "//chrome/test:chrome_finch_smoke_tests",
+    "script": "//testing/scripts/run_finch_smoke_tests.py",
+    "type": "script",
+  },
   "chromedriver_replay_unittests": {
     "label": "//chrome/test/chromedriver:chromedriver_replay_unittests",
     "script": "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",

@@ -9443,3 +9443,14 @@ if (is_chromeos_ash) {
     ]
   }
 }
+
+if (is_linux) {
+  group("chrome_finch_smoke_tests") {
+    testonly = true
+    data_deps = [
+      "//chrome",
+      "//chrome/test/chromedriver",
+    ]
+    data = [ "//testing/scripts/run_finch_smoke_tests.py" ]
+  }
+}

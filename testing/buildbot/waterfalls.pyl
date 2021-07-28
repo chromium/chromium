@@ -6407,6 +6407,27 @@
   {
     'project': 'chrome',
     'bucket': 'ci',
+    'name': 'internal.chrome.fyi',
+    'mixins': ['chrome-tester-service-account'],
+    'machines': {
+      'linux-chrome-finch-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+          'chrome/installer/linux',
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_finch_smoke_tests',
+        },
+      },
+    },
+  },
+  {
+    'project': 'chrome',
+    'bucket': 'ci',
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
