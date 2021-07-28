@@ -52,6 +52,12 @@ gfx::PointF CalculateDragPoint(const WindowResizer& resizer,
   return location;
 }
 
+void AllowSnap(aura::Window* window) {
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanResize |
+                          aura::client::kResizeBehaviorCanMaximize);
+}
+
 // A simple window delegate that returns the specified min size.
 class TestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
@@ -528,9 +534,7 @@ TEST_F(WorkspaceWindowResizerTest, Edge) {
   // TODO(varkha): Insets are reset after every drag because of
   // http://crbug.com/292238.
   window_->SetBounds(gfx::Rect(20, 30, 400, 60));
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  AllowSnap(window_.get());
   WindowState* window_state = WindowState::Get(window_.get());
 
   {
@@ -639,10 +643,8 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
   window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
                              display::Screen::GetScreen()->GetPrimaryDisplay());
 
-  // Make the window snappable by making it resizable and maximizable.
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  // Make the window snappable.
+  AllowSnap(window_.get());
   EXPECT_EQ(root_windows[0], window_->GetRootWindow());
   EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
   {
@@ -670,6 +672,8 @@ TEST_F(WorkspaceWindowResizerTest, DragSnapped) {
   const gfx::Rect kInitialBounds(100, 100, 100, 100);
   window_->SetBounds(kInitialBounds);
   window_->Show();
+  AllowSnap(window_.get());
+
   const WMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_event);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
@@ -689,6 +693,7 @@ TEST_F(WorkspaceWindowResizerTest, DragSnapped) {
 // Verifies the behavior of resizing a side snapped window.
 TEST_F(WorkspaceWindowResizerTest, ResizeSnapped) {
   WindowState* window_state = WindowState::Get(window_.get());
+  AllowSnap(window_.get());
 
   const gfx::Rect kInitialBounds(100, 100, 100, 100);
   window_->SetBounds(kInitialBounds);
@@ -1448,11 +1453,10 @@ TEST_F(WorkspaceWindowResizerTest, TestPartialMaxSizeEnforced) {
 }
 
 // Test that a window with a specified max size can't be snapped.
-TEST_F(WorkspaceWindowResizerTest, PhantomSnapMaxSize) {
-  // Make the window snappable by making it resizable and maximizable.
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+TEST_F(WorkspaceWindowResizerTest, PhantomSnapNonMaximizable) {
+  // Make the window snappable.
+  AllowSnap(window_.get());
+
   {
     // With max size not set we get a phantom window controller for dragging off
     // the right hand side.
@@ -1464,21 +1468,12 @@ TEST_F(WorkspaceWindowResizerTest, PhantomSnapMaxSize) {
     resizer->RevertDrag();
   }
   {
-    // With max size defined, we get no phantom window for snapping.
+    // When it can't be maximzied, we get no phantom window for snapping.
     window_->SetBounds(gfx::Rect(0, 0, 400, 200));
-    delegate_.set_max_size(gfx::Size(400, 200));
-
-    std::unique_ptr<WindowResizer> resizer =
-        CreateResizerForTest(window_.get());
-    resizer->Drag(CalculateDragPoint(*resizer, 801, 0), 0);
-    EXPECT_FALSE(snap_phantom_window_controller());
-    resizer->RevertDrag();
-  }
-  {
-    // With max size defined, we get no phantom window for snapping.
-    window_->SetBounds(gfx::Rect(0, 0, 400, 200));
-    delegate_.set_max_size(gfx::Size(400, 200));
-
+    window_->SetProperty(
+        aura::client::kResizeBehaviorKey,
+        window_->GetProperty(aura::client::kResizeBehaviorKey) ^
+            aura::client::kResizeBehaviorCanMaximize);
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get());
     resizer->Drag(CalculateDragPoint(*resizer, 801, 0), 0);
@@ -1843,6 +1838,7 @@ TEST_F(WorkspaceWindowResizerTest, DraggingThresholdForSnappedAndMaximized) {
   UpdateDisplay("800x648");
   const gfx::Rect restore_bounds(30, 30, 300, 300);
   window_->SetBounds(restore_bounds);
+  AllowSnap(window_.get());
 
   // Test that on a normal window, there is no minimal drag amount.
   std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
@@ -1897,9 +1893,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToSnapMaximize) {
   UpdateDisplay("800x648");
   const gfx::Rect restore_bounds(30, 30, 300, 300);
   window_->SetBounds(restore_bounds);
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  AllowSnap(window_.get());
 
   // Drag to a top region of the display and release. The window should be
   // maximized.
@@ -1937,9 +1931,7 @@ TEST_F(WorkspaceWindowResizerTest, DragToMaximizeStartingInSnapRegion) {
   // Drag starting in the snap to maximize region. If we do not leave it, on
   // drag release the window will not get maximized.
   window_->SetBounds(gfx::Rect(200, 200));
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  AllowSnap(window_.get());
 
   std::unique_ptr<WindowResizer> resizer =
       CreateResizerForTest(window_.get(), gfx::Point(400.f, 1.f));
@@ -1990,9 +1982,8 @@ TEST_F(WorkspaceWindowResizerTest, MultiDisplayRestoreBounds) {
 
   // Create a window and maximize it on the primary display.
   window_->SetBounds(gfx::Rect(200, 200));
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  AllowSnap(window_.get());
+
   auto* window_state = WindowState::Get(window_.get());
   window_state->Maximize();
   ASSERT_TRUE(window_state->HasRestoreBounds());
@@ -2181,9 +2172,8 @@ TEST_F(WorkspaceWindowResizerTest, TabDraggingHistogram) {
 TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
   UpdateDisplay("800x648");
   window_->SetBounds(gfx::Rect(10, 10, 100, 100));
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  AllowSnap(window_.get());
+
   std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
   // Ensure the timer is not running.
   EXPECT_FALSE(IsDwellCountdownTimerRunning());
@@ -2245,9 +2235,8 @@ TEST_F(WorkspaceWindowResizerTest, SnapMaximizeDwellTime) {
 TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
   UpdateDisplay("800x648");
   window_->SetBounds(gfx::Rect(10, 10, 100, 100));
-  window_->SetProperty(aura::client::kResizeBehaviorKey,
-                       aura::client::kResizeBehaviorCanResize |
-                           aura::client::kResizeBehaviorCanMaximize);
+  AllowSnap(window_.get());
+
   std::unique_ptr<WindowResizer> resizer =
       CreateResizerForTest(window_.get(), gfx::Point(400.f, 67.f));
   // Check if a horizontal move more than threshold will trigger snap.

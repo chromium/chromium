@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/focus_cycler.h"
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -311,13 +312,16 @@ bool WindowState::HasMaximumWidthOrHeight() const {
 }
 
 bool WindowState::CanMaximize() const {
-  // Window must allow maximization and have no maximum width or height.
-  if ((window_->GetProperty(aura::client::kResizeBehaviorKey) &
-       aura::client::kResizeBehaviorCanMaximize) == 0) {
-    return false;
+  bool can_maximize = (window_->GetProperty(aura::client::kResizeBehaviorKey) &
+                       aura::client::kResizeBehaviorCanMaximize) != 0;
+#if DCHECK_IS_ON()
+  if (window_->delegate() && can_maximize) {
+    const gfx::Size max_size = window_->delegate()->GetMaximumSize();
+    DCHECK(max_size.IsEmpty() || max_size.width() > kAllowMaximizeThreshold ||
+           max_size.height() > kAllowMaximizeThreshold);
   }
-
-  return !HasMaximumWidthOrHeight();
+#endif
+  return can_maximize;
 }
 
 bool WindowState::CanMinimize() const {
@@ -335,13 +339,7 @@ bool WindowState::CanActivate() const {
 }
 
 bool WindowState::CanSnap() const {
-  if (!CanResize() || IsPip())
-    return false;
-
-  // Allow windows with no maximum width or height to be snapped.
-  // TODO(oshima): We should probably snap if the maximum size is defined
-  // and greater than the snapped size.
-  return !HasMaximumWidthOrHeight();
+  return !IsPip() && CanResize() && CanMaximize();
 }
 
 bool WindowState::HasRestoreBounds() const {

@@ -727,7 +727,7 @@ void ClientControlledShellSurface::SetResizeLock(bool resize_lock) {
   pending_resize_lock_ = resize_lock;
 }
 
-void ClientControlledShellSurface::UpdateCanResize() {
+void ClientControlledShellSurface::UpdateResizability() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::updateCanResize");
   ash::ArcResizeLockType resizeLockType = ash::ArcResizeLockType::RESIZABLE;
   if (pending_resize_lock_) {
@@ -747,7 +747,7 @@ void ClientControlledShellSurface::UpdateCanResize() {
     SetCanResize(false);
     return;
   }
-  ShellSurfaceBase::UpdateCanResize();
+  ShellSurfaceBase::UpdateResizability();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1251,7 +1251,7 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
                                               ? ui::ZOrderLevel::kFloatingWindow
                                               : ui::ZOrderLevel::kNormal);
 
-  UpdateCanResize();
+  UpdateResizability();
 
   ash::WindowState* window_state = GetWindowState();
   // For PIP, the snap fraction is used to specify the ideal position. Usually

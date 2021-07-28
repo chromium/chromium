@@ -62,6 +62,9 @@ class WorkspaceEventHandlerTest : public AshTestBase {
     ParentWindowInPrimaryRootWindow(window);
     window->SetBounds(bounds);
     window->Show();
+    window->SetProperty(aura::client::kResizeBehaviorKey,
+                        aura::client::kResizeBehaviorCanResize |
+                            aura::client::kResizeBehaviorCanMaximize);
     return window;
   }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/ash_constants.h"
@@ -575,7 +576,6 @@ void ShellSurfaceBase::SetContainer(int container) {
 void ShellSurfaceBase::SetMaximumSize(const gfx::Size& size) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetMaximumSize", "size",
                size.ToString());
-
   pending_maximum_size_ = size;
 }
 
@@ -609,8 +609,16 @@ void ShellSurfaceBase::DisableMovement() {
     widget_->set_movement_disabled(true);
 }
 
-void ShellSurfaceBase::UpdateCanResize() {
+void ShellSurfaceBase::UpdateResizability() {
   SetCanResize(CalculateCanResize());
+  auto max_size = GetMaximumSize();
+
+  // Allow maximizeing if the max size is bigger than 32k resolution.
+  SetCanMaximize(CanResize() && !parent_ &&
+                 ash::desks_util::IsDeskContainerId(container_) &&
+                 (max_size.IsEmpty() ||
+                  (max_size.width() > ash::kAllowMaximizeThreshold &&
+                   max_size.height() > ash::kAllowMaximizeThreshold)));
 }
 
 void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
@@ -689,7 +697,7 @@ void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
   }
 
   UpdateWidgetBounds();
-  UpdateCanResize();
+  UpdateResizability();
 }
 
 void ShellSurfaceBase::RemoveOverlay() {
@@ -699,7 +707,7 @@ void ShellSurfaceBase::RemoveOverlay() {
     GetWidget()->GetNativeWindow()->SetProperty(
         aura::client::kSkipImeProcessing, true);
   }
-  UpdateCanResize();
+  UpdateResizability();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1370,8 +1378,7 @@ void ShellSurfaceBase::SetContainerInternal(int container) {
 void ShellSurfaceBase::SetParentInternal(aura::Window* parent) {
   parent_ = parent;
   WidgetDelegate::SetCanMinimize(!parent_ && can_minimize_);
-  WidgetDelegate::SetCanMaximize(
-      !parent_ && ash::desks_util::IsDeskContainerId(container_));
+  UpdateResizability();
   if (widget_)
     widget_->OnSizeConstraintsChanged();
 }
@@ -1393,7 +1400,7 @@ void ShellSurfaceBase::CommitWidget() {
                                  maximum_size_ != pending_maximum_size_;
   minimum_size_ = pending_minimum_size_;
   maximum_size_ = pending_maximum_size_;
-  UpdateCanResize();
+  UpdateResizability();
 
   if (!widget_)
     return;

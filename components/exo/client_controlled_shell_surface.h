@@ -243,7 +243,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void SetResizeLock(bool resize_lock);
 
   // Update the resizability based on the resize lock state.
-  void UpdateCanResize() override;
+  void UpdateResizability() override;
 
  protected:
   // Overridden from ShellSurfaceBase:

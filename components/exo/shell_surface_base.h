@@ -130,7 +130,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void DisableMovement();
 
   // Update the resizability for the surface.
-  virtual void UpdateCanResize();
+  virtual void UpdateResizability();
 
   // Rebind a surface as the root surface of the shell surface.
   void RebindRootSurface(Surface* root_surface,
