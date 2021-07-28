@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -244,6 +245,13 @@ void InteractionSequence::Start() {
   StageNextStep();
 }
 
+void InteractionSequence::RunSynchronouslyForTesting() {
+  base::RunLoop run_loop;
+  quit_run_loop_closure_for_testing_ = run_loop.QuitClosure();
+  Start();
+  run_loop.Run();
+}
+
 void InteractionSequence::OnElementShown(TrackedElement* element) {
   DCHECK_EQ(StepType::kShown, next_step()->type);
   DCHECK(element->identifier() == next_step()->id);
@@ -388,12 +396,15 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // Last step end callback needs to be run before sequence completed.
     // Because the InteractionSequence could conceivably be destroyed during
     // one of these callbacks, make local copies of the callbacks and data.
+    base::OnceClosure quit_closure =
+        std::move(quit_run_loop_closure_for_testing_);
     CompletedCallback completed_callback =
         std::move(configuration_->completed_callback);
     std::unique_ptr<Step> last_step = std::move(current_step_);
     RunIfValid(std::move(last_step->end_callback), last_step->element,
                last_step->id, last_step->type);
     RunIfValid(std::move(completed_callback));
+    RunIfValid(std::move(quit_closure));
     return;
   }
 
@@ -465,6 +476,10 @@ void InteractionSequence::StageNextStep() {
 void InteractionSequence::Abort() {
   DCHECK(started_);
   configuration_->steps.clear();
+  // The current object could be destroyed during callbacks, so ensure we save
+  // a handle to the testing run loop (if there is one).
+  base::OnceClosure quit_closure =
+      std::move(quit_run_loop_closure_for_testing_);
   if (current_step_) {
     // Stop listening for events; we don't want additional callbacks during
     // teardown.
@@ -489,6 +504,7 @@ void InteractionSequence::Abort() {
     RunIfValid(std::move(configuration_->aborted_callback), nullptr,
                ElementIdentifier(), StepType::kShown);
   }
+  RunIfValid(std::move(quit_closure));
 }
 
 bool InteractionSequence::AbortedDuringCallback() const {

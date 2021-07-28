@@ -219,6 +219,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // associated with that window).
   void Start();
 
+  // Starts the sequence and does not return until the sequence either
+  // completes or aborts. Events on the current thread continue to be processed
+  // while the method is waiting, so this will not e.g. block the browser UI
+  // thread from handling inputs.
+  //
+  // This is a test-only method since production code applications should
+  // always run asynchronously.
+  void RunSynchronouslyForTesting();
+
  private:
   explicit InteractionSequence(std::unique_ptr<Configuration> configuration);
 
@@ -267,6 +276,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   bool processing_step_ = false;
   std::unique_ptr<Step> current_step_;
   std::unique_ptr<Configuration> configuration_;
+  base::OnceClosure quit_run_loop_closure_for_testing_;
 
   // This is necessary because this object could be deleted during any callback,
   // and we don't want to risk a UAF if that happens.
