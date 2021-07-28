@@ -130,7 +130,8 @@ class SynchronousCompositorProxyRegistry
  public:
   explicit SynchronousCompositorProxyRegistry(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner)
-      : compositor_task_runner_(std::move(compositor_task_runner)) {}
+      : compositor_thread_default_task_runner_(
+            std::move(compositor_task_runner)) {}
 
   ~SynchronousCompositorProxyRegistry() override {
     // Ensure the proxy has already been release on the compositor thread
@@ -139,7 +140,7 @@ class SynchronousCompositorProxyRegistry
   }
 
   void CreateProxy(SynchronousInputHandlerProxy* handler) {
-    DCHECK(compositor_task_runner_->BelongsToCurrentThread());
+    DCHECK(compositor_thread_default_task_runner_->BelongsToCurrentThread());
     proxy_ = std::make_unique<SynchronousCompositorProxy>(handler);
     proxy_->Init();
 
@@ -151,7 +152,7 @@ class SynchronousCompositorProxyRegistry
 
   void RegisterLayerTreeFrameSink(
       SynchronousLayerTreeFrameSink* layer_tree_frame_sink) override {
-    DCHECK(compositor_task_runner_->BelongsToCurrentThread());
+    DCHECK(compositor_thread_default_task_runner_->BelongsToCurrentThread());
     DCHECK_EQ(nullptr, sink_);
     sink_ = layer_tree_frame_sink;
     if (proxy_)
@@ -160,18 +161,19 @@ class SynchronousCompositorProxyRegistry
 
   void UnregisterLayerTreeFrameSink(
       SynchronousLayerTreeFrameSink* layer_tree_frame_sink) override {
-    DCHECK(compositor_task_runner_->BelongsToCurrentThread());
+    DCHECK(compositor_thread_default_task_runner_->BelongsToCurrentThread());
     DCHECK_EQ(layer_tree_frame_sink, sink_);
     sink_ = nullptr;
   }
 
   void DestroyProxy() {
-    DCHECK(compositor_task_runner_->BelongsToCurrentThread());
+    DCHECK(compositor_thread_default_task_runner_->BelongsToCurrentThread());
     proxy_.reset();
   }
 
  private:
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      compositor_thread_default_task_runner_;
   std::unique_ptr<SynchronousCompositorProxy> proxy_;
   SynchronousLayerTreeFrameSink* sink_ = nullptr;
 };
@@ -183,22 +185,23 @@ scoped_refptr<WidgetInputHandlerManager> WidgetInputHandlerManager::Create(
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
     bool never_composited,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+    scheduler::WebThreadScheduler* compositor_thread_scheduler,
     scheduler::WebThreadScheduler* main_thread_scheduler,
     bool uses_input_handler) {
   scoped_refptr<WidgetInputHandlerManager> manager =
       new WidgetInputHandlerManager(
           std::move(widget), std::move(frame_widget_input_handler),
-          never_composited, std::move(compositor_task_runner),
-          main_thread_scheduler);
+          never_composited, compositor_thread_scheduler, main_thread_scheduler);
   if (uses_input_handler)
     manager->InitInputHandler();
 
   // A compositor thread implies we're using an input handler.
-  DCHECK(!manager->compositor_task_runner_ || uses_input_handler);
+  DCHECK(!manager->compositor_thread_default_task_runner_ ||
+         uses_input_handler);
   // Conversely, if we don't use an input handler we must not have a compositor
   // thread.
-  DCHECK(uses_input_handler || !manager->compositor_task_runner_);
+  DCHECK(uses_input_handler ||
+         !manager->compositor_thread_default_task_runner_);
 
   return manager;
 }
@@ -208,7 +211,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
         frame_widget_input_handler,
     bool never_composited,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+    scheduler::WebThreadScheduler* compositor_thread_scheduler,
     scheduler::WebThreadScheduler* main_thread_scheduler)
     : widget_(std::move(widget)),
       frame_widget_input_handler_(std::move(frame_widget_input_handler)),
@@ -221,15 +224,22 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           main_thread_scheduler,
           /*allow_raf_aligned_input=*/!never_composited)),
       main_thread_task_runner_(widget_scheduler_->InputTaskRunner()),
-      compositor_task_runner_(std::move(compositor_task_runner)),
+      compositor_thread_default_task_runner_(
+          compositor_thread_scheduler
+              ? compositor_thread_scheduler->DefaultTaskRunner()
+              : nullptr),
+      compositor_thread_input_blocking_task_runner_(
+          compositor_thread_scheduler
+              ? compositor_thread_scheduler->InputTaskRunner()
+              : nullptr),
       response_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Response")) {
 #if defined(OS_ANDROID)
-  if (compositor_task_runner_) {
+  if (compositor_thread_default_task_runner_) {
     synchronous_compositor_registry_ =
         std::make_unique<SynchronousCompositorProxyRegistry>(
-            compositor_task_runner_);
+            compositor_thread_default_task_runner_);
   }
 #endif
 }
@@ -252,11 +262,11 @@ WidgetInputHandlerManager::~WidgetInputHandlerManager() = default;
 void WidgetInputHandlerManager::AddInterface(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver,
     mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
-  if (compositor_task_runner_) {
+  if (compositor_thread_default_task_runner_) {
     host_ = mojo::SharedRemote<mojom::blink::WidgetInputHandlerHost>(
-        std::move(host), compositor_task_runner_);
+        std::move(host), compositor_thread_default_task_runner_);
     // Mojo channel bound on compositor thread.
-    compositor_task_runner_->PostTask(
+    compositor_thread_default_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&WidgetInputHandlerManager::BindChannel, this,
                                   std::move(receiver)));
   } else {
@@ -326,8 +336,8 @@ void WidgetInputHandlerManager::FindScrollTargetOnMainThread(
   uint64_t element_id =
       widget_->client()->FrameWidget()->GetScrollableContainerIdAt(point);
 
-  InputThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), element_id));
+  InputThreadTaskRunner(TaskRunnerType::kInputBlocking)
+      ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), element_id));
 }
 
 void WidgetInputHandlerManager::DidAnimateForInput() {
@@ -681,11 +691,11 @@ void WidgetInputHandlerManager::BindChannel(
   if (!receiver.is_valid())
     return;
   // Don't pass the |input_event_queue_| on if we don't have a
-  // |compositor_task_runner_| as events might get out of order.
+  // |compositor_thread_default_task_runner_| as events might get out of order.
   WidgetInputHandlerImpl* handler = new WidgetInputHandlerImpl(
       this, main_thread_task_runner_,
-      compositor_task_runner_ ? input_event_queue_ : nullptr, widget_,
-      frame_widget_input_handler_);
+      compositor_thread_default_task_runner_ ? input_event_queue_ : nullptr,
+      widget_, frame_widget_input_handler_);
   handler->SetReceiver(std::move(receiver));
 }
 
@@ -897,15 +907,16 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
     allowed_touch_action_.reset();
   }
   // This method is called from either the main thread or the compositor thread.
-  bool is_compositor_thread = compositor_task_runner_ &&
-                              compositor_task_runner_->BelongsToCurrentThread();
+  bool is_compositor_thread =
+      compositor_thread_default_task_runner_ &&
+      compositor_thread_default_task_runner_->BelongsToCurrentThread();
 
   // If there is a compositor task runner and the current thread isn't the
   // compositor thread proxy it over to the compositor thread.
-  if (compositor_task_runner_ && !is_compositor_thread) {
+  if (compositor_thread_default_task_runner_ && !is_compositor_thread) {
     TRACE_EVENT_INSTANT0("input", "PostingToCompositor",
                          TRACE_EVENT_SCOPE_THREAD);
-    compositor_task_runner_->PostTask(
+    compositor_thread_default_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(CallCallback, std::move(callback), ack_state,
                                   latency_info, std::move(overscroll_params),
                                   touch_action));
@@ -933,9 +944,13 @@ void WidgetInputHandlerManager::ObserveGestureEventOnInputHandlingThread(
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
-WidgetInputHandlerManager::InputThreadTaskRunner() const {
-  if (compositor_task_runner_)
-    return compositor_task_runner_;
+WidgetInputHandlerManager::InputThreadTaskRunner(TaskRunnerType type) const {
+  if (compositor_thread_input_blocking_task_runner_ &&
+      type == TaskRunnerType::kInputBlocking) {
+    return compositor_thread_input_blocking_task_runner_;
+  } else if (compositor_thread_default_task_runner_) {
+    return compositor_thread_default_task_runner_;
+  }
   return main_thread_task_runner_;
 }
 

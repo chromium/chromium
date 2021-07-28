@@ -211,16 +211,11 @@ void WidgetBase::InitializeCompositing(
 
   FrameWidget* frame_widget = client_->FrameWidget();
 
+  // |compositor_thread_scheduler| will be null for a popup (since it has no
+  // FrameWidget) or in tests without a compositor thread.
   scheduler::WebThreadScheduler* compositor_thread_scheduler =
-      scheduler::WebThreadScheduler::CompositorThreadScheduler();
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_input_task_runner;
-  // Use the compositor thread task runner unless this is a popup or other such
-  // non-frame widgets. The |compositor_thread_scheduler| can be null in tests
-  // without a compositor thread.
-  if (frame_widget && compositor_thread_scheduler) {
-    compositor_input_task_runner =
-        compositor_thread_scheduler->DefaultTaskRunner();
-  }
+      frame_widget ? scheduler::WebThreadScheduler::CompositorThreadScheduler()
+                   : nullptr;
 
   // We only use an external input handler for frame widgets because only
   // frames use the compositor for input handling. Other kinds of widgets
@@ -229,8 +224,8 @@ void WidgetBase::InitializeCompositing(
   bool uses_input_handler = frame_widget;
   widget_input_handler_manager_ = WidgetInputHandlerManager::Create(
       weak_ptr_factory_.GetWeakPtr(), std::move(frame_widget_input_handler),
-      never_composited_, std::move(compositor_input_task_runner),
-      main_thread_scheduler, uses_input_handler);
+      never_composited_, compositor_thread_scheduler, main_thread_scheduler,
+      uses_input_handler);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

@@ -75,6 +75,10 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   // Returns the default task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner();
 
+  // Returns a task runner for input-blocking tasks on the compositor thread.
+  // (For input tasks on the main thread, use WebWidgetScheduler instead.)
+  virtual scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner();
+
   // Returns the compositor task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner();
 

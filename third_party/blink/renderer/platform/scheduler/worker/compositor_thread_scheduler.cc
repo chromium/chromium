@@ -79,6 +79,11 @@ CompositorThreadScheduler::DefaultTaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+CompositorThreadScheduler::InputTaskRunner() {
+  return helper()->InputTaskRunner();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::CompositorTaskRunner() {
   NOTREACHED();
   return nullptr;

@@ -77,7 +77,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+      scheduler::WebThreadScheduler* compositor_thread_scheduler,
       scheduler::WebThreadScheduler* main_thread_scheduler,
       bool needs_input_handler);
 
@@ -182,7 +182,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       bool never_composited,
-      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+      scheduler::WebThreadScheduler* compositor_thread_scheduler,
       scheduler::WebThreadScheduler* main_thread_scheduler);
   void InitInputHandler();
   void InitOnInputHandlingThread(
@@ -255,10 +255,15 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void HandleInputEventWithLatencyOnInputHandlingThread(
       std::unique_ptr<WebCoalescedInputEvent>);
 
+  // The kInputBlocking task runner is for tasks which are on the critical path
+  // of showing the effect of an already-received input event, and should be
+  // prioritized above handling new input.
+  enum class TaskRunnerType { kDefault = 0, kInputBlocking = 1 };
+
   // Returns the task runner for the thread that receives input. i.e. the
   // "Mojo-bound" thread.
-  const scoped_refptr<base::SingleThreadTaskRunner>& InputThreadTaskRunner()
-      const;
+  const scoped_refptr<base::SingleThreadTaskRunner>& InputThreadTaskRunner(
+      TaskRunnerType type = TaskRunnerType::kDefault) const;
 
   void LogInputTimingUMA();
 
@@ -280,7 +285,10 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // Any thread can access these variables.
   scoped_refptr<MainThreadEventQueue> input_event_queue_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      compositor_thread_default_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner>
+      compositor_thread_input_blocking_task_runner_;
 
   absl::optional<cc::TouchAction> allowed_touch_action_;
 
