@@ -1017,6 +1017,58 @@ TEST_F(AccessibilityTest, LineBreakInDisplayLockedIsLineBreakingObject) {
   EXPECT_TRUE(br->IsLineBreakingObject());
 }
 
+TEST_P(ParameterizedAccessibilityTest, ListMarkerIsNotLineBreakingObject) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        ul li::marker {
+          content: "X";
+        }
+      </style>
+      <ul id="unorderedList">
+        <li id="unorderedListItem">.....
+          Unordered item 1
+        </li>
+      </ul>
+      <ol id="orderedList">
+        <li id="orderedListItem">
+          Ordered item 1
+        </li>
+      </ol>
+      )HTML");
+
+  const AXObject* unordered_list = GetAXObjectByElementId("unorderedList");
+  ASSERT_NE(nullptr, unordered_list);
+  ASSERT_EQ(ax::mojom::Role::kList, unordered_list->RoleValue());
+  EXPECT_TRUE(unordered_list->IsLineBreakingObject());
+
+  const AXObject* unordered_list_item =
+      GetAXObjectByElementId("unorderedListItem");
+  ASSERT_NE(nullptr, unordered_list_item);
+  ASSERT_EQ(ax::mojom::Role::kListItem, unordered_list_item->RoleValue());
+  EXPECT_TRUE(unordered_list_item->IsLineBreakingObject());
+
+  const AXObject* unordered_list_marker =
+      unordered_list_item->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, unordered_list_marker);
+  ASSERT_EQ(ax::mojom::Role::kListMarker, unordered_list_marker->RoleValue());
+  EXPECT_FALSE(unordered_list_marker->IsLineBreakingObject());
+
+  const AXObject* ordered_list = GetAXObjectByElementId("orderedList");
+  ASSERT_NE(nullptr, ordered_list);
+  ASSERT_EQ(ax::mojom::Role::kList, ordered_list->RoleValue());
+  EXPECT_TRUE(ordered_list->IsLineBreakingObject());
+
+  const AXObject* ordered_list_item = GetAXObjectByElementId("orderedListItem");
+  ASSERT_NE(nullptr, ordered_list_item);
+  ASSERT_EQ(ax::mojom::Role::kListItem, ordered_list_item->RoleValue());
+  EXPECT_TRUE(ordered_list_item->IsLineBreakingObject());
+
+  const AXObject* ordered_list_marker = ordered_list_item->UnignoredChildAt(0);
+  ASSERT_NE(nullptr, ordered_list_marker);
+  ASSERT_EQ(ax::mojom::Role::kListMarker, ordered_list_marker->RoleValue());
+  EXPECT_FALSE(ordered_list_marker->IsLineBreakingObject());
+}
+
 TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
   GetPage().GetSettings().SetInlineTextBoxAccessibilityEnabled(false);
   SetBodyInnerHTML(R"HTML(

@@ -4128,13 +4128,13 @@ class AXPosition {
   }
 
   // Determines if the anchor containing this position produces a hard line
-  // break in the text representation, e.g. a block level element or a <br>.
+  // break in the text representation, e.g. the anchor is a block level element
+  // or a <br>.
   bool IsInLineBreakingObject() const {
     if (IsNullPosition())
       return false;
     return GetAnchor()->GetBoolAttribute(
-               ax::mojom::BoolAttribute::kIsLineBreakingObject) &&
-           !GetAnchor()->IsInListMarker();
+        ax::mojom::BoolAttribute::kIsLineBreakingObject);
   }
 
   ax::mojom::Role GetAnchorRole() const {
