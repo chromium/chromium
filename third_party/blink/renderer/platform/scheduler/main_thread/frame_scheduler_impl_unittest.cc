@@ -157,7 +157,7 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalPostMessageForwarding};
 
 static_assert(
-    static_cast<int>(TaskType::kCount) == 80,
+    static_cast<int>(TaskType::kMaxValue) == 79,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {

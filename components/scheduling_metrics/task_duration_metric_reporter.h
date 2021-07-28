@@ -32,14 +32,14 @@ class TaskDurationMetricReporter {
       : value_per_type_histogram_(new base::ScaledLinearHistogram(
             metric_name,
             1,
-            static_cast<int>(TaskClass::kCount),
-            static_cast<int>(TaskClass::kCount) + 1,
+            static_cast<int>(TaskClass::kMaxValue) + 1,
+            static_cast<int>(TaskClass::kMaxValue) + 2,
             1000 * 1000,
             base::HistogramBase::kUmaTargetedHistogramFlag)) {}
 
   void RecordTask(TaskClass task_class, base::TimeDelta duration) {
     DCHECK_LT(static_cast<int>(task_class),
-              static_cast<int>(TaskClass::kCount));
+              static_cast<int>(TaskClass::kMaxValue) + 1);
 
     // To get microseconds precision, duration is converted to microseconds
     // since |value_per_type_histogram_| is constructed with a scale of

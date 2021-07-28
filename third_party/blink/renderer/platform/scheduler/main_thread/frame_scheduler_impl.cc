@@ -528,7 +528,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // The associated TaskRunner should be obtained by creating a
     // WebSchedulingTaskQueue with CreateWebSchedulingTaskQueue().
     case TaskType::kExperimentalWebScheduling:
-    case TaskType::kCount:
       // Not a valid frame-level TaskType.
       NOTREACHED();
       return QueueTraits();

@@ -47,9 +47,6 @@ const char* GetNameForThreadType(ThreadType thread_type) {
       return "Realtime AudioWorklet thread";
     case ThreadType::kSemiRealtimeAudioWorkletThread:
       return "Semi-Realtime AudioWorklet thread";
-    case ThreadType::kCount:
-      NOTREACHED();
-      return nullptr;
   }
   return nullptr;
 }
