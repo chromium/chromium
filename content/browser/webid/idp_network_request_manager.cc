@@ -416,10 +416,6 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
 
 void IdpNetworkRequestManager::OnSigninRequestResponse(
     std::unique_ptr<std::string> response_body) {
-  int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
-
   url_loader_.reset();
 
   if (!response_body) {
@@ -478,10 +474,6 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
 
 void IdpNetworkRequestManager::OnAccountsRequestResponse(
     std::unique_ptr<std::string> response_body) {
-  int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
-
   url_loader_.reset();
 
   if (!response_body) {
@@ -527,10 +519,6 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
 
 void IdpNetworkRequestManager::OnTokenRequestResponse(
     std::unique_ptr<std::string> response_body) {
-  int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
-
   url_loader_.reset();
 
   if (!response_body) {
@@ -575,10 +563,6 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
 
 void IdpNetworkRequestManager::OnLogoutCompleted(
     std::unique_ptr<std::string> response_body) {
-  int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
-
   url_loader_.reset();
 
   if (!response_body) {

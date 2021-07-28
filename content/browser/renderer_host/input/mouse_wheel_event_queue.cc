@@ -185,13 +185,11 @@ void MouseWheelEventQueue::ProcessMouseWheelAck(
     bool current_phase_ended = false;
     bool scroll_phase_ended = false;
     bool momentum_phase_ended = false;
-    bool has_phase_info = false;
 
     if (event_sent_for_gesture_ack_->event.phase !=
             blink::WebMouseWheelEvent::kPhaseNone ||
         event_sent_for_gesture_ack_->event.momentum_phase !=
             blink::WebMouseWheelEvent::kPhaseNone) {
-      has_phase_info = true;
       scroll_phase_ended = event_sent_for_gesture_ack_->event.phase ==
                                blink::WebMouseWheelEvent::kPhaseEnded ||
                            event_sent_for_gesture_ack_->event.phase ==

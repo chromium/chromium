@@ -13061,9 +13061,6 @@ IN_PROC_BROWSER_TEST_F(
   cc::TouchAction expected_touch_action = cc::TouchAction::kPan;
   GetTouchActionsForChild(router, rwhv_root, rwhv_child, point_inside_child,
                           effective_touch_action, allowed_touch_action);
-  cc::TouchAction effective_touch_action_result =
-      effective_touch_action.has_value() ? effective_touch_action.value()
-                                         : cc::TouchAction::kAuto;
   if (allowed_touch_action.has_value())
     EXPECT_EQ(expected_touch_action, allowed_touch_action.value());
 
@@ -13076,9 +13073,6 @@ IN_PROC_BROWSER_TEST_F(
                             child_thread_observer.get());
   GetTouchActionsForChild(router, rwhv_root, rwhv_child, point_inside_child,
                           effective_touch_action, allowed_touch_action);
-  effective_touch_action_result = effective_touch_action.has_value()
-                                      ? effective_touch_action.value()
-                                      : cc::TouchAction::kAuto;
   if (allowed_touch_action.has_value())
     EXPECT_EQ(expected_touch_action, allowed_touch_action.value());
 
@@ -13091,9 +13085,6 @@ IN_PROC_BROWSER_TEST_F(
   expected_touch_action = cc::TouchAction::kAuto;
   GetTouchActionsForChild(router, rwhv_root, rwhv_child, point_inside_child,
                           effective_touch_action, allowed_touch_action);
-  effective_touch_action_result = effective_touch_action.has_value()
-                                      ? effective_touch_action.value()
-                                      : cc::TouchAction::kAuto;
   if (allowed_touch_action.has_value())
     EXPECT_EQ(expected_touch_action, allowed_touch_action.value());
 }

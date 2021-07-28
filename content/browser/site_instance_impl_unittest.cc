@@ -1144,14 +1144,13 @@ TEST_F(SiteInstanceTest, NoProcessPerSiteForEmptySite) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kProcessPerSite);
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  RenderProcessHost* host;
   scoped_refptr<SiteInstanceImpl> instance(
       SiteInstanceImpl::Create(browser_context.get()));
 
   instance->SetSite(UrlInfo());
   EXPECT_TRUE(instance->HasSite());
   EXPECT_TRUE(instance->GetSiteURL().is_empty());
-  host = instance->GetProcess();
+  instance->GetProcess();
 
   EXPECT_FALSE(RenderProcessHostImpl::GetSoleProcessHostForSite(
       instance->GetIsolationContext(), SiteInfo(browser_context.get())));

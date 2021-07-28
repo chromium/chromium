@@ -358,10 +358,6 @@ bool BackgroundTracingActiveScenario::StartTracing() {
   // itself, but asynchronously via Mojo, and in the meantime events will be
   // dropped. This ensures that we start recording events for those categories
   // immediately.
-  uint8_t modes = base::trace_event::TraceLog::RECORDING_MODE;
-  if (!chrome_config.event_filters().empty())
-    modes |= base::trace_event::TraceLog::FILTERING_MODE;
-
   DCHECK(!tracing_session_);
   bool convert_to_legacy_json =
       !base::FeatureList::IsEnabled(features::kBackgroundTracingProtoOutput);

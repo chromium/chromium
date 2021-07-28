@@ -396,10 +396,8 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   base::win::ScopedBstr bstr;
   base::win::ScopedVariant ia_role_variant;
-  LONG ia_role = 0;
   if (SUCCEEDED(node->get_accRole(variant_self, ia_role_variant.Receive()))) {
     dict->SetStringPath("role", RoleVariantToString(ia_role_variant));
-    ia_role = V_I4(ia_role_variant.ptr());
   }
 
   // If S_FALSE it means there is no name

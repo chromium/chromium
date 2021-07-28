@@ -452,7 +452,6 @@ TEST_F(NavigationControllerTest, LoadURL) {
 
   controller.LoadURL(url1, Referrer(), ui::PAGE_TRANSITION_TYPED,
                      std::string());
-  int entry_id = controller.GetPendingEntry()->GetUniqueID();
   // Creating a pending notification should not have issued any of the
   // notifications we're listening for.
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
@@ -506,7 +505,6 @@ TEST_F(NavigationControllerTest, LoadURL) {
   // Load another...
   controller.LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
                      std::string());
-  entry_id = controller.GetPendingEntry()->GetUniqueID();
 
   // The load should now be pending.
   EXPECT_EQ(controller.GetEntryCount(), 1);

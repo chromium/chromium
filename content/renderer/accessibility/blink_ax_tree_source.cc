@@ -411,11 +411,6 @@ void BlinkAXTreeSource::GetChildren(
     parent.LoadInlineTextBoxes();
   }
 
-  bool is_iframe = false;
-  WebNode node = parent.GetNode();
-  if (!node.IsNull() && node.IsElementNode())
-    is_iframe = node.To<WebElement>().HasHTMLTagName("iframe");
-
   for (unsigned i = 0; i < parent.ChildCount(); i++) {
     WebAXObject child = parent.ChildAt(i);
 
@@ -547,13 +542,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     if (src.IsInLiveRegion())
       SerializeLiveRegionAttributes(src, dst);
     SerializeOtherScreenReaderAttributes(src, dst);
-  }
-
-  WebNode node = src.GetNode();
-  bool is_iframe = false;
-  if (!node.IsNull() && node.IsElementNode()) {
-    WebElement element = node.To<WebElement>();
-    is_iframe = element.HasHTMLTagName("iframe");
   }
 
   if (dst->id == image_data_node_id_) {
