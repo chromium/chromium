@@ -26,6 +26,7 @@
 <link rel="import" href="../internet_page/internet_page.html">
 <link rel="import" href="../kerberos_page/kerberos_page.html">
 <link rel="import" href="../multidevice_page/multidevice_page.html">
+<link rel="import" href="../os_bluetooth_page/os_bluetooth_page.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 
 <dom-module id="os-settings-page">
@@ -149,6 +150,10 @@
           <template is="dom-if" if="[[!isBluetoothRevampEnabled_]]" restamp>
             <settings-bluetooth-page prefs="{{prefs}}">
             </settings-bluetooth-page>
+          </template>
+          <template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
+            <os-settings-bluetooth-page>
+            </os-settings-bluetooth-page>
           </template>
         </settings-section>
         <template is="dom-if" if="[[!isGuestMode_]]" restamp>

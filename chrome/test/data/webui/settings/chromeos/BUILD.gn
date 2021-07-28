@@ -120,6 +120,7 @@ js_modulizer("modulize") {
     "network_summary_item_test.js",
     "os_a11y_page_tests.js",
     "os_about_page_tests.js",
+    "os_bluetooth_page_tests.js",
     "os_edit_dictionary_page_test.js",
     "os_files_page_test.js",
     "os_languages_page_v2_tests.js",

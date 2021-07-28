@@ -354,6 +354,7 @@ TEST_F(
  ['NetworkProxySection', 'network_proxy_section_test.m.js'],
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],
+ ['OsBluetoothPage', 'os_bluetooth_page_tests.m.js'],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
  ['OsSettingsUi', 'os_settings_ui_test.m.js'],

@@ -66,8 +66,6 @@ suite('OsSettingsPageTests', function() {
     assert(!!osSettingsPrintingPage);
   });
 
-  // TODO(crbug.com/1010321) Update this to check for absence of
-  // <os-settings-bluetooth-page> when it is created.
   test(
       'Check settings-bluetooth-page exists with' +
           'enableBluetoothRevamp flag off',
@@ -75,11 +73,13 @@ suite('OsSettingsPageTests', function() {
         init();
         const settingsBluetoothPage =
             settingsPage.$$('settings-bluetooth-page');
+
+        const osSettingsBluetoothPage =
+            settingsPage.$$('os-settings-bluetooth-page');
         assert(!!settingsBluetoothPage);
+        assertFalse(!!osSettingsBluetoothPage);
       });
 
-  // TODO(crbug.com/1010321) Update this to check for existence of
-  // <os-settings-bluetooth-page> when it is created.
   test(
       'Check settings-bluetooth-page does not exist with' +
           'enableBluetoothRevamp flag on',
@@ -90,7 +90,12 @@ suite('OsSettingsPageTests', function() {
         init();
         const settingsBluetoothPage =
             settingsPage.$$('settings-bluetooth-page');
+
+        const osSettingsBluetoothPage =
+            settingsPage.$$('os-settings-bluetooth-page');
+
         assertFalse(!!settingsBluetoothPage);
+        assert(!!osSettingsBluetoothPage);
       });
 
   test('Check os-settings-privacy-page exists', async () => {
