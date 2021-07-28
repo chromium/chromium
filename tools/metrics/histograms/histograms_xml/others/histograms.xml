@@ -12896,6 +12896,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Privacy.AccuracyTip.NumDialogsShown" units="dialogs"
+    expires_after="M96">
+  <owner>dullweber@chromium.org</owner>
+  <owner>eokoyomon@chromium.org</owner>
+  <summary>
+    The number of accuracy tip dialogs that have been shown to the user.
+    Recorded when UI is closed.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.AccuracyTip.PageStatus" enum="AccuracyTipStatus"
     expires_after="M96">
   <owner>dullweber@chromium.org</owner>
