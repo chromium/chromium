@@ -2267,7 +2267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPolicies" enum="EnterprisePolicies"
-    expires_after="2021-08-09">
+    expires_after="2022-08-08">
   <owner>pastarmovj@chromium.org</owner>
   <summary>
     A set of policy rules that were ignored due to integrity violations while
@@ -2277,7 +2277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPoliciesDetected"
-    units="disabled policies" expires_after="2021-08-09">
+    units="disabled policies" expires_after="2022-08-08">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chomium.org</owner>
   <summary>
