@@ -23,6 +23,7 @@ polymer_element_files = [
   "icons.js",
   "input_key.js",
   "shortcut_customization_fonts_css.js",
+  "shortcut_customization_shared_css.js",
   "shortcut_customization_app.js",
   "shortcut_input.js",
 ]
