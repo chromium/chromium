@@ -561,8 +561,17 @@ TEST_P(
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
+#if defined(OS_CHROMEOS)
+#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
+  DISABLED_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
+#else
+#define MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload \
+  WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload
+#endif
+
+// TODO(crbug.com/1194878) - Test is flaky on CrOS.
 TEST_P(StorageQueueTest,
-       WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
+       MAYBE_WriteIntoNewStorageQueueReopenWithMissingDataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
