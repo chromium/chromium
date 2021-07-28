@@ -79,6 +79,8 @@ TEST_F(GeneratePasswordForFormFieldActionTest, GeneratedPassword) {
             user_data_.GetAdditionalValue(kMemoryKeyForGeneratedPassword)
                 ->strings()
                 .values(0));
+  EXPECT_TRUE(user_data_.GetAdditionalValue(kMemoryKeyForGeneratedPassword)
+                  ->is_client_side_only());
 }
 
 TEST_F(GeneratePasswordForFormFieldActionTest, FormDataIsNotRetrieved) {
