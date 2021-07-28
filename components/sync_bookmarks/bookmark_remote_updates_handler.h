@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 
@@ -46,7 +45,7 @@ class BookmarkRemoteUpdatesHandler {
 
   static size_t ComputeChildNodeIndexForTest(
       const bookmarks::BookmarkNode* parent,
-      const syncer::UniquePosition& unique_position,
+      const sync_pb::UniquePosition& unique_position,
       const SyncedBookmarkTracker* bookmark_tracker);
 
  private:

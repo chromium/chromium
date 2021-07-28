@@ -34,17 +34,35 @@ enum class ExpectedBookmarkGuidSource {
   kMaxValue = kLeftEmptyPossiblyForClientTag,
 };
 
-TEST(BookmarkUpdatePreprocessingTest, ShouldPropagateUniquePosition) {
+TEST(BookmarkUpdatePreprocessingTest,
+     ShouldPropagateUniquePositionFromSpecifics) {
+  const UniquePosition kUniquePosition =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
+
   sync_pb::SyncEntity entity;
-  entity.set_originator_cache_guid(base::GenerateGUID());
-  entity.set_originator_client_item_id("1");
-  *entity.mutable_unique_position() =
-      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  *entity.mutable_specifics()->mutable_bookmark()->mutable_unique_position() =
+      *entity.mutable_unique_position() = kUniquePosition.ToProto();
 
-  EntityData entity_data;
-  AdaptUniquePositionForBookmark(entity, &entity_data);
+  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
 
-  EXPECT_TRUE(entity_data.unique_position.IsValid());
+  EXPECT_TRUE(
+      UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
+          .Equals(kUniquePosition));
+}
+
+TEST(BookmarkUpdatePreprocessingTest,
+     ShouldPropagateUniquePositionFromSyncEntity) {
+  const UniquePosition kUniquePosition =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
+
+  sync_pb::SyncEntity entity;
+  *entity.mutable_unique_position() = kUniquePosition.ToProto();
+
+  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
+
+  EXPECT_TRUE(
+      UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
+          .Equals(kUniquePosition));
 }
 
 TEST(BookmarkUpdatePreprocessingTest,
@@ -54,10 +72,20 @@ TEST(BookmarkUpdatePreprocessingTest,
   entity.set_originator_client_item_id("1");
   entity.set_position_in_parent(5);
 
-  EntityData entity_data;
-  AdaptUniquePositionForBookmark(entity, &entity_data);
+  sync_pb::EntitySpecifics specifics1;
+  AdaptUniquePositionForBookmark(entity, &specifics1);
 
-  EXPECT_TRUE(entity_data.unique_position.IsValid());
+  sync_pb::EntitySpecifics specifics2;
+  entity.set_position_in_parent(6);
+  AdaptUniquePositionForBookmark(entity, &specifics2);
+
+  EXPECT_TRUE(UniquePosition::FromProto(specifics1.bookmark().unique_position())
+                  .IsValid());
+  EXPECT_TRUE(UniquePosition::FromProto(specifics2.bookmark().unique_position())
+                  .IsValid());
+  EXPECT_TRUE(UniquePosition::FromProto(specifics1.bookmark().unique_position())
+                  .LessThan(UniquePosition::FromProto(
+                      specifics2.bookmark().unique_position())));
 }
 
 TEST(BookmarkUpdatePreprocessingTest,
@@ -67,10 +95,20 @@ TEST(BookmarkUpdatePreprocessingTest,
   entity.set_originator_client_item_id("1");
   entity.set_insert_after_item_id("ITEM_ID");
 
-  EntityData entity_data;
-  AdaptUniquePositionForBookmark(entity, &entity_data);
+  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
 
-  EXPECT_TRUE(entity_data.unique_position.IsValid());
+  EXPECT_TRUE(
+      UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
+          .IsValid());
+}
+
+TEST(BookmarkUpdatePreprocessingTest, ShouldFallBackToRandomUniquePosition) {
+  sync_pb::SyncEntity entity;
+  AdaptUniquePositionForBookmark(entity, entity.mutable_specifics());
+
+  EXPECT_TRUE(
+      UniquePosition::FromProto(entity.specifics().bookmark().unique_position())
+          .IsValid());
 }
 
 // Tests that AdaptGuidForBookmark() propagates GUID in specifics if the field

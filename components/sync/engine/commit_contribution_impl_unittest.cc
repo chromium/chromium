@@ -57,6 +57,10 @@ EntitySpecifics GenerateBookmarkSpecifics(const std::string& url,
     specifics.mutable_bookmark()->set_type(sync_pb::BookmarkSpecifics::URL);
     specifics.mutable_bookmark()->set_url(url);
   }
+  *specifics.mutable_bookmark()->mutable_unique_position() =
+      syncer::UniquePosition::FromInt64(10,
+                                        syncer::UniquePosition::RandomSuffix())
+          .ToProto();
   return specifics;
 }
 
@@ -122,8 +126,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   data->modification_time = modification_time;
   data->name = "Name:";
   data->parent_id = "ParentOf:";
-  data->unique_position = syncer::UniquePosition::FromInt64(
-      10, syncer::UniquePosition::RandomSuffix());
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
@@ -169,8 +171,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   data->modification_time = modification_time;
   data->name = "Name:";
   data->parent_id = "ParentOf:";
-  data->unique_position = syncer::UniquePosition::FromInt64(
-      10, syncer::UniquePosition::RandomSuffix());
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;

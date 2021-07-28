@@ -43018,6 +43018,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Non-unique meta_info keys"/>
   <int value="5" label="Invalid GUID"/>
   <int value="6" label="Invalid parent GUID"/>
+  <int value="7" label="Invalid unique position"/>
 </enum>
 
 <enum name="InvalidDevicePolicyFilesStatus">
@@ -70147,7 +70148,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0"
       label="Remote and local bookmarks types don't match (URL vs. Folder)"/>
   <int value="1" label="Invalid specifics"/>
-  <int value="2" label="Invalid unique position"/>
+  <int value="2" label="Invalid unique position (deprecated)"/>
   <int value="3" label="Permanent node creation in an incremental update"/>
   <int value="4" label="Parent entity not found in server"/>
   <int value="5" label="Parent node not found locally"/>

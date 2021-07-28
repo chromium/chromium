@@ -448,7 +448,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
 
   // Adapt the update for compatibility.
   if (model_type == BOOKMARKS) {
-    AdaptUniquePositionForBookmark(update_entity, &data);
+    AdaptUniquePositionForBookmark(update_entity, &data.specifics);
     AdaptTypeForBookmark(update_entity, &data.specifics);
     AdaptTitleForBookmark(update_entity, &data.specifics,
                           specifics_were_encrypted);

@@ -13,19 +13,10 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "components/sync/base/time.h"
-#include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
 namespace syncer {
-
-namespace {
-
-std::string UniquePositionToString(const UniquePosition& unique_position) {
-  return unique_position.ToDebugString();
-}
-
-}  // namespace
 
 EntityData::EntityData() = default;
 
@@ -63,7 +54,6 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   ADD_TO_DICT(dict, parent_id);
   ADD_TO_DICT_WITH_TRANSFORM(dict, ctime, GetTimeDebugString);
   ADD_TO_DICT_WITH_TRANSFORM(dict, mtime, GetTimeDebugString);
-  ADD_TO_DICT_WITH_TRANSFORM(dict, unique_position, UniquePositionToString);
   return dict;
 }
 
@@ -81,7 +71,6 @@ size_t EntityData::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(name);
   memory_usage += EstimateMemoryUsage(specifics);
   memory_usage += EstimateMemoryUsage(parent_id);
-  memory_usage += EstimateMemoryUsage(unique_position);
   return memory_usage;
 }
 

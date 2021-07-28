@@ -22,6 +22,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -52,8 +53,9 @@ enum class InvalidBookmarkSpecificsError {
   kNonUniqueMetaInfoKeys = 4,
   kInvalidGUID = 5,
   kInvalidParentGUID = 6,
+  kInvalidUniquePosition = 7,
 
-  kMaxValue = kInvalidParentGUID,
+  kMaxValue = kInvalidUniquePosition,
 };
 
 void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
@@ -233,6 +235,7 @@ bool IsBookmarkEntityReuploadNeeded(
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
+    const sync_pb::UniquePosition& unique_position,
     bool force_favicon_load) {
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
@@ -255,6 +258,7 @@ sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
   bm_specifics->set_full_title(node_title);
   bm_specifics->set_creation_time_us(
       node->date_added().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  *bm_specifics->mutable_unique_position() = unique_position;
 
   if (node->GetMetaInfoMap()) {
     UpdateBookmarkSpecificsMetaInfo(node->GetMetaInfoMap(), bm_specifics);
@@ -450,6 +454,14 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
       break;
     case sync_pb::BookmarkSpecifics::FOLDER:
       break;
+  }
+
+  if (!syncer::UniquePosition::FromProto(specifics.unique_position())
+           .IsValid()) {
+    // Ignore updates with invalid positions.
+    DLOG(ERROR) << "Invalid bookmark: invalid unique position.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidUniquePosition);
+    is_valid = false;
   }
 
   // Verify all keys in meta_info are unique.

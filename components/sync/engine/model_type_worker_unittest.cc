@@ -1552,10 +1552,11 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkTombstone) {
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
-     BookmarkWithUniquePosition) {
+     BookmarkWithUniquePositionInSyncEntity) {
+  const UniquePosition kUniquePosition =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix());
   sync_pb::SyncEntity entity;
-  *entity.mutable_unique_position() =
-      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
+  *entity.mutable_unique_position() = kUniquePosition.ToProto();
   entity.set_client_defined_unique_tag("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
   entity.mutable_specifics()->mutable_bookmark();
@@ -1566,7 +1567,9 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .Equals(kUniquePosition));
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
@@ -1583,7 +1586,9 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
@@ -1600,11 +1605,13 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_TRUE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
-     BookmarkWithMissingPosition) {
+     BookmarkWithMissingPositionFallsBackToRandom) {
   sync_pb::SyncEntity entity;
   entity.set_client_defined_unique_tag("CLIENT_TAG");
   entity.set_server_defined_unique_tag("SERVER_TAG");
@@ -1616,22 +1623,9 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
             ModelTypeWorker::PopulateUpdateResponseData(
                 FakeCryptographer(), BOOKMARKS, entity, &response_data));
   const EntityData& data = response_data.entity;
-  EXPECT_FALSE(data.unique_position.IsValid());
-}
-
-TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, NonBookmarkWithNoPosition) {
-  sync_pb::SyncEntity entity;
-
-  EntitySpecifics specifics;
-  *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
-
-  UpdateResponseData response_data;
-
-  EXPECT_EQ(ModelTypeWorker::SUCCESS,
-            ModelTypeWorker::PopulateUpdateResponseData(
-                FakeCryptographer(), PREFERENCES, entity, &response_data));
-  const EntityData& data = response_data.entity;
-  EXPECT_FALSE(data.unique_position.IsValid());
+  EXPECT_TRUE(syncer::UniquePosition::FromProto(
+                  data.specifics.bookmark().unique_position())
+                  .IsValid());
 }
 
 TEST(ModelTypeWorkerPopulateUpdateResponseDataTest, BookmarkWithGUID) {

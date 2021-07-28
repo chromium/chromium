@@ -63,6 +63,10 @@ sync_pb::EntitySpecifics GenerateSpecifics(const std::string& title,
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_bookmark()->set_legacy_canonicalized_title(title);
   specifics.mutable_bookmark()->set_url(url);
+  *specifics.mutable_bookmark()->mutable_unique_position() =
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix())
+          .ToProto();
   return specifics;
 }
 
@@ -123,16 +127,12 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
   const int64_t kServerVersion = 1000;
   const base::Time kCreationTime(base::Time::Now() -
                                  base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
 
   bookmarks::BookmarkNode node(kId, kGuid, kUrl);
   const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kCreationTime,
-                   unique_position, specifics);
+      tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
   ASSERT_THAT(entity, NotNull());
   EXPECT_THAT(entity->bookmark_node(), Eq(&node));
   EXPECT_THAT(entity->GetClientTagHash(),
@@ -144,7 +144,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
               Eq(syncer::TimeToProtoTime(kCreationTime)));
   EXPECT_TRUE(
       syncer::UniquePosition::FromProto(entity->metadata()->unique_position())
-          .Equals(unique_position));
+          .Equals(syncer::UniquePosition::FromProto(
+              specifics.bookmark().unique_position())));
   EXPECT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
   EXPECT_THAT(tracker->GetEntityForBookmarkNode(&node), Eq(entity));
   EXPECT_THAT(
@@ -154,7 +155,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldAddEntity) {
 
   syncer::EntityData data;
   *data.specifics.mutable_bookmark() = specifics.bookmark();
-  data.unique_position = unique_position;
   EXPECT_TRUE(entity->MatchesDataPossiblyIncludingParent(data));
 
   EXPECT_THAT(tracker->GetEntityForSyncId("unknown id"), IsNull());
@@ -170,13 +170,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldRemoveEntity) {
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
   ASSERT_THAT(entity, NotNull());
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
   ASSERT_THAT(tracker->GetEntityForBookmarkNode(&node), Eq(entity));
@@ -206,15 +204,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldBuildBookmarkModelMetadata) {
   const int64_t kServerVersion = 1000;
   const base::Time kCreationTime(base::Time::Now() -
                                  base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
 
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), kUrl);
-  tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, unique_position,
-               specifics);
+  tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
 
   sync_pb::BookmarkModelMetadata bookmark_model_metadata =
       tracker->BuildBookmarkModelMetadata();
@@ -236,13 +230,11 @@ TEST(SyncedBookmarkTrackerTest,
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
   tracker->IncrementSequenceNumber(entity);
@@ -260,13 +252,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldAckSequenceNumber) {
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   // Test simple scenario of ack'ing an incrememented sequence number.
   EXPECT_THAT(tracker->HasLocalChanges(), Eq(false));
@@ -296,13 +286,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateUponCommitResponseWithNewId) {
   const int64_t kNewServerVersion = 1001;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), GURL());
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
   ASSERT_THAT(entity, NotNull());
 
   // Initially only the old ID should be tracked.
@@ -331,15 +319,13 @@ TEST(SyncedBookmarkTrackerTest, ShouldUpdateId) {
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(/*id=*/1, base::GUID::GenerateRandomV4(),
                                GURL());
   // Track a sync entity.
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(entity, NotNull());
   // Update the sync id.
@@ -494,13 +480,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldMarkDeleted) {
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -536,13 +520,11 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() -
                                      base::TimeDelta::FromSeconds(1));
-  const syncer::UniquePosition unique_position;
   const sync_pb::EntitySpecifics specifics =
       GenerateSpecifics(/*title=*/std::string(), /*url=*/std::string());
   bookmarks::BookmarkNode node(kId, kGuid, GURL());
-  const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kModificationTime,
-                   unique_position, specifics);
+  const SyncedBookmarkTracker::Entity* entity = tracker->Add(
+      &node, kSyncId, kServerVersion, kModificationTime, specifics);
 
   ASSERT_THAT(tracker->TrackedUncommittedTombstonesCount(), Eq(0U));
   ASSERT_THAT(tracker->GetEntityForSyncId(kSyncId), Eq(entity));
@@ -1021,9 +1003,6 @@ TEST(SyncedBookmarkTrackerTest,
   const int64_t kId = 1;
   const int64_t kServerVersion = 1000;
   const base::Time kCreationTime = base::Time::Now();
-  const syncer::UniquePosition kUniquePosition =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
   const std::string kFaviconPngBytes = "fakefaviconbytes";
 
   sync_pb::EntitySpecifics specifics = GenerateSpecifics(kTitle, kUrl.spec());
@@ -1031,8 +1010,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   bookmarks::BookmarkNode node(kId, base::GUID::GenerateRandomV4(), kUrl);
   const SyncedBookmarkTracker::Entity* entity =
-      tracker->Add(&node, kSyncId, kServerVersion, kCreationTime,
-                   kUniquePosition, specifics);
+      tracker->Add(&node, kSyncId, kServerVersion, kCreationTime, specifics);
 
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
   EXPECT_TRUE(entity->MatchesFaviconHash(kFaviconPngBytes));
@@ -1045,9 +1023,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
   const GURL kUrl("http://www.foo.com");
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime = base::Time::Now();
-  const syncer::UniquePosition kUniquePosition =
-      syncer::UniquePosition::InitialPosition(
-          syncer::UniquePosition::RandomSuffix());
   const std::string kFaviconPngBytes = "fakefaviconbytes";
 
   std::unique_ptr<bookmarks::BookmarkModel> model =
@@ -1078,8 +1053,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
   sync_pb::EntitySpecifics specifics = GenerateSpecifics(kTitle, kUrl.spec());
   specifics.mutable_bookmark()->set_favicon(kFaviconPngBytes);
 
-  tracker->Update(entity, kServerVersion, kModificationTime, kUniquePosition,
-                  specifics);
+  tracker->Update(entity, kServerVersion, kModificationTime, specifics);
 
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
   EXPECT_TRUE(entity->MatchesFaviconHash(kFaviconPngBytes));
@@ -1149,8 +1123,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
       GenerateSpecifics(kTitle, kUrl.spec());
   tracker->Add(node, /*sync_id=*/"id", /*server_version=*/0,
                /*creation_time=*/base::Time::Now(),
-               syncer::UniquePosition::InitialPosition(
-                   syncer::UniquePosition::RandomSuffix()),
                specifics);
 
   sync_pb::EntitySpecifics permanent_specifics;
@@ -1159,18 +1131,12 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
   // Add permanent nodes to tracker.
   tracker->Add(model->bookmark_bar_node(), kBookmarkBarId, /*server_version=*/0,
                /*creation_time=*/base::Time::Now(),
-               syncer::UniquePosition::InitialPosition(
-                   syncer::UniquePosition::RandomSuffix()),
                permanent_specifics);
   tracker->Add(model->other_node(), kOtherBookmarksId, /*server_version=*/0,
                /*creation_time=*/base::Time::Now(),
-               syncer::UniquePosition::InitialPosition(
-                   syncer::UniquePosition::RandomSuffix()),
                permanent_specifics);
   tracker->Add(model->mobile_node(), kMobileBookmarksId, /*server_version=*/0,
                /*creation_time=*/base::Time::Now(),
-               syncer::UniquePosition::InitialPosition(
-                   syncer::UniquePosition::RandomSuffix()),
                permanent_specifics);
 
   ASSERT_FALSE(tracker->HasLocalChanges());

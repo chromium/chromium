@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -98,14 +97,45 @@ std::string InferGuidForLegacyBookmark(
   return guid;
 }
 
+sync_pb::UniquePosition GetUniquePositionFromSyncEntity(
+    const sync_pb::SyncEntity& update_entity) {
+  if (update_entity.has_unique_position()) {
+    return update_entity.unique_position();
+  }
+
+  std::string suffix;
+  if (update_entity.has_originator_cache_guid() &&
+      update_entity.has_originator_client_item_id()) {
+    suffix =
+        GenerateSyncableBookmarkHash(update_entity.originator_cache_guid(),
+                                     update_entity.originator_client_item_id());
+  } else {
+    suffix = UniquePosition::RandomSuffix();
+  }
+
+  if (update_entity.has_position_in_parent()) {
+    return UniquePosition::FromInt64(update_entity.position_in_parent(), suffix)
+        .ToProto();
+  }
+
+  if (update_entity.has_insert_after_item_id()) {
+    return UniquePosition::FromInt64(0, suffix).ToProto();
+  }
+
+  // No positioning information whatsoever, which should be unreachable today.
+  // For future-compatibility in case the fields in SyncEntity get removed,
+  // let's use a random position, which is better than dropping the whole
+  // update.
+  return UniquePosition::InitialPosition(suffix).ToProto();
+}
+
 }  // namespace
 
 void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
-                                    EntityData* data) {
-  DCHECK(data);
-
-  // Tombstones don't need positioning information.
-  if (update_entity.deleted()) {
+                                    sync_pb::EntitySpecifics* specifics) {
+  DCHECK(specifics);
+  // Nothing to do if the field is set or if it's a deletion.
+  if (specifics->bookmark().has_unique_position() || update_entity.deleted()) {
     return;
   }
 
@@ -115,36 +145,8 @@ void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
     return;
   }
 
-  if (update_entity.has_unique_position()) {
-    data->unique_position =
-        UniquePosition::FromProto(update_entity.unique_position());
-  } else if (update_entity.has_position_in_parent() ||
-             update_entity.has_insert_after_item_id()) {
-    bool missing_originator_fields = false;
-    if (!update_entity.has_originator_cache_guid() ||
-        !update_entity.has_originator_client_item_id()) {
-      DLOG(ERROR) << "Update is missing requirements for bookmark position.";
-      missing_originator_fields = true;
-    }
-
-    std::string suffix = missing_originator_fields
-                             ? UniquePosition::RandomSuffix()
-                             : GenerateSyncableBookmarkHash(
-                                   update_entity.originator_cache_guid(),
-                                   update_entity.originator_client_item_id());
-
-    if (update_entity.has_position_in_parent()) {
-      data->unique_position =
-          UniquePosition::FromInt64(update_entity.position_in_parent(), suffix);
-    } else {
-      // If update_entity has insert_after_item_id, use 0 index.
-      DCHECK(update_entity.has_insert_after_item_id());
-      data->unique_position = UniquePosition::FromInt64(0, suffix);
-    }
-  } else {
-    DLOG(ERROR) << "Missing required position information in update: "
-                << update_entity.id_string();
-  }
+  *specifics->mutable_bookmark()->mutable_unique_position() =
+      GetUniquePositionFromSyncEntity(update_entity);
 }
 
 void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,

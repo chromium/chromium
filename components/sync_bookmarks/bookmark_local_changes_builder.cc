@@ -94,12 +94,11 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
       DCHECK(parent_entity);
       data->parent_id = parent_entity->metadata()->server_id();
-      data->unique_position =
-          syncer::UniquePosition::FromProto(metadata->unique_position());
       // Assign specifics only for the non-deletion case. In case of deletion,
       // EntityData should contain empty specifics to indicate deletion.
       data->specifics = CreateSpecificsFromBookmarkNode(
-          node, bookmark_model_, /*force_favicon_load=*/true);
+          node, bookmark_model_, metadata->unique_position(),
+          /*force_favicon_load=*/true);
       // TODO(crbug.com/1058376): check after finishing if we need to use full
       // title instead of legacy canonicalized one.
       data->name = data->specifics.bookmark().legacy_canonicalized_title();

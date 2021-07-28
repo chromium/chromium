@@ -22,6 +22,7 @@ class BookmarkNode;
 
 namespace sync_pb {
 class EntitySpecifics;
+class UniquePosition;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -48,6 +49,7 @@ bool IsBookmarkEntityReuploadNeeded(
 sync_pb::EntitySpecifics CreateSpecificsFromBookmarkNode(
     const bookmarks::BookmarkNode* node,
     bookmarks::BookmarkModel* model,
+    const sync_pb::UniquePosition& unique_position,
     bool force_favicon_load);
 
 // Creates a bookmark node under the given parent node from the given specifics.

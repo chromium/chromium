@@ -523,11 +523,9 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   data.modification_time =
       syncer::ProtoTimeToTime(metadata->modification_time());
   data.name = base::UTF16ToUTF8(node->GetTitle());
-  data.unique_position =
-      syncer::UniquePosition::FromProto(metadata->unique_position());
-  data.specifics =
-      CreateSpecificsFromBookmarkNode(node, bookmark_model_,
-                                      /*force_favicon_load=*/false);
+  data.specifics = CreateSpecificsFromBookmarkNode(
+      node, bookmark_model_, metadata->unique_position(),
+      /*force_favicon_load=*/false);
 
   if (node->is_permanent_node()) {
     data.server_defined_unique_tag =

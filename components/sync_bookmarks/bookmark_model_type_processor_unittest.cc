@@ -85,7 +85,6 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   data.id = bookmark_info.server_id;
   data.parent_id = bookmark_info.parent_id;
   data.server_defined_unique_tag = bookmark_info.server_tag;
-  data.unique_position = unique_position;
   data.originator_client_item_id = guid.AsLowercaseString();
 
   sync_pb::BookmarkSpecifics* bookmark_specifics =
@@ -93,6 +92,8 @@ syncer::UpdateResponseData CreateUpdateResponseData(
   bookmark_specifics->set_guid(guid.AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title(bookmark_info.title);
   bookmark_specifics->set_full_title(bookmark_info.title);
+  *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
+
   if (bookmark_info.url.empty()) {
     bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   } else {

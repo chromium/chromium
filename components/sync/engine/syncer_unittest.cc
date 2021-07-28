@@ -28,6 +28,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/time.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/mock_debug_info_getter.h"
@@ -66,9 +67,11 @@ sync_pb::EntitySpecifics MakeSpecifics(ModelType model_type) {
 
 sync_pb::EntitySpecifics MakeBookmarkSpecificsToCommit() {
   sync_pb::EntitySpecifics specifics = MakeSpecifics(BOOKMARKS);
-  // The worker DCHECKs for the validity of the |type| field for outgoing
-  // commits.
+  // The worker DCHECKs for the validity of the |type| and |unique_position|
+  // fields for outgoing commits.
   specifics.mutable_bookmark()->set_type(sync_pb::BookmarkSpecifics::URL);
+  *specifics.mutable_bookmark()->mutable_unique_position() =
+      UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
   return specifics;
 }
 

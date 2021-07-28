@@ -87,13 +87,13 @@ class UpdateResponseDataBuilder {
                             const syncer::UniquePosition& unique_position) {
     data_.id = server_id;
     data_.parent_id = parent_id;
-    data_.unique_position = unique_position;
 
     sync_pb::BookmarkSpecifics* bookmark_specifics =
         data_.specifics.mutable_bookmark();
     bookmark_specifics->set_legacy_canonicalized_title(title);
     bookmark_specifics->set_full_title(title);
     bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+    *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
 
     SetGuid(base::GUID::GenerateRandomV4());
   }

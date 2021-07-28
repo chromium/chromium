@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
 // TODO(crbug.com/947443): Code outside components/sync depends on this file
@@ -84,10 +83,6 @@ struct EntityData {
   // AdaptGuidForBookmark(), this field will be set to true. Relevant only for
   // bookmarks.
   bool is_bookmark_guid_in_specifics_preprocessed = false;
-
-  // Unique position of an entity among its siblings. This is supposed to be
-  // set only for datatypes that support positioning (e.g. Bookmarks).
-  UniquePosition unique_position;
 
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its

@@ -345,14 +345,6 @@ bool IsValidUpdate(const UpdateResponseData& update) {
   DCHECK(!update_entity.is_deleted());
   DCHECK(update_entity.server_defined_unique_tag.empty());
 
-  if (!update_entity.unique_position.IsValid()) {
-    // Ignore updates with invalid positions.
-    DLOG(ERROR)
-        << "Remote update with invalid position: "
-        << update_entity.specifics.bookmark().legacy_canonicalized_title();
-    LogProblematicBookmark(RemoteBookmarkUpdateError::kInvalidUniquePosition);
-    return false;
-  }
   if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark())) {
     // Ignore updates with invalid specifics.
     DLOG(ERROR) << "Remote update with invalid specifics";
@@ -456,7 +448,7 @@ void BookmarkModelMerger::RemoteTreeNode::EmplaceSelfAndDescendantsByGUID(
 bool BookmarkModelMerger::RemoteTreeNode::UniquePositionLessThan(
     const RemoteTreeNode& lhs,
     const RemoteTreeNode& rhs) {
-  return lhs.entity().unique_position.LessThan(rhs.entity().unique_position);
+  return lhs.unique_position_.LessThan(rhs.unique_position_);
 }
 
 // static
@@ -466,9 +458,13 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
     size_t max_depth,
     UpdatesPerParentId* updates_per_parent_id) {
   DCHECK(updates_per_parent_id);
+  DCHECK(!update.entity.server_defined_unique_tag.empty() ||
+         IsValidUpdate(update));
 
   RemoteTreeNode node;
   node.update_ = std::move(update);
+  node.unique_position_ = syncer::UniquePosition::FromProto(
+      node.update_.entity.specifics.bookmark().unique_position());
 
   // Ensure we have not reached the maximum tree depth to guard against stack
   // overflows.
@@ -731,7 +727,7 @@ void BookmarkModelMerger::MergeSubtree(
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker_->Add(
       local_subtree_root, remote_update_entity.id,
       remote_node.response_version(), remote_update_entity.creation_time,
-      remote_update_entity.unique_position, remote_update_entity.specifics);
+      remote_update_entity.specifics);
   const bool is_reupload_needed =
       !local_subtree_root->is_permanent_node() &&
       IsBookmarkEntityReuploadNeeded(remote_update_entity);
@@ -886,8 +882,7 @@ void BookmarkModelMerger::ProcessRemoteCreation(
   DCHECK(bookmark_node);
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker_->Add(
       bookmark_node, remote_update_entity.id, remote_node.response_version(),
-      remote_update_entity.creation_time, remote_update_entity.unique_position,
-      specifics);
+      remote_update_entity.creation_time, specifics);
   const bool is_reupload_needed =
       IsBookmarkEntityReuploadNeeded(remote_node.entity());
   if (is_reupload_needed) {
@@ -943,9 +938,9 @@ void BookmarkModelMerger::ProcessLocalCreation(
   const syncer::UniquePosition pos =
       GenerateUniquePositionForLocalCreation(parent, index, suffix);
   const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, bookmark_model_, /*force_favicon_load=*/true);
+      node, bookmark_model_, pos.ToProto(), /*force_favicon_load=*/true);
   const SyncedBookmarkTracker::Entity* entity = bookmark_tracker_->Add(
-      node, sync_id, server_version, creation_time, pos, specifics);
+      node, sync_id, server_version, creation_time, specifics);
   // Mark the entity that it needs to be committed.
   bookmark_tracker_->IncrementSequenceNumber(entity);
   for (size_t i = 0; i < node->children().size(); ++i) {

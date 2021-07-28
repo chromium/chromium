@@ -19,12 +19,11 @@ class EntitySpecifics;
 
 namespace syncer {
 
-struct EntityData;
-
-// Populates |data->unique_position| from the various supported proto fields in
-// |update_entity|. |data| must not be null.
+// Populates |specifics->bookmark().unique_position()| from the various
+// supported proto fields in |update_entity| and worst-case falls back to a
+// random position. |specifics| must not be null.
 void AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
-                                    EntityData* data);
+                                    sync_pb::EntitySpecifics* specifics);
 
 // Populates |specifics->bookmark().type()| (i.e. whether a bookmark is a
 // folder) for the cases where the field isn't populated.

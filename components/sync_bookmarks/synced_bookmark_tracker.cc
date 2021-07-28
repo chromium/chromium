@@ -20,11 +20,11 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/time.h"
-#include "components/sync/base/unique_position.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/switches.h"
 #include "ui/base/models/tree_node_iterator.h"
 
@@ -84,10 +84,6 @@ bool SyncedBookmarkTracker::Entity::MatchesDataPossiblyIncludingParent(
   if (metadata_->is_deleted() || data.is_deleted()) {
     // In case of deletion, no need to check the specifics.
     return metadata_->is_deleted() == data.is_deleted();
-  }
-  if (!syncer::UniquePosition::FromProto(metadata_->unique_position())
-           .Equals(data.unique_position)) {
-    return false;
   }
   return MatchesSpecificsHash(data.specifics);
 }
@@ -233,10 +229,12 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
     const std::string& sync_id,
     int64_t server_version,
     base::Time creation_time,
-    const syncer::UniquePosition& unique_position,
     const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSize(), 0);
   DCHECK(bookmark_node);
+  DCHECK(specifics.has_bookmark());
+  DCHECK(bookmark_node->is_permanent_node() ||
+         specifics.bookmark().has_unique_position());
 
   // Note that this gets computed for permanent nodes too.
   syncer::ClientTagHash client_tag_hash =
@@ -250,7 +248,7 @@ const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::Add(
   metadata->set_modification_time(syncer::TimeToProtoTime(creation_time));
   metadata->set_sequence_number(0);
   metadata->set_acked_sequence_number(0);
-  *metadata->mutable_unique_position() = unique_position.ToProto();
+  *metadata->mutable_unique_position() = specifics.bookmark().unique_position();
   metadata->set_client_tag_hash(client_tag_hash.value());
   HashSpecifics(specifics, metadata->mutable_specifics_hash());
   metadata->set_bookmark_favicon_hash(
@@ -275,17 +273,18 @@ void SyncedBookmarkTracker::Update(
     const Entity* entity,
     int64_t server_version,
     base::Time modification_time,
-    const syncer::UniquePosition& unique_position,
     const sync_pb::EntitySpecifics& specifics) {
   DCHECK_GT(specifics.ByteSize(), 0);
   DCHECK(entity);
+  DCHECK(specifics.has_bookmark());
+  DCHECK(specifics.bookmark().has_unique_position());
 
   Entity* mutable_entity = AsMutableEntity(entity);
   mutable_entity->metadata()->set_server_version(server_version);
   mutable_entity->metadata()->set_modification_time(
       syncer::TimeToProtoTime(modification_time));
   *mutable_entity->metadata()->mutable_unique_position() =
-      unique_position.ToProto();
+      specifics.bookmark().unique_position();
   HashSpecifics(specifics,
                 mutable_entity->metadata()->mutable_specifics_hash());
   mutable_entity->metadata()->set_bookmark_favicon_hash(
