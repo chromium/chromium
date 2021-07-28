@@ -56,7 +56,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -103,6 +102,7 @@ public final class WebFeedFollowIntroControllerTest {
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
+    private FeatureList.TestValues mBaseTestValues;
 
     @Before
     public void setUp() {
@@ -119,12 +119,23 @@ public final class WebFeedFollowIntroControllerTest {
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
+        doAnswer(invocation -> {
+            Callback<Boolean> callback = invocation.getArgument(0);
+            callback.onResult(true);
+            return null;
+        })
+                .when(mTracker)
+                .addOnInitializedCallback(any());
+
         when(mTab.getUrl()).thenReturn(sTestUrl);
         when(mTab.isIncognito()).thenReturn(false);
         TrackerFactory.setTrackerForTests(mTracker);
 
-        // This empty setTestFeatures call below is needed to enable the field trial param calls.
-        FeatureList.setTestFeatures(new HashMap<String, Boolean>());
+        // Calling setTestFeatures is needed (even if empty) to enable field trial param calls.
+        mBaseTestValues = new FeatureList.TestValues();
+        mBaseTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.WEB_FEED, "intro_style", "accelerator");
+        FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
     }
 
@@ -142,7 +153,7 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    public void meetsShowingRequirements_showsIntro() {
+    public void meetsShowingRequirements_showsIntro_Accelerator() {
         setWebFeedIntroLastShownTimeMsPref(0);
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);
         setVisitCounts(3, 3);
@@ -160,6 +171,49 @@ public final class WebFeedFollowIntroControllerTest {
                 sSharedPreferencesManager.readLong(
                         ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX
                                 .createKey(Base64.encodeToString(sWebFeedId, Base64.DEFAULT))));
+    }
+
+    @Test
+    @SmallTest
+    public void meetsShowingRequirements_showsIntro_IPH() {
+        mBaseTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
+        FeatureList.setTestValues(mBaseTestValues);
+        resetWebFeedFollowIntroController();
+
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+
+        assertTrue(
+                "Intro should be shown.", mWebFeedFollowIntroController.getIntroShownForTesting());
+        assertEquals("WEB_FEED_INTRO_LAST_SHOWN_TIME_MS should be updated.",
+                mClock.currentTimeMillis(),
+                sSharedPreferencesManager.readLong(
+                        ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS));
+        assertEquals("WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX should be updated.",
+                mClock.currentTimeMillis(),
+                sSharedPreferencesManager.readLong(
+                        ChromePreferenceKeys.WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX
+                                .createKey(Base64.encodeToString(sWebFeedId, Base64.DEFAULT))));
+    }
+
+    @Test
+    @SmallTest
+    public void noIntroStyleSet_doesNotShowIntro() {
+        FeatureList.setTestValues(new FeatureList.TestValues());
+        resetWebFeedFollowIntroController();
+
+        setWebFeedIntroLastShownTimeMsPref(0);
+        setWebFeedIntroWebFeedIdShownTimeMsPref(0);
+        setVisitCounts(3, 3);
+        invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
+        advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
+
+        assertFalse("Intro should not be shown.",
+                mWebFeedFollowIntroController.getIntroShownForTesting());
     }
 
     @Test
@@ -272,10 +326,9 @@ public final class WebFeedFollowIntroControllerTest {
     @SmallTest
     public void introDelay_canBeControlled() {
         final String longerWaitTimeAsString = Long.toString(2 * SAFE_INTRO_WAIT_TIME_MILLIS);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro-wait-time-millis", longerWaitTimeAsString);
-        FeatureList.setTestValues(testValues);
+        FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 
         setWebFeedIntroLastShownTimeMsPref(0);
@@ -296,10 +349,9 @@ public final class WebFeedFollowIntroControllerTest {
     @SmallTest
     public void totalVisitRequirement_canBeControlled() {
         final String minTotalVisitsAsString = Integer.toString(100);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro-num-visit-min", minTotalVisitsAsString);
-        FeatureList.setTestValues(testValues);
+        FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 
         setWebFeedIntroLastShownTimeMsPref(0);
@@ -321,10 +373,9 @@ public final class WebFeedFollowIntroControllerTest {
     @SmallTest
     public void dailyVisitRequirement_canBeControlled() {
         final String minDailyVisitsAsString = Integer.toString(100);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
+        mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro-daily-visit-min", minDailyVisitsAsString);
-        FeatureList.setTestValues(testValues);
+        FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 
         setWebFeedIntroLastShownTimeMsPref(0);

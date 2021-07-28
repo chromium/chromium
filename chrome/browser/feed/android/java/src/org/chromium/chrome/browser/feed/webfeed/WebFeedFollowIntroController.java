@@ -49,6 +49,10 @@ import java.util.concurrent.TimeUnit;
 public class WebFeedFollowIntroController {
     private static final String TAG = "WFFollowIntroCtrl";
 
+    // Intro style control
+    private static final String PARAM_INTRO_STYLE = "intro_style";
+    private static final String INTRO_STYLE_IPH = "IPH";
+    private static final String INTRO_STYLE_ACCELERATOR = "accelerator";
     // In-page time delay to show the intro.
     private static final int DEFAULT_WAIT_TIME_MILLIS = 3 * 1000;
     private static final String PARAM_WAIT_TIME_MILLIS = "intro-wait-time-millis";
@@ -116,8 +120,9 @@ public class WebFeedFollowIntroController {
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mWebFeedSnackbarController = new WebFeedSnackbarController(
                 activity, feedLauncher, dialogManager, snackbarManager);
-        mWebFeedFollowIntroView =
-                new WebFeedFollowIntroView(mActivity, appMenuHandler, menuButtonAnchorView);
+        mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, appMenuHandler,
+                menuButtonAnchorView, mFeatureEngagementTracker, this::introWasShown,
+                this::introWasNotShown, this::introWasDismissed);
 
         mWaitTimeMillis = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_WAIT_TIME_MILLIS, DEFAULT_WAIT_TIME_MILLIS);
@@ -187,6 +192,29 @@ public class WebFeedFollowIntroController {
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, mTabObserver, this::swapTabs);
     }
 
+    private void introWasShown() {
+        mIntroShown = true;
+        if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+            long currentTimeMillis = mClock.currentTimeMillis();
+            mSharedPreferencesManager.writeLong(
+                    ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS, currentTimeMillis);
+            mSharedPreferencesManager.writeLong(
+                    getWebFeedIntroWebFeedIdShownTimeMsKey(mRecommendedInfo.webFeedId),
+                    currentTimeMillis);
+        }
+        Log.i(TAG, "Allowed intro: all requirements met");
+    }
+
+    private void introWasNotShown() {
+        Log.i(TAG, "No intro: not allowed by feature engagement tracker");
+    }
+
+    private void introWasDismissed() {
+        if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+            mFeatureEngagementTracker.dismissed(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE);
+        }
+    }
+
     public void destroy() {
         mCurrentTabObserver.destroy();
     }
@@ -203,50 +231,51 @@ public class WebFeedFollowIntroController {
     }
 
     private void maybeShowFollowIntro() {
-        if (!shouldShowFollowIntro()) return;
+        if (!basicFollowIntroChecks()) return;
 
-        showFollowIntro();
-    }
-
-    private boolean shouldUseIPH() {
-        return ChromeFeatureList
-                .getFieldTrialParamByFeature(ChromeFeatureList.WEB_FEED, "intro_style")
-                .equals("IPH");
-    }
-
-    private void showFollowIntro() {
-        mIntroShown = true;
-        if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
-            long currentTimeMillis = mClock.currentTimeMillis();
-            mSharedPreferencesManager.writeLong(
-                    ChromePreferenceKeys.WEB_FEED_INTRO_LAST_SHOWN_TIME_MS, currentTimeMillis);
-            mSharedPreferencesManager.writeLong(
-                    getWebFeedIntroWebFeedIdShownTimeMsKey(mRecommendedInfo.webFeedId),
-                    currentTimeMillis);
-        }
-
-        if (shouldUseIPH()) {
-            UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
-            mWebFeedFollowIntroView.showIPH(mFeatureEngagementTracker, helper);
+        // Note: the maximum number of weekly appearances is controlled by calls to
+        // FeatureEngagementTrackerbased based on the configuration used for this IPH. See the
+        // kIPHWebFeedFollowFeature entry in
+        // components/feature_engagement/public/feature_configurations.cc.
+        if (isIntroStyle(INTRO_STYLE_IPH)) {
+            maybeShowIPH();
+        } else if (isIntroStyle(INTRO_STYLE_ACCELERATOR)) {
+            maybeShowAccelerator();
         } else {
-            GestureDetector gestureDetector = new GestureDetector(mActivity.getApplicationContext(),
-                    new GestureDetector.SimpleOnGestureListener() {
-                        @Override
-                        public boolean onSingleTapUp(MotionEvent motionEvent) {
-                            if (!mAcceleratorPressed) {
-                                mAcceleratorPressed = true;
-                                performFollowWithAccelerator();
-                            }
-                            return true;
-                        }
-                    });
-            View.OnTouchListener onTouchListener = (view, motionEvent) -> {
-                view.performClick();
-                gestureDetector.onTouchEvent(motionEvent);
-                return true;
-            };
-            mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
+            Log.i(TAG, "No intro: not enabled by Finch controls");
         }
+    }
+
+    private boolean isIntroStyle(String style) {
+        return ChromeFeatureList
+                .getFieldTrialParamByFeature(ChromeFeatureList.WEB_FEED, PARAM_INTRO_STYLE)
+                .equals(style);
+    }
+
+    private void maybeShowIPH() {
+        UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
+        mWebFeedFollowIntroView.showIPH(helper);
+    }
+
+    private void maybeShowAccelerator() {
+        GestureDetector gestureDetector = new GestureDetector(
+                mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent motionEvent) {
+                        if (!mAcceleratorPressed) {
+                            mAcceleratorPressed = true;
+                            performFollowWithAccelerator();
+                        }
+                        return true;
+                    }
+                });
+        View.OnTouchListener onTouchListener = (view, motionEvent) -> {
+            view.performClick();
+            gestureDetector.onTouchEvent(motionEvent);
+            return true;
+        };
+
+        mWebFeedFollowIntroView.showAccelerator(onTouchListener);
     }
 
     private void performFollowWithAccelerator() {
@@ -278,19 +307,21 @@ public class WebFeedFollowIntroController {
     }
 
     /**
-     * Allows the intro to be presented if (all must be true):
+     * Executes the basic checks for the presentation of the intro (all must be true):
      *  1. It was not already presented for this page
      *  2. The URL is recommended.
      *  3. This site was visited enough in day-boolean count and in total.
      *  4. Enough time has passed since the last intro was presented and since the last intro was
      *     presented for this site.
-     *  5. Feature trackers allows it, which includes checking for a weekly limit.
      *
-     *  If the intro debug mode pref is enabled then only 1. and 2. are checked for.
+     * If the intro debug mode pref is enabled then only 1. and 2. are checked for.
      *
-     * @return true if the follow intro should be shown. false otherwise.
+     * Note: The feature engagement tracker check happens only later, and it includes checking for
+     * a weekly limit.
+     *
+     * @return true if the follow intro passes the basic checks to be shown. false otherwise.
      */
-    private boolean shouldShowFollowIntro() {
+    private boolean basicFollowIntroChecks() {
         if (mIntroShown) {
             Log.i(TAG, "No intro: it was already shown");
             return false;
@@ -322,17 +353,7 @@ public class WebFeedFollowIntroController {
                     timeSinceLastShownForWebFeed > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS);
             return false;
         }
-        // Note: the maximum number of weekly appearances is controlled by
-        // FeatureEngagementTracker based on the configuration used for this IPH. See the
-        // kIPHWebFeedFollowFeature entry in
-        // components/feature_engagement/public/feature_configurations.cc.
-        if (!mFeatureEngagementTracker.shouldTriggerHelpUI(
-                    FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
-            Log.i(TAG, "No intro: not allowed by feature engagement tracker");
-            return false;
-        }
 
-        Log.i(TAG, "Allowed intro: all requirements met");
         return true;
     }
 

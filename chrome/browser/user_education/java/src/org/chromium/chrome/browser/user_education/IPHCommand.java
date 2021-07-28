@@ -30,6 +30,8 @@ public class IPHCommand {
     public final Runnable onDismissCallback;
     @Nullable
     public final Runnable onShowCallback;
+    @Nullable
+    public final Runnable onBlockedCallback;
     public final Rect insetRect;
     public final long autoDismissTimeout;
     public final ViewRectProvider viewRectProvider;
@@ -40,9 +42,9 @@ public class IPHCommand {
 
     IPHCommand(@Nullable String featureName, String contentString, String accessibilityText,
             boolean dismissOnTouch, View anchorView, Runnable onDismissCallback,
-            Runnable onShowCallback, Rect insetRect, long autoDismissTimeout,
-            ViewRectProvider viewRectProvider, HighlightParams params, Rect anchorRect,
-            boolean removeArrow) {
+            Runnable onShowCallback, Runnable onBlockedCallback, Rect insetRect,
+            long autoDismissTimeout, ViewRectProvider viewRectProvider, HighlightParams params,
+            Rect anchorRect, boolean removeArrow) {
         this.featureName = featureName;
         this.contentString = contentString;
         this.accessibilityText = accessibilityText;
@@ -50,6 +52,7 @@ public class IPHCommand {
         this.anchorView = anchorView;
         this.onDismissCallback = onDismissCallback;
         this.onShowCallback = onShowCallback;
+        this.onBlockedCallback = onBlockedCallback;
         this.insetRect = insetRect;
         this.autoDismissTimeout = autoDismissTimeout;
         this.viewRectProvider = viewRectProvider;

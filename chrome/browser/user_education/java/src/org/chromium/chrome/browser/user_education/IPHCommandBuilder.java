@@ -32,6 +32,7 @@ public class IPHCommandBuilder {
     private int mAccessibilityStringId;
     private View mAnchorView;
     private Runnable mOnShowCallback;
+    private Runnable mOnBlockedCallback;
     private Runnable mOnDismissCallback;
     private Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
@@ -86,6 +87,15 @@ public class IPHCommandBuilder {
      */
     public IPHCommandBuilder setOnShowCallback(Runnable onShowCallback) {
         mOnShowCallback = onShowCallback;
+        return this;
+    }
+
+    /**
+     *
+     * @param onBlockedCallback callback to invoke if the IPH bubble is finally not shown.
+     */
+    public IPHCommandBuilder setOnNotShownCallback(Runnable onBlockedCallback) {
+        mOnBlockedCallback = onBlockedCallback;
         return this;
     }
 
@@ -188,6 +198,10 @@ public class IPHCommandBuilder {
             mOnShowCallback = NO_OP_RUNNABLE;
         }
 
+        if (mOnBlockedCallback == null) {
+            mOnBlockedCallback = NO_OP_RUNNABLE;
+        }
+
         if (mContentString == null) {
             assert mResources != null;
             mContentString = mResources.getString(mStringId);
@@ -205,7 +219,8 @@ public class IPHCommandBuilder {
         }
 
         return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
-                mAnchorView, mOnDismissCallback, mOnShowCallback, mInsetRect, mAutoDismissTimeout,
-                mViewRectProvider, mHighlightParams, mAnchorRect, mRemoveArrow);
+                mAnchorView, mOnDismissCallback, mOnShowCallback, mOnBlockedCallback, mInsetRect,
+                mAutoDismissTimeout, mViewRectProvider, mHighlightParams, mAnchorRect,
+                mRemoveArrow);
     }
 }

@@ -66,12 +66,17 @@ public class UserEducationHelper {
     private void showIPH(Tracker tracker, IPHCommand iphCommand) {
         // Activity was destroyed; don't show IPH.
         View anchorView = iphCommand.anchorView;
-        if (mActivity.isFinishing() || mActivity.isDestroyed() || anchorView == null) return;
-
-        if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
+        if (mActivity.isFinishing() || mActivity.isDestroyed() || anchorView == null) {
+            iphCommand.onBlockedCallback.run();
+            return;
+        }
 
         String featureName = iphCommand.featureName;
-        if (featureName != null && !tracker.shouldTriggerHelpUI(featureName)) return;
+        if (featureName != null && !tracker.shouldTriggerHelpUI(featureName)) {
+            iphCommand.onBlockedCallback.run();
+            return;
+        }
+
         String contentString = iphCommand.contentString;
         String accessibilityString = iphCommand.accessibilityText;
         assert (!contentString.isEmpty());
