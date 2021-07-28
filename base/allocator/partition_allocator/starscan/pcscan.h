@@ -65,6 +65,13 @@ class BASE_EXPORT PCScan final {
   // Initializes PCScan and prepares internal data structures.
   static void Initialize(WantedWriteProtectionMode);
 
+  // Disable/reenable PCScan. Temporal disabling can be useful in CPU demanding
+  // contexts.
+  static void Disable();
+  static void Reenable();
+  // Query if PCScan is enabled.
+  static bool IsEnabled();
+
   // Registers a root for scanning.
   static void RegisterScannableRoot(Root* root);
   // Registers a root that doesn't need to be scanned but still contains
@@ -80,9 +87,11 @@ class BASE_EXPORT PCScan final {
                                              size_t usable_size,
                                              size_t slot_size);
 
+  // Performs scanning unconditionally.
+  static void PerformScan(InvocationMode invocation_mode);
   // Performs scanning only if a certain quarantine threshold was reached.
   static void PerformScanIfNeeded(InvocationMode invocation_mode);
-
+  // Performs scanning with specified delay.
   static void PerformDelayedScan(TimeDelta delay);
 
   // Join scan from safepoint in mutator thread. As soon as PCScan is scheduled,
@@ -135,9 +144,6 @@ class BASE_EXPORT PCScan final {
   ALWAYS_INLINE bool IsJoinable() const;
 
   inline constexpr PCScan();
-
-  // Performs scanning unconditionally.
-  void PerformScan(InvocationMode invocation_mode);
 
   // Joins scan unconditionally.
   static void JoinScan();

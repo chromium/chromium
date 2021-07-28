@@ -43,6 +43,13 @@ class BASE_EXPORT PCScanSchedulingBackend {
   PCScanSchedulingBackend(const PCScanSchedulingBackend&) = delete;
   PCScanSchedulingBackend& operator=(const PCScanSchedulingBackend&) = delete;
 
+  void DisableScheduling();
+  void EnableScheduling();
+
+  bool is_scheduling_enabled() const {
+    return scheduling_enabled_.load(std::memory_order_relaxed);
+  }
+
   inline QuarantineData& GetQuarantineData();
 
   // Invoked when the limit in PCScanScheduler is reached. Returning true
@@ -62,7 +69,12 @@ class BASE_EXPORT PCScanSchedulingBackend {
   virtual TimeDelta UpdateDelayedSchedule();
 
  protected:
+  inline bool SchedulingDisabled() const;
+
+  virtual bool NeedsToImmediatelyScan() = 0;
+
   PCScanScheduler& scheduler_;
+  std::atomic<bool> scheduling_enabled_{true};
 };
 
 // Scheduling backend that just considers a single hard limit.
@@ -74,6 +86,9 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
 
   bool LimitReached() final;
   void UpdateScheduleAfterScan(size_t, base::TimeDelta, size_t) final;
+
+ private:
+  bool NeedsToImmediatelyScan() final;
 };
 
 // Task based backend that is aware of a target mutator utilization that
@@ -107,6 +122,10 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
   // Inversely, specifies how much walltime (indirectly CPU) is spent on
   // memory management in scan.
   static constexpr double kTargetMutatorUtilizationPercent = 0.90;
+
+  bool NeedsToImmediatelyScan() final;
+  bool CheckIfScanIsNeededOrReschedule()
+      EXCLUSIVE_LOCKS_REQUIRED(scheduler_lock_);
 
   // Callback to schedule a delayed scan.
   const base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan_;
