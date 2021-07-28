@@ -239,12 +239,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)setMode:(TabGridMode)mode {
   _mode = mode;
+  [self.collectionView reloadData];
+
   // Clear items when exiting selection mode.
   if (mode == TabGridModeNormal) {
     [self.selectedEditingItemIDs removeAllObjects];
     [self.selectedSharableEditingItemIDs removeAllObjects];
+    // After transition from the selection mode to the normal mode, the
+    // selection border doesn't show around the selection item. The collection
+    // view needs to be updated with the selected item again for it to appear
+    // correctly.
+    [self.collectionView
+        selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
+                     animated:NO
+               scrollPosition:UICollectionViewScrollPositionNone];
   }
-  [self.collectionView reloadData];
 }
 
 - (BOOL)isSelectedCellVisible {
