@@ -43,10 +43,10 @@ struct PolicyDiagnosticsWaiter {
   }
 };
 
-class TestDiagnosticsReceiver : public PolicyDiagnosticsReceiver {
+class TestDiagnosticsReceiver final : public PolicyDiagnosticsReceiver {
  public:
   TestDiagnosticsReceiver() {}
-  ~TestDiagnosticsReceiver() final {}
+  ~TestDiagnosticsReceiver() override {}
   explicit TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter)
       : waiter_(waiter) {}
   PolicyDiagnosticsWaiter* waiter_;
