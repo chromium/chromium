@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -13,7 +13,6 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +49,7 @@ id StringParameterValidatorWithCountOfSubstring(NSUInteger count,
                                           range:NSMakeRange(0, [value length])];
   }];
 }
-}
+}  // namespace
 
 // Tests that CrashReporterBreadcrumbObserver attaches observed breadcrumb
 // events to crash reports.
@@ -61,6 +60,8 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
     chrome_browser_state_ = test_cbs_builder.Build();
+    TestChromeBrowserState::Builder test_cbs_builder_2;
+    chrome_browser_state_2_ = test_cbs_builder_2.Build();
 
     mock_breakpad_controller_ =
         [OCMockObject mockForClass:[BreakpadController class]];
@@ -82,12 +83,27 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   }
 
  protected:
+  breadcrumbs::BreadcrumbManagerKeyedService* CreateAndObserveBreadcrumbService(
+      web::BrowserState* const browser_state) {
+    breadcrumbs::BreadcrumbManagerKeyedService* const breadcrumb_service =
+        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(browser_state);
+    crash_reporter_breadcrumb_observer_.ObserveBreadcrumbManagerService(
+        breadcrumb_service);
+    return breadcrumb_service;
+  }
+
   id mock_breakpad_controller_;
   std::unique_ptr<ScopedBlockSwizzler>
       breakpad_controller_shared_instance_swizzler_;
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_2_;
+
+  // Must be destroyed before browser states to ensure that it stops observing
+  // the browser states' BreadcrumbManagers before they are destroyed.
+  breadcrumbs::CrashReporterBreadcrumbObserver
+      crash_reporter_breadcrumb_observer_;
 };
 
 // Tests that breadcrumb events logged to a single BreadcrumbManagerKeyedService
@@ -98,12 +114,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   crash_helper::SetEnabled(true);
 
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-  CrashReporterBreadcrumbObserver* crash_reporter_breadcrumb_observer =
-      [[CrashReporterBreadcrumbObserver alloc] init];
-  [crash_reporter_breadcrumb_observer
-      observeBreadcrumbManagerService:breadcrumb_service];
+      CreateAndObserveBreadcrumbService(chrome_browser_state_.get());
 
   id breadcrumbs_param_vaidation_block = [OCMArg checkWithBlock:^(id value) {
     if (![value isKindOfClass:[NSString class]]) {
@@ -120,7 +131,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
   [[mock_breakpad_controller_ expect]
       addUploadParameter:breadcrumbs_param_vaidation_block
                   forKey:base::SysUTF8ToNSString(
-                             crash_keys::kBreadcrumbsProductDataKey)];
+                             breadcrumbs::kBreadcrumbsProductDataKey)];
 
   breadcrumb_service->AddEvent(std::string("Breadcrumb Event"));
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
@@ -132,12 +143,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   crash_helper::SetEnabled(true);
 
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-  CrashReporterBreadcrumbObserver* crash_reporter_breadcrumb_observer =
-      [[CrashReporterBreadcrumbObserver alloc] init];
-  [crash_reporter_breadcrumb_observer
-      observeBreadcrumbManagerService:breadcrumb_service];
+      CreateAndObserveBreadcrumbService(chrome_browser_state_.get());
 
   // Build a sample breadcrumbs string greater than the maximum allowed size.
   NSMutableString* breadcrumbs = [[NSMutableString alloc] init];
@@ -154,7 +160,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, ProductDataOverflow) {
   [[mock_breakpad_controller_ expect]
       addUploadParameter:validation_block
                   forKey:base::SysUTF8ToNSString(
-                             crash_keys::kBreadcrumbsProductDataKey)];
+                             breadcrumbs::kBreadcrumbsProductDataKey)];
   breadcrumb_service->AddEvent(base::SysNSStringToUTF8(breadcrumbs));
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
 }
@@ -171,53 +177,35 @@ TEST_F(CrashReporterBreadcrumbObserverTest,
   NSString* event_nsstring = base::SysUTF8ToNSString(event);
 
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
-  CrashReporterBreadcrumbObserver* crash_reporter_breadcrumb_observer =
-      [[CrashReporterBreadcrumbObserver alloc] init];
-  [crash_reporter_breadcrumb_observer
-      observeBreadcrumbManagerService:breadcrumb_service];
+      CreateAndObserveBreadcrumbService(chrome_browser_state_.get());
 
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              1, event_nsstring)
                   forKey:base::SysUTF8ToNSString(
-                             crash_keys::kBreadcrumbsProductDataKey)];
+                             breadcrumbs::kBreadcrumbsProductDataKey)];
   breadcrumb_service->AddEvent(event);
 
-  ChromeBrowserState* otr_browser_state =
-      chrome_browser_state_->GetOffTheRecordChromeBrowserState();
   breadcrumbs::BreadcrumbManagerKeyedService* otr_breadcrumb_service =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          otr_browser_state);
-  [crash_reporter_breadcrumb_observer
-      observeBreadcrumbManagerService:otr_breadcrumb_service];
+      CreateAndObserveBreadcrumbService(
+          chrome_browser_state_->GetOffTheRecordChromeBrowserState());
 
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              2, event_nsstring)
                   forKey:base::SysUTF8ToNSString(
-                             crash_keys::kBreadcrumbsProductDataKey)];
+                             breadcrumbs::kBreadcrumbsProductDataKey)];
   otr_breadcrumb_service->AddEvent(event);
 
-  TestChromeBrowserState::Builder test_cbs_builder;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_2 =
-      test_cbs_builder.Build();
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_2 =
-      BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-          chrome_browser_state_2.get());
-  [crash_reporter_breadcrumb_observer
-      observeBreadcrumbManagerService:breadcrumb_service_2];
+      CreateAndObserveBreadcrumbService(chrome_browser_state_2_.get());
 
   [[mock_breakpad_controller_ expect]
       addUploadParameter:StringParameterValidatorWithCountOfSubstring(
                              3, event_nsstring)
                   forKey:base::SysUTF8ToNSString(
-                             crash_keys::kBreadcrumbsProductDataKey)];
+                             breadcrumbs::kBreadcrumbsProductDataKey)];
   breadcrumb_service_2->AddEvent(event);
 
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
-
-  // Manually clear observer reference before the Browsers are deconstructed.
-  crash_reporter_breadcrumb_observer = nil;
 }

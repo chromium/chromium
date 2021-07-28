@@ -11,9 +11,6 @@
 
 namespace crash_keys {
 
-// Key for breadcrumbs attached to crash reports.
-extern const char kBreadcrumbsProductDataKey[];
-
 // Sets a key if |background| is true, unset if false. This will allow tracking
 // of crashes that occur when the app is backgrounded.
 void SetCurrentlyInBackground(bool background);
@@ -89,9 +86,6 @@ void SetGridToVisibleTabAnimation(NSString* to_view_controller,
 // Removes the key to help debug a crash when animating from grid to visible
 // tab.
 void RemoveGridToVisibleTabAnimation();
-
-// Sets a key with the given |breadcrumbs| events.
-void SetBreadcrumbEvents(NSString* breadcrumbs);
 
 // Sets a key in browser to store the playback state of media player (audio or
 // video). This function records a new start. This function is called for each

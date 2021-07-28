@@ -18,8 +18,6 @@
 
 namespace crash_keys {
 
-const char kBreadcrumbsProductDataKey[] = "breadcrumbs";
-
 namespace {
 
 const char kCrashedInBackground[] = "crashed_in_background";
@@ -186,11 +184,6 @@ void SetGridToVisibleTabAnimation(NSString* to_view_controller,
 
 void RemoveGridToVisibleTabAnimation() {
   kRemoveGridToVisibleTabAnimationKey.Clear();
-}
-
-void SetBreadcrumbEvents(NSString* breadcrumbs) {
-  static crash_reporter::CrashKeyString<2550> key(kBreadcrumbsProductDataKey);
-  key.Set(base::SysNSStringToUTF8(breadcrumbs));
 }
 
 void MediaStreamPlaybackDidStart() {

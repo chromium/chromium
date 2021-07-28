@@ -16,12 +16,12 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/upload_list/crash_upload_list.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
-#import "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 #include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
@@ -238,31 +238,31 @@ void ClearStateForWebStateList(WebStateList* web_state_list) {
 
 void MonitorBreadcrumbManager(
     breadcrumbs::BreadcrumbManager* breadcrumb_manager) {
-  [[CrashReporterBreadcrumbObserver uniqueInstance]
-      observeBreadcrumbManager:breadcrumb_manager];
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .ObserveBreadcrumbManager(breadcrumb_manager);
 }
 
 void StopMonitoringBreadcrumbManager(
     breadcrumbs::BreadcrumbManager* breadcrumb_manager) {
-  [[CrashReporterBreadcrumbObserver uniqueInstance]
-      stopObservingBreadcrumbManager:breadcrumb_manager];
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .StopObservingBreadcrumbManager(breadcrumb_manager);
 }
 
 void MonitorBreadcrumbManagerService(
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  [[CrashReporterBreadcrumbObserver uniqueInstance]
-      observeBreadcrumbManagerService:breadcrumb_manager_service];
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .ObserveBreadcrumbManagerService(breadcrumb_manager_service);
 }
 
 void StopMonitoringBreadcrumbManagerService(
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
-  [[CrashReporterBreadcrumbObserver uniqueInstance]
-      stopObservingBreadcrumbManagerService:breadcrumb_manager_service];
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .StopObservingBreadcrumbManagerService(breadcrumb_manager_service);
 }
 
 void SetPreviousSessionEvents(const std::vector<std::string>& events) {
-  [[CrashReporterBreadcrumbObserver uniqueInstance]
-      setPreviousSessionEvents:events];
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .SetPreviousSessionEvents(events);
 }
 
 }  // namespace breakpad

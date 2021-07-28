@@ -14,10 +14,13 @@ source_set("core") {
     "breadcrumb_persistent_storage_util.cc",
     "breadcrumb_persistent_storage_util.h",
     "crash_reporter_breadcrumb_constants.h",
+    "crash_reporter_breadcrumb_observer.cc",
+    "crash_reporter_breadcrumb_observer.h",
   ]
 
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key",
     "//components/keyed_service/core",
   ]
 }
