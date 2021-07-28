@@ -519,7 +519,7 @@ class CrostiniManager::CrostiniRestarter
     // path so we can pass it to StartTerminaVm.
     StartStage(mojom::InstallerState::kCreateDiskImage);
     crostini_manager_->CreateDiskImage(
-        base::FilePath(container_id_.vm_name),
+        container_id_.vm_name,
         vm_tools::concierge::StorageLocation::STORAGE_CRYPTOHOME_ROOT,
         disk_size_bytes,
         base::BindOnce(&CrostiniRestarter::CreateDiskImageFinished,
@@ -1110,13 +1110,12 @@ void CrostiniManager::UninstallTermina(BoolCallback callback) {
 }
 
 void CrostiniManager::CreateDiskImage(
-    const base::FilePath& disk_path,
+    const std::string& vm_name,
     vm_tools::concierge::StorageLocation storage_location,
     int64_t disk_size_bytes,
     CreateDiskImageCallback callback) {
-  std::string disk_path_string = disk_path.AsUTF8Unsafe();
-  if (disk_path_string.empty()) {
-    LOG(ERROR) << "Disk path cannot be empty";
+  if (vm_name.empty()) {
+    LOG(ERROR) << "VM name must not be empty";
     std::move(callback).Run(
         /*success=*/false,
         vm_tools::concierge::DiskImageStatus::DISK_STATUS_UNKNOWN,
@@ -1126,7 +1125,7 @@ void CrostiniManager::CreateDiskImage(
 
   vm_tools::concierge::CreateDiskImageRequest request;
   request.set_cryptohome_id(CryptohomeIdForProfile(profile_));
-  request.set_disk_path(std::move(disk_path_string));
+  request.set_vm_name(std::move(vm_name));
   // The type of disk image to be created.
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
 
@@ -1149,18 +1148,17 @@ void CrostiniManager::CreateDiskImage(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CrostiniManager::DestroyDiskImage(const base::FilePath& disk_path,
+void CrostiniManager::DestroyDiskImage(const std::string& vm_name,
                                        BoolCallback callback) {
-  std::string disk_path_string = disk_path.AsUTF8Unsafe();
-  if (disk_path_string.empty()) {
-    LOG(ERROR) << "Disk path cannot be empty";
+  if (vm_name.empty()) {
+    LOG(ERROR) << "VM name must not be empty";
     std::move(callback).Run(/*success=*/false);
     return;
   }
 
   vm_tools::concierge::DestroyDiskImageRequest request;
   request.set_cryptohome_id(CryptohomeIdForProfile(profile_));
-  request.set_disk_path(std::move(disk_path_string));
+  request.set_vm_name(std::move(vm_name));
 
   GetConciergeClient()->DestroyDiskImage(
       std::move(request),

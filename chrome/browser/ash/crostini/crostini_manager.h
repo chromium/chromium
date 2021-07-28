@@ -249,7 +249,7 @@ class CrostiniManager : public KeyedService,
       // The path to the disk image, including the name of
       // the image itself. The image name should match the
       // name of the VM that it will be used for.
-      const base::FilePath& disk_path,
+      const std::string& vm_name,
       // The storage location for the disk image
       vm_tools::concierge::StorageLocation storage_location,
       // The logical size of the disk image, in bytes
@@ -262,7 +262,7 @@ class CrostiniManager : public KeyedService,
   // finishes.
   void DestroyDiskImage(
       // The path to the disk image, including the name of the image itself.
-      const base::FilePath& disk_path,
+      const std::string& vm_name,
       BoolCallback callback);
 
   using ListVmDisksCallback =

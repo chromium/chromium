@@ -645,7 +645,7 @@ void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
     vm_tools::concierge::CreateDiskImageRequest request;
     request.set_cryptohome_id(
         chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
-    request.set_disk_path(kPluginVmName);
+    request.set_vm_name(kPluginVmName);
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
     request.set_source_size(downloaded_image_size_);
@@ -661,7 +661,7 @@ void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
     vm_tools::concierge::ImportDiskImageRequest request;
     request.set_cryptohome_id(
         chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
-    request.set_disk_path(kPluginVmName);
+    request.set_vm_name(kPluginVmName);
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
     request.set_source_size(downloaded_image_size_);

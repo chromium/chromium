@@ -295,21 +295,17 @@ class CrostiniManagerTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(CrostiniManagerTest);
 };
 
-TEST_F(CrostiniManagerTest, CreateDiskImageNameError) {
-  const base::FilePath& disk_path = base::FilePath("");
-
+TEST_F(CrostiniManagerTest, CreateDiskImageEmptyNameError) {
   crostini_manager()->CreateDiskImage(
-      disk_path, vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
+      "", vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
       base::BindOnce(&CrostiniManagerTest::CreateDiskImageFailureCallback,
                      base::Unretained(this), run_loop()->QuitClosure()));
   run_loop()->Run();
 }
 
 TEST_F(CrostiniManagerTest, CreateDiskImageStorageLocationError) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
-
   crostini_manager()->CreateDiskImage(
-      disk_path,
+      kVmName,
       vm_tools::concierge::StorageLocation_INT_MIN_SENTINEL_DO_NOT_USE_,
       kDiskSizeBytes,
       base::BindOnce(&CrostiniManagerTest::CreateDiskImageFailureCallback,
@@ -318,29 +314,23 @@ TEST_F(CrostiniManagerTest, CreateDiskImageStorageLocationError) {
 }
 
 TEST_F(CrostiniManagerTest, CreateDiskImageSuccess) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
-
   crostini_manager()->CreateDiskImage(
-      disk_path, vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
+      kVmName, vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
       base::BindOnce(&CrostiniManagerTest::CreateDiskImageSuccessCallback,
                      base::Unretained(this), run_loop()->QuitClosure()));
   run_loop()->Run();
 }
 
-TEST_F(CrostiniManagerTest, DestroyDiskImageNameError) {
-  const base::FilePath& disk_path = base::FilePath("");
-
+TEST_F(CrostiniManagerTest, DestroyDiskImageEmptyNameError) {
   crostini_manager()->DestroyDiskImage(
-      disk_path, base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
+      "", base::BindOnce(&ExpectFailure, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_EQ(fake_concierge_client_->destroy_disk_image_call_count(), 0);
 }
 
 TEST_F(CrostiniManagerTest, DestroyDiskImageSuccess) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
-
   crostini_manager()->DestroyDiskImage(
-      disk_path, base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
+      kVmName, base::BindOnce(&ExpectSuccess, run_loop()->QuitClosure()));
   run_loop()->Run();
   EXPECT_GE(fake_concierge_client_->destroy_disk_image_call_count(), 1);
 }
@@ -353,7 +343,7 @@ TEST_F(CrostiniManagerTest, ListVmDisksSuccess) {
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmNameError) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   crostini_manager()->StartTerminaVm(
       "", disk_path, 0,
@@ -363,7 +353,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmNameError) {
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmAnomalyDetectorNotConnectedError) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   fake_anomaly_detector_client_->set_guest_file_corruption_signal_connected(
       false);
@@ -386,7 +376,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmDiskPathError) {
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   // Login unaffiliated user.
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
@@ -421,7 +411,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
 
 TEST_F(CrostiniManagerTest,
        StartTerminaVmPowerwashRequestErrorDueToCryptohomeError) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   // Login unaffiliated user.
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
@@ -458,7 +448,7 @@ TEST_F(CrostiniManagerTest,
 
 TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
   base::HistogramTester histogram_tester{};
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   vm_tools::concierge::StartVmResponse response;
   response.set_status(vm_tools::concierge::VM_STATUS_FAILURE);
@@ -477,7 +467,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
 
 TEST_F(CrostiniManagerTest, StartTerminaVmMountErrorThenSuccess) {
   base::HistogramTester histogram_tester{};
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   vm_tools::concierge::StartVmResponse response;
   response.set_status(vm_tools::concierge::VM_STATUS_STARTING);
@@ -497,7 +487,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmMountErrorThenSuccess) {
 
 TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
   base::HistogramTester histogram_tester{};
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   EnsureTerminaInstalled();
   crostini_manager()->StartTerminaVm(
@@ -509,7 +499,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmSuccess) {
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
   NotificationDisplayServiceTester notification_service(nullptr);
   vm_tools::concierge::StartVmResponse response;
   response.set_free_bytes(0);
@@ -531,7 +521,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmLowDiskNotification) {
 
 TEST_F(CrostiniManagerTest,
        StartTerminaVmLowDiskNotificationNotShownIfNoValue) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
   NotificationDisplayServiceTester notification_service(nullptr);
   vm_tools::concierge::StartVmResponse response;
   response.set_free_bytes(1234);
@@ -552,7 +542,7 @@ TEST_F(CrostiniManagerTest,
 }
 
 TEST_F(CrostiniManagerTest, OnStartTremplinRecordsRunningVm) {
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
   const std::string owner_id = CryptohomeIdForProfile(profile());
 
   // Start the Vm.
@@ -1351,7 +1341,7 @@ TEST_F(CrostiniManagerRestartTest, IsContainerRunningFalseIfVmNotStarted) {
 
   // Now call StartTerminaVm again. The default response state is "STARTING",
   // so no container should be considered running.
-  const base::FilePath& disk_path = base::FilePath(kVmName);
+  const base::FilePath& disk_path = base::FilePath("unused");
 
   base::RunLoop run_loop2;
   crostini_manager()->StartTerminaVm(

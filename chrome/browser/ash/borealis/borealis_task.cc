@@ -69,7 +69,7 @@ CreateDiskImage::~CreateDiskImage() = default;
 
 void CreateDiskImage::RunInternal(BorealisContext* context) {
   vm_tools::concierge::CreateDiskImageRequest request;
-  request.set_disk_path(context->vm_name());
+  request.set_vm_name(context->vm_name());
   request.set_cryptohome_id(
       chromeos::ProfileHelper::GetUserIdHashFromProfile(context->profile()));
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
