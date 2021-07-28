@@ -112,12 +112,28 @@
     margin-block-start: 8px;
   }
 
+  #empty-state-container {
+    text-align: center;
+  }
+
+  #empty-state-image {
+    content: url(images/read_later_empty.svg);
+    margin-bottom: 8px;
+    margin-top: 48px;
+    width: 240px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #empty-state-image {
+      content: url(images/read_later_empty_dark.svg);
+    }
+  }
+
   #empty-state-header {
     color: var(--cr-primary-text-color);
     font-size: 15px;
     line-height: 20px;
     padding: 0 var(--mwb-list-item-horizontal-margin);
-    text-align: center;
   }
 
   #empty-state-subheader {
@@ -125,7 +141,6 @@
     font-size: var(--mwb-primary-text-font-size);
     line-height: 20px;
     padding: 4px var(--mwb-list-item-horizontal-margin) 24px;
-    text-align: center;
   }
 </style>
 
@@ -179,7 +194,9 @@
     </template>
   </iron-selector>
 </div>
-<div hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
+<div id="empty-state-container"
+     hidden="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
+  <img id="empty-state-image" aria-hidden="true">
   <div id="empty-state-header">$i18n{emptyStateHeader}</div>
   <div id="empty-state-subheader">$i18n{emptyStateSubheader}</div>
 </div>

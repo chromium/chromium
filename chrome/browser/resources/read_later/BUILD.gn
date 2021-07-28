@@ -33,7 +33,11 @@ grit("resources") {
 }
 
 generate_grd("build_grd") {
-  input_files = [ "read_later.html" ]
+  input_files = [
+    "read_later.html",
+    "images/read_later_empty.svg",
+    "images/read_later_empty_dark.svg",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
   deps = [
