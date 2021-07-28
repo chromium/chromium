@@ -30,6 +30,7 @@ DelegatedInkTrailData::DelegatedInkTrailData() {
     prediction_handlers_[i].predictor =
         std::make_unique<ui::KalmanPredictor>(predictor_options);
   }
+  should_draw_predicted_ink_points_ = features::ShouldDrawPredictedInkPoints();
 }
 
 DelegatedInkTrailData::~DelegatedInkTrailData() = default;
@@ -64,11 +65,6 @@ void DelegatedInkTrailData::PredictPoints(
   static const char* histogram_base_name =
       "Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment";
 
-  // Used to know if the user enabled prediction, and if so, which prediction
-  // config they opted into.
-  absl::optional<int> should_draw_predicted_ink_points =
-      features::ShouldDrawPredictedInkPoints();
-
   for (int experiment = 0; experiment < kNumberOfPredictionConfigs;
        ++experiment) {
     // Used to track the max amount of time predicted for each experiment. Since
@@ -95,8 +91,8 @@ void DelegatedInkTrailData::PredictPoints(
               metadata->frame_time());
           latency_improvement_with_prediction =
               predicted_point->time_stamp - metadata->timestamp();
-          if (should_draw_predicted_ink_points.has_value() &&
-              experiment == should_draw_predicted_ink_points.value()) {
+          if (should_draw_predicted_ink_points_.has_value() &&
+              experiment == should_draw_predicted_ink_points_.value()) {
             ink_points_to_draw->push_back(gfx::DelegatedInkPoint(
                 predicted_point->pos, predicted_point->time_stamp,
                 pointer_id_));
