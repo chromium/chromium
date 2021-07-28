@@ -561,13 +561,6 @@
 <translation id="1593926297800505364">পেমেন্ট পদ্ধতি সেভ করুন</translation>
 <translation id="1595492813686795610">Linux আপগ্রেড হচ্ছে</translation>
 <translation id="1596286373007273895">উপলভ্য</translation>
-<translation id="1597224195604051602">Voice Match-এর মাধ্যমে Google Assistant আপনার <ph name="DEVICE_TYPE" />-এ <ph name="SUPERVISED_USER_NAME" />-এর ভয়েস শনাক্ত করতে পারে এবং সেটি যে অন্যদের ভয়েসের চেয়ে আলাদা তা বলতে পারে।
-    <ph name="BR" />
-    Assistant আপনার বাচ্চার ভয়েসের ক্লিপ থেকে একটি অনন্য ভয়েস মডেল তৈরি করে যা কেবলমাত্র তাদের ডিভাইসে স্টোর করা থাকে। আরও ভালভাবে শনাক্ত করার জন্য সাময়িকভাবে আপনার বাচ্চার ভয়েস মডেল Google-এ পাঠানো হতে পারে।
-    <ph name="BR" />
-    আপনি যদি মনে করেন, আপনার বাচ্চার পক্ষে Voice Match-এর বিষয়টি সঠিক নয় তাহলে তাদের Assistant সেটিংস থেকে এটি সরিয়ে দিন। Voice Match সেট আপ করার সময় আপনার বাচ্চার রেকর্ড করা অডিও ক্লিপ দেখতে বা মুছে ফেলতে, আপনার বাচ্চার অ্যাকাউন্ট থেকে g.co/assistant/match লিঙ্কে যান।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />মনে রাখবেন:<ph name="END_BOLD" /> একই ধরনের কোনও ভয়েস বা রেকর্ডিং <ph name="SUPERVISED_USER_NAME" />-এর ব্যক্তিগত ফলাফল অ্যাক্সেস করতে পারে। ব্যাটারির খরচ কম করতে "Ok Google" তখনই চালু থাকবে যখন এই ডিভাইস কোনও পাওয়ার সোর্সের সাথে কানেক্ট করা থাকবে।</translation>
 <translation id="1598233202702788831">আপনার প্রশাসক দ্বারা আপডেট অক্ষম করা হয়েছে।</translation>
 <translation id="1600857548979126453">পৃষ্ঠা ডিবাগার ব্যাকএন্ড অ্যাক্সেস করুন</translation>
 <translation id="1601560923496285236">প্রয়োগ করুন</translation>
@@ -856,7 +849,6 @@
 <translation id="1865769994591826607">শুধুমাত্র একই-সাইট সংযোগগুলি</translation>
 <translation id="186612162884103683">" <ph name="EXTENSION" /> " চেক করা অবস্থানে চিত্র, ভিডিও এবং শব্দের ফাইলগুলি পড়তে ও লিখতে পারে৷</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> আপনার ইনস্টেলশন সম্পূর্ণ করার জন্য প্রস্তুত</translation>
-<translation id="1868193363684582383">"হ্যালো Google"</translation>
 <translation id="1868553836791672080">Chromium-এ পাসওয়ার্ড পরীক্ষা করার ফিচারটি উপলভ্য নয়</translation>
 <translation id="1869433484041798909">'বুকমার্ক' বোতাম</translation>
 <translation id="1871098866036088250">Chrome ব্রাউজারে খুলুন</translation>
@@ -1140,7 +1132,6 @@
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> এবং আরও একটি সুইচ</translation>
 <translation id="2165177462441582039">প্রতিটি আইটেমে কতটা সময় হাইলাইট থাকবে সেটি বেছে নিন</translation>
-<translation id="2165421703844373933">"হ্যালো Google" বলে আপনার Assistant-কে অ্যাক্সেস করুন। ব্যাটারির যাতে কম চার্জ ক্ষয় হয়, "চালু করুন (সাজেস্ট করা)" বিকল্প বেছে নিন। আপনার ডিভাইস প্লাগ-ইন করা অথবা চার্জে বসানো থাকলে শুধুমাত্র তবেই Assistant উত্তর দেবে।</translation>
 <translation id="2166369534954157698">বিষণ্ণ ঔদাসীন্যে ঊষাবৌদি বাংলাভাষায় প্রচলিত ঈশপের নিখুঁত গল্পটির ডালপালা অর্ধেক ছড়াতেই ঋতু ভুঁইঞা আর ঐন্দ্রিলা ধড়ফড়িয়ে দারুণ হৈ-হৈ করে উঠল-- ওঃ, ব্যাস্ এবার থামো তো, বুঝেছি বড্ডো পুরানো ঢঙের কেমন এক গল্প যার নীতিবাক্য হল,“মূঢ় আড়ম্বর ও আত্মশ্লাঘার ফল জীবনে বিঘ্ন ও বৃহৎ ক্ষতি”-- তাই না, এ্যাঁ?</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">যেকোনো প্রকারে সাইন-ইন করুন</translation>
@@ -1624,9 +1615,6 @@
 <translation id="2691385045260836588">মডেল</translation>
 <translation id="2691440343905273290">ইনপুট সেটিংস পরিবর্তন করুন</translation>
 <translation id="2693176596243495071">একটি অজানা সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন বা সমস্যাটি হতে থাকলে আপনার প্রশাসককে জানান।</translation>
-<translation id="2693640212062142966">Voice Match ফিচার ব্যবহার করে Google Assistant <ph name="DEVICE_TYPE" />-এ আপনার ভয়েস শনাক্ত করতে এবং অন্যদের থেকে আপনাকে আলাদাভাবে চিনে নিতে সাহায্য করে। ব্যাটারির চার্জ বাঁচাতে, ডিভাইস চার্জে বসানো অবস্থাতেই শুধুমাত্র “Ok Google” বলে Assistant অ্যাক্সেস করার সুবিধা পাবেন। পরিবর্তন করতে 'সেটিংস' বিকল্পে যান।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />মনে রাখবেন:<ph name="END_BOLD" /> একই ধরনের ভয়েস বা রেকর্ডিংয়ের সাহায্যে আপনার ব্যক্তিগত ফলাফল অ্যাক্সেস করা যেতে পারে। Assistant সেটিংস থেকে Voice Match বন্ধ করে আপনি পরে এটির অনুমতি সরিয়ে দিতে পারবেন।</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
 <translation id="2701737434167469065">সাইন-ইন করুন, <ph name="EMAIL" /></translation>
@@ -3008,7 +2996,6 @@
 <translation id="4154664944169082762">আঙ্গুলের ছাপ</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">পাস</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" />-এর করা প্রশ্নে নিজের মতো উত্তর পেতে Assistant-কে <ph name="SUPERVISED_USER_NAME" />-এর স্ক্রিনে দেখানো তথ্য ব্যবহার করার অনুমতি দিন। যেসব গান ও ভিডিও চলছে, এখানে সেই সংক্রান্ত তথ্যও থাকতে পারে।</translation>
 <translation id="4159681666905192102">এটি <ph name="CUSTODIAN_EMAIL" /> এবং <ph name="SECOND_CUSTODIAN_EMAIL" /> দ্বারা পরিচালিত বাচ্চাদের জন্য একটি অ্যাকাউন্ট৷</translation>
 <translation id="4163560723127662357">অজানা কীবোর্ড</translation>
 <translation id="4167686856635546851">ভিডিও গেম অথবা ওয়েব ফর্মের মতো ইন্টার‌্যাক্টিভ ফিচার দেখাতে সাইট সাধারণত জাভাস্ক্রিপ্ট ব্যবহার করে</translation>
@@ -3651,7 +3638,6 @@
 <translation id="4884987973312178454">৬x</translation>
 <translation id="4887424188275796356">সিস্টেম প্রদর্শকের মাধ্যমে খুলুন</translation>
 <translation id="488785315393301722">বিশদ বিবরণ দেখান</translation>
-<translation id="4889792122460431731">আপনার করা প্রশ্নের নিজের মতো উত্তর পেতে হলে, Assistant-কে আপনার স্ক্রিনে থাকা তথ্য ব্যবহার করতে দিন। যেসব গান ও ভিডিও চলছে এর মধ্যে সেই সংক্রান্ত তথ্য হয়ত থাকবে।</translation>
 <translation id="4890773143211625964">উন্নত প্রিন্ট বিকল্পগুলি দেখান</translation>
 <translation id="4891089016822695758">বিটা ফোরাম</translation>
 <translation id="4892229439761351791">সাইট ব্লুটুথ ব্যবহার করতে পারে</translation>
@@ -3867,7 +3853,6 @@
 <translation id="5130080518784460891">ইটেন</translation>
 <translation id="5130675701626084557">প্রোফাইল ডাউনলোড করা যায়নি। আবার চেষ্টা করুন অথবা সহায়তার জন্য পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="5131591206283983824">টাচপ্যাডে ট্যাপ করে টেনে আনা</translation>
-<translation id="5135085122826131075">"হ্যালো Google" বলে আপনার Assistant-কে অ্যাক্সেস করুন।</translation>
 <translation id="5135533361271311778">বুকমার্ক আইটেম তৈরী করা যায়নি৷</translation>
 <translation id="5136343472380336530">এটি নিশ্চিত করুন যেন উভয় ডিভাইস আনলক থাকে ও পরস্পরের কাছাকাছি থাকে, তার সাথে যেন ব্লুটুথও চালু করা থাকে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">এই আইটেমটি মুছে দিন</translation>
@@ -4284,7 +4269,6 @@
 <translation id="5585912436068747822">ফরম্যাটিং ব্যর্থ হয়েছে</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">অ্যাপ্লিকেশানগুলি লোড হচ্ছে...</translation>
-<translation id="5590265327628802792">মনে হচ্ছে <ph name="SUPERVISED_USER_NAME" /> আগেই অন্য ডিভাইসে Google Assistant সেট আপ করেছেন। 'স্ক্রিনের তথ্য' বিকল্প চালু করলে<ph name="SUPERVISED_USER_NAME" /> Assistant ব্যবহার করে আরও অনেক বেশি সুবিধা পাবেন।</translation>
 <translation id="5592595402373377407">এখনও যথেষ্ট ডেটা উপলব্ধ নেই৷</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
@@ -4913,9 +4897,6 @@
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6295855836753816081">সংরক্ষণ করা হচ্ছে...</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
-<translation id="6298800237463568825">Voice Match ফিচার ব্যবহার করে Google Assistant <ph name="DEVICE_TYPE" />-এ আপনার ভয়েস শনাক্ত করতে এবং অন্যদের থেকে আপনাকে আলাদাভাবে চিনে নিতে সাহায্য করে।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />মনে রাখবেন:<ph name="END_BOLD" /> একই ধরনের ভয়েস বা রেকর্ডিংয়ের সাহায্যে আপনার ব্যক্তিগত ফলাফল অ্যাক্সেস করা যেতে পারে। Assistant সেটিংস থেকে Voice Match বন্ধ করে আপনি পরে এটির অনুমতি সরিয়ে দিতে পারবেন।</translation>
 <translation id="6298962879096096191">Android অ্যাপ ইনস্টল করতে Google Play ব্যবহার করুন</translation>
 <translation id="6300177430812514606">ডেটা পাওয়া বা পাঠানো শেষ করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="630065524203833229">ব&amp;ন্ধ</translation>
@@ -5695,7 +5676,6 @@
 <translation id="7171559745792467651">আপনার অন্যান্য ডিভাইস থেকে অ্যাপগুলি ইনস্টল করুন</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="7173114856073700355">সেটিংস খুলুন</translation>
-<translation id="7173336557300642430">আরও বেশি নিজের মতো করে উত্তর পেতে হলে, প্রশ্ন করার সময় Google Assistant-কে আপনার স্ক্রিন ব্যবহার করতে দিন। আপনার চালানো গান বা ভিডিওর তথ্যও Assistant হয়ত ব্যবহার করবে।</translation>
 <translation id="7174199383876220879">নতুন! আপনার মিউজিক, ভিডিও এবং অনেক কিছু নিয়ন্ত্রণ করুন।</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> কনফিগার করুন</translation>
 <translation id="7175353351958621980">এখান থেকে লোড হয়েছে:</translation>
@@ -5937,7 +5917,6 @@
 <translation id="7434969625063495310">প্রিন্ট সার্ভারটি যোগ করা যায়নি। সার্ভার কনফিগারেশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="7436921188514130341">নাম পরিবর্তনের সময় একটি ত্রুটি হয়েছিল।</translation>
 <translation id="7438495332316988804">লঞ্চারে "Chrome" টাইপ করে স্ট্যান্ডার্ড ব্রাউজার খুঁজে পেতে পারেন।</translation>
-<translation id="7439446972050308922">Google অ্যাকাউন্টে সাইন-ইন করে থাকলে আপনার সেভ করা পছন্দগুলি যেকোনও Chrome OS ডিভাইসে ব্যবহার করার জন্য প্রস্তুত থাকবে। সেটিংসে কী সিঙ্ক করা হবে তা আপনি বেছে নিতে পারবেন।</translation>
 <translation id="7439519621174723623">চালিয়ে যেতে ডিভাইসের নাম যোগ করুন</translation>
 <translation id="7441736921018636843">এই সেটিংটি পরিবর্তন করতে, আপনার সিঙ্ক পাসফ্রেজটি সরানোর জন্য <ph name="BEGIN_LINK" />সিঙ্ক রিসেট করুন<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">অন্যান্য ব্যবহারকারী</translation>
@@ -6939,7 +6918,6 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> থেকে অজানা ডিভাইস</translation>
 <translation id="8481187309597259238">ইউএসবি অ্যাক্সেস করার অনুমতি নিশ্চিত করুন</translation>
 <translation id="8481980314595922412">ট্রায়াল ফিচার চালু আছে</translation>
-<translation id="8482860770919360244">মনে হচ্ছে আপনি আগেই অন্য ডিভাইসে Google Assistant সেট আপ করেছেন। স্ক্রিনের তথ্য চালু করে আপনার Assistant-এর থেকে আরও বেশি সুবিধা পান।</translation>
 <translation id="848666842773560761">একটি অ্যাপ ক্যামেরা অ্যাক্সেস করার চেষ্টা করছে। অ্যাক্সেস করার অনুমতি দিতে, ক্যামেরার প্রাইভেসি সুইচ বন্ধ করে দিন।</translation>
 <translation id="8487678622945914333">জুম বাড়ান</translation>
 <translation id="8489156414266187072">ব্যক্তিগত সাজেশন কেবলমাত্র আপনার অ্যাকাউন্টেই দেখানো হয়</translation>

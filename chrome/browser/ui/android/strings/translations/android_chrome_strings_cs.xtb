@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Zkratky funkcí prohlížeče Google Chrome</translation>
 <translation id="1344653310988386453">Zahrnout odkaz na zvýraznění</translation>
 <translation id="1347468774581902829">Spravovat aktivitu</translation>
+<translation id="1352771733366526411">Spravovat všechna okna (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Odhlásit se a vypnout synchronizaci?</translation>
 <translation id="1373696734384179344">Ke stažení vybraného obsahu není k dispozici dostatek paměti.</translation>
 <translation id="1376578503827013741">Probíhá výpočet…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome teď stahuje soubory rychleji</translation>
 <translation id="1877026089748256423">Chrome je zastaralý</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
+<translation id="1888378517829496315">Spravovat všechna okna</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
 <translation id="1918175104945982129">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta otevřené do poloviny výšky</translation>
 <translation id="1919130412786645364">Povolit přihlášení do Chromu</translation>
@@ -639,6 +641,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5123685120097942451">Anonymní karta</translation>
 <translation id="5132942445612118989">Vaše hesla, historie a další údaje na všech zařízeních</translation>
 <translation id="5139940364318403933">Naučte se používat Disk Google</translation>
+<translation id="5142281402488957685">Přetažením dolů načtete nové příběhy</translation>
 <translation id="5152843274749979095">Nejsou nainstalovány žádné podporované aplikace</translation>
 <translation id="5161254044473106830">Je požadován název</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo.}few{Stažení # souborů se nezdařilo.}many{Stažení # souboru se nezdařilo.}other{Stažení # souborů se nezdařilo.}}</translation>
@@ -679,6 +682,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5403644198645076998">Povolit pouze určité weby</translation>
 <translation id="5409881200985013443">Odeslat v klientu <ph name="CLIENT_NAME" /> kód <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="5414836363063783498">Ověřování…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_COUNT_MANY" /> karty}other{<ph name="TAB_COUNT_MANY" /> karet}}</translation>
 <translation id="5423934151118863508">Zde se zobrazí vaše nejnavštěvovanější stránky.</translation>
 <translation id="5424588387303617268">K dispozici: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
@@ -946,6 +950,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6979737339423435258">Od počátku věků</translation>
 <translation id="6981982820502123353">Usnadnění</translation>
 <translation id="6989267951144302301">Stažení se nezdařilo</translation>
+<translation id="6992232929048168262">Otevřít přes celou obrazovku</translation>
 <translation id="6995899638241819463">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="7001056293070445572">Tento soubor je velký (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Otevřít v prohlížeči</translation>
@@ -1230,6 +1235,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8683081248374354009">Resetovat skupinu</translation>
 <translation id="869891660844655955">Datum vypršení platnosti</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
+<translation id="8701921397542715895">Spuštěno ve vedlejším okně</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8730621377337864115">Hotovo</translation>

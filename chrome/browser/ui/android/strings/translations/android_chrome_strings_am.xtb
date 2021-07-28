@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">የGoogle Chrome ባህሪ አቋራጮች</translation>
 <translation id="1344653310988386453">ወደ ድምቀቱ የሚወስድ አገናኝን አካታትት</translation>
 <translation id="1347468774581902829">እንቅስቃሴን አቀናብር</translation>
+<translation id="1352771733366526411">ሁሉንም መስኮቶች ያቀናብሩ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">ዘግተው ወጥተው ስምረት ይጥፋ?</translation>
 <translation id="1373696734384179344">የተመረጠውን ይዘት ለማውረድ በቂ ያልሆነ ማህደረ ትውስታ።</translation>
 <translation id="1376578503827013741">በማስላት ላይ…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome አሁን ፋይሎችን በበለጠ ፍጥነት ያወርዳል</translation>
 <translation id="1877026089748256423">Chrome ጊዜው አልፎበታል</translation>
 <translation id="1883903952484604915">የእኔ ፋይሎች</translation>
+<translation id="1888378517829496315">ሁሉንም መስኮቶች ያቀናብሩ</translation>
 <translation id="189358972401248634">ሌሎች ቋንቋዎች</translation>
 <translation id="1918175104945982129">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይን በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5139940364318403933">እንዴት Google Driveን መጠቀም እንደሚችሉ ይወቁ</translation>
+<translation id="5142281402488957685">ለአዳዲስ ታሪኮች ለማደስ ወደ ታች ይጎትቱ</translation>
 <translation id="5152843274749979095">ምንም የሚደገፉ መተግበሪያዎች አልተጫኑም</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ውርድ አልተሳካም።}one{# ውርዶች አልተሳኩም።}other{# ውርዶች አልተሳኩም።}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">የተወሰኑ ጣቢያዎችን ብቻ ፍቀድ</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> በ<ph name="CLIENT_NAME" /> ላይ ያስረክቡ?</translation>
 <translation id="5414836363063783498">በማረጋገጥ ላይ…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_COUNT_MANY" /> ትሮች}other{<ph name="TAB_COUNT_MANY" /> ትሮች}}</translation>
 <translation id="5423934151118863508">በጣም በብዛት የተጎበኙ ገጾችዎ እዚህ ይመጣሉ</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ጊባ ይገኛል</translation>
 <translation id="543338862236136125">የይለፍ ቃል አርትዕ</translation>
@@ -946,6 +950,7 @@
 <translation id="6979737339423435258">የምንጊዜም</translation>
 <translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="6989267951144302301">ማውረድ አልተቻለም</translation>
+<translation id="6992232929048168262">ሙሉ ገጽ ዕይታ ክፈት</translation>
 <translation id="6995899638241819463">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቅዎት</translation>
 <translation id="7001056293070445572">ይህ ፋይል ትልቅ ነው (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">በአሳሽ ውስጥ ክፈት</translation>
@@ -1230,6 +1235,7 @@
 <translation id="8683081248374354009">ቡድንን ዳግም አስጀምር</translation>
 <translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8699120352855309748">እነዚህን ቋንቋዎች ለመተርጎም አያቅርቡ</translation>
+<translation id="8701921397542715895">በትይዩ መስኮት ውስጥ በማሄድ ላይ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>

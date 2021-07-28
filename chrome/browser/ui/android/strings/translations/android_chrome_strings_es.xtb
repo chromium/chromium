@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
 <translation id="1344653310988386453">Incluir enlace al texto destacado</translation>
 <translation id="1347468774581902829">Gestionar actividad</translation>
+<translation id="1352771733366526411">Gestionar las ventanas (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1373696734384179344">No hay memoria suficiente para descargar el contenido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Ahora Chrome descarga los archivos más rápido</translation>
 <translation id="1877026089748256423">Chrome no está actualizado</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
+<translation id="1888378517829496315">Gestionar todas las ventanas</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1918175104945982129">Interfaz de consentimiento de la búsqueda por voz del Asistente abierta en la mitad inferior de la pantalla</translation>
 <translation id="1919130412786645364">Permitir el inicio de sesión en Chrome</translation>
@@ -639,6 +641,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5139940364318403933">Más información sobre cómo usar Google Drive</translation>
+<translation id="5142281402488957685">Para ver nuevo contenido, arrastra hacia abajo para actualizar la página</translation>
 <translation id="5152843274749979095">No hay aplicaciones compatibles instaladas</translation>
 <translation id="5161254044473106830">Título obligatorio</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{No se ha podido completar 1 descarga.}other{No se han podido completar # descargas.}}</translation>
@@ -679,6 +682,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5403644198645076998">Permitir solo determinados sitios</translation>
 <translation id="5409881200985013443">¿Enviar el código <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas}}</translation>
 <translation id="5423934151118863508">Aquí aparecerán las páginas a las que accedes con más frecuencia</translation>
 <translation id="5424588387303617268">Disponibilidad: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Cambiar contraseña</translation>
@@ -946,6 +950,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6979737339423435258">Desde siempre</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6989267951144302301">Error al descargar</translation>
+<translation id="6992232929048168262">Abrir en pantalla completa</translation>
 <translation id="6995899638241819463">Avisar si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
 <translation id="7001056293070445572">Este archivo es grande (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Abrir en el navegador</translation>
@@ -1230,6 +1235,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8683081248374354009">Restablecer grupo</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
+<translation id="8701921397542715895">Se está ejecutando en la ventana contigua</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Reintentar</translation>
 <translation id="8730621377337864115">Hecho</translation>

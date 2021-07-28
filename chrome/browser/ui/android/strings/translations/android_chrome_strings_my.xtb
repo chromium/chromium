@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome ဝန်ဆောင်မှု ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="1344653310988386453">မြင်သာအောင်လုပ်ထားသော စာသားသို့ လင့်ခ်ကို ထည့်သွင်းပါ</translation>
 <translation id="1347468774581902829">လုပ်ဆောင်ချက်ကို စီမံခန့်ခွဲရန်</translation>
+<translation id="1352771733366526411">ဝင်းဒိုးအားလုံး စီမံခြင်း (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
 <translation id="1373696734384179344">ရွေးချယ်ထားသည့် အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် မှတ်ဉာဏ် မလုံလောက်ပါ။</translation>
 <translation id="1376578503827013741">တွက်ချက်နေသည်…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">ယခုအခါ Chrome သည် ဖိုင်များကို ပိုမိုလျင်မြန်စွာ ဒေါင်းလုဒ်လုပ်ပါသည်</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
 <translation id="1883903952484604915">ကျွန်ုပ်၏ဖိုင်များ</translation>
+<translation id="1888378517829496315">ဝင်းဒိုးအားလုံး စီမံခြင်း</translation>
 <translation id="189358972401248634">အခြား ဘာသာစကားများ</translation>
 <translation id="1918175104945982129">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui ကို မြင်ကွင်းတစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
 <translation id="5139940364318403933">Google Drive အသုံးပြုပုံကို လေ့လာရန်</translation>
+<translation id="5142281402488957685">ဝဘ်ပို့စ်အသစ်များ ပြန်လည် စတင်ရန် အောက်သို့ဆွဲချပါ</translation>
 <translation id="5152843274749979095">ပံ့ပိုးသည့်အက်ပ်များကို ထည့်သွင်းမထားပါ</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ။}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ။}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">ဆိုက်အချို့ကိုသာ ခွင့်ပြုပါ</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> သို့ <ph name="ONE_TIME_CODE" /> ပို့မလား။</translation>
 <translation id="5414836363063783498">စိစစ်နေ…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>
 <translation id="5423934151118863508">သင် အများဆုံး ဝင်ကြည့်ခဲ့သည့် စာမျက်နှာများ ဒီမှာ ပေါ်လာမည်</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB အသုံးပြုနိုင်ပါသည်</translation>
 <translation id="543338862236136125">စကားဝှက်ကို တည်းဖြတ်ခြင်း</translation>
@@ -945,6 +949,7 @@
 <translation id="6979737339423435258">အားလုံး</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="6989267951144302301">ဒေါင်းလုဒ် လုပ်၍မရပါ</translation>
+<translation id="6992232929048168262">ဖန်သားပြင်အပြည့် ဖွင့်ရန်</translation>
 <translation id="6995899638241819463">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက်များ ဖော်ထုတ်ခံရသည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
 <translation id="7001056293070445572">ဤဖိုင်သည် ကြီးမားသည် (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">ဘရောက်ဇာတွင် ဖွင့်ပါ</translation>
@@ -1229,6 +1234,7 @@
 <translation id="8683081248374354009">အဖွဲ့ကို ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="869891660844655955">သက်တမ်း ကုန်ဆုံးရက်</translation>
 <translation id="8699120352855309748">ဤဘာသာစကားများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
+<translation id="8701921397542715895">ကပ်ရပ်ဝင်းဒိုးတွင် လုပ်ဆောင်နေသည်</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>

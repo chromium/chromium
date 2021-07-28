@@ -558,13 +558,6 @@
 <translation id="1593926297800505364">পৰিশোধৰ পদ্ধতি ছেভ কৰক</translation>
 <translation id="1595492813686795610">Linux আপগ্ৰে‘ড হৈ আছে</translation>
 <translation id="1596286373007273895">উপলব্ধ</translation>
-<translation id="1597224195604051602">Voice Matchএ আপোনাৰ Google Assistantক আপোনাৰ <ph name="DEVICE_TYPE" />ত <ph name="SUPERVISED_USER_NAME" />ৰ কণ্ঠধ্বনি চিনাক্ত কৰা আৰু অন্য লোকসকলৰ পৰা পৃথক হিচাপে আপোনাক চিনাক্ত কৰাত সহায় কৰে।
-    <ph name="BR" />
-    Assistantএ আপোনাৰ শিশুৰ কণ্ঠধ্বনিৰ ক্লিপসমূহ লৈ এটা অদ্বৈত কণ্ঠধ্বনিৰ মডেল সৃষ্টি কৰে, যিটো কেৱল তেওঁৰ ডিভাইচ(সমূহ)ত ছেভ কৰা হয়। আপোনাৰ শিশুৰ কণ্ঠধ্বনিক ভালদৰে চিনাক্ত কৰিবলৈ তেওঁৰ কণ্ঠধ্বনিৰ মডেলটো সাময়িকভাৱে Googleলৈ পঠিওৱা হ’ব পাৰে।
-    <ph name="BR" />
-    যদি পাছত আপুনি সিদ্ধান্ত লয় যে Voice Matchৰ সুবিধাটো আপোনাৰ শিশুটিৰ বাবে সঠিক নহয়, তেন্তে তেওঁৰ Assistantৰ ছেটিঙৰ পৰা ইয়াক আঁতৰাই পেলাওক। Voice Match ছেটআপ কৰাৰ সময়ত আপোনাৰ শিশুৱে ৰেকৰ্ড কৰা অডিঅ’ ক্লিপসমূহ চাবলৈ অথবা মচিবলৈ, আপোনাৰ শিশুৰ একাউণ্টৰ পৰা g.co/assistant/matchলৈ যাওক।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />টোকা:<ph name="END_BOLD" /> একেধৰণৰ কোনো কণ্ঠধ্বনি অথবা ৰেকৰ্ডিঙেও <ph name="SUPERVISED_USER_NAME" />ৰ ব্যক্তিগত ফলাফল এক্সেছ কৰিবলৈ সক্ষম হ’ব পাৰে। বেটাৰী ৰাহি কৰিবলৈ “Hey Google” সুবিধাটো এই ডিভাইচটো কোনো পাৱাৰ উৎসৰ সৈতে সংযুক্ত হ’লেহে অন হয়।</translation>
 <translation id="1598233202702788831">আপোনাৰ প্ৰশাসকে আপডে’ট অক্ষম কৰি থৈছে৷</translation>
 <translation id="1600857548979126453">পৃষ্ঠা ডিবাগাৰ বেকএণ্ড এক্সেছ কৰক</translation>
 <translation id="1601560923496285236">প্ৰয়োগ কৰক</translation>
@@ -853,7 +846,6 @@
 <translation id="1865769994591826607">কেৱল একে ছাইটৰ সংযোগ</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />"এ পৰীক্ষা কৰা অৱস্থানসমূহত প্ৰতিচ্ছবি, ভিডিঅ’ আৰু ধ্বনিৰ ফাইলসমূহ পঢ়িব আৰু লিখিব পাৰে।</translation>
 <translation id="1867780286110144690">আপোনাৰ ইনষ্টলেশ্বন সম্পূৰ্ণ কৰিবলৈ <ph name="PRODUCT_NAME" /> সাজু আছে</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Chromiumত পাছৱৰ্ড পৰীক্ষা কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
 <translation id="1869433484041798909">বুকমাৰ্ক কৰাৰ বুটাম</translation>
 <translation id="1871098866036088250">Chrome ব্ৰাউজাৰত খোলক</translation>
@@ -1137,7 +1129,6 @@
 <translation id="2163937499206714165">গাঢ় ম’ড ম’ডটো অন কৰক</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য ১ টা ছুইচ</translation>
 <translation id="2165177462441582039">প্ৰতিটো বস্তুত কিমান সময়ৰ বাবে হাইলাইট থাকিব বাছনি কৰক</translation>
-<translation id="2165421703844373933">"Ok Google" বুলি কৈ আপোনাৰ Assistant এক্সেছ কৰক। বেটাৰী ৰাহি কৰিবলৈ “অন (চুপাৰিছ কৰা)” বাছনি কৰক। আপোনাৰ ডিভাইচটো প্লাগ ইন অথবা চাৰ্জ হৈ থাকিলেহে আপোনাৰ Assistantএ সঁহাৰি জনাব।</translation>
 <translation id="2166369534954157698">অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ</translation>
 <translation id="2167276631610992935">Javascript</translation>
 <translation id="2169062631698640254">যিকোনো প্ৰকাৰে ছাইন ইন কৰক</translation>
@@ -1621,9 +1612,6 @@
 <translation id="2691385045260836588">ম’ডেল</translation>
 <translation id="2691440343905273290">ইনপুট ছেটিং সলনি কৰক</translation>
 <translation id="2693176596243495071">আমি দুঃখিত!  কোনো অজ্ঞাত আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পিছত আকৌ চেষ্টা কৰক বা সমস্যাটো যদি হৈয়েই থাকে, নিজৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
-<translation id="2693640212062142966">Voice Matchএ আপোনাৰ Google Assistantক আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ কণ্ঠধ্বনি চিনাক্ত কৰা আৰু অন্য লোকসকলৰ পৰা পৃথক হিচাপে আপোনাক চিনাক্ত কৰাত সহায় কৰে। বেটাৰী ৰাহি কৰিবলৈ “Hey Google” সুবিধাটো আপোনাৰ ডিভাইচটো কোনো পাৱাৰ উৎসৰ সৈতে সংযুক্ত হ’লেহে অন হয়। সলনি কৰিবলৈ ছেটিঙলৈ যাওক।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />মনত ৰাখিব:<ph name="END_BOLD" /> একেধৰণৰ কোনো কণ্ঠধ্বনি অথবা ৰেকৰ্ডিঙেও আপোনাৰ ব্যক্তিগত ফলাফল এক্সেছ কৰিবলৈ সক্ষম হ’ব পাৰে। আপুনি পাছত Assistantৰ ছেটিঙত সেইটো অফ কৰি Voice Match সুবিধাটোৰ অনুমতি আঁতৰাব পাৰে।</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> ক'ডৰ সৈতে পিনৰ কাৰ্য বিফল হ'ল।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="2701737434167469065">ছাইন ইন কৰক, <ph name="EMAIL" /></translation>
@@ -3003,7 +2991,6 @@
 <translation id="4154664944169082762">ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="4157869833395312646">Microsoft ছাৰ্ভাৰ গে’টেড ক্ৰিপ্ট’গ্ৰাফী</translation>
 <translation id="4158364720893025815">পাছ কৰিছে</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" />এ প্ৰশ্ন সুধিলে বিশেষভাৱে বাবে যুগুত কৰা সঁহাৰি লাভ কৰিবলৈ, Assistantক <ph name="SUPERVISED_USER_NAME" />ৰ স্ক্ৰীনত থকা তথ্য ব্যৱহাৰ কৰিবলৈ দিয়ক। ইয়াত প্লে’ হৈ থকা গীত অথবা ভিডিঅ’ৰ বিষয়ে তথ্য থাকিব পাৰে।</translation>
 <translation id="4159681666905192102">এই একাউণ্টটো <ph name="CUSTODIAN_EMAIL" /> আৰু <ph name="SECOND_CUSTODIAN_EMAIL" />এ পৰিচালনা কৰা শিশুৰ একাউণ্ট।</translation>
 <translation id="4163560723127662357">অজ্ঞাত কীব’র্ড</translation>
 <translation id="4167686856635546851">ছাইটসমূহে সচৰাচৰ ভিডিঅ' গে'ম অথবা ৱেব ফৰ্মসমূহৰ দৰে ভাব-বিনিময়কাৰী সুবিধাসমূহ প্ৰদৰ্শন কৰিবলৈ JavaScript ব্যৱহাৰ কৰক</translation>
@@ -3645,7 +3632,6 @@
 <translation id="4884987973312178454">৬x</translation>
 <translation id="4887424188275796356">ছিষ্টেম ভিউৱাৰৰ জৰিয়তে খোলক</translation>
 <translation id="488785315393301722">সবিশেষ দেখুৱাওক</translation>
-<translation id="4889792122460431731">আপুনি প্ৰশ্ন সুধিলে আপোনাৰ বাবে যুগুত কৰা সঁহাৰি লাভ কৰিবলৈ আপোনাৰ Assistantক আপোনাৰ স্ক্ৰীনত থকা তথ্য ব্যৱহাৰ কৰিবলৈ দিয়ক। ইয়াত প্লে’ হৈ থকা গীত অথবা ভিডিঅ’ৰ বিষয়ে তথ্য থাকিব পাৰে।</translation>
 <translation id="4890773143211625964">প্ৰিণ্টাৰৰ উন্নত বিকল্প দেখুৱাওক</translation>
 <translation id="4891089016822695758">বিটা ফৰাম</translation>
 <translation id="4892229439761351791">ছাইটে ব্লুটুথ ব্যৱহাৰ কৰিব পাৰে</translation>
@@ -3861,7 +3847,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">প্ৰ’ফাইল ডাউনল’ড কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পাছত পুনৰ চেষ্টা কৰক অথবা সহায়ৰ বাবে বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5131591206283983824">টাচ্‌পেড টিপি ধৰি টানি অনা</translation>
-<translation id="5135085122826131075">"Ok Google" বুলি কৈ আপোনাৰ Assistant এক্সেছ কৰক।</translation>
 <translation id="5135533361271311778">বুকমাৰ্ক সৃষ্টি কৰিব পৰা নগ‘ল।</translation>
 <translation id="5136343472380336530">দুয়োটা ডিভাইচ আনলক কৰাটো, এটা আনটোৰ ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">এই বস্তুটো মচক</translation>
@@ -4277,7 +4262,6 @@
 <translation id="5585898376467608182">আপোনাৰ ডিভাইচটোৰ ষ্ট’ৰেজৰ খালী ঠাই কমিছে। <ph name="APP_NAME" /> ব্যৱহাৰ কৰিবলৈ অতি কমেও <ph name="MINIMUM_SPACE" /> খালী ঠাইৰ আৱশ্যক। খালী ঠাই বঢ়াবলৈ ডিভাইচৰ পৰা ফাইল মচক।</translation>
 <translation id="5585912436068747822">ফৰ্মেট কৰিব পৰা নগ’ল</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />এ অন্য কোনো ডিভাইচত ইতিমধ্যে Google Assistant ছেট আপ কৰা যেন লাগিছে। <ph name="SUPERVISED_USER_NAME" />এ স্ক্ৰীনৰ প্ৰসংগ অন কৰি Assistantৰ পৰা আৰু সুবিধা পাব পাৰে।</translation>
 <translation id="5592595402373377407">এতিয়ালৈকে পৰ্যাপ্ত ডেটা উপলব্ধ হোৱা নাই।</translation>
 <translation id="5595485650161345191">ঠিকনা সম্পাদনা কৰক</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
@@ -4904,9 +4888,6 @@
 <translation id="6295158916970320988">সকলো ছাইট</translation>
 <translation id="6295855836753816081">ছেভ কৰি থকা হৈছে...</translation>
 <translation id="629730747756840877">একাউণ্ট</translation>
-<translation id="6298800237463568825">Voice Matchএ আপোনাৰ Google Assistantক আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ কণ্ঠধ্বনি চিনাক্ত কৰা আৰু অন্য লোকসকলৰ পৰা পৃথক হিচাপে আপোনাক চিনাক্ত কৰাত সহায় কৰে।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />মনত ৰাখিব:<ph name="END_BOLD" /> একেধৰণৰ কোনো কণ্ঠধ্বনি অথবা ৰেকৰ্ডিঙেও আপোনাৰ ব্যক্তিগত ফলাফল এক্সেছ কৰিবলৈ সক্ষম হ’ব পাৰে। আপুনি পাছত Assistantৰ ছেটিঙত সেইটো অফ কৰি Voice Match সুবিধাটোৰ অনুমতি আঁতৰাব পাৰে।</translation>
 <translation id="6298962879096096191">Androidৰ এপ্‌ ইনষ্টল কৰিবলৈ Google Play ব্যৱহাৰ কৰক</translation>
 <translation id="6300177430812514606">ডেটা পঠিওৱা অথবা গ্ৰহণ কৰাটো সম্পূৰ্ণ কৰাৰ অনুমতি নাই</translation>
 <translation id="630065524203833229">প্ৰ&amp;স্থান কৰক</translation>
@@ -5682,7 +5663,6 @@
 <translation id="7171559745792467651">আপোনাৰ অন্য ডিভাইচৰ পৰা এপ্ ইনষ্টল কৰক</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{নতুন গোটত টেব যোগ দিয়ক}one{নতুন গোটত টেবসমূহ যোগ দিয়ক}other{নতুন গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="7173114856073700355">ছেটিংসমূহ খোলক</translation>
-<translation id="7173336557300642430">আপোনাৰ বাবে অধিক উপযুক্ত হোৱাকৈ যুগুত কৰা সঁহাৰি লাভ কৰিবলৈ, আপুনি প্ৰশ্ন সুধিলে Google Assistantক আপোনাৰ স্ক্ৰীনত থকা তথ্য ব্যৱহাৰ কৰিবলৈ দিয়ক। আপোনাৰ Assistantএ প্লে’ হৈ থকা গীত অথবা ভিডিঅ’ৰ বিষয়ে তথ্যও ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="7174199383876220879">নতুন! আপোনাৰ সংগীত, ভিডিঅ’সমূহ আৰু অধিক নিয়ন্ত্ৰণ কৰক৷</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> কনফিগাৰ কৰক</translation>
 <translation id="7175353351958621980">ল'ড কৰা হৈছে:</translation>
@@ -5924,7 +5904,6 @@
 <translation id="7434969625063495310">প্ৰিণ্ট ছার্ভাৰটো যোগ দিব পৰা নগ’ল। অনুগ্ৰহ কৰি ছার্ভাৰটোৰ কনফিগাৰেশ্বন পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7436921188514130341">আমি দুঃখিত! পূৰ্বৰ নাম সলাই নতুন নাম দি থাকোঁতে কিবা আসোঁৱাহ হ'ল।</translation>
 <translation id="7438495332316988804">লঞ্চাৰত "Chrome" বুলি টাইপ কৰি মানক ব্ৰাউজাৰটো পাব পৰা যায়।</translation>
-<translation id="7439446972050308922">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰিলে আপুনি ছেভ কৰি থোৱা অগ্ৰাধিকাৰসমূহ যিকোনো Chrome OS ডিভাইচত সাজু হ’ব। আপুনি কি ছিংক কৰিব লাগে সেয়া ছেটিঙত বাছনি কৰিব পাৰে।</translation>
 <translation id="7439519621174723623">অব্যাহত ৰাখিবলৈ ডিভাইচৰ নাম যোগ দিয়ক</translation>
 <translation id="7441736921018636843">এই ছেটিং সলনি কৰিবলৈ, ছিংক পাছফ্ৰেজ আঁতৰবলৈ <ph name="BEGIN_LINK" />ছিংক ৰিছেট কৰক<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">অন্য ব্যৱহাৰকাৰী</translation>
@@ -6922,7 +6901,6 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />এ ব্যৱহাৰ কৰা অজ্ঞাত ডিভাইচ</translation>
 <translation id="8481187309597259238">USBক অনুমতি প্ৰদান কৰাটো নিশ্চিত কৰক</translation>
 <translation id="8481980314595922412">ট্ৰায়েলৰ সুবিধা অন আছে</translation>
-<translation id="8482860770919360244">আপুনি অন্য কোনো ডিভাইচত ইতিমধ্যে Google Assistant ছেট আপ কৰা যেন লাগিছে। স্ক্ৰীনৰ প্ৰসংগ অন কৰি আপোনাৰ Assistantৰ পৰা আৰু অধিক উপকৃত হওক।</translation>
 <translation id="848666842773560761">এটা এপে কেমেৰাটো এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ কেমেৰাৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
 <translation id="8487678622945914333">জুম ইন কৰক</translation>
 <translation id="8489156414266187072">ব্যক্তিগত পৰামৰ্শসমূহ কেৱল আপোনাৰ একাউণ্টত দেখুওৱা হয়</translation>

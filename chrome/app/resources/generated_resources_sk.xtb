@@ -323,10 +323,12 @@
 <translation id="1347512539447549782">Ukladací priestor systému Linux</translation>
 <translation id="1347975661240122359">Aktualizácia sa začne, keď sa batéria dobije na <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Ak chcete používať rodičovskú kontrolu, napríklad schvaľovať aplikácie a limity času používania, musí mať dieťa účet Google spravovaný rodičom. Školský účet, ktorý sa bude dať používať s nástrojmi, ako je Učebňa Google, môžete pridať neskôr.</translation>
+<translation id="135389172849514421">Funguje offline</translation>
 <translation id="1353980523955420967">Súbor PPD sa nepodarilo nájsť. Skontrolujte, či je Chromebook online, a skúste to znova.</translation>
 <translation id="1354045473509304750">Pokračovať v povolení hostiteľovi <ph name="HOST" /> používať vašu kameru a hýbať ňou</translation>
 <translation id="1355088139103479645">Chcete odstrániť všetky údaje?</translation>
 <translation id="1355466263109342573">Doplnok <ph name="PLUGIN_NAME" /> je blokovaný</translation>
+<translation id="1356178530321889280">Ak chcete vyhľadať ľubovoľnú oblasť webu a dozvedieť sa viac o vizuálnom obsahu, ktorý sa zobrazuje pri prehliadaní a nakupovaní, kliknite pravým tlačidlom a vyberte „Vyhľadať časť stránky pomocou funkcie Google Lens“.</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
 <translation id="1359923111303110318">Zariadenie môžete odomykať pomocou funkcie Smart Lock. Odomknete ho stlačením tlačidla Enter.</translation>
 <translation id="1361164813881551742">Pridať ručne</translation>
@@ -560,13 +562,6 @@
 <translation id="1593926297800505364">Uložiť spôsob platby</translation>
 <translation id="1595492813686795610">Linux sa inovuje</translation>
 <translation id="1596286373007273895">K dispozícii</translation>
-<translation id="1597224195604051602">Voice Match pomáha Asistentovi Google identifikovať hlas dieťaťa <ph name="SUPERVISED_USER_NAME" /> vo vašom zariadení <ph name="DEVICE_TYPE" /> a odlíšiť ho od ostatných.
-    <ph name="BR" />
-    Pomocou klipov jeho hlasu vytvorí Asistent jedinečný hlasový model, ktorý je uložený iba v jeho zariadeniach. Hlasový model vášho dieťaťa môže byť dočasne odoslaný Googlu, aby bolo možné lepšie identifikovať jeho hlas.
-    <ph name="BR" />
-    Ak sa neskôr rozhodnete, že funkcia Voice Match nie je pre neho vhodná, stačí ju vypnúť v sekcii Nastavenia jeho Asistenta. Zvukové klipy, ktoré vaše dieťa nahrá počas nastavovania funkcie Voice Match, môžete zobraziť alebo odstrániť v jeho účte na g.co/assistant/match.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K osobným výsledkom dieťaťa <ph name="SUPERVISED_USER_NAME" /> môže získať prístup aj osoba s podobným hlasom alebo nahrávkou. Rozpoznávanie príkazu „Hey Google“ je zapnuté iba vtedy, keď je toto zariadenie pripojené k napájaciemu zdroju, aby sa šetrila batéria.</translation>
 <translation id="1598233202702788831">Aktualizácie zakázal váš správca.</translation>
 <translation id="1600857548979126453">Pristupovať k ladiacemu nástroju stránok na strane servera</translation>
 <translation id="1601560923496285236">Použiť</translation>
@@ -846,7 +841,6 @@
 <translation id="1865769994591826607">Iba pripojenia z rovnakého webu</translation>
 <translation id="186612162884103683"><ph name="EXTENSION" /> môže čítať a zapisovať obrázky, video a zvukové súbory vo vybratých umiestneniach.</translation>
 <translation id="1867780286110144690">Aplikácia <ph name="PRODUCT_NAME" /> je pripravená dokončiť inštaláciu</translation>
-<translation id="1868193363684582383">„Ok Google“</translation>
 <translation id="1868553836791672080">Kontrola hesla nie je v prehliadači Chromium k dispozícii</translation>
 <translation id="1869433484041798909">Tlačidlo Záložka</translation>
 <translation id="1871098866036088250">Otvárať v prehliadači Chrome</translation>
@@ -1130,7 +1124,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2163937499206714165">Zapnúť tmavý režim</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 ďalší prepínač</translation>
 <translation id="2165177462441582039">Zvoľte, ako dlho majú byť zvýraznené jednotlivé položky</translation>
-<translation id="2165421703844373933">Aktivujte svojho Asistenta vyslovením výrazu „OK Google“. Ak chcete šetriť batériu, vyberte Zapnutý (odporúčané). Váš Asistent bude reagovať iba vtedy, keď bude zariadenie pripojené do zásuvky alebo sa bude nabíjať.</translation>
 <translation id="2166369534954157698">Kŕdeľ ďateľov učí koňa žrať kôru</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Napriek tomu sa prihlásiť</translation>
@@ -1457,6 +1450,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2509495747794740764">Hodnota mierky musí byť v rozsahu od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Odstrániť zariadenie Bluetooth</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (vybraný)</translation>
 <translation id="2513396635448525189">Obrázok na prihlasovacej obrazovke</translation>
 <translation id="2514326558286966059">Rýchlejšie odomykanie odtlačkom prsta</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1611,9 +1605,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Zmeniť nastavenia vstupu</translation>
 <translation id="2693176596243495071">Ojoj, vyskytla sa neznáma chyba. Skúste to neskôr alebo, ak problém pretrváva, kontaktujte správcu.</translation>
-<translation id="2693640212062142966">Voice Match pomáha Asistentovi Google identifikovať váš hlas v zariadení <ph name="DEVICE_TYPE" /> a odlíšiť vás od ostatných. Rozpoznávanie príkazu „Hey Google“ je zapnuté iba vtedy, keď je vaše zariadenie pripojené k napájaciemu zdroju, aby sa šetrila batéria. Ak chcete vykonať zmeny, prejdite do Nastavení.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Upozornenie:<ph name="END_BOLD" /> K vašim osobným výsledkom môže získať prístup aj osoba s podobným hlasom alebo nahrávkou. Povolenie pre funkciu Voice Match môžete odstrániť neskôr jej vypnutím v sekcii Nastavenia Asistenta.</translation>
 <translation id="2699911226086014512">Operácia kódu PIN zlyhala. Kód chyby: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Zdieľané zo zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Prihlásiť sa, <ph name="EMAIL" /></translation>
@@ -2367,6 +2358,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3495496470825196617">Výkon pri nečinnosti počas nabíjania</translation>
 <translation id="3495660573538963482">Nastavenia Asistenta Google</translation>
 <translation id="3496213124478423963">Oddialiť</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (nie je vybraný)</translation>
 <translation id="3497501929010263034">Zariadenie USB od dodávateľa <ph name="VENDOR_NAME" /> (výrobok <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Zdieľať doodle</translation>
 <translation id="3498215018399854026">V tejto chvíli sa nám nepodarilo spojiť s vaším rodičom. Skúste to neskôr.</translation>
@@ -2997,7 +2989,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4154664944169082762">Odtlačky</translation>
 <translation id="4157869833395312646">Šifrovanie Server Gated Cryptography spoločnosti Microsoft</translation>
 <translation id="4158364720893025815">Prešlo kontrolou</translation>
-<translation id="4159163871835771155">Ak chcete, aby Asistent poskytoval prispôsobené odpovede na otázky používateľa <ph name="SUPERVISED_USER_NAME" />, povoľte mu používať informácie na obrazovke používateľa <ph name="SUPERVISED_USER_NAME" />. Môžu zahŕňať informácie o prehrávaných skladbách alebo videách.</translation>
 <translation id="4159681666905192102">Toto je detský účet spravovaný používateľmi <ph name="CUSTODIAN_EMAIL" /> a <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Neznáma klávesnica</translation>
 <translation id="4167686856635546851">Weby zvyčajne používajú Javaskript, aby mohli zobraziť interaktívne funkcie, napríklad videohry alebo webové formuláre</translation>
@@ -3639,7 +3630,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Otvorenie pomocou systémového zobrazovača</translation>
 <translation id="488785315393301722">Zobraziť podrobnosti</translation>
-<translation id="4889792122460431731">Ak chcete dostávať pri kladení otázok prispôsobenejšie odpovede, umožnite Asistentovi používať informácie na obrazovke. Môžu zahŕňať informácie o prehrávaných skladbách alebo videách.</translation>
 <translation id="4890773143211625964">Zobraziť rozšírené možnosti tlačiarne</translation>
 <translation id="4891089016822695758">Beta fórum</translation>
 <translation id="4892229439761351791">Web môže používať Bluetooth</translation>
@@ -3855,7 +3845,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profil sa nedal stiahnuť. Skúste to neskôr alebo požiadajte o pomoc operátora.</translation>
 <translation id="5131591206283983824">Presun klepnutím na touchpade</translation>
-<translation id="5135085122826131075">Aktivujte svojho Asistenta vyslovením výrazu „OK Google“.</translation>
 <translation id="5135533361271311778">Nepodarilo sa vytvoriť položku záložiek</translation>
 <translation id="5136343472380336530">Obe zariadenia musia byť odomknuté, blízko seba a mať zapnuté rozhranie Bluetooth. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Odstrániť túto položku</translation>
@@ -4132,6 +4121,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5449551289610225147">Neplatné heslo</translation>
 <translation id="5449588825071916739">Uložiť všetky karty ako záložky</translation>
 <translation id="5449716055534515760">Zavrieť o&amp;kno</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (funguje offline)</translation>
 <translation id="5454166040603940656">s poskytovateľom <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5457459357461771897">Čítať a odstraňovať fotky, hudbu a ďalšie médiá z tohto počítača</translation>
@@ -4272,7 +4262,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5585912436068747822">Formátovanie zlyhalo</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Načítavajú sa aplikácie...</translation>
-<translation id="5590265327628802792">Zdá sa, že dieťa <ph name="SUPERVISED_USER_NAME" /> si už Asistenta Google nastavilo v inom zariadení. <ph name="SUPERVISED_USER_NAME" /> ho môže využívať ešte efektívnejšie, keď zapne kontext obrazovky.</translation>
 <translation id="5592595402373377407">Zatiaľ nie je k dispozícii dostatok údajov.</translation>
 <translation id="5595485650161345191">Upraviť adresu</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
@@ -4593,6 +4582,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maximum: <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvoriť všetky v novom okne}=1{Otvoriť v novom okne}few{Otvoriť všetky ({COUNT}) v novom okne}many{Otvoriť všetky ({COUNT}) v novom okne}other{Otvoriť všetky ({COUNT}) v novom okne}}</translation>
 <translation id="5965661248935608907">Tiež určuje, ktorá stránka sa zobrazí po kliknutí na tlačidlo Domovská stránka alebo pri vyhľadávaní pomocou všeobecného poľa.</translation>
+<translation id="5968022600320704045">Žiadne výsledky vyhľadávania</translation>
 <translation id="5969419185858894314">Web <ph name="ORIGIN" /> môže zobrazovať súbory v priečinku <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Upozornenie na klávesové skratky bolo zavreté</translation>
 <translation id="5971037678316050792">Ovládanie stavu a párovania adaptéra Bluetooth</translation>
@@ -4900,9 +4890,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6295158916970320988">Všetky weby</translation>
 <translation id="6295855836753816081">Ukladá sa...</translation>
 <translation id="629730747756840877">Účet</translation>
-<translation id="6298800237463568825">Voice Match pomáha Asistentovi Google identifikovať váš hlas v zariadení <ph name="DEVICE_TYPE" /> a odlíšiť vás od ostatných.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Upozornenie:<ph name="END_BOLD" /> K vašim osobným výsledkom môže získať prístup aj osoba s podobným hlasom alebo nahrávkou. Povolenie pre funkciu Voice Match môžete odstrániť neskôr jej vypnutím v sekcii Nastavenia Asistenta.</translation>
 <translation id="6298962879096096191">Inštalácia aplikácií pre Android pomocou služby Google Play</translation>
 <translation id="6300177430812514606">Nemôže dokončiť odosielanie ani prijímanie dát</translation>
 <translation id="630065524203833229">U&amp;končiť</translation>
@@ -5405,6 +5392,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6855892664589459354">Zálohovanie a obnova v systéme Crostini</translation>
 <translation id="6856348640027512653">Nie je povolené používanie zariadení ani údajov virtuálnej reality</translation>
 <translation id="6856623341093082836">Nastaviť a upraviť presnosť dotykovej obrazovky</translation>
+<translation id="6856850379840757744">Ak nastavenie vypnete, budú upozornenia stlmené</translation>
 <translation id="6857145580237920905">Pred spustením obnovenia pomocou funkcie Powerwash odstráňte profily eSIM karty</translation>
 <translation id="6857699260879628349">Získať informácie o konfigurácii</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -5683,7 +5671,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7171559745792467651">Inštalácia aplikácií z iných zariadení</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Pridať kartu do novej skupiny}few{Pridať karty do novej skupiny}many{Pridať karty do novej skupiny}other{Pridať karty do novej skupiny}}</translation>
 <translation id="7173114856073700355">Otvoriť Nastavenia</translation>
-<translation id="7173336557300642430">Ak chcete dostávať prispôsobenejšie odpovede, umožnite Asistentovi Google používať pri kladení otázok informácie na obrazovke. Váš Asistent tiež môže používať informácie o prehrávaných skladbách a videách.</translation>
 <translation id="7174199383876220879">Novinka! Ovládajte svoju hudbu, videá a ďalší obsah.</translation>
 <translation id="7175037578838465313">Konfigurácia siete <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Načítané z:</translation>
@@ -5925,7 +5912,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7434969625063495310">Tlačový server sa nepodarilo pridať. Skontrolujte jeho konfiguráciu a skúste to znova.</translation>
 <translation id="7436921188514130341">Ojoj! Pri premenovaní sa vyskytla chyba.</translation>
 <translation id="7438495332316988804">Štandardný prehliadač nájdete zadaním výrazu Chrome do Spúšťača.</translation>
-<translation id="7439446972050308922">Vaše uložené predvoľby budú k dispozícii v ľubovoľnom zariadení so systémom Chrome OS, keď sa prihlásite účtom Google. Položky, ktoré chcete synchronizovať, môžete vybrať v Nastaveniach.</translation>
 <translation id="7439519621174723623">Ak chcete pokračovať, pridajte názov zariadenia</translation>
 <translation id="7441736921018636843">Ak chcete zmeniť toto nastavenie, <ph name="BEGIN_LINK" />resetujte synchronizáciu<ph name="END_LINK" /> a odstráňte tak prístupovú frázu synchronizácie</translation>
 <translation id="7441830548568730290">Ostatní používatelia</translation>
@@ -6384,6 +6370,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Duplikovať</translation>
 <translation id="7887864092952184874">Myš Bluetooth bola spárovaná</translation>
+<translation id="7889371445710865055">Zmena jazyka diktovania</translation>
 <translation id="7890147169288018054">Zobrazte si informácie o sieti, napríklad adresu IP alebo MAC</translation>
 <translation id="7893008570150657497">Mať prístup k fotkám, hudbe a ďalším médiám z vášho počítača</translation>
 <translation id="7893153962594818789">V tomto zariadení <ph name="DEVICE_TYPE" /> je rozhranie Bluetooth vypnuté. Zadajte heslo a Bluetooth zapnite.</translation>
@@ -6928,7 +6915,6 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8480869669560681089">Neznáme zariadenie od spoločnosti <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrdenie povolenia pre USB</translation>
 <translation id="8481980314595922412">Skúšobné funkcie sú zapnuté</translation>
-<translation id="8482860770919360244">Zdá sa, že Asistenta Google ste už nastavili v inom zariadení. Zapnite kontext obrazovky a využívajte Asistenta ešte efektívnejšie.</translation>
 <translation id="848666842773560761">K fotoaparátu sa snaží získať prístup určitá aplikácia. Ak chcete prístup povoliť, vypnite prepínač ochrany súkromia fotoaparátu.</translation>
 <translation id="8487678622945914333">Priblížiť</translation>
 <translation id="8489156414266187072">Osobné návrhy sa zobrazujú iba vo vašom účte</translation>

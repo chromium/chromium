@@ -554,13 +554,6 @@
 <translation id="1593926297800505364">Ruaj mënyrën e pagesës</translation>
 <translation id="1595492813686795610">Linux po përmirësohet</translation>
 <translation id="1596286373007273895">Në shitje</translation>
-<translation id="1597224195604051602">Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin e <ph name="SUPERVISED_USER_NAME" /> në pajisjen tënde <ph name="DEVICE_TYPE" /> dhe ta dallojë atë nga të tjerët.
-    <ph name="BR" />
-    "Asistenti" merr klipe të zërit të fëmijës tënd për të krijuar një model unik zëri, i cili ruhet vetëm në pajisjen ose pajisjet e tua. Modeli i zërit të fëmijës tënd mund të dërgohet përkohësisht te Google për të identifikuar më mirë zërin e fëmijës.
-    <ph name="BR" />
-    Nëse vendos më vonë se Voice Match nuk është i përshtatshëm për fëmijën tënd, thjesht hiqe atë nga "Cilësimet" e "Asistentit". Për të parë ose fshirë klipet e audios që regjistron fëmija yt gjatë konfigurimit të Voice Match, shko te g.co/assistant/match nga llogaria e fëmijës tënd.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Shënim:<ph name="END_BOLD" /> Një zë i ngjashëm ose një regjistrim mund të jetë në gjendje që të ketë qasje te rezultatet personale të <ph name="SUPERVISED_USER_NAME" />. Për të kursyer baterinë, “Ok Google” është aktiv vetëm kur kjo pajisje është e lidhur me një burim energjie.</translation>
 <translation id="1598233202702788831">Përditësimet janë çaktivizuar nga administratori.</translation>
 <translation id="1600857548979126453">Qasu te korrigjuesi kryesor i faqes</translation>
 <translation id="1601560923496285236">Zbato</translation>
@@ -840,7 +833,6 @@
 <translation id="1865769994591826607">Vetëm lidhjet e të njëjtit sajt</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" mund të lexojë dhe shkruajë imazhe, video dhe skedarë audio në vendndodhjet e verifikuara.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> është gati për të përfunduar instalimin tënd</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Kontrolli i fjalëkalimit nuk ofrohet në Chromium</translation>
 <translation id="1869433484041798909">Butoni i faqeshënuesit</translation>
 <translation id="1871098866036088250">Hapi në shfletuesin Chrome</translation>
@@ -1124,7 +1116,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe 1 çelës tjetër</translation>
 <translation id="2165177462441582039">Zgjidh për sa kohë duhet të qëndrojë theksimi në secilin artikull</translation>
-<translation id="2165421703844373933">Hap "Asistentin" kur thua "Ok Google". Për të kursyer bateri, zgjidh "Aktive (Rekomandohet)". "Asistenti" yt do të përgjigjet vetëm kur pajisja jote të jetë e lidhur ose në karikim.</translation>
 <translation id="2166369534954157698">Zhapiku i gjelbër njomzak nga shporta e vjetër prej xunkthi u hodh si rrufe në qiell të pastër, pranë ca druve të çarë e xhamave të thyer</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Identifikohu gjithsesi</translation>
@@ -1606,9 +1597,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2691385045260836588">Modeli</translation>
 <translation id="2691440343905273290">Ndrysho cilësimet e hyrjes</translation>
 <translation id="2693176596243495071">Mos! Ndodhi një gabim i panjohur. Provo sërish më vonë ose kontakto me administratorin tënd nëse problemi vazhdon.</translation>
-<translation id="2693640212062142966">Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin tënd në pajisjen tënde <ph name="DEVICE_TYPE" /> dhe të të dallojë nga të tjerët. Për të kursyer bateri, "Ok Google" është aktiv vetëm kur pajisja jote është lidhur me një burim energjie. Për të bërë ndryshime, shko te "Cilësimet".
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ki parasysh:<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale. Mund ta heqësh më vonë lejen e Voice Match duke e çaktivizuar te "Cilësimet" e "Asistentit".</translation>
 <translation id="2699911226086014512">Veprimi i kodit PIN dështoi me kodin <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Ndarë nga <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Identifikohu, <ph name="EMAIL" /></translation>
@@ -2991,7 +2979,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4154664944169082762">Gjurmë gishtash</translation>
 <translation id="4157869833395312646">Kriptografia e rrethuar e serverit të Microsoft</translation>
 <translation id="4158364720893025815">Leje</translation>
-<translation id="4159163871835771155">Për të marrë përgjigje të personalizuara kur <ph name="SUPERVISED_USER_NAME" /> bën pyetje, lejo që "Asistenti" të përdorë informacionet në ekranin e <ph name="SUPERVISED_USER_NAME" />. Kjo mund të përfshijë informacione për këngët ose videot që janë duke u luajtur.</translation>
 <translation id="4159681666905192102">Kjo është një llogari për fëmijë e menaxhuar nga <ph name="CUSTODIAN_EMAIL" /> dhe <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Tastierë e panjohur</translation>
 <translation id="4167686856635546851">Sajtet përdorin zakonisht JavaScript për të shfaqur veçoritë ndërvepruese, si p.sh. videolojëra ose formularë uebi</translation>
@@ -3633,7 +3620,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Hap me "Shikuesin e sistemit"</translation>
 <translation id="488785315393301722">Shfaq detajet</translation>
-<translation id="4889792122460431731">Për të marrë përgjigje të personalizuara kur bën pyetje, lejoje "Asistentit" tënd të përdorë informacionin në ekranin tënd. Ky mund të përfshijë informacion për këngë apo video që janë duke u luajtur.</translation>
 <translation id="4890773143211625964">Shfaq opsionet e përparuara të printerit</translation>
 <translation id="4891089016822695758">Forumi beta</translation>
 <translation id="4892229439761351791">Sajti mund të përdorë Bluetooth-in</translation>
@@ -3849,7 +3835,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profili nuk mund të shkarkohej. Provo përsëri më vonë ose kontakto me operatorin celular për ndihmë.</translation>
 <translation id="5131591206283983824">Zvarritja me trokitje e bllokut me prekje</translation>
-<translation id="5135085122826131075">Hap "Asistentin" kur thua "Ok Google".</translation>
 <translation id="5135533361271311778">Artikulli i faqeshënuesve nuk mund të krijohej.</translation>
 <translation id="5136343472380336530">Sigurohu që të dyja pajisjet të jenë të shkyçura, pranë njëra-tjetrës, si dhe të kenë të aktivizuar Bluetooth-in. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Fshije këtë artikull</translation>
@@ -4266,7 +4251,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5585912436068747822">Formatimi dështoi</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Po ngarkon aplikacionet...</translation>
-<translation id="5590265327628802792">Me sa duket <ph name="SUPERVISED_USER_NAME" /> e ka konfiguruar tashmë "Asistentin e Google" në një pajisje tjetër. <ph name="SUPERVISED_USER_NAME" /> mund të përfitojë edhe më shumë nga "Asistenti" duke aktivizuar "Kontekstin e ekranit".</translation>
 <translation id="5592595402373377407">Nuk ofrohen ende të dhëna të mjaftueshme.</translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
@@ -4894,9 +4878,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6295855836753816081">Po ruan...</translation>
 <translation id="629730747756840877">Llogaria</translation>
-<translation id="6298800237463568825">Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin tënd në pajisjen tënde <ph name="DEVICE_TYPE" /> dhe të të dallojë nga të tjerët.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ki parasysh:<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale. Mund ta heqësh më vonë lejen e Voice Match duke e çaktivizuar te "Cilësimet" e "Asistentit".</translation>
 <translation id="6298962879096096191">Përdor Google Play për të instaluar aplikacionet e Android</translation>
 <translation id="6300177430812514606">Nuk lejohen të përfundojnë dërgimin ose marrjen e të dhënave</translation>
 <translation id="630065524203833229">D&amp;il</translation>
@@ -5676,7 +5657,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7171559745792467651">Instalo aplikacione nga pajisjet e tjera</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Shto një skedë te grupi i ri}other{Shto skeda te grupi i ri}}</translation>
 <translation id="7173114856073700355">Hap cilësimet</translation>
-<translation id="7173336557300642430">Për të marrë përgjigje që janë më të përshtatura për ty, lejoje "Asistentin e Google" të përdorë informacionin në ekranin tënd kur ti bën pyetje. "Asistenti" yt mund të përdorë gjithashtu informacion për këngët apo videot që je duke luajtur.</translation>
 <translation id="7174199383876220879">E re! Kontrollo muzikën, videot e tua etj.</translation>
 <translation id="7175037578838465313">Konfiguro <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Ngarkuar nga:</translation>
@@ -5918,7 +5898,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="7434969625063495310">Serveri i printimit nuk mund të shtohej. Kontrollo konfigurimin e serverit dhe provo përsëri.</translation>
 <translation id="7436921188514130341">Mos! Pati një gabim gjatë riemërtimit.</translation>
 <translation id="7438495332316988804">Shfletuesi standard mund të gjendet duke shkruar "Chrome" te "Nisësi".</translation>
-<translation id="7439446972050308922">Preferencat e tua të ruajtura do të jenë gati në çdo pajisje me Chrome OS kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh çfarë të sinkronizosh te "Cilësimet".</translation>
 <translation id="7439519621174723623">Shto një pajisje për të vazhduar</translation>
 <translation id="7441736921018636843">Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /> për të hequr frazën e kalimit për sinkronizimin</translation>
 <translation id="7441830548568730290">Përdoruesit e tjerë</translation>
@@ -6918,7 +6897,6 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
 <translation id="8480869669560681089">Pajisje e panjohur nga <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Konfirmo lejen e USB-së</translation>
 <translation id="8481980314595922412">Veçoritë e provës janë aktive</translation>
-<translation id="8482860770919360244">Me sa duket e ke konfiguruar tashmë "Asistentin e Google" në një pajisje tjetër. Përfito edhe më shumë nga "Asistenti" yt duke aktivizuar kontekstin e "Ekranit".</translation>
 <translation id="848666842773560761">Një aplikacion po përpiqet të ketë qasje te kamera. Çaktivizo çelësin e privatësisë të kamerës për të lejuar qasjen.</translation>
 <translation id="8487678622945914333">Zmadho</translation>
 <translation id="8489156414266187072">Sugjerimet personale tregohen vetëm në llogarinë tënde</translation>

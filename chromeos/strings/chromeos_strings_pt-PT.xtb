@@ -319,6 +319,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7059230779847288458">A carregar, <ph name="TIME_VALUE" /> até ficar totalmente carregada</translation>
 <translation id="708426984172631313">PARADO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>

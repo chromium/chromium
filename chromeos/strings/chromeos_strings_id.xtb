@@ -319,6 +319,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>

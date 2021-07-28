@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome-kenmerkkortpaaie</translation>
 <translation id="1344653310988386453">Sluit skakel na hoogtepunt in</translation>
 <translation id="1347468774581902829">Bestuur aktiwiteit</translation>
+<translation id="1352771733366526411">Bestuur alle vensters (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Meld af en skakel sinkronisasie af?</translation>
 <translation id="1373696734384179344">Onvoldoende berging om die geselekteerde inhoud af te laai.</translation>
 <translation id="1376578503827013741">Bereken tans …</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome laai lêers nou vinniger af</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">My lêers</translation>
+<translation id="1888378517829496315">Bestuur alle vensters</translation>
 <translation id="189358972401248634">Ander tale</translation>
 <translation id="1918175104945982129">Assistent-stemsoektog se instemming-UI is teen halwe hoogte oopgemaak</translation>
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
@@ -639,6 +641,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5123685120097942451">Incognito-oortjie</translation>
 <translation id="5132942445612118989">Sinkroniseer jou wagwoorde, geskiedenis en meer op alle toestelle</translation>
 <translation id="5139940364318403933">Leer hoe om Google Drive te gebruik</translation>
+<translation id="5142281402488957685">Trek af om te herlaai vir nuwe berigte</translation>
 <translation id="5152843274749979095">Geen gesteunde programme is geïnstalleer nie</translation>
 <translation id="5161254044473106830">Titel word vereis</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Kon 1 item nie aflaai nie.}other{Kon # items nie aflaai nie.}}</translation>
@@ -679,6 +682,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5403644198645076998">Laat net sekere werwe toe</translation>
 <translation id="5409881200985013443">Dien <ph name="ONE_TIME_CODE" /> op <ph name="CLIENT_NAME" /> in?</translation>
 <translation id="5414836363063783498">Verifieer tans …</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> oortjie}other{<ph name="TAB_COUNT_MANY" /> oortjies}}</translation>
 <translation id="5423934151118863508">Jou mees besoekte bladsye sal hier verskyn</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB is beskikbaar</translation>
 <translation id="543338862236136125">Wysig wagwoord</translation>
@@ -946,6 +950,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6979737339423435258">Van die begin af</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="6989267951144302301">Kon nie aflaai nie</translation>
+<translation id="6992232929048168262">Maak in volskerm oop</translation>
 <translation id="6995899638241819463">Waarsku jou as wagwoorde in 'n dataskending blootgestel is</translation>
 <translation id="7001056293070445572">Hierdie lêer is te groot (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Maak in blaaier oop</translation>
@@ -1230,6 +1235,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8683081248374354009">Stel groep terug</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Moenie aanbied om hierdie tale te vertaal nie</translation>
+<translation id="8701921397542715895">Loop tans in aangrensende venster</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>

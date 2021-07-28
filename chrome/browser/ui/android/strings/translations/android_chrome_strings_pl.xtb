@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Skróty do funkcji Google Chrome</translation>
 <translation id="1344653310988386453">Dołącz link do podświetlenia</translation>
 <translation id="1347468774581902829">Zarządzaj aktywnością</translation>
+<translation id="1352771733366526411">Zarządzaj wszystkimi oknami (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Wylogować i wyłączyć synchronizację?</translation>
 <translation id="1373696734384179344">Za mało pamięci, by pobrać te treści.</translation>
 <translation id="1376578503827013741">Obliczam…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome pobiera pliki jeszcze szybciej</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
 <translation id="1883903952484604915">Moje pliki</translation>
+<translation id="1888378517829496315">Zarządzaj wszystkimi oknami</translation>
 <translation id="189358972401248634">Inne języki</translation>
 <translation id="1918175104945982129">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta został otwarty na połowę wysokości</translation>
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
@@ -639,6 +641,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
 <translation id="5139940364318403933">Dowiedz się, jak używać Dysku Google</translation>
+<translation id="5142281402488957685">Pociągnij w dół, aby odświeżyć widok i wyświetlić nowe artykuły</translation>
 <translation id="5152843274749979095">Nie zainstalowano obsługiwanych aplikacji</translation>
 <translation id="5161254044473106830">Tytuł jest wymagany</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nie udało się pobrać 1 pliku.}few{Nie udało się pobrać # plików.}many{Nie udało się pobrać # plików.}other{Nie udało się pobrać # pliku.}}</translation>
@@ -679,6 +682,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5403644198645076998">Pozwól na otwieranie tylko wybranych stron</translation>
 <translation id="5409881200985013443">Przesłać <ph name="ONE_TIME_CODE" /> na: <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Weryfikuję…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_COUNT_MANY" /> kart}other{<ph name="TAB_COUNT_MANY" /> karty}}</translation>
 <translation id="5423934151118863508">Tu pojawią się strony, na które najczęściej wchodzisz</translation>
 <translation id="5424588387303617268">Dostępne <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Edytuj hasło</translation>
@@ -946,6 +950,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6979737339423435258">Od początku</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="6989267951144302301">Nie udało się pobrać</translation>
+<translation id="6992232929048168262">Otwórz na pełnym ekranie</translation>
 <translation id="6995899638241819463">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="7001056293070445572">Plik jest duży (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Otwórz w przeglądarce</translation>
@@ -1230,6 +1235,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8683081248374354009">Resetuj grupę</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
+<translation id="8701921397542715895">Uruchomiono w sąsiednim oknie</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>

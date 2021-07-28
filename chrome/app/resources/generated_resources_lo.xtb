@@ -323,10 +323,12 @@
 <translation id="1347512539447549782">ບ່ອນຈັດເກັບຂໍ້ມູນ Linux</translation>
 <translation id="1347975661240122359">ການອັບເດດຈະເລີ່ມຕົ້ນເມື່ອແບັດເຕີຣີຮອດ <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">ເພື່ອໃຊ້ການ​ຄວບ​ຄຸມຂອງ​ພໍ່ແມ່ ເຊັ່ນ: ການອະນຸມັດແອັບ ແລະ ການຈຳກັດເວລາໜ້າຈໍ, ເດັກນ້ອຍຈະຕ້ອງມີບັນຊີ Google ທີ່ຈັດການໂດຍພໍ່ແມ່ກ່ອນ. ສາມາດເພີ່ມບັນຊີໂຮງຮຽນໃນພາຍຫຼັງໄດ້ສຳລັບເຄື່ອງມືຕ່າງໆ ເຊັ່ນ: Google ຫ້ອງຮຽນ.</translation>
+<translation id="135389172849514421">ໃຊ້ໄດ້ແບບອອບລາຍ</translation>
 <translation id="1353980523955420967">ບໍ່ສາມາດຊອກເຫັນ PPD. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າ Chromebook ຂອງທ່ານອອນລາຍຢູ່ ແລະ ລອງອີກຄັ້ງ.</translation>
 <translation id="1354045473509304750">ສືບຕໍ່ອະນຸຍາດໃຫ້ <ph name="HOST" /> ໃຊ້ ແລະ ຍ້າຍກ້ອງຂອງທ່ານ</translation>
 <translation id="1355088139103479645">ລຶບຂໍ້ມູນທັງໝົດບໍ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ຖືກບລັອກໄວ້</translation>
+<translation id="1356178530321889280">ຄລິກຂວາແລ້ວເລືອກ “ຊອກຫາບາງສ່ວນຂອງໜ້າດ້ວຍ Google Lens” ເພື່ອຊອກຫາພາກສ່ວນໃດກໍໄດ້ຂອງເວັບໄຊເພື່ອສຶກສາເພີ່ມເຕີມກ່ຽວກັບເນື້ອຫາດ້ານພາບທີ່ທ່ານເຫັນໃນເວລາທີ່ທ່ານເລືອກເບິ່ງ ແລະ ຊື້ເຄື່ອງຢູ່ເວັບ.</translation>
 <translation id="1358741672408003399">ການ​ສະ​ກົດ​ຄໍາ​ ແລະໄວຍາກອນ</translation>
 <translation id="1359923111303110318">ສາມາດປົດລັອກອຸປະກອນຂອງທ່ານດ້ວຍ Smart Lock ໄດ້. ກົດ Enter ເພື່ອປົດລັອກ.</translation>
 <translation id="1361164813881551742">ເພີ່ມໃສ່ດ້ວຍຕົນເອງ</translation>
@@ -559,13 +561,6 @@
 <translation id="1593926297800505364">ບັນທຶກວິທີການຈ່າຍເງິນ</translation>
 <translation id="1595492813686795610">Linux ກຳລັງອັບເກຣດ</translation>
 <translation id="1596286373007273895">ສາມາດໃຊ້ໄດ້</translation>
-<translation id="1597224195604051602">Voice Match ຈະຊ່ວຍໃຫ້ຜູ້ຊ່ວຍ Google ລະບຸສຽງຂອງ <ph name="SUPERVISED_USER_NAME" /> ຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ ແລະ ແຍກສຽງຂອງລາວອອກຈາກສຽງຂອງຄົນອື່ນໄດ້.
-    <ph name="BR" />
-    ຜູ້ຊ່ວຍຈະບັນທຶກຄລິບສັ້ນໆຂອງສຽງລູກທ່ານຈາກຮູບແບບສຽງທີ່ບໍ່ຊ້ຳກັນ, ເຊິ່ງຈະຖືກຈັດເກັບໄວ້ຢູ່ອຸປະກອນຂອງເຂົາເຈົ້າເທົ່ານັ້ນ. ຮູບແບບສຽງຂອງລູກທ່ານອາດຖືກສົ່ງໄປໃຫ້ Google ຊົ່ວຄາວເພື່ອລະບຸສຽງຂອງເຂົາເຈົ້າໄດ້ດີຍິ່ງຂຶ້ນ.
-    <ph name="BR" />
-    ຫາກທ່ານຕັດສິນໃຈໃນພາຍຫຼັງວ່າ Voice Match ບໍ່ເໝາະສຳລັບລູກຂອງທ່ານ, ກໍພຽງລຶບມັນອອກໄດ້ໃການຕັ້ງຄ່າຜູ້ຊ່ວຍຂອງເຂົາເຈົ້າ. ເພື່ອເບິ່ງ ຫຼື ລຶບຄລິບສຽງທີ່ລູກຂອງທ່ານບັນທຶກໃນລະຫວ່າງການຕັ້ງຄ່າ Voice Match, ໃຫ້ເຂົ້າໄປ g.co/assistant/match ຈາກບັນຊີຂອງລູກຂອງທ່ານ.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ໝາຍເຫດ:<ph name="END_BOLD" /> ສຽງເວົ້າ ຫຼື ການບັນທຶກທີ່ຄ້າຍກັນອາດສາມາດເຂົ້າເຖິງຜົນການຊອກຫາສ່ວນຕົວຂອງ <ph name="SUPERVISED_USER_NAME" /> ໄດ້. ເພື່ອປະຢັດແບັດເຕີຣີ, “Ok Google” ຈະສະແດງຢູ່ອຸປະກອນນີ້ເມື່ອເຊື່ອມຕໍ່ຫາແຫຼ່ງໄຟເທົ່ານັ້ນ.</translation>
 <translation id="1598233202702788831">ການ​ອັບ​ເດດ​ຖືກ​ປິດ​ໃຊ້​ງານ​ໂດຍ​ຜູ້​ດູແລລະ​ບົບ​ຂອງ​ທ່ານ.</translation>
 <translation id="1600857548979126453">ເຂົ້າຫາດ້ານຫຼັງຂອງຕົວແກ້ໄຂບັນຫາໜ້າ</translation>
 <translation id="1601560923496285236">ນໍາໃຊ້</translation>
@@ -853,7 +848,6 @@
 <translation id="1865769994591826607">ການເຊື່ອມຕໍ່ເວັບໄຊດຽວກັນເທົ່ານັ້ນ</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" ສາມາດອ່ານ ແລະຂຽນໄຟລ໌ຮູບ, ວິດີໂອ, ແລະສຽງຢູ່ໃນຢູ່ໃນທີ່ຕັ້ງທີ່ໝາຍຕິກແລ້ວໄດ້.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> ​ພ້ອມ​ທີ່​ຈະ​ສໍາ​ເລັດ​ການ​ຕິດ​ຕັ້ງ​ຂອງ​ທ່ານແລ້ວ</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">ການກວດລະຫັດຜ່ານບໍ່ສາມາດໃຊ້ໄດ້ໃນ Chromium</translation>
 <translation id="1869433484041798909">ປຸ່ມບຸກມາກ</translation>
 <translation id="1871098866036088250">ເປີດໃນໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
@@ -1137,7 +1131,6 @@
 <translation id="2163937499206714165">ເປີດໃຊ້ໂໝດມືດ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ແລະ ອີກ 1 ປຸ່ມ</translation>
 <translation id="2165177462441582039">ເລືອກວ່າຈະໃຫ້ໄຮໄລ້ຢູ່ດົນປານໃດໃນແຕ່ລະລາຍການ</translation>
-<translation id="2165421703844373933">ເຂົ້າເຖິງຜູ້ຊ່ວຍຂອງທ່ານເມື່ອທ່ານເວົ້າ "Ok Google." ເພື່ອປະຢັດແບັດເຕີຣີ, ກະລຸນາເລືອກ “ເປີດ (ແນະນຳ)”. ຜູ້ຊ່ວຍຂອງທ່ານຈະຕອບສະໜອງພຽງແຕ່ເມື່ອອຸປະກອນຂອງທ່ານສຽບໄຟ ຫຼື ກຳລັງສາກຢູ່ເທົ່ານັ້ນ.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ແນວໃດກໍ່ລົງຊື່ເຂົ້າໃຊ້</translation>
@@ -1467,6 +1460,7 @@
 <translation id="2509495747794740764">ຈຳນວນຂະໜາດຕ້ອງແມ່ນຕົວເລກລະຫວ່າງ 10 ຫາ 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">ລືມອຸປະກອນ Bluetooth</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (ເລືອກແລ້ວ)</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2514326558286966059">ປົດລັອກໄດ້ໄວຂຶ້ນດ້ວຍລາຍນິ້ວມືຂອງທ່ານ</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1621,9 +1615,6 @@
 <translation id="2691385045260836588">ລຸ້ນ</translation>
 <translation id="2691440343905273290">ປ່ຽນການຕັ້ງຄ່າການປ້ອນຂໍ້ມູນ</translation>
 <translation id="2693176596243495071">ອຸ້ຍ!  ເກີດຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ ຫຼື ຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຖ້າບັນຫາຍັງຄົງຢູ່.</translation>
-<translation id="2693640212062142966">Voice Match ຈະຊ່ວຍຜູ້ຊ່ວຍ Google ຂອງທ່ານລະບຸສຽງຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ ແລະ ແຍກສຽງຂອງທ່ານອອກຈາກສຽງຄົນອື່ນໄດ້. ເພື່ອປະຢັດແບັດເຕີຣີ, “Ok Google” ຈະເປີດເມື່ອອຸປະກອນຂອງທ່ານເຊື່ອມຕໍ່ກັບແຫຼ່ງໄຟເທົ່ານັ້ນ. ເພື່ອປ່ຽນແປງ, ກະລຸນາເຂົ້າໄປການຕັ້ງຄ່າ.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ກະລຸນາຮັບຊາບ:<ph name="END_BOLD" /> ສຽງເວົ້າ ຫຼື ການບັນທຶກທີ່ຄ້າຍກັນອາດສາມາດເຂົ້າເຖິງຜົນການຊອກຫາສ່ວນຕົວຂອງທ່ານໄດ້ເຊັ່ນກັນ. ທ່ານສາມາດລຶບການອະນຸຍາດ Voice Match ອອກໄດ້ໃນພາຍຫຼັງໂດຍການປິດມັນໃນການຕັ້ງຄ່າຜູ້ຊ່ວຍ.</translation>
 <translation id="2699911226086014512">ການດຳເນີນ PIN ບໍ່ສຳເລັດໂດຍມີລະຫັດ <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">ເຂົ້າສູ່ລະບົບ, <ph name="EMAIL" /></translation>
@@ -2377,6 +2368,7 @@
 <translation id="3495496470825196617">ພັກເຄື່ອງໃນຂະນະທີ່ສາກ</translation>
 <translation id="3495660573538963482">ການຕັ້ງຄ່າຜູ້ຊ່ວຍ Google</translation>
 <translation id="3496213124478423963">ຊູມອອກ</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (ບໍ່ໄດ້ເລືອກ)</translation>
 <translation id="3497501929010263034">ອຸປະກອນ USB ຈາກ <ph name="VENDOR_NAME" /> (ຜະລິດຕະພັນ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ແບ່ງປັນ Doodle</translation>
 <translation id="3498215018399854026">ພວກ​ເຮົາ​ບໍ່​ສາ​ມາດ​ຕິດ​ຕໍ່​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ​ໄດ້​ໃນ​ຂະ​ນະ​ນີ້. ກະ​ລຸ​ນາ​ລອງ​ໃໝ່ອີກ.</translation>
@@ -3007,7 +2999,6 @@
 <translation id="4154664944169082762">ລາຍນີ້ວມື</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">ຜ່ານ</translation>
-<translation id="4159163871835771155">ເພື່ອຮັບຄຳຕອບທີ່ປັບແຕ່ງມາເມື່ອ <ph name="SUPERVISED_USER_NAME" /> ຖາມຄຳຖາມ, ໃຫ້ຜູ້ຊ່ວຍໃຊ້ຂໍ້ມູນຢູ່ໜ້າຈໍຂອງ <ph name="SUPERVISED_USER_NAME" />. ນີ້ອາດຮວມຂໍ້ມູນກ່ຽວກັບເພງ ຫຼື ວິດີໂອທີ່ກຳລັງເປີດຢູ່ນຳ.</translation>
 <translation id="4159681666905192102">ນີ້​ແມ່ນ​ບັນ​ຊີ​ສຳ​ລັບ​ເດັກ​ນ້ອຍ​ທີ່​ຖືກ​ຄຸ້​ມ​ຄອງ​ໂດຍ <ph name="CUSTODIAN_EMAIL" /> ແລະ <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">ຄີບອດທີ່ບໍ່ຮູ້​ຈັກ</translation>
 <translation id="4167686856635546851">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະໃຊ້ JavaScript ເພື່ອສະແດງຄຸນສົມບັດແບບໂຕ້ຕອບ ເຊັ່ນ: ວິດີໂອເກມ ຫຼື ແບບຟອມເວັບ</translation>
@@ -3650,7 +3641,6 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">ເປີດດ້ວຍຕົວເບິ່ງລະບົບ</translation>
 <translation id="488785315393301722">ສະແດງລາຍລະອຽດ</translation>
-<translation id="4889792122460431731">ເພື່ອຮັບຄຳຕອບທີ່ປັບແຕ່ງມາແລ້ວເມື່ອທ່ານຖາມຄຳຖາມ, ກະລຸນາເປີດໃຫ້ຜູ້ຊ່ວຍຂອງທ່ານໃຊ້ຂໍ້ມູນຢູ່ໜ້າຈໍຂອງທ່ານໄດ້. ນີ້ອາດຮວມຂໍ້ມູນກ່ຽວກັບເພງ ຫຼື ວິດີໂອທີ່ກຳລັງເປີດຢູ່ນຳ.</translation>
 <translation id="4890773143211625964">ສະແດງຕົວເລືອກເຄື່ອງພິມຂັ້ນສູງ</translation>
 <translation id="4891089016822695758">ເວທີເບຕ້າ</translation>
 <translation id="4892229439761351791">ເວັບໄຊສາມາດໃຊ້ Bluetooth ໄດ້</translation>
@@ -3866,7 +3856,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">ບໍ່ສາມາດດາວໂຫຼດໂປຣໄຟລ໌ໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ ຫຼື ຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການເພື່ອຂໍຄວາມຊ່ວຍເຫຼືອ.</translation>
 <translation id="5131591206283983824">ການແຕະແລ້ວລາກແຜ່ນສຳຜັດ</translation>
-<translation id="5135085122826131075">ເຂົ້າເຖິງຜູ້ຊ່ວຍຂອງທ່ານເມື່ອທ່ານເວົ້າ "Ok Google."</translation>
 <translation id="5135533361271311778">ບໍ່​ສາ​ມາດ​ສ້າງ​ລາຍການບຸກມາກຄ໌ໄດ້.</translation>
 <translation id="5136343472380336530">ກະລຸນາກວດສອບວ່າອຸປະກອນທັງສອງປົດລັອກແລ້ວ, ຢູ່ໃກ້ກັນ ແລະ ເປີດ Bluetooth. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">ລຶບ​ລາຍ​ການ​ນີ້</translation>
@@ -4143,6 +4132,7 @@
 <translation id="5449551289610225147">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5449588825071916739">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ</translation>
 <translation id="5449716055534515760">ປິດໜ້າຕ່າງ</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ໃຊ້ໄດ້ແບບອອບລາຍ)</translation>
 <translation id="5454166040603940656">ກັບ <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">ໃຊ້ບໍ່ໄດ້</translation>
 <translation id="5457459357461771897">ອ່ານ ແລະລຶບຮູບ, ເພງ, ແລະມີເດຍອື່ນໆຈາກຄອມພິວເຕີຂອງທ່ານ</translation>
@@ -4283,7 +4273,6 @@
 <translation id="5585912436068747822">ການຟໍແມັດບໍ່ສໍາເລັດ</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ກຳລັງໂຫຼດແອັບ...</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> ໄດ້ຕັ້ງຄ່າຜູ້ຊ່ວຍ Google ຢູ່ອຸປະກອນອື່ນໄປກ່ອນແລ້ວ. <ph name="SUPERVISED_USER_NAME" /> ສາມາດໃຊ້ປະໂຫຍດຈາກຜູ້ຊ່ວຍໄດ້ຫຼາຍຍິ່ງຂຶ້ນໂດຍການເປີດໃຊ້ບໍລິບົດໜ້າຈໍ.</translation>
 <translation id="5592595402373377407">ບໍ່ມີຂໍ້​ມູນພຽງ​ພໍ​ເທື່ອ​.</translation>
 <translation id="5595485650161345191">ແກ້ໄຂທີ່ຢູ່</translation>
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
@@ -4604,6 +4593,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ສູງ​ສຸດ​)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
 <translation id="5965661248935608907">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານຄລິກປຸ່ມໜ້າຫຼັກ ຫຼືຄົ້ນຫາຈາກ Omnibox.</translation>
+<translation id="5968022600320704045">ບໍ່​ມີ​ຜົນ​​ການ​ຊອກຫາ​</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> ສາມາດເບິ່ງໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ໄດ້</translation>
 <translation id="5969728632630673489">ປິດປະກາດຄີລັດແລ້ວ</translation>
 <translation id="5971037678316050792">ຄວບຄຸມສະພາວະອາແດັບເຕີ ແລະການຈັບຄູ່ Bluetooth</translation>
@@ -4911,9 +4901,6 @@
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
 <translation id="6295855836753816081">ກໍາລັງບັນທຶກ...</translation>
 <translation id="629730747756840877">ບັນ​ຊີ</translation>
-<translation id="6298800237463568825">Voice Match ຈະຊ່ວຍຜູ້ຊ່ວຍ Google ຂອງທ່ານລະບຸສຽງຂອງທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ ແລະ ແຍກສຽງຂອງທ່ານອອກຈາກສຽງຄົນອື່ນໄດ້.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ກະລຸນາຮັບຊາບ:<ph name="END_BOLD" /> ສຽງເວົ້າ ຫຼື ການບັນທຶກທີ່ຄ້າຍກັນອາດສາມາດເຂົ້າເຖິງຜົນການຊອກຫາສ່ວນຕົວຂອງທ່ານໄດ້ເຊັ່ນກັນ. ທ່ານສາມາດລຶບການອະນຸຍາດ Voice Match ອອກໄດ້ໃນພາຍຫຼັງໂດຍການປິດມັນໃນການຕັ້ງຄ່າຜູ້ຊ່ວຍ.</translation>
 <translation id="6298962879096096191">ໃຊ້ Google Play ເພື່ອຕິດຕັ້ງແອັບ Android</translation>
 <translation id="6300177430812514606">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຮັດສຳເລັດການສົ່ງ ຫຼື ຮັບຂໍ້ມູນ</translation>
 <translation id="630065524203833229">ອອກ</translation>
@@ -5416,6 +5403,7 @@
 <translation id="6855892664589459354">ການສຳຮອງ ແລະ ກູ້ຂໍ້ມູນໃນ Crostini</translation>
 <translation id="6856348640027512653">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ອຸປະກອນເວີຊົວ ຣິອາລິຕີ ຫຼື ຂໍ້ມູນ</translation>
 <translation id="6856623341093082836">ຕັ້ງຄ່າ ແລະ ປັບຄວາມຖືກຕ້ອງຂອງໜ້າຈໍສຳຜັດຂອງທ່ານ</translation>
+<translation id="6856850379840757744">ເມື່ອເປີດໃຊ້ແລ້ວ, ການແຈ້ງເຕືອນທັງໝົດຈະງຽບ</translation>
 <translation id="6857145580237920905">ລຶບໂປຣໄຟລ໌ eSIM ອອກກ່ອນ Powerwash</translation>
 <translation id="6857699260879628349">ຮັບຂໍ້ມູນການກຳນົດຄ່າ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
@@ -5694,7 +5682,6 @@
 <translation id="7171559745792467651">ຕິດຕັ້ງແອັບຈາກອຸປະກອນອື່ນຂອງທ່ານ</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="7173114856073700355">ເປີດການຕັ້ງຄ່າ</translation>
-<translation id="7173336557300642430">ເພື່ອຮັບຄຳຕອບທີ່ປັບແຕ່ງມາໃຫ້ເໝາະກັບທ່ານຍິ່ງຂຶ້ນ, ກະລຸນາເປີດໃຫ້ຜູ້ຊ່ວຍ Google ໃຊ້ຂໍ້ມູນຢູ່ໜ້າຈໍຂອງທ່ານໄດ້ໃນເວລາທີ່ທ່ານຖາມຄຳຖາມ. ຜູ້ຊ່ວຍຂອງທ່ານອາດໃຊ້ຂໍ້ມູນກ່ຽວກັບເພງ ຫຼື ວິດີໂອທີ່ກຳລັງເປີດຢູ່ນຳ.</translation>
 <translation id="7174199383876220879">ໃໝ່! ຄວບຄຸມເພງ, ວິດີໂອຂອງທ່ານ ແລະ ອື່ນໆອີກ.</translation>
 <translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7175353351958621980">ໂຫຼດ​ຈາກ​:</translation>
@@ -5936,7 +5923,6 @@
 <translation id="7434969625063495310">ບໍ່ສາມາດເພີ່ມເຊີບເວີການພິມໄດ້. ກະລຸນາກວດເບິ່ງການຕັ້ງຄ່າເຊີບເວີ ແລ້ວລອງໃໝ່.</translation>
 <translation id="7436921188514130341">ໂອ໋ຍ, ໂຊກຮ້າຍແທ້! ເກີດຄວາມຜິດພາດຂຶ້ນໃນເວລາປ່ຽນຊື່.</translation>
 <translation id="7438495332316988804">ສາມາດໃຊ້ໂປຣແກຣມທ່ອງເວັບມາດຕະຖານໄດ້ໂດຍການພິມ "Chrome" ໄປໃສ່ຕົວເປີດໃຊ້.</translation>
-<translation id="7439446972050308922">ການຕັ້ງຄ່າທີ່ທ່ານບັນທຶກໄວ້ຈະພ້ອມໃຊ້ຢູ່ອຸປະກອນ Chrome OS ໃດກໍຕາມເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານ. ທ່ານສາມາດເລືອກຊິ້ງຂໍ້ມູນຫຍັງໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="7439519621174723623">ເພີ່ມຊື່ອຸປະກອນເພື່ອສືບຕໍ່</translation>
 <translation id="7441736921018636843">ເພື່ອປ່ຽນການຕັ້ງຄ່ານີ້, ກະລຸນາ <ph name="BEGIN_LINK" />ຣີເຊັດການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" /> ເພື່ອລຶບລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານອອກ</translation>
 <translation id="7441830548568730290">ຜູ້ໃຊ້ອື່ນ</translation>
@@ -6395,6 +6381,7 @@
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">ຈໍາລອງ</translation>
 <translation id="7887864092952184874">ເມົາສ໌ Bluetooth ຈັບຄູ່ແລ້ວ</translation>
+<translation id="7889371445710865055">ປ່ຽນພາສາການປ້ອນຂໍ້ມູນດ້ວຍສຽງ</translation>
 <translation id="7890147169288018054">ເບິ່ງຂໍ້ມູນເຄືອຂ່າຍ ເຊັ່ນ: ທີ່ຢູ່ IP ຫຼື MAC</translation>
 <translation id="7893008570150657497">ເຂົ້າຫາຮູບ, ເພງ, ແລະມີເດຍອື່ນໆຈາກຄອມພິວເຕີຂອງທ່ານ</translation>
 <translation id="7893153962594818789">Bluetooth ຖືກປິດຢູ່ໃນ <ph name="DEVICE_TYPE" /> ນີ້. ກະລຸນາປ້ອນລະຫັດຜ່ານຂອງທ່ານ ແລະ ເປີດ Bluetooth.</translation>
@@ -6938,7 +6925,6 @@
 <translation id="8480869669560681089">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ຢືນຢັນການອະນຸຍາດ USB</translation>
 <translation id="8481980314595922412">ຄຸນສົມບັດທົດລອງໃຊ້ເປີດຢູ່</translation>
-<translation id="8482860770919360244">ທ່ານໜ້າຈະເຄີຍຕັ້ງຄ່າຜູ້ຊ່ວຍ Google ຢູ່ອຸປະກອນອື່ນໄປກ່ອນແລ້ວ. ໃຊ້ປະໂຫຍດຫຼາຍຍິ່ງຂຶ້ນຈາກຜູ້ຊ່ວຍຂອງທ່ານໂດຍການເປີດໃຊ້ບໍລິບົດໜ້າຈໍ.</translation>
 <translation id="848666842773560761">ມີແອັບກຳລັງພະຍາຍາມເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຢູ່. ປິດປຸ່ມຄວາມເປັນສ່ວນຕົວຂອງກ້ອງຖ່າຍຮູບເພື່ອອະນຸຍາດການເຂົ້າເຖິງ.</translation>
 <translation id="8487678622945914333">ຊຸມເຂົ້າ</translation>
 <translation id="8489156414266187072">ການແນະນຳສ່ວນຕົວພຽງແຕ່ສະແດງໃນບັນຊີຂອງທ່ານເທົ່ານັ້ນ</translation>

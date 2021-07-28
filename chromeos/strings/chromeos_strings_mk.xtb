@@ -319,6 +319,7 @@
 <translation id="7059230779847288458">Се полни, <ph name="TIME_VALUE" /> до полна</translation>
 <translation id="708426984172631313">СОПРЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Име на серверот}one{Име на серверите}other{Име на серверите}}</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>

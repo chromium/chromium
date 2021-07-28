@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Кратенки за функциите на Google Chrome</translation>
 <translation id="1344653310988386453">Вклучи линк до нагласената ставка</translation>
 <translation id="1347468774581902829">Управувајте со активноста</translation>
+<translation id="1352771733366526411">Управувајте со сите прозорци (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Одјавете се и исклучете синхронизација?</translation>
 <translation id="1373696734384179344">Недоволно меморија за да се преземе избраната содржина.</translation>
 <translation id="1376578503827013741">Се пресметува…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Отсега Chrome побрзо презема датотеки</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1883903952484604915">Мои датотеки</translation>
+<translation id="1888378517829496315">Управувајте со сите прозорци</translation>
 <translation id="189358972401248634">Други јазици</translation>
 <translation id="1918175104945982129">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на половина екран</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
@@ -639,6 +641,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5123685120097942451">Картичка инкогнито</translation>
 <translation id="5132942445612118989">Синхронизирајте ги лозинките, историјата и друго на сите уреди</translation>
 <translation id="5139940364318403933">Дознајте како се користи Google Drive</translation>
+<translation id="5142281402488957685">За нови стории, повлечете надолу за да освежите</translation>
 <translation id="5152843274749979095">Не се инсталирани поддржани апликации</translation>
 <translation id="5161254044473106830">Потребен е наслов</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 неуспешно преземање.}one{# неуспешно преземање.}other{# неуспешни преземања.}}</translation>
@@ -679,6 +682,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5403644198645076998">Дозволи само одредени сајтови</translation>
 <translation id="5409881200985013443">Да се испрати <ph name="ONE_TIME_CODE" /> на <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка}other{<ph name="TAB_COUNT_MANY" /> картички}}</translation>
 <translation id="5423934151118863508">Најпосетуваните страници ќе се појават тука</translation>
 <translation id="5424588387303617268">Достапни се <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Измени ја лозинката</translation>
@@ -946,6 +950,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6989267951144302301">Не може да се преземе</translation>
+<translation id="6992232929048168262">Отвори на цел екран</translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="7001056293070445572">Датотекава е голема (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Отвори во прелистувач</translation>
@@ -1230,6 +1235,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8683081248374354009">Ресетирај група</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
+<translation id="8701921397542715895">Се извршува во соседен прозорец</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8730621377337864115">Готово</translation>

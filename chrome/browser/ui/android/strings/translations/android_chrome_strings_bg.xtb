@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Комбинации за функции на Google Chrome</translation>
 <translation id="1344653310988386453">Включване на връзка към откроения текст</translation>
 <translation id="1347468774581902829">Управление на активността</translation>
+<translation id="1352771733366526411">Управление на прозорците (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
 <translation id="1376578503827013741">Изчислява се…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Изтеглянето на файлове в Chrome вече е по-бързо</translation>
 <translation id="1877026089748256423">Chrome не е актуален</translation>
 <translation id="1883903952484604915">Моите файлове</translation>
+<translation id="1888378517829496315">Управление на прозорците</translation>
 <translation id="189358972401248634">Други езици</translation>
 <translation id="1918175104945982129">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е отворен на половината височина</translation>
 <translation id="1919130412786645364">Разрешаване на влизането в Chrome</translation>
@@ -639,6 +641,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5139940364318403933">Научете как да използвате Google Диск</translation>
+<translation id="5142281402488957685">За нови материали дръпнете надолу, за да опресните</translation>
 <translation id="5152843274749979095">Никое от поддържаните приложения не е инсталирано</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно.}other{# изтегляния не бяха успешни.}}</translation>
@@ -679,6 +682,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
 <translation id="5409881200985013443">Да се изпрати ли еднократният код <ph name="ONE_TIME_CODE" /> до <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="5423934151118863508">Най-посещаваните от вас страници ще се показват тук</translation>
 <translation id="5424588387303617268">Налични: <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
@@ -946,6 +950,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6979737339423435258">За цялото време</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6989267951144302301">Неуспешно изтегляне</translation>
+<translation id="6992232929048168262">Отваряне на цял екран</translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="7001056293070445572">Този файл е голям (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>
@@ -1230,6 +1235,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8683081248374354009">Повторно задаване на групата</translation>
 <translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
+<translation id="8701921397542715895">Изпълнява се в съседен прозорец</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8730621377337864115">Готово</translation>

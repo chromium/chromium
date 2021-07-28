@@ -319,6 +319,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7059230779847288458">Laddas – fulladdat om <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">HAR STOPPATS</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>

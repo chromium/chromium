@@ -324,10 +324,12 @@
 <translation id="1347512539447549782">Linux-lagerplads</translation>
 <translation id="1347975661240122359">Opdateringen starter, når batteriniveauet er på <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Hvis du vil bruge forældreindstillinger såsom godkendelse af apps og grænser for skærmtid, skal barnet have en Google-konto, som administreres af en forælder. Der kan tilføjes en skolekonto senere, som kan bruges til værktøjer som f.eks. Google Classroom.</translation>
+<translation id="135389172849514421">Fungerer offline</translation>
 <translation id="1353980523955420967">PPD-filen kan ikke findes. Sørg for, at din Chromebook er online, og prøv igen.</translation>
 <translation id="1354045473509304750">Tillad fortsat, at <ph name="HOST" /> kan bruge og flytte dit kamera</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> er blokeret</translation>
+<translation id="1356178530321889280">Højreklik, og vælg "Søg på en del af siden ved hjælp af Google Lens" for at søge ethvert sted på websitet, så du kan få mere at vide om det visuelle indhold, du ser, mens du browser og shopper på nettet.</translation>
 <translation id="1358741672408003399">Stavning og grammatik</translation>
 <translation id="1359923111303110318">Din enhed kan låses op ved hjælp af Smart Lock. Tryk på Enter for at låse op.</translation>
 <translation id="1361164813881551742">Tilføj manuelt</translation>
@@ -562,13 +564,6 @@
 <translation id="1593926297800505364">Gem betalingsmetode</translation>
 <translation id="1595492813686795610">Linux opgraderes</translation>
 <translation id="1596286373007273895">Tilgængelig</translation>
-<translation id="1597224195604051602">Voice Match hjælper Google Assistent med at identificere stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" />, på din <ph name="DEVICE_TYPE" /> og skelne mellem den og andre stemmer.
-    <ph name="BR" />
-    Google Assistent optager klip af dit barns stemme for at registrere en unik stemmemodel, som kun gemmes på dit barns enheder. Dit barns stemmemodel sendes muligvis midlertidigt til Google for bedre at kunne identificere barnets stemme.
-    <ph name="BR" />
-    Hvis du senere beslutter dig for, at dit barn ikke skal have Voice Match, kan du fjerne funktionen fra indstillingerne i Google Assistent. Du kan se og slette lydklip, som dit barn optager under konfigurationen af Voice Match, ved at gå til g.co/assistant/match via dit barns konto.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af den kan muligvis bruges til at få adgang til det personlige indhold, der tilhører <ph name="SUPERVISED_USER_NAME" />. "Hey Google" er kun aktiveret, når enheden er sluttet til en strømkilde med henblik på at spare på batteriet.</translation>
 <translation id="1598233202702788831">Opdateringer er deaktiveret af din administrator.</translation>
 <translation id="1600857548979126453">Få adgang til administration af fejlfinding på siden</translation>
 <translation id="1601560923496285236">Anvend</translation>
@@ -857,7 +852,6 @@
 <translation id="1865769994591826607">Kun forbindelser på samme website</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" har læse- og skriverettigheder til billed-, video- og lydfiler på de markerede placeringer.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> er klar til at færdiggøre din installation</translation>
-<translation id="1868193363684582383">"Hey Google"</translation>
 <translation id="1868553836791672080">Kontrol af adgangskode er ikke tilgængelig i Chromium</translation>
 <translation id="1869433484041798909">Knappen Bogmærke</translation>
 <translation id="1871098866036088250">Åbn i Chrome-browseren</translation>
@@ -1141,7 +1135,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 anden kontakt</translation>
 <translation id="2165177462441582039">Vælg, hvor længe hvert element skal fremhæves</translation>
-<translation id="2165421703844373933">Få adgang til din Google-assistent, når du siger "Hey Google". Du kan spare på batteriet ved at vælge "Til (anbefales)". Google-assistenten svarer kun, når din enhed oplader eller er sluttet til en strømkilde.</translation>
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
@@ -1471,6 +1464,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2509495747794740764">Skaleringsværdien skal være et tal mellem 10 og 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Glem Bluetooth-enhed</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (valgt)</translation>
 <translation id="2513396635448525189">Loginbillede</translation>
 <translation id="2514326558286966059">Lås op hurtigere med dit fingeraftryk</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1625,9 +1619,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Skift indstillinger for indtastning</translation>
 <translation id="2693176596243495071">Ups! Der opstod en ukendt fejl. Prøv igen senere, eller kontakt din administrator, hvis problemet fortsætter.</translation>
-<translation id="2693640212062142966">Voice Match hjælper Google Assistent med at identificere din stemme på din <ph name="DEVICE_TYPE" />, så den undgår at forveksle dig med andre. "Hey Google" er kun aktiveret, når din enhed er sluttet til en strømkilde, for at spare på batteriet. Gå til Indstillinger for at foretage ændringer.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis også bruges til at få adgang til dit personlige indhold. Du kan fjerne tilladelsen til Voice Match på et senere tidspunkt ved at deaktivere funktionen i indstillingerne for Google Assistent.</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
@@ -2381,6 +2372,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3495496470825196617">Inaktiv tilstand ved opladning</translation>
 <translation id="3495660573538963482">Indstillinger for Google Assistent</translation>
 <translation id="3496213124478423963">Zoom ud</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (ikke valgt).</translation>
 <translation id="3497501929010263034">USB-enhed fra <ph name="VENDOR_NAME" /> (produkt <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Del doodle</translation>
 <translation id="3498215018399854026">Vi kan ikke få fat i din forælder på nuværende tidspunkt. Prøv igen.</translation>
@@ -3011,7 +3003,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4154664944169082762">Fingeraftryk</translation>
 <translation id="4157869833395312646">Microsoft-kryptering via server</translation>
 <translation id="4158364720893025815">Bestået</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> kan få personligt tilpassede svar på egne spørgsmål ved at give Google Assistent tilladelse til at bruge oplysningerne på skærmen, der tilhører <ph name="SUPERVISED_USER_NAME" />. Det kan omfatte oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="4159681666905192102">Dette er en børnekonto, der administreres af <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Ukendt tastatur</translation>
 <translation id="4167686856635546851">Websites bruger normalt JavaScript til interaktive formål såsom videospil og webformularer</translation>
@@ -3654,7 +3645,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Åbn med standardvisningsprogram</translation>
 <translation id="488785315393301722">Se info</translation>
-<translation id="4889792122460431731">Få personligt tilpassede svar, når du stiller spørgsmål, ved at give Assistent tilladelse til at bruge oplysningerne på din skærm. Det kan omfatte oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="4890773143211625964">Vis avancerede printerindstillinger</translation>
 <translation id="4891089016822695758">Betaforum</translation>
 <translation id="4892229439761351791">Websitet kan anvende Bluetooth</translation>
@@ -3870,7 +3860,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profilen kunne ikke downloades. Prøv igen senere, eller kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="5131591206283983824">Tryk og træk på touchplade</translation>
-<translation id="5135085122826131075">Få adgang til din Google-assistent, når du siger "Hey Google".</translation>
 <translation id="5135533361271311778">Bogmærkeelementet blev ikke oprettet.</translation>
 <translation id="5136343472380336530">Sørg for, at begge enheder er låst op, er i nærheden af hinanden og har Bluetooth aktiveret. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Slet dette element</translation>
@@ -4147,6 +4136,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5449551289610225147">Ugyldig adgangskode</translation>
 <translation id="5449588825071916739">Tilføj alle faner som bogmærker</translation>
 <translation id="5449716055534515760">Luk vin&amp;due</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (fungerer offline)</translation>
 <translation id="5454166040603940656">med <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5457459357461771897">Læs og slet billeder, musik og andre medier på din computer</translation>
@@ -4287,7 +4277,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5585912436068747822">Formatering mislykkedes</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Indlæser apps...</translation>
-<translation id="5590265327628802792">Det ser ud til, at <ph name="SUPERVISED_USER_NAME" /> allerede har konfigureret Google Assistent på en anden enhed. <ph name="SUPERVISED_USER_NAME" /> kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst.</translation>
 <translation id="5592595402373377407">Der er ikke nok data til rådighed endnu.</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -4608,6 +4597,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maks. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Åbn alle i &amp;nyt vindue}=1{Åbn i &amp;nyt vindue}one{Åbn ({COUNT}) i &amp;nyt vindue}other{Åbn alle ({COUNT}) i &amp;nyt vindue}}</translation>
 <translation id="5965661248935608907">Den styrer også, hvilken side der vises, når du klikker på knappen Startside eller søger via omnifeltet.</translation>
+<translation id="5968022600320704045">Ingen søgeresultater</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> kan se filer i <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Meddelelsen med tastaturgenveje blev lukket</translation>
 <translation id="5971037678316050792">Kontrollere tilstand og parring af Bluetooth-adaptere</translation>
@@ -4915,9 +4905,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
 <translation id="629730747756840877">Konto</translation>
-<translation id="6298800237463568825">Voice Match hjælper Google Assistent med at identificere din stemme på din <ph name="DEVICE_TYPE" />, så den undgår at forveksle dig med andre.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis også bruges til at få adgang til dit personlige indhold. Du kan fjerne tilladelsen til Voice Match på et senere tidspunkt ved at deaktivere funktionen i indstillingerne for Google Assistent.</translation>
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
 <translation id="6300177430812514606">Har ikke tilladelse til at sende eller modtage data</translation>
 <translation id="630065524203833229">Af&amp;slut</translation>
@@ -5420,6 +5407,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6855892664589459354">Backup og gendannelse i Crostini</translation>
 <translation id="6856348640027512653">Har ikke tilladelse til at bruge virtual reality-enheder eller -data</translation>
 <translation id="6856623341093082836">Konfigurer og juster nøjagtigheden af din touchskærm</translation>
+<translation id="6856850379840757744">Når du har aktiveret denne funktion, er alle notifikationer lydløse</translation>
 <translation id="6857145580237920905">Fjern eSIM-profiler, inden du udfører en powerwash</translation>
 <translation id="6857699260879628349">Hent konfigurationsoplysninger</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -5698,7 +5686,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7171559745792467651">Installer apps fra dine andre enheder</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
-<translation id="7173336557300642430">Du kan få mere personligt tilpassede svar ved at give Google Assistent tilladelse til at bruge oplysningerne på din skærm, når du stiller spørgsmål. Assistent kan også bruge oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="7174199383876220879">Nyhed! Styr din musik, dine videoer og meget mere.</translation>
 <translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Indlæst fra:</translation>
@@ -5940,7 +5927,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7434969625063495310">Der kunne ikke tilføjes en printerserver. Tjek serverens konfiguration, og prøv igen.</translation>
 <translation id="7436921188514130341">Øv, surt! Der opstod en fejl under omdøbningen.</translation>
 <translation id="7438495332316988804">Du finder standardbrowseren ved at skrive "Chrome" i Appliste.</translation>
-<translation id="7439446972050308922">Dine gemte præferencer anvendes på enhver Chrome OS-enhed, når du logger ind med din Google-konto. Du kan vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="7439519621174723623">Tilføj en enhed for at fortsætte</translation>
 <translation id="7441736921018636843">Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /> for at fjerne din adgangssætning for synkronisering</translation>
 <translation id="7441830548568730290">Andre brugere</translation>
@@ -6399,6 +6385,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Dupliker</translation>
 <translation id="7887864092952184874">Bluetooth-mus er parret</translation>
+<translation id="7889371445710865055">Skift dikteringssprog</translation>
 <translation id="7890147169288018054">Se netværksoplysninger som f.eks. din IP- eller MAC-adresse</translation>
 <translation id="7893008570150657497">Få adgang til billeder, musik og andre medier fra din computer</translation>
 <translation id="7893153962594818789">Bluetooth er slået fra på denne <ph name="DEVICE_TYPE" />. Angiv din adgangskode, og slå Bluetooth til.</translation>
@@ -6943,7 +6930,6 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8480869669560681089">Ukendt enhed fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekræft USB-tilladelse</translation>
 <translation id="8481980314595922412">Prøvefunktioner er slået til</translation>
-<translation id="8482860770919360244">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Få endnu mere ud af Assistent ved at aktivere skærmkontekst.</translation>
 <translation id="848666842773560761">En app forsøger at få adgang til kameraet. Slå kameraets privatlivskontakt fra for at give appen adgang.</translation>
 <translation id="8487678622945914333">Zoom ind</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på din konto</translation>

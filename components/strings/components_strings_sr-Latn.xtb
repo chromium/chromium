@@ -999,6 +999,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="443121186588148776">Serijski port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nije prihvatio sertifikat za prijavljivanje ili sertifikat za prijavljivanje nije priložen.</translation>
 <translation id="4432792777822557199">Stranice na jeziku <ph name="SOURCE_LANGUAGE" /> će se od sada prevoditi na <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="4433642172056592619">Zanemareno je korisnik nije povezan sa upravljanjem uređaja ili se uređajem ne upravlja.</translation>
 <translation id="4434045419905280838">Iskačući prozori i preusmeravanja</translation>
 <translation id="4435702339979719576">razglednica)</translation>
 <translation id="443673843213245140">Korišćenje proksija je onemogućeno, ali je navedena eksplicitna konfiguracija proksija.</translation>

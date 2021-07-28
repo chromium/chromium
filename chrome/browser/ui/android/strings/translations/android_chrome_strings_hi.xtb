@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome सुविधा शॉर्टकट</translation>
 <translation id="1344653310988386453">हाइलाइट किए गए टेक्स्ट का लिंक शामिल करें</translation>
 <translation id="1347468774581902829">गतिविधि प्रबंधित करें</translation>
+<translation id="1352771733366526411">सभी विंडो (<ph name="INSTANCE_COUNTS" />) मैनेज करें</translation>
 <translation id="1360432990279830238">साइन आउट करें और सिंक बंद करें?</translation>
 <translation id="1373696734384179344">चयनित सामग्री डाउनलोड करने के लिए मेमोरी अपर्याप्‍त है.</translation>
 <translation id="1376578503827013741">गणना की जा रही है…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome अब ज़्यादा तेज़ी से फ़ाइलें डाउनलोड करता है</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
+<translation id="1888378517829496315">सभी विंडो मैनेज करें</translation>
 <translation id="189358972401248634">अन्य भाषाएं</translation>
 <translation id="1918175104945982129">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति आधी स्क्रीन में खुली हुई है</translation>
 <translation id="1919130412786645364">Chrome में साइन-इन करने दें</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">गुप्त टैब</translation>
 <translation id="5132942445612118989">सभी डिवाइस पर अपने पासवर्ड, इतिहास और दूसरी कई चीज़ें सिंक करें</translation>
 <translation id="5139940364318403933">Google डिस्क के इस्तेमाल का तरीका जानें</translation>
+<translation id="5142281402488957685">फ़ीड का कॉन्टेंट रीफ़्रेश करने के लिए, पेज को नीचे खींचें, ताकि नई स्टोरी दिखें</translation>
 <translation id="5152843274749979095">भुगतान करने के लिए कोई ऐप्लिकेशन इंस्‍टॉल नहीं है</translation>
 <translation id="5161254044473106830">शीर्षक आवश्‍यक</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 डाउनलोड नहीं हो सका.}one{# डाउनलोड नहीं हो सके.}other{# डाउनलोड नहीं हो सके.}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">सिर्फ़ कुछ निश्चित साइटों को ही अनुमति दें</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब}other{<ph name="TAB_COUNT_MANY" /> टैब}}</translation>
 <translation id="5423934151118863508">  सबसे ज़्यादा देखे गए पेज यहां दिखाई देंगे</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जीबी उपलब्ध है</translation>
 <translation id="543338862236136125">पासवर्ड में बदलाव करें</translation>
@@ -946,6 +950,7 @@
 <translation id="6979737339423435258">हमेशा</translation>
 <translation id="6981982820502123353">सुलभता</translation>
 <translation id="6989267951144302301">डाउनलोड नहीं किया जा सका</translation>
+<translation id="6992232929048168262">फ़ुल स्क्रीन में खोलें</translation>
 <translation id="6995899638241819463">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="7001056293070445572">यह फ़ाइल बड़ी (<ph name="FILE_SIZE" />) है</translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>
@@ -1230,6 +1235,7 @@
 <translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
+<translation id="8701921397542715895">बगल वाली विंडो में चल रही है</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8730621377337864115">हो गया</translation>

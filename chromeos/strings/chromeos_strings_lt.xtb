@@ -319,6 +319,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7059230779847288458">Kraunama, <ph name="TIME_VALUE" />, kol bus įkrauta</translation>
 <translation id="708426984172631313">SUSTABDYTA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="714876143603641390">LAN ryšys</translation>

@@ -325,10 +325,12 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1347512539447549782">Linuxova pohrana</translation>
 <translation id="1347975661240122359">Ažuriranje će početi kada baterija dosegne <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Da koristite kontrole roditeljskog nadzora, kao što su odobrenja za aplikacije i ograničenja vremena korištenja uređaja, dijete mora imati Google račun kojim upravlja roditelj. Školski račun se može dodati kasnije za korištenje s alatima kao što je Google Učionica.</translation>
+<translation id="135389172849514421">Funkcionira offline</translation>
 <translation id="1353980523955420967">Nije moguće pronaći PPD. Provjerite je li Chromebook na mreži i pokušajte ponovo.</translation>
 <translation id="1354045473509304750">I dalje dozvoli da <ph name="HOST" /> koristi i pomjera kameru</translation>
 <translation id="1355088139103479645">Izbrisati sve podatke?</translation>
 <translation id="1355466263109342573">Dodatak <ph name="PLUGIN_NAME" /> je blokiran</translation>
+<translation id="1356178530321889280">Kliknite desnim klikom i odaberite "Pretraži dio stranice pomoću Google Objektiva" da pretražite bilo koji dio web lokacije kako biste saznali više o prikazanom vizuelnom sadržaju dok pretražujete i kupujete na webu.</translation>
 <translation id="1358741672408003399">Provjera pravopisa i gramatika</translation>
 <translation id="1359923111303110318">Vaš uređaj se može otključati pomoću Smart Locka. Pritisnite Enter da ga otključate.</translation>
 <translation id="1361164813881551742">Dodaj ručno</translation>
@@ -563,13 +565,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1593926297800505364">Sačuvaj način plaćanja</translation>
 <translation id="1595492813686795610">Nadograđivanje Linuxa</translation>
 <translation id="1596286373007273895">Dostupno</translation>
-<translation id="1597224195604051602">Voice Match pomaže da Google Asistent identificira glas djeteta (<ph name="SUPERVISED_USER_NAME" />) na vašem uređaju <ph name="DEVICE_TYPE" /> i da ga razlikuje od drugih.
-    <ph name="BR" />
-    Asistent snima isječke glasa vašeg djeteta da kreira jedinstveni model glasa, koji se pohranjuje isključivo na uređajima djeteta. Model glasa vašeg djeteta može biti privremeno poslan Googleu radi bolje identifikacije glasa.
-    <ph name="BR" />
-    Ako kasnije odlučite da Voice Match nije dobar izbor za vaše dijete, jednostavno ga uklonite u djetetovim Postavkama Asistenta. Da pregledate ili izbrišete audio isječke koje je vaše dijete snimilo dok je postavljalo Voice Match, idite na g.co/assistant/match s računa djeteta.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> neko sa sličnim glasom ili snimkom može pristupiti ličnim rezultatima djeteta (<ph name="SUPERVISED_USER_NAME" />). Radi uštede baterije "Ok Google" se uključuje samo kada je ovaj uređaj povezan na izvor napajanja.</translation>
 <translation id="1598233202702788831">Administrator je onemogućio ažuriranja.</translation>
 <translation id="1600857548979126453">Pristup pozadini programa za otklanjanje grešaka na stranici</translation>
 <translation id="1601560923496285236">Primijeni</translation>
@@ -855,7 +850,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1865769994591826607">Veze samo na istoj stranici</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" može čitati i pisati slike, videozapise i zvučne fajlove na označenim lokacijama.</translation>
 <translation id="1867780286110144690">Aplikacija <ph name="PRODUCT_NAME" /> je spremna za završetak vaše instalacije</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Provjera lozinki nije dostupna na Chromiumu</translation>
 <translation id="1869433484041798909">Dugme za označavanje</translation>
 <translation id="1871098866036088250">Otvori u pregledniku Chrome</translation>
@@ -1139,7 +1133,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2163937499206714165">Uključi tamni način rada</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i još 1 prekidač</translation>
 <translation id="2165177462441582039">Odaberite koliko dugo će svaka stavka biti istaknuta</translation>
-<translation id="2165421703844373933">Pristupite Asistentu izgovaranjem "Ok Google" Radi uštede baterije, odaberite “Uključi (Preporučeno)”. Asistent će reagirati samo kada je uređaj priključen ili kada se puni.</translation>
 <translation id="2166369534954157698">Bošnjak Fadil Hadžić žučljiv zet najgrđem piscu!</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Ipak se prijavi</translation>
@@ -1469,6 +1462,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2509495747794740764">Razmjer mora biti broj između 10 i 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Zaboravi Bluetooth uređaj</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (odabrano)</translation>
 <translation id="2513396635448525189">Slika prilikom prijave</translation>
 <translation id="2514326558286966059">Otključavajte brže pomoću otiska prsta</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1623,9 +1617,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Promijenite postavke unosa</translation>
 <translation id="2693176596243495071">Ups!  Došlo je do nepoznate greške. Pokušajte ponovo kasnije ili se obratite administratoru ako se problem nastavi.</translation>
-<translation id="2693640212062142966">Voice Match omogućava da Google Asistent identificira vaš glas na uređaju <ph name="DEVICE_TYPE" /> i da vas razlikuje od drugih. Radi uštede baterije "Ok Google" se uključuje samo kada je uređaj povezan na izvor napajanja. Da to promijenite, idite u Postavke.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> neko sa sličnim glasom ili snimkom također može pristupiti vašim ličnim rezultatima. Odobrenje za Voice Match možete ukloniti kasnije u Postavkama Asistenta.</translation>
 <translation id="2699911226086014512">Korištenje PIN-a s kodom <ph name="RETRIES" /> nije uspjelo.</translation>
 <translation id="2701330563083355633">Dijeljeno s uređaja: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Prijavite se, <ph name="EMAIL" /></translation>
@@ -2378,6 +2369,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3495496470825196617">Neaktivnost tokom punjenja</translation>
 <translation id="3495660573538963482">Postavke Google Asistenta</translation>
 <translation id="3496213124478423963">Umanji</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (nije odabrano)</translation>
 <translation id="3497501929010263034">USB uređaj dobavljača <ph name="VENDOR_NAME" /> (proizvod: <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Dijeljenje doodle logotipa</translation>
 <translation id="3498215018399854026">Nismo uspjeli kontaktirati tvog roditelja ovaj put. Pokušaj ponovo.</translation>
@@ -3008,7 +3000,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4154664944169082762">Otisci prstiju</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Uspješno</translation>
-<translation id="4159163871835771155">Da bi <ph name="SUPERVISED_USER_NAME" /> primao/la prilagođene odgovore kada postavlja pitanja, dozvolite Asistentu da koristi informacije koje <ph name="SUPERVISED_USER_NAME" /> ima na ekranu. To može obuhvatati informacije o pjesmama ili videozapisima koji se trenutno reproduciraju.</translation>
 <translation id="4159681666905192102">Ovo je račun za djecu kojim upravlja <ph name="CUSTODIAN_EMAIL" /> i <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nepoznata tastatura</translation>
 <translation id="4167686856635546851">Web lokacije obično koriste JavaScript za prikaz interaktivnih funkcija, kao što su video igre ili web obrasci</translation>
@@ -3651,7 +3642,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4884987973312178454">6 x</translation>
 <translation id="4887424188275796356">Otvori koristeći sistemski prikazivač</translation>
 <translation id="488785315393301722">Prikaži detalje</translation>
-<translation id="4889792122460431731">Da primite prilagođene odgovore kada postavljate pitanja, omogućite Asistentu da koristi informacije na vašem ekranu. To može obuhvatati informacije o pjesmama ili videozapisima koji se trenutno reproduciraju.</translation>
 <translation id="4890773143211625964">Prikaži napredne opcije pisača</translation>
 <translation id="4891089016822695758">Forum za beta verziju</translation>
 <translation id="4892229439761351791">Web lokacija može koristiti Bluetooth</translation>
@@ -3867,7 +3857,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Preuzimanje profila nije uspjelo. Pokušajte ponovo kasnije ili za pomoć kontaktirajte mobilnog operatera.</translation>
 <translation id="5131591206283983824">Prevlačenje dodirom na dodirnoj podlozi</translation>
-<translation id="5135085122826131075">Pristupite Asistentu izgovaranjem "Ok Google"</translation>
 <translation id="5135533361271311778">Oznaka nije kreirana.</translation>
 <translation id="5136343472380336530">Provjerite jesu li oba uređaja otključana, jedan blizu drugoga i je li na njima uključen Bluetooth. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Izbriši ovu stavku</translation>
@@ -4144,6 +4133,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5449551289610225147">Pogrešna lozinka</translation>
 <translation id="5449588825071916739">Označavanje svih kartica</translation>
 <translation id="5449716055534515760">Zatvori prozor</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (funkcionira van mreže)</translation>
 <translation id="5454166040603940656">s pružaocem usluge <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Nevažeće</translation>
 <translation id="5457459357461771897">čitati i brisati fotografije, glazbu i druge medije s vašeg računala</translation>
@@ -4284,7 +4274,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5585912436068747822">Formatiranje nije uspjelo</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
-<translation id="5590265327628802792">Izgleda da je <ph name="SUPERVISED_USER_NAME" /> već postavio/la Google Asistenta na drugom uređaju. <ph name="SUPERVISED_USER_NAME" /> može još bolje iskoristiti Asistenta ako uključi Kontekst ekrana.</translation>
 <translation id="5592595402373377407">Još nije dostupno dovoljno podataka.</translation>
 <translation id="5595485650161345191">Uredite adresu</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -4605,6 +4594,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (najviše <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvori sve u &amp;novom prozoru}=1{Otvori u &amp;novom prozoru}one{Otvori sve ({COUNT}) u &amp;novom prozoru}few{Otvori sve ({COUNT}) u &amp;novom prozoru}other{Otvori sve ({COUNT}) u &amp;novom prozoru}}</translation>
 <translation id="5965661248935608907">Također određuje koja stranica će se prikazati kada kliknete dugme Početna ili pretražujete iz Omniboxa.</translation>
+<translation id="5968022600320704045">Nema rezultata pretraživanja</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> može pregledati fajlove u folderu <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Obavještenje o prečici tastature je odbačeno</translation>
 <translation id="5971037678316050792">Kontrolira stanje Bluetooth adaptera i uparivanje</translation>
@@ -4912,9 +4902,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6295158916970320988">Sve web-lokacije</translation>
 <translation id="6295855836753816081">Pohranjivanje…</translation>
 <translation id="629730747756840877">Račun</translation>
-<translation id="6298800237463568825">Voice Match omogućava da Google Asistent identificira vaš glas na uređaju <ph name="DEVICE_TYPE" /> i da vas razlikuje od drugih.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Napomena:<ph name="END_BOLD" /> neko sa sličnim glasom ili snimkom također može pristupiti vašim ličnim rezultatima. Odobrenje za Voice Match možete ukloniti kasnije u Postavkama Asistenta.</translation>
 <translation id="6298962879096096191">Korištenje Google Playa za instaliranje Android aplikacija</translation>
 <translation id="6300177430812514606">Nije dozvoljeno završavanje slanja ili primanja podataka</translation>
 <translation id="630065524203833229">I&amp;zađi</translation>
@@ -5417,6 +5404,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6855892664589459354">Izrada sigurnosnih kopija i vraćanje na Crostiniju</translation>
 <translation id="6856348640027512653">Nije dozvoljeno korištenje uređaja ili podataka virtuelne realnosti</translation>
 <translation id="6856623341093082836">Postavite i podesite preciznost ekrana osjetljivog na dodir</translation>
+<translation id="6856850379840757744">Kada je uključeno, sva obavještenja će se utišati</translation>
 <translation id="6857145580237920905">Uklonite profile eSIM-a prije nego što izvršite Powerwash</translation>
 <translation id="6857699260879628349">Preuzimanje informacija o konfiguraciji</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -5695,7 +5683,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7171559745792467651">Instalirajte aplikacije s drugih uređaja</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Dodaj karticu u novu grupu}one{Dodaj kartice u novu grupu}few{Dodaj kartice u novu grupu}other{Dodaj kartice u novu grupu}}</translation>
 <translation id="7173114856073700355">Otvori postavke</translation>
-<translation id="7173336557300642430">Da primite odgovore koji su više prilagođeni vama, omogućite Google Asistentu da koristi informacije na vašem ekranu kada postavljate pitanja. Asistent također može koristiti informacije o pjesmama ili videozapisima koji se trenutno reproduciraju.</translation>
 <translation id="7174199383876220879">Novo! Upravljajte muzikom, videozapisima i drugim sadržajima.</translation>
 <translation id="7175037578838465313">Konfigurirajte <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Učitano iz:</translation>
@@ -5937,7 +5924,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7434969625063495310">Dodavanje servera za štampanje nije uspjelo. Provjerite konfiguraciju servera i pokušajte ponovo.</translation>
 <translation id="7436921188514130341">O, ne! Došlo je do pogreške prilikom preimenovanja.</translation>
 <translation id="7438495332316988804">Standardni preglednik možete pronaći ako u Pokretač unesete "Chrome".</translation>
-<translation id="7439446972050308922">Vaše sačuvane postavke će biti spremne na svakom Chrome OS uređaju kada se prijavite pomoću Google računa. U Postavkama možete odabrati šta želite sinhronizirati.</translation>
 <translation id="7439519621174723623">Dodajte naziv uređaja da nastavite</translation>
 <translation id="7441736921018636843">Za promjenu ove postavke <ph name="BEGIN_LINK" />poništite sinhronizaciju<ph name="END_LINK" /> da uklonite pristupni izraz sinhronizacije</translation>
 <translation id="7441830548568730290">Drugi korisnici</translation>
@@ -6397,6 +6383,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Dupliciraj</translation>
 <translation id="7887864092952184874">Bluetooth miš je uparen</translation>
+<translation id="7889371445710865055">Promijenite jezik diktiranja</translation>
 <translation id="7890147169288018054">Prikaz informacija o mreži, kao što su vaša IP ili MAC adresa</translation>
 <translation id="7893008570150657497">Pristupa fotografijama, muzici i drugim medijskim fajlovima s vašeg računara</translation>
 <translation id="7893153962594818789">Bluetooth je isključen na uređaju <ph name="DEVICE_TYPE" />. Unesite lozinku i zatim uključite Bluetooth.</translation>
@@ -6941,7 +6928,6 @@ Pritisnite dodijeljeni prekidač da uklonite dodjeljivanje</translation>
 <translation id="8480869669560681089">Nepoznat uređaj od dobavljača <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrdite odobrenje za USB</translation>
 <translation id="8481980314595922412">Funkcije probnog perioda su uključene</translation>
-<translation id="8482860770919360244">Izgleda da ste već postavili Google Asistenta na drugom uređaju. Uključite Kontekst ekrana da još više iskoristite prednosti Asistenta.</translation>
 <translation id="848666842773560761">Aplikacija pokušava pristupiti kameri. Isključite prekidač za privatnost kamere da omogućite pristup.</translation>
 <translation id="8487678622945914333">Uvećaj</translation>
 <translation id="8489156414266187072">Lični prijedlozi se prikazuju samo na vašem računu</translation>

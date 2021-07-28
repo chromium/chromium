@@ -319,6 +319,7 @@
 <translation id="7059230779847288458">Заряджається (<ph name="TIME_VALUE" /> до повного зарядження)</translation>
 <translation id="708426984172631313">ЗУПИНЕНО</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>

@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Atalhos de recursos do Google Chrome</translation>
 <translation id="1344653310988386453">Incluir link para o conteúdo destacado</translation>
 <translation id="1347468774581902829">Gerenciar atividade</translation>
+<translation id="1352771733366526411">Gerenciar todas as janelas (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
 <translation id="1373696734384179344">Memória insuficiente para fazer o download do conteúdo selecionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Agora o Chrome faz o download de arquivos mais rapidamente</translation>
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
 <translation id="1883903952484604915">Meus arquivos</translation>
+<translation id="1888378517829496315">Gerenciar todas as janelas</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1918175104945982129">IU de consentimento para a pesquisa por voz do Assistente aberta na metade da altura</translation>
 <translation id="1919130412786645364">Permitir login no Chrome</translation>
@@ -640,6 +642,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5123685120097942451">Guia anônima</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5139940364318403933">Saber como usar o Google Drive</translation>
+<translation id="5142281402488957685">Puxe para baixo para atualizar e ver novas matérias</translation>
 <translation id="5152843274749979095">Nenhum app compatível instalado</translation>
 <translation id="5161254044473106830">O título é obrigatório</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Falha em 1 download.}one{Falha em # download.}other{Falha em # downloads.}}</translation>
@@ -680,6 +683,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5403644198645076998">Permitir apenas determinados sites</translation>
 <translation id="5409881200985013443">Enviar <ph name="ONE_TIME_CODE" /> no <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verificando...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia}one{<ph name="TAB_COUNT_MANY" /> guia}other{<ph name="TAB_COUNT_MANY" /> guias}}</translation>
 <translation id="5423934151118863508">Suas páginas mais visitadas aparecerão aqui</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponível(is)</translation>
 <translation id="543338862236136125">Editar senha</translation>
@@ -947,6 +951,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6979737339423435258">Todo o período</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6989267951144302301">Falha no download</translation>
+<translation id="6992232929048168262">Abrir em tela cheia</translation>
 <translation id="6995899638241819463">Avisar se suas senhas forem expostas em uma violação de dados</translation>
 <translation id="7001056293070445572">Esse arquivo é grande (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
@@ -1231,6 +1236,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8683081248374354009">Redefinir grupo</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>
+<translation id="8701921397542715895">Executando em uma janela adjacente</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>

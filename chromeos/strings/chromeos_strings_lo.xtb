@@ -320,6 +320,7 @@
 <ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
 <translation id="708426984172631313">ຢຸດແລ້ວ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>

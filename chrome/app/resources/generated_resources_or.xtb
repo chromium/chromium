@@ -527,6 +527,7 @@
 <translation id="156793199942386351">'<ph name="ACTION" />'କୁ ପୂର୍ବରୁ '<ph name="CURRENTKEY" />'କୁ ଆସାଇନ୍ କରାଯାଇଛି। <ph name="RESPONSE" /> ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="1567993339577891801">&amp;JavaScript କନ୍‌ସୋଲ୍</translation>
 <translation id="1568323446248056064">ଡିସ୍‌ପ୍ଲେ ଡିଭାଇସ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="1571738973904005196">ଟାବ୍ ଦେଖନ୍ତୁ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ଅତିଥି)</translation>
 <translation id="1572266655485775982">ୱାଇ-ଫାଇ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="1572876035008611720">ଆପଣଙ୍କର ଇମେଲ୍ ଲେଖନ୍ତୁ</translation>
@@ -556,13 +557,6 @@
 <translation id="1593926297800505364">ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ସେଭ୍‍ କରନ୍ତୁ</translation>
 <translation id="1595492813686795610">Linuxକୁ ଅପ୍‍‍ଗ୍ରେଡ୍ କରାଯାଉଛି</translation>
 <translation id="1596286373007273895">ଉପଲବ୍ଧ</translation>
-<translation id="1597224195604051602">Voice Match ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ <ph name="SUPERVISED_USER_NAME" />ର ଭଏସକୁ ଚିହ୍ନଟ କରିବାରେ ଏବଂ ଆପଣଙ୍କୁ ଅନ୍ୟମାନଙ୍କଠାରୁ ଅଲଗା କରିବାରେ Google Assistantକୁ ସାହାଯ୍ୟ କରେ।
-    <ph name="BR" />
-ଏକ ସ୍ୱତନ୍ତ୍ର ଭଏସ୍ ମଡେଲ୍ ତିଆରି କରିବାକୁ, Assistant କେବଳ ଆପଣଙ୍କ ପିଲାର ଡିଭାଇସ(ଗୁଡ଼ିକ)ରେ ଷ୍ଟୋର୍ ହୋଇଥିବା ତା'ର ଭଏସ୍ କ୍ଲିପଗୁଡ଼ିକୁ ନିଏ। ଆପଣଙ୍କ ପିଲାର ଭଏସକୁ ଭଲ ଭାବରେ ଚିହ୍ନଟ କରିବା ପାଇଁ Googleକୁ ସାମୟିକ ଭାବେ ତା'ର ଭଏସ୍ ମଡେଲ୍ ପଠାଯାଇପାରେ।
-    <ph name="BR" />
-ଯଦି Voice Matchଟି ଆପଣଙ୍କ ପିଲା ପାଇଁ ଠିକ୍ ନୁହେଁ ବୋଲି ଆପଣ ପରେ ନିଷ୍ପତ୍ତି ନିଅନ୍ତି, ତେବେ ଏହାକୁ ତା'ର Assistant ସେଟିଂସରୁ କାଢ଼ି ଦିଅନ୍ତୁ। Voice Match ସେଟଅପ୍ କରିବା ସମୟରେ ଆପଣଙ୍କ ପିଲା ରେକର୍ଡ କରିଥିବା ଅଡିଓ କ୍ଲିପଗୁଡ଼ିକ ଦେଖିବାକୁ କିମ୍ବା ଡିଲିଟ୍ କରିବାକୁ ଆପଣଙ୍କ ପିଲାର ଆକାଉଣ୍ଟରୁ g.co/assistant/matchକୁ ଯାଆନ୍ତୁ।
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ଧ୍ୟାନ ଦିଅନ୍ତୁ:<ph name="END_BOLD" /> ଏକ ସମାନ ଭଏସ୍ କିମ୍ବା ରେକର୍ଡିଂ <ph name="SUPERVISED_USER_NAME" />ର ବ୍ୟକ୍ତିଗତ ଫଳାଫଳଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାରେ ସମର୍ଥ ହୋଇପାରେ। ବ୍ୟାଟେରୀ ସେଭ୍ କରିବାକୁ, ଏହି ଡିଭାଇସ୍ ଏକ ପାୱାର ସୋର୍ସ ସହ ସଂଯୁକ୍ତ ଥିବା ସମୟରେ କେବଳ "Hey Google" ଚାଲୁ ହୋଇଥାଏ।</translation>
 <translation id="1598233202702788831">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଅପ୍‌ଡେଟ୍ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="1600857548979126453">ପୃଷ୍ଠା ଡିବଗର୍ ବ୍ୟାକ୍‍ଏଣ୍ଡ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="1601560923496285236">ଲାଗୁ କରନ୍ତୁ</translation>
@@ -840,7 +834,6 @@
 <translation id="1865769994591826607">ସମାନ-ସାଇଟ୍ ସଂଯୋଗଗୁଡ଼ିକ କେବଳ</translation>
 <translation id="186612162884103683">ଯାଞ୍ଚ କରାଯାଇଥିବା ଲୋକେସନ୍‌ଗୁଡ଼ିକରେ "<ph name="EXTENSION" />", ଛବି, ଭିଡିଓ ଓ ସାଉଣ୍ଡ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ପଢ଼ିପାରିବ ଓ ଲେଖିପାରିବ।</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> ଆପଣଙ୍କର ଇନ୍‍ଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟା ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ପ୍ରସ୍ତୁତ ଅଛି</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Chromiumରେ ପାସୱାର୍ଡ ଯାଞ୍ଚ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1869433484041798909">ବୁକମାର୍କ ବଟନ୍</translation>
 <translation id="1871098866036088250">Chrome ବ୍ରାଉଜରରେ ଖୋଲନ୍ତୁ</translation>
@@ -1124,7 +1117,6 @@
 <translation id="2163937499206714165">ଡାର୍କ ମୋଡ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, ଏବଂ ଅଧିକ 1ଟି ସ୍ୱିଚ୍</translation>
 <translation id="2165177462441582039">ପ୍ରତ୍ୟେକ ଆଇଟମରେ କେତେ ସମୟ ପର୍ଯ୍ୟନ୍ତ ହାଇଲାଇଟ୍ ରଖିବା ଉଚିତ ତାହା ବାଛନ୍ତୁ</translation>
-<translation id="2165421703844373933">"Ok Google" କହି ଆପଣଙ୍କର Assistantକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ। ବ୍ୟାଟେରୀ ସେଭ୍ କରିବା ପାଇଁ, “ଚାଲୁ କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)”କୁ ବାଛନ୍ତୁ। ଆପଣଙ୍କର ଡିଭାଇସ୍ ପ୍ଲଗ୍ ଇନ୍ ଥିବା କିମ୍ବା ଚାର୍ଜ ହେଉଥିବା ସମୟରେ ହିଁ କେବଳ Assistant ପ୍ରତିକ୍ରିୟା କରିବ।</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ଯେକୌଣସି ମତେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
@@ -1606,9 +1598,6 @@
 <translation id="2691385045260836588">ମଡେଲ୍</translation>
 <translation id="2691440343905273290">ଇନପୁଟ୍ ସେଟିଂସ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="2693176596243495071">ଓହୋ!  ଏକ ଅଜଣା ତ୍ରୁଟି ଦେଖାଦେଲା। ଦୟାକରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ ବା ଯଦି ସମସ୍ୟାଟି ଲାଗିରୁହେ ତେବେ ନିଜର ବ୍ୟବସ୍ଥାପକଙ୍କ ସହ ସମ୍ପର୍କ କରନ୍ତୁ।</translation>
-<translation id="2693640212062142966">Voice Match ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କର ଭଏସକୁ ଚିହ୍ନଟ କରିବାରେ ଏବଂ ଆପଣଙ୍କୁ ଅନ୍ୟମାନଙ୍କଠାରୁ ଅଲଗା କରିବାରେ ଆପଣଙ୍କ Google Assistantକୁ ସାହାଯ୍ୟ କରେ। ବ୍ୟାଟେରୀ ସେଭ୍ କରିବାକୁ, ଆପଣଙ୍କ ଡିଭାଇସ୍ ଏକ ପାୱାର ସୋର୍ସ ସହ ସଂଯୁକ୍ତ ଥିବା ସମୟରେ କେବଳ "Hey Google" ଚାଲୁ ହୋଇଥାଏ। ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ।
-    <ph name="BR" />
-<ph name="BEGIN_BOLD" />ମନେ ରଖନ୍ତୁ:<ph name="END_BOLD" /> ଏକ ସମାନ ଭଏସ୍ କିମ୍ବା ରେକର୍ଡିଂ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ଫଳାଫଳଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାରେ ମଧ୍ୟ ସକ୍ଷମ ହୋଇପାରେ। ଆପଣ Assistant ସେଟିଂସରେ Voice Match ଅନୁମତିକୁ ବନ୍ଦ କରି ପରେ ଏହାକୁ କାଢ଼ି ଦେଇପାରିବେ।</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" />କୋଡ୍ ସହିତ ପିନ୍‌ର କାର୍ଯ୍ୟକାରିତା ବିଫଳ ହେଲା।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />ରୁ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="2701737434167469065">ସାଇନ୍ ଇନ୍, <ph name="EMAIL" /></translation>
@@ -2991,7 +2980,6 @@
 <translation id="4154664944169082762">ଟିପଚିହ୍ନ</translation>
 <translation id="4157869833395312646">Microsoft ସର୍ଭର୍‌ ଗେଟେଡ୍‌ କ୍ରିପ୍ଟୋଗ୍ରାଫି</translation>
 <translation id="4158364720893025815">ପାସ୍</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> ପ୍ରଶ୍ନଗୁଡ଼ିକ ପଚାରିଲେ ଉପଯୋଗୀ ଉତ୍ତରଗୁଡ଼ିକ ପାଇବା ପାଇଁ Assistantକୁ <ph name="SUPERVISED_USER_NAME" />ର ସ୍କ୍ରିନରେ ଥିବା ସୂଚନା ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ। ଚାଲୁଥିବା ଗୀତ କିମ୍ବା ଭିଡିଓଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା ଏଥିରେ ଅନ୍ତର୍ଭୁକ୍ତ ଥାଇପାରେ।</translation>
 <translation id="4159681666905192102">ଏହା <ph name="CUSTODIAN_EMAIL" /> ଏବଂ <ph name="SECOND_CUSTODIAN_EMAIL" />.ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଥିବା ଶିଶୁଙ୍କ ପାଇଁ ଉଦ୍ଦିଷ୍ଟ ଏକ ଆକାଉଣ୍ଟ ଅଟେ।</translation>
 <translation id="4163560723127662357">ଅଜଣା କୀବୋର୍ଡ</translation>
 <translation id="4167686856635546851">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଭିଡିଓ ଗେମ୍ କିମ୍ବା ୱେବ୍ ଫର୍ମଗୁଡ଼ିକ ପରି, ଇଣ୍ଟରାକ୍ଟିଭ୍ ଫିଚରଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ JavaScript ବ୍ୟବହାର କରିଥାଏ</translation>
@@ -3634,7 +3622,6 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">ସିଷ୍ଟମ୍ ଭ୍ୟୁଅର୍ ସହିତ ଖୋଲନ୍ତୁ</translation>
 <translation id="488785315393301722">ବିବରଣୀ ଦେଖାନ୍ତୁ</translation>
-<translation id="4889792122460431731">ଆପଣ ପ୍ରଶ୍ନ ପଚାରିଲେ ଆପଣଙ୍କ ପାଇଁ ଉପଯୋଗୀ ହେଉଥିବା ଉତ୍ତର ପାଇବା ନିମନ୍ତେ ଆପଣଙ୍କର Assistantକୁ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ। ଏଥିରେ ଚାଲୁଥିବା ଗୀତ କିମ୍ବା ଭିଡିଓଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ ଥାଇପାରେ।</translation>
 <translation id="4890773143211625964">ଉନ୍ନତ ପ୍ରିଣ୍ଟର୍ ବିକଳ୍ପଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="4891089016822695758">ବିଟା ଫୋରମ୍</translation>
 <translation id="4892229439761351791">ସାଇଟ୍ ବ୍ଲୁଟୁଥ୍ ବ୍ୟବହାର କରିପାରିବ</translation>
@@ -3850,7 +3837,6 @@
 <translation id="5130080518784460891">ଇଟେନ୍</translation>
 <translation id="5130675701626084557">ପ୍ରୋଫାଇଲକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ସହାୟତା ପାଇଁ କ୍ୟାରିଅରଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="5131591206283983824">ଟଚପ୍ୟାଡ୍ ଟାପ୍ ଡ୍ରାଗିଂ</translation>
-<translation id="5135085122826131075">"Ok Google" କହି ଆପଣଙ୍କର Assistantକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ।</translation>
 <translation id="5135533361271311778">ବୁକ୍‍ମାର୍କ ଆଇଟମ୍ ତିଆରି କରିହେଲା ନାହିଁ।</translation>
 <translation id="5136343472380336530">ଉଭୟ ଡିଭାଇସକୁ ଅନଲକ୍ କରାଯାଇଛି, ସେଗୁଡ଼ିକ ପାଖାପାଖି ରହିଛି ଏବଂ ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">ଏହି ଆଇଟମ୍‍ ଡିଲିଟ୍‍ କରନ୍ତୁ</translation>
@@ -4267,7 +4253,6 @@
 <translation id="5585912436068747822">ଫର୍ମାଟ୍ ବିଫଳ ହେଲା</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ଆପ୍ସ ଲୋଡ୍‌ ହେଉଛି...</translation>
-<translation id="5590265327628802792">ପୂର୍ବରୁ <ph name="SUPERVISED_USER_NAME" /> ଅନ୍ୟ ଏକ ଡିଭାଇସରେ Google Assistant ସେଟ୍ ଅପ୍ କରିଥିବା ପରି ଜଣାପଡ଼ୁଛି। ସ୍କ୍ରିନ୍ ପ୍ରସଙ୍ଗ ଚାଲୁ କରି,<ph name="SUPERVISED_USER_NAME" /> Assistantରୁ ଆହୁରି ଅଧିକ ସୁବିଧା ପାଇପାରିବ।</translation>
 <translation id="5592595402373377407">ଏପର୍ଯ୍ୟନ୍ତ ସୁଦ୍ଧା ପର୍ଯ୍ୟାପ୍ତ ଡାଟା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5595485650161345191">ଠିକଣା ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
@@ -4895,9 +4880,6 @@
 <translation id="6295158916970320988">ସମସ୍ତ ସାଇଟ୍‍ଗୁଡ଼ିକ</translation>
 <translation id="6295855836753816081">ସେଭ୍ ହେଉଛି…</translation>
 <translation id="629730747756840877">ଆକାଉଣ୍ଟ</translation>
-<translation id="6298800237463568825">Voice Match ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କର ଭଏସକୁ ଚିହ୍ନଟ କରିବାରେ ଏବଂ ଆପଣଙ୍କୁ ଅନ୍ୟମାନଙ୍କଠାରୁ ଅଲଗା କରିବାରେ ଆପଣଙ୍କ Google Assistantକୁ ସାହାଯ୍ୟ କରେ।
-    <ph name="BR" />
-<ph name="BEGIN_BOLD" />ମନେ ରଖନ୍ତୁ:<ph name="END_BOLD" /> ଏକ ସମାନ ଭଏସ୍ କିମ୍ବା ରେକର୍ଡିଂ ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ଫଳାଫଳଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାରେ ମଧ୍ୟ ସକ୍ଷମ ହୋଇପାରେ। ଆପଣ Assistant ସେଟିଂସରେ Voice Match ଅନୁମତିକୁ ବନ୍ଦ କରି ପରେ ଏହାକୁ କାଢ଼ି ଦେଇପାରିବେ।</translation>
 <translation id="6298962879096096191">Android ଆପ୍ସ ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାକୁ Google Play ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6300177430812514606">ଡାଟା ପଠାଇବା କିମ୍ବା ଗ୍ରହଣ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="630065524203833229">&amp;ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
@@ -5642,6 +5624,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7117247127439884114">ପୁର୍ନବାର ସାଇନ୍ ଇନ୍ କରନ୍ତୁ...</translation>
 <translation id="711840821796638741">ପରିଚାଳିତ ବୁକ୍‌ମାର୍କଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="711902386174337313">ଆପଣଙ୍କ ଦ୍ୱାରା ସାଇନ୍-ଇନ୍ କରାଯାଇଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକର ତାଲିକା ପଢ଼ନ୍ତୁ</translation>
+<translation id="711985611146095797">ଏହି ପୃଷ୍ଠା ଆପଣଙ୍କୁ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ହୋଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବାକୁ ଅନୁମତି ଦେଇଥାଏ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">ଏକ VPN ସଂଯୋଗ ନ ହେବା ପର୍ଯ୍ୟନ୍ତ Chrome ବ୍ରାଉଜର୍ ଏବଂ Android ଟ୍ରାଫିକ୍ ବ୍ଲକ୍ ହୋଇଯିବ</translation>
 <translation id="7120865473764644444">ସିଙ୍କ୍ ସର୍ଭର୍ ସହ ସଂଯୋଗ କରିପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରାଯାଉଛି…</translation>
 <translation id="7121438501124788993">ଡେଭଲପର୍ ମୋଡ୍</translation>
@@ -5679,7 +5662,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7171559745792467651">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସ୍‍ରୁ ଆପ୍ସ ଇନ୍‍ଷ୍ଟଲ୍‍ କରନ୍ତୁ</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ନୂଆ ଗୋଷ୍ଠୀକୁ ଟାବ୍ ଯୋଗ କରନ୍ତୁ}other{ନୂଆ ଗୋଷ୍ଠୀକୁ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="7173114856073700355">ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
-<translation id="7173336557300642430">ଆପଣଙ୍କ ପାଇଁ ଅଧିକ ଉପଯୋଗୀ ହେଉଥିବା ଉତ୍ତରଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ ପ୍ରଶ୍ନ ପଚାରିବା ସମୟରେ Google Assistantକୁ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରିବାକୁ ଦିଅନ୍ତୁ। ଆପଣଙ୍କ Assistant ଚାଲୁଥିବା ଗୀତ କିମ୍ବା ଭିଡିଓଗୁଡ଼ିକ ବିଷୟରେ ସୂଚନାକୁ ମଧ୍ୟ ବ୍ୟବହାର କରିପାରେ।</translation>
 <translation id="7174199383876220879">ନୂତନ! ଆପଣଙ୍କର ସଙ୍ଗୀତ, ଭିଡିଓଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛି ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ।</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> କନ୍‌ଫିଗର୍‌ କରନ୍ତୁ</translation>
 <translation id="7175353351958621980">ଏଠାରୁ ଲୋଡ୍ କରାଯାଇଛି:</translation>
@@ -5921,7 +5903,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7434969625063495310">ପ୍ରିଣ୍ଟ ସର୍ଭର୍ ଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ। ଦୟାକରି ସର୍ଭରର କନଫିଗରେସନ୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7436921188514130341">ଇସ୍‌, କିଛି ଭୁଲ୍‍ ହୋଇଛି! ରିନେମ୍‌ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋ‍ଇଥିଲା।</translation>
 <translation id="7438495332316988804">ଲଞ୍ଚରରେ "Chrome" ଟାଇପ୍ କରି ଷ୍ଟାଣ୍ଡାର୍ଡ ବ୍ରାଉଜର୍ ମିଳିପାରିବ।</translation>
-<translation id="7439446972050308922">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ୍ ଇନ୍ କଲେ ଆପଣଙ୍କର ସେଭ୍ କରାଯାଇଥିବା ପସନ୍ଦଗୁଡ଼ିକ ଯେ କୌଣସି Chrome OS ଡିଭାଇସରେ ପ୍ରସ୍ତୁତ ହୋଇଯିବ। କ’ଣ ସିଙ୍କ୍ କରିବାକୁ ହେବ ତାହା ଆପଣ ସେଟିଂସରେ ବାଛି ପାରିବେ।</translation>
 <translation id="7439519621174723623">ଜାରି ରଖିବାକୁ ଏକ ଡିଭାଇସର ନାମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7441736921018636843">ଏହି ସେଟିଂ ପର୍ବର୍ତ୍ତନ କରିବାକୁ, <ph name="BEGIN_LINK" />ସିଙ୍କ୍‌ ରିସେଟ୍‍ କରନ୍ତୁ<ph name="END_LINK" /> ଯାହାଦ୍ୱାରା ଆପଣଙ୍କର ସିଙ୍କ୍‌ ପାସ୍‌ଫ୍ରେଜ୍‍ କାଢ଼ନ୍ତୁ</translation>
 <translation id="7441830548568730290">ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାମାନେ</translation>
@@ -6116,6 +6097,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7639914187072011620">ସର୍ଭରରୁ SAML ରିଡାଇରେକ୍ଟ URL ଫେଚ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ସ୍ୱଚାଳିତ ରୂପେ ଆପଣ ସେଭ୍ କରିଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ମାଧ୍ୟମରେ ଆପଣଙ୍କୁ ଯୋଗ୍ୟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ ସାଇନ୍ ଇନ୍ କରାଏ।</translation>
 <translation id="7641513591566880111">ନୂଆ ପ୍ରୋଫାଇଲ୍ ନାମ</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" />ଙ୍କୁ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="7642778300616172920">ସମ୍ବେଦନଶୀଳ ବିଷୟବସ୍ତୁକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="7643842463591647490">{0,plural, =1{#ଟି ଖୋଲା ୱିଣ୍ଡୋ}other{#ଟି ଖୋଲା ୱିଣ୍ଡୋ}}</translation>
 <translation id="7643932971554933646">ସାଇଟ୍‌କୁ ଫାଇଲ୍‌ଗୁଡ଼ିକ ଦେଖିବାକୁ ଦେବେ କି?</translation>
@@ -6921,7 +6903,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> ଠାରୁ ଅଜ୍ଞାତ ଡିଭାଇସ୍</translation>
 <translation id="8481187309597259238">USB ଅନୁମତି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8481980314595922412">ଟ୍ରାଏଲ୍ ଫିଚରଗୁଡ଼ିକ ଚାଲୁ ଅଛି</translation>
-<translation id="8482860770919360244">ଆପଣ ପୂର୍ବରୁ ଅନ୍ୟ ଏକ ଡିଭାଇସରେ Google Assistant ସେଟ୍ ଅପ୍ କରିଥିବା ପରି ଜଣାପଡ଼ୁଛି। ସ୍କ୍ରିନ୍ ପ୍ରସଙ୍ଗକୁ ଚାଲୁ କରି ଆପଣଙ୍କ Assistantରୁ ଆହୁରି ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ।</translation>
 <translation id="848666842773560761">ଏକ ଆପ୍ କ୍ୟାମେରାକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦେବାକୁ କ୍ୟାମେରାର ଗୋପନୀୟତା ସ୍ୱିଚକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="8487678622945914333">ଜୁମ୍ ଇନ୍</translation>
 <translation id="8489156414266187072">ବ୍ୟକ୍ତିଗତ ପରାମର୍ଶଗୁଡ଼ିକ କେବଳ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଦେଖାଯାଏ</translation>
@@ -7176,6 +7157,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8756969031206844760">ପାସ୍‌ୱାର୍ଡ ଅପ୍‌ଡେଟ୍ କରିବେ?</translation>
 <translation id="8757090071857742562">ଡେସ୍କଟପ୍ କାଷ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ।  ଆପଣ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସେୟାରିଂ ଆରମ୍ଭ କରିବା ପାଇଁ ପ୍ରମ୍ଫ୍ଟକୁ ନିଶ୍ଚିତ କରିଛନ୍ତି କି ନାହିଁ ତାହା ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="8757203080302669031">ଏହି ଟାବଟି ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ସକ୍ରିୟ ଭାବେ ସ୍କାନ୍ କରୁଛି।</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" />ଙ୍କୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="8758418656925882523">ଶ୍ରୁତଲିଖନକୁ ସକ୍ଷମ କରନ୍ତୁ (ଟାଇପ୍ କରିବାକୁ କୁହନ୍ତୁ)</translation>
 <translation id="8759408218731716181">ଏକାଧିକ ସାଇନ୍-ଇନ୍ ସେଟ୍ ଅପ୍ କରିପାରିବେ ନାହିଁ</translation>
 <translation id="8759753423332885148">ଅଧିକ ଜାଣନ୍ତୁ।</translation>

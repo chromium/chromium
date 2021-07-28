@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome'un özellik kısayolları</translation>
 <translation id="1344653310988386453">Seçili metin bağlantısını ekle</translation>
 <translation id="1347468774581902829">Etkinliği yönet</translation>
+<translation id="1352771733366526411">Tüm pencereleri yönet (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Oturum ve senkronizasyon kapatılsın mı?</translation>
 <translation id="1373696734384179344">Seçilen içeriği indirmek için bellek yetersiz.</translation>
 <translation id="1376578503827013741">Hesaplanıyor…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome artık dosyaları daha hızlı indiriyor</translation>
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
+<translation id="1888378517829496315">Tüm pencereleri yönet</translation>
 <translation id="189358972401248634">Diğer diller</translation>
 <translation id="1918175104945982129">Asistan sesli arama izni kullanıcı arayüzü yarım yükseklikte açıldı</translation>
 <translation id="1919130412786645364">Chrome'da oturum açmaya izin verin</translation>
@@ -639,6 +641,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5123685120097942451">Gizli sekme</translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
 <translation id="5139940364318403933">Google Drive'ın nasıl kullanılacağını öğrenin</translation>
+<translation id="5142281402488957685">Yeni hikayeler için aşağıya çekerek feed içeriğini yenileyin</translation>
 <translation id="5152843274749979095">Desteklenen yüklü uygulama yok</translation>
 <translation id="5161254044473106830">Başlık gerekiyor</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 indirme işlemi başarısız oldu.}other{# indirme işlemi başarısız oldu.}}</translation>
@@ -679,6 +682,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5403644198645076998">Yalnızca belirli sitelere izin ver</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> üzerinde <ph name="ONE_TIME_CODE" /> gönderilsin mi?</translation>
 <translation id="5414836363063783498">Doğrulanıyor…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme}}</translation>
 <translation id="5423934151118863508">En çok ziyaret ettiğiniz sayfalar burada görünecektir</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB kullanılabilir</translation>
 <translation id="543338862236136125">Şifreyi düzenle</translation>
@@ -946,6 +950,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6979737339423435258">Tüm zamanlar</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="6989267951144302301">İndirilemedi</translation>
+<translation id="6992232929048168262">Tam ekranda aç</translation>
 <translation id="6995899638241819463">Şifreleriniz bir veri ihlalinde ifşa olursa uyarı alın</translation>
 <translation id="7001056293070445572">Bu dosya büyük (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Tarayıcıda aç</translation>
@@ -1230,6 +1235,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8683081248374354009">Grubu sıfırla</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
+<translation id="8701921397542715895">Bitişik pencerede çalışıyor</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8730621377337864115">Bitti</translation>

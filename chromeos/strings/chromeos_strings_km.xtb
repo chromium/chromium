@@ -318,6 +318,7 @@
 <translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
 <translation id="708426984172631313">បានឈប់</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}other{ដាក់ឈ្មោះ​ម៉ាស៊ីនមេ}}</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>

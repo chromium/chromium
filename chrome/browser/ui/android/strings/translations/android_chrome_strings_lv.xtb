@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome funkciju īsinājumtaustiņi</translation>
 <translation id="1344653310988386453">Ietveriet saiti uz atzīmēto tekstu.</translation>
 <translation id="1347468774581902829">Pārvaldīt darbības</translation>
+<translation id="1352771733366526411">Pārvaldīt visus logus (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Izrakstīties un izslēgt sinhronizēšanu?</translation>
 <translation id="1373696734384179344">Nepietiek vietas, lai lejupielādētu atlasīto saturu.</translation>
 <translation id="1376578503827013741">Notiek aprēķināšana...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Tagad pārlūkā Chrome faili tiek lejupielādēti ātrāk.</translation>
 <translation id="1877026089748256423">Chrome versija ir novecojusi.</translation>
 <translation id="1883903952484604915">Mani faili</translation>
+<translation id="1888378517829496315">Visu logu pārvaldība</translation>
 <translation id="189358972401248634">Citas valodas</translation>
 <translation id="1918175104945982129">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi (atvērta pusekrāna augstumā)</translation>
 <translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
@@ -639,6 +641,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5123685120097942451">Inkognito cilne</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
 <translation id="5139940364318403933">Uzzināt, kā izmantot Google disku</translation>
+<translation id="5142281402488957685">Velciet lejup, lai saturs tiktu atsvaidzināts un tiktu rādīti jauni raksti.</translation>
 <translation id="5152843274749979095">Nav instalēta neviena atbalstīta lietotne</translation>
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 lejupielāde neizdevās.}zero{# lejupielādes neizdevās.}one{# lejupielāde neizdevās.}other{# lejupielādes neizdevās.}}</translation>
@@ -679,6 +682,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5403644198645076998">Atļaut apmeklēt tikai konkrētas vietnes</translation>
 <translation id="5409881200985013443">Vai iesniegt kodu “<ph name="ONE_TIME_CODE" />” ierīcē “<ph name="CLIENT_NAME" />”?</translation>
 <translation id="5414836363063783498">Notiek verifikācija...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_COUNT_MANY" /> ciļņu}one{<ph name="TAB_COUNT_MANY" /> cilne}other{<ph name="TAB_COUNT_MANY" /> cilnes}}</translation>
 <translation id="5423934151118863508">Šeit tiks parādītas jūsu visvairāk apmeklētās lapas.</translation>
 <translation id="5424588387303617268">Pieejami <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Rediģēt paroli</translation>
@@ -946,6 +950,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6989267951144302301">Nevarēja lejupielādēt</translation>
+<translation id="6992232929048168262">Atvērt pilnekrāna režīmā</translation>
 <translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
 <translation id="7001056293070445572">Šis fails ir liels (<ph name="FILE_SIZE" />).</translation>
 <translation id="7022756207310403729">Atvērt pārlūkā</translation>
@@ -1230,6 +1235,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8683081248374354009">Atiestatīt grupu</translation>
 <translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8699120352855309748">Nepiedāvāt tulkot no šīm valodām</translation>
+<translation id="8701921397542715895">Darbojas blakus esošā logā</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8730621377337864115">Gatavs</translation>

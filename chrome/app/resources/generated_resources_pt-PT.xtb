@@ -321,10 +321,12 @@
 <translation id="1347512539447549782">Armazenamento do Linux</translation>
 <translation id="1347975661240122359">A atualização é iniciada quando a bateria chegar a <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Para utilizar o controlo parental, como a aprovação de apps e os limites de tempo de utilização, uma criança tem de ter uma Conta Google gerida por um dos pais. É possível adicionar uma conta escolar mais tarde para ferramentas como o Google Classroom.</translation>
+<translation id="135389172849514421">Funciona offline</translation>
 <translation id="1353980523955420967">Não é possível encontrar o PPD. Certifique-se de que o Chromebook está online e tente novamente.</translation>
 <translation id="1354045473509304750">Continuar a permitir que <ph name="HOST" /> utilize e mova a câmara</translation>
 <translation id="1355088139103479645">Pretende eliminar todos os dados?</translation>
 <translation id="1355466263109342573">O <ph name="PLUGIN_NAME" /> está bloqueado</translation>
+<translation id="1356178530321889280">Clique com o botão direito do rato e selecione "Pesquisar parte da página com o Google Lens" para pesquisar qualquer região do site e saber mais acerca do conteúdo visual apresentado enquanto procura e compra na Web.</translation>
 <translation id="1358741672408003399">Ortografia e gramática</translation>
 <translation id="1359923111303110318">O seu dispositivo pode ser desbloqueado com o Smart Lock. Prima Enter para desbloquear.</translation>
 <translation id="1361164813881551742">Adicionar manualmente</translation>
@@ -558,13 +560,6 @@
 <translation id="1593926297800505364">Guardar método de pagamento</translation>
 <translation id="1595492813686795610">O Linux está a ser atualizado</translation>
 <translation id="1596286373007273895">Disponível</translation>
-<translation id="1597224195604051602">O Voice Match ajuda o Assistente Google a identificar a voz de <ph name="SUPERVISED_USER_NAME" /> no <ph name="DEVICE_TYPE" /> e a distingui-la da de outras pessoas.
-    <ph name="BR" />
-    O Assistente grava clipes da voz da criança para formar um modelo de voz único, que apenas é armazenado no(s) respetivo(s) dispositivo(s). O modelo de voz da criança pode ser enviado temporariamente para a Google para identificar melhor a respetiva voz.
-    <ph name="BR" />
-    Se decidir mais tarde que o Voice Match não é adequado para a criança, basta removê-lo nas Definições do Assistente. Para ver ou eliminar os clipes de áudio que a criança grava durante a configuração do Voice Match, aceda a g.co/assistant/match na respetiva conta.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação pode conseguir aceder aos resultados pessoais de <ph name="SUPERVISED_USER_NAME" />. Para poupar bateria, a opção "Ok Google" só é ativada quando este dispositivo estiver ligado a uma fonte de alimentação.</translation>
 <translation id="1598233202702788831">As atualizações estão desativadas pelo seu gestor.</translation>
 <translation id="1600857548979126453">Aceder ao back-end do depurador da página</translation>
 <translation id="1601560923496285236">Aplicar</translation>
@@ -844,7 +839,6 @@
 <translation id="1865769994591826607">Apenas ligações do mesmo site</translation>
 <translation id="186612162884103683">A extensão "<ph name="EXTENSION" />" consegue ler e escrever em imagens, em ficheiros de vídeo e de som nas localizações confirmadas.</translation>
 <translation id="1867780286110144690">O <ph name="PRODUCT_NAME" /> está preparado para concluir a instalação</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">A verificação da palavra-passe não está disponível no Chromium.</translation>
 <translation id="1869433484041798909">Botão de marcadores</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
@@ -1128,7 +1122,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2163937499206714165">Ativar modo escuro</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor.</translation>
 <translation id="2165177462441582039">Escolha o tempo de realce de cada item</translation>
-<translation id="2165421703844373933">Aceda ao Assistente ao dizer "Ok Google". Para poupar bateria, escolha a opção "Ativado (recomendado)". O Assistente responderá apenas quando o dispositivo estiver ligado a uma fonte de alimentação ou a carregar.</translation>
 <translation id="2166369534954157698">A ligeira raposa marrom salta sobre o cão preguiçoso</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Continuar com o início de sessão</translation>
@@ -1455,6 +1448,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2509495747794740764">O valor de dimensionamento tem de ser um número entre 10 e 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Esquecer dispositivo Bluetooth</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (selecionado)</translation>
 <translation id="2513396635448525189">Imagem de início de sessão</translation>
 <translation id="2514326558286966059">Desbloqueie mais rapidamente com a sua impressão digital</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1609,9 +1603,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Altere as definições de introdução</translation>
 <translation id="2693176596243495071">Ups! Ocorreu um erro desconhecido. Tente novamente mais tarde ou contacte o gestor se o problema persistir.</translation>
-<translation id="2693640212062142966">O Voice Match ajuda o Assistente Google a identificar a sua voz no <ph name="DEVICE_TYPE" /> e a distingui-la da de outras pessoas. Para poupar bateria, a opção "Ok Google" só é ativada quando o seu dispositivo estiver ligado a uma fonte de alimentação. Para efetuar alterações, aceda a Definições.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tenha em atenção o seguinte:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação também pode conseguir aceder aos seus resultados pessoais. Pode remover a autorização do Voice Match mais tarde ao desativá-la nas Definições do Assistente.</translation>
 <translation id="2699911226086014512">Falha na definição do PIN com o código <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Partilhado a partir do <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicie sessão, <ph name="EMAIL" /></translation>
@@ -2366,6 +2357,7 @@ Pretende pará-lo?</translation>
 <translation id="3495496470825196617">Energia em suspensão ao carregar</translation>
 <translation id="3495660573538963482">Definições do Assistente Google</translation>
 <translation id="3496213124478423963">Reduzir</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (não selecionado)</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (produto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Partilhar doodle</translation>
 <translation id="3498215018399854026">Não conseguimos falar com o(a) seu (sua) pai/mãe de momento. Tente novamente.</translation>
@@ -2996,7 +2988,6 @@ Pretende pará-lo?</translation>
 <translation id="4154664944169082762">Impressões digitais</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Aprovado</translation>
-<translation id="4159163871835771155">Para obter respostas personalizadas quando <ph name="SUPERVISED_USER_NAME" /> faz perguntas, permita que o Assistente utilize as informações no ecrã de <ph name="SUPERVISED_USER_NAME" />. Isto pode incluir informações sobre músicas ou vídeos que estão a ser reproduzidos.</translation>
 <translation id="4159681666905192102">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4167686856635546851">Normalmente, os sites utilizam JavaScript para apresentar funcionalidades interativas como videojogos ou formulários Web.</translation>
@@ -3638,7 +3629,6 @@ Pretende pará-lo?</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Abrir com o System Viewer</translation>
 <translation id="488785315393301722">Mostrar Detalhes</translation>
-<translation id="4889792122460431731">Para obter respostas personalizadas quando faz perguntas, permita que o Assistente utilize as informações no seu ecrã. Isto pode incluir informações sobre músicas ou vídeos que estão a ser reproduzidos.</translation>
 <translation id="4890773143211625964">Mostrar opções avançadas da impressora</translation>
 <translation id="4891089016822695758">Fórum da versão beta</translation>
 <translation id="4892229439761351791">O site pode utilizar Bluetooth.</translation>
@@ -3854,7 +3844,6 @@ Pretende pará-lo?</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Não foi possível transferir o perfil. Tente novamente mais tarde ou contacte o operador para obter ajuda.</translation>
 <translation id="5131591206283983824">Arrastamento através do toque do touchpad</translation>
-<translation id="5135085122826131075">Aceda ao Assistente ao dizer "Ok Google".</translation>
 <translation id="5135533361271311778">Não foi possível criar item de marcador.</translation>
 <translation id="5136343472380336530">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Eliminar este item</translation>
@@ -4131,6 +4120,7 @@ Pretende pará-lo?</translation>
 <translation id="5449551289610225147">Palavra-passe inválida</translation>
 <translation id="5449588825071916739">Adicionar Todos os Separadores aos Marcadores</translation>
 <translation id="5449716055534515760">Fechar &amp;Janela</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona offline)</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Inválido</translation>
 <translation id="5457459357461771897">Ler e eliminar fotos, música e outros elementos multimédia a partir do computador</translation>
@@ -4271,7 +4261,6 @@ Pretende pará-lo?</translation>
 <translation id="5585912436068747822">Falha na formatação</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">A carregar aplicações…</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> já configurou o Assistente Google noutro dispositivo. <ph name="SUPERVISED_USER_NAME" /> pode tirar ainda mais partido do Assistente ao ativar o Contexto do ecrã.</translation>
 <translation id="5592595402373377407">Ainda não estão disponíveis dados suficientes.</translation>
 <translation id="5595485650161345191">Editar morada</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -4593,6 +4582,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pico de <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todos numa &amp;nova janela}=1{Abrir numa &amp;nova janela}other{Abrir todos ({COUNT}) numa &amp;nova janela}}</translation>
 <translation id="5965661248935608907">Também controla a página apresentada quando clica no botão Página Inicial ou pesquisa a partir da Caixa geral.</translation>
+<translation id="5968022600320704045">Nenhum resultado da pesquisa</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> pode ver ficheiros em <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Aviso de atalhos de teclado ignorado</translation>
 <translation id="5971037678316050792">Controlar estado e sincronização do adaptador Bluetooth</translation>
@@ -4900,9 +4890,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">A guardar...</translation>
 <translation id="629730747756840877">Conta</translation>
-<translation id="6298800237463568825">O Voice Match ajuda o Assistente Google a identificar a sua voz no <ph name="DEVICE_TYPE" /> e a distingui-la da de outras pessoas.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tenha em atenção o seguinte:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação também pode conseguir aceder aos seus resultados pessoais. Pode remover a autorização do Voice Match mais tarde ao desativá-la nas Definições do Assistente.</translation>
 <translation id="6298962879096096191">Utilizar o Google Play para instalar aplicações para Android</translation>
 <translation id="6300177430812514606">Sem autorização para concluir o envio ou a receção de dados</translation>
 <translation id="630065524203833229">&amp;Sair</translation>
@@ -5405,6 +5392,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6855892664589459354">Cópia de segurança e restauro do Crostini</translation>
 <translation id="6856348640027512653">Sem autorização para utilizar dados ou dispositivos de realidade virtual</translation>
 <translation id="6856623341093082836">Configurar e ajustar a precisão do ecrã tátil</translation>
+<translation id="6856850379840757744">Quando está ativado, todas as notificações são silenciadas</translation>
 <translation id="6857145580237920905">Remova os perfis de eSIM antes de executar a função Powerwash</translation>
 <translation id="6857699260879628349">Obter informações de configuração</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
@@ -5683,7 +5671,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7171559745792467651">Instalar aplicações dos seus outros dispositivos</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
-<translation id="7173336557300642430">Para obter respostas personalizadas para si, permita que o Assistente Google utilize as informações no seu ecrã quando faz perguntas. O Assistente também pode utilizar informações sobre músicas ou vídeos que estão a ser reproduzidos.</translation>
 <translation id="7174199383876220879">Novo! Controle a sua música, vídeos e muito mais.</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Carregado de:</translation>
@@ -5925,7 +5912,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7434969625063495310">Não foi possível adicionar o servidor de impressão. Verifique a configuração do servidor e tente novamente.</translation>
 <translation id="7436921188514130341">Ah, bolas! Ocorreu um erro durante a mudança de nome.</translation>
 <translation id="7438495332316988804">É possível encontrar o navegador padrão ao escrever "Chrome" no Launcher.</translation>
-<translation id="7439446972050308922">As suas preferências guardadas estarão prontas em qualquer dispositivo Chrome OS quando iniciar sessão com a sua Conta Google. Pode escolher o que pretende sincronizar nas Definições.</translation>
 <translation id="7439519621174723623">Adicione um nome de dispositivo para continuar.</translation>
 <translation id="7441736921018636843">Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" /> para remover a sua frase de acesso de sincronização</translation>
 <translation id="7441830548568730290">Outros utilizadores</translation>
@@ -6385,6 +6371,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Duplicar</translation>
 <translation id="7887864092952184874">Rato Bluetooth sincronizado</translation>
+<translation id="7889371445710865055">Altere o idioma do ditado</translation>
 <translation id="7890147169288018054">Ver informações sobre a rede, como o endereço IP ou MAC</translation>
 <translation id="7893008570150657497">Aceder a fotos, música e outros elementos multimédia a partir do seu computador</translation>
 <translation id="7893153962594818789">O Bluetooth está desativado neste <ph name="DEVICE_TYPE" />. Introduza a palavra-passe e ative o Bluetooth.</translation>
@@ -6929,7 +6916,6 @@ Prima um comutador atribuído para remover a atribuição</translation>
 <translation id="8480869669560681089">Dispositivo desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar autorização USB</translation>
 <translation id="8481980314595922412">As funcionalidades de avaliação estão ativadas</translation>
-<translation id="8482860770919360244">Já configurou o Assistente Google noutro dispositivo. Obtenha ainda mais com o Assistente ao ativar o contexto do ecrã.</translation>
 <translation id="848666842773560761">Uma app está a tentar aceder à câmara. Desligue o interruptor de privacidade da câmara para permitir o acesso.</translation>
 <translation id="8487678622945914333">Ampliar</translation>
 <translation id="8489156414266187072">As sugestões pessoais apenas são mostradas na sua conta.</translation>

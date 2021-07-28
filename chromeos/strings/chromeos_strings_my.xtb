@@ -318,6 +318,7 @@
 <translation id="7059230779847288458">အားသွင်းနေသည် (အားပြည့်ရန် <ph name="TIME_VALUE" /> ကျန်သည်)</translation>
 <translation id="708426984172631313">ရပ်ထားသည်</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>

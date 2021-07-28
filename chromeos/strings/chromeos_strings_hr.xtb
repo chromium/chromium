@@ -319,6 +319,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7059230779847288458">Punjenje, <ph name="TIME_VALUE" /> do potpune napunjenosti</translation>
 <translation id="708426984172631313">ZAUSTAVLJENO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Poslužitelj naziva}one{Poslužitelji naziva}few{Poslužitelji naziva}other{Poslužitelji naziva}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
 <translation id="714876143603641390">LAN povezivost</translation>

@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Funktionsgenveje i Google Chrome</translation>
 <translation id="1344653310988386453">Medtag link til fremhævning</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
+<translation id="1352771733366526411">Administrer alle vinduer (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
 <translation id="1373696734384179344">Der er ikke nok hukommelse til at downloade det valgte indhold.</translation>
 <translation id="1376578503827013741">Beregner…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome downloader nu filer endnu hurtigere</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1883903952484604915">Mine filer</translation>
+<translation id="1888378517829496315">Administrer alle vinduer</translation>
 <translation id="189358972401248634">Andre sprog</translation>
 <translation id="1918175104945982129">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er åbnet i halv højde</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
@@ -639,6 +641,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5139940364318403933">Få oplysninger om, hvordan du bruger Google Drev</translation>
+<translation id="5142281402488957685">Hvis du vil se nye historier, skal du trække nedad for at opdatere</translation>
 <translation id="5152843274749979095">Der er ikke installeret nogen understøttede apps</translation>
 <translation id="5161254044473106830">Der skal angives en titel</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download mislykkedes.}one{# download mislykkedes.}other{# downloads mislykkedes.}}</translation>
@@ -679,6 +682,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5403644198645076998">Tillad kun bestemte websites</translation>
 <translation id="5409881200985013443">Vil du angive <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Bekræfter...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner}}</translation>
 <translation id="5423934151118863508">Dine mest besøgte sider vises her</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ledig plads</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
@@ -946,6 +950,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6979737339423435258">Altid</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
 <translation id="6989267951144302301">Der kan ikke downloades</translation>
+<translation id="6992232929048168262">Åbn i fuldskærmsvisning</translation>
 <translation id="6995899638241819463">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="7001056293070445572">Denne fil er stor (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Åbn i browser</translation>
@@ -1230,6 +1235,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8683081248374354009">Nulstil gruppe</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8699120352855309748">Tilbyd ikke at oversætte disse sprog</translation>
+<translation id="8701921397542715895">Kører i et tilstødende vindue</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>

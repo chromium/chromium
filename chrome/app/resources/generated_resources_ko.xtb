@@ -323,10 +323,12 @@
 <translation id="1347512539447549782">Linux 저장용량</translation>
 <translation id="1347975661240122359">배터리 잔량이 <ph name="BATTERY_LEVEL" />%가 되면 업데이트가 시작됩니다.</translation>
 <translation id="1353275871123211385">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 도구를 사용할 수 있습니다.</translation>
+<translation id="135389172849514421">오프라인에서 사용 가능</translation>
 <translation id="1353980523955420967">PPD를 찾을 수 없습니다. Chromebook이 온라인 상태인지 확인하고 다시 시도해 보세요.</translation>
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />이(가) 차단되었습니다.</translation>
+<translation id="1356178530321889280">마우스 오른쪽 버튼으로 클릭한 다음 'Google 렌즈로 페이지 일부 검색'을 선택하여 사이트의 원하는 부분을 검색하세요. 웹 탐색 및 쇼핑 중에 보게 되는 시각 콘텐츠에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="1358741672408003399">영문 철자 및 문법</translation>
 <translation id="1359923111303110318">Smart Lock으로 기기를 잠금 해제할 수 있습니다. 잠금 해제하려면 Enter 키를 누르세요.</translation>
 <translation id="1361164813881551742">직접 추가</translation>
@@ -561,13 +563,6 @@
 <translation id="1593926297800505364">결제 수단 저장</translation>
 <translation id="1595492813686795610">Linux 업그레이드 중</translation>
 <translation id="1596286373007273895">사용 가능</translation>
-<translation id="1597224195604051602">Voice Match를 사용하면 Google 어시스턴트가 <ph name="DEVICE_TYPE" />에서 <ph name="SUPERVISED_USER_NAME" />님의 음성을 인식하여 다른 사람과 구분할 수 있습니다.
-    <ph name="BR" />
-    어시스턴트는 자녀의 음성 클립을 사용해 고유한 음성 모델을 만들어 자녀의 기기에만 저장합니다. 음성 인식 개선을 위해 자녀의 음성 모델이 일시적으로 Google에 전송될 수 있습니다.
-    <ph name="BR" />
-    나중에 Voice Match가 자녀에게 적합하지 않다고 생각되면 어시스턴트 설정에서 삭제하세요. Voice Match 설정 중에 녹음된 자녀의 오디오 클립을 보거나 삭제하려면 자녀의 계정에서 g.co/assistant/match로 이동합니다.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 <ph name="SUPERVISED_USER_NAME" />님의 개인 검색결과에 액세스할 수도 있습니다. 배터리를 절약하기 위해 기기가 전원에 연결된 경우에만 'Hey Google' 인식 기능이 켜집니다.</translation>
 <translation id="1598233202702788831">관리자가 업데이트를 사용 중지했습니다.</translation>
 <translation id="1600857548979126453">페이지 디버거 백엔드에 액세스</translation>
 <translation id="1601560923496285236">적용</translation>
@@ -856,7 +851,6 @@
 <translation id="1865769994591826607">동일한 사이트에서 연결하는 경우에만</translation>
 <translation id="186612162884103683">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽고 쓸 수 있습니다.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" />에서 설치 완료 준비가 되었습니다.</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Chromium에서 비밀번호 확인 기능을 사용할 수 없습니다.</translation>
 <translation id="1869433484041798909">북마크 버튼</translation>
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
@@ -1140,7 +1134,6 @@
 <translation id="2163937499206714165">어두운 모드 사용 설정</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
 <translation id="2165177462441582039">강조표시가 각 항목에 유지되는 시간 선택</translation>
-<translation id="2165421703844373933">"Ok Google"이라고 말하여 어시스턴트에 액세스합니다. 배터리를 절약하려면 '사용(권장)'을 선택하세요. 기기가 전원에 연결되어 있거나 충전 중일 때만 어시스턴트가 응답합니다.</translation>
 <translation id="2166369534954157698">재빠른 갈색 여우가 게으른 개를 뛰어넘습니다.</translation>
 <translation id="2167276631610992935">자바스크립트</translation>
 <translation id="2169062631698640254">로그인</translation>
@@ -1470,6 +1463,7 @@
 <translation id="2509495747794740764">배율 값은 10에서 200 사이의 숫자여야 합니다.</translation>
 <translation id="2509566264613697683">8배</translation>
 <translation id="2510988373360790637">블루투스 기기 삭제</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" />(선택됨)</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1624,9 +1618,6 @@
 <translation id="2691385045260836588">모델</translation>
 <translation id="2691440343905273290">입력 설정 변경</translation>
 <translation id="2693176596243495071">죄송합니다. 알 수 없는 오류가 발생했습니다. 나중에 다시 시도하거나 문제가 계속되는 경우 관리자에게 문의하세요.</translation>
-<translation id="2693640212062142966">Voice Match를 사용하면 Google 어시스턴트가 <ph name="DEVICE_TYPE" />에서 음성을 인식하여 나와 다른 사람을 구분할 수 있습니다. 배터리를 절약하기 위해 기기가 전원에 연결된 경우에만 "Hey Google" 인식 기능이 켜집니다. 옵션을 변경하려면 설정으로 이동하세요.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 내 개인정보 검색결과에 액세스할 수도 있습니다. 나중에 어시스턴트 설정에서 Voice Match를 사용 중지하여 권한을 삭제할 수 있습니다.</translation>
 <translation id="2699911226086014512">PIN 작업에 실패했습니다. 오류 코드는 <ph name="RETRIES" />입니다.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="2701737434167469065">로그인, <ph name="EMAIL" /></translation>
@@ -2380,6 +2371,7 @@
 <translation id="3495496470825196617">충전 시 전력 유휴 상태로 설정</translation>
 <translation id="3495660573538963482">Google 어시스턴트 설정</translation>
 <translation id="3496213124478423963">축소</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" />(선택되지 않음)</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />의 USB 기기(제품 <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">기념일 로고 공유</translation>
 <translation id="3498215018399854026">현재 부모님께 연락할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
@@ -3008,7 +3000,6 @@
 <translation id="4154664944169082762">지문</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">통과</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" />님이 질문할 때 맞춤 답변을 들을 수 있게 하고 싶다면 어시스턴트가 <ph name="SUPERVISED_USER_NAME" />님의 화면에 표시된 정보를 사용하도록 허용해 주세요. 여기에는 재생 중인 노래나 동영상에 관한 정보가 포함됩니다.</translation>
 <translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" />님과 <ph name="SECOND_CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
 <translation id="4163560723127662357">알 수 없는 키보드</translation>
 <translation id="4167686856635546851">사이트에서는 일반적으로 비디오 게임 또는 웹 양식과 같은 대화형 기능을 실행하는 데 자바스크립트를 사용합니다.</translation>
@@ -3650,7 +3641,6 @@
 <translation id="4884987973312178454">6배</translation>
 <translation id="4887424188275796356">시스템 뷰어로 열기</translation>
 <translation id="488785315393301722">세부정보 표시</translation>
-<translation id="4889792122460431731">질문할 때 나에게 맞는 답변을 듣고 싶다면 어시스턴트가 화면에 표시된 정보를 사용하도록 허용해 주세요. 재생 중인 노래나 동영상에 관한 정보를 사용할 수도 있습니다.</translation>
 <translation id="4890773143211625964">고급 프린터 옵션 표시</translation>
 <translation id="4891089016822695758">베타 포럼</translation>
 <translation id="4892229439761351791">사이트에서 블루투스를 사용할 수 있습니다.</translation>
@@ -3866,7 +3856,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">프로필을 다운로드할 수 없습니다. 나중에 다시 시도하거나 이동통신사에 문의하세요.</translation>
 <translation id="5131591206283983824">터치패드 탭 드래그</translation>
-<translation id="5135085122826131075">"Ok Google"이라고 말하여 어시스턴트에 액세스합니다.</translation>
 <translation id="5135533361271311778">북마크 항목을 만들지 못했습니다.</translation>
 <translation id="5136343472380336530">두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 사용 설정되어 있어야 합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">이 항목 삭제</translation>
@@ -4143,6 +4132,7 @@
 <translation id="5449551289610225147">비밀번호가 잘못되었습니다.</translation>
 <translation id="5449588825071916739">모든 탭 북마크</translation>
 <translation id="5449716055534515760">창 닫기(&amp;D)</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" />(오프라인에서 사용 가능)</translation>
 <translation id="5454166040603940656">제공업체: <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">잘못된 데이터</translation>
 <translation id="5457459357461771897">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 삭제</translation>
@@ -4283,7 +4273,6 @@
 <translation id="5585912436068747822">포맷 실패</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />개)</translation>
 <translation id="558918721941304263">앱 로드 중...</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />님이 다른 기기에서 이미 Google 어시스턴트를 설정한 것 같습니다. <ph name="SUPERVISED_USER_NAME" />님은 화면 컨텍스트를 사용 설정하여 어시스턴트를 더 유용하게 활용할 수 있습니다.</translation>
 <translation id="5592595402373377407">아직 데이터가 충분하지 않습니다.</translation>
 <translation id="5595485650161345191">주소 수정</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
@@ -4604,6 +4593,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />(최대 <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
 <translation id="5965661248935608907">또한 홈 버튼을 클릭하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
+<translation id="5968022600320704045">검색결과 없음</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있습니다.</translation>
 <translation id="5969728632630673489">단축키 알림 닫힘</translation>
 <translation id="5971037678316050792">블루투스 어댑터 상태 및 페어링을 제어합니다.</translation>
@@ -4911,9 +4901,6 @@
 <translation id="6295158916970320988">모든 사이트</translation>
 <translation id="6295855836753816081">저장 중...</translation>
 <translation id="629730747756840877">계정</translation>
-<translation id="6298800237463568825">Voice Match를 사용하면 Google 어시스턴트가 <ph name="DEVICE_TYPE" />에서 음성을 인식하여 나와 다른 사람을 구분할 수 있습니다.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 비슷한 목소리나 녹음된 음성을 이용하여 다른 사람이 내 개인정보 검색결과에 액세스할 수도 있습니다. 나중에 어시스턴트 설정에서 Voice Match를 사용 중지하여 권한을 삭제할 수 있습니다.</translation>
 <translation id="6298962879096096191">Google Play를 사용하여 Android 앱을 설치합니다.</translation>
 <translation id="6300177430812514606">데이터 전송 또는 수신 완료가 허용되지 않음</translation>
 <translation id="630065524203833229">종료(&amp;X)</translation>
@@ -5416,6 +5403,7 @@
 <translation id="6855892664589459354">Crostini 백업 및 복원</translation>
 <translation id="6856348640027512653">가상 현실 기기 또는 데이터 사용이 허용되지 않음</translation>
 <translation id="6856623341093082836">터치스크린 설정 및 정확도 조정</translation>
+<translation id="6856850379840757744">사용 설정되면 모든 알림이 무음 설정됩니다.</translation>
 <translation id="6857145580237920905">파워워시 전에 eSIM 프로필을 삭제하세요</translation>
 <translation id="6857699260879628349">구성 정보 가져오기</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
@@ -5694,7 +5682,6 @@
 <translation id="7171559745792467651">다른 기기의 앱 설치</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
 <translation id="7173114856073700355">설정 열기</translation>
-<translation id="7173336557300642430">나에게 맞는 답변을 듣고 싶다면 내가 질문할 때 Google 어시스턴트가 화면에 표시된 정보를 사용할 수 있도록 허용해 주세요. 어시스턴트는 재생 중인 노래나 동영상에 관한 정보를 사용할 수도 있습니다.</translation>
 <translation id="7174199383876220879">New! 음악, 동영상 등의 항목을 제어할 수 있습니다.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7175353351958621980">로드 위치:</translation>
@@ -5936,7 +5923,6 @@
 <translation id="7434969625063495310">인쇄 서버를 추가할 수 없습니다. 서버 설정을 확인하고 다시 시도해 보세요.</translation>
 <translation id="7436921188514130341">이름 변경 중에 오류가 발생했습니다.</translation>
 <translation id="7438495332316988804">표준 브라우저는 런처에 'Chrome'이라고 입력하여 찾을 수 있습니다.</translation>
-<translation id="7439446972050308922">Google 계정을 사용해 로그인할 경우 모든 Chrome OS 기기에서 저장된 환경설정을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택할 수 있습니다.</translation>
 <translation id="7439519621174723623">계속하려면 기기 이름을 추가하세요.</translation>
 <translation id="7441736921018636843">이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="7441830548568730290">다른 사용자</translation>
@@ -6396,6 +6382,7 @@
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">새 탭에서 보기</translation>
 <translation id="7887864092952184874">블루투스 마우스 페어링됨</translation>
+<translation id="7889371445710865055">음성기록 언어 변경</translation>
 <translation id="7890147169288018054">IP 또는 MAC 주소와 같은 네트워크 정보 보기</translation>
 <translation id="7893008570150657497">컴퓨터에서 사진, 음악, 기타 미디어에 액세스</translation>
 <translation id="7893153962594818789">이 <ph name="DEVICE_TYPE" />에서 블루투스가 사용 중지되어 있습니다. 비밀번호를 입력하고 블루투스를 사용 설정하세요.</translation>
@@ -6940,7 +6927,6 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />의 알 수 없는 기기</translation>
 <translation id="8481187309597259238">USB 권한 확인</translation>
 <translation id="8481980314595922412">무료 체험 기능 사용 중</translation>
-<translation id="8482860770919360244">이미 다른 기기에서 Google 어시스턴트를 설정한 것 같습니다. 화면 컨텍스트를 사용 설정하면 어시스턴트를 더 유용하게 활용할 수 있습니다.</translation>
 <translation id="848666842773560761">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="8487678622945914333">확대</translation>
 <translation id="8489156414266187072">개인 추천 항목은 내 계정에만 표시됩니다.</translation>

@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
 <translation id="1347468774581902829">활동 관리</translation>
+<translation id="1352771733366526411">모든 창 관리(<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">로그아웃하고 동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1373696734384179344">선택한 콘텐츠를 다운로드할 공간이 부족합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">이제 Chrome에서 파일을 더 빠르게 다운로드합니다.</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1883903952484604915">내 파일</translation>
+<translation id="1888378517829496315">모든 창 관리</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1918175104945982129">어시스턴트 음성 검색 동의 UI가 절반 높이로 열림</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
 <translation id="5139940364318403933">Google Drive 사용 방법 알아보기</translation>
+<translation id="5142281402488957685">새로운 스토리를 보려면 아래로 당겨 새로고침하세요.</translation>
 <translation id="5152843274749979095">지원되는 앱이 설치되어 있지 않음</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">특정 사이트만 허용</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />에 코드(<ph name="ONE_TIME_CODE" />)를 제출하시겠습니까?</translation>
 <translation id="5414836363063783498">확인 중...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개}}</translation>
 <translation id="5423934151118863508">자주 방문한 페이지가 여기에 표시됩니다.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB 사용 가능</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
@@ -946,6 +950,7 @@
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6989267951144302301">다운로드할 수 없음</translation>
+<translation id="6992232929048168262">전체 화면으로 열기</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="7001056293070445572">파일이 너무 큼(<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
@@ -1230,6 +1235,7 @@
 <translation id="8683081248374354009">그룹 재설정</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
+<translation id="8701921397542715895">인접한 창에서 실행 중</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8730621377337864115">완료</translation>

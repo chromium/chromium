@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">„Google Chrome“ funkcijų spartieji klavišai</translation>
 <translation id="1344653310988386453">Įtraukite nuorodą į paryškintą tekstą</translation>
 <translation id="1347468774581902829">Tvarkyti veiklą</translation>
+<translation id="1352771733366526411">Tvarkyti visus langus (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Atsijungti ir išjungti sinchronizavimą?</translation>
 <translation id="1373696734384179344">Nepakanka atminties pasirinktam turiniui atsisiųsti.</translation>
 <translation id="1376578503827013741">Apskaičiuojama...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Dabar „Chrome“ failus atsisiunčia greičiau</translation>
 <translation id="1877026089748256423">„Chrome“ versija yra pasenusi</translation>
 <translation id="1883903952484604915">Mano failai</translation>
+<translation id="1888378517829496315">Tvarkyti visus langus</translation>
 <translation id="189358972401248634">Kitos kalbos</translation>
 <translation id="1918175104945982129">Sutikimo atlikti paiešką balsu naudojant Padėjėją NS atidaryta iki pusės aukščio</translation>
 <translation id="1919130412786645364">Leisti „Chrome“ prisijungti</translation>
@@ -639,6 +641,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
 <translation id="5139940364318403933">Sužinokite, kaip naudoti „Google Drive“</translation>
+<translation id="5142281402488957685">Jei norite matyti naujas istorijas, patraukite žemyn, kad atnaujintumėte</translation>
 <translation id="5152843274749979095">Neįdiegta jokių palaikomų programų</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo.}one{Nepavyko atlikti # atsisiuntimo.}few{Nepavyko atlikti # atsisiuntimų.}many{Nepavyko atlikti # atsisiuntimo.}other{Nepavyko atlikti # atsisiuntimų.}}</translation>
@@ -679,6 +682,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5403644198645076998">Leisti tik konkrečias svetaines</translation>
 <translation id="5409881200985013443">Pateikti <ph name="ONE_TIME_CODE" /> įrenginyje (<ph name="CLIENT_NAME" />)?</translation>
 <translation id="5414836363063783498">Patvirtinama…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skirtukas}one{<ph name="TAB_COUNT_MANY" /> skirtukas}few{<ph name="TAB_COUNT_MANY" /> skirtukai}many{<ph name="TAB_COUNT_MANY" /> skirtuko}other{<ph name="TAB_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="5423934151118863508">Puslapiai, kuriuose lankomasi dažniausiai, bus rodomi čia</translation>
 <translation id="5424588387303617268">Pasiekiama: <ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">Redaguoti slaptažodį</translation>
@@ -946,6 +950,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6979737339423435258">Visas laikotarpis</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="6989267951144302301">Nepavyko atsisiųsti</translation>
+<translation id="6992232929048168262">Atidaryti visame ekrane</translation>
 <translation id="6995899638241819463">Įspėti, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="7001056293070445572">Šis failas didelis (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Atidaryti naršyklėje</translation>
@@ -1230,6 +1235,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8683081248374354009">Iš naujo nustatyti grupę</translation>
 <translation id="869891660844655955">Galiojimo data</translation>
 <translation id="8699120352855309748">Nesiūlyti versti šių kalbų</translation>
+<translation id="8701921397542715895">Vykdoma gretimame lange</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8730621377337864115">Atlikta</translation>

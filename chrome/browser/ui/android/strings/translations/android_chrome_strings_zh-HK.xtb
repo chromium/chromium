@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
 <translation id="1344653310988386453">包含突顯文字的連結</translation>
 <translation id="1347468774581902829">管理活動</translation>
+<translation id="1352771733366526411">管理所有視窗 (<ph name="INSTANCE_COUNTS" /> 個)</translation>
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
 <translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
 <translation id="1376578503827013741">正在運算…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome 現在的檔案下載速度更快了</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
+<translation id="1888378517829496315">管理所有視窗</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1918175104945982129">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示在畫面下半部</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
@@ -639,6 +641,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5132942445612118989">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
 <translation id="5139940364318403933">瞭解如何使用 Google 雲端硬碟</translation>
+<translation id="5142281402488957685">如要重新整理動態消息內容，請將頁面往下拉</translation>
 <translation id="5152843274749979095">尚未安裝任何支援的應用程式</translation>
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 項下載操作失敗。}other{# 項下載操作失敗。}}</translation>
@@ -679,6 +682,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5403644198645076998">只允許瀏覽部分網站</translation>
 <translation id="5409881200985013443">要在「<ph name="CLIENT_NAME" />」上提交 <ph name="ONE_TIME_CODE" /> 嗎？</translation>
 <translation id="5414836363063783498">正在驗證…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="5423934151118863508">您最常瀏覽的網頁會在此顯示</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
 <translation id="543338862236136125">修改密碼</translation>
@@ -946,6 +950,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="6989267951144302301">無法下載</translation>
+<translation id="6992232929048168262">在全螢幕模式中開啟</translation>
 <translation id="6995899638241819463">密碼因資料外洩而被洩露時接收警告</translation>
 <translation id="7001056293070445572">此檔案體積很大 (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
@@ -1230,6 +1235,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8683081248374354009">重設群組</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
+<translation id="8701921397542715895">在相鄰的視窗中執行</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>

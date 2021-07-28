@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome eginbideetarako lasterbideak</translation>
 <translation id="1344653310988386453">Gehitu nabarmendutako testurako esteka bat</translation>
 <translation id="1347468774581902829">Kudeatu jarduerak</translation>
+<translation id="1352771733366526411">Kudeatu leiho guztiak (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Saioa amaitu eta sinkronizazioa desaktibatu nahi duzu?</translation>
 <translation id="1373696734384179344">Ez dago behar adina memoria hautatutako edukia deskargatzeko.</translation>
 <translation id="1376578503827013741">Kalkulatzen…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome-k orain bizkorrago deskargatzen ditu fitxategiak</translation>
 <translation id="1877026089748256423">Chrome zaharkituta dago</translation>
 <translation id="1883903952484604915">Nire fitxategiak</translation>
+<translation id="1888378517829496315">Kudeatu leiho guztiak</translation>
 <translation id="189358972401248634">Beste hizkuntzak</translation>
 <translation id="1918175104945982129">Altuera erdian ireki da ahozko bilaketa egite aldera Laguntzailea eginbideari baimena emateko erabiltzaile-interfazea</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
@@ -639,6 +641,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
 <translation id="5139940364318403933">Lortu Google Drive erabiltzeari buruzko informazioa</translation>
+<translation id="5142281402488957685">Istorio berririk dagoen ikusi nahi baduzu, tiratu beherantz freskatzeko</translation>
 <translation id="5152843274749979095">Ez dago aplikazio bateragarririk instalatuta</translation>
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Ezin izan da gauzatu 1 deskarga.}other{Ezin izan dira gauzatu # deskarga.}}</translation>
@@ -679,6 +682,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5403644198645076998">Onartu webgune jakin batzuk bakarrik</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> bezeroari bidali nahi diozu <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="5414836363063783498">Egiaztatzen…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fitxa}other{<ph name="TAB_COUNT_MANY" /> fitxa}}</translation>
 <translation id="5423934151118863508">Gehien erabiltzen dituzun orriak agertuko dira hemen</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB daude erabilgarri</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
@@ -946,6 +950,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6979737339423435258">Guztiak</translation>
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="6989267951144302301">Ezin izan da deskargatu</translation>
+<translation id="6992232929048168262">Ireki pantaila osoan</translation>
 <translation id="6995899638241819463">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako</translation>
 <translation id="7001056293070445572">Fitxategi handia da (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>
@@ -1230,6 +1235,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8683081248374354009">Berrezarri taldea</translation>
 <translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8699120352855309748">Ez eskaini hizkuntza hauek itzultzea</translation>
+<translation id="8701921397542715895">Ondoko leihoan abian da</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8730621377337864115">Eginda</translation>

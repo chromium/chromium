@@ -324,10 +324,12 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1347512539447549782">storage ng Linux</translation>
 <translation id="1347975661240122359">Magsisimula ang pag-update kapag umabot na ang baterya sa <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Para gumamit ng parental controls gaya ng pag-apruba ng app at mga limitasyon sa tagal ng paggamit, dapat ay mayroong Google Account ang bata na pinapamahalaan ng magulang. Puwedeng magdagdag ng pampaaralang account sa ibang pagkakataon para sa mga tool gaya ng Google Classroom.</translation>
+<translation id="135389172849514421">Gumagana offline</translation>
 <translation id="1353980523955420967">Hindi makita ang PPD. Tiyaking online ang iyong Chromebook at subukang muli.</translation>
 <translation id="1354045473509304750">Patuloy na payagan ang <ph name="HOST" /> na gamitin at galawin ang iyong camera</translation>
 <translation id="1355088139103479645">I-delete ang lahat ng data?</translation>
 <translation id="1355466263109342573">Naka-block ang <ph name="PLUGIN_NAME" /></translation>
+<translation id="1356178530321889280">I-right click at piliin ang “Hanapin ang bahagi ng page gamit ang Google Lens” para hanapin ang anumang bahagi ng site at malaman ang higit pang tungkol sa visual na content na nakikita mo habang nagba-browse at namimili ka sa web.</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Puwedeng i-unlock ang iyong device gamit ang Smart Lock. Pindutin ang Enter para ma-unlock.</translation>
 <translation id="1361164813881551742">Idagdag nang Manual</translation>
@@ -562,13 +564,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1593926297800505364">I-save ang paraan ng pagbabayad</translation>
 <translation id="1595492813686795610">Ina-upgrade ang Linux</translation>
 <translation id="1596286373007273895">Available</translation>
-<translation id="1597224195604051602">Nakakatulong ang Voice Match sa Google Assistant na tukuyin ang boses ni <ph name="SUPERVISED_USER_NAME" /> sa iyong <ph name="DEVICE_TYPE" /> at makilala ito mula sa iba.
-    <ph name="BR" />
-    Kumukuha ang Assistant ng mga clip ng boses ng iyong anak para makabuo ng natatanging voice model na sa kanyang (mga) device lang naka-store. Posibleng pansamantalang ipadala sa Google ang voice model ng iyong anak para mas makilala ang boses niya.
-    <ph name="BR" />
-    Kung mapagpapasyahan mo sa ibang pagkakataon na hindi naaangkop sa iyong anak ang Voice Match, alisin lang ito sa kanyang Mga Setting ng Assistant. Para tingnan o i-delete ang mga audio clip na na-record ng iyong anak habang sine-set up ang Voice Match, pumunta sa g.co/assistant/match mula sa account ng anak mo.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang mga personal na resulta ni <ph name="SUPERVISED_USER_NAME" />. Para makatipid ng baterya, naka-on lang ang “Hey Google” kapag nakakonekta ang device na ito sa isang power source.</translation>
 <translation id="1598233202702788831">Na-disable ng iyong administrator ang mga update.</translation>
 <translation id="1600857548979126453">I-access ang backend ng debugger ng pahina</translation>
 <translation id="1601560923496285236">Ilapat</translation>
@@ -857,7 +852,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1865769994591826607">Mga koneksyon sa iisang site lang</translation>
 <translation id="186612162884103683">Ang "<ph name="EXTENSION" />" ay nakakabasa at nakakapagsulat ng mga larawan, video, file ng tunog sa mga may check na lokasyon.</translation>
 <translation id="1867780286110144690">Ang <ph name="PRODUCT_NAME" /> ay handa nang kumpletuhin ang iyong pag-install</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Hindi available ang pagsusuri sa password sa Chromium</translation>
 <translation id="1869433484041798909">Button ng bookmark</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
@@ -1141,7 +1135,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, at 1 pang switch</translation>
 <translation id="2165177462441582039">Piliin kung gaano katagal iha-highlight ang bawat item</translation>
-<translation id="2165421703844373933">I-access ang iyong Assistant kapag sinabi mong "Ok Google." Para makatipid ng baterya, piliin ang “Naka-on (Inirerekomenda.)” Sasagot lang ang iyong Assistant kapag naka-plug in o nagcha-charge ang device mo.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Mag-sign in pa rin</translation>
@@ -1471,6 +1464,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2509495747794740764">Dapat ay numero sa pagitan ng 10 at 200 ang halaga ng scale.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Kalimutan ang Bluetooth device</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (pinili)</translation>
 <translation id="2513396635448525189">Larawan sa pag-log in</translation>
 <translation id="2514326558286966059">Mas mabilis na mag-unlock gamit ang iyong fingerprint</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1625,9 +1619,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Baguhin ang mga setting ng pag-input</translation>
 <translation id="2693176596243495071">Oops!  Nagkaroon ng hindi matukoy na error. Pakisubukang muli sa ibang pagkakataon o makipag-ugnayan sa iyong administrator kung magpapatuloy ang isyu.</translation>
-<translation id="2693640212062142966">Nakakatulong ang Voice Match sa iyong Google Assistant na makilala ang boses mo sa iyong <ph name="DEVICE_TYPE" /> at makilala ka mula sa iba. Para makatipid ng baterya, naka-on lang ang “Hey Google” kapag nakakonekta ang iyong device sa isang power source. Para gumawa ng mga pagbabago, pumunta sa Mga Setting.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang iyong mga personal na resulta. Puwede mong alisin ang pahintulot sa Voice Match sa ibang pagkakataon sa pamamagitan ng pag-off nito sa Mga Setting ng Assistant.</translation>
 <translation id="2699911226086014512">Hindi nagamit ang PIN na may code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Ibinahagi mula kay <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Mag-sign in, <ph name="EMAIL" /></translation>
@@ -2381,6 +2372,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3495496470825196617">Idle na power habang nagcha-charge</translation>
 <translation id="3495660573538963482">Mga setting ng Google Assistant</translation>
 <translation id="3496213124478423963">Zoom Out</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (hindi napili)</translation>
 <translation id="3497501929010263034">USB device mula sa <ph name="VENDOR_NAME" /> (produkto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Ibahagi ang Doodle</translation>
 <translation id="3498215018399854026">Hindi namin makaugnayan ang iyong magulang sa sandaling ito. Pakisubukang muli.</translation>
@@ -3011,7 +3003,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4154664944169082762">Mga fingerprint</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Pumasa</translation>
-<translation id="4159163871835771155">Para makakuha ng mga iniangkop na sagot kapag nagtanong si <ph name="SUPERVISED_USER_NAME" />, payagan ang Assistant na gamitin ang impormasyon tungkol sa screen ni <ph name="SUPERVISED_USER_NAME" />. Puwedeng kasama rito ang impormasyon tungkol sa mga kanta o video na nagpe-play.</translation>
 <translation id="4159681666905192102">Isa itong account para sa mga bata na pinamamahalaan nina <ph name="CUSTODIAN_EMAIL" /> at <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Hindi kilalang keyboard</translation>
 <translation id="4167686856635546851">Karaniwang gumagamit ang mga site ng Javascript para magpakita ng mga interactive na feature, gaya ng mga video game o web form</translation>
@@ -3654,7 +3645,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Buksan Gamit ang System Viewer</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
-<translation id="4889792122460431731">Para makakuha ng mga iniangkop na sagot kapag nagtanong ka, hayaan ang iyong Assistant na gamitin ang impormasyon sa screen mo. Puwedeng kasama rito ang impormasyon tungkol sa mga kanta o video na nagpe-play.</translation>
 <translation id="4890773143211625964">Ipakita ang mga advanced na opsyon sa printer</translation>
 <translation id="4891089016822695758">Forum sa Beta</translation>
 <translation id="4892229439761351791">Puwedeng gumamit ng Bluetooth ang site</translation>
@@ -3870,7 +3860,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Hindi ma-download ang profile. Pakisubukan ulit sa ibang pagkakataon o makipag-ugnayan sa carrier para sa tulong.</translation>
 <translation id="5131591206283983824">Pag-tap para mag-drag gamit ang touchpad</translation>
-<translation id="5135085122826131075">I-access ang iyong Assistant kapag sinabi mong "Ok Google."</translation>
 <translation id="5135533361271311778">Hindi makalikha ng item ng bookmark.</translation>
 <translation id="5136343472380336530">Tiyaking naka-unlock at magkalapit ang dalawang device, at naka-on ang Bluetooth ng mga ito. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Tanggalin ang item na ito</translation>
@@ -4147,6 +4136,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5449551289610225147">Di-wastong password</translation>
 <translation id="5449588825071916739">I-bookmark ang Lahat ng Tab</translation>
 <translation id="5449716055534515760">Isara ang Win&amp;dow</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (gumagana offline)</translation>
 <translation id="5454166040603940656">sa <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Di-wasto</translation>
 <translation id="5457459357461771897">Basahin at i-delete ang mga larawan, musika at iba pang media sa iyong computer</translation>
@@ -4287,7 +4277,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5585912436068747822">Nabigo ang pag-format</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Nilo-load ang mga app...</translation>
-<translation id="5590265327628802792">Mukhang na-set up na ni <ph name="SUPERVISED_USER_NAME" /> ang Google Assistant sa ibang device. Mas masusulit ni <ph name="SUPERVISED_USER_NAME" /> ang Assistant sa pamamagitan ng pag-on sa Konteksto ng screen.</translation>
 <translation id="5592595402373377407">Wala pang available na sapat na data.</translation>
 <translation id="5595485650161345191">Mag-edit ng address</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
@@ -4608,6 +4597,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ang pinakamataas)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Buksan lahat sa &amp;bagong window}=1{Buksan sa &amp;bagong window}one{Buksan lahat ({COUNT}) sa &amp;bagong window}other{Buksan lahat ({COUNT}) sa &amp;bagong window}}</translation>
 <translation id="5965661248935608907">Kinokontrol din nito kung anong pahina ang ipinapakita kapag na-click mo ang button ng Home o naghanap mula sa Omnibox.</translation>
+<translation id="5968022600320704045">Walang resulta ng paghahanap</translation>
 <translation id="5969419185858894314">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga file sa <ph name="FOLDERNAME" /></translation>
 <translation id="5969728632630673489">Na-dismiss ang abiso sa keyboard shortcut</translation>
 <translation id="5971037678316050792">Kontrolin ang estado at pagpapares ng Bluetooth adapter</translation>
@@ -4915,9 +4905,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6295158916970320988">Lahat ng site</translation>
 <translation id="6295855836753816081">Sine-save...</translation>
 <translation id="629730747756840877">Account</translation>
-<translation id="6298800237463568825">Nakakatulong ang Voice Match sa iyong Google Assistant na makilala ang boses mo sa iyong <ph name="DEVICE_TYPE" /> at makilala ka mula sa iba.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang iyong mga personal na resulta. Puwede mong alisin ang pahintulot sa Voice Match sa ibang pagkakataon sa pamamagitan ng pag-off nito sa Mga Setting ng Assistant.</translation>
 <translation id="6298962879096096191">Gamitin ang Google Play upang mag-install ng mga Android app</translation>
 <translation id="6300177430812514606">Hindi pinapayagang tapusin ang pagpapadala o pagtanggap ng data</translation>
 <translation id="630065524203833229">L&amp;umabas</translation>
@@ -5420,6 +5407,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6855892664589459354">Pag-back up at pag-restore ng Crostini</translation>
 <translation id="6856348640027512653">Hindi pinapayagang gumamit ng mga virtual reality device o data</translation>
 <translation id="6856623341093082836">I-set up at isaayos ang katumpakan ng iyong touchscreen</translation>
+<translation id="6856850379840757744">Kapag naka-on, masa-silent ang lahat ng notification</translation>
 <translation id="6857145580237920905">Alisin ang mga profile ng eSIM bago mag-Powerwash</translation>
 <translation id="6857699260879628349">Kunin ang impormasyon sa pag-configure</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
@@ -5698,7 +5686,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7171559745792467651">Mag-install ng mga app mula sa iba mo pang device</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Magdagdag ng tab sa bagong grupo}one{Magdagdag ng mga tab sa bagong grupo}other{Magdagdag ng mga tab sa bagong grupo}}</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
-<translation id="7173336557300642430">Para makakuha ng mga sagot na mas iniangkop sa iyo, hayaan ang Google Assistant na gamitin ang impormasyon sa iyong screen kapag nagtanong ka. Puwede ring gamitin ng iyong Assistant ang impormasyon tungkol sa mga kanta o video na nagpe-play.</translation>
 <translation id="7174199383876220879">Bago! Kontrolin ang iyong musika, mga video, at higit pa.</translation>
 <translation id="7175037578838465313">I-configure ang <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Nag-load mula sa:</translation>
@@ -5940,7 +5927,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7434969625063495310">Hindi maidagdag ang server sa pag-print. Pakisuri ang configuration ng server at subukan ulit.</translation>
 <translation id="7436921188514130341">Naku! Nagka-error habang pinapalitan ang pangalan.</translation>
 <translation id="7438495332316988804">Makikita ang karaniwang browser sa pamamagitan ng pag-type ng "Chrome" sa Launcher.</translation>
-<translation id="7439446972050308922">Magagamit ang iyong mga naka-save na preference sa anumang Chrome OS device kapag magsa-sign in ka gamit ang Google Account mo. Mapipili mo kung ano ang isi-sync sa Mga Setting.</translation>
 <translation id="7439519621174723623">Magdagdag ng pangalan ng device para magpatuloy</translation>
 <translation id="7441736921018636843">Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /> para alisin ang iyong passphrase sa pag-sync</translation>
 <translation id="7441830548568730290">Iba pang mga user</translation>
@@ -6400,6 +6386,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Doblehin</translation>
 <translation id="7887864092952184874">Naipares ang bluetooth mouse</translation>
+<translation id="7889371445710865055">Palitan ang wika sa Dictation</translation>
 <translation id="7890147169288018054">Tingnan ang impormasyon ng network, gaya ng iyong IP o MAC address</translation>
 <translation id="7893008570150657497">Ma-access ang mga larawan, musika, at iba pang media mula sa iyong computer</translation>
 <translation id="7893153962594818789">Naka-off ang Bluetooth sa <ph name="DEVICE_TYPE" /> na ito. Ilagay ang iyong password, at i-on ang Bluetooth.</translation>
@@ -6945,7 +6932,6 @@ Pumindot ng nakatalagang switch para mag-alis ng pagtatalaga</translation>
 <translation id="8480869669560681089">Hindi kilalang device mula sa <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Kumpirmahin ang Pahintulot sa USB</translation>
 <translation id="8481980314595922412">Naka-on ang mga feature ng trial</translation>
-<translation id="8482860770919360244">Mukhang na-set up mo na ang Google Assistant sa isa pang device. Mas sulitin ang iyong Assistant sa pamamagitan ng pag-on sa konteksto ng Screen.</translation>
 <translation id="848666842773560761">Sinusubukan ng isang app na i-access ang camera. I-off ang switch ng privacy ng camera para payagan ang access.</translation>
 <translation id="8487678622945914333">Mag-zoom In</translation>
 <translation id="8489156414266187072">Ipinapakita lang ang mga personal na suhestyon sa iyong account</translation>

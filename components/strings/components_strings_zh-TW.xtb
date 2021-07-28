@@ -990,6 +990,7 @@
 <translation id="443121186588148776">序列埠</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受你的登入憑證，或是你可能未提供登入憑證。</translation>
 <translation id="4432792777822557199">從現在起，系統會將<ph name="SOURCE_LANGUAGE" />網頁內容翻譯成<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="4433642172056592619">由於使用者未與裝置管理服務建立關聯，或者裝置未受管理，因此系統已忽略這項政策。</translation>
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="4435702339979719576">明信片)</translation>
 <translation id="443673843213245140">雖然已停用 Proxy，不過已指定明確 Proxy 設定。</translation>

@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome'i funktsioonide otseteed</translation>
 <translation id="1344653310988386453">Lisage esiletõstmiseks link</translation>
 <translation id="1347468774581902829">Tegevuste haldamine</translation>
+<translation id="1352771733366526411">Kõikide akende haldamine (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
 <translation id="1373696734384179344">Valitud sisu allalaadimiseks pole piisavalt mäluruumi.</translation>
 <translation id="1376578503827013741">Arvutamine …</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome laadib nüüd faile kiiremini alla</translation>
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1883903952484604915">Minu failid</translation>
+<translation id="1888378517829496315">Kõikide akende haldamine</translation>
 <translation id="189358972401248634">Teised keeled</translation>
 <translation id="1918175104945982129">Assistendi häälotsingu sisu kasutajaliides on avatud poolel kõrgusel</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
@@ -639,6 +641,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5123685120097942451">Inkognito vaheleht</translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5139940364318403933">Vaadake, kuidas Google Drive'i kasutada</translation>
+<translation id="5142281402488957685">Uute lugude nägemiseks tõmmake värskendamiseks alla</translation>
 <translation id="5152843274749979095">Toetatud rakendusi pole installitud</translation>
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 allalaadimine ebaõnnestus.}other{# allalaadimist ebaõnnestus.}}</translation>
@@ -679,6 +682,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5403644198645076998">Luba ainult kindlad saidid</translation>
 <translation id="5409881200985013443">Kas soovite saata koodi <ph name="ONE_TIME_CODE" /> seadmes <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Kinnitamine ...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="5423934151118863508">Teie enim külastatud lehed ilmuvad siin</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB saadaval</translation>
 <translation id="543338862236136125">Muuda parooli</translation>
@@ -946,6 +950,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6979737339423435258">Algusest</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="6989267951144302301">Ei saanud alla laadida</translation>
+<translation id="6992232929048168262">Ava täisekraanil</translation>
 <translation id="6995899638241819463">Hoiata mind, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
 <translation id="7001056293070445572">See fail on suur (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Avamine brauseris</translation>
@@ -1230,6 +1235,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8683081248374354009">Lähtesta grupp</translation>
 <translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
+<translation id="8701921397542715895">Käitatakse teises aknas</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>

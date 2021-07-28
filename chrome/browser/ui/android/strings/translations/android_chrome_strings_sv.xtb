@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Kortkommandon för funktioner i Google Chrome</translation>
 <translation id="1344653310988386453">Ta med länk till markering</translation>
 <translation id="1347468774581902829">Hantera aktivitet</translation>
+<translation id="1352771733366526411">Hantera alla fönster (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
 <translation id="1373696734384179344">Det finns inte tillräckligt med minne för att ladda ned det valda innehållet.</translation>
 <translation id="1376578503827013741">Beräknar …</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Nu laddas filer ned snabbare i Chrome</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
 <translation id="1883903952484604915">Mina filer</translation>
+<translation id="1888378517829496315">Hantera alla fönster</translation>
 <translation id="189358972401248634">Övriga språk</translation>
 <translation id="1918175104945982129">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över halva skärmen</translation>
 <translation id="1919130412786645364">Tillåt inloggning i Chrome</translation>
@@ -639,6 +641,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5123685120097942451">Inkognitoflik</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5139940364318403933">Lär dig använda Google Drive</translation>
+<translation id="5142281402488957685">Om du vill se nya artiklar drar du nedåt för att uppdatera</translation>
 <translation id="5152843274749979095">Inga appar som stöds finns installerade</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 nedladdning misslyckades.}other{# nedladdningar misslyckades.}}</translation>
@@ -679,6 +682,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5403644198645076998">Tillåt endast vissa webbplatser</translation>
 <translation id="5409881200985013443">Vill du skicka <ph name="ONE_TIME_CODE" /> på <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifierar ...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flik}other{<ph name="TAB_COUNT_MANY" /> flikar}}</translation>
 <translation id="5423934151118863508">Dina mest besökta sidor visas här</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tillgängligt</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
@@ -946,6 +950,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6989267951144302301">Nedladdning misslyckades</translation>
+<translation id="6992232929048168262">Öppna i helskärmsläge</translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="7001056293070445572">Filen är stor (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Öppna i webbläsaren</translation>
@@ -1230,6 +1235,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8683081248374354009">Återställ gruppen</translation>
 <translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
+<translation id="8701921397542715895">Körs i angränsande fönster</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>

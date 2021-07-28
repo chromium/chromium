@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Scorciatoie delle funzioni di Google Chrome</translation>
 <translation id="1344653310988386453">Includi link al testo evidenziato</translation>
 <translation id="1347468774581902829">Gestisci attività</translation>
+<translation id="1352771733366526411">Gestisci tutte finestre (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Uscire e disattivare la sincronizzazione?</translation>
 <translation id="1373696734384179344">Memoria non sufficiente per scaricare i contenuti selezionati.</translation>
 <translation id="1376578503827013741">Elaborazione...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Ora Chrome scarica i file più velocemente</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1883903952484604915">I miei file</translation>
+<translation id="1888378517829496315">Gestisci tutte le finestre</translation>
 <translation id="189358972401248634">Altre lingue</translation>
 <translation id="1918175104945982129">Interfaccia utente per il consenso all'utilizzo dell'assistente per la ricerca vocale aperta nella parte inferiore dello schermo</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
@@ -639,6 +641,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="5139940364318403933">Impara a utilizzare Google Drive</translation>
+<translation id="5142281402488957685">Per accedere a nuove notizie, trascina verso il basso per aggiornare</translation>
 <translation id="5152843274749979095">Nessuna app supportata installata</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download non riuscito.}other{# download non riusciti.}}</translation>
@@ -679,6 +682,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5403644198645076998">Consenti solo siti specifici</translation>
 <translation id="5409881200985013443">Vuoi inviare <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifica…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede}}</translation>
 <translation id="5423934151118863508">Le pagine che visiti più spesso verranno visualizzate qui</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponibili</translation>
 <translation id="543338862236136125">Modifica password</translation>
@@ -946,6 +950,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6979737339423435258">Dall'inizio</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6989267951144302301">Download non riuscito</translation>
+<translation id="6992232929048168262">Apri a schermo intero</translation>
 <translation id="6995899638241819463">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="7001056293070445572">File di grandi dimensioni (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Apri nel browser</translation>
@@ -1230,6 +1235,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8683081248374354009">Reimposta gruppo</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
+<translation id="8701921397542715895">In esecuzione in finestra adiacente</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8730621377337864115">Fine</translation>

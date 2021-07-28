@@ -558,13 +558,6 @@
 <translation id="1593926297800505364">To‘lov usulini saqlash</translation>
 <translation id="1595492813686795610">Linux yangilanmoqda</translation>
 <translation id="1596286373007273895">Mavjud</translation>
-<translation id="1597224195604051602">Voice Match yordamida Google Assistent <ph name="DEVICE_TYPE" /> qurilmangizda <ph name="SUPERVISED_USER_NAME" />ning ovozini taniy oladi va boshqalarnikidan ajrata oladi.
-    <ph name="BR" />
-    Assistent farzandingizning ovoz namunalarini oladi va shu asosida unikal ovoz modelini yaratadi. Ular farzandingiz qurilmalarida saqlanadi. Farzandingizning ovoz modeli uning ovozini yanada yaxshiroq tanish maqsasdida vaqtincha Googlega yuborilishi mumkin.
-    <ph name="BR" />
-    Farzandingiz uchun Voice Match kerak emas deb hisoblasangiz, uni Assistent sozlamalari orqali olib tashlashingiz mumkin. Voice Match sozlanayotganda yozib olingan farzandingizning ovoz namunalarini koʻrish va olib tashlash uchun farzandingiz qurilmasida g.co/assistant/match sahifasini oching.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovozlar ham <ph name="SUPERVISED_USER_NAME" />ning shaxsiy natijalarini olishi mumkin. Batareyani tejash uchun bu qurilmada “Ok Google” funksiyasi faqat quvvat manbaiga ulanganda ishlaydi.</translation>
 <translation id="1598233202702788831">Yangilash funksiyasi administrator tomonidan o‘chirib qo‘yilgan.</translation>
 <translation id="1600857548979126453">Sahifalarda nosozliklarni ko‘rib chiqish vositasiga ruxsat</translation>
 <translation id="1601560923496285236">Tatbiq etish</translation>
@@ -845,7 +838,6 @@
 <translation id="1865769994591826607">Faqat bir saytga ulanishlar</translation>
 <translation id="186612162884103683">“<ph name="EXTENSION" />” kengaytmasi belgilangan jildlarda rasm, audio va video fayllarni o‘qishi va o‘zgartirishi mumkin.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> o‘rnatish jarayonini tugatishga tayyor</translation>
-<translation id="1868193363684582383">“Ok Google”</translation>
 <translation id="1868553836791672080">Chromiumda parollar tekshiruvi ishlamaydi</translation>
 <translation id="1869433484041798909">Bukmark tugmasi</translation>
 <translation id="1871098866036088250">Chrome brauzerida ochish</translation>
@@ -1129,7 +1121,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> va yana 1 ta kalit tugma</translation>
 <translation id="2165177462441582039">Har bir element qancha vaqt ajratib turilishini tanlang</translation>
-<translation id="2165421703844373933">Asistentdan “Ok Google” deb aytib foydalanish Batareya quvvatini tejash uchun “Yoniq” boʻlishi kerak (tavsiya etiladi). Assistent faqatgina qurilma quvvat manbaiga ulanganda yoki quvvatlanayotganda chiqadi.</translation>
 <translation id="2166369534954157698">Chaqqon malla tulki yalqov itning ustidan sakrab o‘tdi</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Tizimga baribir kirish</translation>
@@ -1614,9 +1605,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Kiritish sozlamalarini oʻzgartirish</translation>
 <translation id="2693176596243495071">Ana xolos! Kutilmagan xatolik yuz berdi. Qayta urinib ko‘ring, agar muammo qaytarilsa administrator bilan bog‘laning.</translation>
-<translation id="2693640212062142966">Voice Match funksiyasi Google Assistent ovozingizni <ph name="DEVICE_TYPE" /> qurilmangizda va boshqalardan ajratib olishiga yordam beradi. Batareyani tejash uchun bu qurilmada “Ok Google” funksiyasi faqat quvvat manbaiga ulanganda ishlaydi. Buni Sozlamalar orqali oʻzgartirishingiz mumkin.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovozlar ham shaxsiy natijalaringizni olishi mumkin. Voice Match funksiyasini istalgan vaqtda Assistent sozlamalari orqali olib tashlash mumkin.</translation>
 <translation id="2699911226086014512">PIN kod oʻrnatilmadi: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> orqali ulashilgan</translation>
 <translation id="2701737434167469065">Kirish, <ph name="EMAIL" /></translation>
@@ -3001,7 +2989,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4154664944169082762">Barmoq izlari</translation>
 <translation id="4157869833395312646">Microsoft shifrlash serveri</translation>
 <translation id="4158364720893025815">Tekshirildi</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> savol berganda batafsil javob olishi uchun Assistentga <ph name="SUPERVISED_USER_NAME" /> ekranidagi axborotdan foydalanishga ruxsat bering. Bunga ijro etilayotgan tarona va videolar haqidagi axborotlar ham kirishi mumkin.</translation>
 <translation id="4159681666905192102">Bu bolalar hisobi <ph name="CUSTODIAN_EMAIL" /> va <ph name="SECOND_CUSTODIAN_EMAIL" /> hisoblari tomonidan boshqariladi.</translation>
 <translation id="4163560723127662357">Noma’lum klaviatura</translation>
 <translation id="4167686856635546851">Saytlar odatda video oʻyinlar yoki veb shakllarni aks ettirish maqsadida JavaScript ishlatadi</translation>
@@ -3644,7 +3631,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Standart ko‘rish dasturida ochish</translation>
 <translation id="488785315393301722">Tafsilotlarini ko‘rsatish</translation>
-<translation id="4889792122460431731">Savol berganingizda batafsil javob olish uchun Assistentga ekrandagi axborotdan foydalanishga ruxsat bering. Bunga ijro etilayotgan tarona va videolar haqidagi axborotlar ham kirishi mumkin.</translation>
 <translation id="4890773143211625964">Qo‘shimcha printer sozlamalarini ko‘rsatish</translation>
 <translation id="4891089016822695758">Beta forum</translation>
 <translation id="4892229439761351791">Sayt Bluetooth ishlatishi mumkin</translation>
@@ -3860,7 +3846,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profilni yuklab olinmadi. Keyinroq qayta urining yoki yordam olish uchun aloqa operatoriga murojaat qiling.</translation>
 <translation id="5131591206283983824">Sensorli panelga teginib tortish</translation>
-<translation id="5135085122826131075">Asistentdan “Ok Google” deb aytib foydalanish</translation>
 <translation id="5135533361271311778">Xatcho‘p yaratib bo‘lmadi.</translation>
 <translation id="5136343472380336530">Ikkala qurilma ham ochiq, orasidagi masofa yaqin va Bluetooth yoniq ekanini tekshiring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">O‘chirish</translation>
@@ -4278,7 +4263,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5585912436068747822">Formatlash amalga oshmadi</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Ilovalar yuklanmoqda…</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> Google Assistentni allaqachon boshqa qurilmada sozlagan. <ph name="SUPERVISED_USER_NAME" /> Ekran kontekstini yoqish orqali Assistentning barcha funksiyalaridan foydalana oladi.</translation>
 <translation id="5592595402373377407">Ma’lumotlar yetarli emas.</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
@@ -4907,9 +4891,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6295158916970320988">Barcha saytlar</translation>
 <translation id="6295855836753816081">Saqlanmoqda...</translation>
 <translation id="629730747756840877">Hisob</translation>
-<translation id="6298800237463568825">Voice Match funksiyasi Google Assistent ovozingizni <ph name="DEVICE_TYPE" /> qurilmangizda va boshqalardan ajratib olishiga yordam beradi.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Eslatma:<ph name="END_BOLD" /> Oʻxshash yoki yozib olingan ovozlar ham shaxsiy natijalaringizni olishi mumkin. Voice Match funksiyasini istalgan vaqtda Assistent sozlamalari orqali olib tashlash mumkin.</translation>
 <translation id="6298962879096096191">Android ilovalarini o‘rnatish uchun Google Play ishlatilsin</translation>
 <translation id="6300177430812514606">Maʼlumotlarni yuborish yoki qabul qilishni tugatish taqiqlangan</translation>
 <translation id="630065524203833229">&amp;Chiqish</translation>
@@ -5692,7 +5673,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7171559745792467651">Boshqa qurilmalardan ilovalar o‘rnatish</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Varaqni yangi guruhga kiritish}other{Varaqlarni yangi guruhga kiritish}}</translation>
 <translation id="7173114856073700355">Sozlamalarni ochish</translation>
-<translation id="7173336557300642430">Yanada aniqroq javob berish uchun Google Assistentga savol berganingizda ekrandagi axborotdan foydalanish uchun ruxsat bering. Shuningdek, Assistent ijro etilayotgan tarona va videolar haqidagi axborotdan foydalanishi mumkin.</translation>
 <translation id="7174199383876220879">Yangi! Musiqa, video va boshqa media kontent ijrosini boshqaring.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> – sozlash</translation>
 <translation id="7175353351958621980">Qayerdan yuklandi:</translation>
@@ -5934,7 +5914,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7434969625063495310">Bosma server kiritilmadi. Server sozlamalarini tekshiring va qaytadan urining.</translation>
 <translation id="7436921188514130341">Ana xolos! Nomni o‘zgartirishda xatolik yuz berdi.</translation>
 <translation id="7438495332316988804">Standart brauzerni ochish uchun Launcherga “Chrome” deb yozing.</translation>
-<translation id="7439446972050308922">Google hisobingizga kirganingizda saqlangan sozlamalaringiz barcha Chrome OS qurilmalaringizda sinxronlanadi. Nimani sinxronlashni Sozlamalar orqali tanlash mumkin.</translation>
 <translation id="7439519621174723623">Davom etish uchun qurilma kiriting</translation>
 <translation id="7441736921018636843">Bu sozlamani o‘zgartirish uchun, avval, <ph name="BEGIN_LINK" />sinxronizatsiyani tiklang<ph name="END_LINK" /> va parolini olib tashlang</translation>
 <translation id="7441830548568730290">Boshqa foydalanuvchilar</translation>
@@ -6937,7 +6916,6 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8480869669560681089">Notanish qurilma (<ph name="VENDOR_NAME" />)</translation>
 <translation id="8481187309597259238">USB ruxsatnomasini tasdiqlash</translation>
 <translation id="8481980314595922412">Bepul sinov funksiyalari yoniq</translation>
-<translation id="8482860770919360244">Boshqa qurilmada Google Assistentni sozlagansiz. Ekrandagi axborotga ruxsatni yoqish orqali Assistent imkoniyatlaridan yanada koʻproq foydalaning.</translation>
 <translation id="848666842773560761">Ilova kameradan foydalanmoqchi. Ruxsat berish uchun kamera maxfiylik qoidasini faolsizlantiring.</translation>
 <translation id="8487678622945914333">Yaqinlashtirish</translation>
 <translation id="8489156414266187072">Shaxsiy takliflar faqat sizning hisobda chiqadi</translation>

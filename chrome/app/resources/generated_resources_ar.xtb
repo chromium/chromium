@@ -323,10 +323,12 @@
 <translation id="1347512539447549782">‏مساحة تخزين نظام التشغيل Linux</translation>
 <translation id="1347975661240122359">سيبدأ التحديث عندما يصل مستوى البطارية إلى <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">‏لاستخدام أدوات الرقابة الأبوية، مثل الموافقة على التطبيقات وحدود وقت النظر إلى الشاشة، يجب أن يتوفّر لدى الطفل حساب على Google يديره أحد الوالدَين. يمكن إضافة حساب تديره المؤسسة التعليمية لاحقًا لاستخدامه في أدوات مثل Google Classroom.</translation>
+<translation id="135389172849514421">تعمل بدون اتصال بالإنترنت</translation>
 <translation id="1353980523955420967">‏يتعذّر العثور على ملف PPD. تأكد من اتصال Chromebook بالإنترنت وأعد المحاولة.</translation>
 <translation id="1354045473509304750">مواصلة السماح للمضيف <ph name="HOST" /> باستخدام الكاميرا وتحريكها</translation>
 <translation id="1355088139103479645">هل تريد حذف كلّ البيانات؟</translation>
 <translation id="1355466263109342573">تم حظر <ph name="PLUGIN_NAME" /></translation>
+<translation id="1356178530321889280">‏انقر بزر الماوس الأيمن ثم اختَر "البحث في جزء من الصفحة باستخدام "عدسة Google"" للبحث في أي منطقة من الموقع الإلكتروني بهدف التعرّف على المزيد من المعلومات حول المحتوى المرئي الذي يظهر لك أثناء التصفُّح والتسوق على الإنترنت.</translation>
 <translation id="1358741672408003399">التدقيق الإملائي والتدقيق النحوي</translation>
 <translation id="1359923111303110318">‏يمكن فتح قفل جهازك باستخدام Smart Lock. عليك الضغط على Enter لفتح القفل.</translation>
 <translation id="1361164813881551742">الإضافة يدويًا</translation>
@@ -560,13 +562,6 @@
 <translation id="1593926297800505364">حفظ طريقة الدفع</translation>
 <translation id="1595492813686795610">‏جارٍ ترقية Linux</translation>
 <translation id="1596286373007273895">متوفِّر</translation>
-<translation id="1597224195604051602">‏تستعين خدمة "مساعد Google" بميزة Voice Match للتعرّف على صوت <ph name="SUPERVISED_USER_NAME" /> على <ph name="DEVICE_TYPE" /> من بين الأصوات الأخرى.
-    <ph name="BR" />
-    وتسجِّل خدمة "مساعد Google" مقاطع صوتية لطفلك لإنشاء نموذج صوتي فريد وحفظه على أجهزة طفلك فقط. ويمكن أن يُرسَل النموذج الصوتي لطفلك مؤقتًا إلى Google للتعرّف على صوته بشكلٍ أفضل.
-    <ph name="BR" />
-    إذا قرّرت لاحقًا عدم استخدام ميزة Voice Match لأنها غير مناسبة لطفلك، ما عليك سوى إزالتها من إعدادات "مساعد Google" على أجهزة طفلك. لعرض أو حذف المقاطع الصوتية التي سجّلها طفلك أثناء إعداد ميزة Voice Match، انتقِل إلى g.co/assistant/match من حساب طفلك.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ملاحظة:<ph name="END_BOLD" /> يمكن الوصول إلى نتائج طفلك <ph name="SUPERVISED_USER_NAME" /> الشخصية باستخدام صوت أو تسجيل مشابه لصوت طفلك. لتوفير طاقة البطارية، لا يتم تفعيل الكلمة المفتاح Ok Google إلا عندما يكون جهازك متصلاً بمصدر طاقة.</translation>
 <translation id="1598233202702788831">أوقف المشرف التحديثات.</translation>
 <translation id="1600857548979126453">الدخول إلى الواجهة الخلفية لبرنامج تصحيح أخطاء الصفحة</translation>
 <translation id="1601560923496285236">تطبيق</translation>
@@ -844,7 +839,6 @@
 <translation id="1865769994591826607">اتصالات من نفس الموقع فقط</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" يمكنها قراءة ملفات الصور والفيديو والصوت وكتابتها في المواقع المحددة.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> جاهز لإكمال عملية التثبيت</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">‏لا تتوفّر ميزة "التحقُّق من كلمة المرور" في Chromium.</translation>
 <translation id="1869433484041798909">زر وضع إشارة مرجعية</translation>
 <translation id="1871098866036088250">‏فتح في متصفّح Chrome</translation>
@@ -1128,7 +1122,6 @@
 <translation id="2163937499206714165">تفعيل الوضع المُعتِم</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /> و<ph name="THIRD_SWITCH" /> ومفتاح تبديل آخر</translation>
 <translation id="2165177462441582039">اختَر مدة إبقاء كل عنصر مميّزًا.</translation>
-<translation id="2165421703844373933">‏الوصول إلى "مساعد Google" عند قول "Ok Google" لتوفير طاقة البطارية، اختَر "تفعيل (مُقترح)". ولن يستجيب "مساعد Google" إلا عند توصيل جهازك بمصدر طاقة أو شحنه.</translation>
 <translation id="2166369534954157698">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
@@ -1454,6 +1447,7 @@
 <translation id="2509495747794740764">يجب أن تمثل قيمة التدرج رقمًا يتراوح بين 10 و200.</translation>
 <translation id="2509566264613697683">8 أضعاف</translation>
 <translation id="2510988373360790637">إلغاء إقران جهاز عبر بلوتوث</translation>
+<translation id="2512065992892294946">تم اختيار <ph name="LANGUAGE" />.</translation>
 <translation id="2513396635448525189">صورة الملف الشخصي</translation>
 <translation id="2514326558286966059">استخدام بصمة الإصبع لفتح قفل الجهاز بسرعة</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2362,6 +2356,7 @@
 <translation id="3495496470825196617">وضع الخمول أثناء الشحن</translation>
 <translation id="3495660573538963482">‏إعدادات مساعد Google</translation>
 <translation id="3496213124478423963">تصغير</translation>
+<translation id="3496238553815913323">لم يتم اختيار <ph name="LANGUAGE" />.</translation>
 <translation id="3497501929010263034">‏أجهزة USB من <ph name="VENDOR_NAME" /> (المنتج <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">مشاركة رسومات الشعار المبتكرة</translation>
 <translation id="3498215018399854026">لم نتمكن من الوصول إلى أحد والديك في الوقت الحالي. يُرجى إعادة المحاولة مرة أخرى.</translation>
@@ -3624,7 +3619,6 @@
 <translation id="4884987973312178454">6 أضعاف</translation>
 <translation id="4887424188275796356">فتح باستخدام عارض النظام</translation>
 <translation id="488785315393301722">عرض التفاصيل</translation>
-<translation id="4889792122460431731">‏يمكنك السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة عند طرح الأسئلة من أجل عرض ردود مخصَّصة. وقد يشمل ذلك استخدام المعلومات المتعلقة بالأغاني أو الفيديوهات التي يتم تشغيلها.</translation>
 <translation id="4890773143211625964">عرض خيارات الطابعة المتقدمة</translation>
 <translation id="4891089016822695758">منتدى الإصدار التجريبي</translation>
 <translation id="4892229439761351791">يمكن للموقع الإلكتروني استخدام البلوتوث.</translation>
@@ -3839,7 +3833,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">تعذَّر تنزيل الملف الشخصي. يُرجى إعادة المحاولة لاحقًا أو التواصل مع مشغّل شبكة الجوّال للحصول على المساعدة.</translation>
 <translation id="5131591206283983824">السحب بعد النقر على لوحة اللمس</translation>
-<translation id="5135085122826131075">‏الوصول إلى "مساعد Google" عند قول "Ok Google"</translation>
 <translation id="5135533361271311778">تعذر إنشاء عنصر إشارة.</translation>
 <translation id="5136343472380336530">تأكَّد من فتح قفل كلا الجهازَين وقرِّبهما من بعضهما وفعِّل البلوتوث فيهما. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">حذف هذا العنصر</translation>
@@ -4115,6 +4108,7 @@
 <translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
 <translation id="5449588825071916739">وضع إشارة على جميع علامات التبويب</translation>
 <translation id="5449716055534515760">إغلاق &amp;النافذة</translation>
+<translation id="5452976525201205853">اللغة <ph name="LANGUAGE" /> متاحة بدون اتصال بالإنترنت.</translation>
 <translation id="5454166040603940656">مع <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">غير صالحة</translation>
 <translation id="5457459357461771897">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وحذفها</translation>
@@ -4572,6 +4566,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> في الذروة)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="5965661248935608907">كما أنها تتحكم في الصفحة التي تظهر عند النقر على زر الصفحة الرئيسية أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
+<translation id="5968022600320704045">لم يتم العثور نتائج بحث.</translation>
 <translation id="5969419185858894314">بإمكان <ph name="ORIGIN" /> عرض الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="5969728632630673489">تم إغلاق إشعار اختصارات لوحة المفاتيح.</translation>
 <translation id="5971037678316050792">التحكم في حالة محول بلوتوث وإقرانه</translation>
@@ -5374,6 +5369,7 @@
 <translation id="6855892664589459354">‏النسخ الاحتياطي واستعادة البيانات من نظام التشغيل Crostini</translation>
 <translation id="6856348640027512653">المواقع الإلكترونية التي لا يُسمح لها باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
 <translation id="6856623341093082836">إعداد دقة الشاشة التي تعمل باللمس وضبطها</translation>
+<translation id="6856850379840757744">في حال تفعيل هذه الميزة، سيتم كتم صوت جميع الإشعارات.</translation>
 <translation id="6857145580237920905">‏إزالة الملفات التعريفية لشرائح eSIM قبل إجراء عملية Powerwash</translation>
 <translation id="6857699260879628349">الحصول على معلومات الضبط</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
@@ -5651,7 +5647,6 @@
 <translation id="7171559745792467651">تثبيت التطبيقات من أجهزتك الأخرى</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
 <translation id="7173114856073700355">فتح الإعدادات</translation>
-<translation id="7173336557300642430">‏يمكنك السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة عند طرح الأسئلة من أجل عرض ردود مخصَّصة بدرجة أكبر لك. وقد يستخدم "مساعد Google" أيضًا المعلومات المتعلقة بالأغاني أو الفيديوهات التي يتم تشغيلها.</translation>
 <translation id="7174199383876220879">إليك إعداد جديد. يمكنك التحكم في الموسيقى والفيديوهات وغير ذلك.</translation>
 <translation id="7175037578838465313">إعداد <ph name="NAME" /></translation>
 <translation id="7175353351958621980">تم التحميل من:</translation>
@@ -5893,7 +5888,6 @@
 <translation id="7434969625063495310">تعذّر العثور على خادم الطباعة. يُرجى التحقّق من إعدادات الخادم وإعادة المحاولة.</translation>
 <translation id="7436921188514130341">عذرًا، حدث خطأ في أثناء إعادة التسمية.</translation>
 <translation id="7438495332316988804">‏يمكنك العثور على المتصفِّح العادي من خلال كتابة كلمة Chrome في مشغّل التطبيقات.</translation>
-<translation id="7439446972050308922">‏ستكون إعداداتك المفضّلة والمحفوظة جاهزة على أي جهاز يعمل بنظام التشغيل Chrome عند تسجيل الدخول باستخدام حسابك على Google. ويمكنك اختيار ما تريد مزامنته من خلال "الإعدادات".</translation>
 <translation id="7439519621174723623">يجب إضافة اسم جهاز للمتابعة.</translation>
 <translation id="7441736921018636843">لتغيير هذا الإعداد، يمكنك <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /> لإزالة عبارة مرور المزامنة.</translation>
 <translation id="7441830548568730290">المستخدمون الآخرون</translation>
@@ -6349,6 +6343,7 @@
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">تكرار</translation>
 <translation id="7887864092952184874">ماوس بلوتوث مقترن</translation>
+<translation id="7889371445710865055">تغيير لغة الإملاء</translation>
 <translation id="7890147169288018054">‏الاطّلاع على معلومات الشبكة، مثل عناوين IP أو MAC</translation>
 <translation id="7893008570150657497">الوصول إلى الصور والموسيقى والوسائط الأخرى من جهاز الكمبيوتر</translation>
 <translation id="7893153962594818789">تم إيقاف البلوتوث في جهاز <ph name="DEVICE_TYPE" /> هذا. أدخل كلمة مرورك، وشغّل البلوتوث.</translation>
@@ -6889,7 +6884,6 @@
 <translation id="8480869669560681089">جهاز غير معروف من <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏تأكيد إذن USB</translation>
 <translation id="8481980314595922412">تم تفعيل ميزات الإصدار التجريبي.</translation>
-<translation id="8482860770919360244">‏يبدو أنّه سبق لك إعداد "مساعد Google" على جهاز آخر. يمكنك الاستفادة أكثر من خدمة "مساعد Google" من خلال تفعيل ميزة "سياق الشاشة".</translation>
 <translation id="848666842773560761">هناك تطبيق يحاول الوصول إلى الكاميرا. عليك إيقاف مفتاح خصوصية الكاميرا للسماح بوصول هذا التطبيق إليها.</translation>
 <translation id="8487678622945914333">تكبير</translation>
 <translation id="8489156414266187072">لا يتم عرض الاقتراحات الشخصية إلّا على حسابك.</translation>

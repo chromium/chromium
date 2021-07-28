@@ -324,10 +324,12 @@
 <translation id="1347512539447549782">‏فضای ذخیره‌سازی Linux</translation>
 <translation id="1347975661240122359">وقتی شارژ باتری به <ph name="BATTERY_LEVEL" />% رسید، به‌روزرسانی شروع خواهد شد.</translation>
 <translation id="1353275871123211385">‏برای استفاده از کنترل‌های والدین (مثل تأییدیه برنامه و محدودیت‌های مدت تماشای صفحه)، کودک باید یک «حساب Google» تحت مدیریت ولی داشته باشد. می‌توان بعداً حساب محل تحصیلی را برای ابزارهایی مثل Google Classroom اضافه کرد.</translation>
+<translation id="135389172849514421">به‌صورت آفلاین کار می‌کند</translation>
 <translation id="1353980523955420967">‏PPD پیدا نشد. مطمئن شوید Chromebook آنلاین باشد و دوباره امتحان کنید.</translation>
 <translation id="1354045473509304750">ادامه دهید و به <ph name="HOST" /> اجازه دهید از دوربین استفاده کند و آن را حرکت دهد</translation>
 <translation id="1355088139103479645">همه داده‌ها حذف شود؟</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> مسدود شده است</translation>
+<translation id="1356178530321889280">‏برای جستجوی هر بخشی از سایت و دریافت اطلاعات بیشتر درباره محتوای بصری که هنگام مرور و خرید در وب می‌بینید، کلیک راست کنید و «جستجوی بخشی از صفحه با «لنز Google»» را انتخاب کنید.</translation>
 <translation id="1358741672408003399">املا و گرامر</translation>
 <translation id="1359923111303110318">‏قفل دستگاه می‌تواند با Smart Lock باز شود. برای باز کردن قفل، Enter را فشار دهید.</translation>
 <translation id="1361164813881551742">افزودن دستی</translation>
@@ -559,13 +561,6 @@
 <translation id="1593926297800505364">ذخیره روش پرداخت</translation>
 <translation id="1595492813686795610">‏Linux درحال ارتقا است</translation>
 <translation id="1596286373007273895">دردسترس</translation>
-<translation id="1597224195604051602">‏Voice Match به «دستیار Google» کمک می‌کند صدای <ph name="SUPERVISED_USER_NAME" /> را در <ph name="DEVICE_TYPE" /> شما شناسایی کند و او را از دیگران تشخیص دهد.
-    <ph name="BR" />
-    «دستیار» برای ایجاد مدل صوتی یکتا از صدای فرزندتان چند کلیپ می‌گیرد؛ این مدل فقط در دستگاه(های) او ذخیره می‌شود. ممکن است مدل صوتی فرزندتان موقتاً به Google ارسال شود تا صدایش بهتر شناسایی شود.
-    <ph name="BR" />
-    اگر بعداً تشخیص دهید که Voice Match مناسب فرزندتان نیست، کافی است آن را از بخش «تنظیمات دستیار» او بردارید. برای مشاهده یا حذف کلیپ‌های صوتی‌ای که فرزندتان درطول راه‌اندازی Voice Match ضبط می‌کند، با حساب فرزندتان به g.co/assistant/match بروید.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> صدای مشابه یا صدای ضبط‌شده هم ممکن است بتواند به نتایج شخصی <ph name="SUPERVISED_USER_NAME" /> دسترسی پیدا کند. برای صرفه‌جویی در مصرف باتری، فقط زمانی که این دستگاه به منبع نیرو وصل باشد، «Ok Google» روشن می‌شود.</translation>
 <translation id="1598233202702788831">سرپرست سیستم شما به‌روزرسانی‌ها را غیرفعال کرده است.</translation>
 <translation id="1600857548979126453">دسترسی به مرحله پایانی اشکال‌زدای صفحه</translation>
 <translation id="1601560923496285236">اعمال</translation>
@@ -853,7 +848,6 @@
 <translation id="1865769994591826607">‏فقط اتصالات same-site</translation>
 <translation id="186612162884103683">«<ph name="EXTENSION" />» می‌تواند تصاویر، ویدئوها و فایل‌های صوتی را از مکان‌های انتخاب شده  بخوانید یا بنویسید.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> آماده تکمیل نصب است</translation>
-<translation id="1868193363684582383">«Ok Google»</translation>
 <translation id="1868553836791672080">‏بررسی گذرواژه در Chromium دردسترس نیست</translation>
 <translation id="1869433484041798909">دکمه نشانک‌گذاری</translation>
 <translation id="1871098866036088250">‏باز کردن در مرورگر Chrome</translation>
@@ -1137,7 +1131,6 @@
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" />، و ۱ کلید دیگر</translation>
 <translation id="2165177462441582039">انتخاب کنید هر مورد چه مدت برجسته بماند</translation>
-<translation id="2165421703844373933">‏با گفتن «OK Google» به «دستیار» دسترسی پیدا کنید. برای صرفه‌جویی در مصرف باتری، «روشن (توصیه می‌شود)» را انتخاب کنید. «دستیار» تنها زمانی پاسخ می‌دهد که دستگاه شما به برق متصل باشد یا درحال شارژ باشد.</translation>
 <translation id="2166369534954157698">روباه قهوه‌ای چالاک از روی سگ تنبل پرید</translation>
 <translation id="2167276631610992935">جاوا اسکریپت</translation>
 <translation id="2169062631698640254">در هر صورت وارد سیستم شود</translation>
@@ -1467,6 +1460,7 @@
 <translation id="2509495747794740764">مقیاس باید عددی بین ۱۰ تا ۲۰۰ باشد.</translation>
 <translation id="2509566264613697683">۸ برابر</translation>
 <translation id="2510988373360790637">فراموش کردن دستگاه بلوتوث</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (انتخاب شده است)</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
 <translation id="2514326558286966059">باز کردن سریع‌تر قفل با اثر انگشت</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1621,9 +1615,6 @@
 <translation id="2691385045260836588">مدل</translation>
 <translation id="2691440343905273290">تغییر تنظیمات ورودی</translation>
 <translation id="2693176596243495071">وای! خطای نامعلومی روی داد. لطفاً بعداً دوباره امتحان کنید یا اگر مشکل حل نشد، با سرپرستتان تماس بگیرید.</translation>
-<translation id="2693640212062142966">‏Voice Match به «دستیار Google» کمک می‌کند صدایتان را در <ph name="DEVICE_TYPE" /> شناسایی کند و شما را از دیگران تشخیص دهد. برای صرفه‌جویی در مصرف باتری، فقط زمانی که دستگاهتان به منبع نیرو وصل باشد، «Ok Google» روشن می‌شود. برای ایجاد تغییرات، به «تنظیمات» بروید.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />به‌خاطر داشته باشید:<ph name="END_BOLD" /> صدای مشابه یا صدای ضبط‌شده هم ممکن است بتواند به نتایج شخصی‌تان دسترسی یابد. بعداً می‌توانید مجوز Voice Match را با خاموش کردن آن در «تنظیمات دستیار» بردارید.</translation>
 <translation id="2699911226086014512">عملیات پین به‌دلیل کد خطای <ph name="RETRIES" /> انجام نشد.</translation>
 <translation id="2701330563083355633">هم‌رسانی‌شده از <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">ورودبه‌سیستم، <ph name="EMAIL" /></translation>
@@ -2377,6 +2368,7 @@
 <translation id="3495496470825196617">حالت راکد هنگام شارژ کردن</translation>
 <translation id="3495660573538963482">‏تنظیمات «دستیار Google»</translation>
 <translation id="3496213124478423963">‏Zoom Out (دورنمایی)</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (انتخاب نشده است)</translation>
 <translation id="3497501929010263034">‏دستگاه USB از <ph name="VENDOR_NAME" /> (محصول <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">‏هم‌رسانی Doodle</translation>
 <translation id="3498215018399854026">در حال حاضر نمی‌توانیم با والدینتان تماس برقرار کنیم. لطفاً دوباره امتحان کنید.</translation>
@@ -3007,7 +2999,6 @@
 <translation id="4154664944169082762">اثر انگشت</translation>
 <translation id="4157869833395312646">‏رمزنگاری انتقال یافته از دروازه سرور Microsoft</translation>
 <translation id="4158364720893025815">موفق</translation>
-<translation id="4159163871835771155">به «دستیار» اجازه دهید از اطلاعات روی صفحه <ph name="SUPERVISED_USER_NAME" /> استفاده کند تا وقتی <ph name="SUPERVISED_USER_NAME" /> سؤال می‌پرسد، پاسخ‌های متناسب‌تری دریافت کند. این اطلاعات ممکن است شامل اطلاعات مربوط به آهنگ‌ها یا ویدیوهای درحال پخش باشد.</translation>
 <translation id="4159681666905192102">این یک حساب مخصوص بچه‌ها است که توسط <ph name="CUSTODIAN_EMAIL" /> و <ph name="SECOND_CUSTODIAN_EMAIL" /> مدیریت می‌شود.</translation>
 <translation id="4163560723127662357">صفحه‌کلید ناشناس</translation>
 <translation id="4167686856635546851">سایت‌ها معمولاً از جاوا اسکریپت برای نمایش ویژگی‌های تعاملی، مانند بازی‌های ویدیویی یا فرم‌های وب، استفاده می‌کنند</translation>
@@ -3650,7 +3641,6 @@
 <translation id="4884987973312178454">۶ برابر</translation>
 <translation id="4887424188275796356">‏باز کردن با System Viewer</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
-<translation id="4889792122460431731">برای دریافت پاسخ‌های متناسب‌تر هنگام پرسیدن سؤال، به «دستیار» اجازه دهید از اطلاعات روی صفحه استفاده کند. این اطلاعات ممکن است شامل اطلاعات مربوط به آهنگ‌ها یا ویدیوهای درحال پخش شود.</translation>
 <translation id="4890773143211625964">نمایش گزینه‌های چاپگر پیشرفته</translation>
 <translation id="4891089016822695758">تالار گفتمان بتا</translation>
 <translation id="4892229439761351791">سایت می‌تواند از بلوتوث استفاده کند</translation>
@@ -3866,7 +3856,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">نمایه را نمی‌توان بارگیری کرد. لطفاً بعداً دوباره امتحان کنید یا برای راهنمایی با شرکت مخابراتی تماس بگیرید.</translation>
 <translation id="5131591206283983824">کشیدن با ضربه روی صفحه لمسی</translation>
-<translation id="5135085122826131075">‏با گفتن «OK Google» به «دستیار» دسترسی پیدا کنید.</translation>
 <translation id="5135533361271311778">ایجاد مورد نشانک ممکن نیست.</translation>
 <translation id="5136343472380336530">مطمئن شوید قفل هر دو دستگاه باز باشد، نزدیک یکدیگر باشند، و بلوتوث آن‌ها روشن باشد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">حذف این مورد</translation>
@@ -4143,6 +4132,7 @@
 <translation id="5449551289610225147">گذرواژه نامعتبر است</translation>
 <translation id="5449588825071916739">نشانک‌گذاری همه برگه‌ها...</translation>
 <translation id="5449716055534515760">بستن &amp;پنجره</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (آفلاین کار می‌کند)</translation>
 <translation id="5454166040603940656">با <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">نامعتبر</translation>
 <translation id="5457459357461771897">خواندن و حذف عکس‌ها، موسیقی، و سایر رسانه‌ها از رایانه‌تان</translation>
@@ -4283,7 +4273,6 @@
 <translation id="5585912436068747822">قالب‌بندی ناموفق بود</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">درحال بار کردن برنامه...</translation>
-<translation id="5590265327628802792">‏به‌نظر می‌رسد <ph name="SUPERVISED_USER_NAME" /> ازقبل «دستیار Google» را در دستگاه دیگری راه‌اندازی کرده است. <ph name="SUPERVISED_USER_NAME" /> می‌تواند با روشن کردن «اطلاعات روی صفحه»، بهره بیشتری از «دستیار» ببرد.</translation>
 <translation id="5592595402373377407">هنوز داده کافی در دسترس نیست.</translation>
 <translation id="5595485650161345191">ویرایش آدرس</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
@@ -4604,6 +4593,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> اوج مصرف)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{باز کردن همه در پنجره جدید}=1{باز کردن در پنجره جدید}one{باز کردن همه ({COUNT}) در پنجره جدید}other{باز کردن همه ({COUNT}) در پنجره جدید}}</translation>
 <translation id="5965661248935608907">‏این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه صفحه اصلی یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
+<translation id="5968022600320704045">بدون نتیجه جستجو</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> می‌تواند فایل‌های <ph name="FOLDERNAME" /> را مشاهده کند</translation>
 <translation id="5969728632630673489">اعلان میان‌برهای صفحه‌کلید رد شد</translation>
 <translation id="5971037678316050792">کنترل حالت آداپتور بلوتوث و مرتبط‌سازی</translation>
@@ -4911,9 +4901,6 @@
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6295855836753816081">در حال ذخیره کردن...</translation>
 <translation id="629730747756840877">حساب</translation>
-<translation id="6298800237463568825">‏Voice Match به «دستیار Google» کمک می‌کند صدایتان را در <ph name="DEVICE_TYPE" /> شناسایی کند و شما را از دیگران تشخیص دهد.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />به‌خاطر داشته باشید:<ph name="END_BOLD" /> صدای مشابه یا صدای ضبط‌شده هم ممکن است بتواند به نتایج شخصی‌تان دسترسی یابد. بعداً می‌توانید مجوز Voice Match را با خاموش کردن آن در «تنظیمات دستیار» بردارید.</translation>
 <translation id="6298962879096096191">‏برای نصب برنامه‌های Android از Google Play‌ استفاده کنید</translation>
 <translation id="6300177430812514606">اجازه ندارد ارسال و دریافت داده را به‌پایان برساند</translation>
 <translation id="630065524203833229">&amp;خروج</translation>
@@ -5416,6 +5403,7 @@
 <translation id="6855892664589459354">‏پشتیبان‌گیری و بازیابی Crostini</translation>
 <translation id="6856348640027512653">اجازه ندارد از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کند</translation>
 <translation id="6856623341093082836">راه‌اندازی و تنظیم دقت صفحه لمسی</translation>
+<translation id="6856850379840757744">وقتی روشن است،‌ همه اعلان‌ها بی‌صدا خواهند بود</translation>
 <translation id="6857145580237920905">‏قبل‌از Powerwash، نمایه‌های سیم‌کارت داخلی را بردارید</translation>
 <translation id="6857699260879628349">دریافت اطلاعات پیکربندی</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
@@ -5694,7 +5682,6 @@
 <translation id="7171559745792467651">نصب برنامه‌ها از دستگاه‌های دیگرتان</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه‌ها به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
 <translation id="7173114856073700355">باز کردن تنظیمات</translation>
-<translation id="7173336557300642430">‏برای دریافت پاسخ‌هایی که با نیازهای شما تناسب بیشتری دارد، به «دستیار Google» اجازه دهید هنگامی که سؤالی می‌پرسید از اطلاعات روی صفحه استفاده کند. ممکن است «دستیار» از اطلاعات مربوط به آهنگ‌ها یا ویدیوهای درحال پخش هم استفاده کند.</translation>
 <translation id="7174199383876220879">جدید! موسیقی، ویدیو، و محتوای بیشتر را کنترل کنید.</translation>
 <translation id="7175037578838465313">پیکربندی <ph name="NAME" /></translation>
 <translation id="7175353351958621980">بارگیری شده از:</translation>
@@ -5936,7 +5923,6 @@
 <translation id="7434969625063495310">سرور چاپ اضافه نشد. لطفاً پیکربندی سرور را بررسی و دوباره امتحان کنید.</translation>
 <translation id="7436921188514130341">اوه، نه! درحین تغییر نام خطایی رخ داد.</translation>
 <translation id="7438495332316988804">‏می‌توانید مرورگر استاندارد را با تایپ کردن «Chrome» در «راه‌انداز» پیدا کنید.</translation>
-<translation id="7439446972050308922">‏وقتی با «حساب Google» خودتان به سیستم وارد شوید، اولویت‌هایی که ذخیره کرده‌اید در همه دستگاه‌های Chrome OS آماده استفاده خواهند بود. می‌توانید مواردی را که می‌خواهید همگام‌سازی شوند، در «تنظیمات» انتخاب کنید.</translation>
 <translation id="7439519621174723623">برای ادامه، نام دستگاه را اضافه کنید</translation>
 <translation id="7441736921018636843">برای تغییر این تنظیم، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /> تا گذرعبارت همگام‌سازی حذف شود</translation>
 <translation id="7441830548568730290">کاربران دیگر</translation>
@@ -6396,6 +6382,7 @@
 <translation id="7886605625338676841">سیم‌کارت داخلی</translation>
 <translation id="7887334752153342268">کپی‌برداری</translation>
 <translation id="7887864092952184874">موشواره بلوتوث مرتبط شد</translation>
+<translation id="7889371445710865055">تغییر زبان تایپ صوتی</translation>
 <translation id="7890147169288018054">‏دیدن اطلاعات شبکه، مانند نشانی IP یا MAC شما</translation>
 <translation id="7893008570150657497">دسترسی به عکس‌ها، موسیقی، و دیگر رسانه‌ها از رایانه شما</translation>
 <translation id="7893153962594818789">بلوتوث در این <ph name="DEVICE_TYPE" /> خاموش است. گذرواژه‌تان را وارد و بلوتوث را روشن کنید.</translation>
@@ -6940,7 +6927,6 @@
 <translation id="8480869669560681089">دستگاه نامشخص از <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">‏تأیید مجوز USB</translation>
 <translation id="8481980314595922412">ویژگی‌های آزمایشی روشن است</translation>
-<translation id="8482860770919360244">به‌نظر می‌رسد قبلاً «دستیار» را در دستگاه دیگری راه‌اندازی کرده‌اید. با روشن کردن «اطلاعات روی صفحه»، بهره بیشتری از «دستیار» ببرید.</translation>
 <translation id="848666842773560761">برنامه‌ای می‌خواهد به دوربین دسترسی داشته باشد. برای مجاز کردن دسترسی، کلید «حریم‌خصوصی دوربین» را خاموش کنید.</translation>
 <translation id="8487678622945914333">بزرگ‌نمایی</translation>
 <translation id="8489156414266187072">پیشنهادهای شخصی فقط در حساب شما نمایش داده می‌شوند</translation>

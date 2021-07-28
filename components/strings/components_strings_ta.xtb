@@ -482,7 +482,7 @@
 <translation id="264810637653812429">இணக்கமான சாதனங்கள் இல்லை.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் உலாவல் வரலாறு, குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பலவற்றை அழிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
-<translation id="2650446666397867134">கோப்பிற்கான அணுகல் மறுக்கப்பட்டது</translation>
+<translation id="2650446666397867134">ஃபைலுக்கான அணுகல் மறுக்கப்பட்டது</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2660779039299703961">நிகழ்வு</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{எதுவுமில்லை}=1{ஒரு கடவுச்சொல் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}=2{2 கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}other{# கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}}</translation>

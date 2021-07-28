@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome-ի գործառույթների դյուրանցումներ</translation>
 <translation id="1344653310988386453">Ներառել ընդգծված տեքստի հղումը</translation>
 <translation id="1347468774581902829">Կառավարել պատմությունը</translation>
+<translation id="1352771733366526411">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
 <translation id="1373696734384179344">Ընտրված բովանդակությունը ներբեռնելու համար բավարար հիշողություն չկա:</translation>
 <translation id="1376578503827013741">Հաշվարկ...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome-ն այժմ ավելի արագ է ֆայլեր ներբեռնում</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
+<translation id="1888378517829496315">Կառավարել բոլոր պատուհանները</translation>
 <translation id="189358972401248634">Այլ լեզուներ</translation>
 <translation id="1918175104945982129">Օգնականի միջոցով ձայնային որոնման միջերեսը բացվում է կես բարձրությամբ</translation>
 <translation id="1919130412786645364">Թույլատրել մուտքը Chrome-ում</translation>
@@ -639,6 +641,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="5139940364318403933">Իմացեք, թե ինչպես օգտագործել Google Drive-ը</translation>
+<translation id="5142281402488957685">Նոր պատմություններ տեսնելու համար քաշեք էջը ներքև</translation>
 <translation id="5152843274749979095">Աջակցվող հավելվածներ չեն տեղադրվել</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ։}one{Չհաջողվեց ներբեռնել # ֆայլ։}other{Չհաջողվեց ներբեռնել # ֆայլ։}}</translation>
@@ -679,6 +682,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="5423934151118863508">Ձեր հաճախակի այցելած էջերը կցուցադրվեն այստեղ</translation>
 <translation id="5424588387303617268">Ազատ տարածքը՝ <ph name="GIGABYTES" /> ԳԲ</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
@@ -946,6 +950,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
 <translation id="6989267951144302301">Չհաջողվեց ներբեռնել</translation>
+<translation id="6992232929048168262">Բացել լիաէկրան ռեժիմում</translation>
 <translation id="6995899638241819463">Զգուշացնել, եթե տվյալների արտահոսքի արդյունքում իմ գաղտնաբառերը հայտնի դառնան կողմնակի անձանց</translation>
 <translation id="7001056293070445572">Ֆայլը մեծ է (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Բացել դիտարկիչով</translation>
@@ -1230,6 +1235,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8683081248374354009">Զրոյացնել խմբի կարգավորումները</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
+<translation id="8701921397542715895">Աշխատում է կողքի պատուհանում</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

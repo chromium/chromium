@@ -317,6 +317,7 @@
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
 <translation id="708426984172631313">متوقّف</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>

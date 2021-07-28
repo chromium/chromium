@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Prečice za Google Chrome funkcije</translation>
 <translation id="1344653310988386453">Uvrstite link do istaknutog teksta</translation>
 <translation id="1347468774581902829">Upravljajte aktivnostima</translation>
+<translation id="1352771733366526411">Upravljajte prozorima (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Odjavljujete se i isključujete sinhroniz?</translation>
 <translation id="1373696734384179344">Nema dovoljno memorije za preuzimanje izabranog sadržaja.</translation>
 <translation id="1376578503827013741">Računa se…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome sada brže preuzima datoteke</translation>
 <translation id="1877026089748256423">Chrome je zastareo</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
+<translation id="1888378517829496315">Upravljajte svim prozorima</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
 <translation id="1918175104945982129">Korisnički interfejs za saglasnost za glasovnu pretragu Pomoćnika otvoren je do polovine ekrana</translation>
 <translation id="1919130412786645364">Dozvoli prijavljivanje u Chrome</translation>
@@ -639,6 +641,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5123685120097942451">Kartica bez arhiviranja</translation>
 <translation id="5132942445612118989">Sinhronizujte lozinke, istoriju i drugi sadržaj na svim uređajima</translation>
 <translation id="5139940364318403933">Saznajte kako da koristite Google disk</translation>
+<translation id="5142281402488957685">Povucite nadole da biste osvežili i videli nove priče</translation>
 <translation id="5152843274749979095">Nije instalirana nijedna podržana aplikacija</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 preuzimanje nije uspelo.}one{# preuzimanje nije uspelo.}few{# preuzimanja nisu uspela.}other{# preuzimanja nije uspelo.}}</translation>
@@ -679,6 +682,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5403644198645076998">Dozvoli samo određene sajtove</translation>
 <translation id="5409881200985013443">Želite li da pošaljete <ph name="ONE_TIME_CODE" /> na <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifikuju se...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="5423934151118863508">Najčešće posećivane stranice će se pojaviti ovde</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB je dostupno</translation>
 <translation id="543338862236136125">Izmenite lozinku</translation>
@@ -946,6 +950,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6979737339423435258">Oduvek</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6989267951144302301">Preuzimanje nije uspelo</translation>
+<translation id="6992232929048168262">Otvori preko celog ekrana</translation>
 <translation id="6995899638241819463">Upozori me ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="7001056293070445572">Ovaj fajl je velik (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Otvori u pregledaču</translation>
@@ -1230,6 +1235,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8683081248374354009">Resetuj grupu</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
+<translation id="8701921397542715895">Pokreće se u susednom prozoru</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>

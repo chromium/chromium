@@ -319,6 +319,7 @@
 <translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>

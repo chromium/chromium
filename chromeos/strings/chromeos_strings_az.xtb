@@ -318,6 +318,7 @@
 <translation id="7059230779847288458">Şarj edilir, tam dolana qədər <ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="708426984172631313">DAYANDIRILIB</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="714876143603641390">Lan Bağlantısı</translation>

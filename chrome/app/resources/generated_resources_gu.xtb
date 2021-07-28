@@ -554,13 +554,6 @@
 <translation id="1593926297800505364">ચુકવણી પદ્ધતિ સાચવો</translation>
 <translation id="1595492813686795610">Linux અપગ્રેડ થાય છે</translation>
 <translation id="1596286373007273895">ઉપલબ્ધ</translation>
-<translation id="1597224195604051602">Voice Match <ph name="DEVICE_TYPE" /> પર <ph name="SUPERVISED_USER_NAME" />નો વૉઇસ ઓળખવામાં અને તે બીજાથી અલગ છે તેવું Google Assistantને જણાવવામાં સહાય કરે છે.
-    <ph name="BR" />
-    Assistant વિશેષ વૉઇસ મૉડલ બનાવવા માટે તમારા બાળકના વૉઇસની ક્લિપ રેકોર્ડ કરે છે, જે ક્લિપ તેમના ડિવાઇસમાં જ સ્ટોર કરેલી હોય છે. તમારા બાળકના વૉઇસને વધુ સારી રીતે ઓળખવા માટે તેમનું વૉઇસ મૉડલ હંગામી રીતે Googleને મોકલવામાં આવી શકે છે.
-    <ph name="BR" />
-    જો ભવિષ્યમાં તમને લાગે કે Voice Matchની સુવિધા તમારા બાળક માટે યોગ્ય નથી, તો Assistantના સેટિંગમાં જઈને તમે તેને સરળતાથી કાઢી શકો છો. Voice Matchના સેટઅપ કરવા દરમિયાન તમારા બાળકે રેકૉર્ડ કરેલી ઑડિયો ક્લિપ જોવા કે ડિલીટ કરવા માટે તમારા બાળકના એકાઉન્ટમાંથી g.co/assistant/match પર જાઓ.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />નોંધ:<ph name="END_BOLD" /> સમાન વૉઇસ કે રેકોર્ડિંગ <ph name="SUPERVISED_USER_NAME" />ના વ્યક્તિગત પરિણામોનો ઍક્સેસ કદાચ મેળવી શકે છે. બૅટરીની બચત કરવા માટે જ્યારે આ ડિવાઇસ કોઈ પાવર સૉર્સ સાથે કનેક્ટ કરેલું હોય, માત્ર ત્યારે જ “Ok Google”ની સુવિધા ચાલુ હોય છે.</translation>
 <translation id="1598233202702788831">તમારા વ્યવસ્થાપક દ્વારા અપડેટ્સ અક્ષમ કરાયા છે.</translation>
 <translation id="1600857548979126453">પૃષ્ઠ ડીબગર બૅકએંડ ઍક્સેસ કરો</translation>
 <translation id="1601560923496285236">લાગુ કરો</translation>
@@ -840,7 +833,6 @@
 <translation id="1865769994591826607">માત્ર સમાન-સાઇટ કનેક્શન્સ</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" આ તપાસાયેલા સ્થાનોમાં ફોટા, વીડિયો અને સાઉન્ડ ફાઇલોને વાંચી અને લખી શકે છે.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" />  તમારું ઇન્સ્ટોલેશન પૂર્ણ કરવાની તૈયારીમાં છે</translation>
-<translation id="1868193363684582383">"ઓકે Google"</translation>
 <translation id="1868553836791672080">Chromiumમાં પાસવર્ડ ચેક કરવાની સુવિધા ઉપલબ્ધ નથી</translation>
 <translation id="1869433484041798909">બુકમાર્કનું બટન</translation>
 <translation id="1871098866036088250">Chrome બ્રાઉઝરમાં ખોલો</translation>
@@ -1124,7 +1116,6 @@
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
 <translation id="2165177462441582039">દરેક આઇટમ પર હાઇલાઇટ કેટલીવાર સુધી રહેશે તે પસંદ કરો</translation>
-<translation id="2165421703844373933">તમે "ઓકે Google" બોલીને તમારા આસિસ્ટંટને ઍક્સેસ કરો. બૅટરીની બચત કરવા માટે, “ચાલુ (સુઝાવ આપ્યો છે પસંદ કરો)”. જ્યારે તમારું ડિવાઇસનો પ્લગ જોડેલો હશે અથવા ચાર્જ થઈ રહ્યું હશે ત્યારે જ આસિસ્ટંટ જવાબ આપશે.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
@@ -1606,9 +1597,6 @@
 <translation id="2691385045260836588">મોડલ</translation>
 <translation id="2691440343905273290">ઇનપુટ સેટિંગ બદલો</translation>
 <translation id="2693176596243495071">અરેરે! અજાણી ભૂલ આવી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો અથવા જો સમસ્યા ચાલુ રહે, તો તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
-<translation id="2693640212062142966">Voice Match તમારા Google Assistantને તમારા <ph name="DEVICE_TYPE" /> પર તમારો વૉઇસ ઓળખવામાં અને બીજા લોકોમાંથી તમને જુદા તારવવામાં સહાય કરે છે. બૅટરીની બચત કરવા માટે, જ્યારે તમારું ડિવાઇસ પાવર સૉર્સ સાથે કનેક્ટ કરેલું હોય માત્ર ત્યારે જ “Ok Google” ચાલુ હોય છે. ફેરફારો કરવા માટે, સેટિંગ પર જાઓ.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ધ્યાન રાખો:<ph name="END_BOLD" /> સમાન વૉઇસ અથવા રેકોર્ડિંગથી પણ કદાચ તમારા વ્યક્તિગત પરિણામો ઍક્સેસ કરી શકશે. તમે થોડા સમય પછી Assistantના સેટિંગમાં Voice Match બંધ કરીને તેની પરવાનગી કાઢી નાખી શકો છો.</translation>
 <translation id="2699911226086014512">કોડ <ph name="RETRIES" /> સાથે પિન ઑપરેશન નિષ્ફળ થયું.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />માંથી શેર કર્યું</translation>
 <translation id="2701737434167469065">સાઇન ઇન કરો, <ph name="EMAIL" /></translation>
@@ -2992,7 +2980,6 @@
 <translation id="4154664944169082762">ફિંગરપ્રીંટ્સ</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">પાસ</translation>
-<translation id="4159163871835771155">જ્યારે <ph name="SUPERVISED_USER_NAME" /> પ્રશ્નો પૂછે, ત્યારે ખાસ તેમની જરૂરિયાતો અનુસારના પ્રતિસાદો મેળવવા માટે, Assistantને <ph name="SUPERVISED_USER_NAME" />ની સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવા દો. આમાં ચાલી રહ્યાં હોય તેવા ગીતો અથવા વીડિયો વિશેની માહિતીનો પણ સમાવેશ થઈ શકે છે.</translation>
 <translation id="4159681666905192102">આ બાળકો માટેનું એકાઉન્ટ છે, જે <ph name="CUSTODIAN_EMAIL" /> અને <ph name="SECOND_CUSTODIAN_EMAIL" /> દ્વારા મેનેજ કરાય છે.</translation>
 <translation id="4163560723127662357">અજાણીતું કીબોર્ડ</translation>
 <translation id="4167686856635546851">વીડિયો ગેમ અથવા વેબ ફોર્મ જેવી ક્રિયાપ્રતિક્રિયાત્મક સુવિધાઓ બતાવવા માટે, સાઇટ સામાન્ય રીતે JavaScriptનો ઉપયોગ કરે છે</translation>
@@ -3634,7 +3621,6 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">સિસ્ટમ દર્શક સાથે ખોલો</translation>
 <translation id="488785315393301722">વિગતો બતાવો</translation>
-<translation id="4889792122460431731">ખાસ તમારી જરૂરિયાતો અનુસારના પ્રતિસાદો મેળવવા માટે, જ્યારે તમે પ્રશ્નો પૂછો ત્યારે તમારા Assistantને તમારી સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવા દો. આમાં ચાલી રહ્યાં હોય તેવા ગીતો અથવા વીડિયો વિશેની માહિતીનો પણ સમાવેશ થઈ શકે છે.</translation>
 <translation id="4890773143211625964">વિગતવાર પ્રિન્ટર વિકલ્પો બતાવો</translation>
 <translation id="4891089016822695758">બીટા ચર્ચા મંચ</translation>
 <translation id="4892229439761351791">સાઇટ બ્લૂટૂથનો ઉપયોગ કરી શકે</translation>
@@ -3850,7 +3836,6 @@
 <translation id="5130080518784460891">ઇટેન</translation>
 <translation id="5130675701626084557">પ્રોફાઇલ ડાઉનલોડ કરી શકાઈ નથી. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો અથવા સહાય માટે મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="5131591206283983824">ટચપૅડના ટૅપ ખેંચવાના સેટિંગ</translation>
-<translation id="5135085122826131075">તમે "ઓકે Google" બોલીને તમારા આસિસ્ટંટને ઍક્સેસ કરો.</translation>
 <translation id="5135533361271311778">બુકમાર્ક આઇટમ બનાવી શકાઈ નથી.</translation>
 <translation id="5136343472380336530">ખાતરી કરો કે બન્ને ડિવાઇસ અનલૉક કરેલા અને નજીક જ હોય તેમજ તેમાં બ્લૂટૂથની સુવિધા ચાલુ કરેલી હોય. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">આ આઇટમ ડિલીટ કરો</translation>
@@ -4267,7 +4252,6 @@
 <translation id="5585912436068747822">ફોર્મેટિંગ નિષ્ફળ થયું</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ઍપ્લિકેશનો લોડ કરી રહ્યું છે...</translation>
-<translation id="5590265327628802792">એવું લાગી રહ્યું છે કે <ph name="SUPERVISED_USER_NAME" /> દ્વારા પહેલેથી જ અન્ય ડિવાઇસ પર Google Assistantનું સેટઅપ કરાયું છે. સ્ક્રીન સંદર્ભ ચાલુ કરીને, <ph name="SUPERVISED_USER_NAME" /> Assistantથી વધુ ફાયદો મેળવી શકે છે.</translation>
 <translation id="5592595402373377407">હજુ સુધી પર્યાપ્ત ડેટા ઉપલબ્ધ નથી.</translation>
 <translation id="5595485650161345191">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
@@ -4897,9 +4881,6 @@ USB ડિવાઇસ</translation>
 <translation id="6295158916970320988">બધી સાઇટ્સ</translation>
 <translation id="6295855836753816081">સાચવી રહ્યું છે...</translation>
 <translation id="629730747756840877">એકાઉન્ટ</translation>
-<translation id="6298800237463568825">Voice Match તમારા Google Assistantને તમારા <ph name="DEVICE_TYPE" /> પર તમારો વૉઇસ ઓળખવામાં અને બીજા લોકોમાંથી તમને જુદા તારવવામાં સહાય કરે છે.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ધ્યાન રાખો:<ph name="END_BOLD" /> સમાન વૉઇસ અથવા રેકોર્ડિંગથી પણ કદાચ તમારા વ્યક્તિગત પરિણામો ઍક્સેસ કરી શકશે. તમે થોડા સમય પછી Assistantના સેટિંગમાં Voice Match બંધ કરીને તેની પરવાનગી કાઢી નાખી શકો છો.</translation>
 <translation id="6298962879096096191">Android ઍપ્લિકેશનોને ઇન્સ્ટૉલ કરવા માટે Google Play નો ઉપયોગ કરો</translation>
 <translation id="6300177430812514606">ડેટા મોકલવા કે પ્રાપ્ત કરવાનું સમાપ્ત કરવાની મંજૂરી નથી</translation>
 <translation id="630065524203833229">&amp;બહાર નીકળો</translation>
@@ -5679,7 +5660,6 @@ USB ડિવાઇસ</translation>
 <translation id="7171559745792467651">તમારા અન્ય ઉપકરણોમાંથી ઍપને ઇન્સ્ટૉલ કરો</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
-<translation id="7173336557300642430">ખાસ તમારી જરૂરિયાતો અનુસારના પ્રતિસાદો મેળવવા માટે, જ્યારે તમે પ્રશ્નો પૂછો ત્યારે તમારા Google Assistantને તમારી સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવા દો. તમારું Assistant ચાલી રહ્યાં હોય તેવા ગીતો અથવા વીડિયો વિશેની માહિતીનો પણ ઉપયોગ કરી શકે છે.</translation>
 <translation id="7174199383876220879">નવું! તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ગોઠવો</translation>
 <translation id="7175353351958621980">અહીંથી લોડ કરેલું:</translation>
@@ -5921,7 +5901,6 @@ USB ડિવાઇસ</translation>
 <translation id="7434969625063495310">પ્રિન્ટ સર્વર ઉમેરી શક્યા નથી. કૃપા કરીને સર્વરની ગોઠવણી ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7436921188514130341">અરેરે! નામ બદલતી વખતે એક ભૂલ આવી હતી.</translation>
 <translation id="7438495332316988804">લૉન્ચરમાં "Chrome" ટાઇપ કરીને, માનક બ્રાઉઝર મેળવી શકાય છે.</translation>
-<translation id="7439446972050308922">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરશો, ત્યારે તમારી સાચવેલી પસંદગીઓ કોઈપણ Chrome OS ડિવાઇસ પર તૈયાર થઈ જશે. શું સિંક કરવું, તે તમે સેટિંગમાં જઈને પસંદ કરી શકો છો.</translation>
 <translation id="7439519621174723623">આગળ વધવા માટે ડિવાઇસનું નામ ઉમેરો</translation>
 <translation id="7441736921018636843">આ સેટિંગ બદલવા, સિંક પાસફ્રેઝ કાઢી નાખવા માટે <ph name="BEGIN_LINK" />સિંક રીસેટ કરો<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">અન્ય વપરાશકર્તાઓ</translation>
@@ -6918,7 +6897,6 @@ USB ડિવાઇસ</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> તરફથી અજાણ્યું ઉપકરણ</translation>
 <translation id="8481187309597259238">USB પરવાનગી કન્ફર્મ કરો</translation>
 <translation id="8481980314595922412">અજમાયશની સુવિધાઓ ચાલુ છે</translation>
-<translation id="8482860770919360244">એવું લાગે છે કે તમે પહેલેથી જ અન્ય ડિવાઇસ પર Google Assistantનું સેટઅપ કરી લીધું છે. સ્ક્રીન સંદર્ભ ચાલુ કરીને તમારા Assistantનો વધુને વધુ લાભ મેળવો.</translation>
 <translation id="848666842773560761">કોઈ ઍપ કૅમેરા ઍક્સેસ કરવાનો પ્રયાસ કરી રહી છે. ઍક્સેસની મંજૂરી આપવા માટે કૅમેરાની પ્રાઇવસી સ્વિચ બંધ કરો.</translation>
 <translation id="8487678622945914333">ઝૂમ વધારો</translation>
 <translation id="8489156414266187072">માત્ર તમારા એકાઉન્ટ પર વ્યક્તિગત સૂચનો બતાવવામાં આવે છે</translation>

@@ -319,6 +319,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7059230779847288458">Charging; <ph name="TIME_VALUE" /> until full</translation>
 <translation id="708426984172631313">STOPPED</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="714876143603641390">LAN connectivity</translation>

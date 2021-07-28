@@ -554,13 +554,6 @@
 <translation id="1593926297800505364">保存付款方式</translation>
 <translation id="1595492813686795610">Linux 正在升级</translation>
 <translation id="1596286373007273895">可用</translation>
-<translation id="1597224195604051602">借助 Voice Match，Google 助理可在 <ph name="DEVICE_TYPE" /> 上识别出<ph name="SUPERVISED_USER_NAME" />的语音，从而将其与他人区分开。
-    <ph name="BR" />
-    Google 助理会录制您孩子的语音剪辑以创建专属语音模型，这个语音模型只会存储在您孩子的设备上。系统可能会暂时将您孩子的语音模型发送给 Google，以便更准确地识别孩子的语音。
-    <ph name="BR" />
-    如果您日后又改变了想法，觉得 Voice Match 功能不适合您的孩子，只需在孩子的 Google 助理设置中关闭该功能即可。如需查看或删除您孩子在设置 Voice Match 时录制的音频剪辑，请使用孩子的帐号访问 g.co/assistant/match。
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="1598233202702788831">您的管理员已停用更新。</translation>
 <translation id="1600857548979126453">访问页面调试程序后端</translation>
 <translation id="1601560923496285236">应用</translation>
@@ -840,7 +833,6 @@
 <translation id="1865769994591826607">仅限同一网站的连接</translation>
 <translation id="186612162884103683">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取和写入权限。</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" />已准备就绪，可以进行安装。</translation>
-<translation id="1868193363684582383">“Ok Google”</translation>
 <translation id="1868553836791672080">此版 Chromium 无法检查密码</translation>
 <translation id="1869433484041798909">书签按钮</translation>
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
@@ -1124,7 +1116,6 @@
 <translation id="2163937499206714165">开启深色模式</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
-<translation id="2165421703844373933">只需说“Ok Google”即可访问您的 Google 助理。要节省电量，请选择“开启（推荐）”。选择这一选项后，只有当您的设备已接通电源或正在充电时，Google 助理才会做出响应。</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">仍然登录</translation>
@@ -1605,9 +1596,6 @@
 <translation id="2691385045260836588">型号</translation>
 <translation id="2691440343905273290">更改输入设置</translation>
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
-<translation id="2693640212062142966">借助 Voice Match，Google 助理可在 <ph name="DEVICE_TYPE" /> 上识别出您的语音，从而将您与他人区分开。为了省电，“Ok Google”指令仅在您的设备已接通电源时可用。如需做出更改，请转到“设置”。
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与您相似或拥有您的语音录音，此人可能也能获取您的个人信息相关结果。日后若有需要，您可通过在 Google 助理设置中关闭 Voice Match 来撤消相应权限。</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
 <translation id="2701330563083355633">共享自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
@@ -2989,7 +2977,6 @@
 <translation id="4154664944169082762">指纹</translation>
 <translation id="4157869833395312646">Microsoft 服务器网关加密</translation>
 <translation id="4158364720893025815">通过</translation>
-<translation id="4159163871835771155">如果想在<ph name="SUPERVISED_USER_NAME" />提问后获得为该用户量身定制的回复，您不妨允许 Google 助理使用<ph name="SUPERVISED_USER_NAME" />的屏幕中的信息，其中可能包括正在播放的歌曲或视频的相关信息。</translation>
 <translation id="4159681666905192102">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
 <translation id="4163560723127662357">未知键盘</translation>
 <translation id="4167686856635546851">网站通常会使用 JavaScript 来显示互动功能（例如视频游戏或网络表单）</translation>
@@ -3631,7 +3618,6 @@
 <translation id="4884987973312178454">6 倍</translation>
 <translation id="4887424188275796356">使用系统查看器打开</translation>
 <translation id="488785315393301722">显示详细信息</translation>
-<translation id="4889792122460431731">如需在提问时获取更贴合您的需求的回复，您不妨允许 Google 助理使用屏幕中的信息，其中可能包括正在播放的歌曲或视频的相关信息。</translation>
 <translation id="4890773143211625964">显示高级打印机选项</translation>
 <translation id="4891089016822695758">Chrome（测试版）论坛</translation>
 <translation id="4892229439761351791">此网站可能会使用蓝牙</translation>
@@ -3847,7 +3833,6 @@
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">无法下载配置文件。请稍后再试，或向运营商求助。</translation>
 <translation id="5131591206283983824">触控板点按拖动</translation>
-<translation id="5135085122826131075">只需说“Ok Google”即可访问您的 Google 助理。</translation>
 <translation id="5135533361271311778">无法创建书签项。</translation>
 <translation id="5136343472380336530">请确保这两部设备均已解锁、相距很近且均已开启蓝牙。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">删除此项</translation>
@@ -4264,7 +4249,6 @@
 <translation id="5585912436068747822">格式化失败</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在加载应用…</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上设置了 Google 助理。<ph name="SUPERVISED_USER_NAME" />可以在开启屏幕上下文功能后更充分地利用 Google 助理。</translation>
 <translation id="5592595402373377407">尚无足够的数据。</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -4603,7 +4587,7 @@
 <translation id="5979353814339191480">此选项适用于以下类型的 Chromebook：具有流量套餐或移动网络加密狗，或者已通过“网络共享”功能连接到便携式热点</translation>
 <translation id="5979421442488174909">翻成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
-<translation id="5983831175889857946">已检查完毕！</translation>
+<translation id="5983831175889857946">检查完毕！</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="5985458664595100876">网址格式无效。支持的格式为 \\server\share 和 smb://server/share。</translation>
 <translation id="598810097218913399">移除分配关系</translation>
@@ -4892,9 +4876,6 @@
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6295855836753816081">正在保存…</translation>
 <translation id="629730747756840877">帐号</translation>
-<translation id="6298800237463568825">借助 Voice Match，Google 助理可在 <ph name="DEVICE_TYPE" /> 上识别出您的语音，从而将您与他人区分开。
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与您相似或拥有您的语音录音，此人可能也能获取您的个人信息相关结果。日后若有需要，您可通过在 Google 助理设置中关闭 Voice Match 来撤消相应权限。</translation>
 <translation id="6298962879096096191">使用 Google Play 安装 Android 应用</translation>
 <translation id="6300177430812514606">不允许完成数据收发操作</translation>
 <translation id="630065524203833229">退出(&amp;X)</translation>
@@ -5674,7 +5655,6 @@
 <translation id="7171559745792467651">安装您的其他设备中的应用</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
-<translation id="7173336557300642430">如需获取更贴合您的需求的回复，您不妨允许 Google 助理在您提问时使用屏幕中的信息。Google 助理可能还会使用正在播放的歌曲或视频的相关信息。</translation>
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7175353351958621980">加载来源：</translation>
@@ -5916,7 +5896,6 @@
 <translation id="7434969625063495310">无法添加打印服务器。请检查服务器的配置，然后重试。</translation>
 <translation id="7436921188514130341">糟糕！重命名过程中出错了。</translation>
 <translation id="7438495332316988804">您可通过在启动器中输入“Chrome”来找到标准浏览器。</translation>
-<translation id="7439446972050308922">无论是在哪部 Chrome 操作系统设备上，您只需登录自己的 Google 帐号，便能使用您保存的偏好设置。您可在“设置”中选择要同步的内容。</translation>
 <translation id="7439519621174723623">您必须添加设备名称才能继续操作</translation>
 <translation id="7441736921018636843">要更改此设置，请<ph name="BEGIN_LINK" />重置同步功能<ph name="END_LINK" />以移除同步密码</translation>
 <translation id="7441830548568730290">其他用户</translation>
@@ -6918,7 +6897,6 @@
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8481980314595922412">试用版功能已开启</translation>
-<translation id="8482860770919360244">您似乎已在另一部设备上设置了 Google 助理。您只需开启屏幕上下文功能，即可更充分地利用 Google 助理。</translation>
 <translation id="848666842773560761">有一款应用正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8489156414266187072">个性化建议仅会显示在您的帐号中</translation>

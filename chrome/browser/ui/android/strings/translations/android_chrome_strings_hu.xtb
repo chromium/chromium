@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">A Google Chrome-funkciók billentyűparancsai</translation>
 <translation id="1344653310988386453">A kiemelt szöveghez vezető linkkel együtt</translation>
 <translation id="1347468774581902829">Tevékenységek kezelése</translation>
+<translation id="1352771733366526411">Összes ablak kezelése (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Kijelentkezik, és kikapcsolja a szinkronizálást?</translation>
 <translation id="1373696734384179344">Nincs elegendő memória a kiválasztott tartalom letöltéséhez.</translation>
 <translation id="1376578503827013741">Számítás…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Mostantól a Chrome gyorsabban tölti le a fájlokat</translation>
 <translation id="1877026089748256423">A Chrome elavult</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
+<translation id="1888378517829496315">Összes ablak kezelése</translation>
 <translation id="189358972401248634">Más nyelvek</translation>
 <translation id="1918175104945982129">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete félmagasságban megnyitva</translation>
 <translation id="1919130412786645364">Chrome-bejelentkezés engedélyezése</translation>
@@ -639,6 +641,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5123685120097942451">Inkognitó lap</translation>
 <translation id="5132942445612118989">Jelszavak, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
 <translation id="5139940364318403933">További információ a Google Drive használatáról</translation>
+<translation id="5142281402488957685">Új hírek betöltéséhez húzza lefelé a frissítéshez</translation>
 <translation id="5152843274749979095">Nincs telepítve támogatott alkalmazás</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 letöltés nem sikerült.}other{# letöltés nem sikerült.}}</translation>
@@ -679,6 +682,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5403644198645076998">Csak bizonyos webhelyek engedélyezése</translation>
 <translation id="5409881200985013443">Elküldi a(z) <ph name="ONE_TIME_CODE" /> kódot a következő ügyfélre: <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Ellenőrzés...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> lap}other{<ph name="TAB_COUNT_MANY" /> lap}}</translation>
 <translation id="5423934151118863508">A leggyakrabban látogatott oldalak fognak itt megjelenni</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB szabad</translation>
 <translation id="543338862236136125">Jelszó módosítása</translation>
@@ -946,6 +950,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6979737339423435258">Mindenkori</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6989267951144302301">A letöltés sikertelen</translation>
+<translation id="6992232929048168262">Megnyitás teljes képernyőn</translation>
 <translation id="6995899638241819463">Figyelmeztetés, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek</translation>
 <translation id="7001056293070445572">Ez egy nagy méretű fájl (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Megnyitás böngészőben</translation>
@@ -1230,6 +1235,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8683081248374354009">Csoport visszaállítása</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
+<translation id="8701921397542715895">Szomszédos ablakban fut</translation>
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>

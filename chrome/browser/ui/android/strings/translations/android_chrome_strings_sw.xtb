@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Njia za mikato za vipengele vya Google Chrome</translation>
 <translation id="1344653310988386453">Jumuisha kiungo cha maandishi yaliyoangaziwa</translation>
 <translation id="1347468774581902829">Dhibiti shughuli</translation>
+<translation id="1352771733366526411">Dhibiti madirisha yote (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Utaondoka na uzime usawazishaji?</translation>
 <translation id="1373696734384179344">Hakuna hifadhi ya kutosha ya kupakua maudhui yaliyochaguliwa.</translation>
 <translation id="1376578503827013741">Inakokotoa...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Sasa Chrome inapakua faili haraka zaidi</translation>
 <translation id="1877026089748256423">Toleo hili la Chrome limepitwa na wakati</translation>
 <translation id="1883903952484604915">Faili Zangu</translation>
+<translation id="1888378517829496315">Dhibiti madirisha yote</translation>
 <translation id="189358972401248634">Lugha zingine</translation>
 <translation id="1918175104945982129">Kiolesura cha idhini ya kutafuta kwa kutamka kupitia programu ya Mratibu kimefunguliwa kwenye nusu ya skrini</translation>
 <translation id="1919130412786645364">Ruhusu kuingia katika akaunti ya Chrome</translation>
@@ -639,6 +641,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5123685120097942451">Kichupo fiche</translation>
 <translation id="5132942445612118989">Sawazisha historia, manenosiri na mambo yako mengine kwenye vifaa vyote</translation>
 <translation id="5139940364318403933">Pata maelezo ya jinsi ya kutumia Google Drive</translation>
+<translation id="5142281402488957685">Kuona hadithi mpya, vuta kuelekea chini ili uonyeshe upya</translation>
 <translation id="5152843274749979095">Hakuna programu zinazotumika zimesakinishwa</translation>
 <translation id="5161254044473106830">Kichwa kinahitajika</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Imeshindwa kupakua 1.}other{Imeshindwa kupakua faili #.}}</translation>
@@ -679,6 +682,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5403644198645076998">Ruhusu tovuti maalum pekee</translation>
 <translation id="5409881200985013443">Ungependa kutuma <ph name="ONE_TIME_CODE" /> kwenye <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Inathibitisha...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{Kichupo <ph name="TAB_COUNT_ONE" />}other{Vichupo <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="5423934151118863508">Kurasa zako zilizotembelewa sana zitaonekana hapa</translation>
 <translation id="5424588387303617268">GB <ph name="GIGABYTES" /> zinapatikana</translation>
 <translation id="543338862236136125">Badilisha nenosiri</translation>
@@ -946,6 +950,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6979737339423435258">Wakati wote</translation>
 <translation id="6981982820502123353">Ufikivu</translation>
 <translation id="6989267951144302301">Imeshindwa kupakua</translation>
+<translation id="6992232929048168262">Fungua kwenye skrini nzima</translation>
 <translation id="6995899638241819463">Nionye ikiwa manenosiri yamefichuliwa katika tukio la ufichuzi haramu wa data</translation>
 <translation id="7001056293070445572">Faili hii ni kubwa (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Fungua katika kivinjari</translation>
@@ -1230,6 +1235,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8683081248374354009">Badilisha kikundi</translation>
 <translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8699120352855309748">Usionyeshe chaguo la kutafsiri lugha hizi</translation>
+<translation id="8701921397542715895">Inatumika katika dirisha linalopakana</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>

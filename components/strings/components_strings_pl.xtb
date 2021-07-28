@@ -990,6 +990,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="443121186588148776">Port szeregowy</translation>
 <translation id="4432688616882109544">Serwer <ph name="HOST_NAME" /> nie zaakceptował lub nie otrzymał Twojego certyfikatu logowania.</translation>
 <translation id="4432792777822557199">Od teraz strony, których językiem jest <ph name="SOURCE_LANGUAGE" />, będą tłumaczone na <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="4433642172056592619">Ignorowane, ponieważ użytkownik nie jest przypisany do zarządzania komputerem lub komputer nie jest zarządzany.</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="4435702339979719576">pocztówka)</translation>
 <translation id="443673843213245140">Korzystanie z serwera proxy jest wyłączone, ale podano konfigurację proxy.</translation>

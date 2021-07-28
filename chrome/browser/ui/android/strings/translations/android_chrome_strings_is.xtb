@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Flýtilyklar eiginleika Google Chrome</translation>
 <translation id="1344653310988386453">Taka með tengil í merktan texta</translation>
 <translation id="1347468774581902829">Stjórna virkni</translation>
+<translation id="1352771733366526411">Stjórna öllum gluggum (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Skrá út og slökkva á samstillingu?</translation>
 <translation id="1373696734384179344">Ekki nægt minni til að sækja valda efnið.</translation>
 <translation id="1376578503827013741">Reiknar…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome er nú fljótara að sækja skrár</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
+<translation id="1888378517829496315">Stjórna öllum gluggum</translation>
 <translation id="189358972401248634">Önnur tungumál</translation>
 <translation id="1918175104945982129">Samþykkisviðmót raddleitar Hjálpara opið á hálfum skjánum</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
@@ -639,6 +641,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5123685120097942451">Huliðsflipi</translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
 <translation id="5139940364318403933">Lærðu að nota Google Drive</translation>
+<translation id="5142281402488957685">Strjúktu niður til að endurnýja og sjá nýjar sögur</translation>
 <translation id="5152843274749979095">Engin studd forrit uppsett</translation>
 <translation id="5161254044473106830">Titil vantar</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Mistókst að sækja 1 skrá.}one{Mistókst að sækja # skrá.}other{Mistókst að sækja # skrár.}}</translation>
@@ -679,6 +682,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5403644198645076998">Leyfa aðeins tiltekin vefsvæði</translation>
 <translation id="5409881200985013443">Senda <ph name="ONE_TIME_CODE" /> á <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Staðfestir…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_COUNT_MANY" /> flipi}other{<ph name="TAB_COUNT_MANY" /> flipar}}</translation>
 <translation id="5423934151118863508">Síðurnar sem þú heimsækir oftast munu birtast hér</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tiltæk</translation>
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
@@ -946,6 +950,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6979737339423435258">Frá upphafi</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
 <translation id="6989267951144302301">Ekki tókst að sækja</translation>
+<translation id="6992232929048168262">Opna á öllum skjánum</translation>
 <translation id="6995899638241819463">Láta vita ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="7001056293070445572">Þessi skrá er stór (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Opna í vafra</translation>
@@ -1230,6 +1235,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8683081248374354009">Endurstilla hóp</translation>
 <translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8699120352855309748">Ekki bjóða upp á að þýða þessi tungumál</translation>
+<translation id="8701921397542715895">Keyrt í aðliggjandi glugga</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8730621377337864115">Lokið</translation>

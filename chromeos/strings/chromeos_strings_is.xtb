@@ -319,6 +319,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7059230779847288458">Í hleðslu, <ph name="TIME_VALUE" /> þar til full hleðsla næst</translation>
 <translation id="708426984172631313">STÖÐVAÐ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="714876143603641390">LAN-tenging</translation>

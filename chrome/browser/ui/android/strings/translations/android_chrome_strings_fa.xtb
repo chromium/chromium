@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">‏میان‌برهای ویژه Google Chrome</translation>
 <translation id="1344653310988386453">اضافه کردن پیوند به مورد برجسته</translation>
 <translation id="1347468774581902829">مدیریت فعالیت</translation>
+<translation id="1352771733366526411">مدیریت همه پنجره‌ها (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">از سیستم خارج و همگام‌سازی خاموش شود؟</translation>
 <translation id="1373696734384179344">حافظه برای بارگیری محتوای انتخابی کافی نیست.</translation>
 <translation id="1376578503827013741">درحال محاسبه…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">‏اکنون Chrome فایل‌ها را سریع‌تر بارگیری می‌کند</translation>
 <translation id="1877026089748256423">‏نسخه Chrome قدیمی است</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
+<translation id="1888378517829496315">مدیریت همه پنجره‌ها</translation>
 <translation id="189358972401248634">زبان‌های دیگر</translation>
 <translation id="1918175104945982129">میانای کاربر رضایت برای جستجوی گفتاری «دستیار» تا نیمه باز شد</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">برگه ناشناس</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="5139940364318403933">‏آشنایی با نحوه استفاده از Google Drive</translation>
+<translation id="5142281402488957685">برای داستان‌های جدید، صفحه را به‌طرف پایین بکشید تا بازخوانی شود</translation>
 <translation id="5152843274749979095">هیچ برنامه پشتیبانی‌شده‌ای نصب نشده است</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{۱ بارگیری انجام نشد.}one{# بارگیری انجام نشد.}other{# بارگیری انجام نشد.}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">فقط بعضی از سایت‌ها مجاز هستند</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> در <ph name="CLIENT_NAME" /> ارسال شود؟</translation>
 <translation id="5414836363063783498">در حال تأیید...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> برگه}one{<ph name="TAB_COUNT_MANY" /> برگه}other{<ph name="TAB_COUNT_MANY" /> برگه}}</translation>
 <translation id="5423934151118863508">صفحاتی که بیشترین بازدید را از آنها داشته‌اید در اینجا نمایان می‌شوند</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> گیگابایت در دسترس</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
@@ -946,6 +950,7 @@
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
 <translation id="6989267951144302301">بارگیری نشد</translation>
+<translation id="6992232929048168262">باز کردن در حالت تمام‌صفحه</translation>
 <translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
 <translation id="7001056293070445572">این فایل بزرگ است (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">بازکردن در مرورگر</translation>
@@ -1230,6 +1235,7 @@
 <translation id="8683081248374354009">بازنشانی گروه</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
+<translation id="8701921397542715895">درحال اجرا در پنجره مجاور</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8730621377337864115">تمام</translation>

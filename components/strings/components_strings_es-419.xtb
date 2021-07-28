@@ -991,6 +991,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="443121186588148776">Puerto en serie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> no aceptó tu certificado de acceso o es posible que no se haya proporcionado.</translation>
 <translation id="4432792777822557199">De ahora en más, las páginas en <ph name="SOURCE_LANGUAGE" /> se traducirán al <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="4433642172056592619">Se ignoró porque el usuario no es el administrador de la máquina o la máquina no está administrada.</translation>
 <translation id="4434045419905280838">Ventanas emergentes y redireccionamientos</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>

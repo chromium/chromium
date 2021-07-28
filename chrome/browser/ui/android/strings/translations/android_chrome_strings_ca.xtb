@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Dreceres per a funcions de Google Chrome</translation>
 <translation id="1344653310988386453">Inclou un enllaç al contingut marcat</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
+<translation id="1352771733366526411">Gestiona les finestres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
 <translation id="1376578503827013741">S'està calculant…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Ara Chrome baixa els fitxers més ràpid</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
+<translation id="1888378517829496315">Gestiona totes les finestres</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
 <translation id="1918175104945982129">La IU de consentiment de la cerca per veu de l'Assistent s'ha obert a mitja alçada</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
@@ -639,6 +641,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5123685120097942451">Pestanya d'incògnit</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
 <translation id="5139940364318403933">Obtén informació sobre com pots utilitzar Google Drive</translation>
+<translation id="5142281402488957685">Per actualitzar el contingut i veure històries noves, arrossega cap avall</translation>
 <translation id="5152843274749979095">No hi ha cap aplicació admesa instal·lada</translation>
 <translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{No s'ha pogut completar 1 baixada.}other{No s'han pogut completar # baixades.}}</translation>
@@ -679,6 +682,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5403644198645076998">Permet només certs llocs web</translation>
 <translation id="5409881200985013443">Vols enviar <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">S'està verificant...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="5423934151118863508">Les pàgines més visitades es mostraran aquí</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
@@ -946,6 +950,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="6989267951144302301">No s'ha pogut baixar</translation>
+<translation id="6992232929048168262">Obre en pantalla completa</translation>
 <translation id="6995899638241819463">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
 <translation id="7001056293070445572">Aquest fitxer és gran (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Obre al navegador</translation>
@@ -1230,6 +1235,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8683081248374354009">Restableix el grup</translation>
 <translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8699120352855309748">No proposis traduir aquests idiomes</translation>
+<translation id="8701921397542715895">S'està executant a la finestra adjacent</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8730621377337864115">Fet</translation>

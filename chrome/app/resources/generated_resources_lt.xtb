@@ -326,10 +326,12 @@
 <translation id="1347512539447549782">„Linux“ saugykla</translation>
 <translation id="1347975661240122359">Atnaujinimo procesas prasidės, kai akumuliatoriaus įkrovos lygis bus <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Kad būtų galima naudoti tėvų kontrolės funkcijas, pvz., programų patvirtinimo ir įrenginio naudojimo laiko apribojimo funkcijas, vaikas turi turėti vieno iš tėvų valdomą „Google“ paskyrą. Vėliau galima pridėti mokyklos paskyrą, kad būtų galima naudoti tam tikrus įrankius, pvz., „Google Classroom“.</translation>
+<translation id="135389172849514421">Veikia neprisijungus</translation>
 <translation id="1353980523955420967">Nepavyko rasti PPD. Įsitikinkite, kad „Chromebook“ prijungtas, ir bandykite dar kartą.</translation>
 <translation id="1354045473509304750">Ir toliau leisti <ph name="HOST" /> naudoti ir judinti kamerą</translation>
 <translation id="1355088139103479645">Ištrinti visus duomenis?</translation>
 <translation id="1355466263109342573">„<ph name="PLUGIN_NAME" />“ užblokuotas</translation>
+<translation id="1356178530321889280">Spustelėkite dešiniuoju pelės klavišu ir pasirinkite „Ieškoti puslapio dalies naudojant „Google Lens“, kad ieškotumėte bet kurioje svetainės vietoje ir sužinotumėte daugiau apie matomą vaizdinį turinį, kol naršote ir apsiperkate žiniatinklyje.</translation>
 <translation id="1358741672408003399">Rašyba ir gramatika</translation>
 <translation id="1359923111303110318">Įrenginį galima atrakinti naudojant „Smart Lock“. Paspauskite „Enter“, kad atrakintumėte.</translation>
 <translation id="1361164813881551742">Pridėti neautomatiškai</translation>
@@ -564,13 +566,6 @@
 <translation id="1593926297800505364">Išsaugoti mokėjimo metodą</translation>
 <translation id="1595492813686795610">„Linux“ naujovinama</translation>
 <translation id="1596286373007273895">Pasiekiama</translation>
-<translation id="1597224195604051602">„Voice Match“ padeda „Google“ padėjėjui nustatyti <ph name="SUPERVISED_USER_NAME" /> balsą jūsų „<ph name="DEVICE_TYPE" />“ įrenginyje ir atskirti jį nuo kitų.
-    <ph name="BR" />
-    Padėjėjas įrašo jūsų vaiko balso klipus, kad galėtų sukurti unikalų balso modelį, saugomą tik vaiko įrenginyje (-iuose). Vaiko balso modelis gali būti laikinai siunčiamas „Google“, kad būtų galima lengviau identifikuoti jo balsą.
-    <ph name="BR" />
-    Jei vėliau nuspręsite, kad funkcija „Voice Match“ jūsų vaikui netinkama, tiesiog pašalinkite ją iš vaiko Padėjėjo nustatymų. Jei norite peržiūrėti ar ištrinti garso įrašų klipus, kuriuos vaikas įrašė nustatydamas „Voice Match“, apsilankykite adresu g.co/assistant/match iš vaiko paskyros.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Pastaba:<ph name="END_BOLD" /> <ph name="SUPERVISED_USER_NAME" /> asmeninius rezultatus galima pasiekti panašiu balsu ar naudojant panašų įrašą. Siekiant tausoti akumuliatoriaus energiją, funkcija „Ok Google“ įjungiama, tik kai šis įrenginys prijungtas prie maitinimo šaltinio.</translation>
 <translation id="1598233202702788831">Administratorius išjungė naujinius</translation>
 <translation id="1600857548979126453">Pasiekti puslapio derintuvės vidinę pusę</translation>
 <translation id="1601560923496285236">Taikyti</translation>
@@ -859,7 +854,6 @@
 <translation id="1865769994591826607">Tik ryšiai toje pačioje svetainėje</translation>
 <translation id="186612162884103683">„<ph name="EXTENSION" />“ patikrintose vietose gali nuskaityti ir įrašyti vaizdus, vaizdo įrašus ir garso failus.</translation>
 <translation id="1867780286110144690">„<ph name="PRODUCT_NAME" />“ pasirengusi baigti diegimą</translation>
-<translation id="1868193363684582383">„Ok Google“</translation>
 <translation id="1868553836791672080">Naudojant „Chromium“ slaptažodžio patikra nepasiekiama</translation>
 <translation id="1869433484041798909">Žymės mygtukas</translation>
 <translation id="1871098866036088250">Atidaryti naršyklėje „Chrome“</translation>
@@ -1143,7 +1137,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2163937499206714165">Įjungti tamsų režimą</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ir dar vienas jungiklis</translation>
 <translation id="2165177462441582039">Pasirinkite, kiek laiko turi būti paryškintas kiekvienas elementas</translation>
-<translation id="2165421703844373933">Pasiekite Padėjėją pasakę „Ok Google“. Siekdami tausoti akumuliatoriaus energiją, pasirinkite „Įjungti (rekomenduojama)“. Padėjėjas reaguos, tik kai įrenginys bus prijungtas prie maitinimo šaltinio arba kraunamas.</translation>
 <translation id="2166369534954157698">Įlinkdama fechtuotojo špaga sublykčiojo ir pragręžė apvalų arbūzą</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Vis tiek prisijungti</translation>
@@ -1473,6 +1466,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2509495747794740764">Mastelio verčių suma turi būti skaičius nuo 10 iki 200.</translation>
 <translation id="2509566264613697683">8 k.</translation>
 <translation id="2510988373360790637">„Bluetooth“ įrenginio užmiršimas</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (pasirinkta)</translation>
 <translation id="2513396635448525189">Prisijungimo vaizdas</translation>
 <translation id="2514326558286966059">Atrakinkite greičiau kontroliniu kodu</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1627,9 +1621,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691440343905273290">Keisti įvesties nustatymus</translation>
 <translation id="2693176596243495071">Oi! Įvyko nežinoma klaida. Bandykite dar kartą vėliau arba susisiekite su administratoriumi, jei problema išliks.</translation>
-<translation id="2693640212062142966">Naudojant „Voice Match“ „Google“ padėjėjas gali atpažinti jūsų balsą „<ph name="DEVICE_TYPE" />“ įrenginyje ir atskirti nuo kitų. Siekiant tausoti akumuliatoriaus energiją, funkcija „Ok Google“ įjungiama, tik kai įrenginys prijungtas prie maitinimo šaltinio. Jei norite pakeisti, eikite į skiltį „Nustatymai“.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Atminkite:<ph name="END_BOLD" /> asmeninius rezultatus taip pat galima pasiekti panašiu balsu ar naudojant panašų įrašą. Vėliau galėsite pašalinti „Voice Match“ leidimą išjungę jį „Google“ padėjėjo nustatymuose.</translation>
 <translation id="2699911226086014512">PIN kodo operacijos atlikti nepavyko, klaidos kodas: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Bendrinta iš „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2701737434167469065">Prisijungti, <ph name="EMAIL" /></translation>
@@ -2383,6 +2374,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3495496470825196617">Įkraunant įjungti neaktyvią būseną</translation>
 <translation id="3495660573538963482">„Google“ padėjėjo nustatymai</translation>
 <translation id="3496213124478423963">Tolinti</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (nepasirinkta)</translation>
 <translation id="3497501929010263034">USB įrenginys iš „<ph name="VENDOR_NAME" />“ (produktas <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Bendrinti papuoštą logotipą</translation>
 <translation id="3498215018399854026">Šiuo metu nepavyko susisiekti su jūsų tėvu. Bandykite dar kartą.</translation>
@@ -3013,7 +3005,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4154664944169082762">Pirštų atspaudai</translation>
 <translation id="4157869833395312646">„Microsoft“ serverio ribotas šifravimas</translation>
 <translation id="4158364720893025815">Pavyko</translation>
-<translation id="4159163871835771155">Kad gautumėte labiau jūsų poreikius atitinkančius atsakymus į <ph name="SUPERVISED_USER_NAME" /> užduotus klausimus, leiskite Padėjėjui naudoti <ph name="SUPERVISED_USER_NAME" /> ekrane esančią informaciją. Tai gali apimti informaciją apie leidžiamas dainas ar vaizdo įrašus.</translation>
 <translation id="4159681666905192102">Tai yra vaikų paskyra, kurią tvarko <ph name="CUSTODIAN_EMAIL" /> ir <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nežinoma klaviatūra</translation>
 <translation id="4167686856635546851">Paprastai svetainėse naudojama „JavaScript“, kad būtų galima teikti interaktyvias funkcijas, pvz., vaizdo žaidimus ar žiniatinklio formas</translation>
@@ -3656,7 +3647,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4884987973312178454">6 k.</translation>
 <translation id="4887424188275796356">Atidaryti naudojat sistemos peržiūros priemonę</translation>
 <translation id="488785315393301722">Rodyti išsamią informaciją</translation>
-<translation id="4889792122460431731">Kad gautumėte labiau jūsų poreikius atitinkančius atsakymus į užduotus klausimus, leiskite Padėjėjui naudoti ekrane esančią informaciją. Tai gali apimti informaciją apie leidžiamas dainas ar vaizdo įrašus.</translation>
 <translation id="4890773143211625964">Rodyti išplėstines spausdintuvo parinktis</translation>
 <translation id="4891089016822695758">Beta forumas</translation>
 <translation id="4892229439761351791">Svetainė gali naudoti „Bluetooth“</translation>
@@ -3872,7 +3862,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Nepavyko atsisiųsti profilio. Vėliau bandykite dar kartą arba kreipkitės pagalbos į operatorių.</translation>
 <translation id="5131591206283983824">Vilkimas palietus jutiklinę dalį</translation>
-<translation id="5135085122826131075">Pasiekite Padėjėją pasakę „Ok Google“.</translation>
 <translation id="5135533361271311778">Žymės elemento sukurti nepavyko.</translation>
 <translation id="5136343472380336530">Įsitikinkite, kad abu įrenginiai yra atrakinti, vienas šalia kito ir juose įjungtas „Bluetooth“ ryšys. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Ištrinti šį elementą</translation>
@@ -4149,6 +4138,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5449551289610225147">Netinkamas slaptažodis</translation>
 <translation id="5449588825071916739">Žymėti visus skirtukus</translation>
 <translation id="5449716055534515760">Uždaryti lan&amp;gą</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (veikia neprisijungus)</translation>
 <translation id="5454166040603940656">naudojant <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Netinkama</translation>
 <translation id="5457459357461771897">Skaityti ir ištrinti nuotraukas, muziką ir kitą mediją iš kompiuterio</translation>
@@ -4289,7 +4279,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5585912436068747822">Formatuojant įvyko klaida</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Įkeliamos programos...</translation>
-<translation id="5590265327628802792">Panašu, kad <ph name="SUPERVISED_USER_NAME" /> jau nustatė „Google“ padėjėją kitame įrenginyje. <ph name="SUPERVISED_USER_NAME" /> gali išnaudoti dar daugiau Padėjėjo galimybių įjungęs (-usi) ekrano kontekstą.</translation>
 <translation id="5592595402373377407">Kol kas nepakanka duomenų.</translation>
 <translation id="5595485650161345191">Adreso redagavimas</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
@@ -4611,6 +4600,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maks. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Atidaryti viską &amp;naujame lange}=1{Atidaryti &amp;naujame lange}one{Atidaryti viską ({COUNT}) &amp;naujame lange}few{Atidaryti viską ({COUNT}) &amp;naujame lange}many{Atidaryti viską ({COUNT}) &amp;naujame lange}other{Atidaryti viską ({COUNT}) &amp;naujame lange}}</translation>
 <translation id="5965661248935608907">Ji taip pat kontroliuoja, koks puslapis rodomas, kai spustelėjate pagrindinio puslapio mygtuką ar ieškote „Omnibox“.</translation>
+<translation id="5968022600320704045">Nėra jokių paieškos rezultatų</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> gali peržiūrėti aplanko „<ph name="FOLDERNAME" />“ failus</translation>
 <translation id="5969728632630673489">Sparčiųjų klavišų pranešimo atsisakyta</translation>
 <translation id="5971037678316050792">Valdyti „Bluetooth“ adapterio būseną ir susiejimą</translation>
@@ -4918,9 +4908,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
 <translation id="6295855836753816081">Išsaugoma...</translation>
 <translation id="629730747756840877">Paskyra</translation>
-<translation id="6298800237463568825">Naudojant „Voice Match“ „Google“ padėjėjas gali atpažinti jūsų balsą „<ph name="DEVICE_TYPE" />“ įrenginyje ir atskirti nuo kitų.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Atminkite:<ph name="END_BOLD" /> asmeninius rezultatus taip pat galima pasiekti panašiu balsu ar naudojant panašų įrašą. Vėliau galėsite pašalinti „Voice Match“ leidimą išjungę jį „Google“ padėjėjo nustatymuose.</translation>
 <translation id="6298962879096096191">Naudoti „Google Play“ diegiant „Android“ programas</translation>
 <translation id="6300177430812514606">Neleidžiama baigti siųsti ar gauti duomenų</translation>
 <translation id="630065524203833229">I&amp;šeiti</translation>
@@ -5423,6 +5410,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6855892664589459354">„Crostini“ atsarginės kopijos kūrimas ir atkūrimas</translation>
 <translation id="6856348640027512653">Neleidžiama naudoti virtualiosios realybės įrenginių ar duomenų</translation>
 <translation id="6856623341093082836">Nustatyti ir koreguoti jutiklinio ekrano tikslumą</translation>
+<translation id="6856850379840757744">Kai įjungta, visi pranešimai nutildomi</translation>
 <translation id="6857145580237920905">„eSIM“ kortelės profilių pašalinimas prieš naudojant funkciją „Powerwash“</translation>
 <translation id="6857699260879628349">Gauti konfigūravimo informacijos</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
@@ -5701,7 +5689,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7171559745792467651">Įdiekite programas iš kitų įrenginių</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Pridėti skirtuką prie naujos grupės}one{Pridėti skirtukų prie naujos grupės}few{Pridėti skirtukų prie naujos grupės}many{Pridėti skirtukų prie naujos grupės}other{Pridėti skirtukų prie naujos grupės}}</translation>
 <translation id="7173114856073700355">Atidaryti nustatymus</translation>
-<translation id="7173336557300642430">Kad gautumėte labiau jūsų poreikius atitinkančius atsakymus, leiskite „Google“ padėjėjui naudoti ekrane esančią informaciją, kai užduodate klausimus. Padėjėjas taip pat gali naudoti informaciją apie leidžiamas dainas ar vaizdo įrašus.</translation>
 <translation id="7174199383876220879">Naujiena! Valdykite savo muziką, vaizdo įrašus ir daugiau.</translation>
 <translation id="7175037578838465313">„<ph name="NAME" />“ konfigūravimas</translation>
 <translation id="7175353351958621980">Įkelta iš:</translation>
@@ -5943,7 +5930,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7434969625063495310">Nepavyko pridėti spausdinimo serverio. Patikrinkite serverio konfigūraciją ir bandykite dar kartą.</translation>
 <translation id="7436921188514130341">Oi, pervardijant įvyko klaida.</translation>
 <translation id="7438495332316988804">Įprastą naršyklę galima rasti Paleidimo priemonėje įvedus „Chrome“.</translation>
-<translation id="7439446972050308922">Išsaugotos nuostatos bus paruoštos bet kuriame „Chrome“ OS įrenginyje, kai prisijungsite naudodami „Google“ paskyrą. Galite pasirinkti, ką norite sinchronizuoti, skiltyje „Nustatymai“.</translation>
 <translation id="7439519621174723623">Jei norite tęsti, pridėkite įrenginio pavadinimą</translation>
 <translation id="7441736921018636843">Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />nustatykite sinchronizavimą iš naujo<ph name="END_LINK" />, kad pašalintumėte sinchronizavimo slaptafrazę</translation>
 <translation id="7441830548568730290">Kiti naudotojai</translation>
@@ -6403,6 +6389,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7886605625338676841">„eSIM“ kortelė</translation>
 <translation id="7887334752153342268">Dubliuoti</translation>
 <translation id="7887864092952184874">„Bluetooth“ pelė susieta</translation>
+<translation id="7889371445710865055">Diktavimo kalbos keitimas</translation>
 <translation id="7890147169288018054">Žr. tinklo informaciją, pvz., IP ar MAC adresą</translation>
 <translation id="7893008570150657497">Pasiekti nuotraukas, muziką ir kitą mediją iš kompiuterio</translation>
 <translation id="7893153962594818789">Šiame „<ph name="DEVICE_TYPE" />“ išjungtas „Bluetooth“. Įveskite slaptažodį ir įjunkite „Bluetooth“.</translation>
@@ -6947,7 +6934,6 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą</translation>
 <translation id="8480869669560681089">Nežinomas įrenginys iš „<ph name="VENDOR_NAME" />“</translation>
 <translation id="8481187309597259238">USB leidimo patvirtinimas</translation>
 <translation id="8481980314595922412">Bandomosios funkcijos įjungtos</translation>
-<translation id="8482860770919360244">Panašu, kad jau esate nustatę „Google“ padėjėją kitame įrenginyje. Dar geriau išnaudokite Padėjėjo galimybes įjungę ekrano konteksto nustatymą.</translation>
 <translation id="848666842773560761">Programa bando pasiekti kamerą. Išjunkite kameros privatumo jungiklį, kad leistumėte pasiekti.</translation>
 <translation id="8487678622945914333">Artinti</translation>
 <translation id="8489156414266187072">Asmeniniai pasiūlymai rodomi tik jūsų paskyroje</translation>

@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Functiesneltoetsen in Google Chrome</translation>
 <translation id="1344653310988386453">Link naar markering opnemen</translation>
 <translation id="1347468774581902829">Activiteit beheren</translation>
+<translation id="1352771733366526411">Alle vensters beheren (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Uitloggen en synchroniseren uitzetten?</translation>
 <translation id="1373696734384179344">Onvoldoende geheugen om de geselecteerde content te downloaden.</translation>
 <translation id="1376578503827013741">Berekenen…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome downloadt bestanden nu sneller</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
+<translation id="1888378517829496315">Alle vensters beheren</translation>
 <translation id="189358972401248634">Andere talen</translation>
 <translation id="1918175104945982129">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op halve hoogte geopend</translation>
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
@@ -639,6 +641,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5123685120097942451">Incognitotabblad</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5139940364318403933">Meer informatie over het gebruik van Google Drive</translation>
+<translation id="5142281402488957685">Trek omlaag om te vernieuwen voor nieuwe stories</translation>
 <translation id="5152843274749979095">Geen ondersteunde apps geïnstalleerd</translation>
 <translation id="5161254044473106830">Titel is vereist</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download mislukt.}other{# downloads mislukt.}}</translation>
@@ -679,6 +682,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5403644198645076998">Alleen bepaalde sites toestaan</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> doorgeven op <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifiëren…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tabblad}other{<ph name="TAB_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="5423934151118863508">Hier zie je de meest bezochte pagina's</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB beschikbaar</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
@@ -946,6 +950,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6979737339423435258">Alles</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6989267951144302301">Kan niet downloaden</translation>
+<translation id="6992232929048168262">Op volledig scherm openen</translation>
 <translation id="6995899638241819463">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="7001056293070445572">Dit bestand is groot (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Openen in browser</translation>
@@ -1230,6 +1235,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="8683081248374354009">Groep resetten</translation>
 <translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
+<translation id="8701921397542715895">Uitgevoerd in een ander venster</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8730621377337864115">Klaar</translation>

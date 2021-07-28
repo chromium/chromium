@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
 <translation id="1344653310988386453">تضمين رابط يؤدي إلى النصوص التي تم تمييزها</translation>
 <translation id="1347468774581902829">إدارة النشاط</translation>
+<translation id="1352771733366526411">إدارة جميع النوافذ (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
 <translation id="1373696734384179344">لا توجد ذاكرة كافية لتنزيل المحتوى المحدد.</translation>
 <translation id="1376578503827013741">جارٍ الحوسبة...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">‏يُنزِّل Chrome الآن الملفات بشكلٍ أسرع.</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
 <translation id="1883903952484604915">ملفاتي</translation>
+<translation id="1888378517829496315">إدارة جميع النوافذ</translation>
 <translation id="189358972401248634">لغات أخرى</translation>
 <translation id="1918175104945982129">‏تم فتح واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google" في نصف الشاشة.</translation>
 <translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
@@ -636,6 +638,7 @@
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
 <translation id="5132942445612118989">مزامنة كلمات المرور والسجلّ والمزيد على جميع الأجهزة</translation>
 <translation id="5139940364318403933">‏التعرّف على كيفية استخدام Google Drive</translation>
+<translation id="5142281402488957685">للاطّلاع على قصص جديدة، اسحب للأسفل لإعادة تحميل المحتوى.</translation>
 <translation id="5152843274749979095">ليس هناك أي تطبيق مثبّت متوافق</translation>
 <translation id="5161254044473106830">العنوان مطلوب</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{تعذَّر إتمام عملية تنزيل واحدة.}zero{تعذَّر إتمام # عملية تنزيل.}two{تعذَّر إتمام عمليتي تنزيل (#).}few{تعذَّر إتمام # عمليات تنزيل.}many{تعذَّر إتمام # عملية تنزيل.}other{تعذَّر إتمام # عملية تنزيل.}}</translation>
@@ -676,6 +679,7 @@
 <translation id="5403644198645076998">السماح بمواقع ويب معيّنة فقط</translation>
 <translation id="5409881200985013443">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />)}few{<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="5423934151118863508">ستظهر صفحاتك الأكثر زيارة هنا</translation>
 <translation id="5424588387303617268">يتوفر <ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
@@ -941,6 +945,7 @@
 <translation id="6979737339423435258">جميع الأوقات</translation>
 <translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6989267951144302301">تعذّر التنزيل</translation>
+<translation id="6992232929048168262">فتح في وضع ملء الشاشة</translation>
 <translation id="6995899638241819463">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7001056293070445572">هذا الملف كبير (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">فتح في المتصفح</translation>
@@ -1220,6 +1225,7 @@
 <translation id="8683081248374354009">إعادة تحديد المجموعة</translation>
 <translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
+<translation id="8701921397542715895">يتم التشغيل في نافذة مجاورة.</translation>
 <translation id="8712637175834984815">تم</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8730621377337864115">تم</translation>

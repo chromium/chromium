@@ -324,10 +324,12 @@
 <translation id="1347512539447549782">Linux ගබඩාව</translation>
 <translation id="1347975661240122359">බැටරි මට්ටම <ph name="BATTERY_LEVEL" />% වූ විට යාවත්කාලීන කිරීම ආරම්භ වනු ඇත.</translation>
 <translation id="1353275871123211385">යෙදුම් අනුමත කිරීම සහ තිර කාල සීමා වැනි මාපිය පාලන භාවිත කිරීමට, දරුවෙකුට මාපියන්ගෙන් අයෙකු විසින් කළමනාකරණය කරන Google ගිණුමක් තිබිය යුතුය. Google පන්ති කාමරය වැනි මෙවලම් සඳහා පාසල් ගිණුමක් පසුව එක් කළ හැකිය.</translation>
+<translation id="135389172849514421">නොබැඳිව ක්‍රියාකරයි</translation>
 <translation id="1353980523955420967">PPD සොයා ගත නොහැක. ඔබේ Chromebook සබැඳි බවට සහතික වී නැවත උත්සාහ කරන්න.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> හට ඔබේ කැමරාව භාවිත කිරීමටත් එහා මෙහා කිරීමටත් දිගටම ඉඩ දෙන්න</translation>
 <translation id="1355088139103479645">සියලු දත්ත මකන්නද?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> අවහිර කර ඇත</translation>
+<translation id="1356178530321889280">ඔබ වෙබය බ්‍රවුස් කරන විට සහ සාප්පු යාමේදී ඔබ දකින දෘශ්‍ය අන්තර්ගතය පිළිබඳ වැඩිදුර දැන ගැනීමට අඩවියේ ඕනෑම ප්‍රදේශයක් සෙවීමට දකුණ ක්ලික් කර “Google Lens සමඟ පිටුවේ කොටසක් සොයන්න” තෝරන්න.</translation>
 <translation id="1358741672408003399">අක්ෂර වින්‍යාස</translation>
 <translation id="1359923111303110318">ඔබේ උපාංගය ස්මාර්ට් අගුල මඟින් අගුලු හැරිය හැක. අගුලු හැරීමට Enter ඔබන්න.</translation>
 <translation id="1361164813881551742">හස්තීයව එක් කරන්න</translation>
@@ -558,13 +560,6 @@
 <translation id="1593926297800505364">ගෙවීමේ ක්‍රමය සුරකින්න</translation>
 <translation id="1595492813686795610">ලිනක්ස් උත්ශ්‍රේණි කෙරේ</translation>
 <translation id="1596286373007273895">තිබේ</translation>
-<translation id="1597224195604051602">Voice Match ඔබගේ <ph name="DEVICE_TYPE" /> හි <ph name="SUPERVISED_USER_NAME" />ගේ කටහඬ හඳුනා ගැනීමට සහ ඒවා අනෙක් අයගෙන් වෙන් කොට පැවසීමට Google සහායකට උදව් කරයි.
-    <ph name="BR" />
-    සහායක ඔවුන්ගේ උපාංගයෙහි(උපාංගවල) පමණක් ගබඩා කරන, ඔබගේ දරුවාගේ කටහඬෙහි අනන්‍ය හඬ ආකෘතියක් තැනීමට එහි පසුරු ලබා ගනියි. ඔබගේ දරුවාගේ කටහඬ ආකෘතිය ඔවුන්ගේ කටහඬ වඩාත් හොඳින් හඳුනා ගැනීම සඳහා තාවකාලිකව Google වෙත යවනු ලැබිය හැකිය.
-    <ph name="BR" />
-    Voice Match ඔබගේ දරුවාට සුදුසු නොවන බව ඔබ පසුව තීරණය කළහොත්, එය ඔවුන්ගේ සහායක සැකසීම් තුළ ඉවත් කරන්න. Voice Match පිහිටුවීම අතරතුර ඔබගේ දරුවා පටිගත කරන ලද ශ්‍රව්‍ය පසුරු බැලීමට හෝ මැකීමට, ඔබගේ දරුවාගේ ගිණුමෙන් g.co/assistant/match වෙත යන්න.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />සටහන:<ph name="END_BOLD" /> ඒ හා සමාන කටහඬ හෝ පටිගත කිරීමකට <ph name="SUPERVISED_USER_NAME" />ගේ පුද්ගලික ප්‍රතිඵල වෙත ප්‍රවේශ විය හැකිය. බැටරිය සුරැකීමට, මෙම උපාංගය බල මූලාශ්‍රයකට සම්බන්ධ විට “Hey Google” පමණක් ක්‍රියාත්මකයි.</translation>
 <translation id="1598233202702788831">ඔබේ පරිපාලක විසින් යාවත්කාලීන අබල කර ඇත.</translation>
 <translation id="1600857548979126453">පිටු දෝෂ සෙවුම් පසුඅන්තය ප්‍රවේශ කරන්න</translation>
 <translation id="1601560923496285236">යොදන්න</translation>
@@ -845,7 +840,6 @@
 <translation id="1865769994591826607">එකම අඩවියේ සම්බන්ධතා පමණි</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" ට පරීක්ෂා කළ ස්ථානවල රූප, වීඩියෝ, සහ ශබ්ද ගොනු කියවිය සහ ලිවිය හැක.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> ඔබේ ස්ථාපනය සම්පූර්ණ කිරීමට සූදානම්</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Chromium හි මුරපද පිරික්සුම ලබා ගත නොහැක</translation>
 <translation id="1869433484041798909">පිටුසන් බොත්තම</translation>
 <translation id="1871098866036088250">Chrome බ්‍රව්සරය තුළ විවෘත කරන්න</translation>
@@ -1129,7 +1123,6 @@
 <translation id="2163937499206714165">අඳුරු ප්‍රකාරය ක්‍රියාත්මක කරන්න</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, සහ තවත් ස්විච 1</translation>
 <translation id="2165177462441582039">එක් එක් අයිතමය තුළ උද්දීපනය පැවතිය යුතු කාලය තෝරන්න</translation>
-<translation id="2165421703844373933">ඔබ "Ok Google" යැයි කියන විට වේලාවක ඔබේ සහකරු වෙත ප්‍රවේශ වන්න බැටරිය සුරැකීමට, “සක්‍රීය (නිර්දේශිතයි)” තෝරන්න. ඔබේ සහකරු ඔබේ උපාංගය පේනුගත කර ඇති විට හෝ ආරෝපණ කෙරෙන විට පමණක් ප්‍රතිචාර දක්වයි.</translation>
 <translation id="2166369534954157698">කඩිසර දුඹුරු හිවලා කම්මැලි සුනඛයාට උඩින් පැන්නේය</translation>
 <translation id="2167276631610992935">ජාවාස්ක්‍රිප්ට්</translation>
 <translation id="2169062631698640254">කෙසේ වෙතත් සයින් ඉන් වන්න</translation>
@@ -1459,6 +1452,7 @@
 <translation id="2509495747794740764">පරිමාණ ප්‍රමාණය 10 සහ 200 අතර අංකයක් විය යුතුය.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">බ්ලූටූත් උපාංගය අමතක කරන්න</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (තෝරා ඇත)</translation>
 <translation id="2513396635448525189">පුරන රූපය</translation>
 <translation id="2514326558286966059">ඔබගේ ඇඟිලි සලකුණ සමග වඩා වේගයෙන් අගුලු හරින්න</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -1613,9 +1607,6 @@
 <translation id="2691385045260836588">මාදිලිය</translation>
 <translation id="2691440343905273290">ආදාන සැකසීම් වෙනස් කරන්න</translation>
 <translation id="2693176596243495071">අපොයි! නොදන්නා දෝෂයක් ඇති විය. පසුව නැවත උත්සාහ කරන්න හෝ ගැටලුව දිගටම පැවතියහොත් ඔබේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
-<translation id="2693640212062142966">Voice Match ඔබගේ Google සහායකට <ph name="DEVICE_TYPE" /> හි ඔබගේ කටහඬ හඳුනා ගැනීමට සහ අන් අයගෙන් වෙන් කොට ඔබට පැවසීමට උදව් කරයි. බැටරිය සුරැකීමට, ඔබගේ උපාංගය බල මූලාශ්‍රයකට සම්බන්ධ විට “Hey Google” පමණක් ක්‍රියාත්මකයි. වෙනස් කිරීම් සිදු කිරීමට, සැකසීම් වෙත යන්න.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />සිතෙහි තබා ගන්න:<ph name="END_BOLD" /> ඒ හා සමාන කටහඬ හෝ පටිගත කිරීමකට ඔබගේ පුද්ගලික ප්‍රතිඵල වෙතද ප්‍රවේශ විය හැකිය. පසුව සහායක සැකසීම් තුළ එය ක්‍රියාවිරහිත කිරීමෙන් ඔබට Voice Match අවසරය ඉවත් කළ හැකිය.</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> කේතය සමඟ රහස් අංක මෙහෙයුම අසාර්ථක විය.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> වෙතින් බෙදා ගන්නා ලදි</translation>
 <translation id="2701737434167469065">පුරන්න, <ph name="EMAIL" /></translation>
@@ -2368,6 +2359,7 @@
 <translation id="3495496470825196617">ආරෝපණය අතරතුර බලය අකර්මණ්‍ය කරන්න</translation>
 <translation id="3495660573538963482">Google සහායක සැකසීම්</translation>
 <translation id="3496213124478423963">කුඩා කරන්න</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (තෝරා නැත)</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> වෙතින් USB උපාංගය (නිෂ්පාදන <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle බෙදා ගන්න</translation>
 <translation id="3498215018399854026">අපට ඔබේ දෙමව්පියන් වෙත ලඟාවිය නොහැකි විය. කරුණාකර නැවත උත්සහ කරන්න.</translation>
@@ -2999,7 +2991,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4154664944169082762">ඇඟිලි සලකුණු</translation>
 <translation id="4157869833395312646">Microsoft සේවාදායක ද්වාර ගුප්තලේඛන කියවීම</translation>
 <translation id="4158364720893025815">සමත්</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> ප්‍රශ්න අසන විට සරිලන ලෙස සකස් කළ ප්‍රතිචාර ලබා ගැනීමට, සහායකට <ph name="SUPERVISED_USER_NAME" />ගේ තිරයේ තොරතුරු භාවිත කිරීමට ඉඩ දෙන්න. මෙයට වාදනය වන ගීත හෝ වීඩියෝ පිළිබඳ තොරතුරු ඇතුළත් විය හැකිය.</translation>
 <translation id="4159681666905192102">මෙය <ph name="CUSTODIAN_EMAIL" /> හා<ph name="SECOND_CUSTODIAN_EMAIL" /> මගින් පාලනය වන ළමුන් සඳහා වන ගිණුමකි.</translation>
 <translation id="4163560723127662357">නොදන්නා යතුරුපුවරුව</translation>
 <translation id="4167686856635546851">අඩවි සාමාන්‍යයෙන් වීඩියෝ ක්‍රීඩා හෝ වෙබ් පෝරම වැනි අන්තර්ක්‍රියාකාරී විශේෂාංග සංදර්ශනය කිරීමට ජාවාස්ක්‍රිප්ට් භාවිත කරයි</translation>
@@ -3641,7 +3632,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">පද්ධති නැරඹුම සමඟ විවෘත කරන්න</translation>
 <translation id="488785315393301722">විස්තර පෙන්වන්න</translation>
-<translation id="4889792122460431731">ඔබ ප්‍රශ්න අසන විට සරිලන ලෙස සකස් කළ ප්‍රතිචාර ලබා ගැනීමට, ඔබගේ සහායකට ඔබගේ තිරයේ තොරතුරු භාවිත කිරීමට ඉඩ දෙන්න. මෙයට වාදනය වන ගීත හෝ වීඩියෝ පිළිබඳ තොරතුරු ඇතුළත් විය හැකිය.</translation>
 <translation id="4890773143211625964">උසස් මුද්‍රක විකල්ප පෙන්වන්න</translation>
 <translation id="4891089016822695758">බීටා සංසදය</translation>
 <translation id="4892229439761351791">වෙබ් අඩවියට බ්ලූටූත් භාවිත කළ හැක</translation>
@@ -3857,7 +3847,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">පැතිකඩ බාගැනීමට නොහැකි විය. කරුණාකර පසුව නැවත උත්සාහ කරන්න හෝ උදව් සඳහා වාහක අමතන්න.</translation>
 <translation id="5131591206283983824">ස්පර්ශ පුවරුවට තට්ටු කර ඇදීම</translation>
-<translation id="5135085122826131075">ඔබ "Ok Google" යැයි කියන විට වේලාවක ඔබේ සහකරු වෙත ප්‍රවේශ වන්න</translation>
 <translation id="5135533361271311778">පිටු සලකුණු අයිතමය සෑදිය නොහැකි විය.</translation>
 <translation id="5136343472380336530">උපාංග දෙකම අගුලු හැර, එකිනෙකට ළංව සහ බ්ලූටූත් ක්‍රියාත්මක කර ඇති බව සහතික කර ගන්න. <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">මෙම අයිතමය මකන්න</translation>
@@ -4134,6 +4123,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5449551289610225147">වලංගු නොවන මුරපදය</translation>
 <translation id="5449588825071916739">සියලු ටැබ පිටු සලකුණු කරන්න</translation>
 <translation id="5449716055534515760">කවුළුව වසන්න</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (නොබැඳිව ක්‍රියාකරයි)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> සමඟ</translation>
 <translation id="5457113250005438886">අවලංගු</translation>
 <translation id="5457459357461771897">ඔබගේ පරිගණකයෙන් ඡායාරූප, සංගීතය, සහ වෙනත් මාධ්‍යය කියවා මකන්න</translation>
@@ -4274,7 +4264,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5585912436068747822">හැඩසවිගැන්වීම අසාර්ථකයි</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">යෙදුම් පූරණය වේ...</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> දැනටමත් වෙනත් උපාංගයක Google සහායක පිහිටුවා ඇති බව පෙනේ. <ph name="SUPERVISED_USER_NAME" /> හට තිර සන්දර්භය ක්‍රියාත්මක කිරීමෙන් සහායකගෙන් තවත් බොහෝ දේ ලබා ගත හැකිය.</translation>
 <translation id="5592595402373377407">තවම ප්‍රමාණවත් දත්ත නොමැත.</translation>
 <translation id="5595485650161345191">ලිපිනය සංස්කරණය</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
@@ -4596,6 +4585,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> උච්චතම)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{සියල්ල &amp;නව කවුළුවක විවෘත කරන්න}=1{&amp;නව කවුළුවක විවෘත කරන්න}one{සියල්ල ({COUNT}) &amp;නව කවුළුවක විවෘත කරන්න}other{සියල්ල ({COUNT}) &amp;නව කවුළුවක විවෘත කරන්න}}</translation>
 <translation id="5965661248935608907">ඔබ මුල්පිටු බොත්තම ක්ලික් කළ විට හෝ Omnibox වෙතින් සොයන විට කුමන පිටුව පෙන්වන්නේද යන්නද එය පාලනය කරයි.</translation>
+<translation id="5968022600320704045">සෙවීම් ප්‍රතිඵල නැත</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> හට <ph name="FOLDERNAME" /> තුළ ඇති ගොනු බැලිය හැක</translation>
 <translation id="5969728632630673489">යතුරු පුවරු කෙටි මං දැන්වීම ඉවත ලන ලදි</translation>
 <translation id="5971037678316050792">Bluetooth ඇඩැප්ටර තත්වය හා යුගල කිරීම</translation>
@@ -4903,9 +4893,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6295158916970320988">සියලු අඩවි</translation>
 <translation id="6295855836753816081">සුරකිමින්...</translation>
 <translation id="629730747756840877">ගිණුම</translation>
-<translation id="6298800237463568825">Voice Match ඔබගේ Google සහායකට <ph name="DEVICE_TYPE" /> හි ඔබගේ කටහඬ හඳුනා ගැනීමට සහ අන් අයගෙන් වෙන් කොට ඔබට පැවසීමට උදව් කරයි.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />සිතෙහි තබා ගන්න:<ph name="END_BOLD" /> ඒ හා සමාන කටහඬ හෝ පටිගත කිරීමකට ඔබගේ පුද්ගලික ප්‍රතිඵල වෙතද ප්‍රවේශ විය හැකිය. පසුව සහායක සැකසීම් තුළ එය ක්‍රියාවිරහිත කිරීමෙන් ඔබට Voice Match අවසරය ඉවත් කළ හැකිය.</translation>
 <translation id="6298962879096096191">Android යෙදුම් ස්ථාපනය කිරීමට Google Play භාවිත කරන්න</translation>
 <translation id="6300177430812514606">දත්ත යැවීම හෝ ලැබීම අවසන් කිරීමට ඉඩ නොදේ</translation>
 <translation id="630065524203833229">පිට&amp;වන්න</translation>
@@ -5406,6 +5393,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6855892664589459354">Crostini උපස්ථය සහ ප්‍රතිසාධනය</translation>
 <translation id="6856348640027512653">අතථ්‍ය යථාර්ථ උපාංග හෝ දත්ත භාවිත කිරීමට ඉඩ නොදේ</translation>
 <translation id="6856623341093082836">ඔබේ ස්පර්ශ තිරයේ නිරවද්‍යතාවය පිහිටුවන්න සහ සීරුමාරු කරන්න</translation>
+<translation id="6856850379840757744">ක්‍රියාත්මක කළ විට, සියලු දැනුම්දීම් නිහඬ කරනු ඇත</translation>
 <translation id="6857145580237920905">Powerwash කිරීමට පෙර eSIM පැතිකඩ ඉවත් කරන්න</translation>
 <translation id="6857699260879628349">වින්‍යාස තොරතුරු ලබා ගන්න</translation>
 <translation id="6857725247182211756">තත් <ph name="SECONDS" /></translation>
@@ -5684,7 +5672,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7171559745792467651">ඔබේ අනෙකුත් උපාංගවලින් යෙදුම් ස්ථාපනය කරන්න</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{නව කණ්ඩායමට පටිත්ත එක් කරන්න}one{නව කණ්ඩායමට පටිති එක් කරන්න}other{නව කණ්ඩායමට පටිති එක් කරන්න}}</translation>
 <translation id="7173114856073700355">සැකසීම් විවෘත කරන්න</translation>
-<translation id="7173336557300642430">ඔබට වඩාත් සරිලන ලෙස සකස් කළ ප්‍රතිචාර ලබා ගැනීම සඳහා, ඔබ ප්‍රශ්න අසන විට ඔබගේ තිරයේ තොරතුරු භාවිත කිරීමට Google සහායකට ඉඩ දෙන්න. ඔබගේ සහායක වාදනය වන ගීත හෝ වීඩියෝ පිළිබඳ තොරතුරුද භාවිත කළ හැකිය.</translation>
 <translation id="7174199383876220879">නව! ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> වින්‍යාස කරන්න</translation>
 <translation id="7175353351958621980">ප්‍රවේශනය කළේ:</translation>
@@ -5926,7 +5913,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7434969625063495310">මුද්‍රණ සේවාදායකය එක් කළ නොහැකි විය. සේවාදායකයේ වින්‍යාසය පරීක්‍ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="7436921188514130341">අනේ, අපොයි! යළි නම් කිරීමේ දී ගැටලුවක් ඇති විය.</translation>
 <translation id="7438495332316988804">දියත්කරණයට "Chrome" ටයිප් කිරීමෙන් සම්මත බ්‍රව්සරය සොයා ගත හැකිය.</translation>
-<translation id="7439446972050308922">ඔබ ඔබගේ Google ගිණුම සමඟ පුරන විට ඔබගේ සුරකින ලද මනාප ඕනෑම Chrome OS උපාංගයක සූදානම් කරනු ඇත. ඔබට සැකසීම් තුළ සමමුහුර්ත කළ යුතු දෙය තෝරා ගත හැකිය.</translation>
 <translation id="7439519621174723623">ඉදිරියට යාමට උපාංග නමක් එක් කරන්න</translation>
 <translation id="7441736921018636843">මෙම සැකසීම වෙනස් කිරීමට, ඔබේ සමුමුහුර්ත මුර-වැකිකඩ ඉවත් කිරීමට <ph name="BEGIN_LINK" />සමමුහුර්තය යළි සකසන්න<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">වෙනත් පරිශීලකයන්</translation>
@@ -6384,6 +6370,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">ද්විතීයකරණය</translation>
 <translation id="7887864092952184874">Bluetooth මවුසය යුගල කරන ලදි</translation>
+<translation id="7889371445710865055">අනුලේඛන භාෂාව වෙනස් කරන්න</translation>
 <translation id="7890147169288018054">ඔබේ IP හෝ MAC ලිපිනය යනාදි ජාල තොරතුරු බලන්න</translation>
 <translation id="7893008570150657497">ප්‍රවේශ ඡායාරූප, සංගීතය, සහ ඔබේ පරිගණකයේ අනෙකුත් මාධ්‍ය</translation>
 <translation id="7893153962594818789">මෙම <ph name="DEVICE_TYPE" /> මත බ්ලූටූත් ක්‍රියාවිරහිතයි. ඔබේ මුරපදය ඇතුළු කර, බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
@@ -6926,7 +6913,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> වෙතින් වන නොදන්නා උපාංගය</translation>
 <translation id="8481187309597259238">USB අවසරය තහවුරු කරන්න</translation>
 <translation id="8481980314595922412">අත්හදා බැලීමේ විශේෂාංග ක්‍රියාත්මකයි</translation>
-<translation id="8482860770919360244">ඔබ දැනටමත් වෙනත් උපාංගයක Google සහායක පිහිටුවා ඇති බව පෙනේ. තිර සන්දර්භය ක්‍රියාත්මක කිරීමෙන් ඔබගේ සහායකගෙන් තවත් බොහෝ දේ ලබා ගන්න.</translation>
 <translation id="848666842773560761">යෙදුමක් කැමරාවට ප්‍රවේශ වීමට උත්සාහ කරයි. ප්‍රවේශ වීමට ඉඩ දීම සඳහා කැමරා පෞද්ගලිකත්ව ස්විචය ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="8487678622945914333">විශාලනය කරන්න</translation>
 <translation id="8489156414266187072">පුද්ගලික යෝජනා ඔබගේ ගිණුමේ පමණක් පෙන්වයි</translation>

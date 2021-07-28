@@ -318,6 +318,7 @@
 <translation id="7059230779847288458">Oplader, fuldt opladet om <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">STOPPET</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="714876143603641390">LAN-forbindelse</translation>

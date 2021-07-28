@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Спалучэнні клавіш для функцый Google Chrome</translation>
 <translation id="1344653310988386453">Далучыць спасылку на вылучаны тэкст</translation>
 <translation id="1347468774581902829">Кіраваць дзеяннямі</translation>
+<translation id="1352771733366526411">Кіраваць усімі вокнамі (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
 <translation id="1373696734384179344">Недастаткова памяці, каб спампаваць выбранае змесціва.</translation>
 <translation id="1376578503827013741">Вылічэнне…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome цяпер спампоўвае файлы хутчэй</translation>
 <translation id="1877026089748256423">Chrome састарэў</translation>
 <translation id="1883903952484604915">Мае файлы</translation>
+<translation id="1888378517829496315">Кіраванне ўсімі вокнамі</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
 <translation id="1918175104945982129">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку адкрыта на палову экрана</translation>
 <translation id="1919130412786645364">Дазволіць уваход ва ўліковы запіс Chrome</translation>
@@ -639,6 +641,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="5139940364318403933">Даведайцеся, як карыстацца Google Дыскам</translation>
+<translation id="5142281402488957685">Каб праверыць, ці з'явіліся новыя артыкулы, пацягніце ўніз</translation>
 <translation id="5152843274749979095">Праграм, якія падтрымліваюцца, не ўсталявана</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Збой 1 спампоўкі.}one{Збой # спампоўкі.}few{Збой # спамповак.}many{Збой # спамповак.}other{Збой # спампоўкі.}}</translation>
@@ -679,6 +682,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5403644198645076998">Дазваляць толькі пэўныя сайты</translation>
 <translation id="5409881200985013443">Адправіць код <ph name="ONE_TIME_CODE" /> на прыладу "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{<ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="5423934151118863508">Тут будуць паказвацца старонкі, якія вы найчасцей наведваеце</translation>
 <translation id="5424588387303617268">Даступна <ph name="GIGABYTES" /> ГБ</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
@@ -946,6 +950,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6979737339423435258">За ўвесь час</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="6989267951144302301">Не ўдалося спампаваць</translation>
+<translation id="6992232929048168262">Адкрыць у поўнаэкранным рэжыме</translation>
 <translation id="6995899638241819463">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="7001056293070445572">Гэта вялікі файл (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Адкрыць у браўзеры</translation>
@@ -1230,6 +1235,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8683081248374354009">Скінуць параметры групы</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
+<translation id="8701921397542715895">Выконваецца ў суседнім акне</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8730621377337864115">Гатова</translation>

@@ -319,6 +319,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7059230779847288458">In carica, <ph name="TIME_VALUE" /> al completamento della ricarica</translation>
 <translation id="708426984172631313">INTERROTTO</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>

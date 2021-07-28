@@ -319,6 +319,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>

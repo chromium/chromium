@@ -554,13 +554,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1593926297800505364">Zahlungsmethode speichern</translation>
 <translation id="1595492813686795610">Linux wird aktualisiert</translation>
 <translation id="1596286373007273895">Verfügbar</translation>
-<translation id="1597224195604051602">Mit „Voice Match“ kann Google Assistant die Stimme von <ph name="SUPERVISED_USER_NAME" /> auf dem Gerät (<ph name="DEVICE_TYPE" />) erkennen und das Kind so von anderen unterscheiden.
-    <ph name="BR" />
-    Assistant nimmt Audioclips der Stimme Ihres Kindes auf, um ein eindeutiges Sprachmodell zu erstellen, das nur auf seinen Geräten gespeichert ist. Das Sprachmodell Ihres Kindes wird eventuell vorübergehend an Google gesendet, um seine Stimme besser identifizieren zu können.
-    <ph name="BR" />
-    Wenn Sie sich später gegen „Voice Match“ entscheiden, entfernen Sie die Funktion einfach in den Assistant-Einstellungen Ihres Kindes. Unter g.co/assistant/match können Sie die Audioclips im Konto Ihres Kindes aufrufen oder löschen, die es während der „Voice Match“-Einrichtung aufgenommen hat.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse Ihres Kindes zugreifen. Zur Schonung des Akkus ist „Hey Google“ nur dann aktiv, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="1598233202702788831">Updates sind durch Ihren Administrator deaktiviert.</translation>
 <translation id="1600857548979126453">Auf das Back-End für Seiten-Debugger zugreifen</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
@@ -840,7 +833,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1865769994591826607">Nur bei Verbindungen zur gleichen Website</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" kann Bilder, Video- und Sounddateien an den geprüften Orten lesen und schreiben.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> ist zum Abschließen der Installation bereit.</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Die Passwortüberprüfung ist in Chromium nicht verfügbar</translation>
 <translation id="1869433484041798909">Lesezeichen-Schaltfläche</translation>
 <translation id="1871098866036088250">In Chrome-Browser öffnen</translation>
@@ -1124,7 +1116,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> und ein weiterer Schalter</translation>
 <translation id="2165177462441582039">Sie können festlegen, wie lange ein Element markiert bleiben soll</translation>
-<translation id="2165421703844373933">Mit "Ok Google" können Sie auf Ihren Assistant zugreifen. Damit der Akku geschont wird, sollten Sie die Option "An (empfohlen)" auswählen. So reagiert Ihr Assistant nur, wenn Ihr Gerät an eine Stromquelle angeschlossen ist oder auflädt.</translation>
 <translation id="2166369534954157698">Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Trotzdem anmelden</translation>
@@ -1605,9 +1596,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691440343905273290">Eingabeeinstellungen ändern</translation>
 <translation id="2693176596243495071">Hoppla! Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es später noch einmal oder wenden Sie sich an Ihren Administrator, wenn das Problem weiterhin besteht.</translation>
-<translation id="2693640212062142966">Mit „Voice Match“ kann Google Assistant Ihre Stimme auf dem Gerät (<ph name="DEVICE_TYPE" />) erkennen und sie von anderen unterscheiden. Zur Schonung des Akkus ist „Hey Google“ nur dann aktiv, wenn Ihr Gerät an eine Stromquelle angeschlossen ist. Änderungen können Sie in den Einstellungen vornehmen.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme oder einer Aufnahme Ihrer Stimme kann möglicherweise auf Ihre persönlichen Ergebnisse zugreifen. Sie können die „Voice Match“-Berechtigung später in den Assistant-Einstellungen deaktivieren.</translation>
 <translation id="2699911226086014512">Fehler beim Festlegen der PIN. Fehlercode: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Anmelden, <ph name="EMAIL" /></translation>
@@ -2991,7 +2979,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4154664944169082762">Fingerabdrücke</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Erfolgreich</translation>
-<translation id="4159163871835771155">Damit <ph name="SUPERVISED_USER_NAME" /> relevantere Antworten auf Fragen erhält, können Sie Assistant erlauben, Informationen auf dem Bildschirm von <ph name="SUPERVISED_USER_NAME" /> zu verwenden. Das kann auch Informationen über abgespielte Lieder oder Videos umfassen.</translation>
 <translation id="4159681666905192102">Dies ist ein Konto für Kinder, das von <ph name="CUSTODIAN_EMAIL" /> und <ph name="SECOND_CUSTODIAN_EMAIL" /> verwaltet wird.</translation>
 <translation id="4163560723127662357">Unbekannte Tastatur</translation>
 <translation id="4167686856635546851">Websites verwenden normalerweise JavaScript zum Anzeigen interaktiver Funktionen, wie Videospiele oder Webformulare</translation>
@@ -3633,7 +3620,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4884987973312178454">6-fach</translation>
 <translation id="4887424188275796356">Mit System Viewer öffnen</translation>
 <translation id="488785315393301722">Details ansehen</translation>
-<translation id="4889792122460431731">Um relevantere Antworten auf Ihre Fragen zu erhalten, können Sie Assistant erlauben, Informationen auf Ihrem Bildschirm zu verwenden. Das kann auch Informationen über abgespielte Lieder oder Videos umfassen.</translation>
 <translation id="4890773143211625964">Erweiterte Druckereinstellungen anzeigen</translation>
 <translation id="4891089016822695758">Beta-Forum</translation>
 <translation id="4892229439761351791">Website kann Bluetooth verwenden</translation>
@@ -3847,7 +3833,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Das Profil konnte nicht heruntergeladen werden. Bitte versuche es später noch einmal oder wende dich an deinen Mobilfunkanbieter.</translation>
 <translation id="5131591206283983824">Antippen und Ziehen für Touchpad</translation>
-<translation id="5135085122826131075">Mit "Ok Google" können Sie auf Ihren Assistant zugreifen.</translation>
 <translation id="5135533361271311778">Lesezeichenelement konnte nicht erstellt werden.</translation>
 <translation id="5136343472380336530">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Diesen Eintrag löschen</translation>
@@ -4264,7 +4249,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5585912436068747822">Fehler bei der Formatierung</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Apps werden geladen...</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> hat Google Assistant offenbar bereits auf einem anderen Gerät eingerichtet. <ph name="SUPERVISED_USER_NAME" /> kann Assistant noch besser nutzen, wenn „Bildschirmkontext“ aktiviert ist.</translation>
 <translation id="5592595402373377407">Noch nicht genügend Daten vorhanden</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
@@ -4892,9 +4876,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="629730747756840877">Konto</translation>
-<translation id="6298800237463568825">Mit „Voice Match“ kann Google Assistant Ihre Stimme auf dem Gerät (<ph name="DEVICE_TYPE" />) erkennen und sie von anderen unterscheiden.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme oder einer Aufnahme Ihrer Stimme kann möglicherweise auf Ihre persönlichen Ergebnisse zugreifen. Sie können die „Voice Match“-Berechtigung später in den Assistant-Einstellungen deaktivieren.</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
 <translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
 <translation id="630065524203833229">&amp;Beenden</translation>
@@ -5674,7 +5655,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7171559745792467651">Apps von Ihren anderen Geräten installieren</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Tab zu neuer Gruppe hinzufügen}other{Tabs zu neuer Gruppe hinzufügen}}</translation>
 <translation id="7173114856073700355">Einstellungen öffnen</translation>
-<translation id="7173336557300642430">Google Assistant darf die Informationen auf meinem Bildschirm verwenden, um mir relevantere Antworten auf meine Fragen zu geben. Assistant darf auch Informationen über abgespielte Lieder oder Videos verwenden.</translation>
 <translation id="7174199383876220879">Neu! Sie können nun Musik, Videos und andere Medien steuern.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> konfigurieren</translation>
 <translation id="7175353351958621980">Geladen von:</translation>
@@ -5916,7 +5896,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7434969625063495310">Der Druckserver konnte nicht hinzugefügt werden. Prüfen Sie die Konfiguration des Servers und versuchen Sie es noch einmal.</translation>
 <translation id="7436921188514130341">Oh nein! Beim Umbenennen ist ein Fehler aufgetreten.</translation>
 <translation id="7438495332316988804">Zum Standardbrowser gelangen Sie, indem Sie „Chrome“ in den Launcher eingeben.</translation>
-<translation id="7439446972050308922">Ihre gespeicherten Einstellungen stehen auf jedem Chrome OS-Gerät zur Verfügung, auf dem Sie sich in Ihrem Google-Konto anmelden. In den Einstellungen können Sie festlegen, was synchronisiert werden soll.</translation>
 <translation id="7439519621174723623">Geben Sie einen Gerätenamen ein, um fortzufahren</translation>
 <translation id="7441736921018636843">Wenn Sie diese Einstellung ändern möchten, müssen Sie die <ph name="BEGIN_LINK" />Synchronisierung zurücksetzen<ph name="END_LINK" />, um die Synchronisierungspassphrase zu entfernen</translation>
 <translation id="7441830548568730290">Andere Nutzer</translation>
@@ -6918,7 +6897,6 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="8480869669560681089">Unbekanntes Gerät von <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-Berechtigung bestätigen</translation>
 <translation id="8481980314595922412">Testfunktionen sind aktiviert</translation>
-<translation id="8482860770919360244">Sie haben Google Assistant schon auf einem anderen Gerät eingerichtet. Wenn Sie den Bildschirmkontext aktivieren, können Sie Assistant noch besser nutzen.</translation>
 <translation id="848666842773560761">Eine App versucht, auf die Kamera zuzugreifen. Schalten Sie den Vertraulichkeitsmodus der Kamera aus, um den Zugriff zu erlauben.</translation>
 <translation id="8487678622945914333">Vergrößern</translation>
 <translation id="8489156414266187072">Persönliche Vorschläge werden nur in deinem Konto angezeigt</translation>

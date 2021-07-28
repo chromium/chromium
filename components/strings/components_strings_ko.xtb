@@ -990,6 +990,7 @@
 <translation id="443121186588148776">직렬 포트</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" />에서 로그인 인증서를 승인하지 않았거나 로그인 인증서가 제공되지 않았을 수 있습니다.</translation>
 <translation id="4432792777822557199">지금부터 <ph name="SOURCE_LANGUAGE" />로 된 페이지가 <ph name="TARGET_LANGUAGE" />로 번역됩니다.</translation>
+<translation id="4433642172056592619">사용자가 머신 관리와 연결되어 있지 않거나 관리되는 머신이 아니므로 무시되었습니다.</translation>
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
 <translation id="4435702339979719576">엽서)</translation>
 <translation id="443673843213245140">프록시 사용은 중지되었지만 명시적 프록시 설정이 지정되어 있습니다.</translation>

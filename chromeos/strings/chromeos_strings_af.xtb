@@ -319,6 +319,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7059230779847288458">Laai tans; <ph name="TIME_VALUE" /> tot vol</translation>
 <translation id="708426984172631313">GESTOP</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Naambediener}other{Naambedieners}}</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>

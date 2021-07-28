@@ -999,6 +999,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="443121186588148776">Puerto serie</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> no ha aceptado el certificado de inicio de sesión o es posible que no se haya proporcionado ninguno.</translation>
 <translation id="4432792777822557199">Las páginas en <ph name="SOURCE_LANGUAGE" /> se traducirán al <ph name="TARGET_LANGUAGE" /> a partir de ahora</translation>
+<translation id="4433642172056592619">Se ha ignorado porque el usuario no está afiliado con la gestión de dispositivos o porque el dispositivo no está gestionado.</translation>
 <translation id="4434045419905280838">Ventanas emergentes y redirecciones</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Se ha inhabilitado el uso de un servidor proxy, pero se han especificado ajustes de proxy explícitos.</translation>

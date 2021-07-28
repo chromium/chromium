@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Mga shortcut ng feature ng Google Chrome</translation>
 <translation id="1344653310988386453">Isama ang link sa highlight</translation>
 <translation id="1347468774581902829">Pamahalaan ang aktibidad</translation>
+<translation id="1352771733366526411">I-manage lahat ng window (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Mag-sign out at i-off ang pag-sync?</translation>
 <translation id="1373696734384179344">Hindi sapat ang memory upang ma-download ang napiling content.</translation>
 <translation id="1376578503827013741">Kino-compute…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Mas mabilis nang mag-download ng mga file ang Chrome</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1883903952484604915">Aking Mga File</translation>
+<translation id="1888378517829496315">Pamahalaan ang lahat ng window</translation>
 <translation id="189358972401248634">Iba pang mga wika</translation>
 <translation id="1918175104945982129">Nakabukas ang ui ng pahintulot ng paghahanap gamit ang boses ng Assistant nang kalahati ang taas</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
@@ -639,6 +641,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5123685120097942451">Tab na incognito</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
 <translation id="5139940364318403933">Alamin kung paano gamitin ang Google Drive</translation>
+<translation id="5142281402488957685">Para sa mga bagong kuwento, i-slide pababa para mag-refresh</translation>
 <translation id="5152843274749979095">Walang naka-install na sinusuportahang app</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ang hindi na-download.}one{# ang hindi na-download.}other{# ang hindi na-download.}}</translation>
@@ -679,6 +682,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5403644198645076998">Ilang partikular na site lang ang payagan</translation>
 <translation id="5409881200985013443">Isumite ang <ph name="ONE_TIME_CODE" /> sa <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vine-verify…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_COUNT_MANY" /> tab}other{<ph name="TAB_COUNT_MANY" /> na tab}}</translation>
 <translation id="5423934151118863508">Lalabas dito ang mga page na madalas mong bisitahin</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ang available</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
@@ -946,6 +950,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6979737339423435258">Lahat ng oras</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6989267951144302301">Hindi ma-download</translation>
+<translation id="6992232929048168262">Buksan sa full screen</translation>
 <translation id="6995899638241819463">Balaan ka kung ma-expose ang mga password sa isang paglabag sa data</translation>
 <translation id="7001056293070445572">Malaki ang file na ito (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Buksan sa browser</translation>
@@ -1230,6 +1235,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8683081248374354009">I-reset ang grupo</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
+<translation id="8701921397542715895">Tumatakbo sa katabing window</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8730621377337864115">Tapos na</translation>

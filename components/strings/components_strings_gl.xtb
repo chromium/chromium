@@ -557,7 +557,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2941952326391522266">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza é de <ph name="DOMAIN2" />. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2943895734390379394">Momento da carga:</translation>
 <translation id="2948083400971632585">Podes desactivar os proxies configurados para unha conexión desde a páxina de configuración.</translation>
-<translation id="2949183777371959169">Ignorouse porque o dispositivo non está inscrito con Chrome Browser Cloud Management.</translation>
+<translation id="2949183777371959169">Ignorouse porque o dispositivo non está inscrito en Chrome Browser Cloud Management.</translation>
 <translation id="2951588413176968965">A miña caixa de correo</translation>
 <translation id="295526156371527179">Advertencia: Esta política non se combinou como un dicionario do xeito especificado na política porque non é un dicionario.</translation>
 <translation id="2955913368246107853">Pecha a barra de busca</translation>

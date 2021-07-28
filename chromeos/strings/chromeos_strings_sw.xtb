@@ -318,6 +318,7 @@
 <translation id="7059230779847288458">Inachaji, imebakisha <ph name="TIME_VALUE" /> ijae</translation>
 <translation id="708426984172631313">LIMESIMAMISHWA</translation>
 <translation id="7086440545492620869"><ph name="DISPLAY_NAME" /> <ph name="VALUE" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Seva ya jina}other{Seva za majina}}</translation>
 <translation id="7143207342074048698">Inaunganisha</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
 <translation id="714876143603641390">Muunganisho wa LAN</translation>
