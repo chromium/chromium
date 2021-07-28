@@ -130,8 +130,15 @@ crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_co
 crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc7-rgba-unorm";* [ Failure ]
 crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc7-rgba-unorm-srgb";* [ Failure ]
 
+# Robust access tests cause a lot of failures in various systems. Revisit expectations after the tests are fixed.
 crbug.com/dawn/1009 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 crbug.com/dawn/1009 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
+crbug.com/dawn/1018 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure Crash ]
+crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=false;indirect=false;* [ Crash Failure ]
+crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=false;indirect=true;* [ Crash Failure ]
+crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=false;* [ Crash Failure ]
+crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=true;* [ Crash Failure ]
+
 
 ###
 ### Test bugs (fixed upstream)
@@ -155,8 +162,8 @@ crbug.com/dawn/485 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_p
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000";* [ Failure ]
 crbug.com/1215024 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createComputePipeline:enrty_point_name_must_match:stageEntryPoint="main%5Cu0000a";* [ Failure ]
 
-# Crash with validation layers (Vulkan/D3D12).
-crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Skip ]
+# Fails newly added validation.
+crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,vertex_state,index_format:* [ Failure ]
 
 # Failures because 1d, stencil8 and depth16unorm aren't implemented.
 crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
@@ -226,18 +233,13 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExt
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="stencil8";* [ Failure ]
 
-# Unimplemented validation in Tint. Skipped because it causes test timeouts
-crbug.com/tint/480 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:initializer_type:* [ Skip ]
-crbug.com/tint/481 wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:io_shareable_type:* [ Skip ]
-
-# Validation rules and supported texture format changed for CopyExternalImageToTexture/CopyImageBitmapToTexture
 crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:source_image,crossOrigin:* [ Failure ]
-crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:* [ Skip ]
+crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";* [ Skip ]
 
 crbug.com/dawn/995 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,create:createBuffer_invalid_and_oom:* [ Failure ]
 
-# Max dispatch size validation. Nasty crash (possibly whole system crash?) on Mac+Intel and Linux+Intel.
-crbug.com/dawn/1006 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:dispatch_sizes:* [ Skip ]
+# Validation of max dispatch size isn't implemented for dispatchIndirect
+crbug.com/dawn/1006 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:dispatch_sizes:dispatchType="indirect";* [ Skip ]
 
 # Dawn validation requires that aspects of attachments is "all", which the tests don't do.
 # See also crbug.com/dawn/603 for missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE that happens on the same tests.
@@ -254,9 +256,6 @@ crbug.com/dawn/809 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust
 ### Mac (Metal) specific
 ###
 
-# Rendering differs slightly from ref.
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
-
 # Stencil textures with more than one mip level are disabled on Metal
 crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";* [ Failure ]
 crbug.com/dawn/838 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_upload_to_stencil_aspect:stencilFormat="depth24plus-stencil8";mipLevel=2;* [ Failure ]
@@ -267,10 +266,8 @@ crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executio
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";* [ Skip ]
 crbug.com/tint/993 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="write";* [ Skip ]
 
-# Only on Mac Intel
+# Only on Mac Intel, baseVertex is always 0 for drawIndirect.
 crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;base_vertex=9;* [ Failure ]
-
-crbug.com/dawn/1018 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure Crash ]
 
 ###
 ### Linux (Vulkan) specific
@@ -297,21 +294,11 @@ crbug.com/dawn/956 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation
 # and possibly crbug.com/1231840
 crbug.com/1213657 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:* [ Slow Crash Failure Timeout ]
 
-# UNASSIGNED-CoreValidation-Shader-InterfaceTypeMismatch | Attribute type of `VK_FORMAT_R8G8_UINT` at location 0 does not match vertex shader input type of `ptr to input sint32`
-crbug.com/tint/996 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_type_matches_attribute_format:* [ Crash Failure ]
-
 # Conflicts with a Skip expectation
 # crbug.com/dawn/759 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Failure ]
 
 # Crashes on pipeline compilation in the driver.
 crbug.com/tint/993 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";atomic=false;baseType="bool";* [ Skip ]
-# SPIRV VVL errors
-crbug.com/tint/993 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";* [ Skip ]
-
-crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=false;indirect=false;* [ Crash Failure ]
-crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=false;indirect=true;* [ Crash Failure ]
-crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=false;* [ Crash Failure ]
-crbug.com/dawn/1011 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=true;* [ Crash Failure ]
 
 crbug.com/dawn/1013 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:unused_bindings_in_pipeline:* [ Crash Failure ]
 
@@ -325,10 +312,11 @@ crbug.com/1234041 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
 
+# The D3D12 debug layers produce and incorrect warning: Missing State: 0x1000: D3D12_RESOURCE_STATE_RESOLVE_DEST
+crbug.com/dawn/988 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:render_pass_resolve:* [ Failure ]
+
 crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";* [ Failure ]
 crbug.com/tint/993 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";* [ Failure ]
 
-# Missing State: 0x1000: D3D12_RESOURCE_STATE_RESOLVE_DEST
-crbug.com/dawn/988 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:render_pass_resolve:* [ Failure ]
-
+# Handling of base_vertex base_instance is not implemented for indirect draws on D3D12.
 crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;* [ Failure ]
