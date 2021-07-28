@@ -95,17 +95,17 @@
 // if the flow is interrupted by a sign-in error.
 - (void)operationCompletedWithIdentity:(ChromeIdentity*)identity
                                  error:(NSError*)error {
-  SigninCoordinatorResult signinResult;
-  if (error) {
+  SigninCoordinatorResult signinResult = SigninCoordinatorResultSuccess;
+  if (self.signinInterrupted) {
+    signinResult = SigninCoordinatorResultInterrupted;
+    identity = nil;
+  } else if (error) {
     // Filter out errors handled internally by ChromeIdentity.
     if (ShouldHandleSigninError(error)) {
       [self.delegate addAccountSigninManagerFailedWithError:error];
       return;
     }
     signinResult = SigninCoordinatorResultCanceledByUser;
-  } else {
-    signinResult = self.signinInterrupted ? SigninCoordinatorResultInterrupted
-                                          : SigninCoordinatorResultSuccess;
   }
 
   [self.delegate addAccountSigninManagerFinishedWithSigninResult:signinResult

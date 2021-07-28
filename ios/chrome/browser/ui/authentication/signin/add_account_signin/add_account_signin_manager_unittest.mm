@@ -188,7 +188,7 @@ TEST_F(AddAccountSigninManagerTest, AddAccountSigninInterrupted) {
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultInterrupted
-                                             identity:fake_identity_]);
+                                             identity:nil]);
 
   [signin_manager_ setSigninInterrupted:YES];
   [signin_manager_
@@ -256,7 +256,7 @@ TEST_F(AddAccountSigninManagerTest, ReauthSigninInterrupted) {
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultInterrupted
-                                             identity:fake_identity_]);
+                                             identity:nil]);
 
   [signin_manager_ setSigninInterrupted:YES];
   [signin_manager_
