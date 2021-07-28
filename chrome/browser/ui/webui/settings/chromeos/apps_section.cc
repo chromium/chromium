@@ -249,8 +249,8 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"appNotificationsTitle", IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT},
       {"doNotDisturbToggleTitle",
        IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE},
-      {"doNotDisturbToggleDesc",
-       IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESC},
+      {"doNotDisturbToggleDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
       {"appNotificationsLinkToBrowserSettingsDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
   };

@@ -3833,7 +3833,7 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications DoNotDisturb toggle that lets the user silence all app notifications.">
     Do not disturb
   </message>
-   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESC" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
+   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
     When turned on, all notifications will be silenced
   </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION" desc="In notifications OSSettings subpage, explanatory text for website notifications link.">
