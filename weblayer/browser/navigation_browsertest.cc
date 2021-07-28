@@ -89,7 +89,8 @@ class NavigationObserverImpl : public NavigationObserver {
     if (callback)
       callback.Run(navigation);
   }
-  void OnPageLanguageDetermined(Page* page, std::string language) override {
+  void OnPageLanguageDetermined(Page* page,
+                                const std::string& language) override {
     if (on_page_language_determined_callback_)
       on_page_language_determined_callback_.Run(page, language);
   }

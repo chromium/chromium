@@ -64,7 +64,7 @@ class NavigationControllerImpl : public NavigationController,
       const base::TimeDelta& largest_contentful_paint);
 
   void OnPageDestroyed(Page* page);
-  void OnPageLanguageDetermined(Page* page, std::string language);
+  void OnPageLanguageDetermined(Page* page, const std::string& language);
 
 #if defined(OS_ANDROID)
   void SetNavigationControllerImpl(

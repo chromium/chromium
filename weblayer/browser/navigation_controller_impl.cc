@@ -197,8 +197,9 @@ void NavigationControllerImpl::OnPageDestroyed(Page* page) {
     observer.OnPageDestroyed(page);
 }
 
-void NavigationControllerImpl::OnPageLanguageDetermined(Page* page,
-                                                        std::string language) {
+void NavigationControllerImpl::OnPageLanguageDetermined(
+    Page* page,
+    const std::string& language) {
 #if defined(OS_ANDROID)
   JNIEnv* env = AttachCurrentThread();
   Java_NavigationControllerImpl_onPageLanguageDetermined(
