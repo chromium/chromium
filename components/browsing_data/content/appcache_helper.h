@@ -9,7 +9,6 @@
 
 #include <list>
 #include <set>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"

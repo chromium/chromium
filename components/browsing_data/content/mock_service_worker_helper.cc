@@ -4,8 +4,6 @@
 
 #include "components/browsing_data/content/mock_service_worker_helper.h"
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"

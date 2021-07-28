@@ -5,7 +5,6 @@
 #include "components/browsing_data/content/mock_appcache_helper.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/callback.h"
 #include "content/public/browser/browser_context.h"
