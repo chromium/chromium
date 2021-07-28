@@ -515,3 +515,23 @@ TEST_F(IntentUtilTest, ConvertEmptyIntent) {
   EXPECT_EQ(apps::mojom::OptionalBool::kUnknown, dst_intent->ui_bypassed);
   EXPECT_FALSE(dst_intent->extras.has_value());
 }
+
+TEST_F(IntentUtilTest, CalculateCommonMimeType) {
+  EXPECT_EQ("*/*", apps_util::CalculateCommonMimeType({}));
+
+  EXPECT_EQ("*/*", apps_util::CalculateCommonMimeType({""}));
+  EXPECT_EQ("*/*", apps_util::CalculateCommonMimeType({"not_a_valid_type"}));
+  EXPECT_EQ("*/*", apps_util::CalculateCommonMimeType({"not_a_valid_type/"}));
+  EXPECT_EQ("*/*",
+            apps_util::CalculateCommonMimeType({"not_a_valid_type/foo/bar"}));
+
+  EXPECT_EQ("image/png", apps_util::CalculateCommonMimeType({"image/png"}));
+  EXPECT_EQ("image/png",
+            apps_util::CalculateCommonMimeType({"image/png", "image/png"}));
+  EXPECT_EQ("image/*",
+            apps_util::CalculateCommonMimeType({"image/png", "image/jpeg"}));
+  EXPECT_EQ("*/*",
+            apps_util::CalculateCommonMimeType({"image/png", "text/plain"}));
+  EXPECT_EQ("*/*", apps_util::CalculateCommonMimeType(
+                       {"image/png", "image/jpeg", "text/plain"}));
+}

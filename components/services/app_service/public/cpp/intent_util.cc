@@ -111,43 +111,6 @@ bool MimeTypeMatched(const std::string& intent_mime_type,
   return true;
 }
 
-// Calculates the least general mime type that matches all of the given ones.
-// E.g., for ["image/jpeg", "image/png"] it will be "image/*". ["text/html",
-// "text/html"] will return "text/html", and ["text/html", "image/jpeg"]
-// becomes the fully wildcard pattern.
-std::string CalculateCommonMimeType(
-    const std::vector<std::string>& mime_types) {
-  const std::string any_mime_type = std::string(kWildCardAny) +
-                                    std::string(kMimeTypeSeparator) +
-                                    std::string(kWildCardAny);
-  if (mime_types.size() == 0) {
-    return any_mime_type;
-  }
-
-  std::vector<std::string> common_type =
-      base::SplitString(mime_types[0], kMimeTypeSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (common_type.size() != 2) {
-    return any_mime_type;
-  }
-
-  for (auto& mime_type : mime_types) {
-    std::vector<std::string> type =
-        base::SplitString(mime_type, kMimeTypeSeparator, base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    if (type.size() != kMimeTypeComponentSize) {
-      return any_mime_type;
-    }
-    if (common_type[0] != type[0]) {
-      return any_mime_type;
-    }
-    if (common_type[1] != type[1]) {
-      common_type[1] = kWildCardAny;
-    }
-  }
-  return common_type[0] + kMimeTypeSeparator + common_type[1];
-}
-
 }  // namespace
 
 namespace apps_util {
@@ -582,6 +545,39 @@ apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
   intent->extras = GetExtrasFromDict(*dict, kExtrasKey);
 
   return intent;
+}
+
+std::string CalculateCommonMimeType(
+    const std::vector<std::string>& mime_types) {
+  const std::string any_mime_type = std::string(kWildCardAny) +
+                                    std::string(kMimeTypeSeparator) +
+                                    std::string(kWildCardAny);
+  if (mime_types.size() == 0) {
+    return any_mime_type;
+  }
+
+  std::vector<std::string> common_type =
+      base::SplitString(mime_types[0], kMimeTypeSeparator,
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (common_type.size() != 2) {
+    return any_mime_type;
+  }
+
+  for (auto& mime_type : mime_types) {
+    std::vector<std::string> type =
+        base::SplitString(mime_type, kMimeTypeSeparator, base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    if (type.size() != kMimeTypeComponentSize) {
+      return any_mime_type;
+    }
+    if (common_type[0] != type[0]) {
+      return any_mime_type;
+    }
+    if (common_type[1] != type[1]) {
+      common_type[1] = kWildCardAny;
+    }
+  }
+  return common_type[0] + kMimeTypeSeparator + common_type[1];
 }
 
 }  // namespace apps_util

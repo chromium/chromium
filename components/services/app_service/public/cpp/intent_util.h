@@ -133,6 +133,12 @@ absl::optional<std::vector<apps::mojom::IntentFilePtr>> GetFilesFromDict(
 // Converts base::Value to Intent.
 apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value);
 
+// Calculates the least general mime type that matches all of the given ones.
+// E.g., for ["image/jpeg", "image/png"] it will be "image/*". ["text/html",
+// "text/html"] will return "text/html", and ["text/html", "image/jpeg"]
+// becomes the fully wildcard pattern.
+std::string CalculateCommonMimeType(const std::vector<std::string>& mime_types);
+
 }  // namespace apps_util
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INTENT_UTIL_H_
