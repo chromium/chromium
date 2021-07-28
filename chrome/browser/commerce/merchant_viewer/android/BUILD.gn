@@ -52,6 +52,7 @@ android_library("java") {
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
+    "//components/site_engagement/content/android:java",
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",
     "//components/thin_webview:thin_webview",

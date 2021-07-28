@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -19,6 +20,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -37,6 +39,7 @@ public class MerchantTrustSignalsCoordinator {
     private final MerchantTrustMetrics mMetrics;
     private final MerchantTrustSignalsDataProvider mDataProvider;
     private final MerchantTrustSignalsStorageFactory mStorageFactory;
+    private final ObservableSupplier<Profile> mProfileSupplier;
 
     /** Creates a new instance. */
     public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
@@ -45,7 +48,7 @@ public class MerchantTrustSignalsCoordinator {
             ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
         this(context, new MerchantTrustMessageScheduler(messageDispatcher, metrics), tabSupplier,
-                new MerchantTrustSignalsDataProvider(), metrics,
+                new MerchantTrustSignalsDataProvider(), profileSupplier, metrics,
                 new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
                         bottomSheetController, tabSupplier, layoutView, metrics,
                         intentRequestTracker),
@@ -55,12 +58,14 @@ public class MerchantTrustSignalsCoordinator {
     @VisibleForTesting
     MerchantTrustSignalsCoordinator(Context context, MerchantTrustMessageScheduler messageScheduler,
             ObservableSupplier<Tab> tabSupplier, MerchantTrustSignalsDataProvider dataProvider,
-            MerchantTrustMetrics metrics, MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
+            ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics,
+            MerchantTrustBottomSheetCoordinator detailsTabCoordinator,
             MerchantTrustSignalsStorageFactory storageFactory) {
         mContext = context;
         mDataProvider = dataProvider;
         mMetrics = metrics;
         mStorageFactory = storageFactory;
+        mProfileSupplier = profileSupplier;
 
         mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::maybeDisplayMessage);
         mMessageScheduler = messageScheduler;
@@ -97,6 +102,23 @@ public class MerchantTrustSignalsCoordinator {
         }
     }
 
+    private boolean isFamiliarMerchant(String url) {
+        if (!MerchantViewerConfig.doesTrustSignalsUseSiteEngagement() || TextUtils.isEmpty(url)) {
+            return false;
+        }
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return false;
+        }
+        return getSiteEngagementScore(profile, url)
+                > MerchantViewerConfig.getTrustSignalsSiteEngagementThreshold();
+    }
+
+    @VisibleForTesting
+    double getSiteEngagementScore(Profile profile, String url) {
+        return SiteEngagementService.getForBrowserContext(profile).getScore(url);
+    }
+
     @VisibleForTesting
     void onMessageEnqueued(MerchantTrustMessageContext messageContext) {
         if (messageContext == null) {
@@ -115,7 +137,8 @@ public class MerchantTrustSignalsCoordinator {
     private void getDataForUnfamiliarMerchant(
             NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
         MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
-        if (storage == null || navigationHandle == null || navigationHandle.getUrl() == null) {
+        if (storage == null || navigationHandle == null || navigationHandle.getUrl() == null
+                || isFamiliarMerchant(navigationHandle.getUrl().getSpec())) {
             return;
         }
 
