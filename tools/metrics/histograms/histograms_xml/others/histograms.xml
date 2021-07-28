@@ -4742,6 +4742,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Display.GenerateDisplayId.CollisionDetection"
+    enum="BooleanDisplayIdCollision" expires_after="2022-08-01">
+  <owner>gildekel@google.com</owner>
+  <owner>chromeos-gfx@google.com</owner>
+  <summary>
+    Whether or not two (or more) connected displays produced identical display
+    IDs due to insufficient EDIDs. This may occur when identical displays (same
+    make and model) lack serial numbers in both the EDID's block zero or S/N
+    descriptor block. Recorded every time Chrome OS detects a change in display
+    configuration and attempts to get an updated list of available displays.
+  </summary>
+</histogram>
+
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
     expires_after="2021-11-14">
   <owner>sashamcintosh@chromium.org</owner>

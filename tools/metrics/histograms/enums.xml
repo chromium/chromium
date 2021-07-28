@@ -8842,6 +8842,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Dispatched"/>
 </enum>
 
+<enum name="BooleanDisplayIdCollision">
+  <int value="0" label="No display ID collision"/>
+  <int value="1" label="Display ID collision detected"/>
+</enum>
+
 <enum name="BooleanDowngrade">
   <int value="0" label="Not downgraded"/>
   <int value="1" label="Downgraded"/>

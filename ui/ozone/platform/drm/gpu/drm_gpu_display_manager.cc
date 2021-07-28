@@ -8,7 +8,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -22,6 +24,10 @@
 namespace ui {
 
 namespace {
+constexpr char kDisplayIdCollisionDetected[] =
+    "Display.GenerateDisplayId.CollisionDetection";
+using MapDisplayIdToIndexAndSnapshotPair =
+    base::flat_map<int64_t, display::DisplaySnapshot*>;
 
 class DisplayComparator {
  public:
@@ -113,6 +119,8 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
 
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   size_t device_index = 0;
+  MapDisplayIdToIndexAndSnapshotPair id_collision_map;
+  bool collision_detected = false;
   for (const auto& drm : devices) {
     if (device_index >= kMaxDrmCount) {
       LOG(WARNING) << "Reached the current limit of " << kMaxDrmCount
@@ -140,6 +148,19 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
       auto display_snapshot = displays_.back()->Update(
           display_info.get(), static_cast<uint8_t>(device_index));
       if (display_snapshot) {
+        const auto colliding_display_snapshot_iter =
+            id_collision_map.find(display_snapshot->edid_display_id());
+        if (colliding_display_snapshot_iter != id_collision_map.end()) {
+          // There is a collision between |display_snapshot| and a previous
+          // display. Resolve it by adding their connector indices to their
+          // display IDs, respectively.
+          collision_detected = true;
+          display_snapshot->AddIndexToDisplayId();
+          colliding_display_snapshot_iter->second->AddIndexToDisplayId();
+        } else {
+          id_collision_map[display_snapshot->edid_display_id()] =
+              display_snapshot.get();
+        }
         params_list.push_back(std::move(display_snapshot));
       } else {
         displays_.pop_back();
@@ -147,6 +168,7 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     }
     device_index++;
   }
+  base::UmaHistogramBoolean(kDisplayIdCollisionDetected, collision_detected);
 
   NotifyScreenManager(displays_, old_displays);
   return params_list;
