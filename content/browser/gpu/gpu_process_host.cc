@@ -310,6 +310,9 @@ static const char* const kSwitchNames[] = {
     switches::kPlatformDisallowsChromeOSDirectVideoDecoder,
     switches::kSchedulerBoostUrgent,
 #endif
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    switches::kHardwareVideoDecodeFrameRate,
+#endif
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
