@@ -53271,6 +53271,7 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Valid match"/>
   <int value="1" label="Invalid match"/>
   <int value="2" label="Index Out of Bounds"/>
+  <int value="3" label="Native match dead"/>
 </enum>
 
 <enum name="MayLaunchUrlType">
