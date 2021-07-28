@@ -50,7 +50,8 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
                                MediaStreamVector streams,
                                bool force_encoded_audio_insertable_streams,
                                bool force_encoded_video_insertable_streams)
-    : pc_(pc),
+    : ExecutionContextLifecycleObserver(pc->GetExecutionContext()),
+      pc_(pc),
       receiver_(std::move(receiver)),
       track_(track),
       streams_(std::move(streams)),
@@ -289,6 +290,17 @@ void RTCRtpReceiver::UpdateSourcesIfNeeded() {
                 WrapWeakPersistent(this)));
 }
 
+void RTCRtpReceiver::ContextDestroyed() {
+  {
+    WTF::MutexLocker locker(audio_underlying_source_mutex_);
+    audio_from_depacketizer_underlying_source_.Clear();
+  }
+  {
+    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    audio_to_decoder_underlying_sink_.Clear();
+  }
+}
+
 void RTCRtpReceiver::SetContributingSourcesNeedsUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   web_sources_needs_updating_ = true;
@@ -305,6 +317,7 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(video_to_decoder_underlying_sink_);
   visitor->Trace(encoded_video_streams_);
   ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
@@ -423,6 +436,12 @@ void RTCRtpReceiver::UnregisterEncodedAudioStreamCallback() {
 void RTCRtpReceiver::SetAudioUnderlyingSource(
     RTCEncodedAudioUnderlyingSource* new_underlying_source,
     scoped_refptr<base::SingleThreadTaskRunner> new_source_task_runner) {
+  if (!GetExecutionContext()) {
+    // If our context is destroyed, then the RTCRtpReceiver, underlying
+    // source(s), and transformer are about to be garbage collected, so there's
+    // no reason to continue.
+    return;
+  }
   {
     WTF::MutexLocker locker(audio_underlying_source_mutex_);
     audio_from_depacketizer_underlying_source_->OnSourceTransferStarted();
@@ -435,6 +454,12 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
 
 void RTCRtpReceiver::SetAudioUnderlyingSink(
     RTCEncodedAudioUnderlyingSink* new_underlying_sink) {
+  if (!GetExecutionContext()) {
+    // If our context is destroyed, then the RTCRtpReceiver and underlying
+    // sink(s) are about to be garbage collected, so there's no reason to
+    // continue.
+    return;
+  }
   WTF::MutexLocker locker(audio_underlying_sink_mutex_);
   audio_to_decoder_underlying_sink_ = new_underlying_sink;
 }
