@@ -59,7 +59,7 @@ public class AccessibilityEventDispatcherTest {
                 mEventDispatched = true;
                 return true;
             }
-        }, mEventDelays, mViewIndependentEvents, new HashSet<Integer>());
+        }, mEventDelays, mViewIndependentEvents, new HashSet<Integer>(), false);
 
         mRunnablePosted = false;
         mRunnableRemoved = false;
@@ -164,6 +164,7 @@ public class AccessibilityEventDispatcherTest {
         Set<Integer> relevantEvents = new HashSet<Integer>();
         relevantEvents.add(3);
         mDispatcher.updateRelevantEventTypes(relevantEvents);
+        mDispatcher.setOnDemandEnabled(true);
 
         // Send a relevant event type and ensure it is dispatched.
         mDispatcher.enqueueEvent(1, 3);

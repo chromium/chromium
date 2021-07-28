@@ -49,6 +49,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -103,6 +104,8 @@ public class WebContentsAccessibilityTest {
             "Expected to receive both a traversal and selection text event";
     private static final String BOUNDING_BOX_ERROR =
             "Expected bounding box to change after web contents was resized.";
+    private static final String ONDEMAND_HISTOGRAM_ERROR =
+            "Expected histogram for OnDemand AT feature to be recorded.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
@@ -1408,6 +1411,48 @@ public class WebContentsAccessibilityTest {
         mNodeInfo.getBoundsInScreen(afterBounds);
 
         Assert.assertTrue(BOUNDING_BOX_ERROR, afterBounds.top < (beforeBounds.top / 2));
+    }
+
+    /**
+     * Test that UMA histograms are recorded for the OnDemand AT feature.
+     */
+    @Test
+    @SmallTest
+    public void testOnDemandAccessibilityEventsUMARecorded() throws Throwable {
+        // Build a simple web page with a few nodes to traverse.
+        setupTestWithHTML("<p>This is a test 1</p>\n"
+                + "<p>This is a test 2</p>\n"
+                + "<p>This is a test 3</p>");
+
+        // Find the three text nodes.
+        int vvId1 = waitForNodeMatching(sTextMatcher, "This is a test 1");
+        int vvId2 = waitForNodeMatching(sTextMatcher, "This is a test 2");
+        int vvId3 = waitForNodeMatching(sTextMatcher, "This is a test 3");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvId1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvId2);
+        AccessibilityNodeInfo mNodeInfo3 = createAccessibilityNodeInfo(vvId3);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
+
+        // Focus each node in turn to generate events.
+        focusNode(vvId1);
+        focusNode(vvId2);
+        focusNode(vvId3);
+
+        // Signal end of test.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Force recording of UMA histograms.
+        mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
+
+        // Verify results were recorded in histograms.
+        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Accessibility.Android.OnDemand.PercentageDropped"));
+        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Accessibility.Android.OnDemand.EventsDropped"));
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)

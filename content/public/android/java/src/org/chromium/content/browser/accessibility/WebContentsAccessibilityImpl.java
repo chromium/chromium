@@ -40,6 +40,7 @@ import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate.AccessibilityCoordinates;
@@ -127,6 +128,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     // once per this time interval in milliseconds for a given focused node.
     private static final int CONTENT_INVALID_THROTTLE_DELAY = 4500;
 
+    // These are constant names of UMA histograms, and values for custom count histogram.
+    private static final String PERCENTAGE_DROPPED_HISTOGRAM =
+            "Accessibility.Android.OnDemand.PercentageDropped";
+    private static final String EVENTS_DROPPED_HISTOGRAM =
+            "Accessibility.Android.OnDemand.EventsDropped";
+    private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
+    private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
+    private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
+
     private static SparseArray<AccessibilityAction> sAccessibilityActionMap =
             new SparseArray<AccessibilityAction>();
 
@@ -192,6 +202,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     // invalid for that node. Used to ensure we report content invalid on a node once per interval.
     private int mLastContentInvalidViewId;
     private long mLastContentInvalidUtteranceTime;
+
+    // These track the total number of enqueued events, and the total number of dispatched events,
+    // so we can report the percentage/number of dropped events.
+    private int mTotalEnqueuedEvents;
+    private int mTotalDispatchedEvents;
 
     /**
      * Create a WebContentsAccessibilityImpl object.
@@ -261,10 +276,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         Set<Integer> viewIndependentEvents = new HashSet<Integer>();
         viewIndependentEvents.add(AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
 
-        // Define an initial set of events relevant to AT.
-        // TODO(mschillaci): Update beyond an empty set once feature is no longer behind a flag.
-        Set<Integer> relevantEvents = new HashSet<Integer>();
-
         mEventDispatcher =
                 new AccessibilityEventDispatcher(new AccessibilityEventDispatcher.Client() {
                     @Override
@@ -303,7 +314,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
                         return true;
                     }
-                }, eventThrottleDelays, viewIndependentEvents, relevantEvents);
+                }, eventThrottleDelays, viewIndependentEvents, new HashSet<Integer>(), false);
 
         if (mDelegate.getNativeAXTree() != 0) {
             initializeNativeWithAXTreeUpdate(mDelegate.getNativeAXTree());
@@ -334,6 +345,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
         // Register a broadcast receiver for locale change.
         if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
+
+        // Define an initial set of relevant events if OnDemand feature is enabled.
+        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+            int serviceEventMask = BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
+            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
+            mEventDispatcher.setOnDemandEnabled(true);
+        }
     }
 
     @CalledByNative
@@ -386,6 +404,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         WebContentsAccessibilityImplJni.get().signalEndOfTestForTesting(mNativeObj);
     }
 
+    @VisibleForTesting
+    public void forceRecordUMAHistogramsForTesting() {
+        recordUMAHistograms();
+    }
+
     @CalledByNative
     public void handleEndOfTestSignal() {
         // We have received a signal that we have reached the end of a unit test. If we have a
@@ -403,6 +426,31 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         mCaptioningController.stopListening();
         if (!isNativeInitialized()) return;
         ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+
+        // If the OnDemand feature is enabled, log UMA metrics and reset counters.
+        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+            recordUMAHistograms();
+        }
+    }
+
+    // Helper method to record UMA histograms for OnDemand feature and reset counters.
+    private void recordUMAHistograms() {
+        // If we did not enqueue any events, we can ignore the data as a trivial case.
+        if (mTotalEnqueuedEvents > 0) {
+            // Log the percentage dropped (dispatching 0 events should be 100% dropped).
+            RecordHistogram.recordPercentageHistogram(PERCENTAGE_DROPPED_HISTOGRAM,
+                    100 - (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0));
+
+            // Log the total number of dropped events.
+            RecordHistogram.recordCustomCountHistogram(EVENTS_DROPPED_HISTOGRAM,
+                    mTotalEnqueuedEvents - mTotalDispatchedEvents,
+                    EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
+                    EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+        }
+
+        // Reset counters.
+        mTotalEnqueuedEvents = 0;
+        mTotalDispatchedEvents = 0;
     }
 
     @Override
@@ -603,7 +651,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 mNativeObj, WebContentsAccessibilityImpl.this, newScreenReaderEnabledState);
 
         // Update the list of events we dispatch to enabled services.
-        // TODO(mschillaci): Remove this check once feature is no longer behind a flag
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             int serviceEventMask = BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
             mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
@@ -1266,6 +1313,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             return;
         }
 
+        mTotalEnqueuedEvents++;
         mEventDispatcher.enqueueEvent(virtualViewId, eventType);
     }
 
@@ -1832,6 +1880,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // transiently null (such as during teardown, switching tabs...). Also ensure that
         // accessibility is still enabled, throttling may result in events sent late.
         if (mView.getParent() != null && isAccessibilityEnabled()) {
+            mTotalDispatchedEvents++;
             if (mTracker != null) mTracker.addEvent(event);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);

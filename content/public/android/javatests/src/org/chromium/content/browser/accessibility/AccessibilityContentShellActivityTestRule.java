@@ -186,10 +186,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 performActionOnUiThread(virtualViewId, AccessibilityNodeInfo.ACTION_FOCUS, null));
         Assert.assertTrue(performActionOnUiThread(
                 virtualViewId, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null));
-        AccessibilityNodeInfo nodeInfo = mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
 
         CriteriaHelper.pollUiThread(() -> {
-            nodeInfo.recycle();
             return mNodeProvider.createAccessibilityNodeInfo(virtualViewId)
                     .isAccessibilityFocused();
         }, NODE_TIMEOUT_ERROR);
