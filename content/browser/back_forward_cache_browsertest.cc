@@ -3700,6 +3700,54 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(rfh_b_2->IsInBackForwardCache());
 }
 
+// Disabled on Android, since we have problems starting up the websocket test
+// server in the host
+#if defined(OS_ANDROID)
+#define MAYBE_WebSocketCachedIfClosed DISABLED_WebSocketCachedIfClosed
+#else
+#define MAYBE_WebSocketCachedIfClosed WebSocketCachedIfClosed
+#endif
+// Pages with WebSocket should be cached if the connection is closed.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestShouldConsiderPagehideForEligibility,
+    MAYBE_WebSocketCachedIfClosed) {
+  net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
+                                   net::GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(ws_server.Start());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Open a WebSocket.
+  const char script[] = R"(
+      let socket;
+      window.onpagehide = event => {
+        socket.close();
+      }
+      new Promise(resolve => {
+        socket = new WebSocket($1);
+        socket.addEventListener('open', () => resolve());
+      });)";
+  ASSERT_TRUE(
+      ExecJs(rfh_a.get(),
+             JsReplace(script, ws_server.GetURL("echo-with-no-extension"))));
+
+  // 2) Navigate to B.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Navigate back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
 // Track the events dispatched when a page is deemed ineligible for back-forward
 // cache after we've dispatched the 'pagehide' event with persisted set to true.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
