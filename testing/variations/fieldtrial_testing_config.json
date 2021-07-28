@@ -6477,7 +6477,8 @@
     "PowerScheduler2": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
