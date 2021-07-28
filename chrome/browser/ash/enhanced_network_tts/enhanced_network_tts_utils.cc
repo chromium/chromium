@@ -23,22 +23,35 @@ std::string FormatJsonRequest(const mojom::TtsRequestPtr tts_request) {
   request.SetKey("text", std::move(text));
 
   // Voice and language are sent as
-  // {'voice_settings':
-  //   {'voice_criteria_and_selections':
-  //     [{
-  //        'selection': {'default_voice':<voice>}},
-  //        'criteria': {'language':<lang>}}
-  //     }]
+  // {
+  //   {'advanced_options':
+  //     {'force_language':<lang>}
+  //   },
+  //   {'voice_settings':
+  //     {'voice_criteria_and_selections':
+  //       [{
+  //          'selection': {'default_voice':<voice>}},
+  //          'criteria': {'language':<lang>}}
+  //       }]
+  //     }
   //   }
   // }
   // The voice and language have to be set together to be valid.
+  // See https://goto.google.com/readaloud-proto for more information.
   if (tts_request->voice.has_value() && tts_request->lang.has_value()) {
+    const std::string lang = tts_request->lang.value();
+
+    // Force the server to produce audio based on the current lang.
+    base::Value advanced_options(base::Value::Type::DICTIONARY);
+    advanced_options.SetKey("force_language", base::Value(lang));
+    request.SetKey("advanced_options", std::move(advanced_options));
+
+    // Produce 'voice_settings'.
     base::Value selection(base::Value::Type::DICTIONARY);
     selection.SetKey("default_voice",
                      base::Value(std::move(tts_request->voice.value())));
     base::Value criteria(base::Value::Type::DICTIONARY);
-    criteria.SetKey("language",
-                    base::Value(std::move(tts_request->lang.value())));
+    criteria.SetKey("language", base::Value(lang));
     base::Value voice_selection(base::Value::Type::DICTIONARY);
     voice_selection.SetKey("selection", std::move(selection));
     voice_selection.SetKey("criteria", std::move(criteria));

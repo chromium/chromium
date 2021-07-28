@@ -19,6 +19,9 @@ namespace {
 // Template for a request that contains all variables.
 constexpr char kTemplateRequest[] =
     R"({
+        "advanced_options": {
+          "force_language": "%s"
+        },
         "text": {
           "text_parts": ["%s"]
         },
@@ -70,8 +73,9 @@ TEST_F(EnhancedNetworkTtsUtilsTest, FormatJsonRequest) {
   const std::string utterance = "Hello, World!";
   const std::string voice = "test_name";
   const std::string language = "en-US";
-  const std::string expected_text = base::StringPrintf(
-      kTemplateRequest, utterance.c_str(), language.c_str(), voice.c_str());
+  const std::string expected_text =
+      base::StringPrintf(kTemplateRequest, language.c_str(), utterance.c_str(),
+                         language.c_str(), voice.c_str());
   const std::string formated_text =
       FormatJsonRequest(mojom::TtsRequest::New(utterance, voice, language));
 
