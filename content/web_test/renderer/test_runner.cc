@@ -47,6 +47,7 @@
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
@@ -1929,8 +1930,10 @@ void TestRunnerBindings::CopyImageThen(int x,
   GetWebFrame()->CopyImageAtForTesting(gfx::Point(x, y));
   auto sequence_number_after = sequence_number_before;
   while (sequence_number_before.value() == sequence_number_after.value()) {
-    CHECK(remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
-                                              &sequence_number_after));
+    // TODO(crbug.com/872076): Ideally we would CHECK here that the mojo call
+    // succeeded, but this crashes under some circumstances (crbug.com/1232810).
+    remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
+                                        &sequence_number_after);
   }
 
   SkBitmap bitmap;
