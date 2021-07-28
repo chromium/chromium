@@ -14,7 +14,6 @@ namespace content {
 // Returns the last committed URL for `web_contents`. If the frame's URL is
 // about:blank, returns GetLastCommittedOrigin.
 // Due to dependency issues, this method is duplicated in
-// content/shell/browser/shell_permission_manager.cc and
 // content/browser/permissions/permission_util.cc.
 // TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage.
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
@@ -43,9 +42,7 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
       return render_frame_host->GetLastCommittedURL().GetOrigin();
     }
 
-    if (render_frame_host->GetLastCommittedURL().IsAboutBlank()) {
-      return render_frame_host->GetLastCommittedOrigin().GetURL();
-    }
+    return render_frame_host->GetLastCommittedOrigin().GetURL();
   }
 
   return render_frame_host->GetLastCommittedURL().GetOrigin();

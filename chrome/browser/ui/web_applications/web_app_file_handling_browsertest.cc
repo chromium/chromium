@@ -697,8 +697,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 class WebAppFileHandlingPermissionDialogTest
     : public WebAppFileHandlingBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    WebAppFileHandlingBrowserTest::SetUpOnMainThread();
+  void InstallAndLaunchWebApp() {
     InstallFileHandlingPWA();
     SetFileHandlingPermission(CONTENT_SETTING_ASK);
 
@@ -720,11 +719,11 @@ class WebAppFileHandlingPermissionDialogTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath test_file_path_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowAlways) {
+  InstallAndLaunchWebApp();
   FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
                                                       /*accept=*/true);
   VerifyPwaDidReceiveFileLaunchParams(true, test_file_path_);
@@ -733,6 +732,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowAlways) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowOnce) {
+  InstallAndLaunchWebApp();
   FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
                                                       /*accept=*/true);
   VerifyPwaDidReceiveFileLaunchParams(true, test_file_path_);
@@ -740,6 +740,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowOnce) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockAlways) {
+  InstallAndLaunchWebApp();
   FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
                                                       /*accept=*/false);
   VerifyPwaDidReceiveFileLaunchParams(false);
@@ -748,6 +749,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockAlways) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockOnce) {
+  InstallAndLaunchWebApp();
   FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
                                                       /*accept=*/false);
   VerifyPwaDidReceiveFileLaunchParams(false);
