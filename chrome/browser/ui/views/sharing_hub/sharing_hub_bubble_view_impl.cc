@@ -34,6 +34,11 @@ constexpr int kActionButtonGroup = 0;
 views::Separator* GetSeparator() {
   auto* separator = new views::Separator();
   separator->SetColor(gfx::kGoogleGrey300);
+  const int kIndent = 16;
+  const int kPadding = 8;
+  constexpr auto kSeperatorBorder =
+      gfx::Insets(kPadding, kIndent, kPadding, kIndent);
+  separator->SetBorder(views::CreateEmptyBorder(kSeperatorBorder));
   return separator;
 }
 }  // namespace
