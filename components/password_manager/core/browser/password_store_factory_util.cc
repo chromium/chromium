@@ -97,20 +97,6 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
                                          IsAccountStore(true));
 }
 
-void DeleteLoginDatabaseForAccountStorageFiles(
-    const base::FilePath& profile_path) {
-  base::FilePath login_db_file_path =
-      profile_path.Append(kLoginDataForAccountFileName);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&LoginDatabase::DeleteDatabaseFile, login_db_file_path));
-}
-
-base::FilePath GetLoginDatabaseForAccountStoragePathForTesting(
-    const base::FilePath& profile_path) {
-  return profile_path.Append(kLoginDataForAccountFileName);
-}
-
 bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service) {
   return true;
 }

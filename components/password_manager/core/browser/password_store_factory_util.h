@@ -42,14 +42,6 @@ std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
     const base::FilePath& profile_path);
 
-// Deletes any files associated with the acccount-scoped LoginDatabase. Do *not*
-// call this while a LoginDatabase instance is using these files!
-void DeleteLoginDatabaseForAccountStorageFiles(
-    const base::FilePath& profile_path);
-
-base::FilePath GetLoginDatabaseForAccountStoragePathForTesting(
-    const base::FilePath& profile_path);
-
 // Determines if affiliation based matching can be performed.
 // It checks whether the user
 // 1) has password syncing across multiple devices enabled

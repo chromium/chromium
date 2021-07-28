@@ -47,12 +47,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
   ~LoginDatabase() override;
 
-  // Deletes any database files for the given |db_path| from the disk. Must not
-  // be called while a LoginDatabase instance for this path exists!
-  // This does blocking I/O, so must only be called from a thread that allows
-  // this (in particular, *not* from the UI thread).
-  static void DeleteDatabaseFile(const base::FilePath& db_path);
-
   // Returns whether this is the profile-scoped or the account-scoped storage:
   // true:  Gaia-account-scoped store, which is used for signed-in but not
   //        syncing users.

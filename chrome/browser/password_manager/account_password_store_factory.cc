@@ -29,8 +29,6 @@
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -133,18 +131,8 @@ scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
     ServiceAccessType access_type) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
-    if (profile->GetPrefs()->GetBoolean(
-            password_manager::prefs::kAccountStorageExists)) {
-      // TODO(crbug.com/1108738): Remove this logic once
-      // kEnablePasswordsAccountStorage is launched.
-      profile->GetPrefs()->ClearPref(
-          password_manager::prefs::kAccountStorageExists);
-      password_manager::DeleteLoginDatabaseForAccountStorageFiles(
-          profile->GetPath());
-    }
     return nullptr;
   }
-
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.
@@ -152,11 +140,6 @@ scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
       profile->IsOffTheRecord()) {
     return nullptr;
   }
-
-  // Either the store exists already, or it'll be created now.
-  profile->GetPrefs()->SetBoolean(
-      password_manager::prefs::kAccountStorageExists, true);
-
   return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
       GetInstance()->GetServiceForBrowserContext(profile, true).get()));
 }
@@ -174,12 +157,6 @@ AccountPasswordStoreFactory::AccountPasswordStoreFactory()
 }
 
 AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
-
-void AccountPasswordStoreFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(password_manager::prefs::kAccountStorageExists,
-                                false);
-}
 
 scoped_refptr<RefcountedKeyedService>
 AccountPasswordStoreFactory::BuildServiceInstanceFor(

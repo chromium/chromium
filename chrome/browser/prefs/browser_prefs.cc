@@ -654,6 +654,9 @@ const char kForceEnablePrivetPrinting[] =
     "printing.force_enable_privet_printing";
 #endif
 
+// Deprecated 07/2021.
+const char kAccountStorageExists[] = "profile.password_account_storage_exists";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -846,6 +849,8 @@ void RegisterProfilePrefsForMigration(
                                 false);
   registry->RegisterBooleanPref(kForceEnablePrivetPrinting, false);
 #endif
+
+  registry->RegisterBooleanPref(kAccountStorageExists, false);
 }
 
 }  // namespace
@@ -1650,6 +1655,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kCloudPrintDeprecationWarningsSuppressed);
   profile_prefs->ClearPref(kForceEnablePrivetPrinting);
 #endif
+
+  // Added 2021/07.
+  profile_prefs->ClearPref(kAccountStorageExists);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -31,8 +31,6 @@ const char kWereOldGoogleLoginsRemoved[] =
 const char kAccountStoragePerAccountSettings[] =
     "profile.password_account_storage_settings";
 
-const char kAccountStorageExists[] = "profile.password_account_storage_exists";
-
 const char kSyncPasswordHash[] = "profile.sync_password_hash";
 
 const char kSyncPasswordLengthAndHashSalt[] =
