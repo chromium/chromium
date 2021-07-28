@@ -737,7 +737,5 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
-  // TODO: Change AuthenticationService to not re-authenticate if email is
-  // filtered.
-  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }

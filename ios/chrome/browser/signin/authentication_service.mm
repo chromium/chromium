@@ -538,13 +538,26 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
+  const CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const bool account_filtered_out =
+      account_manager_service_->IsEmailRestricted(account_info.email);
+
   // Reauth prompt should only be set when the user is syncing, since reauth
-  // turns on sync by default.
-  should_prompt = should_prompt && identity_manager_->HasPrimaryAccount(
-                                       signin::ConsentLevel::kSync);
+  // turns on sync by default. The user should not be prompted if the account
+  // is filtered out since they can't sign-in back.
+  should_prompt =
+      should_prompt && !account_filtered_out &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+
+  // Metrics.
+  signin_metrics::ProfileSignout signout_source =
+      account_filtered_out ? signin_metrics::SIGNOUT_PREF_CHANGED
+                           : signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE;
+
   // Sign the user out.
-  SignOut(signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
-          /*force_clear_browsing_data=*/false, nil);
+  SignOut(signout_source, /*force_clear_browsing_data=*/false, nil);
+
   if (should_prompt)
     SetReauthPromptForSignInAndSync();
 }
