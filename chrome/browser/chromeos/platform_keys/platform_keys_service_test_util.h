@@ -7,15 +7,10 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -24,174 +19,93 @@ namespace platform_keys {
 class PlatformKeysService;
 
 namespace test_util {
+
 // A helper that waits until execution of an asynchronous PlatformKeysService
-// operation has finished and provides access to the results.
-// Note: all PlatformKeysService operations have a trailing status argument that
-// is filled in case of an error.
-template <typename... ResultCallbackArgs>
-class ExecutionWaiter {
+// operation that only passes a |status| field to the callback.
+class StatusWaiter : public base::test::TestFuture<Status> {
  public:
-  ExecutionWaiter() = default;
-  ~ExecutionWaiter() = default;
-  ExecutionWaiter(const ExecutionWaiter& other) = delete;
-  ExecutionWaiter& operator=(const ExecutionWaiter& other) = delete;
-
-  // Returns the callback to be passed to the PlatformKeysService operation
-  // invocation.
-  base::OnceCallback<void(ResultCallbackArgs... result_callback_args,
-                          Status status)>
-  GetCallback() {
-    return base::BindOnce(&ExecutionWaiter::OnExecutionDone,
-                          weak_ptr_factory_.GetWeakPtr());
-  }
-
-  // Waits until the callback returned by GetCallback() has been called.
-  void Wait() { run_loop_.Run(); }
-
-  // Returns the status passed to the callback.
-  Status status() const {
-    EXPECT_TRUE(done_);
-    return status_;
-  }
-
- protected:
-  // A std::tuple that is capable of storing the arguments passed to the result
-  // callback.
-  using ResultCallbackArgsTuple =
-      std::tuple<std::decay_t<ResultCallbackArgs>...>;
-
-  // Access to the arguments passed to the callback.
-  const ResultCallbackArgsTuple& result_callback_args() const {
-    EXPECT_TRUE(done_);
-    return result_callback_args_;
-  }
-
- private:
-  void OnExecutionDone(ResultCallbackArgs... result_callback_args,
-                       Status status) {
-    EXPECT_FALSE(done_);
-    done_ = true;
-    result_callback_args_ = ResultCallbackArgsTuple(
-        std::forward<ResultCallbackArgs>(result_callback_args)...);
-    status_ = status;
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  bool done_ = false;
-  ResultCallbackArgsTuple result_callback_args_;
-  Status status_ = Status::kSuccess;
-
-  base::WeakPtrFactory<ExecutionWaiter> weak_ptr_factory_{this};
+  Status status();
 };
 
 // Supports waiting for the result of PlatformKeysService::GetTokens.
 class GetTokensExecutionWaiter
-    : public ExecutionWaiter<std::unique_ptr<std::vector<TokenId>>> {
+    : public base::test::TestFuture<std::unique_ptr<std::vector<TokenId>>,
+                                    Status> {
  public:
-  GetTokensExecutionWaiter();
-  ~GetTokensExecutionWaiter();
-
-  const std::unique_ptr<std::vector<TokenId>>& token_ids() const {
-    return std::get<0>(result_callback_args());
-  }
+  const std::unique_ptr<std::vector<TokenId>>& token_ids();
+  Status status();
 };
 
 // Supports waiting for the result of the PlatformKeysService::GenerateKey*
 // function family.
-class GenerateKeyExecutionWaiter : public ExecutionWaiter<const std::string&> {
+class GenerateKeyExecutionWaiter
+    : public base::test::TestFuture<std::string, Status> {
  public:
-  GenerateKeyExecutionWaiter();
-  ~GenerateKeyExecutionWaiter();
+  const std::string& public_key_spki_der();
+  Status status();
 
-  const std::string& public_key_spki_der() const {
-    return std::get<0>(result_callback_args());
-  }
+  base::OnceCallback<void(const std::string&, Status)> GetCallback();
 };
 
 // Supports waiting for the result of the PlatformKeysService::Sign* function
 // family.
-class SignExecutionWaiter : public ExecutionWaiter<const std::string&> {
+class SignExecutionWaiter : public base::test::TestFuture<std::string, Status> {
  public:
-  SignExecutionWaiter();
-  ~SignExecutionWaiter();
+  const std::string& signature();
+  Status status();
 
-  const std::string& signature() const {
-    return std::get<0>(result_callback_args());
-  }
+  base::OnceCallback<void(const std::string&, Status)> GetCallback();
 };
 
 // Supports waiting for the result of the PlatformKeysService::GetCertificates.
 class GetCertificatesExecutionWaiter
-    : public ExecutionWaiter<std::unique_ptr<net::CertificateList>> {
+    : public base::test::TestFuture<std::unique_ptr<net::CertificateList>,
+                                    Status> {
  public:
-  GetCertificatesExecutionWaiter();
-  ~GetCertificatesExecutionWaiter();
-
-  const net::CertificateList& matches() const {
-    return *std::get<0>(result_callback_args());
-  }
+  const net::CertificateList& matches();
+  Status status();
 };
 
 // Supports waiting for the result of the
 // PlatformKeysService::SetAttributeForKey.
-class SetAttributeForKeyExecutionWaiter : public ExecutionWaiter<> {
- public:
-  SetAttributeForKeyExecutionWaiter();
-  ~SetAttributeForKeyExecutionWaiter();
-};
+using SetAttributeForKeyExecutionWaiter = StatusWaiter;
 
 // Supports waiting for the result of the
 // PlatformKeysService::GetAttributeForKey.
 class GetAttributeForKeyExecutionWaiter
-    : public ExecutionWaiter<const absl::optional<std::string>&> {
+    : public base::test::TestFuture<absl::optional<std::string>, Status> {
  public:
-  GetAttributeForKeyExecutionWaiter();
-  ~GetAttributeForKeyExecutionWaiter();
+  const absl::optional<std::string>& attribute_value();
+  Status status();
 
-  const absl::optional<std::string>& attribute_value() const {
-    return std::get<0>(result_callback_args());
-  }
+  base::OnceCallback<void(const absl::optional<std::string>&, Status)>
+  GetCallback();
 };
 
 // Supports waiting for the result of the PlatformKeysService::RemoveKey.
-class RemoveKeyExecutionWaiter : public ExecutionWaiter<> {
- public:
-  RemoveKeyExecutionWaiter();
-  ~RemoveKeyExecutionWaiter();
-};
+using RemoveKeyExecutionWaiter = StatusWaiter;
 
 class GetAllKeysExecutionWaiter
-    : public ExecutionWaiter<std::vector<std::string>> {
+    : public base::test::TestFuture<std::vector<std::string>, Status> {
  public:
-  GetAllKeysExecutionWaiter();
-  ~GetAllKeysExecutionWaiter();
-
-  const std::vector<std::string>& public_keys() const {
-    return std::get<0>(result_callback_args());
-  }
+  const std::vector<std::string>& public_keys();
+  Status status();
 };
 
 class IsKeyOnTokenExecutionWaiter
-    : public ExecutionWaiter<absl::optional<bool>> {
+    : public base::test::TestFuture<absl::optional<bool>, Status> {
  public:
-  IsKeyOnTokenExecutionWaiter();
-  ~IsKeyOnTokenExecutionWaiter();
-
-  absl::optional<bool> on_slot() const {
-    return std::get<0>(result_callback_args());
-  }
+  absl::optional<bool> on_slot();
+  Status status();
 };
 
 class GetKeyLocationsExecutionWaiter
-    : public ExecutionWaiter<const std::vector<TokenId>&> {
+    : public base::test::TestFuture<std::vector<TokenId>, Status> {
  public:
-  GetKeyLocationsExecutionWaiter();
-  ~GetKeyLocationsExecutionWaiter();
+  const std::vector<TokenId>& key_locations();
+  Status status();
 
-  const std::vector<TokenId>& key_locations() const {
-    return std::get<0>(result_callback_args());
-  }
+  base::OnceCallback<void(const std::vector<TokenId>&, Status)> GetCallback();
 };
 
 }  // namespace test_util

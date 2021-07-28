@@ -42,30 +42,14 @@ namespace {
 constexpr char kTestUserEmail[] = "test@example.com";
 
 // Supports waiting for the result of KeyPermissionsService::AllowKeyForUsage.
-class AllowKeyForUsageExecutionWaiter : public test_util::ExecutionWaiter<> {
- public:
-  AllowKeyForUsageExecutionWaiter() = default;
-  AllowKeyForUsageExecutionWaiter(
-      const AllowKeyForUsageExecutionWaiter& other) = delete;
-  AllowKeyForUsageExecutionWaiter& operator=(
-      const AllowKeyForUsageExecutionWaiter& other) = delete;
-  ~AllowKeyForUsageExecutionWaiter() = default;
-};
+using AllowKeyForUsageExecutionWaiter = test_util::StatusWaiter;
 
 // Supports waiting for the result of KeyPermissionsService::AllowKeyForUsage.
 class IsKeyAllowedForUsageExecutionWaiter
-    : public test_util::ExecutionWaiter<absl::optional<bool>> {
+    : public base::test::TestFuture<absl::optional<bool>, Status> {
  public:
-  IsKeyAllowedForUsageExecutionWaiter() = default;
-  IsKeyAllowedForUsageExecutionWaiter(
-      const IsKeyAllowedForUsageExecutionWaiter& other) = delete;
-  IsKeyAllowedForUsageExecutionWaiter& operator=(
-      const IsKeyAllowedForUsageExecutionWaiter& other) = delete;
-  ~IsKeyAllowedForUsageExecutionWaiter() = default;
-
-  absl::optional<bool> allowed() const {
-    return std::get<0>(result_callback_args());
-  }
+  absl::optional<bool> allowed() { return Get<0>(); }
+  Status status() { return Get<1>(); }
 };
 
 }  // namespace

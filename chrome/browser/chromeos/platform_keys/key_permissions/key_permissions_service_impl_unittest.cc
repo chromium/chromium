@@ -9,10 +9,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/chromeos/platform_keys/platform_keys_service_test_util.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,73 +28,12 @@ namespace chromeos {
 namespace platform_keys {
 namespace {
 
-// A helper that waits until execution of an asynchronous KeyPermissionsService
-// operation has finished and provides access to the results.
-template <typename... ResultCallbackArgs>
-class ExecutionWaiter {
- public:
-  ExecutionWaiter() = default;
-  ~ExecutionWaiter() = default;
-  ExecutionWaiter(const ExecutionWaiter& other) = delete;
-  ExecutionWaiter& operator=(const ExecutionWaiter& other) = delete;
-
-  // Returns the callback to be passed to the KeyPermissionsService operation
-  // invocation.
-  base::OnceCallback<void(ResultCallbackArgs... result_callback_args)>
-  GetCallback() {
-    return base::BindOnce(&ExecutionWaiter::OnExecutionDone,
-                          weak_ptr_factory_.GetWeakPtr());
-  }
-
-  // Waits until the callback returned by GetCallback() has been called.
-  void Wait() { run_loop_.Run(); }
-
- protected:
-  // A std::tuple that is capable of storing the arguments passed to the result
-  // callback.
-  using ResultCallbackArgsTuple =
-      std::tuple<std::decay_t<ResultCallbackArgs>...>;
-
-  // Access to the arguments passed to the callback.
-  const ResultCallbackArgsTuple& result_callback_args() const {
-    EXPECT_TRUE(done_);
-    return result_callback_args_;
-  }
-
- private:
-  void OnExecutionDone(ResultCallbackArgs... result_callback_args) {
-    EXPECT_FALSE(done_);
-    done_ = true;
-    result_callback_args_ = ResultCallbackArgsTuple(
-        std::forward<ResultCallbackArgs>(result_callback_args)...);
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  bool done_ = false;
-  ResultCallbackArgsTuple result_callback_args_;
-
-  base::WeakPtrFactory<ExecutionWaiter> weak_ptr_factory_{this};
-};
-
 // Supports waiting for the result of KeyPermissionsService::IsCorporateKey.
 class IsCorporateKeyExecutionWaiter
-    : public ExecutionWaiter<absl::optional<bool>, Status> {
+    : public base::test::TestFuture<absl::optional<bool>, Status> {
  public:
-  IsCorporateKeyExecutionWaiter() = default;
-  ~IsCorporateKeyExecutionWaiter() = default;
-
-  bool corporate() const { return std::get<0>(result_callback_args()).value(); }
-  Status status() const { return std::get<1>(result_callback_args()); }
-};
-
-// Supports waiting for the result of KeyPermissionsService::SetCorporateKey.
-class SetCorporateKeyExecutionWaiter : public ExecutionWaiter<Status> {
- public:
-  SetCorporateKeyExecutionWaiter() = default;
-  ~SetCorporateKeyExecutionWaiter() = default;
-
-  Status status() const { return std::get<0>(result_callback_args()); }
+  bool corporate() { return Get<0>().value(); }
+  Status status() { return Get<1>(); }
 };
 
 }  // namespace
@@ -156,7 +97,7 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     key_permissions_service_->IsCorporateKey(
         public_key, is_corporate_key_waiter.GetCallback());
     is_corporate_key_waiter.Wait();
-    DCHECK_EQ(is_corporate_key_waiter.status(), Status::kSuccess);
+    EXPECT_EQ(is_corporate_key_waiter.status(), Status::kSuccess);
     return is_corporate_key_waiter.corporate();
   }
 
@@ -169,7 +110,7 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
                 IsKeyAllowedForUsage(_, KeyUsage::kCorporate, public_key))
         .WillOnce(
             base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
-    SetCorporateKeyExecutionWaiter set_corporate_key_waiter;
+    test_util::StatusWaiter set_corporate_key_waiter;
     key_permissions_service_->SetCorporateKey(
         public_key, set_corporate_key_waiter.GetCallback());
     set_corporate_key_waiter.Wait();
