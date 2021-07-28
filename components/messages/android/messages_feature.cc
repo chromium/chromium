@@ -6,6 +6,9 @@
 
 namespace messages {
 
+const base::Feature kMessagesForAndroidAdsBlocked{
+    "MessagesForAndroidAdsBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMessagesForAndroidChromeSurvey{
     "MessagesForAndroidChromeSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -35,6 +38,11 @@ const base::Feature kMessagesForAndroidSaveCard{
 
 const base::Feature kMessagesForAndroidUpdatePassword{
     "MessagesForAndroidUpdatePassword", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAdsBlockedMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
+}
 
 bool IsPasswordMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&

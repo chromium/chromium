@@ -89,6 +89,8 @@ public class MessagesMetrics {
                 return "GroupedPermission";
             case MessageIdentifier.PERMISSION_UPDATE:
                 return "PermissionUpdate";
+            case MessageIdentifier.ADS_BLOCKED:
+                return "AdsBlocked";
             default:
                 return "Unknown";
         }

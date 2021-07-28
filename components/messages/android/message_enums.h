@@ -85,6 +85,7 @@ enum class MessageIdentifier {
   SAVE_CARD = 12,
   GROUPED_PERMISSION = 13,
   PERMISSION_UPDATE = 14,
+  ADS_BLOCKED = 15,
 
   // Insert new values before this line.
   COUNT

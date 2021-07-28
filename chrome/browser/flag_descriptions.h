@@ -1890,6 +1890,9 @@ extern const char kInterestFeedV2ClickAndViewActionsConditionalUploadName[];
 extern const char
     kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[];
 
+extern const char kMessagesForAndroidAdsBlockedName[];
+extern const char kMessagesForAndroidAdsBlockedDescription[];
+
 extern const char kMessagesForAndroidChromeSurveyName[];
 extern const char kMessagesForAndroidChromeSurveyDescription[];
 

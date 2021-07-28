@@ -9,6 +9,10 @@
 
 namespace messages {
 
+// Feature that controls whether "ads blocked" messages use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidAdsBlocked;
+
 // Feature that controls whether "survey" prompts use Messages or
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidChromeSurvey;
@@ -49,6 +53,8 @@ extern const base::Feature kMessagesForAndroidSaveCard;
 // Feature that controls whether "update password" prompt uses Messages or
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidUpdatePassword;
+
+bool IsAdsBlockedMessagesUiEnabled();
 
 bool IsGroupedPermissionMessagesUiEnabled();
 
