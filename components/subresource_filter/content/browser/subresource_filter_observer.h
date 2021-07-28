@@ -23,6 +23,12 @@ class ActivationState;
 
 // Class to receive notifications of subresource filter events for a given
 // WebContents. Registered with a SubresourceFilterObserverManager.
+// !!!WARNING!!!: This observer will receive notifications from all pages
+// within a WebContents. This includes non-primary pages like those that are
+// prerendering which is probably not what clients expect. Clients should
+// make sure they're manually scoping observations to the relevant page.
+// TODO(bokan): We should probably refactor this and the manager class
+// to register against a single Page/FrameTree. #MPArch
 class SubresourceFilterObserver {
  public:
   virtual ~SubresourceFilterObserver() = default;
