@@ -78,7 +78,6 @@ class DownloadsHandler : public SettingsPageUIHandler,
 
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
 
-  bool has_linked_account_ = false;
   base::WeakPtrFactory<DownloadsHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadsHandler);

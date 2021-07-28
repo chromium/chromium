@@ -35,13 +35,7 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
     AuthorizationCompletedCallback callback,
     SigninExperienceTestObserver* test_observer = nullptr);
 
-// Start the sign in experience as triggered by the settings page.
-void StartFileSystemConnectorSigninExperienceForSettingsPage(
-    Profile* profile,
-    base::OnceCallback<void(bool)> callback,
-    SigninExperienceTestObserver* test_observer = nullptr);
-
-// If |enable_link| = true, start the sign in experience as triggered by
+// If `enable_link` is true, start the sign in experience as triggered by
 // settings page; else, unlink the existing account.
 void SetFileSystemConnectorAccountLinkForSettingsPage(
     bool enable_link,
@@ -49,24 +43,25 @@ void SetFileSystemConnectorAccountLinkForSettingsPage(
     base::OnceCallback<void(bool)> callback,
     SigninExperienceTestObserver* test_observer = nullptr);
 
-absl::optional<base::DictionaryValue>
-GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
+struct AccountInfo {
+  std::string account_name;
+  std::string account_login;
+  std::string folder_link;
+  std::string folder_name;
+
+  AccountInfo();
+  ~AccountInfo();
+  AccountInfo(const AccountInfo& other);
+};
+
+absl::optional<AccountInfo> GetFileSystemConnectorLinkedAccountInfo(
     const FileSystemSettings& settings,
     PrefService* prefs);
-
-// Clear authentication tokens and stored account info.
-bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
-                                           PrefService* prefs);
 
 // Run |callback| with a GoogleServiceAuthError that indicates cancellation.
 void ReturnCancellation(AuthorizationCompletedCallback callback);
 
 // Helper function/classes for testing.
-void ExtractAccountInfoFromDictionary(const base::DictionaryValue& dict,
-                                      base::Value* account,
-                                      std::string* folder_name,
-                                      std::string* folder_link);
-
 class SigninExperienceTestObserver {
  public:
   SigninExperienceTestObserver();

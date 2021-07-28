@@ -11,10 +11,12 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 #include "chrome/browser/enterprise/connectors/file_system/test_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/os_crypt/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,36 +31,44 @@ using WebUIDataReceivedPtr = std::unique_ptr<content::TestWebUI::CallData>;
 
 struct DownloadsSettings {
   std::string auto_open_downloads = "";
-  bool downloads_connection_policy_enabled = false;
+  bool connection_policy_enabled = false;
+  bool connection_init_linked_account = false;
 };
 
-void VerifyLinkedAccountInfo(const base::Value* dict) {
+const char kAccountName[] = "Jane Doe";
+const char kAccountLogin[] = "janedoe@download_handler_unittest.com";
+const char kFolderId[] = "12345";
+const char kFolderLink[] = "https://app.box.com/folder/12345";
+const char kFolderName[] = "ChromeDownloads";
+
+void VerifyLinkedAccountInfo(const base::Value* dict, bool linked) {
   ASSERT_TRUE(dict->is_dict());
   absl::optional<bool> has_account_linked_opt = dict->FindBoolKey("linked");
   ASSERT_TRUE(has_account_linked_opt.has_value());
   const bool has_account_linked = has_account_linked_opt.value();
-  ASSERT_TRUE(has_account_linked);
+  ASSERT_EQ(has_account_linked, linked);
 
   const std::string* account_name = dict->FindStringPath("account.name");
   const std::string* account_login = dict->FindStringPath("account.login");
   const std::string* folder_link = dict->FindStringPath("folder.link");
   const std::string* folder_name = dict->FindStringPath("folder.name");
-  ASSERT_EQ(has_account_linked, account_name != nullptr);
-  ASSERT_EQ(has_account_linked, account_login != nullptr);
-  ASSERT_EQ(has_account_linked, folder_link != nullptr);
-  ASSERT_EQ(has_account_linked, folder_name != nullptr);
+  ASSERT_EQ(has_account_linked, account_name != nullptr) << *dict;
+  ASSERT_EQ(has_account_linked, account_login != nullptr) << *dict;
+  ASSERT_EQ(has_account_linked, folder_link != nullptr) << *dict;
+  ASSERT_EQ(has_account_linked, folder_name != nullptr) << *dict;
 
   if (has_account_linked) {
-    ASSERT_EQ(*account_name, "Jane Doe");
-    ASSERT_EQ(*account_login, "janedoe@example.com");
-    ASSERT_EQ(*folder_link, "https://example.com/folder/12345");
-    ASSERT_EQ(*folder_name, "ChromeDownloads");
+    ASSERT_EQ(*account_name, kAccountName);
+    ASSERT_EQ(*account_login, kAccountLogin);
+    ASSERT_EQ(*folder_link, kFolderLink);
+    ASSERT_EQ(*folder_name, kFolderName);
   }
 }
 
 void VerifyDownloadsConnectionPolicyChangedCallback(
     const std::vector<WebUIDataReceivedPtr>& web_ui_call_data,
-    bool policy_enabled) {
+    bool policy_enabled,
+    bool has_account_linked) {
   ASSERT_FALSE(web_ui_call_data.empty());
   bool policy_change_received = false;
   bool account_info_received = false;
@@ -72,7 +82,7 @@ void VerifyDownloadsConnectionPolicyChangedCallback(
       EXPECT_EQ(data->arg2()->GetBool(), policy_enabled);
     } else if (event == "downloads-connection-link-changed") {
       account_info_received = true;
-      VerifyLinkedAccountInfo(data->arg2());
+      VerifyLinkedAccountInfo(data->arg2(), has_account_linked);
     }
   }
   ASSERT_TRUE(policy_change_received);
@@ -120,10 +130,11 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
 
     // Setup the downloads connection feature.
     feature_list_.InitWithFeatures({ec::kFileSystemConnectorEnabled}, {});
-    SetDownloadsConnectionPolicy(param.downloads_connection_policy_enabled);
+    SetDownloadsConnectionPolicy(param.connection_policy_enabled);
+    SetUpDownloadsConnectionAccount(param.connection_init_linked_account);
     size_t expected_inlt_callback_count = 2u;
-    // SendDownloadsConnectionInfoToJavascript().
-    expected_inlt_callback_count += param.downloads_connection_policy_enabled;
+    // SendDownloadsConnectionToJavascript().
+    expected_inlt_callback_count += param.connection_policy_enabled;
 
     base::ListValue args;
     handler()->HandleInitialize(&args);
@@ -138,6 +149,7 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
 
   void TearDown() override {
     service_->SetDownloadManagerDelegateForTesting(nullptr);
+    OSCryptMocker::TearDown();
     testing::Test::TearDown();
   }
 
@@ -150,13 +162,34 @@ class DownloadsHandlerTest : public testing::TestWithParam<DownloadsSettings> {
     policy_enabled_ = enable;
   }
 
+  void SetUpDownloadsConnectionAccount(bool linked) {
+    OSCryptMocker::SetUp();
+    if (!linked)
+      return;
+
+    ASSERT_TRUE(ec::SetFileSystemOAuth2Tokens(
+        profile()->GetPrefs(), ec::kFileSystemServiceProviderPrefNameBox,
+        "AToken", "RToken"));
+
+    base::DictionaryValue account_info;
+    account_info.SetStringKey("name", kAccountName);
+    account_info.SetStringKey("login", kAccountLogin);
+    ec::SetFileSystemAccountInfo(profile()->GetPrefs(),
+                                 ec::kFileSystemServiceProviderPrefNameBox,
+                                 std::move(account_info));
+    ec::SetDefaultFolder(profile()->GetPrefs(),
+                         ec::kFileSystemServiceProviderPrefNameBox, kFolderId,
+                         kFolderName);
+  }
+
   void ToggleDownloadsConnectionPolicy() {
     SetDownloadsConnectionPolicy(!policy_enabled_);
   }
 
   void VerifyDownloadsConnectionPolicyChangedCallback() const {
-    ::VerifyDownloadsConnectionPolicyChangedCallback(web_ui_call_data(),
-                                                     policy_enabled_);
+    ::VerifyDownloadsConnectionPolicyChangedCallback(
+        web_ui_call_data(), policy_enabled_,
+        GetParam().connection_init_linked_account);
   }
 
   void VerifyAutoOpenDownloadsChangedCallback() const {
@@ -199,7 +232,14 @@ TEST_P(DownloadsHandlerTest, DownloadsConnection) {
   VerifyDownloadsConnectionPolicyChangedCallback();
 }
 
-const DownloadsSettings test_settings[] = {{"", true}, {"abc", false}};
+const DownloadsSettings test_settings[] =
+    //  .-- .auto_open_downloads
+    // |    .-- .connection_policy_enabled
+    // |   |     .---- .connection_init_linked_account
+    {{"", true, true},
+     {"", true, false},
+     {"abc", false, true},
+     {"", true, false}};
 INSTANTIATE_TEST_SUITE_P(SettingsPage,
                          DownloadsHandlerTest,
                          testing::ValuesIn(test_settings));

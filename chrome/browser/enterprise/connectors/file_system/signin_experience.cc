@@ -64,25 +64,6 @@ ec::ConnectorsService* GetConnectorsService(content::BrowserContext* context) {
   return ec::ConnectorsServiceFactory::GetForBrowserContext(context);
 }
 
-// These fields must match up fields used in
-// chrome/browser/resources/settings/downloads_page/downloads_page.html.
-constexpr char kAccountKey[] = "account";
-// These fields must also match how base::DictionaryValue's are filled below:
-constexpr char kFolderLinkKey[] = "folder.link";
-constexpr char kFolderNameKey[] = "folder.name";
-
-void AddFolderInfoToDictionary(PrefService* prefs,
-                               std::string provider,
-                               base::DictionaryValue* dict) {
-  std::string link = ec::GetDefaultFolderLink(prefs, provider);
-  std::string name = ec::GetDefaultFolderName(prefs, provider);
-  DCHECK(name.size());
-  base::DictionaryValue folder;
-  folder.SetStringKey("name", std::move(name));
-  folder.SetStringKey("link", std::move(link));
-  dict->SetKey("folder", std::move(folder));
-}
-
 }  // namespace
 
 namespace enterprise_connectors {
@@ -237,27 +218,36 @@ bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
          ClearFileSystemAccountInfo(prefs, settings.service_provider);
 }
 
-absl::optional<base::DictionaryValue>
-GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
+AccountInfo::AccountInfo() = default;
+AccountInfo::~AccountInfo() = default;
+AccountInfo::AccountInfo(const AccountInfo& other) = default;
+
+absl::optional<AccountInfo> GetFileSystemConnectorLinkedAccountInfo(
     const FileSystemSettings& settings,
     PrefService* prefs) {
-  std::string refresh_token;
-  base::DictionaryValue info;
-  base::Value* stored_account_info = nullptr;
   const std::string& provider = settings.service_provider;
-  if (!(stored_account_info = info.SetKey(
-            kAccountKey, GetFileSystemAccountInfo(prefs, provider))) ||
-      stored_account_info->DictEmpty() ||
+  base::Value stored_account_info = GetFileSystemAccountInfo(prefs, provider);
+  std::string refresh_token;
+  std::string *account_name, *account_login;
+  if (stored_account_info.DictEmpty() ||
+      !(account_name = stored_account_info.FindStringPath("name")) ||
+      !(account_login = stored_account_info.FindStringPath("login")) ||
       !GetFileSystemOAuth2Tokens(prefs, provider, /* access_token = */ nullptr,
                                  &refresh_token) ||
       refresh_token.empty()) {
     return absl::nullopt;
   }
 
-  DCHECK(refresh_token.size()) << "No refresh token for linked account";
-
-  AddFolderInfoToDictionary(prefs, provider, &info);
-  return absl::make_optional<base::DictionaryValue>(std::move(info));
+  AccountInfo account_info;
+  account_info.account_name = *account_name;
+  account_info.account_login = *account_login;
+  account_info.folder_link = GetDefaultFolderLink(prefs, provider);
+  account_info.folder_name = GetDefaultFolderName(prefs, provider);
+  DCHECK(!account_info.account_name.empty());
+  DCHECK(!account_info.account_login.empty());
+  DCHECK(!account_info.folder_name.empty());
+  DCHECK(!account_info.folder_link.empty());
+  return absl::make_optional<AccountInfo>(std::move(account_info));
 }
 
 void SetFileSystemConnectorAccountLinkForSettingsPage(
@@ -267,9 +257,8 @@ void SetFileSystemConnectorAccountLinkForSettingsPage(
     SigninExperienceTestObserver* test_observer) {
   absl::optional<FileSystemSettings> settings = GetFileSystemSettings(profile);
   auto has_linked_account =
-      settings.has_value() &&
-      GetFileSystemConnectorLinkedAccountInfoForSettingsPage(
-          settings.value(), profile->GetPrefs());
+      settings.has_value() && GetFileSystemConnectorLinkedAccountInfo(
+                                  settings.value(), profile->GetPrefs());
 
   // Early return if linked state already match the desired state.
   if (has_linked_account == enable_link) {
@@ -295,19 +284,6 @@ void ReturnCancellation(AuthorizationCompletedCallback callback) {
   std::move(callback).Run(
       GoogleServiceAuthError{GoogleServiceAuthError::State::REQUEST_CANCELED},
       std::string(), std::string());
-}
-
-// Helper method for testing.
-void ExtractAccountInfoFromDictionary(const base::DictionaryValue& dict,
-                                      base::Value* account,
-                                      std::string* folder_name,
-                                      std::string* folder_link) {
-  if (account && dict.FindPath(kAccountKey))
-    *account = dict.FindPath(kAccountKey)->Clone();
-  if (folder_name && dict.FindStringPath(kFolderNameKey))
-    *folder_name = *dict.FindStringPath(kFolderNameKey);
-  if (folder_link && dict.FindStringPath(kFolderLinkKey))
-    *folder_link = *dict.FindStringPath(kFolderLinkKey);
 }
 
 // SigninExperienceTestObserver

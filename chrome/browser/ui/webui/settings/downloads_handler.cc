@@ -172,60 +172,44 @@ void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
                     base::Value(routing_enabled));
 }
 
-bool linked = true;
-// TODO(https://crbug.com/1168812): check whether an account has been linked.
-
 void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
     const base::ListValue* args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
   CHECK_EQ(1U, args->GetSize());
   bool enable_link = args->GetList()[0].GetBool();
-
-  // Early erturn if linked status already match the desired state.
-  if (linked == enable_link) {
-    OnDownloadsConnectionAccountLinkSet(true);
-    return;
-  }
-
-  // Early erturn after quick clearing function calls.
-  if (linked) {
-    bool success = ec::ClearFileSystemConnectorLinkedAccount(
-        ec::GetFileSystemSettings(profile_).value(), profile_->GetPrefs());
-    OnDownloadsConnectionAccountLinkSet(success);
-    return;
-  }
-
-  // This shows dialogs for the sign-in experience that the user needs to
-  // interact with, so the process is async.
-  ec::StartFileSystemConnectorSigninExperienceForSettingsPage(
-      profile_,
+  ec::SetFileSystemConnectorAccountLinkForSettingsPage(
+      enable_link, profile_,
       base::BindOnce(&DownloadsHandler::OnDownloadsConnectionAccountLinkSet,
                      weak_factory_.GetWeakPtr()));
 }
 
 void DownloadsHandler::OnDownloadsConnectionAccountLinkSet(bool success) {
-  if (success) {
-    linked = !linked;
-  } else {
+  if (!success) {
     DLOG(ERROR) << "Failed to set downloads connection account link";
   }
   SendDownloadsConnectionInfoToJavascript();
 }
 
 void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
+  absl::optional<ec::FileSystemSettings> settings =
+      ec::GetFileSystemSettings(profile_);
+  absl::optional<ec::AccountInfo> info;
+  bool got_linked_account =
+      settings.has_value() && (info = GetFileSystemConnectorLinkedAccountInfo(
+                                   settings.value(), profile_->GetPrefs()))
+                                  .has_value();
   // Dict to match the fields used in downloads_page.html.
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("linked", linked);
-  if (linked) {
+  dict.SetBoolKey("linked", got_linked_account);
+  if (got_linked_account) {
     base::Value account(base::Value::Type::DICTIONARY);
-    account.SetStringKey("name", "Jane Doe");
-    account.SetStringKey("login", "janedoe@example.com");
+    account.SetStringKey("name", info->account_name);
+    account.SetStringKey("login", info->account_login);
     dict.SetKey("account", std::move(account));
     base::Value folder(base::Value::Type::DICTIONARY);
-    folder.SetStringKey("name", "ChromeDownloads");
-    folder.SetStringKey("link", "https://example.com/folder/12345");
+    folder.SetStringKey("name", info->folder_name);
+    folder.SetStringKey("link", info->folder_link);
     dict.SetKey("folder", std::move(folder));
-    // TODO(https://crbug.com/1168812): retrieve them from prefs.
   }
   FireWebUIListener("downloads-connection-link-changed", dict);
 }
