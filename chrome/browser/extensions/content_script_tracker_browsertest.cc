@@ -765,8 +765,9 @@ IN_PROC_BROWSER_TEST_F(
 // Tests tracking of content scripts injected/declared via
 // `chrome.declarativeContent` API.  See also:
 // https://developer.chrome.com/docs/extensions/reference/declarativeContent/#type-RequestContentScript
+// TODO(crbug.com/1233939): Test flaking frequently.
 IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
-                       ContentScriptViaDeclarativeContentApi) {
+                       DISABLED_ContentScriptViaDeclarativeContentApi) {
   // Install a test extension.
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(
