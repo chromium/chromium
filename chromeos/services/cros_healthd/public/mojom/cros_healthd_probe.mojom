@@ -607,7 +607,7 @@ struct DmiInfo {
   // The product name of the motherboard.
   string? board_name;
   // The vendor of the motherboard.
-  string? board_vender;
+  string? board_vendor;
   // The version of the motherboard.
   string? board_version;
   // The vendor of the chassis.
