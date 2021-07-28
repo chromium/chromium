@@ -690,10 +690,11 @@ void WidgetInputHandlerManager::BindChannel(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver) {
   if (!receiver.is_valid())
     return;
-  // Don't pass the |input_event_queue_| on if we don't have a
-  // |compositor_thread_default_task_runner_| as events might get out of order.
+  // Passing null for |input_event_queue_| tells the handler that we don't have
+  // a compositor thread. (Single threaded-mode shouldn't use the queue, or else
+  // events might get out of order - see crrev.com/519829).
   WidgetInputHandlerImpl* handler = new WidgetInputHandlerImpl(
-      this, main_thread_task_runner_,
+      this,
       compositor_thread_default_task_runner_ ? input_event_queue_ : nullptr,
       widget_, frame_widget_input_handler_);
   handler->SetReceiver(std::move(receiver));
