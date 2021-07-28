@@ -117,9 +117,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Clear the text and put the password into hide mode.
   void Reset();
 
-  // Clear all currently entered text.
-  void Clear();
-
   // Inserts the given numeric value to the textfield at the current cursor
   // position (most likely the end).
   void InsertNumber(int value);
@@ -144,7 +141,9 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   void InvertPasswordDisplayingState();
 
   // Hides the password. When |chromevox_exception| is true, the password is not
-  // hidden if ChromeVox is enabled.
+  // hidden if ChromeVox is enabled. There should be a ChromeVox exception iff
+  // it is triggered by a timer: a user action or a reset call should always
+  // hide password.
   void HidePassword(bool chromevox_exception);
 
   // views::TextfieldController:

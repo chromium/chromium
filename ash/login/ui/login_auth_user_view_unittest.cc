@@ -200,7 +200,7 @@ TEST_P(LoginAuthUserViewUnittest, PressReturnWithTapToUnlockEnabled) {
                   user_view->current_user().basic_user_info.account_id));
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_TAP);
-  password_view->Clear();
+  password_view->Reset();
 
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();

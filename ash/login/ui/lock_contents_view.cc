@@ -1450,7 +1450,7 @@ void LockContentsView::SuspendImminent(
     power_manager::SuspendImminent::Reason reason) {
   LoginBigUserView* big_user = CurrentBigUserView();
   if (big_user && big_user->auth_user())
-    big_user->auth_user()->password_view()->Clear();
+    big_user->auth_user()->password_view()->Reset();
 }
 
 void LockContentsView::ShowAuthErrorMessageForDebug(int unlock_attempt) {

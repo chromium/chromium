@@ -127,7 +127,7 @@ constexpr const int kPasswordTextfieldMarginDp = 2;
 constexpr const int kPasswordRowCornerRadiusDp = 4;
 
 // Delay after which the password gets cleared if nothing has been typed. It is
-// only effective if the display password button is shown, as there is no
+// only running if the display password button is shown, as there is no
 // potential security threat otherwise.
 constexpr base::TimeDelta kClearPasswordAfterDelay =
     base::TimeDelta::FromSeconds(30);
@@ -261,17 +261,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     SetFontList(GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD
                     ? font_list_hidden_
                     : font_list_visible_);
-  }
-
-  // Switches between normal input and password input when the user hits the
-  // display password button.
-  void InvertTextInputType() {
-    if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
-      SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-    else
-      SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
-
-    UpdateFontListAndCursor();
   }
 
   // This is useful when the display password button is not shown. In such a
@@ -473,12 +462,6 @@ class LoginPasswordView::DisplayPasswordButton
   DisplayPasswordButton& operator=(const DisplayPasswordButton&) = delete;
   ~DisplayPasswordButton() override = default;
 
-  // This should be done automatically per ToggleImageButton.
-  void InvertToggled() {
-    toggled_ = !toggled_;
-    SetToggled(toggled_);
-  }
-
   void UpdateIcons(const LoginPalette& palette) {
     auto color = palette.button_enabled_color;
     const gfx::ImageSkia invisible_icon = gfx::CreateVectorIcon(
@@ -492,9 +475,6 @@ class LoginPasswordView::DisplayPasswordButton
     SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
     SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
   }
-
- private:
-  bool toggled_ = false;
 };
 
 // A container view that either shows the easy unlock icon or the caps lock
@@ -743,22 +723,13 @@ void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
   if (visible) {
     clear_password_timer_->Start(
         FROM_HERE, kClearPasswordAfterDelay,
-        base::BindRepeating(&LoginPasswordView::Clear, base::Unretained(this)));
+        base::BindRepeating(&LoginPasswordView::Reset, base::Unretained(this)));
   }
 }
 
 void LoginPasswordView::Reset() {
-  Clear();
-
-  // A user could hit the display button, then quickly switch account and
-  // type; we want the password to be hidden in such a case.
-  HidePassword(false /*chromevox_exception*/);
-}
-
-void LoginPasswordView::Clear() {
+  HidePassword(/*chromevox_exception=*/false);
   textfield_->SetText(std::u16string());
-  // For security reasons, we also want to clear the edit history if the Clear
-  // function is invoked by the clear password timer.
   textfield_->ClearEditHistory();
   // |ContentsChanged| won't be called by |Textfield| if the text is changed
   // by |Textfield::SetText()|.
@@ -824,13 +795,18 @@ bool LoginPasswordView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void LoginPasswordView::InvertPasswordDisplayingState() {
-  display_password_button_->InvertToggled();
-  textfield_->InvertTextInputType();
-  hide_password_timer_->Start(
-      FROM_HERE, kHidePasswordAfterDelay,
-      base::BindRepeating(&LoginPasswordView::HidePassword,
-                          base::Unretained(this),
-                          true /*chromevox_exception*/));
+  if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD) {
+    textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NULL);
+    display_password_button_->SetToggled(true);
+    textfield_->UpdateFontListAndCursor();
+    hide_password_timer_->Start(
+        FROM_HERE, kHidePasswordAfterDelay,
+        base::BindRepeating(&LoginPasswordView::HidePassword,
+                            base::Unretained(this),
+                            /*chromevox_exception=*/true));
+  } else {
+    HidePassword(/*chromevox_exception=*/false);
+  }
 }
 
 void LoginPasswordView::HidePassword(bool chromevox_exception) {
@@ -838,8 +814,9 @@ void LoginPasswordView::HidePassword(bool chromevox_exception) {
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return;
   }
-  if (textfield_->GetTextInputType() == ui::TEXT_INPUT_TYPE_NULL)
-    InvertPasswordDisplayingState();
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  display_password_button_->SetToggled(false);
+  textfield_->UpdateFontListAndCursor();
 }
 
 void LoginPasswordView::ContentsChanged(views::Textfield* sender,

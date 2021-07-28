@@ -93,7 +93,7 @@ TEST_F(LoginPasswordViewTest, SubmitButtonUpdatesUiState) {
   EXPECT_TRUE(test_api.submit_button()->GetEnabled());
 
   // Clear password. The submit button is disabled.
-  view_->Clear();
+  view_->Reset();
   EXPECT_TRUE(is_password_field_empty_);
   EXPECT_FALSE(test_api.submit_button()->GetEnabled());
 
@@ -221,7 +221,7 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
 
   // Clear password.
   password_.reset();
-  view_->Clear();
+  view_->Reset();
   view_->SetReadOnly(false);
   EXPECT_TRUE(is_password_field_empty_);
 
@@ -299,7 +299,7 @@ TEST_F(LoginPasswordViewTest, CtrlZDisabled) {
 
   generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   EXPECT_FALSE(is_password_field_empty_);
-  view_->Clear();
+  view_->Reset();
   EXPECT_TRUE(is_password_field_empty_);
   generator->PressKey(ui::KeyboardCode::VKEY_Z, ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(is_password_field_empty_);
@@ -473,7 +473,7 @@ TEST_F(LoginPasswordViewTest,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(is_password_field_empty_);
   EXPECT_TRUE(test_api.display_password_button()->GetEnabled());
-  view_->Clear();
+  view_->Reset();
   EXPECT_TRUE(is_password_field_empty_);
   EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
 
@@ -500,6 +500,45 @@ TEST_F(LoginPasswordViewTest, FocusReturn) {
   view_->InsertNumber(1);
   EXPECT_TRUE(test_api.textfield()->HasFocus());
   EXPECT_EQ(test_api.textfield()->GetText().length(), 2u);
+}
+
+// Verifies that the display password button state does not interact badly with
+// the clearing timer.
+TEST_F(LoginPasswordViewTest, MakePasswordVisibleJustBeforeClearing) {
+  LoginPasswordView::TestApi test_api(view_);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  view_->SetDisplayPasswordButtonVisible(true);
+
+  // Enable the clearing timer by typing something.
+  generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  EXPECT_FALSE(is_password_field_empty_);
+
+  // Click on the display password button just before the password field gets
+  // cleared.
+  auto small_delay = kHidePasswordAfterDelay / 3;
+  task_environment()->FastForwardBy(kClearPasswordAfterDelay - small_delay);
+  generator->MoveMouseTo(
+      test_api.display_password_button()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_EQ(test_api.textfield()->GetTextInputType(), ui::TEXT_INPUT_TYPE_NULL);
+
+  // Once the clearing delay has passed, the password should get cleared. In
+  // such a case, the input type should be password and the display password
+  // button should be disabled.
+  task_environment()->FastForwardBy(small_delay);
+  EXPECT_TRUE(is_password_field_empty_);
+  EXPECT_EQ(test_api.textfield()->GetTextInputType(),
+            ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
+
+  // The situation should remain the same once the hide password delay has
+  // passed. Especially since a password reset should reset the hiding timer.
+  task_environment()->FastForwardBy(small_delay);
+  EXPECT_TRUE(is_password_field_empty_);
+  EXPECT_EQ(test_api.textfield()->GetTextInputType(),
+            ui::TEXT_INPUT_TYPE_PASSWORD);
+  EXPECT_FALSE(test_api.display_password_button()->GetEnabled());
 }
 
 }  // namespace ash
