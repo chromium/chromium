@@ -26,9 +26,11 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.ui.ConfirmSyncDataStateMachine;
@@ -46,7 +48,9 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -106,6 +110,7 @@ public abstract class SyncConsentFragmentBase
     private boolean mIsSigninInProgress;
     private boolean mCanUseGooglePlayServices;
     private boolean mRecordUndoSignin;
+    private boolean mIsSignedInWithoutSync;
     protected @SigninAccessPoint int mSigninAccessPoint;
     private ModalDialogManager mModalDialogManager;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
@@ -274,7 +279,24 @@ public abstract class SyncConsentFragmentBase
         mView.getAccountPickerEndImageView().setImageDrawable(endImageViewDrawable);
 
         updateConsentText();
-        setHasAccounts(true); // Assume there are accounts, updateAccounts will set the real value.
+        final CoreAccountInfo primaryAccount =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(Profile.getLastUsedRegularProfile())
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_M2)
+                && mSigninAccessPoint == SigninAccessPoint.START_PAGE && primaryAccount != null) {
+            mIsSignedInWithoutSync = true;
+            mSelectedAccountName = primaryAccount.getEmail();
+            mAccountSelectionPending = false;
+            mView.getAccountPickerView().setVisibility(View.GONE);
+            mConsentTextTracker.setText(mView.getAcceptButton(), R.string.signin_accept_button);
+            mView.getAcceptButton().setOnClickListener(this::onAcceptButtonClicked);
+            updateSigninDetailsDescription(/* addSettingsLink= */ true);
+        } else {
+            mIsSignedInWithoutSync = false;
+            // Assume there are accounts, updateAccounts will set the real value.
+            setHasAccounts(true);
+        }
 
         // When a fragment that was in the FragmentManager backstack becomes visible again, the view
         // will be recreated by onCreateView. Update the state of this recreated UI.
@@ -501,9 +523,11 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onResume() {
         super.onResume();
-        mAccountManagerFacade.addObserver(this);
-        updateAccounts(
-                AccountUtils.getAccountsIfFulfilledOrEmpty(mAccountManagerFacade.getAccounts()));
+        if (!mIsSignedInWithoutSync) {
+            mAccountManagerFacade.addObserver(this);
+            updateAccounts(AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    mAccountManagerFacade.getAccounts()));
+        }
 
         mView.startAnimations();
     }
@@ -511,8 +535,9 @@ public abstract class SyncConsentFragmentBase
     @Override
     public void onPause() {
         super.onPause();
-        mAccountManagerFacade.removeObserver(this);
-
+        if (!mIsSignedInWithoutSync) {
+            mAccountManagerFacade.removeObserver(this);
+        }
         mView.stopAnimations();
     }
 
