@@ -2606,6 +2606,12 @@ void DocumentLoader::RecordUseCountersForCommit() {
     if (client_hints_preferences_.ShouldSend(type))
       hints_context.CountClientHints(type);
   }
+
+  if (RuntimeEnabledFeatures::EarlyHintsPreloadForNavigationOptInEnabled(
+          frame_->DomWindow()) &&
+      !early_hints_preloaded_resources_.IsEmpty()) {
+    CountUse(WebFeature::kEarlyHintsPreload);
+  }
 }
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {

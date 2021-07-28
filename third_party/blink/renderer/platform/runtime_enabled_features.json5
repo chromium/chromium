@@ -887,6 +887,11 @@
       name: "DocumentWrite",
     },
     {
+      name: "EarlyHintsPreloadForNavigationOptIn",
+      origin_trial_feature_name: "EarlyHintsPreloadForNavigation",
+      status: "experimental",
+    },
+    {
       name: "EditContext",
       settable_from_internals: true,
       status: "test",

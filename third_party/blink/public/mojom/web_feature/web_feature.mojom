@@ -3279,6 +3279,7 @@ enum WebFeature {
   kBlobStoreAccessAcrossAgentClustersInResolveForNavigation = 3964,
   kTapDelayEnabled = 3965,
   kV8URLPattern_CompareComponent_Method = 3966,
+  kEarlyHintsPreload = 3967,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

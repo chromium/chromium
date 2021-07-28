@@ -4,6 +4,10 @@
 <script src="/resources/testharnessreport.js"></script>
 <body>
 <script>
+
+// From public/mojom/web_feature/web_feature.mojom
+const kEarlyHintsPreloadUseCounter = 3966;
+
 async_test((t) => {
     const image = document.createElement('img');
     image.src = "blue-cacheable.png";
@@ -12,6 +16,7 @@ async_test((t) => {
         const entry = performance.getEntriesByName(name);
         assert_equals(entry.length, 1);
         assert_equals(entry[0].initiatorType, "early-hints");
+        assert_true(internals.isUseCounted(document, kEarlyHintsPreloadUseCounter));
     });
     document.body.appendChild(image);
 }, "Ensure initiatorType is set to 'early-hints'");

@@ -34001,6 +34001,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="BlobStoreAccessAcrossAgentClustersInResolveForNavigation"/>
   <int value="3965" label="TapDelayEnabled"/>
   <int value="3966" label="V8URLPattern_CompareComponent_Method"/>
+  <int value="3967" label="EarlyHintsPreload"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
