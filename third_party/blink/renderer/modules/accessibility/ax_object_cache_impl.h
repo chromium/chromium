@@ -287,13 +287,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   // aria-owns.
   bool IsAriaOwned(const AXObject*) const;
 
-  // Returns the parent of the given object due to aria-owns.
-  AXObject* GetAriaOwnedParent(const AXObject*) const;
+  // Returns the parent of the given object due to aria-owns, if valid.
+  AXObject* ValidatedAriaOwner(const AXObject*) const;
 
   // Given an object that has an aria-owns attribute, return the validated
   // set of aria-owned children.
-  void GetAriaOwnedChildren(const AXObject* owner,
-                            HeapVector<Member<AXObject>>& owned_children);
+  void ValidatedAriaOwnedChildren(const AXObject* owner,
+                                  HeapVector<Member<AXObject>>& owned_children);
 
   // Given a <map> element, get the image currently associated with it, if any.
   AXObject* GetAXImageForMap(HTMLMapElement& map);

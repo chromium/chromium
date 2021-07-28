@@ -3157,7 +3157,7 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
   AXObjectVector children;
 
   HeapVector<Member<AXObject>> owned_children;
-  AXObjectCache().GetAriaOwnedChildren(this, owned_children);
+  AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
 
   // TODO(aleventhal) Why isn't this just using cached children?
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
@@ -3749,7 +3749,7 @@ void AXNodeObject::AddAccessibleNodeChildren() {
 
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
-  AXObjectCache().GetAriaOwnedChildren(this, owned_children);
+  AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
 
   DCHECK(owned_children.size() == 0 || AXRelationCache::IsValidOwner(this))
       << "This object is not allowed to use aria-owns, but it is.\n"

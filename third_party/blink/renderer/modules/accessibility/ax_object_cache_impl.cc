@@ -2533,16 +2533,16 @@ bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
   return relation_cache_->IsAriaOwned(object);
 }
 
-AXObject* AXObjectCacheImpl::GetAriaOwnedParent(const AXObject* object) const {
-  return relation_cache_->GetAriaOwnedParent(object);
+AXObject* AXObjectCacheImpl::ValidatedAriaOwner(const AXObject* object) const {
+  return relation_cache_->ValidatedAriaOwner(object);
 }
 
-void AXObjectCacheImpl::GetAriaOwnedChildren(
+void AXObjectCacheImpl::ValidatedAriaOwnedChildren(
     const AXObject* owner,
     HeapVector<Member<AXObject>>& owned_children) {
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean);
-  relation_cache_->GetAriaOwnedChildren(owner, owned_children);
+  relation_cache_->ValidatedAriaOwnedChildren(owner, owned_children);
 }
 
 bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
