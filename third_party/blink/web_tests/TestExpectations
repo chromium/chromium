@@ -7296,3 +7296,4 @@ crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Failure Pass ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-cancel.https.html [ Failure Pass ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Failure Pass ]
+crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
