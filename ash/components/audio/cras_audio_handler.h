@@ -134,6 +134,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
     ARC,
     VM_TERMINA,
     VM_PLUGIN,
+    VM_BOREALIS,
     UNKNOWN,
   };
 

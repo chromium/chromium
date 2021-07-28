@@ -32,7 +32,7 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
                            public media::CameraPrivacySwitchObserver,
                            public CrasAudioHandler::AudioObserver {
  public:
-  enum class VmType { kCrostiniVm, kPluginVm };
+  enum class VmType { kCrostiniVm, kPluginVm, kBorealis };
 
   enum class DeviceType {
     kMic,

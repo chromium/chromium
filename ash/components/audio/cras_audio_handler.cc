@@ -1925,6 +1925,8 @@ CrasAudioHandler::ClientType CrasAudioHandler::ConvertClientTypeStringToEnum(
     return ClientType::CHROME;
   } else if (client_type_str == "CRAS_CLIENT_TYPE_ARC") {
     return ClientType::ARC;
+  } else if (client_type_str == "CRAS_CLIENT_TYPE_BOREALIS") {
+    return ClientType::VM_BOREALIS;
   } else {
     return ClientType::UNKNOWN;
   }
