@@ -359,10 +359,22 @@ void BindTextSuggestionHostForFrame(
 }
 #endif
 
+// Get the service worker's worker process ID and post a task to bind the
+// receiver on a USER_VISIBLE task runner.
+// This is necessary because:
+// - Binding the host itself and checking the ID on the task's thread may cause
+//   a UAF if the host has been deleted in the meantime.
+// - The process ID is not yet populated at the time `PopulateInterfaceBinders`
+//   is called.
 void BindFileUtilitiesHost(
-    const ServiceWorkerHost* host,
+    ServiceWorkerHost* host,
     mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
-  FileUtilitiesHostImpl::Create(host->worker_process_id(), std::move(receiver));
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FileUtilitiesHostImpl::Create, host->worker_process_id(),
+                     std::move(receiver)));
 }
 
 template <typename WorkerHost, typename Interface>
@@ -1177,9 +1189,7 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
 
   // static binders
   map->Add<blink::mojom::FileUtilitiesHost>(
-      base::BindRepeating(&BindFileUtilitiesHost, host),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
+      base::BindRepeating(&BindFileUtilitiesHost, host));
   map->Add<shape_detection::mojom::BarcodeDetectionProvider>(
       base::BindRepeating(&BindBarcodeDetectionProvider));
   map->Add<shape_detection::mojom::FaceDetectionProvider>(
