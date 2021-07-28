@@ -29,6 +29,10 @@ class GrpcServer : public base::PlatformThread::Delegate {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  // Indicates that Stop() has been called and no more requests or other server
+  // calls should be made.  This can be used by e.g. SimpleAsyncGrpc.
+  bool is_shutdown_{false};
+
   // Unowned pointers to the completion queue and server so they can be shut
   // down by the polling thread.
   grpc::ServerCompletionQueue* grpc_cq_{nullptr};

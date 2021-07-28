@@ -16,9 +16,14 @@ class SetUrlRewriteRules final
                              cast::v2::SetUrlRewriteRulesResponse> {
  public:
   SetUrlRewriteRules(cast::v2::RuntimeApplicationService::AsyncService* service,
-                     RuntimeApplicationServiceDelegate* delegate,
-                     ::grpc::ServerCompletionQueue* cq)
-      : SimpleAsyncGrpc(cq), delegate_(delegate), service_(service) {
+                     base::WeakPtr<RuntimeApplicationServiceDelegate> delegate,
+                     ::grpc::ServerCompletionQueue* cq,
+                     bool* is_shutdown)
+      : SimpleAsyncGrpc(cq),
+        is_shutdown_(is_shutdown),
+        delegate_(delegate),
+        service_(service) {
+    DCHECK(!*is_shutdown_);
     service_->RequestSetUrlRewriteRules(&ctx_, &request_, &responder_, cq_, cq_,
                                         static_cast<GRPC*>(this));
   }
@@ -27,12 +32,17 @@ class SetUrlRewriteRules final
     return service_;
   }
 
-  RuntimeApplicationServiceDelegate* delegate() { return delegate_; }
+  base::WeakPtr<RuntimeApplicationServiceDelegate> delegate() {
+    return delegate_;
+  }
+
+  bool* is_shutdown() { return is_shutdown_; }
 
   void DoMethod() { delegate_->SetUrlRewriteRules(request_, &response_, this); }
 
  private:
-  RuntimeApplicationServiceDelegate* delegate_;
+  bool* is_shutdown_;
+  base::WeakPtr<RuntimeApplicationServiceDelegate> delegate_;
   cast::v2::RuntimeApplicationService::AsyncService* service_;
 };
 
@@ -43,9 +53,10 @@ RuntimeApplicationServiceDelegate::~RuntimeApplicationServiceDelegate() =
 
 void StartRuntimeApplicationServiceMethods(
     cast::v2::RuntimeApplicationService::AsyncService* service,
-    RuntimeApplicationServiceDelegate* delegate,
-    ::grpc::ServerCompletionQueue* cq) {
-  new SetUrlRewriteRules(service, delegate, cq);
+    base::WeakPtr<RuntimeApplicationServiceDelegate> delegate,
+    ::grpc::ServerCompletionQueue* cq,
+    bool* is_shutdown) {
+  new SetUrlRewriteRules(service, delegate, cq, is_shutdown);
 }
 
 }  // namespace chromecast

@@ -26,7 +26,14 @@ void GrpcServer::Start() {
 
 void GrpcServer::Stop() {
   if (grpc_cq_) {
-    grpc_server_->Shutdown();
+    is_shutdown_ = true;
+    // NOTE: We pass a deadline of 0 because we don't need any pending calls to
+    // be allowed to finish, and more importantly they won't.  Since requests
+    // are also processed on this sequence, we can't block this sequence waiting
+    // for them.
+    gpr_timespec deadline = {};
+    deadline.clock_type = GPR_TIMESPAN;
+    grpc_server_->Shutdown(deadline);
     // NOTE: This leads to cq->Next() returning false.
     grpc_cq_->Shutdown();
     grpc_server_ = nullptr;

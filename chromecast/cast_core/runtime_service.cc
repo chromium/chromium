@@ -11,7 +11,6 @@
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
-#include "chromecast/cast_core/grpc_server.h"
 #include "chromecast/cast_core/web_runtime_application_service.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
@@ -78,7 +77,8 @@ bool RuntimeService::Start(const std::string& runtime_id,
     return false;
   }
 
-  StartRuntimeServiceMethods(&grpc_runtime_service_, this, grpc_cq_);
+  StartRuntimeServiceMethods(&grpc_runtime_service_, weak_factory_.GetWeakPtr(),
+                             grpc_cq_, &is_shutdown_);
   GrpcServer::Start();
 
   return true;
@@ -222,12 +222,14 @@ void RuntimeService::StopMetricsRecorder(
 
 void RuntimeService::SendHeartbeat() {
   DVLOG(2) << "Sending heartbeat";
-  heartbeat_->Tick();
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&RuntimeService::SendHeartbeat,
-                     weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(heartbeat_period_));
+  if (heartbeat_) {
+    heartbeat_->Tick();
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&RuntimeService::SendHeartbeat,
+                       weak_factory_.GetWeakPtr()),
+        base::TimeDelta::FromSeconds(heartbeat_period_));
+  }
 }
 
 void RuntimeService::OnRecordComplete() {

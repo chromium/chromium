@@ -7,7 +7,6 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/bindings_manager_web_runtime.h"
-#include "chromecast/cast_core/grpc_server.h"
 #include "chromecast/cast_core/url_rewrite_rules_adapter.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -29,7 +28,7 @@ WebRuntimeApplicationService::~WebRuntimeApplicationService() {
     return;
   }
 
-  {
+  if (core_app_stub_) {
     grpc::ClientContext context;
     cast::v2::ApplicationStatusRequest status;
     cast::v2::ApplicationStatusResponse unused;
@@ -65,9 +64,11 @@ bool WebRuntimeApplicationService::Load(
     LOG(ERROR) << "Failed to start server on path: " << grpc_address;
     return false;
   }
-  StartRuntimeApplicationServiceMethods(&grpc_app_service_, this, grpc_cq_);
+  StartRuntimeApplicationServiceMethods(
+      &grpc_app_service_, weak_factory_.GetWeakPtr(), grpc_cq_, &is_shutdown_);
   StartRuntimeMessagePortApplicationServiceMethods(&grpc_message_port_service_,
-                                                   this, grpc_cq_);
+                                                   weak_factory_.GetWeakPtr(),
+                                                   grpc_cq_, &is_shutdown_);
   GrpcServer::Start();
 
   cast_session_id_ = request.cast_session_id();
