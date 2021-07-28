@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store_change.h"
-#include "components/sync/model/model_type_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {

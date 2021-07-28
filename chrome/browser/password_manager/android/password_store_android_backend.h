@@ -9,10 +9,7 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
-
-namespace syncer {
-class ModelTypeControllerDelegate;
-}  // namespace syncer
+#include "components/sync/model/model_type_controller_delegate.h"
 
 namespace password_manager {
 
