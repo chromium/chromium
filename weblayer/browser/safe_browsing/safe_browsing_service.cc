@@ -13,6 +13,7 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -28,7 +29,6 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "weblayer/browser/browser_context_impl.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_navigation_throttle.h"
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
 #include "weblayer/browser/safe_browsing/weblayer_ui_manager_delegate.h"
@@ -137,7 +137,7 @@ SafeBrowsingService::CreateURLLoaderThrottle(
 std::unique_ptr<content::NavigationThrottle>
 SafeBrowsingService::CreateSafeBrowsingNavigationThrottle(
     content::NavigationHandle* handle) {
-  return std::make_unique<SafeBrowsingNavigationThrottle>(
+  return std::make_unique<safe_browsing::SafeBrowsingNavigationThrottle>(
       handle, GetSafeBrowsingUIManager().get());
 }
 

@@ -645,8 +645,6 @@ source_set("weblayer_lib_base") {
       "browser/safe_browsing/client_side_detection_service_factory.h",
       "browser/safe_browsing/real_time_url_lookup_service_factory.cc",
       "browser/safe_browsing/real_time_url_lookup_service_factory.h",
-      "browser/safe_browsing/safe_browsing_navigation_throttle.cc",
-      "browser/safe_browsing/safe_browsing_navigation_throttle.h",
       "browser/safe_browsing/safe_browsing_service.cc",
       "browser/safe_browsing/safe_browsing_service.h",
       "browser/safe_browsing/safe_browsing_tab_observer.cc",
