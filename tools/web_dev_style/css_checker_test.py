@@ -313,7 +313,7 @@ a,
 div,a,
 div,/* Hello! */ span,
 #id.class([dir=rtl]):not(.class):any(a, b, d),
-div :is(a, #b, .c) {
+div :is(:not(a), #b, .c) {
   rule: value;
 }
 
