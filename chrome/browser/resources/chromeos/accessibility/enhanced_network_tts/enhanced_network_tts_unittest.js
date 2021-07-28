@@ -90,6 +90,33 @@ SYNC_TEST_F(
           utterance, options, audioStreamOptions, sendTtsAudio);
     });
 
+SYNC_TEST_F('EnhancedNetworkTtsUnitTest', 'GenerateRequest', async function() {
+  let utterance = 'name and lang should be specified together';
+  let options = {voiceName: 'test name', lang: 'en'};
+  let request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(request, {utterance, voice: 'test name', lang: 'en'});
+
+  utterance = 'name without lang will be ignored';
+  options = {voiceName: 'test name'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(request, {utterance, voice: undefined, lang: undefined});
+
+  utterance = 'lang without name will be ignored';
+  options = {lang: 'en'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(request, {utterance, voice: undefined, lang: undefined});
+
+  utterance = 'only lang code (e.g., en) will be used';
+  options = {voiceName: 'test name', lang: 'en_US'};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(request, {utterance, voice: 'test name', lang: 'en'});
+
+  utterance = 'utterance without options can proceed';
+  options = {};
+  request = EnhancedNetworkTts.generateRequest(utterance, options);
+  assertEqualsJSON(request, {utterance, voice: undefined, lang: undefined});
+});
+
 SYNC_TEST_F(
     'EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
     async function() {

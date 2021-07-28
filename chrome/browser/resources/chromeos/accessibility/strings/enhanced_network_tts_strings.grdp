@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<grit-part>
+  <message desc="The product name for Enhanced Network TTS." name="IDS_ENHANCED_NETWORK_TTS_NAME">
+    Google Enhanced Network text-to-speech extension
+  </message>
+  <message desc="The description for Enhanced Network TTS." name="IDS_ENHANCED_NETWORK_TTS_DESCRIPTION">
+
+  </message>
+</grit-part>

@@ -23,10 +23,6 @@ export class EnhancedNetworkTts {
    */
   static async onSpeakWithAudioStreamEvent(
       utterance, options, audioStreamOptions, sendTtsAudio) {
-    // TODO(crbug.com/1231318): Enable voice selection from |options|.
-    const request = /** @type {!ash.enhancedNetworkTts.mojom.TtsRequest} */ (
-        {utterance, voice: 'gba-wavenet', lang: 'en'});
-
     let api;
     try {
       api = /**
@@ -39,6 +35,7 @@ export class EnhancedNetworkTts {
       return;
     }
 
+    const request = EnhancedNetworkTts.generateRequest(utterance, options);
     const response = /** @type {!ash.enhancedNetworkTts.mojom.TtsResponse} */
         ((await api.getAudioData(request)).response);
     if (!response.data) {
@@ -56,6 +53,40 @@ export class EnhancedNetworkTts {
     EnhancedNetworkTts.sendAudioDataInBuffers(
         decodedAudioData, audioStreamOptions.sampleRate,
         audioStreamOptions.bufferSize, timeInfo, sendTtsAudio);
+  }
+
+  /**
+   * Generates a request that can be used to query audio data from the Enhanced
+   * Network TTS mojo API, which sends the request to the ReadAloud server.
+   * @param {string} utterance The text to speak.
+   * @param {!chrome.ttsEngine.SpeakOptions} options Options specified when a
+   *     client calls the chrome.tts.speak.
+   * @return {!ash.enhancedNetworkTts.mojom.TtsRequest}
+   */
+  static generateRequest(utterance, options) {
+    // Unpack voice and lang. For lang, the server takes lang code only.
+    let voice = options.voiceName || '';
+    let lang = options.lang || '';
+    lang = lang.trim().split(/_/)[0];
+
+    // The ReadAloud server takes voice and lang as a pair. Sets them to
+    // undefined if either is empty.
+    if (voice.trim().length === 0 || lang.trim().length === 0) {
+      voice = undefined;
+      lang = undefined;
+    }
+
+    // The default voice is used for a situation where the user enables the
+    // natural voices in Select-to-Speak but does not specify which voice name
+    // to use. We override the |voice| and |lang| to |undefined| to get the
+    // default voice from the server.
+    if (voice === 'default-wavenet') {
+      voice = undefined;
+      lang = undefined;
+    }
+
+    return /** @type {!ash.enhancedNetworkTts.mojom.TtsRequest} */ (
+        {utterance, voice, lang});
   }
 
   /**
