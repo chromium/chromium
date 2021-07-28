@@ -7292,9 +7292,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledFlatbuffer_20210629",
+                    "name": "EnabledFlatbuffer_20210723",
                     "params": {
-                        "reporter_omaha_tag": "25"
+                        "reporter_omaha_tag": "25.3"
                     },
                     "enable_features": [
                         "ClientSideDetectionModelIsFlatBuffer",
@@ -7303,9 +7303,9 @@
                     ]
                 },
                 {
-                    "name": "EnabledProtobuf_20210629",
+                    "name": "EnabledProtobuf_20210723",
                     "params": {
-                        "reporter_omaha_tag": "22"
+                        "reporter_omaha_tag": "25.2"
                     },
                     "enable_features": [
                         "ClientSideDetectionModelOnAndroid",
