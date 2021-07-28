@@ -392,6 +392,7 @@ module.exports = {
     // TODO(b/190689433): Remove this once we have
     // https://github.com/sindresorhus/globals/pull/178 merged in ESlint and
     // Chromium.
+    'CSSNumericValue': 'readable',
     'CSSRotate': 'readable',
     'CSSScale': 'readable',
     'CSSTransformValue': 'readable',

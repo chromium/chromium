@@ -1,0 +1,79 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#new-feature-toast {
+  align-items: center;
+  background-color: rgb(26, 115, 232);
+  border-radius: 20px;
+  color: white;
+  display: flex;
+  height: 42px;
+  padding: 0 12px;
+  position: absolute;
+  white-space: nowrap;
+}
+
+#new-feature-toast::before {
+  content: url(/images/new_feature_toast_icon.svg);
+  display: inline-block;
+  margin-inline: 2px 10px;
+}
+
+body.tab-navigation #new-feature-toast:focus::after {
+  --focus-ring-size: 5px;
+
+  border: 2px solid var(--focus-color);
+  border-radius: 24px;
+  bottom: calc(-1 * var(--focus-ring-size));
+  content: '';
+  left: calc(-1 * var(--focus-ring-size));
+  position: absolute;
+  right: calc(-1 * var(--focus-ring-size));
+  top: calc(-1 * var(--focus-ring-size));
+}
+
+@keyframes ripple {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: var(--scale);
+  }
+}
+
+.ripple {
+  --duration: 0; /* Set at runtime. */
+  --scale: scale(0, 0); /* Set at runtime. */
+
+  border: 3px solid rgb(66, 133, 244);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform-origin: center;
+}
+
+.ripple.animate {
+  animation: ripple var(--duration) ease-out;
+}
+
+#open-ptz-panel {
+  --ripple-scale-x: 2;
+  --ripple-scale-y: 2;
+  --ripple-start-height: 41px;
+  --ripple-start-width: 41px;
+  --toast-left-to-element-right: 19px;
+  --toast-top-to-element-top: 0;
+}
+
+#modes-group .mode-item {
+  --ripple-scale-x: 1.37;
+  --ripple-scale-y: 1.8;
+  --ripple-start-height: 40px;
+  --ripple-start-width: 78px;
+  --toast-bottom-to-element-top: -24px;
+  --toast-left-to-element-left: -115px;
+}

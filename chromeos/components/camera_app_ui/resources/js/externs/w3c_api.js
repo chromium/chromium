@@ -129,6 +129,12 @@ function StylePropertyMapReadOnly() {}
 StylePropertyMapReadOnly.prototype.get = function(property) {};
 
 /**
+ * @param {string} property
+ * @return {boolean}
+ */
+StylePropertyMapReadOnly.prototype.has = function(property) {};
+
+/**
  * @return {!StylePropertyMapReadOnly}
  */
 Element.prototype.computedStyleMap = function() {};
@@ -196,3 +202,15 @@ CSS.rad;
  * @return {!CSSStyleValue}
  */
 CSS.number;
+
+/**
+ * @constructor
+ * @extends {CSSStyleValue}
+ */
+function CSSNumericValue() {}
+
+/**
+ * @param {string} str
+ * @return {!CSSStyleValue}
+ */
+CSSNumericValue.parse;

@@ -10,10 +10,9 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/focus_ring.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
+    <link rel="stylesheet" href="/css/new_feature_toast.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
-    <link rel="stylesheet" href="/css/ptz_toast.css">
     <link rel="stylesheet" href="/css/review_document.css">
-    <link rel="stylesheet" href="/css/ripple.css">
     <link rel="stylesheet" href="/css/scanner.css">
     <script src="/js/mojo/mojo_bindings_lite.js"></script>
     <script src="/js/mojo/time.mojom-lite.js"></script>
@@ -177,7 +176,7 @@
             <span i18n-text="label_switch_take_square_photo_button"
                   aria-hidden="true"></span>
           </div>
-          <div class="mode-item">
+          <div class="mode-item" i18n-new-feature="new_document_scan_toast">
             <input type="radio" name="mode"
                  data-mode="scanner" tabindex="0"
                  i18n-aria="switch_scanner_mode_button">
@@ -227,17 +226,11 @@
         <button id="switch-device" tabindex="0"
                 i18n-label="switch_camera_button"></button>
       </div>
-      <div id="ptz-toast" class="hidden" i18n-aria="label_new_control_toast"
-           tabindex="0">
-        <span i18n-text="new_control_toast" aria-hidden="true"></span>
-      </div>
 
       <div id="options-group" class="left-stripe buttons circle">
         <button id="open-ptz-panel" tabindex="0" aria-haspopup="true"
-                i18n-label="open_ptz_panel_button">
-          <div class="ripple"></div>
-          <div class="ripple ripple-2nd"></div>
-          <div class="ripple ripple-3rd"></div>
+                i18n-label="open_ptz_panel_button"
+                i18n-new-feature="new_control_toast">
         </button>
         <input type="checkbox" id="toggle-timer" tabindex="0"
                data-state="timer" data-key="toggleTimer">
@@ -612,6 +605,14 @@
     </template>
     <template id="inkdrop-template">
       <div class="inkdrop-ripple"></div>
+    </template>
+    <template id="ripple-template">
+      <div class="ripple"></div>
+    </template>
+    <template id="new-feature-toast-template">
+      <div id="new-feature-toast" tabindex="0">
+        <span class="new-feature-toast-text" aria-hidden="true"></span>
+      </div>
     </template>
   </body>
 </html>

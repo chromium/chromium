@@ -6,9 +6,8 @@ css_files = [
   "focus_ring.css",
   "inkdrop.css",
   "main.css",
+  "new_feature_toast.css",
   "ptz_panel.css",
-  "ptz_toast.css",
   "review_document.css",
-  "ripple.css",
   "scanner.css",
 ]

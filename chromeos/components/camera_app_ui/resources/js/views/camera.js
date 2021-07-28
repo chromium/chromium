@@ -26,6 +26,7 @@ import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as nav from '../nav.js';
+import * as newFeatureToast from '../new_feature_toast.js';
 // eslint-disable-next-line no-unused-vars
 import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
@@ -257,12 +258,6 @@ export class Camera extends View {
     this.banner_ = dom.get('#banner', HTMLElement);
 
     /**
-     * @type {!HTMLElement}
-     * @private
-     */
-    this.ptzToast_ = dom.get('#ptz-toast', HTMLElement);
-
-    /**
      * @type {!HTMLButtonElement}
      */
     this.openPTZPanel_ = dom.get('#open-ptz-panel', HTMLButtonElement);
@@ -425,31 +420,30 @@ export class Camera extends View {
     });
 
     // Highlight effect for PTZ button.
+    let toastShown = false;
     const highlight = (enabled) => {
-      this.ptzToast_.classList.toggle('hidden', !enabled);
-      this.openPTZPanel_.classList.toggle('rippling', enabled);
-      if (enabled) {
-        this.ptzToast_.focus();
-        setTimeout(() => highlight(false), 10000);
+      if (!enabled) {
+        if (toastShown) {
+          newFeatureToast.hide();
+          toastShown = false;
+        }
+        return;
       }
+      toastShown = true;
+      newFeatureToast.show(this.openPTZPanel_);
+      newFeatureToast.focus();
     };
 
     this.addConfigureCompleteListener_(async () => {
-      if (!state.get(state.State.ENABLE_PTZ)) {
+      const ptzToastKey = 'isPTZToastShown';
+      if (!state.get(state.State.ENABLE_PTZ) ||
+          state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
+          localStorage.getBool(ptzToastKey)) {
         highlight(false);
         return;
       }
-
-      const ptzToastKey = 'isPTZToastShown';
-      if (localStorage.getBool(ptzToastKey)) {
-        return;
-      }
       localStorage.set(ptzToastKey, true);
-
-      const {bottom, right} =
-          dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
-      this.ptzToast_.style.bottom = `${window.innerHeight - bottom}px`;
-      this.ptzToast_.style.left = `${right + 20}px`;
+      state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
       highlight(true);
     });
   }
@@ -474,9 +468,38 @@ export class Camera extends View {
    */
   async initScannerMode_() {
     const helper = await ChromeHelper.getInstance();
-    state.set(
-        state.State.PLATFORM_SUPPORT_SCAN_DOCUMENT,
-        await helper.isDocumentModeSupported());
+    const isPlatformSupport = await helper.isDocumentModeSupported();
+    state.set(state.State.PLATFORM_SUPPORT_SCAN_DOCUMENT, isPlatformSupport);
+    if (!isPlatformSupport) {
+      return;
+    }
+
+    const scannerModeBtn =
+        dom.get('input[data-mode="scanner"]', HTMLInputElement);
+
+    const docModeToastKey = 'isDocModeToastShown';
+    const checkShowToast = () => {
+      state.removeObserver(state.State.SHOW_SCANNER_MODE, checkShowToast);
+      if (state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
+          localStorage.getBool(docModeToastKey)) {
+        return;
+      }
+      state.set(state.State.IS_NEW_FEATURE_TOAST_SHOWN, true);
+      localStorage.set(docModeToastKey, true);
+      // aria-owns don't work on HTMLInputElement, show toast on parent div
+      // instead.
+      const scannerModeItem =
+          assertInstanceof(scannerModeBtn.parentElement, HTMLDivElement);
+      newFeatureToast.show(scannerModeItem);
+      scannerModeBtn.addEventListener('click', () => {
+        newFeatureToast.hide();
+      });
+    };
+    if (state.get(state.State.SHOW_SCANNER_MODE)) {
+      checkShowToast();
+    } else {
+      state.addObserver(state.State.SHOW_SCANNER_MODE, checkShowToast);
+    }
   }
 
   /**
@@ -535,19 +558,23 @@ export class Camera extends View {
    * @override
    */
   focus() {
-    const focusOnShutterButton = () => {
-      // Avoid focusing invisible shutters.
-      dom.getAll('button.shutter', HTMLButtonElement)
-          .forEach((btn) => btn.offsetParent && btn.focus());
-    };
     (async () => {
       const shown = localStorage.getBool('isFolderChangeMsgShown');
       await this.configuring_;
       if (!shown) {
         localStorage.set('isFolderChangeMsgShown', true);
         await animate.play(this.banner_);
+        return;
       }
-      focusOnShutterButton();
+
+      if (newFeatureToast.isShowing()) {
+        newFeatureToast.focus();
+        return;
+      }
+
+      // Avoid focusing invisible shutters.
+      dom.getAll('button.shutter', HTMLButtonElement)
+          .forEach((btn) => btn.offsetParent && btn.focus());
     })();
   }
 

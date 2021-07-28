@@ -52,6 +52,7 @@ compile_js_files = [
   "mojo/mock_document_scanner.js",
   "mojo/util.js",
   "nav.js",
+  "new_feature_toast.js",
   "perf.js",
   "snackbar.js",
   "sound.js",
