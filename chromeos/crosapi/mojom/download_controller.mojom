@@ -17,11 +17,30 @@ enum DownloadState {
     kInterrupted
 };
 
+// This mirrors `download::DownloadItem`. See:
+// https://source.chromium.org/chromium/chromium/src/+/main:components/download/public/common/download_item.h?q=download_item.h
+//
+// NOTE: Starting in Version 1, `has_field` is added for every new
+// non-nullable `field`. This is for backwards compatibility, so that older
+// clients know when values are present or are absent by default.
+//
+// Next MinVersion: 2
+// Next ID: 13
 [Stable]
 struct DownloadEvent {
   DownloadState state@0;
   mojo_base.mojom.FilePath target_file_path@1;
   bool is_from_incognito_profile@2;
+  [MinVersion=1] string? guid@3;
+  [MinVersion=1] mojo_base.mojom.FilePath? full_path@4;
+  [MinVersion=1] bool has_is_paused@5;
+  [MinVersion=1] bool is_paused@6;
+  [MinVersion=1] bool has_open_when_complete@7;
+  [MinVersion=1] bool open_when_complete@8;
+  [MinVersion=1] bool has_received_bytes@9;
+  [MinVersion=1] int64 received_bytes@10;
+  [MinVersion=1] bool has_total_bytes@11;
+  [MinVersion=1] int64 total_bytes@12;
 };
 
 // Allows lacros to pass download information to ash-chrome.

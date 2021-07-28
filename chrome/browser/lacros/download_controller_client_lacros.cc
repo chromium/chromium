@@ -38,9 +38,19 @@ crosapi::mojom::DownloadEventPtr BuildDownloadEvent(
       content::DownloadItemUtils::GetBrowserContext(item));
 
   crosapi::mojom::DownloadEventPtr dle = crosapi::mojom::DownloadEvent::New();
+  dle->guid = item->GetGuid();
   dle->state = ConvertDownloadState(item->GetState());
+  dle->full_path = item->GetFullPath();
   dle->target_file_path = item->GetTargetFilePath();
   dle->is_from_incognito_profile = profile->IsIncognitoProfile();
+  dle->is_paused = item->IsPaused();
+  dle->has_is_paused = true;
+  dle->open_when_complete = item->GetOpenWhenComplete();
+  dle->has_open_when_complete = true;
+  dle->received_bytes = item->GetReceivedBytes();
+  dle->has_received_bytes = true;
+  dle->total_bytes = item->GetTotalBytes();
+  dle->has_total_bytes = true;
   return dle;
 }
 }  // namespace

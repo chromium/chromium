@@ -430,6 +430,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   }
 }
 
+// TODO(crbug.com/1184438): Support in-progress downloads.
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
     const crosapi::mojom::DownloadEvent& event) {
   if (event.is_from_incognito_profile &&
