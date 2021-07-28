@@ -35,6 +35,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
       std::unique_ptr<Model> model,
       std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
       std::unique_ptr<FileMonitor> file_monitor,
+      const base::FilePath& download_dir,
       base::Clock* clock);
   ~BackgroundDownloadServiceImpl() override;
 
@@ -91,6 +92,10 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
   std::map<std::string, DownloadParams::StartCallback> start_callbacks_;
   base::Time update_time_;
   base::Clock* clock_;
+
+  // A directory to hold download service files. The files in here will be
+  // pruned frequently.
+  const base::FilePath download_dir_;
 
   base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};
 };

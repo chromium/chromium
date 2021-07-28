@@ -44,7 +44,7 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
         base::BindRepeating(&BackgroundDownloadTaskHelperTest::DefaultResponse,
                             base::Unretained(this)));
     server_handle_ = server_.StartAndReturnHandle();
-    helper_ = BackgroundDownloadTaskHelper::Create(dir_.GetPath());
+    helper_ = BackgroundDownloadTaskHelper::Create();
   }
 
   void Download(const std::string& relative_url) {
@@ -55,7 +55,8 @@ class BackgroundDownloadTaskHelperTest : public PlatformTest {
         net::HttpRequestHeaders::kIfMatch, kHeaderValue);
     base::RunLoop loop;
     helper_->StartDownload(
-        kGuid, params.request_params, params.scheduling_params,
+        kGuid, dir_.GetPath().AppendASCII(kGuid), params.request_params,
+        params.scheduling_params,
         base::BindLambdaForTesting(
             [&](bool, const base::FilePath& file_path, int64_t file_size) {
               std::string content;

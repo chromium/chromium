@@ -45,6 +45,7 @@ BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
     std::unique_ptr<Model> model,
     std::unique_ptr<BackgroundDownloadTaskHelper> download_helper,
     std::unique_ptr<FileMonitor> file_monitor,
+    const base::FilePath& download_dir,
     base::Clock* clock)
     : config_(std::make_unique<Configuration>()),
       service_config_(config_.get()),
@@ -52,7 +53,8 @@ BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
       model_(std::move(model)),
       download_helper_(std::move(download_helper)),
       file_monitor_(std::move(file_monitor)),
-      clock_(clock) {
+      clock_(clock),
+      download_dir_(download_dir) {
   model_->Initialize(this);
 }
 
@@ -104,11 +106,11 @@ void BackgroundDownloadServiceImpl::StartDownload(
     return;
   }
 
+  DCHECK(!download_params.guid.empty());
   start_callbacks_.emplace(download_params.guid,
                            std::move(download_params.callback));
-  // TODO(xingliu): Write target path to entry, and generate the path here. Also
-  // write the state change.
   Entry entry(download_params);
+  entry.target_file_path = download_dir_.AppendASCII(download_params.guid);
   entry.create_time = clock_->Now();
   entry.state = Entry::State::ACTIVE;
   model_->Add(entry);
@@ -218,7 +220,8 @@ void BackgroundDownloadServiceImpl::OnItemAdded(bool success,
   InvokeStartCallback(guid, client, DownloadParams::StartResult::ACCEPTED,
                       std::move(callback));
   download_helper_->StartDownload(
-      entry->guid, entry->request_params, entry->scheduling_params,
+      entry->guid, entry->target_file_path, entry->request_params,
+      entry->scheduling_params,
       base::BindOnce(&BackgroundDownloadServiceImpl::OnDownloadFinished,
                      weak_ptr_factory_.GetWeakPtr(), entry->client,
                      entry->guid),

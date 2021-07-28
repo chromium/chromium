@@ -76,6 +76,6 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
       files_storage_dir, background_task_runner);
   return std::make_unique<download::BackgroundDownloadServiceImpl>(
       std::move(client_set), std::move(model),
-      download::BackgroundDownloadTaskHelper::Create(files_storage_dir),
-      std::move(file_monitor), base::DefaultClock::GetInstance());
+      download::BackgroundDownloadTaskHelper::Create(), std::move(file_monitor),
+      files_storage_dir, base::DefaultClock::GetInstance());
 }

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -52,6 +53,7 @@ class MockBackgroundDownloadTaskHelper : public BackgroundDownloadTaskHelper {
   MOCK_METHOD(void,
               StartDownload,
               (const std::string& guid,
+               const base::FilePath& target_path,
                const RequestParams&,
                const SchedulingParams&,
                CompletionCallback,
@@ -66,6 +68,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
   ~BackgroundDownloadServiceImplTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(dir_.CreateUniqueTempDir());
     auto store = std::make_unique<test::TestStore>();
     store_ = store.get();
     auto model = std::make_unique<ModelImpl>(std::move(store));
@@ -80,7 +83,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     file_monitor_ = file_monitor.get();
     service_ = std::make_unique<BackgroundDownloadServiceImpl>(
         std::move(client_set), std::move(model), std::move(download_helper),
-        std::move(file_monitor), &clock_);
+        std::move(file_monitor), dir_.GetPath(), &clock_);
     ON_CALL(*file_monitor_, DeleteUnknownFiles(_, _, _))
         .WillByDefault(RunOnceCallback<2>());
   }
@@ -104,6 +107,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir dir_;
   base::SimpleTestClock clock_;
   MockBackgroundDownloadTaskHelper* download_helper_;
   test::TestStore* store_;
@@ -164,8 +168,8 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadDbFailure) {
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadHelperFailure) {
   Init();
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
-  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _, _))
-      .WillOnce(RunOnceCallback<3>(/*success=*/false, base::FilePath(), 0));
+  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<4>(/*success=*/false, base::FilePath(), 0));
   EXPECT_CALL(*client_,
               OnDownloadFailed(kGuid, CompletionInfoIs(base::FilePath()),
                                download::Client::FailureReason::UNKNOWN));
@@ -182,9 +186,9 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadHelperFailure) {
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
   Init();
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
-  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _, _))
+  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _, _, _))
       .WillOnce(
-          RunOnceCallback<3>(/*success=*/true, base::FilePath(kFilePath), 0));
+          RunOnceCallback<4>(/*success=*/true, base::FilePath(kFilePath), 0));
   EXPECT_CALL(
       *client_,
       OnDownloadSucceeded(kGuid, CompletionInfoIs(base::FilePath(kFilePath))));
@@ -195,6 +199,8 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
   EXPECT_EQ(clock_.Now(), store_->LastUpdatedEntry()->create_time);
   EXPECT_EQ(clock_.Now(), store_->LastUpdatedEntry()->completion_time);
   EXPECT_EQ(Entry::State::COMPLETE, store_->LastUpdatedEntry()->state);
+  EXPECT_EQ(dir_.GetPath().AppendASCII(kGuid),
+            store_->LastUpdatedEntry()->target_file_path);
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectBucketCount(kCompletionHistogram,
                                       CompletionType::SUCCEED, 1);
@@ -204,8 +210,8 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
 TEST_F(BackgroundDownloadServiceImplTest, OnDownloadUpdated) {
   Init();
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
-  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _, _))
-      .WillOnce(RunCallback<4>(10u));
+  EXPECT_CALL(*download_helper_, StartDownload(_, _, _, _, _, _))
+      .WillOnce(RunCallback<5>(10u));
   EXPECT_CALL(*client_, OnDownloadUpdated(kGuid, 0u, 10u));
   auto download_params = CreateDownloadParams(kURL);
   service()->StartDownload(std::move(download_params));
