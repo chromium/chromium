@@ -46,7 +46,7 @@ enum CALayerResult {
   CA_LAYER_FAILED_TILE_NOT_CANDIDATE = 7,
   CA_LAYER_FAILED_QUAD_BLEND_MODE = 8,
   // CA_LAYER_FAILED_QUAD_TRANSFORM = 9,
-  // CA_LAYER_FAILED_QUAD_CLIPPING = 10,
+  CA_LAYER_FAILED_QUAD_CLIPPING = 10,
   CA_LAYER_FAILED_DEBUG_BORDER = 11,
   CA_LAYER_FAILED_PICTURE_CONTENT = 12,
   // CA_LAYER_FAILED_RENDER_PASS = 13,
@@ -56,7 +56,7 @@ enum CALayerResult {
   CA_LAYER_FAILED_DIFFERENT_VERTEX_OPACITIES = 17,
   // CA_LAYER_FAILED_RENDER_PASS_FILTER_SCALE = 18,
   CA_LAYER_FAILED_RENDER_PASS_BACKDROP_FILTERS = 19,
-  // CA_LAYER_FAILED_RENDER_PASS_MASK = 20,
+  CA_LAYER_FAILED_RENDER_PASS_MASK = 20,
   CA_LAYER_FAILED_RENDER_PASS_FILTER_OPERATION = 21,
   CA_LAYER_FAILED_RENDER_PASS_SORTING_CONTEXT_ID = 22,
   CA_LAYER_FAILED_TOO_MANY_RENDER_PASS_DRAW_QUADS = 23,
@@ -100,7 +100,8 @@ CALayerResult FromRenderPassQuad(
     return CA_LAYER_FAILED_RENDER_PASS_BACKDROP_FILTERS;
   }
 
-  if (quad->shared_quad_state->sorting_context_id != 0)
+  auto* shared_quad_state = quad->shared_quad_state;
+  if (shared_quad_state->sorting_context_id != 0)
     return CA_LAYER_FAILED_RENDER_PASS_SORTING_CONTEXT_ID;
 
   auto it = render_pass_filters.find(quad->render_pass_id);
@@ -110,6 +111,18 @@ CALayerResult FromRenderPassQuad(
       if (!success)
         return CA_LAYER_FAILED_RENDER_PASS_FILTER_OPERATION;
     }
+  }
+
+  // TODO(crbug.com/1215491): support not 2d axis aligned clipping.
+  if (shared_quad_state->clip_rect &&
+      !shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
+    return CA_LAYER_FAILED_QUAD_CLIPPING;
+  }
+
+  // TODO(crbug.com/1215491): support not 2d axis aligned mask.
+  if (!shared_quad_state->mask_filter_info.IsEmpty() &&
+      !shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment()) {
+    return CA_LAYER_FAILED_RENDER_PASS_MASK;
   }
 
   ca_layer_overlay->rpdq = quad;
