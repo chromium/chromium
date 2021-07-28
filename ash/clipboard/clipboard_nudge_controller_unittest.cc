@@ -266,7 +266,8 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
 
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
 
-  ClipboardNudge* nudge = nudge_controller_->GetClipboardNudgeForTesting();
+  ClipboardNudge* nudge = static_cast<ClipboardNudge*>(
+      nudge_controller_->GetClipboardNudgeForTesting());
   views::Widget* nudge_widget = nudge->widget();
   ASSERT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
   EXPECT_FALSE(nudge_widget->IsClosed());
@@ -278,7 +279,8 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
   // Verify the old nudge widget was closed.
   EXPECT_TRUE(widget_close_observer.WidgetClosed());
 
-  nudge = nudge_controller_->GetClipboardNudgeForTesting();
+  nudge = static_cast<ClipboardNudge*>(
+      nudge_controller_->GetClipboardNudgeForTesting());
   EXPECT_FALSE(nudge->widget()->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kZeroStateNudge, nudge->nudge_type());
 }
@@ -288,7 +290,8 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
 TEST_F(ClipboardNudgeControllerTest, NudgeClosingDuringShutdown) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
 
-  ClipboardNudge* nudge = nudge_controller_->GetClipboardNudgeForTesting();
+  ClipboardNudge* nudge = static_cast<ClipboardNudge*>(
+      nudge_controller_->GetClipboardNudgeForTesting());
   views::Widget* nudge_widget = nudge->widget();
   EXPECT_FALSE(nudge_widget->IsClosed());
   EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());
