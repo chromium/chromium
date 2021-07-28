@@ -51,7 +51,7 @@ namespace media {
 namespace {
 
 bool MultiPlaneVideoSharedImagesEnabled() {
-  return base::FeatureList::IsEnabled(kMultiPlaneVideoSharedImages);
+  return base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages);
 }
 
 }  // namespace

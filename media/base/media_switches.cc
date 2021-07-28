@@ -322,9 +322,21 @@ const base::Feature kCdmProcessSiteIsolation{"CdmProcessSiteIsolation",
 const base::Feature kMemoryPressureBasedSourceBufferGC{
     "MemoryPressureBasedSourceBufferGC", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable binding multiple shared images to a single GpuMemoryBuffer.
-const base::Feature kMultiPlaneVideoSharedImages {
-  "MultiPlaneVideoSharedImages", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enable binding multiple shared images to a single GpuMemoryBuffer for
+// software decoded video frames created by the GpuMemoryBufferVideoFramePool.
+const base::Feature kMultiPlaneSoftwareVideoSharedImages{
+    "MultiPlaneSoftwareVideoSharedImages", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable binding multiple shared images to a single GpuMemoryBuffer for video
+// frames created by video capture.
+const base::Feature kMultiPlaneVideoCaptureSharedImages {
+  "MultiPlaneVideoCaptureSharedImages",
+#if defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Approach original pre-REC MSE object URL autorevoking behavior, though await
 // actual attempt to use the object URL for attachment to perform revocation.
