@@ -257,44 +257,47 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   //   LoadProfileAndApp), if needed.
   // - Launch the app, if appropriate.
   // The "if appropriate" above is defined as:
-  // - If |launch_files| is non-empty, then will always launch the app
-  //   - If |profile_path| is non-empty, then use that profile.
+  // - If `params.files` is non-empty, then will always launch the app
+  //   - If `profile_path` is non-empty, then use that profile.
   //   - In the most recently used profile, otherwise
-  // - If |launch_files| is empty, then launch the app only if:
-  //   - If |profile_path| is non-empty, then launch if the app is not running
+  // - If `params.files` is empty, then launch the app only if:
+  //   - If `profile_path` is non-empty, then launch if the app is not running
   //     in that profile.
   //   - Otherwise, launch the app only if it is not running any profile.
   using LoadAndLaunchAppCallback =
       base::OnceCallback<void(ProfileState* profile_state,
                               chrome::mojom::AppShimLaunchResult result)>;
-  void LoadAndLaunchApp(
-      const web_app::AppId& app_id,
-      const base::FilePath& profile_path,
-      const std::vector<base::FilePath>& launch_files,
-      const std::vector<GURL>& launch_urls,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
-      LoadAndLaunchAppCallback launch_callback);
+  struct LoadAndLaunchAppParams {
+    LoadAndLaunchAppParams();
+    ~LoadAndLaunchAppParams();
+    LoadAndLaunchAppParams(const LoadAndLaunchAppParams&);
+    LoadAndLaunchAppParams& operator=(const LoadAndLaunchAppParams&);
+
+    // Return true if `files` or `urls` is non-empty. If so, then this launch
+    // will open exactly one window.
+    bool HasFilesOrURLs() const;
+
+    web_app::AppId app_id;
+    std::vector<base::FilePath> files;
+    std::vector<GURL> urls;
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kNone;
+  };
+  void LoadAndLaunchApp(const base::FilePath& profile_path,
+                        const LoadAndLaunchAppParams& params,
+                        LoadAndLaunchAppCallback launch_callback);
   bool LoadAndLaunchApp_TryExistingProfileStates(
-      const web_app::AppId& app_id,
       const base::FilePath& profile_path,
-      const std::vector<base::FilePath>& launch_files,
-      const std::vector<GURL>& launch_urls,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+      const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
-      const web_app::AppId& app_id,
-      const std::vector<base::FilePath>& launch_files,
-      const std::vector<GURL>& launch_urls,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
       const std::vector<base::FilePath>& profile_paths_to_launch,
+      const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback launch_callback);
   void LoadAndLaunchApp_LaunchIfAppropriate(
       Profile* profile,
       ProfileState* profile_state,
-      const web_app::AppId& app_id,
-      const std::vector<base::FilePath>& launch_files,
-      const std::vector<GURL>& launch_urls,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state);
+      const LoadAndLaunchAppParams& params);
 
   // The final step of both paths for OnShimProcessConnected. This will connect
   // |bootstrap| to |profile_state|'s AppShimHost, if possible. The value of
