@@ -115,9 +115,11 @@
 
   <translations>
     <file path="translations/omnibox_pedal_synonyms_ar.xtb" lang="ar" />
+    <file path="translations/omnibox_pedal_synonyms_de.xtb" lang="de" />
     <file path="translations/omnibox_pedal_synonyms_es-419.xtb" lang="es-419" />
     <file path="translations/omnibox_pedal_synonyms_fr.xtb" lang="fr" />
     <file path="translations/omnibox_pedal_synonyms_ja.xtb" lang="ja" />
+    <file path="translations/omnibox_pedal_synonyms_zh-CN.xtb" lang="zh-CN" />
     <file path="translations/omnibox_pedal_synonyms_zh-TW.xtb" lang="zh-TW" />
   </translations>
 
