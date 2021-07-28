@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.blink.mojom.TextFragmentReceiver;
@@ -23,6 +24,10 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Handles the Link To Text action in the Sharing Hub.
@@ -39,15 +44,19 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     private static final String INVALID_SELECTOR = "";
-    private static final long TIMEOUT_MS = 50;
+    private static final long TIMEOUT_MS = 100;
+    private static final long AMP_TIMEOUT_MS = 200;
+    private static final Set<String> AMP_VIEWER_DOMAINS =
+            new HashSet<>(Arrays.asList("google.com/amp/", "bing.com/amp"));
+    private static final int LENGTH_AMP_DOMAIN = 15;
     private final Context mContext;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
-    private final String mVisibleUrl;
     private final Tab mTab;
     private final ChromeShareExtras mChromeShareExtras;
     private final long mShareStartTime;
     private final long mRequestSelectorStartTime;
 
+    private String mVisibleUrl;
     private ShareParams mShareLinkParams;
     private TextFragmentReceiver mProducer;
     private boolean mCancelRequest;
@@ -69,7 +78,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mShareTextParams = null;
         mRequestSelectorStartTime = System.currentTimeMillis();
 
-        requestSelector();
+        startRequestSelector();
     }
 
     // Constructor for preemptive link-to-text generation.
@@ -88,8 +97,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mContext = null;
 
         mRequestSelectorStartTime = System.currentTimeMillis();
-        requestSelector();
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
+        startRequestSelector();
     }
 
     public ShareParams getShareParams(@LinkGeneration int linkGeneration) {
@@ -154,9 +162,10 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         cleanup();
     }
 
-    public void requestSelector() {
+    public void startRequestSelector() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                 && mChromeShareExtras.isReshareHighlightedText()) {
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
             reshareHighlightedText();
             return;
         }
@@ -167,28 +176,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
+                    && isAmpUrl(mVisibleUrl)) {
+                PostTask.postDelayedTask(
+                        UiThreadTaskTraits.DEFAULT, () -> timeout(), AMP_TIMEOUT_MS);
+                requestSelectorForCanonicalUrl();
+                return;
+            }
+
             LinkToTextBridge.logGenerateErrorIFrame();
             onSelectorReady(INVALID_SELECTOR);
             return;
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-            LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
-                    LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.REQUEST_SELECTOR);
-        }
 
-        mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
-                TextFragmentReceiver.MANAGER);
-        mProducer.requestSelector(new TextFragmentReceiver.RequestSelectorResponse() {
-            @Override
-            public void call(String selector) {
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-                    LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
-                            LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
-                }
-                onSelectorReady(selector);
-            }
-        });
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
+        requestSelectorForCanonicalUrl();
     }
 
     public void reshareHighlightedText() {
@@ -232,6 +234,50 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     public void onCrash(Tab tab) {
         LinkToTextBridge.logGenerateErrorTabCrash();
         cleanup();
+    }
+
+    private void requestSelector() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+            LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                    LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.REQUEST_SELECTOR);
+        }
+
+        setTextFragmentReceiver();
+        mProducer.requestSelector(new TextFragmentReceiver.RequestSelectorResponse() {
+            @Override
+            public void call(String selector) {
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+                    LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
+                            LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
+                }
+                onSelectorReady(selector);
+            }
+        });
+    }
+
+    public boolean isAmpUrl(String url) {
+        if (url.substring(8, 12).equals("www.")) {
+            if (url.length() - 12 < LENGTH_AMP_DOMAIN) return false;
+            return AMP_VIEWER_DOMAINS.contains(url.substring(12, 12 + LENGTH_AMP_DOMAIN));
+        } else if (url.substring(8, 10).equals("m.")) {
+            if (url.length() - 10 < LENGTH_AMP_DOMAIN) return false;
+            return AMP_VIEWER_DOMAINS.contains(url.substring(10, 10 + LENGTH_AMP_DOMAIN));
+        } else if (url.substring(8, 15).equals("mobile.")) {
+            if (url.length() - 15 < LENGTH_AMP_DOMAIN) return false;
+            return AMP_VIEWER_DOMAINS.contains(url.substring(15, 15 + LENGTH_AMP_DOMAIN));
+        }
+        return false;
+    }
+
+    private void requestSelectorForCanonicalUrl() {
+        mTab.getWebContents().getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
+            @Override
+            public void onResult(GURL result) {
+                mVisibleUrl = result.getSpec();
+                requestSelector();
+            }
+        });
     }
 
     private void setTextFragmentReceiver() {

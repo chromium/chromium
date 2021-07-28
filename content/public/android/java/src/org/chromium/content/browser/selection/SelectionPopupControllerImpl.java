@@ -607,7 +607,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     public void finishActionMode() {
         mHidden = false;
         mHandler.removeCallbacks(mRepeatingHideRunnable);
-        mRenderFrameHost = null;
 
         if (isActionModeValid()) {
             mActionMode.finish();
@@ -1318,6 +1317,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 mSelectionRect.setEmpty();
                 if (mSelectionClient != null) mSelectionClient.cancelAllRequests();
 
+                mRenderFrameHost = null;
                 finishActionMode();
                 break;
 

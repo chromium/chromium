@@ -45,7 +45,7 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LinkToTextCoordinatorTest {
-    // Mock class for |LinkToTextCoordinator| that disables |requestSelector| call.
+    // Mock class for |LinkToTextCoordinator| that disables |startRequestSelector| call.
     private class MockLinkToTextCoordinator extends LinkToTextCoordinator {
         public MockLinkToTextCoordinator(Context context, Tab tab,
                 ChromeOptionShareCallback chromeOptionShareCallback, String visibleUrl,
@@ -61,7 +61,7 @@ public class LinkToTextCoordinatorTest {
         }
 
         @Override
-        public void requestSelector() {}
+        public void startRequestSelector() {}
     };
 
     @Rule
@@ -84,6 +84,13 @@ public class LinkToTextCoordinatorTest {
     private Activity mAcivity;
     private static final String SELECTED_TEXT = "selection";
     private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String AMP_URL = JUnitTestGURLs.AMP_URL;
+    private static final String MOBILE_URL = "https://mobile.foo.com";
+    private static final String AMP_MOBILE_URL =
+            "https://mobile.google.com/amp/www.nyt.com/ampthml/blogs.html";
+    private static final String MOBILE_SUBDOMAIN_URL = "https://m.foo.com";
+    private static final String AMP_MOBILE_SUBDOMAIN_URL =
+            "https://m.google.com/amp/www.nyt.com/ampthml/blogs.html";
 
     @Before
     public void setUpTest() {
@@ -199,5 +206,25 @@ public class LinkToTextCoordinatorTest {
                 shareParams, mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL);
         coordinator.onSelectorReady("");
         verify(mShareCallback).showShareSheet(any(), any(), anyLong());
+    }
+
+    @Test
+    @SmallTest
+    public void isAmpUrlTest() {
+        ShareParams shareParams = new ShareParams.Builder(/*window=*/null, "", AMP_URL)
+                                          .setText(SELECTED_TEXT)
+                                          .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
+                shareParams, mTab, mShareCallback, chromeShareExtras, 1, AMP_URL);
+
+        Assert.assertEquals(true, coordinator.isAmpUrl(AMP_URL));
+        Assert.assertEquals(false, coordinator.isAmpUrl(VISIBLE_URL));
+
+        Assert.assertEquals(true, coordinator.isAmpUrl(AMP_MOBILE_URL));
+        Assert.assertEquals(false, coordinator.isAmpUrl(MOBILE_URL));
+
+        Assert.assertEquals(true, coordinator.isAmpUrl(AMP_MOBILE_SUBDOMAIN_URL));
+        Assert.assertEquals(false, coordinator.isAmpUrl(MOBILE_SUBDOMAIN_URL));
     }
 }
