@@ -57,7 +57,7 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
   };
 
  protected:
-  // FontEnumerationCache interface.
+  // FontEnumerationCache:
   void SchedulePrepareFontEnumerationCache() override;
 
  private:

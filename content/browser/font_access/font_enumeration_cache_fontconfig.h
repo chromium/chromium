@@ -35,7 +35,7 @@ class CONTENT_EXPORT FontEnumerationCacheFontconfig
   ~FontEnumerationCacheFontconfig() override;
 
  protected:
-  // FontEnumerationCache interface.
+  // FontEnumerationCache:
   void SchedulePrepareFontEnumerationCache() override;
 
  private:

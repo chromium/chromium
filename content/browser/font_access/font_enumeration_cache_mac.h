@@ -33,7 +33,7 @@ class CONTENT_EXPORT FontEnumerationCacheMac : public FontEnumerationCache {
   ~FontEnumerationCacheMac() override;
 
  protected:
-  // FontEnumerationCache interface.
+  // FontEnumerationCache:
   void SchedulePrepareFontEnumerationCache() override;
 
  private:

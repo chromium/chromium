@@ -236,18 +236,15 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
         fontset->fonts[i], FC_WIDTH, 0,
         FC_WIDTH_NORMAL);  // Maps to width: 100% (normal).
 
-    blink::FontEnumerationTable_FontMetadata metadata;
-    metadata.set_postscript_name(postscript_name);
-    metadata.set_full_name(full_name);
-    metadata.set_family(family);
-    metadata.set_style(style);
-    metadata.set_italic(FCSlantToWebItalic(slant));
-    metadata.set_weight(FCWeightToWebWeight(weight));
-    metadata.set_stretch(FCWidthToWebStretch(width));
-
-    blink::FontEnumerationTable_FontMetadata* added_font_meta =
+    blink::FontEnumerationTable_FontMetadata* metadata =
         font_enumeration_table->add_fonts();
-    *added_font_meta = metadata;
+    metadata->set_postscript_name(postscript_name);
+    metadata->set_full_name(full_name);
+    metadata->set_family(family);
+    metadata->set_style(style);
+    metadata->set_italic(FCSlantToWebItalic(slant));
+    metadata->set_weight(FCWeightToWebWeight(weight));
+    metadata->set_stretch(FCWidthToWebStretch(width));
   }
 
   base::UmaHistogramCounts100(

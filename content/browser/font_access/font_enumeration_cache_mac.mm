@@ -219,19 +219,15 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
                                          width);
       }
 
-      blink::FontEnumerationTable_FontMetadata metadata;
-      metadata.set_postscript_name(postscript_name.c_str());
-      metadata.set_full_name(
-          base::SysCFStringRefToUTF8(cf_full_name.get()).c_str());
-      metadata.set_family(base::SysCFStringRefToUTF8(cf_family.get()).c_str());
-      metadata.set_style(base::SysCFStringRefToUTF8(cf_style.get()).c_str());
-      metadata.set_italic(CTSlantToWebItalic(slant));
-      metadata.set_weight(CTWeightToWebWeight(weight));
-      metadata.set_stretch(CTWidthToWebStretch(width));
-
-      blink::FontEnumerationTable_FontMetadata* added_font_meta =
+      blink::FontEnumerationTable_FontMetadata* metadata =
           font_enumeration_table->add_fonts();
-      *added_font_meta = metadata;
+      metadata->set_postscript_name(std::move(postscript_name));
+      metadata->set_full_name(base::SysCFStringRefToUTF8(cf_full_name.get()));
+      metadata->set_family(base::SysCFStringRefToUTF8(cf_family.get()));
+      metadata->set_style(base::SysCFStringRefToUTF8(cf_style.get()));
+      metadata->set_italic(CTSlantToWebItalic(slant));
+      metadata->set_weight(CTWeightToWebWeight(weight));
+      metadata->set_stretch(CTWidthToWebStretch(width));
     }
 
     BuildEnumerationCache(std::move(font_enumeration_table));
