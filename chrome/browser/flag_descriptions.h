@@ -2056,9 +2056,6 @@ extern const char kSharingHubLinkToggleDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
-extern const char kActionableContentSettingsName[];
-extern const char kActionableContentSettingsDescription[];
-
 extern const char kThemeRefactorAndroidName[];
 extern const char kThemeRefactorAndroidDescription[];
 

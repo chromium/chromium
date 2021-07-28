@@ -49,11 +49,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "actionable-content-settings",
-    "owners": ["oroshiba", "dullweber"],
-    "expiry_milestone": 93
-  },
-  {
     "name": "adaptive-button-in-top-toolbar",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 94

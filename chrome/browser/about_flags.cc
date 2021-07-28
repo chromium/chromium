@@ -205,7 +205,6 @@
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/webapps/android/features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
-#include "components/browser_ui/site_settings/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/external_intents/android/external_intents_features.h"
 #include "components/power_scheduler/power_scheduler_features.h"
@@ -7199,13 +7198,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPdfXfaFormsDescription, kOsAll,
      FEATURE_VALUE_TYPE(chrome_pdf::features::kPdfXfaSupport)},
 #endif  // BUILDFLAG(ENABLE_PDF)
-
-#if defined(OS_ANDROID)
-    {"actionable-content-settings",
-     flag_descriptions::kActionableContentSettingsName,
-     flag_descriptions::kActionableContentSettingsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(browser_ui::kActionableContentSettings)},
-#endif
 
     {"send-tab-to-self-when-signed-in",
      flag_descriptions::kSendTabToSelfWhenSignedInName,
