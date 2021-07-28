@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
