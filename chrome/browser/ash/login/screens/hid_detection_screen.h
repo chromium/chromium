@@ -45,7 +45,7 @@ class HIDDetectionScreen : public BaseScreen,
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
-  enum class Result { NEXT, SKIP, SKIPPED_FOR_TESTS };
+  enum class Result { NEXT, SKIPPED_FOR_TESTS };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

@@ -98,7 +98,6 @@
 -OobeCompletedUnownedTest.*
 -OobeConfigurationEnrollmentTest.*
 -OobeConfigurationTest.*
--OobeConfigurationTestNoHID.*
 -OobeDisplayChooserTest.*
 -OobeSpokenFeedbackTest.*
 -OobeTest.*

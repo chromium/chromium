@@ -90,7 +90,6 @@ class OobeConfigurationTest : public OobeBaseTest {
         fake_policy_dir_.GetPath());
   }
 
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // File name is based on the test name.
     base::FilePath file;
@@ -140,23 +139,6 @@ class OobeConfigurationTest : public OobeBaseTest {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(OobeConfigurationTest);
-};
-
-// EnterpriseEnrollmentConfigurationTest with no input devices.
-class OobeConfigurationTestNoHID : public OobeConfigurationTest {
- public:
-  OobeConfigurationTestNoHID() = default;
-  ~OobeConfigurationTestNoHID() override = default;
-
- protected:
-  test::HIDControllerMixin hid_controller_{&mixin_host_};
-
- private:
-  // HID detection screen only appears for Chromebases, Chromebits, and
-  // Chromeboxes.
-  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
-                                                 base::Time::Now()};
-  DISALLOW_COPY_AND_ASSIGN(OobeConfigurationTestNoHID);
 };
 
 class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
@@ -293,20 +275,6 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestSkipUpdate) {
   LoadConfiguration();
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
-}
-
-// Check that HID detection screen is shown if it is not specified by
-// configuration.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestShowHID) {
-  LoadConfiguration();
-  OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
-}
-
-// Check that HID detection screen is really skipped and rest of configuration
-// is applied.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestSkipHIDDetection) {
-  LoadConfiguration();
-  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
 }  // namespace chromeos

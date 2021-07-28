@@ -15,12 +15,6 @@ namespace configuration {
 // These keys are used in
 // chrome/browser/resources/chromeos/login/components/oobe_types.js
 
-// == HID Detection screen:
-
-// Boolean value indicating if we should skip HID detection screen altogether.
-
-const char kSkipHIDDetection[] = "skipHIDDetection";
-
 // == Welcome screen:
 
 // Boolean value indicating if "Next" button on welcome screen is pressed
@@ -115,8 +109,6 @@ constexpr struct {
   ValueType type;
   ConfigurationHandlerSide side;
 } kAllConfigurationKeys[] = {
-    {kSkipHIDDetection, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
     {kWelcomeNext, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
     {kLanguage, ValueType::STRING, ConfigurationHandlerSide::HANDLER_JS},
     {kInputMethod, ValueType::STRING, ConfigurationHandlerSide::HANDLER_JS},

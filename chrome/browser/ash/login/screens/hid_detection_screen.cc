@@ -73,7 +73,6 @@ std::string HIDDetectionScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
-    case Result::SKIP:
     case Result::SKIPPED_FOR_TESTS:
       return BaseScreen::kNotApplicable;
   }
@@ -156,15 +155,6 @@ void HIDDetectionScreen::CheckIsScreenRequired(
 }
 
 bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
-  const auto* skip_screen_key = context->configuration.FindKeyOfType(
-      configuration::kSkipHIDDetection, base::Value::Type::BOOLEAN);
-  const bool skip_screen = skip_screen_key && skip_screen_key->GetBool();
-
-  if (skip_screen) {
-    Exit(Result::SKIP);
-    return true;
-  }
-
   if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableHIDDetectionOnOOBEForTesting)) {

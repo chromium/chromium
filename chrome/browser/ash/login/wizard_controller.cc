@@ -1122,8 +1122,7 @@ void WizardController::OnHidDetectionScreenExit(
   OnScreenExit(HIDDetectionView::kScreenId,
                HIDDetectionScreen::GetResultString(result));
 
-  if ((result == HIDDetectionScreen::Result::SKIP ||
-       result == HIDDetectionScreen::Result::SKIPPED_FOR_TESTS) &&
+  if (result == HIDDetectionScreen::Result::SKIPPED_FOR_TESTS &&
       current_screen_) {
     return;
   }
