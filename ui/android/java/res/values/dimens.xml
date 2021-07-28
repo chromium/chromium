@@ -105,4 +105,7 @@
 
     <!-- Arbitrary shadow length for elevation levels -->
     <dimen name="default_shadow_length_elev_2">6dp</dimen>
+
+    <!-- Incognito NTP -->
+    <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
 </resources>

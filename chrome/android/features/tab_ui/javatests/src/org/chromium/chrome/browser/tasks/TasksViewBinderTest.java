@@ -38,19 +38,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
-import android.widget.ListView;
-import android.widget.ScrollView;
 
-import androidx.core.widget.NestedScrollView;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.action.ScrollToAction;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -267,33 +257,6 @@ public class TasksViewBinderTest extends DummyUiChromeActivityTestCase {
         });
         assertTrue(isViewVisible(R.id.new_tab_incognito_container));
 
-        mViewClicked.set(false);
-        // Default scrollTo() cannot be used for NestedScrollView. Add a customized scrollTo for
-        // scrolling to learn_more button.
-        ViewAction customizedScrollTo = new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return Matchers.allOf(
-                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
-                        ViewMatchers.isDescendantOfA(
-                                Matchers.anyOf(ViewMatchers.isAssignableFrom(ScrollView.class),
-                                        ViewMatchers.isAssignableFrom(HorizontalScrollView.class),
-                                        ViewMatchers.isAssignableFrom(ListView.class),
-                                        ViewMatchers.isAssignableFrom(NestedScrollView.class))));
-            }
-
-            @Override
-            public String getDescription() {
-                return "scroll to";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                new ScrollToAction().perform(uiController, view);
-            }
-        };
-        onView(withId(R.id.learn_more)).perform(customizedScrollTo, click());
-        assertTrue(mViewClicked.get());
     }
 
     @Test

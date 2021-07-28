@@ -55,9 +55,10 @@ public class IncognitoDescriptionView extends LinearLayout {
     private TextView mCookieControlsSubtitle;
 
     private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 40;
+    private static final int BULLETPOINTS_MARGIN_BOTTOM_DP = 12;
     private static final int CONTENT_WIDTH_DP = 600;
     private static final int WIDE_LAYOUT_THRESHOLD_DP = 720;
-    private static final int COOKIES_CONTROL_MARGIN_TOP_DP = 24;
+    private static final int COOKIES_CONTROL_MARGIN_TOP_DP = 12;
 
     /** Default constructor needed to inflate via XML. */
     public IncognitoDescriptionView(Context context, AttributeSet attrs) {
@@ -208,10 +209,8 @@ public class IncognitoDescriptionView extends LinearLayout {
 
             // The bulletpoints container takes the same width as subtitle. Since the width can
             // not be directly measured at this stage, we must calculate it manually.
-            mBulletpointsContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                    dpToPx(getContext(),
-                            Math.min(CONTENT_WIDTH_DP, mWidthDp - 2 * paddingHorizontalDp)),
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            mBulletpointsContainer.getLayoutParams().width = dpToPx(
+                    getContext(), Math.min(CONTENT_WIDTH_DP, mWidthDp - 2 * paddingHorizontalDp));
         } else {
             // Large padding.
             paddingHorizontalDp = 0; // Should not be necessary on a screen this large.
@@ -226,8 +225,7 @@ public class IncognitoDescriptionView extends LinearLayout {
             int contentWidthPx = dpToPx(getContext(), CONTENT_WIDTH_DP);
             mSubtitle.setLayoutParams(new LinearLayout.LayoutParams(
                     contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
-            mBulletpointsContainer.setLayoutParams(new LinearLayout.LayoutParams(
-                    contentWidthPx, LinearLayout.LayoutParams.WRAP_CONTENT));
+            mBulletpointsContainer.getLayoutParams().width = contentWidthPx;
         }
 
         // Apply the bulletpoints orientation.
@@ -244,8 +242,9 @@ public class IncognitoDescriptionView extends LinearLayout {
         mContainer.setPadding(dpToPx(getContext(), paddingHorizontalDp), paddingTop,
                 dpToPx(getContext(), paddingHorizontalDp), paddingBottom);
 
-        int spacingPx =
-                (int) Math.ceil(mParagraphs[0].getTextSize() * (mHeightDp <= 600 ? 1 : 1.5));
+        // Total space between adjacent paragraphs (Including margins, paddings, etc.)
+        int totalSpaceBetweenViews = getContext().getResources().getDimensionPixelSize(
+                R.dimen.incognito_ntp_total_space_between_views);
 
         for (TextView paragraph : mParagraphs) {
             // If bulletpoints are arranged horizontally, there should be space between them.
@@ -255,25 +254,29 @@ public class IncognitoDescriptionView extends LinearLayout {
                     : 0;
 
             ((LinearLayout.LayoutParams) paragraph.getLayoutParams())
-                    .setMargins(0, spacingPx, rightMarginPx, 0);
+                    .setMargins(0, totalSpaceBetweenViews, rightMarginPx, 0);
             paragraph.setLayoutParams(paragraph.getLayoutParams()); // Apply the new layout.
         }
 
-        // Set up margins of learn more link to maintain a constant space between link text
-        // and other views.
+        // The learn more text view has height of min_touch_target_size. Typically the actual text
+        // is not that tall, and already has some space. We want to have a
+        // totalSpaceBetweenViews tall gap between the learn more text and the adjacent
+        // elements. So add the difference as an additional margin.
         int innerSpacing = (int) ((getContext().getResources().getDimensionPixelSize(
                                            R.dimen.min_touch_target_size)
                                           - mLearnMore.getTextSize())
                 / 2);
-        int learnMoreSpacingTop = spacingPx - innerSpacing;
+        int learnMoreSpacingTop = totalSpaceBetweenViews - innerSpacing
+                - dpToPx(getContext(), BULLETPOINTS_MARGIN_BOTTOM_DP);
         int learnMoreSpacingBottom =
                 dpToPx(getContext(), COOKIES_CONTROL_MARGIN_TOP_DP) - innerSpacing;
+
         LinearLayout.LayoutParams params = (LayoutParams) mLearnMore.getLayoutParams();
-        params.setMargins(
-                0, Math.max(learnMoreSpacingTop, 0), 0, Math.max(learnMoreSpacingBottom, 0));
+        params.setMargins(0, learnMoreSpacingTop, 0, learnMoreSpacingBottom);
         mLearnMore.requestLayout();
 
-        ((LinearLayout.LayoutParams) mHeader.getLayoutParams()).setMargins(0, spacingPx, 0, 0);
+        ((LinearLayout.LayoutParams) mHeader.getLayoutParams())
+                .setMargins(0, totalSpaceBetweenViews, 0, 0);
         mHeader.setLayoutParams(mHeader.getLayoutParams()); // Apply the new layout.
     }
 

@@ -191,6 +191,7 @@ android_resources("ui_java_resources") {
     "java/res/layout/dropdown_footer_wrapper_jellybean.xml",
     "java/res/layout/dropdown_item.xml",
     "java/res/layout/dropdown_window.xml",
+    "java/res/values-h600dp/dimens.xml",
     "java/res/values-ldrtl/dimens.xml",
     "java/res/values-ldrtl/values.xml",
     "java/res/values-night/colors.xml",
