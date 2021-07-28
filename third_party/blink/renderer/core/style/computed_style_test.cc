@@ -98,7 +98,13 @@ TEST_F(ComputedStyleTest, FocusRingWidth) {
   EXPECT_EQ(3, style->GetOutlineStrokeWidthForFocusRing());
   style->SetEffectiveZoom(3.5);
   style->SetOutlineWidth(4);
+#if defined(OS_MAC)
+  EXPECT_EQ(10, style->GetOutlineStrokeWidthForFocusRing());
+#elif defined(OS_ANDROID)
+  EXPECT_EQ(10.5, style->GetOutlineStrokeWidthForFocusRing());
+#else
   EXPECT_EQ(3.5, style->GetOutlineStrokeWidthForFocusRing());
+#endif
 }
 
 TEST_F(ComputedStyleTest, FocusRingOutset) {
@@ -106,7 +112,11 @@ TEST_F(ComputedStyleTest, FocusRingOutset) {
   style->SetOutlineStyle(EBorderStyle::kSolid);
   style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
   style->SetEffectiveZoom(4.75);
+#if defined(OS_MAC) || defined(OS_ANDROID)
+  EXPECT_EQ(10, style->OutlineOutsetExtent());
+#else
   EXPECT_EQ(4, style->OutlineOutsetExtent());
+#endif
 }
 
 TEST_F(ComputedStyleTest, SVGStackingContext) {
