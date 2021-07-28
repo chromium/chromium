@@ -7,11 +7,11 @@
 
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
 
 namespace content {
 class NavigationHandle;
@@ -73,7 +73,8 @@ class SafeBrowsingService {
 
   safe_browsing::PingManager* GetPingManager();
 
-  scoped_refptr<SafeBrowsingUIManager> GetSafeBrowsingUIManager();
+  scoped_refptr<safe_browsing::SafeBrowsingUIManager>
+  GetSafeBrowsingUIManager();
 
  private:
   // Executed on IO thread
@@ -92,7 +93,7 @@ class SafeBrowsingService {
 
   // The UI manager handles showing interstitials. Accessed on both UI and IO
   // thread.
-  scoped_refptr<SafeBrowsingUIManager> ui_manager_;
+  scoped_refptr<safe_browsing::SafeBrowsingUIManager> ui_manager_;
 
   // This is what owns the URLRequestContext inside the network service. This
   // is used by SimpleURLLoader for Safe Browsing requests.

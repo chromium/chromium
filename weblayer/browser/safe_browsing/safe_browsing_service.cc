@@ -30,6 +30,8 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_navigation_throttle.h"
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
+#include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
+#include "weblayer/browser/safe_browsing/weblayer_ui_manager_delegate.h"
 
 namespace weblayer {
 
@@ -169,14 +171,17 @@ safe_browsing::PingManager* SafeBrowsingService::GetPingManager() {
   return ping_manager_.get();
 }
 
-scoped_refptr<SafeBrowsingUIManager>
+scoped_refptr<safe_browsing::SafeBrowsingUIManager>
 SafeBrowsingService::GetSafeBrowsingUIManager() {
   return ui_manager_;
 }
 
 void SafeBrowsingService::CreateSafeBrowsingUIManager() {
   DCHECK(!ui_manager_);
-  ui_manager_ = new SafeBrowsingUIManager(this);
+  ui_manager_ = new safe_browsing::SafeBrowsingUIManager(
+      std::make_unique<WebLayerSafeBrowsingUIManagerDelegate>(),
+      std::make_unique<WebLayerSafeBrowsingBlockingPageFactory>(),
+      GURL(url::kAboutBlankURL));
 }
 
 void SafeBrowsingService::CreateAndStartSafeBrowsingDBManager() {

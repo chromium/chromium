@@ -5,18 +5,18 @@
 #include "weblayer/browser/safe_browsing/safe_browsing_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_handle.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
-#include "weblayer/browser/safe_browsing/safe_browsing_ui_manager.h"
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
 
 namespace weblayer {
 
 SafeBrowsingNavigationThrottle::SafeBrowsingNavigationThrottle(
     content::NavigationHandle* handle,
-    SafeBrowsingUIManager* ui_manager)
+    safe_browsing::SafeBrowsingUIManager* ui_manager)
     : content::NavigationThrottle(handle), ui_manager_(ui_manager) {}
 
 const char* SafeBrowsingNavigationThrottle::GetNameForLogging() {

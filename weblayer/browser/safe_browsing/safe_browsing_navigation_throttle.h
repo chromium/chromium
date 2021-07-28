@@ -11,19 +11,23 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-namespace weblayer {
+namespace safe_browsing {
 class SafeBrowsingUIManager;
+}
+
+namespace weblayer {
 
 class SafeBrowsingNavigationThrottle : public content::NavigationThrottle {
  public:
-  SafeBrowsingNavigationThrottle(content::NavigationHandle* handle,
-                                 SafeBrowsingUIManager* ui_manager);
+  SafeBrowsingNavigationThrottle(
+      content::NavigationHandle* handle,
+      safe_browsing::SafeBrowsingUIManager* ui_manager);
   ~SafeBrowsingNavigationThrottle() override {}
   const char* GetNameForLogging() override;
   content::NavigationThrottle::ThrottleCheckResult WillFailRequest() override;
 
  private:
-  SafeBrowsingUIManager* ui_manager_;
+  safe_browsing::SafeBrowsingUIManager* ui_manager_;
 };
 
 }  // namespace weblayer
