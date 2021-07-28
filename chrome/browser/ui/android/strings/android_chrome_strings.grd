@@ -4761,6 +4761,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CSN_PROVIDER_LABEL" desc="Label that shows the source of a list of clickalbe URLs. This should have a new line character in the middle." translateable="false">
       Results from\n<ph name="PROVIDER">%1$s</ph>
       </message>
+      <message name="IDS_CSN_ACCESSIBILITY_RESULTS_FROM_GOOGLE" desc="Content description for the Google search results button.">
+        Search results from Google.
+      </message>
 
       <!-- WebID Account Selection strings -->
       <message name="IDS_ACCOUNT_SELECTION_SHEET_TITLE_SINGLE" desc="Header for Account Selection sheet where users only have a single account to select." translateable="false">

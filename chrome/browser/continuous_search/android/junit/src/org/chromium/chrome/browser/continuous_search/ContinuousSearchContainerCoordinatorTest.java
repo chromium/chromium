@@ -204,7 +204,7 @@ public class ContinuousSearchContainerCoordinatorTest {
         Assert.assertNull(mRoot.findViewById(STUB_ID));
         Assert.assertNotNull(mRoot.findViewById(INFLATED_ID));
         // UI is still in flux so just assert that the items exist.
-        Assert.assertEquals(2, recyclerView.getAdapter().getItemCount());
+        Assert.assertEquals(1, recyclerView.getAdapter().getItemCount());
 
         // Invalidate.
         mUserData.invalidateData();

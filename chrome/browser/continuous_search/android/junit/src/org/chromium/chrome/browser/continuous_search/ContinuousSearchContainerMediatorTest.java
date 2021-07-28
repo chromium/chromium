@@ -499,7 +499,7 @@ public class ContinuousSearchContainerMediatorTest {
         };
         mMediator.addHeightObserver(heightObserver);
         mCurrentExpectedHeight = JAVA_HEIGHT;
-        mMediator.show();
+        mMediator.show(null);
         mMediator.removeHeightObserver(heightObserver);
         Assert.assertTrue("Mediator should be visible.", mMediator.isVisibleForTesting());
         Assert.assertEquals(
