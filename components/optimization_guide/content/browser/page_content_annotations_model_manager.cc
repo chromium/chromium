@@ -24,6 +24,15 @@ const char kPageTopicsModelMetadataTypeUrl[] =
 // with certainty that no single label in the taxonomy is appropriate.
 const int kNoneCategoryId = -2;
 
+std::unique_ptr<history::VisitContentModelAnnotations>
+GetOrCreateCurrentContentModelAnnotations(
+    std::unique_ptr<history::VisitContentModelAnnotations>
+        current_annotations) {
+  if (current_annotations)
+    return current_annotations;
+  return std::make_unique<history::VisitContentModelAnnotations>();
+}
+
 }  // namespace
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
@@ -55,6 +64,42 @@ PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
 void PageContentAnnotationsModelManager::Annotate(
     const std::string& text,
     PageContentAnnotatedCallback callback) {
+  ExecutePageEntitiesModel(text, /*current_annotations=*/nullptr,
+                           std::move(callback));
+}
+
+void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
+    const std::string& text,
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    PageContentAnnotatedCallback callback) {
+  if (page_entities_model_executor_) {
+    page_entities_model_executor_->ExecuteModelWithInput(
+        text,
+        base::BindOnce(&PageContentAnnotationsModelManager::
+                           OnPageEntitiesModelExecutionCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), text,
+                       std::move(current_annotations), std::move(callback)));
+  } else {
+    OnPageEntitiesModelExecutionCompleted(text, std::move(current_annotations),
+                                          std::move(callback),
+                                          /*output=*/absl::nullopt);
+  }
+}
+
+void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
+    const std::string& text,
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    PageContentAnnotatedCallback callback,
+    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
+  // TODO(crbug/1228790): Convert page entities to history representation.
+  ExecutePageTopicsModel(text, std::move(current_annotations),
+                         std::move(callback));
+}
+
+void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
+    const std::string& text,
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    PageContentAnnotatedCallback callback) {
   bool model_available = page_topics_model_executor_handle_->ModelAvailable();
 
   base::UmaHistogramBoolean(
@@ -65,6 +110,7 @@ void PageContentAnnotationsModelManager::Annotate(
     // TODO(crbug/1177102): Figure out if we want to enqueue it for later if
     // model isn't ready, but if we call this when the model isn't ready, it
     // will just return absl::nullopt for now.
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -73,6 +119,8 @@ void PageContentAnnotationsModelManager::Annotate(
           proto::PageTopicsModelMetadata>();
   if (!model_metadata) {
     NOTREACHED();
+    // Continue to run the callback since NOTREACHED is a no-op in prod.
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -87,26 +135,36 @@ void PageContentAnnotationsModelManager::Annotate(
   }
   if (!has_supported_output) {
     // TODO(crbug/1177102): Add histogram.
+    std::move(callback).Run(absl::nullopt);
     return;
   }
+
   page_topics_model_executor_handle_->ExecuteModelWithInput(
       base::BindOnce(&PageContentAnnotationsModelManager::
                          OnPageTopicsModelExecutionCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(current_annotations), std::move(callback),
                      *model_metadata),
       text);
 }
 
 void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
     PageContentAnnotatedCallback callback,
     const proto::PageTopicsModelMetadata& model_metadata,
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
-  absl::optional<history::VisitContentModelAnnotations> content_annotations;
   if (output) {
-    content_annotations =
-        GetContentModelAnnotationsFromOutput(model_metadata, *output);
+    current_annotations = GetOrCreateCurrentContentModelAnnotations(
+        std::move(current_annotations));
+    PopulateContentModelAnnotationsFromPageTopicsModelOutput(
+        model_metadata, *output, current_annotations.get());
   }
-  std::move(callback).Run(content_annotations);
+
+  if (current_annotations) {
+    std::move(callback).Run(*current_annotations);
+    return;
+  }
+  std::move(callback).Run(absl::nullopt);
 }
 
 absl::optional<int64_t>
@@ -119,10 +177,13 @@ PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
   return absl::nullopt;
 }
 
-history::VisitContentModelAnnotations
-PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
-    const proto::PageTopicsModelMetadata& model_metadata,
-    const std::vector<tflite::task::core::Category>& model_output) const {
+void PageContentAnnotationsModelManager::
+    PopulateContentModelAnnotationsFromPageTopicsModelOutput(
+        const proto::PageTopicsModelMetadata& model_metadata,
+        const std::vector<tflite::task::core::Category>& model_output,
+        history::VisitContentModelAnnotations* out_content_annotations) const {
+  out_content_annotations->page_topics_model_version = model_metadata.version();
+
   absl::optional<std::string> floc_protected_category_name;
   if (model_metadata.output_postprocessing_params()
           .has_floc_protected_params()) {
@@ -130,12 +191,15 @@ PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
                                        .floc_protected_params()
                                        .category_name();
   }
-  float floc_protected_score = -1.0;
+  // -1 is a sentinel value that means the floc_protected-ness was not
+  // evaluated.
+  out_content_annotations->floc_protected_score = -1.0;
   std::vector<std::pair<int, float>> category_candidates;
   for (const auto& category : model_output) {
     if (floc_protected_category_name &&
         category.class_name == *floc_protected_category_name) {
-      floc_protected_score = static_cast<float>(category.score);
+      out_content_annotations->floc_protected_score =
+          static_cast<float>(category.score);
       if (!model_metadata.output_postprocessing_params()
                .has_category_params()) {
         break;
@@ -154,8 +218,7 @@ PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
   // Postprocess categories.
   if (!model_metadata.output_postprocessing_params().has_category_params()) {
     // No parameters for postprocessing, so just return.
-    return history::VisitContentModelAnnotations(
-        floc_protected_score, /*categories=*/{}, model_metadata.version());
+    return;
   }
   const proto::PageTopicsCategoryPostprocessingParams category_params =
       model_metadata.output_postprocessing_params().category_params();
@@ -198,15 +261,13 @@ PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
 
   // Prune out none weights.
   if (total_weight == 0) {
-    return history::VisitContentModelAnnotations(
-        floc_protected_score, /*categories=*/{}, model_metadata.version());
+    return;
   }
   if (none_idx_and_weight) {
     if ((none_idx_and_weight->second / total_weight) >
         category_params.min_none_weight()) {
-      // None weight is too strong -
-      return history::VisitContentModelAnnotations(
-          floc_protected_score, /*categories=*/{}, model_metadata.version());
+      // None weight is too strong.
+      return;
     }
     // None weight doesn't matter, so prune it out.
     categories.erase(categories.begin() + none_idx_and_weight->first);
@@ -235,8 +296,7 @@ PageContentAnnotationsModelManager::GetContentModelAnnotationsFromOutput(
             category.first, static_cast<int>(100 * category.second)));
   }
   DCHECK_LE(final_categories.size(), max_categories);
-  return history::VisitContentModelAnnotations(
-      floc_protected_score, final_categories, model_metadata.version());
+  out_content_annotations->categories = final_categories;
 }
 
 }  // namespace optimization_guide
