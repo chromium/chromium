@@ -37,7 +37,6 @@ class DiscardsUI : public ui::MojoWebUIController {
 
  private:
   std::unique_ptr<discards::mojom::DetailsProvider> ui_handler_;
-  std::unique_ptr<discards::mojom::SiteDataProvider> site_data_provider_;
   std::string profile_id_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
