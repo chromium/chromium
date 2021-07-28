@@ -502,6 +502,9 @@ TEST_P(CredentialManagerImplTest, StoreFederatedAfterPassword) {
       passwords["federation://example.com/google.com"][0].date_created;
   federated.date_last_used =
       passwords["federation://example.com/google.com"][0].date_last_used;
+  federated.date_password_modified =
+      passwords["federation://example.com/google.com"][0]
+          .date_password_modified;
   EXPECT_THAT(passwords["federation://example.com/google.com"],
               ElementsAre(MatchesFormExceptStore(federated)));
 }

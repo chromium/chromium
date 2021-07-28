@@ -973,9 +973,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   // timestamp.
   EXPECT_GT(stored[signin_form.signon_realm][0].date_last_used,
             signin_form.date_last_used);
+  EXPECT_NE(stored[signin_form.signon_realm][0].date_password_modified,
+            base::Time());
   // Now make them equal to be able to check the equality of other fields.
   signin_form.date_last_used =
       stored[signin_form.signon_realm][0].date_last_used;
+  signin_form.date_password_modified =
+      stored[signin_form.signon_realm][0].date_password_modified;
   EXPECT_THAT(signin_form,
               MatchesFormExceptStore(stored[signin_form.signon_realm][0]));
 }
