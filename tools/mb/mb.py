@@ -1685,7 +1685,14 @@ class MetaBuildWrapper(object):
     executable = isolate_map[target].get('executable', target)
     executable_suffix = isolate_map[target].get(
         'executable_suffix', '.exe' if is_win else '')
-    extra_files = ['../../.vpython']
+
+    if isolate_map[target].get('python3'):
+      extra_files = ['../../.vpython3']
+      vpython_exe = 'vpython3'
+    else:
+      extra_files = ['../../.vpython']
+      vpython_exe = 'vpython'
+
     extra_files += [
       '../../testing/test_env.py',
     ]
@@ -1694,11 +1701,10 @@ class MetaBuildWrapper(object):
       if asan:
         cmdline += [os.path.join('bin', 'run_with_asan'), '--']
       cmdline += [
-          'vpython',
-          '../../build/android/test_wrapper/logdog_wrapper.py',
-          '--target', target,
-          '--logdog-bin-cmd', '../../.task_template_packages/logdog_butler',
-          '--store-tombstones']
+          vpython_exe, '../../build/android/test_wrapper/logdog_wrapper.py',
+          '--target', target, '--logdog-bin-cmd',
+          '../../.task_template_packages/logdog_butler', '--store-tombstones'
+      ]
       if clang_coverage or java_coverage:
         cmdline += ['--coverage-dir', '${ISOLATED_OUTDIR}']
     elif is_fuchsia and test_type != 'script':
@@ -1715,7 +1721,7 @@ class MetaBuildWrapper(object):
     elif use_xvfb and test_type == 'windowed_test_launcher':
       extra_files.append('../../testing/xvfb.py')
       cmdline += [
-          'vpython',
+          vpython_exe,
           '../../testing/xvfb.py',
           './' + str(executable) + executable_suffix,
           '--test-launcher-bot-mode',
@@ -1734,7 +1740,7 @@ class MetaBuildWrapper(object):
         cmdline += ['--devtools-code-coverage=${ISOLATED_OUTDIR}']
     elif test_type in ('windowed_test_launcher', 'console_test_launcher'):
       cmdline += [
-          'vpython',
+          vpython_exe,
           '../../testing/test_env.py',
           './' + str(executable) + executable_suffix,
           '--test-launcher-bot-mode',
@@ -1760,7 +1766,7 @@ class MetaBuildWrapper(object):
       if is_android:
         extra_files.append('../../build/android/test_wrapper/logdog_wrapper.py')
         cmdline += [
-            'vpython',
+            vpython_exe,
             '../../testing/test_env.py',
             '../../build/android/test_wrapper/logdog_wrapper.py',
             '--script',
@@ -1770,8 +1776,7 @@ class MetaBuildWrapper(object):
         ]
       else:
         cmdline += [
-            'vpython',
-            '../../testing/test_env.py',
+            vpython_exe, '../../testing/test_env.py',
             '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
         ]
     elif test_type == 'additional_compile_target':
