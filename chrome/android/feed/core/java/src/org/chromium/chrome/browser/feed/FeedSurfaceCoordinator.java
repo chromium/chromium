@@ -18,7 +18,6 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -29,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -84,7 +82,8 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDelegate {
+public class FeedSurfaceCoordinator
+        implements FeedSurfaceProvider, FeedIPHDelegate, SwipeRefreshLayout.OnRefreshListener {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
@@ -260,7 +259,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate,
             @NewTabPageLaunchOrigin int launchOrigin,
             PrivacyPreferencesManagerImpl privacyPreferencesManager,
-            FeedLaunchReliabilityLoggingState launchReliabilityLoggingState) {
+            FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
+            @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
         FeedSurfaceTracker.getInstance().initServiceBridge();
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -276,6 +276,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
         mLaunchReliabilityLoggingState = launchReliabilityLoggingState;
         mPrivacyPreferencesManager = privacyPreferencesManager;
+        mSwipeRefreshLayout = swipeRefreshLayout;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -312,13 +313,24 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
         mMediator =
                 new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mPageNavigationDelegate,
                         mSectionHeaderModel, getTabIdFromLaunchOrigin(launchOrigin));
+
         // Creates streams, initiates content changes.
         mMediator.updateContent();
         FeedSurfaceTracker.getInstance().trackSurface(this);
+
+        // Enable pull-to-refresh.
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.enableSwipe(externalScrollableContainerDelegate);
+            mSwipeRefreshLayout.addOnRefreshListener(this);
+        }
     }
 
     @Override
     public void destroy() {
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.removeOnRefreshListener(this);
+            mSwipeRefreshLayout.disableSwipe();
+        }
         stopIph();
         mMediator.destroy();
         if (mFeedSurfaceLifecycleManager != null) mFeedSurfaceLifecycleManager.destroy();
@@ -368,6 +380,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
     public void captureThumbnail(Canvas canvas) {
         ViewUtils.captureBitmap(mRootView, canvas);
         mMediator.onThumbnailCaptured();
+    }
+
+    @Override
+    public void onRefresh() {
+        mStream.triggerRefresh((Boolean v) -> { mSwipeRefreshLayout.setRefreshing(false); });
     }
 
     /**
@@ -532,8 +549,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
         mFeedSurfaceLifecycleManager = mDelegate.createStreamLifecycleManager(mActivity, this);
         mRecyclerView.setBackgroundResource(R.color.default_bg_color);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
-            mSwipeRefreshLayout = createSwipeRefreshLayout();
+        // For New Tab Page, mSwipeRefreshLayout has not been added to a view container. We need to
+        // do it here.
+        if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.getParent() == null) {
             mRootView.addView(mSwipeRefreshLayout);
             mSwipeRefreshLayout.addView(mRecyclerView);
         } else {
@@ -569,31 +587,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
         // Explicitly request focus on the scroll container to avoid UrlBar being focused after
         // the scroll container for policy is removed.
         mRecyclerView.requestFocus();
-    }
-
-    /**
-     * Create a {@link SwipeRefreshLayout} to do pull-to-refresh.
-     */
-    FeedSwipeRefreshLayout createSwipeRefreshLayout() {
-        FeedSwipeRefreshLayout swipeRefreshLayout = new FeedSwipeRefreshLayout(mActivity);
-        swipeRefreshLayout.setLayoutParams(
-                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(
-                org.chromium.ui.R.color.default_bg_color_elev_2);
-        swipeRefreshLayout.setColorSchemeResources(
-                org.chromium.ui.R.color.default_control_color_active);
-        swipeRefreshLayout.setEnabled(true);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                String accessibilityRefreshString =
-                        mActivity.getResources().getString(R.string.accessibility_swipe_refresh);
-                swipeRefreshLayout.announceForAccessibility(accessibilityRefreshString);
-                mStream.triggerRefresh((Boolean v) -> { swipeRefreshLayout.setRefreshing(false); });
-                RecordUserAction.record("MobilePullGestureReloadNTP");
-            }
-        });
-        return swipeRefreshLayout;
     }
 
     /**
@@ -771,7 +764,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
         if (mStream == null) return;
 
         // Provide a delegate for the container of the feed surface that is handled by the feed
-        // coordinator itself when not provided externally (e.g., by the Start surface).
+        // coordinator itself when not provided externally (e.g., by the NewTabPage).
         if (mScrollableContainerDelegate == null) {
             mScrollableContainerDelegate = new ScrollableContainerDelegateImpl();
         }
@@ -867,7 +860,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedIPHDeleg
 
     @Override
     public boolean canScrollUp() {
-        return mRecyclerView.canScrollVertically(-1);
+        return mSwipeRefreshLayout.canScrollVertically(-1);
     }
 
     private boolean isReliabilityLoggingEnabled() {

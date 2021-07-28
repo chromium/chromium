@@ -7,6 +7,7 @@ package org.chromium.chrome.features.start_surface;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.feed.FeedLaunchReliabilityLoggingState;
+import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -71,7 +73,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final BottomSheetController mBottomSheetController;
     private final Supplier<Tab> mParentTabSupplier;
     private final WindowAndroid mWindowAndroid;
-    private final ViewGroup mContainerView;
+    private ViewGroup mContainerView;
     private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
     private final TabModelSelector mTabModelSelector;
     private final BrowserControlsManager mBrowserControlsManager;
@@ -140,6 +142,10 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Nullable
     private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
+
+    // For pull-to-refresh.
+    @Nullable
+    private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
         @Override
@@ -249,6 +255,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                     containerView, shareDelegateSupplier, multiWindowModeStateDispatcher,
                     scrimCoordinator, /* rootView= */ containerView);
         } else {
+            // createSwipeRefreshLayout has to be called before creating any surface.
+            createSwipeRefreshLayout();
             createAndSetStartSurface(excludeMVTiles);
         }
 
@@ -361,11 +369,12 @@ public class StartSurfaceCoordinator implements StartSurface {
 
         mIsInitializedWithNative = true;
         if (mIsStartSurfaceEnabled) {
-            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
-                    mTasksSurface.getBodyViewContainer(), mPropertyModel, true,
-                    mBottomSheetController, mParentTabSupplier,
-                    new ScrollableContainerDelegateImpl(), mSnackbarManager, mShareDelegateSupplier,
-                    mWindowAndroid, mTabModelSelector, mFeedLaunchReliabilityLoggingState);
+            mExploreSurfaceCoordinator =
+                    new ExploreSurfaceCoordinator(mActivity, mTasksSurface.getBodyViewContainer(),
+                            mPropertyModel, true, mBottomSheetController, mParentTabSupplier,
+                            new ScrollableContainerDelegateImpl(), mSnackbarManager,
+                            mShareDelegateSupplier, mWindowAndroid, mTabModelSelector,
+                            mFeedLaunchReliabilityLoggingState, mSwipeRefreshLayout);
         }
         mStartSurfaceMediator.initWithNative(
                 mIsStartSurfaceEnabled ? mOmniboxStubSupplier.get() : null,
@@ -568,5 +577,24 @@ public class StartSurfaceCoordinator implements StartSurface {
         // Start surface is eanbled in the fieldtrial_testing_config.json, which requires update of
         // the other browser tests.
         return finishingOrDestroyed;
+    }
+
+    /**
+     * Creates a {@link SwipeRefreshLayout} to do a pull-to-refresh.
+     */
+    private void createSwipeRefreshLayout() {
+        assert mSwipeRefreshLayout == null;
+        mSwipeRefreshLayout = FeedSwipeRefreshLayout.create(mActivity);
+
+        // If FeedSwipeRefreshLayout is not created because the feature is not enabled, don't create
+        // another layer.
+        if (mSwipeRefreshLayout == null) return;
+
+        // SwipeRefreshLayout can only support one direct child. So we have to create a FrameLayout
+        // as a container of possible more than one task views.
+        mContainerView.addView(mSwipeRefreshLayout);
+        FrameLayout directChildHolder = new FrameLayout(mActivity);
+        mSwipeRefreshLayout.addView(directChildHolder);
+        mContainerView = directChildHolder;
     }
 }

@@ -77,16 +77,16 @@ public class ExploreSurfaceViewBinderTest {
         // well in debug build).
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mExploreSurfaceCoordinator =
-                    new ExploreSurfaceCoordinator(mActivityTestRule.getActivity(),
-                            mActivityTestRule.getActivity().getCompositorViewHolder(),
-                            mPropertyModel, true, mBottomSheetController,
-                            new ObservableSupplierImpl<>(), mScrollableContainerDelegate,
-                            mActivityTestRule.getActivity().getSnackbarManager(),
-                            mActivityTestRule.getActivity().getShareDelegateSupplier(),
-                            mActivityTestRule.getActivity().getWindowAndroid(),
-                            mActivityTestRule.getActivity().getTabModelSelector(),
-                            new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L));
+            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(
+                    mActivityTestRule.getActivity(),
+                    mActivityTestRule.getActivity().getCompositorViewHolder(), mPropertyModel, true,
+                    mBottomSheetController, new ObservableSupplierImpl<>(),
+                    mScrollableContainerDelegate,
+                    mActivityTestRule.getActivity().getSnackbarManager(),
+                    mActivityTestRule.getActivity().getShareDelegateSupplier(),
+                    mActivityTestRule.getActivity().getWindowAndroid(),
+                    mActivityTestRule.getActivity().getTabModelSelector(),
+                    new FeedLaunchReliabilityLoggingState(SurfaceType.START_SURFACE, 0L), null);
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceController()
                             .createFeedSurfaceCoordinator(false, /* isPlaceholderShown= */ false,
