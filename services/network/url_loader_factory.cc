@@ -42,30 +42,6 @@ namespace {
 constexpr auto kUpdateLoadStatesInterval =
     base::TimeDelta::FromMilliseconds(250);
 
-// An enum class representing whether / how keepalive requests are blocked. This
-// is used for UMA so do NOT re-assign values.
-enum class KeepaliveBlockStatus {
-  // The request is not blocked.
-  kNotBlocked = 0,
-  // The request is blocked due to NetworkContext::CanCreateLoader.
-  kBlockedDueToCanCreateLoader = 1,
-  // The request is blocked due to the number of requests per process.
-  kBlockedDueToNumberOfRequestsPerProcess = 2,
-  // The request is blocked due to the number of requests per top-level frame.
-  kBlockedDueToNumberOfRequestsPerTopLevelFrame = 3,
-  // The request is blocked due to the number of requests in the system.
-  kBlockedDueToNumberOfRequests = 4,
-  // The request is blocked due to the total size of URL and request headers.
-  kBlockedDueToTotalSizeOfUrlAndHeaders = 5,
-  // The request is NOT blocked but the total size of URL and request headers
-  // exceeds 384kb.
-  kNotBlockedButUrlAndHeadersExceeds384kb = 6,
-  // The request is NOT blocked but the total size of URL and request headers
-  // exceeds 256kb.
-  kNotBlockedButUrlAndHeadersExceeds256kb = 7,
-  kMaxValue = kNotBlockedButUrlAndHeadersExceeds256kb,
-};
-
 }  // namespace
 
 constexpr int URLLoaderFactory::kMaxKeepaliveConnections;
