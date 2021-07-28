@@ -367,8 +367,7 @@ class NavigationPredictorPreconnectClientBrowserTestWithSearch
  public:
   NavigationPredictorPreconnectClientBrowserTestWithSearch()
       : NavigationPredictorPreconnectClientBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {kPreconnectToSearchTest, features::kPreconnectToSearchNonGoogle}, {});
+    feature_list_.InitWithFeatures({kPreconnectToSearchTest}, {});
   }
 
  private:
@@ -395,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = true;
 
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_TRUE(template_url);

@@ -68,6 +68,7 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
                                  base::StringPiece favicon_url,
                                  base::StringPiece encoding,
                                  const base::ListValue& alternate_urls_list,
+                                 bool preconnect_to_search_url,
                                  int prepopulate_id)
     : suggestions_url(suggest_url),
       image_url(image_url),
@@ -87,7 +88,8 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
       created_from_play_api(false),
       usage_count(0),
       prepopulate_id(prepopulate_id),
-      sync_guid(GenerateGUID(prepopulate_id)) {
+      sync_guid(GenerateGUID(prepopulate_id)),
+      preconnect_to_search_url(preconnect_to_search_url) {
   SetShortName(name);
   SetKeyword(keyword);
   SetURL(std::string(search_url));

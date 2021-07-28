@@ -112,8 +112,6 @@ class SearchEnginePreconnectorBrowserTest
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::map<GURL, std::unique_ptr<base::RunLoop>> run_loops_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorBrowserTest);
 };
 
 // static
@@ -126,16 +124,12 @@ class SearchEnginePreconnectorNoDelaysBrowserTest
   SearchEnginePreconnectorNoDelaysBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-         {features::kPreconnectToSearchNonGoogle, {{}}},
          {net::features::kNetUnusedIdleSocketTimeout,
           {{"unused_idle_socket_timeout_seconds", "0"}}}},
         {});
   }
 
   ~SearchEnginePreconnectorNoDelaysBrowserTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorNoDelaysBrowserTest);
 };
 
 // Test routinely flakes on the Mac10.11 Tests bot (https://crbug.com/1141028).
@@ -165,6 +159,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = true;
 
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_TRUE(template_url);
@@ -201,6 +196,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = true;
 
   // Set the DSE to the test URL.
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
@@ -214,6 +210,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
   data_fake_search.SetShortName(kShortName);
   data_fake_search.SetKeyword(data.short_name());
   data_fake_search.SetURL(kFakeSearch);
+  data_fake_search.preconnect_to_search_url = true;
 
   template_url = model->Add(std::make_unique<TemplateURL>(data_fake_search));
   ASSERT_TRUE(template_url);
@@ -246,7 +243,6 @@ class SearchEnginePreconnectorForegroundBrowserTest
                 {features::kPreconnectToSearch,
                  {{"startup_delay_ms", "1000000"},
                   {"skip_in_background", "true"}}},
-                {features::kPreconnectToSearchNonGoogle, {{}}},
             },
             {});
       } else {
@@ -255,7 +251,6 @@ class SearchEnginePreconnectorForegroundBrowserTest
                 {features::kPreconnectToSearch,
                  {{"startup_delay_ms", "1000000"},
                   {"skip_in_background", "false"}}},
-                {features::kPreconnectToSearchNonGoogle, {{}}},
             },
             {});
       }
@@ -269,9 +264,6 @@ class SearchEnginePreconnectorForegroundBrowserTest
   ~SearchEnginePreconnectorForegroundBrowserTest() override = default;
 
   base::SimpleTestTickClock tick_clock_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorForegroundBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -300,6 +292,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = true;
 
   // Set the DSE to the test URL.
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
@@ -314,6 +307,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
   data_fake_search.SetKeyword(data.short_name());
   const GURL fake_search_url(kFakeSearch);
   data_fake_search.SetURL(kFakeSearch);
+  data_fake_search.preconnect_to_search_url = true;
 
   template_url = model->Add(std::make_unique<TemplateURL>(data_fake_search));
   ASSERT_TRUE(template_url);
@@ -359,16 +353,12 @@ class SearchEnginePreconnectorKeepSocketBrowserTest
   SearchEnginePreconnectorKeepSocketBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
-         {features::kPreconnectToSearchNonGoogle, {{}}},
          {net::features::kNetUnusedIdleSocketTimeout,
           {{"unused_idle_socket_timeout_seconds", "60"}}}},
         {});
   }
 
   ~SearchEnginePreconnectorKeepSocketBrowserTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorKeepSocketBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorKeepSocketBrowserTest,
@@ -388,6 +378,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorKeepSocketBrowserTest,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = true;
 
   // Set the DSE to the test URL.
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
@@ -431,9 +422,6 @@ class SearchEnginePreconnectorDesktopAutoStartBrowserTest
   }
 
   ~SearchEnginePreconnectorDesktopAutoStartBrowserTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorDesktopAutoStartBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDesktopAutoStartBrowserTest,
@@ -442,29 +430,24 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorDesktopAutoStartBrowserTest,
   WaitForPreresolveCountForURL(GURL(kGoogleSearch), 2);
 }
 
-class SearchEnginePreconnectorGoogleOnlyBrowserTest
+class SearchEnginePreconnectorEnabledOnlyBrowserTest
     : public SearchEnginePreconnectorBrowserTest {
  public:
-  SearchEnginePreconnectorGoogleOnlyBrowserTest() {
+  SearchEnginePreconnectorEnabledOnlyBrowserTest() {
     {
       feature_list_.InitWithFeaturesAndParameters(
           {{features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
            {net::features::kNetUnusedIdleSocketTimeout,
             {{"unused_idle_socket_timeout_seconds", "60"}}}},
-          {
-              features::kPreconnectToSearchNonGoogle,
-          });
+          {});
     }
   }
 
-  ~SearchEnginePreconnectorGoogleOnlyBrowserTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SearchEnginePreconnectorGoogleOnlyBrowserTest);
+  ~SearchEnginePreconnectorEnabledOnlyBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorGoogleOnlyBrowserTest,
-                       GoogleOnly) {
+IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorEnabledOnlyBrowserTest,
+                       AllowedSearch) {
   constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
@@ -477,6 +460,7 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorGoogleOnlyBrowserTest,
   data.SetShortName(kShortName);
   data.SetKeyword(data.short_name());
   data.SetURL(GetTestURL(kSearchURL).spec());
+  data.preconnect_to_search_url = false;
 
   // Set the DSE to the test URL.
   TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
@@ -488,12 +472,13 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorGoogleOnlyBrowserTest,
       ->search_engine_preconnector()
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
-  TemplateURLData data_google_search;
-  data_google_search.SetShortName(kShortName);
-  data_google_search.SetKeyword(data.short_name());
-  data_google_search.SetURL(kGoogleSearch);
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
 
-  template_url = model->Add(std::make_unique<TemplateURL>(data_google_search));
+  template_url = model->Add(std::make_unique<TemplateURL>(data_allowed_search));
   ASSERT_TRUE(template_url);
   model->SetUserSelectedDefaultSearchProvider(template_url);
 

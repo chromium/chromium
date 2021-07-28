@@ -120,6 +120,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
                   &result->created_by_policy);
   dict.GetBoolean(DefaultSearchManager::kCreatedFromPlayAPI,
                   &result->created_from_play_api);
+  dict.GetBoolean(DefaultSearchManager::kPreconnectToSearchUrl,
+                  &result->preconnect_to_search_url);
   return result;
 }
 
@@ -184,6 +186,8 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
                        data.created_by_policy);
   url_dict->SetBoolean(DefaultSearchManager::kCreatedFromPlayAPI,
                        data.created_from_play_api);
+  url_dict->SetBoolean(DefaultSearchManager::kPreconnectToSearchUrl,
+                       data.preconnect_to_search_url);
   return url_dict;
 }
 
@@ -205,7 +209,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringPiece(engine.suggest_url_post_params),
       ToStringPiece(engine.image_url_post_params),
       ToStringPiece(engine.favicon_url), ToStringPiece(engine.encoding),
-      alternate_urls, engine.id);
+      alternate_urls,
+      ToStringPiece(engine.preconnect_to_search_url) == "ALLOWED", engine.id);
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
@@ -233,6 +238,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string search_url_post_params;
     std::string suggest_url_post_params;
     std::string image_url_post_params;
+    std::string preconnect_to_search_url;
     base::ListValue empty_list;
     const base::ListValue* alternate_urls = &empty_list;
     engine.GetString("suggest_url", &suggest_url);
@@ -245,11 +251,12 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     engine.GetString("suggest_url_post_params", &suggest_url_post_params);
     engine.GetString("image_url_post_params", &image_url_post_params);
     engine.GetList("alternate_urls", &alternate_urls);
+    engine.GetString("preconnect_to_search_url", &preconnect_to_search_url);
     return std::make_unique<TemplateURLData>(
         name, keyword, search_url, suggest_url, image_url, new_tab_url,
         contextual_search_url, logo_url, doodle_url, search_url_post_params,
         suggest_url_post_params, image_url_post_params, favicon_url, encoding,
-        *alternate_urls, id);
+        *alternate_urls, preconnect_to_search_url.compare("ALLOWED") == 0, id);
   }
   return nullptr;
 }

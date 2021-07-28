@@ -45,6 +45,7 @@ struct TemplateURLData {
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
                   const base::ListValue& alternate_urls_list,
+                  bool preconnect_to_search_url,
                   int prepopulate_id);
 
   ~TemplateURLData();
@@ -152,6 +153,10 @@ struct TemplateURLData {
   // A list of URL patterns that can be used, in addition to |url_|, to extract
   // search terms from a URL.
   std::vector<std::string> alternate_urls;
+
+  // Whether a connection to |url_| should regularly be established when this is
+  // set as the "default search engine".
+  bool preconnect_to_search_url = false;
 
  private:
   // Private so we can enforce using the setters and thus enforce that these
