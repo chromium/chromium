@@ -1476,6 +1476,14 @@
           'gtest_tests': 'linux_chromeos_gtests',
         },
       },
+      'linux-lacros-dbg': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'linux-lacros-rel': {
         'mixins': [
           'linux-bionic',

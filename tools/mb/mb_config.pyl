@@ -150,6 +150,7 @@
       'linux-chromeos-rel': 'chromeos_with_codecs_release_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot',
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
       'linux-cfm-rel': 'linux_cfm_release_bot',
     },
@@ -2331,6 +2332,10 @@
 
     'lacros_on_linux_release_bot': [
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_debug_bot': [
+      'lacros_on_linux', 'debug_bot', 'also_build_ash_chrome',
     ],
 
     'lacros_on_linux_release_not_build_ash_bot': [

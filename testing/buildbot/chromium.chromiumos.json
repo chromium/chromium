@@ -4823,6 +4823,11 @@
       }
     ]
   },
+  "linux-lacros-dbg": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "linux-lacros-rel": {
     "additional_compile_targets": [
       "all"
