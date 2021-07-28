@@ -908,7 +908,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
+       autofill::features::kAutofillKeyboardAccessory,
+       password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
 
@@ -936,7 +937,8 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
+       autofill::features::kAutofillKeyboardAccessory,
+       password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
 
@@ -968,7 +970,8 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
+       autofill::features::kAutofillKeyboardAccessory,
+       password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
 
@@ -1001,7 +1004,8 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {password_manager::features::kRecoverFromNeverSaveAndroid,
-       autofill::features::kAutofillKeyboardAccessory},
+       autofill::features::kAutofillKeyboardAccessory,
+       password_manager::features::kBiometricTouchToFill},
       {});
   CreateSheetController();
 

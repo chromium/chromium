@@ -68,11 +68,6 @@ void LogAuthResult(BiometricAuthFinalResult result) {
 // static
 scoped_refptr<password_manager::BiometricAuthenticator>
 ChromeBiometricAuthenticator::Create(WebContents* web_contents) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kBiometricTouchToFill)) {
-    return nullptr;
-  }
-
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   if (!window_android) {
     // GetWindowAndroid() can be null in tests.

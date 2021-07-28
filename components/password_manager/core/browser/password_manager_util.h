@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -140,6 +141,10 @@ const password_manager::PasswordForm* GetMatchForUpdating(
 // credentials), the original origin is kept.
 password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordFormDigest digest);
+
+// Helper which checks if biometric authentication is available.
+bool CanUseBiometricAuth(
+    password_manager::BiometricAuthenticator* authenticator);
 
 }  // namespace password_manager_util
 

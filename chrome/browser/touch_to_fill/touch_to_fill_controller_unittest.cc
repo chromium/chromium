@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
@@ -18,6 +19,7 @@
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -92,6 +94,9 @@ class TouchToFillControllerTest : public testing::Test {
 
     ON_CALL(driver_, GetLastCommittedURL())
         .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
+
+    scoped_feature_list_.InitAndEnableFeature(
+        password_manager::features::kBiometricTouchToFill);
   }
 
   std::unique_ptr<TouchToFillController> CreateNoAuthController() {
@@ -129,6 +134,7 @@ class TouchToFillControllerTest : public testing::Test {
   ukm::TestAutoSetUkmRecorder test_recorder_;
   TouchToFillController touch_to_fill_controller_{
       base::PassKey<TouchToFillControllerTest>(), authenticator_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth) {

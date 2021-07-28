@@ -14,7 +14,9 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::mojom::FocusedFieldType;
@@ -98,9 +100,7 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     DCHECK(client_);
     scoped_refptr<password_manager::BiometricAuthenticator> authenticator =
         client_->GetBiometricAuthenticator();
-    if (authenticator &&
-        authenticator->CanAuthenticate() ==
-            password_manager::BiometricsAvailability::kAvailable) {
+    if (password_manager_util::CanUseBiometricAuth(authenticator.get())) {
       authenticator_ = std::move(authenticator);
       authenticator_->Authenticate(
           password_manager::BiometricAuthRequester::kAllPasswordsList,

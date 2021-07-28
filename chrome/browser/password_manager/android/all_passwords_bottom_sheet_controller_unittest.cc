@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view.h"
@@ -20,6 +21,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,6 +121,9 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
  protected:
   AllPasswordsBottomSheetControllerTest() {
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
+
+    scoped_feature_list_.InitAndEnableFeature(
+        password_manager::features::kBiometricTouchToFill);
   }
 
   void createAllPasswordsController(
@@ -169,6 +174,7 @@ class AllPasswordsBottomSheetControllerTest : public testing::Test {
       std::make_unique<MockPasswordManagerClient>();
   scoped_refptr<MockBiometricAuthenticator> mock_authenticator_ =
       base::MakeRefCounted<MockBiometricAuthenticator>();
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AllPasswordsBottomSheetControllerTest, Show) {

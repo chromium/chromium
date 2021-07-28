@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -77,7 +78,7 @@ class MockPasswordManagerClient
 
 class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
  public:
-  AccountChooserDialogAndroidTest() {}
+  AccountChooserDialogAndroidTest();
   ~AccountChooserDialogAndroidTest() override {}
 
   void SetUp() override;
@@ -98,8 +99,14 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
       credential_callback_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   DISALLOW_COPY_AND_ASSIGN(AccountChooserDialogAndroidTest);
 };
+
+AccountChooserDialogAndroidTest::AccountChooserDialogAndroidTest() {
+  scoped_feature_list_.InitAndEnableFeature(
+      password_manager::features::kBiometricTouchToFill);
+}
 
 void AccountChooserDialogAndroidTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
