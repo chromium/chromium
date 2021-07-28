@@ -60,7 +60,7 @@ VisibilityMetricsLogger::GetPerWebViewOpenWebVisibilityHistogram() {
 base::HistogramBase*
 VisibilityMetricsLogger::GetOpenWebVisibileScreenPortionHistogram() {
   static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
-      "Android.WebView.WebViewOpenWebVisible.ScreenPortion",
+      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
       static_cast<int>(
           VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kMaxValue)));
   return histogram;
@@ -113,9 +113,14 @@ void VisibilityMetricsLogger::UpdateOpenWebScreenArea(int pixels,
 
   DCHECK(percentage >= 0);
   DCHECK(percentage <= 100);
-  current_open_web_screen_portion_ =
-      static_cast<VisibilityMetricsLogger::WebViewOpenWebScreenPortion>(
-          percentage / 10);
+  if (pixels == 0) {
+    current_open_web_screen_portion_ = VisibilityMetricsLogger::
+        WebViewOpenWebScreenPortion::kExactlyZeroPercent;
+  } else {
+    current_open_web_screen_portion_ =
+        static_cast<VisibilityMetricsLogger::WebViewOpenWebScreenPortion>(
+            percentage / 10);
+  }
 }
 
 void VisibilityMetricsLogger::UpdateDurations(base::TimeTicks update_time) {
@@ -142,8 +147,10 @@ void VisibilityMetricsLogger::UpdateDurations(base::TimeTicks update_time) {
   webcontent_visible_tracker_.per_webview_untracked_duration_ +=
       delta * (client_visibility_.size() - visible_webcontent_client_count_);
 
-  open_web_screen_portion_tracked_duration_[static_cast<int>(
-      current_open_web_screen_portion_)] += delta;
+  if (visible_webcontent_client_count_ > 0) {
+    open_web_screen_portion_tracked_duration_[static_cast<int>(
+        current_open_web_screen_portion_)] += delta;
+  }
 
   last_update_time_ = update_time;
 }

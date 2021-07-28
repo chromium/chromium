@@ -15,6 +15,7 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +35,8 @@ import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
@@ -590,12 +593,21 @@ public class AwMetricsIntegrationTest {
             // MetricsProvider::ProvideCurrentSessionData().
             mPlatformServiceBridge.waitForNextMetricsLog();
 
-            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion";
-            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
-            Assert.assertNotEquals("There should be at least one sample recorded", 0, totalSamples);
+            final String histogramName = "Android.WebView.WebViewOpenWebVisible.ScreenPortion2";
 
-            int zeroBucketSamples =
-                    RecordHistogram.getHistogramValueCountForTesting(histogramName, 0);
+            // The histogram records whole seconds that the WebView has been on screen, we need to
+            // leave enough time for something to be recorded.
+            CriteriaHelper.pollUiThread(() -> {
+                int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+                Criteria.checkThat("There were no samples recorded", totalSamples, Matchers.not(0));
+            });
+
+            int totalSamples = RecordHistogram.getHistogramTotalCountForTesting(histogramName);
+
+            // Based on VisibilityMetricsLogger::WebViewOpenWebScreenPortion.
+            final int histogramZeroBucket = 11;
+            int zeroBucketSamples = RecordHistogram.getHistogramValueCountForTesting(
+                    histogramName, histogramZeroBucket);
             Assert.assertNotEquals("There should be at least one sample in a non-zero bucket",
                     zeroBucketSamples, totalSamples);
         } finally {

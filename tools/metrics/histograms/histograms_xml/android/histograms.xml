@@ -4089,7 +4089,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.WebViewOpenWebVisible.ScreenPortion"
-    enum="WebViewOpenWebScreenPortion" expires_after="2022-06-01">
+    enum="WebViewOpenWebScreenPortion" expires_after="2021-09-01">
+  <obsolete>
+    Obsolete from 2021-07, use
+    Android.WebView.WebViewOpenWebVisible.ScreenPortion2 instead. That metric
+    has a separate bucket recording when the coverage is exactly zero.
+  </obsolete>
   <owner>idries@google.com</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -4097,6 +4102,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the number of seconds that WebView is displaying Open Web Content
     for each bucket of screen proportion, updated with every Metrics upload. For
     the purposes of bucketing this is rounded down.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.WebViewOpenWebVisible.ScreenPortion2"
+    enum="WebViewOpenWebScreenPortion" expires_after="2022-08-01">
+  <owner>idries@google.com</owner>
+  <owner>ntfschr@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of seconds that WebView is displaying Open Web Content
+    for each bucket of screen proportion, updated with every Metrics upload. For
+    the purposes of bucketing this is rounded down. A separate bucket is used
+    when the screen coverage is exactly zero.
   </summary>
 </histogram>
 

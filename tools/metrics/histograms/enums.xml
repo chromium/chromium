@@ -87397,6 +87397,7 @@ Called by update_scheduler_enums.py.-->
   <int value="8" label="EightyPercent"/>
   <int value="9" label="NinetyPercent"/>
   <int value="10" label="OneHundredPercent"/>
+  <int value="11" label="ExactlyZeroPercent"/>
 </enum>
 
 <enum name="WebViewOpenWebVisibility">

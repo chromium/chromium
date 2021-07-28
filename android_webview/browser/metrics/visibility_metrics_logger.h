@@ -54,7 +54,8 @@ class VisibilityMetricsLogger {
     kEightyPercent = 8,
     kNinetyPercent = 9,
     kOneHundredPercent = 10,
-    kMaxValue = kOneHundredPercent
+    kExactlyZeroPercent = 11,
+    kMaxValue = kExactlyZeroPercent,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
