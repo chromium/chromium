@@ -29,7 +29,6 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -318,12 +317,13 @@ NewTabPageHandler::NewTabPageHandler(
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
     Profile* profile,
     InstantService* instant_service,
+    search_provider_logos::LogoService* logo_service,
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : instant_service_(instant_service),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
-      logo_service_(LogoServiceFactory::GetForProfile(profile)),
+      logo_service_(logo_service),
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
@@ -443,22 +443,11 @@ void NewTabPageHandler::GetBackgroundImages(
 
 void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
   search_provider_logos::LogoCallbacks callbacks;
-  std::string fresh_doodle_param;
-  if (net::GetValueForKeyInQuery(web_contents_->GetLastCommittedURL(),
-                                 "fresh-doodle", &fresh_doodle_param) &&
-      fresh_doodle_param == "1") {
-    // In fresh-doodle mode, wait for the desired doodle to be downloaded.
-    callbacks.on_fresh_encoded_logo_available =
-        base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  } else {
-    // In regular mode, return cached doodle as it is available faster.
-    callbacks.on_cached_encoded_logo_available =
-        base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  }
-  // This will trigger re-downloading the doodle and caching it. This means that
-  // in regular mode a new doodle will be returned on subsequent NTP loads.
+  callbacks.on_cached_encoded_logo_available =
+      base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  // This will trigger re-downloading the doodle and caching it. This means a
+  // new doodle will be returned on subsequent NTP loads.
   logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/true);
 }
 
