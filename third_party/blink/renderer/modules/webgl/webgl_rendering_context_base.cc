@@ -4708,6 +4708,12 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
     buffer.emplace(32);
     data = buffer->data();
   }
+
+  // Last-chance early-out, in case somehow the context was lost during
+  // the above ClearIfComposited operation.
+  if (isContextLost() || !GetDrawingBuffer())
+    return;
+
   {
     ScopedDrawingBufferBinder binder(GetDrawingBuffer(), framebuffer);
     ContextGL()->ReadPixels(x, y, width, height, format, type, data);
