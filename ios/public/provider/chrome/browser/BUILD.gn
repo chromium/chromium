@@ -44,6 +44,7 @@ group("provider_api") {
   deps = [
     # The individual APIs.
     "//ios/public/provider/chrome/browser/modals:modals_api",
+    "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
   ]
 }
@@ -92,6 +93,7 @@ group("test_providers") {
 
     # The individual API implementations.
     "//ios/public/provider/chrome/browser/modals:test_modals",
+    "//ios/public/provider/chrome/browser/risk_data:test_risk_data",
     "//ios/public/provider/chrome/browser/text_zoom:test_text_zoom",
 
     # The provider API needs to provide MaterialDesignComponent API (as the

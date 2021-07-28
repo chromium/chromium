@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("risk_data_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "risk_data_api.h" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("test_risk_data") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_risk_data.mm" ]
+  deps = [ ":risk_data_api" ]
+}
