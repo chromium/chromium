@@ -63,11 +63,7 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
 
   // Note: .Ascii() would convert tab to ?, which is undesirable.
   absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
-      FilterAcceptCH(
-          network::ParseClientHintsHeader(header_value.Latin1()),
-          RuntimeEnabledFeatures::LangClientHintHeaderEnabled(),
-          RuntimeEnabledFeatures::UserAgentClientHintEnabled(),
-          RuntimeEnabledFeatures::PrefersColorSchemeClientHintHeaderEnabled());
+      network::ParseClientHintsHeader(header_value.Latin1());
   if (!parsed_ch.has_value())
     return;
 
@@ -94,8 +90,18 @@ bool ClientHintsPreferences::IsClientHintsAllowed(const KURL& url) {
          network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url));
 }
 
-WebEnabledClientHints ClientHintsPreferences::GetWebEnabledClientHints() const {
+EnabledClientHints ClientHintsPreferences::GetEnabledClientHints() const {
   return enabled_hints_;
+}
+
+bool ClientHintsPreferences::ShouldSend(
+    network::mojom::WebClientHintsType type) const {
+  return enabled_hints_.IsEnabled(type);
+}
+
+void ClientHintsPreferences::SetShouldSend(
+    network::mojom::WebClientHintsType type) {
+  enabled_hints_.SetIsEnabled(type, true);
 }
 
 }  // namespace blink

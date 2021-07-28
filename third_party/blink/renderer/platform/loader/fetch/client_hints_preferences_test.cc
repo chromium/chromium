@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -12,7 +14,20 @@
 
 namespace blink {
 
-class ClientHintsPreferencesTest : public testing::Test {};
+class ClientHintsPreferencesTest : public testing::Test {
+ public:
+  ClientHintsPreferencesTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kUserAgentClientHint,
+                              blink::features::kLangClientHintHeader,
+                              blink::features::
+                                  kPrefersColorSchemeClientHintHeader},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_F(ClientHintsPreferencesTest, BasicSecure) {
   struct TestCase {
@@ -280,8 +295,7 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
 
   for (const auto& test : test_cases) {
     ClientHintsPreferences preferences;
-    WebEnabledClientHints enabled_types =
-        preferences.GetWebEnabledClientHints();
+    EnabledClientHints enabled_types = preferences.GetEnabledClientHints();
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kDeviceMemory));
     EXPECT_FALSE(
@@ -313,7 +327,7 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     preferences.UpdateFromHttpEquivAcceptCH(test.accept_ch_header_value, kurl,
                                             nullptr);
 
-    enabled_types = preferences.GetWebEnabledClientHints();
+    enabled_types = preferences.GetEnabledClientHints();
 
     EXPECT_EQ(test.expect_device_memory,
               enabled_types.IsEnabled(

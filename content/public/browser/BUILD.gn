@@ -490,6 +490,7 @@ source_set("browser_sources") {
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/blink/public/common:headers",
     "//ui/accessibility",
     "//ui/base",
     "//ui/base/clipboard",

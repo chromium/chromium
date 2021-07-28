@@ -9,7 +9,7 @@
 namespace content {
 
 bool PersistClientHintsHelper(const GURL& url,
-                              const blink::WebEnabledClientHints& client_hints,
+                              const blink::EnabledClientHints& client_hints,
                               base::TimeDelta expiration_duration,
                               ClientHintsContainer* container) {
   DCHECK(container);
@@ -28,7 +28,7 @@ bool PersistClientHintsHelper(const GURL& url,
 void GetAllowedClientHintsFromSourceHelper(
     const GURL& url,
     const ClientHintsContainer& container,
-    blink::WebEnabledClientHints* client_hints) {
+    blink::EnabledClientHints* client_hints) {
   const url::Origin origin = url::Origin::Create(url);
   const auto& it = container.find(origin);
   DCHECK(client_hints);

@@ -50,18 +50,6 @@ BLINK_COMMON_EXPORT extern const size_t kWebEffectiveConnectionTypeMappingCount;
 std::string BLINK_COMMON_EXPORT
 SerializeLangClientHint(const std::string& raw_language_list);
 
-// Filters a parsed accept-CH list to exclude clients hints support for which
-// is currently conditional on experiments:
-// Language hints will only be kept if |permit_lang_hints| is true;
-// UA-related ones if |permit_ua_hints| is.
-// Prefers-color-scheme ones if |permit_prefers_color_scheme_hints| is.
-BLINK_COMMON_EXPORT
-absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
-    absl::optional<std::vector<network::mojom::WebClientHintsType>> in,
-    bool permit_lang_hints,
-    bool permit_ua_hints,
-    bool permit_prefers_color_scheme_hints);
-
 // Indicates that a hint is sent by default, regardless of an opt-in.
 BLINK_COMMON_EXPORT
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type);

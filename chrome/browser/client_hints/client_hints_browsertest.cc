@@ -52,13 +52,17 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 namespace {
 
-const unsigned expected_client_hints_number = 13u;
-const int32_t uma_histogram_max_value = 1471228928;
+using ::testing::Eq;
+using ::testing::Optional;
+
+constexpr unsigned expected_client_hints_number = 13u;
+constexpr int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
 // requests to https://foo.com/non-existing-image.jpg.
@@ -2282,6 +2286,117 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, UseCounter) {
   ui_test_utils::NavigateToURL(browser(), gurl);
 
   web_feature_waiter->Wait();
+}
+
+class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
+ public:
+  CriticalClientHintsBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/client_hints");
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &CriticalClientHintsBrowserTest::MonitorResourceRequest,
+        base::Unretained(this)));
+    EXPECT_TRUE(https_server_.Start());
+  }
+
+  void SetUp() override {
+    std::unique_ptr<base::FeatureList> feature_list =
+        std::make_unique<base::FeatureList>();
+    // Don't include LangClientHintHeader in the enabled features; we will
+    // verify that the Sec-CH-Lang header is not included.
+    feature_list->InitializeFromCommandLine(
+        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
+        "PrefersColorSchemeClientHintHeader",
+        "");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  GURL critical_ch_ua_full_version_url() const {
+    return https_server_.GetURL("/critical_ch_ua_full_version.html");
+  }
+
+  GURL critical_ch_lang_url() const {
+    return https_server_.GetURL("/critical_ch_lang.html");
+  }
+
+  const absl::optional<std::string>& observed_ch_ua_full_version() {
+    base::AutoLock lock(ch_ua_full_version_lock_);
+    return ch_ua_full_version_;
+  }
+
+  const absl::optional<std::string>& observed_ch_lang() {
+    base::AutoLock lock(ch_lang_lock_);
+    return ch_lang_;
+  }
+
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    if (request.headers.find("sec-ch-ua-full-version") !=
+        request.headers.end()) {
+      SetChUaFullVersion(request.headers.at("sec-ch-ua-full-version"));
+    }
+    if (request.headers.find("sec-ch-lang") != request.headers.end()) {
+      SetChLang(request.headers.at("sec-ch-lang"));
+    }
+  }
+
+ private:
+  void SetChUaFullVersion(const std::string& ch_ua_full_version) {
+    base::AutoLock lock(ch_ua_full_version_lock_);
+    ch_ua_full_version_ = ch_ua_full_version;
+  }
+
+  void SetChLang(const std::string& ch_lang) {
+    base::AutoLock lock(ch_lang_lock_);
+    ch_lang_ = ch_lang;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+  base::Lock ch_ua_full_version_lock_;
+  absl::optional<std::string> ch_ua_full_version_
+      GUARDED_BY(ch_ua_full_version_lock_);
+  base::Lock ch_lang_lock_;
+  absl::optional<std::string> ch_lang_ GUARDED_BY(ch_lang_lock_);
+};
+
+// Verify that setting Critical-CH in the response header causes the request to
+// be resent with the client hint included.
+IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
+                       CriticalClientHintInRequestHeader) {
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
+  // On the first navigation request, the client hints in the Critical-CH
+  // should be set on the request header.
+  ui_test_utils::NavigateToURL(browser(), critical_ch_ua_full_version_url());
+  const std::string expected_ch_ua_full_version = "\"" + ua.full_version + "\"";
+  EXPECT_THAT(observed_ch_ua_full_version(),
+              Optional(Eq(expected_ch_ua_full_version)));
+  EXPECT_EQ(observed_ch_lang(), absl::nullopt);
+}
+
+// Verify that setting Critical-CH in the response header with a client hint
+// that is filtered out of Accept-CH causes the request to *not* be resent and
+// the critical client hint is not included.
+//
+// NB: When the LangClientHintHeader feature is removed, this test needs to be
+// updated.
+IN_PROC_BROWSER_TEST_F(
+    CriticalClientHintsBrowserTest,
+    CriticalClientHintFilteredOutOfAcceptChNotInRequestHeader) {
+  // On the first navigation request, the client hints in the Critical-CH
+  // should be set on the request header, but in this case, the
+  // LangClientHintHeader is not enabled, so the critical client hint won't be
+  // set in the request header.
+  ui_test_utils::NavigateToURL(browser(), critical_ch_lang_url());
+  EXPECT_EQ(observed_ch_lang(), absl::nullopt);
+  // The request should not have been resent, so ch-ua-full-version should also
+  // not be present.
+  EXPECT_EQ(observed_ch_ua_full_version(), absl::nullopt);
 }
 
 class ClientHintsBrowserTestWithEmulatedMedia

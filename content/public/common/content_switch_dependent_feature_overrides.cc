@@ -56,10 +56,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(features::kFeaturePolicyForClientHints),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(features::kLangClientHintHeader),
+       std::cref(blink::features::kLangClientHintHeader),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(features::kUserAgentClientHint),
+       std::cref(blink::features::kUserAgentClientHint),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
        std::cref(features::kOriginPolicy),
@@ -86,7 +86,7 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(features::kWarnAboutSecurePrivateNetworkRequests),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableExperimentalWebPlatformFeatures,
-       std::cref(features::kPrefersColorSchemeClientHintHeader),
+       std::cref(blink::features::kPrefersColorSchemeClientHintHeader),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
       // Overrides for --enable-experimental-cookie-features.

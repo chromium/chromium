@@ -78,6 +78,7 @@ source_set("common") {
     "cache_storage/cache_storage_utils.cc",
     "chrome_debug_urls.cc",
     "client_hints/client_hints.cc",
+    "client_hints/enabled_client_hints.cc",
     "context_menu_data/context_menu_mojom_traits.cc",
     "context_menu_data/context_menu_params_builder.cc",
     "context_menu_data/untrustworthy_context_menu_params.cc",
@@ -286,6 +287,7 @@ source_set("common_unittests_sources") {
   sources = [
     "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
+    "client_hints/enabled_client_hints_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
     "frame/transient_allow_fullscreen_unittest.cc",
     "frame/user_activation_state_unittest.cc",

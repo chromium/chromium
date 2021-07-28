@@ -51,6 +51,7 @@ source_set("common_export") {
 source_set("headers") {
   visibility = [
     ":*",
+    "//android_webview/*",
     "//chrome/*",
     "//chromecast/*",
     "//components/*",
@@ -73,6 +74,7 @@ source_set("headers") {
     "cache_storage/cache_storage_utils.h",
     "chrome_debug_urls.h",
     "client_hints/client_hints.h",
+    "client_hints/enabled_client_hints.h",
     "context_menu_data/context_menu_data.h",
     "context_menu_data/context_menu_params_builder.h",
     "context_menu_data/edit_flags.h",

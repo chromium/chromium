@@ -169,6 +169,7 @@ blink_platform_sources("loader") {
     "//services/network/public/cpp",
     "//services/network/public/mojom:mojom_blink",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform/blob:blob",
     "//third_party/blink/renderer/platform/instrumentation:instrumentation",

@@ -420,6 +420,7 @@ static_library("test_support") {
     "//services/media_session/public/mojom",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:test_support",
+    "//third_party/blink/public/common:headers",
     "//third_party/blink/public/strings:strings_grit",
     "//ui/gl:test_support",
   ]

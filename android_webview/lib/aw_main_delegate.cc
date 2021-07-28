@@ -63,6 +63,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -266,7 +267,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     // TODO(crbug.com/921655): Add support for User Agent Client hints on
     // WebView.
-    features.DisableIfNotSet(::features::kUserAgentClientHint);
+    features.DisableIfNotSet(blink::features::kUserAgentClientHint);
 
     // Disabled until viz scheduling can be improved.
     features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);

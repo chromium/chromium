@@ -5,7 +5,7 @@
 #include "components/client_hints/common/client_hints.h"
 
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "url/gurl.h"
 
 namespace client_hints {
@@ -13,7 +13,7 @@ namespace client_hints {
 void GetAllowedClientHintsFromSource(
     const GURL& url,
     const ContentSettingsForOneType& client_hints_rules,
-    blink::WebEnabledClientHints* client_hints) {
+    blink::EnabledClientHints* client_hints) {
   if (client_hints_rules.empty())
     return;
 

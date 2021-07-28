@@ -35,11 +35,12 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -377,17 +378,8 @@ bool IsValidURLForClientHints(const GURL& url) {
   return true;
 }
 
-bool LangClientHintEnabled() {
-  return base::FeatureList::IsEnabled(features::kLangClientHintHeader);
-}
-
-bool PrefersColorSchemeClientHintEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kPrefersColorSchemeClientHintHeader);
-}
-
 bool UserAgentClientHintEnabled() {
-  return base::FeatureList::IsEnabled(features::kUserAgentClientHint);
+  return base::FeatureList::IsEnabled(blink::features::kUserAgentClientHint);
 }
 
 void AddUAHeader(net::HttpRequestHeaders* headers,
@@ -435,7 +427,7 @@ struct ClientHintsExtendedData {
     delegate->GetAllowedClientHintsFromSource(main_frame_url, &hints);
   }
 
-  blink::WebEnabledClientHints hints;
+  blink::EnabledClientHints hints;
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
@@ -782,13 +774,6 @@ ParseAndPersistAcceptCHForNavigation(
   if (!frame_tree_node->IsMainFrame())
     return absl::nullopt;
 
-  absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed =
-      blink::FilterAcceptCH(headers->accept_ch.value(), LangClientHintEnabled(),
-                            UserAgentClientHintEnabled(),
-                            PrefersColorSchemeClientHintEnabled());
-  if (!parsed.has_value())
-    return absl::nullopt;
-
   base::TimeDelta persist_duration;
   if (IsPermissionsPolicyForClientHintsEnabled()) {
     // JSON cannot store "non-finite" values (i.e. NaN or infinite) so
@@ -799,13 +784,13 @@ ParseAndPersistAcceptCHForNavigation(
   } else {
     persist_duration = headers->accept_ch_lifetime;
     if (persist_duration.is_zero())
-      return parsed;
+      return headers->accept_ch;
   }
 
-  delegate->PersistClientHints(url::Origin::Create(url), parsed.value(),
-                               persist_duration);
+  delegate->PersistClientHints(url::Origin::Create(url),
+                               headers->accept_ch.value(), persist_duration);
 
-  return parsed;
+  return headers->accept_ch;
 }
 
 CONTENT_EXPORT std::vector<::network::mojom::WebClientHintsType>

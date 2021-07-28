@@ -8,13 +8,13 @@
 #include <map>
 
 #include "content/public/common/origin_util.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/platform/web_url.h"
 
 namespace content {
 
 struct ClientHintsPersistencyData {
-  blink::WebEnabledClientHints client_hints;
+  blink::EnabledClientHints client_hints;
   base::Time expiration;
 };
 
@@ -23,14 +23,14 @@ using ClientHintsContainer =
 
 bool PersistClientHintsHelper(
     const GURL& url,
-    const blink::WebEnabledClientHints& enabled_client_hints,
+    const blink::EnabledClientHints& enabled_client_hints,
     base::TimeDelta expiration_duration,
     ClientHintsContainer* container);
 
 void GetAllowedClientHintsFromSourceHelper(
     const GURL& url,
     const ClientHintsContainer& container,
-    blink::WebEnabledClientHints* client_hints);
+    blink::EnabledClientHints* client_hints);
 
 }  // namespace content
 

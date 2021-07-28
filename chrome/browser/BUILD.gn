@@ -2318,6 +2318,7 @@ static_library("browser") {
     "//third_party/blink/public:scaled_resources",
     "//third_party/blink/public/common",
     "//third_party/blink/public/common:buildflags",
+    "//third_party/blink/public/common:headers",
     "//third_party/icu",
     "//third_party/leveldatabase",
     "//third_party/libaddressinput",

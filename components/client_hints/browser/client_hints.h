@@ -31,7 +31,7 @@ class ClientHints : public KeyedService,
 
   void GetAllowedClientHintsFromSource(
       const GURL& url,
-      blink::WebEnabledClientHints* client_hints) override;
+      blink::EnabledClientHints* client_hints) override;
 
   bool IsJavaScriptAllowed(const GURL& url) override;
 

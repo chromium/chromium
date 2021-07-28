@@ -4,5 +4,4 @@ include_rules = [
   # header-only types, and some selected common code.
   "-third_party/blink",
   "+third_party/blink/public/common",
-  "+third_party/blink/public/platform/web_client_hints_type.h",
 ]

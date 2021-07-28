@@ -35,6 +35,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -44,7 +45,6 @@
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
@@ -541,7 +541,14 @@ TEST_F(FrameFetchContextModifyRequestTest, SendUpgradeInsecureRequestHeader) {
 
 class FrameFetchContextHintsTest : public FrameFetchContextTest {
  public:
-  FrameFetchContextHintsTest() = default;
+  FrameFetchContextHintsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kUserAgentClientHint,
+                              blink::features::kLangClientHintHeader,
+                              blink::features::
+                                  kPrefersColorSchemeClientHintHeader},
+        /*disabled_features=*/{});
+  }
 
   void SetUp() override {
     // Set the document URL to a secure document.
@@ -584,6 +591,9 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
         hints_preferences, resource_width, resource_request);
     return resource_request.HttpHeaderField(header_name);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verify that the client hints should be attached for subresources fetched

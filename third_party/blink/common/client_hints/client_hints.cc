@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
@@ -92,44 +91,6 @@ std::string SerializeLangClientHint(const std::string& raw_language_list) {
     base::StrAppend(&result, {"\"", t.token_piece(), "\""});
   }
   return result;
-}
-
-absl::optional<std::vector<network::mojom::WebClientHintsType>> FilterAcceptCH(
-    absl::optional<std::vector<network::mojom::WebClientHintsType>> in,
-    bool permit_lang_hints,
-    bool permit_ua_hints,
-    bool permit_prefers_color_scheme_hints) {
-  if (!in.has_value())
-    return absl::nullopt;
-
-  std::vector<network::mojom::WebClientHintsType> result;
-  for (network::mojom::WebClientHintsType hint : in.value()) {
-    // Some hints are supported only conditionally.
-    switch (hint) {
-      case network::mojom::WebClientHintsType::kLang:
-        if (permit_lang_hints)
-          result.push_back(hint);
-        break;
-      case network::mojom::WebClientHintsType::kUA:
-      case network::mojom::WebClientHintsType::kUAArch:
-      case network::mojom::WebClientHintsType::kUAPlatform:
-      case network::mojom::WebClientHintsType::kUAPlatformVersion:
-      case network::mojom::WebClientHintsType::kUAModel:
-      case network::mojom::WebClientHintsType::kUAMobile:
-      case network::mojom::WebClientHintsType::kUAFullVersion:
-      case network::mojom::WebClientHintsType::kUABitness:
-        if (permit_ua_hints)
-          result.push_back(hint);
-        break;
-      case network::mojom::WebClientHintsType::kPrefersColorScheme:
-        if (permit_prefers_color_scheme_hints)
-          result.push_back(hint);
-        break;
-      default:
-        result.push_back(hint);
-    }
-  }
-  return absl::make_optional(std::move(result));
 }
 
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {

@@ -8,8 +8,8 @@
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/test/mock_client_hints_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "url/origin.h"
 
 namespace content {
@@ -24,7 +24,7 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
   // Get which client hints opt-ins were persisted on current origin.
   void GetAllowedClientHintsFromSource(
       const GURL& url,
-      blink::WebEnabledClientHints* client_hints) override;
+      blink::EnabledClientHints* client_hints) override;
 
   bool IsJavaScriptAllowed(const GURL& url) override;
 

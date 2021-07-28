@@ -2511,7 +2511,8 @@ class WebContentsImplBrowserTestClientHintsEnabled
     : public WebContentsImplBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kUserAgentClientHint);
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kUserAgentClientHint);
     WebContentsImplBrowserTest::SetUp();
   }
 

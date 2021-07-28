@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CLIENT_HINTS_PREFERENCES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CLIENT_HINTS_PREFERENCES_H_
 
-#include "third_party/blink/public/platform/web_client_hints_type.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -41,21 +41,17 @@ class PLATFORM_EXPORT ClientHintsPreferences {
                                    const KURL& url,
                                    Context* context);
 
-  bool ShouldSend(network::mojom::WebClientHintsType type) const {
-    return enabled_hints_.IsEnabled(type);
-  }
-  void SetShouldSend(network::mojom::WebClientHintsType type) {
-    enabled_hints_.SetIsEnabled(type, true);
-  }
+  bool ShouldSend(network::mojom::WebClientHintsType type) const;
+  void SetShouldSend(network::mojom::WebClientHintsType type);
 
   // Returns true if client hints are allowed for the provided KURL. Client
   // hints are allowed only on HTTP URLs that belong to secure contexts.
   static bool IsClientHintsAllowed(const KURL&);
 
-  WebEnabledClientHints GetWebEnabledClientHints() const;
+  EnabledClientHints GetEnabledClientHints() const;
 
  private:
-  WebEnabledClientHints enabled_hints_;
+  EnabledClientHints enabled_hints_;
 };
 
 }  // namespace blink

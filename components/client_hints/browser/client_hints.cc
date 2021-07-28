@@ -41,7 +41,7 @@ network::NetworkQualityTracker* ClientHints::GetNetworkQualityTracker() {
 
 void ClientHints::GetAllowedClientHintsFromSource(
     const GURL& url,
-    blink::WebEnabledClientHints* client_hints) {
+    blink::EnabledClientHints* client_hints) {
   ContentSettingsForOneType client_hints_rules;
   settings_map_->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
                                        &client_hints_rules);

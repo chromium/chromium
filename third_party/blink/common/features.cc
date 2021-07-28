@@ -120,6 +120,19 @@ const base::Feature kLayoutNGTable{"LayoutNGTable",
 const base::Feature kMixedContentAutoupgrade{"AutoupgradeMixedContent",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// An experimental replacement for the `User-Agent` header, defined in
+// https://tools.ietf.org/html/draft-west-ua-client-hints.
+const base::Feature kUserAgentClientHint{"UserAgentClientHint",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Experimental handling of accept-language via client hints.
+const base::Feature kLangClientHintHeader{"LangClientHintHeader",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Handle prefers-color-scheme user preference media feature via client hints.
+const base::Feature kPrefersColorSchemeClientHintHeader{
+    "PrefersColorSchemeClientHintHeader", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Used to control the collection of anchor element metrics (crbug.com/856683).
 // If kNavigationPredictor is enabled, then metrics of anchor elements
 // in the first viewport after the page load and the metrics of the clicked
