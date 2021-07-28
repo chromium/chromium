@@ -9597,6 +9597,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Mac.FileMenuNativeShare" units="BooleanSuccess"
+    expires_after="2022-12-31">
+  <owner>nasims@google.com</owner>
+  <owner>ellyjones@chromium.org</owner>
+  <summary>
+    Whether the user successfully shared via a native sharing extension after
+    selecting it from the File &gt; Share menu. False can indicate failure or
+    user-initiated cancellation.
+  </summary>
+</histogram>
+
 <histogram name="Mac.UniversalLink.APIDuration" units="ms"
     expires_after="2022-07-01">
   <owner>avi@chromium.org</owner>
@@ -11237,11 +11248,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OSX.NativeShare" units="BooleanSuccess"
     expires_after="2021-09-05">
+  <obsolete>
+    Removed July 2021, superceded by Mac.FileMenuNativeShare.
+  </obsolete>
   <owner>lgrey@chromium.org</owner>
   <summary>
-    Whether the user successfully shared via a native sharing extensions after
-    selecting it from the share menu. False can indicate failure or
-    user-initiated cancellation.
+    Whether the user successfully shared via a native sharing extension after
+    selecting it from the File &gt; Share menu. False can indicate failure or
+    user-initiated cancellation. This is obsolete; the same data is currently
+    being collected as Mac.FileMenuNativeShare.
   </summary>
 </histogram>
 
