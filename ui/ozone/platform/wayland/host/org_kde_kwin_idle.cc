@@ -64,8 +64,8 @@ absl::optional<base::TimeDelta> OrgKdeKwinIdle::GetIdleTime() const {
 
 OrgKdeKwinIdle::Timeout::Timeout(org_kde_kwin_idle_timeout* timeout)
     : timeout_(timeout) {
-  static const struct org_kde_kwin_idle_timeout_listener kTimeoutListener = {
-      OrgKdeKwinIdle::Timeout::Idle, OrgKdeKwinIdle::Timeout::Resumed};
+  static constexpr org_kde_kwin_idle_timeout_listener kTimeoutListener = {
+      &Idle, &Resumed};
   org_kde_kwin_idle_timeout_add_listener(timeout, &kTimeoutListener, this);
 }
 

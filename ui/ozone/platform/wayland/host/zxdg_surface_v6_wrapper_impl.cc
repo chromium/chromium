@@ -26,8 +26,8 @@ bool ZXDGSurfaceV6WrapperImpl::Initialize() {
     return false;
   }
 
-  static const zxdg_surface_v6_listener zxdg_surface_v6_listener = {
-      &ZXDGSurfaceV6WrapperImpl::Configure,
+  static constexpr zxdg_surface_v6_listener zxdg_surface_v6_listener = {
+      &Configure,
   };
 
   zxdg_surface_v6_.reset(zxdg_shell_v6_get_xdg_surface(

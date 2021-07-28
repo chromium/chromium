@@ -675,11 +675,11 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
   DCHECK(shell_toplevel_);
 
   if (connection()->zaura_shell() && !aura_surface_) {
-    static const zaura_surface_listener zaura_surface_listener = {
-        &WaylandToplevelWindow::OcclusionChanged,
-        &WaylandToplevelWindow::LockFrame,
-        &WaylandToplevelWindow::UnlockFrame,
-        &WaylandToplevelWindow::OcclusionStateChanged,
+    static constexpr zaura_surface_listener zaura_surface_listener = {
+        &OcclusionChanged,
+        &LockFrame,
+        &UnlockFrame,
+        &OcclusionStateChanged,
     };
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));

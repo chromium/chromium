@@ -154,9 +154,9 @@ bool ZXDGPopupV6WrapperImpl::InitializeV6(
     WaylandConnection* connection,
     const ShellPopupParams& params,
     ZXDGSurfaceV6WrapperImpl* parent_xdg_surface) {
-  static const struct zxdg_popup_v6_listener zxdg_popup_v6_listener = {
-      &ZXDGPopupV6WrapperImpl::Configure,
-      &ZXDGPopupV6WrapperImpl::PopupDone,
+  static constexpr zxdg_popup_v6_listener zxdg_popup_v6_listener = {
+      &Configure,
+      &PopupDone,
   };
 
   zxdg_positioner_v6* positioner =

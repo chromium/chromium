@@ -24,11 +24,11 @@ WaylandOutput::~WaylandOutput() {
 void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);
   delegate_ = delegate;
-  static const wl_output_listener output_listener = {
-      &WaylandOutput::OutputHandleGeometry,
-      &WaylandOutput::OutputHandleMode,
-      &WaylandOutput::OutputHandleDone,
-      &WaylandOutput::OutputHandleScale,
+  static constexpr wl_output_listener output_listener = {
+      &OutputHandleGeometry,
+      &OutputHandleMode,
+      &OutputHandleDone,
+      &OutputHandleScale,
   };
   wl_output_add_listener(output_.get(), &output_listener, this);
 }

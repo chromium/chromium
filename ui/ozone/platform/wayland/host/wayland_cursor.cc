@@ -59,9 +59,8 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
   buffer_scale_ = buffer_scale;
   wl_surface_set_buffer_scale(pointer_surface_.get(), buffer_scale_);
 
-  static const struct wl_buffer_listener wl_buffer_listener {
-    &WaylandCursor::OnBufferRelease
-  };
+  static constexpr wl_buffer_listener wl_buffer_listener{
+      &WaylandCursor::OnBufferRelease};
   wl_buffer_add_listener(buffer.get(), &wl_buffer_listener, this);
 
   wl::DrawBitmap(image, &buffer);

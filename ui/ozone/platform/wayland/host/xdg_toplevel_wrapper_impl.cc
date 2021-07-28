@@ -64,9 +64,9 @@ bool XDGToplevelWrapperImpl::Initialize() {
     return false;
   }
 
-  static const xdg_toplevel_listener xdg_toplevel_listener = {
-      &XDGToplevelWrapperImpl::ConfigureTopLevel,
-      &XDGToplevelWrapperImpl::CloseTopLevel,
+  static constexpr xdg_toplevel_listener xdg_toplevel_listener = {
+      &ConfigureTopLevel,
+      &CloseTopLevel,
   };
 
   if (!xdg_surface_wrapper_)
@@ -217,9 +217,10 @@ void XDGToplevelWrapperImpl::ConfigureDecoration(
 void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
   if (connection_->xdg_decoration_manager_v1()) {
     DCHECK(!zxdg_toplevel_decoration_);
-    static const zxdg_toplevel_decoration_v1_listener decoration_listener = {
-        &XDGToplevelWrapperImpl::ConfigureDecoration,
-    };
+    static constexpr zxdg_toplevel_decoration_v1_listener decoration_listener =
+        {
+            &ConfigureDecoration,
+        };
     zxdg_toplevel_decoration_.reset(
         zxdg_decoration_manager_v1_get_toplevel_decoration(
             connection_->xdg_decoration_manager_v1(), xdg_toplevel_.get()));

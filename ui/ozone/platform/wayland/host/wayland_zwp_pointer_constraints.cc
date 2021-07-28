@@ -28,10 +28,11 @@ void WaylandZwpPointerConstraints::LockPointer(WaylandSurface* surface) {
       obj_.get(), surface->surface(), connection_->pointer()->wl_object(),
       nullptr, ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_ONESHOT));
 
-  static const zwp_locked_pointer_v1_listener zwp_locked_pointer_v1_listener = {
-      &WaylandZwpPointerConstraints::OnLock,
-      &WaylandZwpPointerConstraints::OnUnlock,
-  };
+  static constexpr zwp_locked_pointer_v1_listener
+      zwp_locked_pointer_v1_listener = {
+          &OnLock,
+          &OnUnlock,
+      };
   zwp_locked_pointer_v1_add_listener(locked_pointer_.get(),
                                      &zwp_locked_pointer_v1_listener, this);
 }

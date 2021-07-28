@@ -84,8 +84,7 @@ XdgForeignWrapper::ExportedSurface* XdgForeignWrapper::GetExportedSurface(
 
 void XdgForeignWrapper::ExportSurfaceInternal(wl_surface* surface,
                                               OnHandleExported cb) {
-  static const struct zxdg_exported_v1_listener kExportedListener = {
-      &XdgForeignWrapper::OnExported};
+  static constexpr zxdg_exported_v1_listener kExportedListener = {&OnExported};
 
   ExportedSurface exported_surface(surface, std::move(cb));
   exported_surface.exported.reset(

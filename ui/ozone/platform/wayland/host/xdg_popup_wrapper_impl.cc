@@ -152,9 +152,9 @@ bool XDGPopupWrapperImpl::InitializeStable(
     WaylandConnection* connection,
     const ShellPopupParams& params,
     XDGSurfaceWrapperImpl* parent_xdg_surface) {
-  static const struct xdg_popup_listener xdg_popup_listener = {
-      &XDGPopupWrapperImpl::Configure,
-      &XDGPopupWrapperImpl::PopupDone,
+  static constexpr xdg_popup_listener xdg_popup_listener = {
+      &Configure,
+      &PopupDone,
   };
 
   struct xdg_positioner* positioner =

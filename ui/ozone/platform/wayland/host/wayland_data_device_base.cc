@@ -68,8 +68,7 @@ void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
   deferred_read_callback_.reset(
       wl_display_sync(connection_->display_wrapper()));
 
-  static const wl_callback_listener kListener = {
-      WaylandDataDeviceBase::DeferredReadCallback};
+  static constexpr wl_callback_listener kListener = {&DeferredReadCallback};
 
   wl_callback_add_listener(deferred_read_callback_.get(), &kListener, this);
 

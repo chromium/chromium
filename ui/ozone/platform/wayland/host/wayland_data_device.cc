@@ -25,10 +25,8 @@ namespace ui {
 WaylandDataDevice::WaylandDataDevice(WaylandConnection* connection,
                                      wl_data_device* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static const struct wl_data_device_listener kDataDeviceListener = {
-      WaylandDataDevice::OnOffer, WaylandDataDevice::OnEnter,
-      WaylandDataDevice::OnLeave, WaylandDataDevice::OnMotion,
-      WaylandDataDevice::OnDrop,  WaylandDataDevice::OnSelection};
+  static constexpr wl_data_device_listener kDataDeviceListener = {
+      &OnOffer, &OnEnter, &OnLeave, &OnMotion, &OnDrop, &OnSelection};
   wl_data_device_add_listener(data_device_.get(), &kDataDeviceListener, this);
 }
 

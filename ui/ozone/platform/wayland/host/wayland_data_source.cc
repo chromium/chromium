@@ -86,13 +86,9 @@ void DataSource<T>::OnDnDDropPerformed(void* data, T* source) {
 
 template <>
 void DataSource<wl_data_source>::Initialize() {
-  static const struct wl_data_source_listener kDataSourceListener = {
-      DataSource<wl_data_source>::OnTarget,
-      DataSource<wl_data_source>::OnSend,
-      DataSource<wl_data_source>::OnCancel,
-      DataSource<wl_data_source>::OnDnDDropPerformed,
-      DataSource<wl_data_source>::OnDnDFinished,
-      DataSource<wl_data_source>::OnAction};
+  static constexpr wl_data_source_listener kDataSourceListener = {
+      &OnTarget,           &OnSend,        &OnCancel,
+      &OnDnDDropPerformed, &OnDnDFinished, &OnAction};
   wl_data_source_add_listener(data_source_.get(), &kDataSourceListener, this);
 }
 
@@ -130,10 +126,8 @@ template class DataSource<wl_data_source>;
 
 template <>
 void DataSource<gtk_primary_selection_source>::Initialize() {
-  static const struct gtk_primary_selection_source_listener
-      kDataSourceListener = {
-          DataSource<gtk_primary_selection_source>::OnSend,
-          DataSource<gtk_primary_selection_source>::OnCancel};
+  static constexpr gtk_primary_selection_source_listener kDataSourceListener = {
+      &OnSend, &OnCancel};
   gtk_primary_selection_source_add_listener(data_source_.get(),
                                             &kDataSourceListener, this);
 }
@@ -148,7 +142,7 @@ void DataSource<gtk_primary_selection_source>::Offer(
 
 template <>
 void DataSource<zwp_primary_selection_source_v1>::Initialize() {
-  static const struct zwp_primary_selection_source_v1_listener
+  static constexpr zwp_primary_selection_source_v1_listener
       kDataSourceListener = {
           DataSource<zwp_primary_selection_source_v1>::OnSend,
           DataSource<zwp_primary_selection_source_v1>::OnCancel};

@@ -18,11 +18,11 @@ namespace ui {
 
 WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
     : wl_drm_(drm), connection_(connection) {
-  static const wl_drm_listener kDrmListener = {
-      &WaylandDrm::Device,
-      &WaylandDrm::Format,
-      &WaylandDrm::Authenticated,
-      &WaylandDrm::Capabilities,
+  static constexpr wl_drm_listener kDrmListener = {
+      &Device,
+      &Format,
+      &Authenticated,
+      &Capabilities,
   };
   wl_drm_add_listener(wl_drm_.get(), &kDrmListener, this);
   connection_->ScheduleFlush();

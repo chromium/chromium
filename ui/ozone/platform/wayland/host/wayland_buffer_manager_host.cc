@@ -375,8 +375,7 @@ class WaylandBufferManagerHost::Surface {
 
   void SetupFrameCallback() {
     DCHECK(wayland_surface_);
-    static const wl_callback_listener frame_listener = {
-        &Surface::FrameCallbackDone};
+    static constexpr wl_callback_listener frame_listener = {&FrameCallbackDone};
 
     DCHECK(!wl_frame_callback_);
     wl_frame_callback_.reset(wl_surface_frame(wayland_surface_->surface()));
@@ -389,9 +388,8 @@ class WaylandBufferManagerHost::Surface {
     if (!connection_->presentation())
       return;
 
-    static const wp_presentation_feedback_listener feedback_listener = {
-        &Surface::FeedbackSyncOutput, &Surface::FeedbackPresented,
-        &Surface::FeedbackDiscarded};
+    static constexpr wp_presentation_feedback_listener feedback_listener = {
+        &FeedbackSyncOutput, &FeedbackPresented, &FeedbackDiscarded};
 
     feedback_queue_.push_back(
         {wl::Object<struct wp_presentation_feedback>(wp_presentation_feedback(

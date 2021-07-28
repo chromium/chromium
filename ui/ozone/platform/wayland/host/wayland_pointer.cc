@@ -20,12 +20,9 @@ WaylandPointer::WaylandPointer(wl_pointer* pointer,
                                WaylandConnection* connection,
                                Delegate* delegate)
     : obj_(pointer), connection_(connection), delegate_(delegate) {
-  static const wl_pointer_listener listener = {
-      &WaylandPointer::Enter,       &WaylandPointer::Leave,
-      &WaylandPointer::Motion,      &WaylandPointer::Button,
-      &WaylandPointer::Axis,        &WaylandPointer::Frame,
-      &WaylandPointer::AxisSource,  &WaylandPointer::AxisStop,
-      &WaylandPointer::AxisDiscrete};
+  static constexpr wl_pointer_listener listener = {
+      &Enter, &Leave,      &Motion,   &Button,      &Axis,
+      &Frame, &AxisSource, &AxisStop, &AxisDiscrete};
 
   wl_pointer_add_listener(obj_.get(), &listener, this);
 }

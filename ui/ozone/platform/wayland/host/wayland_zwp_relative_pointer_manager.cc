@@ -29,8 +29,8 @@ void WaylandZwpRelativePointerManager::EnableRelativePointer() {
   relative_pointer_.reset(zwp_relative_pointer_manager_v1_get_relative_pointer(
       obj_.get(), connection_->pointer()->wl_object()));
 
-  static const struct zwp_relative_pointer_v1_listener
-      relative_pointer_listener = {
+  static constexpr zwp_relative_pointer_v1_listener relative_pointer_listener =
+      {
           &WaylandZwpRelativePointerManager::OnHandleMotion,
       };
   zwp_relative_pointer_v1_add_listener(relative_pointer_.get(),

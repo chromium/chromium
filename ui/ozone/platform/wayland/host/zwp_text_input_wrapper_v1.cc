@@ -18,7 +18,7 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
     ZWPTextInputWrapperClient* client,
     zwp_text_input_manager_v1* text_input_manager)
     : connection_(connection), client_(client) {
-  static const zwp_text_input_v1_listener text_input_listener = {
+  static constexpr zwp_text_input_v1_listener text_input_listener = {
       &OnEnter,                  // text_input_enter,
       &OnLeave,                  // text_input_leave,
       &OnModifiersMap,           // text_input_modifiers_map,

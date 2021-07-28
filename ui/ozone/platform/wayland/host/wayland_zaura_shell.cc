@@ -19,9 +19,9 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
   DCHECK(obj_);
   DCHECK(connection_);
 
-  static const zaura_shell_listener zaura_shell_listener = {
-      &WaylandZAuraShell::OnLayoutMode,
-      &WaylandZAuraShell::OnBugFix,
+  static constexpr zaura_shell_listener zaura_shell_listener = {
+      &OnLayoutMode,
+      &OnBugFix,
   };
   zaura_shell_add_listener(obj_.get(), &zaura_shell_listener, this);
 }

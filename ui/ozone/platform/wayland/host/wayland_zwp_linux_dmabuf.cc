@@ -16,9 +16,9 @@ WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
     zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
     WaylandConnection* connection)
     : zwp_linux_dmabuf_(zwp_linux_dmabuf), connection_(connection) {
-  static const zwp_linux_dmabuf_v1_listener dmabuf_listener = {
-      &WaylandZwpLinuxDmabuf::Format,
-      &WaylandZwpLinuxDmabuf::Modifiers,
+  static constexpr zwp_linux_dmabuf_v1_listener dmabuf_listener = {
+      &Format,
+      &Modifiers,
   };
   zwp_linux_dmabuf_v1_add_listener(zwp_linux_dmabuf_.get(), &dmabuf_listener,
                                    this);
@@ -38,9 +38,8 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
                                          uint32_t format,
                                          uint32_t planes_count,
                                          wl::OnRequestBufferCallback callback) {
-  static const struct zwp_linux_buffer_params_v1_listener params_listener = {
-      &WaylandZwpLinuxDmabuf::CreateSucceeded,
-      &WaylandZwpLinuxDmabuf::CreateFailed};
+  static constexpr zwp_linux_buffer_params_v1_listener params_listener = {
+      &CreateSucceeded, &CreateFailed};
 
   struct zwp_linux_buffer_params_v1* params =
       zwp_linux_dmabuf_v1_create_params(zwp_linux_dmabuf_.get());

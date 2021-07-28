@@ -17,9 +17,8 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
                            WaylandConnection* connection,
                            Delegate* delegate)
     : obj_(touch), connection_(connection), delegate_(delegate) {
-  static const wl_touch_listener listener = {
-      &WaylandTouch::Down,  &WaylandTouch::Up,     &WaylandTouch::Motion,
-      &WaylandTouch::Frame, &WaylandTouch::Cancel,
+  static constexpr wl_touch_listener listener = {
+      &Down, &Up, &Motion, &Frame, &Cancel,
   };
 
   wl_touch_add_listener(obj_.get(), &listener, this);

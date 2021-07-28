@@ -190,9 +190,9 @@ bool WaylandConnection::Initialize() {
   }
 #endif
 
-  static const wl_registry_listener registry_listener = {
-      &WaylandConnection::Global,
-      &WaylandConnection::GlobalRemove,
+  static constexpr wl_registry_listener registry_listener = {
+      &Global,
+      &GlobalRemove,
   };
 
   display_.reset(wl_display_connect(nullptr));
@@ -431,18 +431,18 @@ void WaylandConnection::Global(void* data,
                                uint32_t name,
                                const char* interface,
                                uint32_t version) {
-  static const wl_seat_listener seat_listener = {
-      &WaylandConnection::Capabilities,
-      &WaylandConnection::Name,
+  static constexpr wl_seat_listener seat_listener = {
+      &Capabilities,
+      &Name,
   };
-  static const xdg_wm_base_listener shell_listener = {
-      &WaylandConnection::Ping,
+  static constexpr xdg_wm_base_listener shell_listener = {
+      &Ping,
   };
-  static const zxdg_shell_v6_listener shell_v6_listener = {
-      &WaylandConnection::PingV6,
+  static constexpr zxdg_shell_v6_listener shell_v6_listener = {
+      &PingV6,
   };
-  static const wp_presentation_listener presentation_listener = {
-      &WaylandConnection::ClockId,
+  static constexpr wp_presentation_listener presentation_listener = {
+      &ClockId,
   };
 
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);

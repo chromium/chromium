@@ -35,9 +35,9 @@ bool ZXDGToplevelV6WrapperImpl::Initialize() {
     return false;
   }
 
-  static const zxdg_toplevel_v6_listener zxdg_toplevel_v6_listener = {
-      &ZXDGToplevelV6WrapperImpl::ConfigureTopLevel,
-      &ZXDGToplevelV6WrapperImpl::CloseTopLevel,
+  static constexpr zxdg_toplevel_v6_listener zxdg_toplevel_v6_listener = {
+      &ConfigureTopLevel,
+      &CloseTopLevel,
   };
 
   if (!zxdg_surface_v6_wrapper_)

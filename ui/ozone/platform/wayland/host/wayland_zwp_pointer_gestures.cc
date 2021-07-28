@@ -34,7 +34,7 @@ void WaylandZwpPointerGestures::Init() {
   pinch_.reset(zwp_pointer_gestures_v1_get_pinch_gesture(
       obj_.get(), connection_->pointer()->wl_object()));
 
-  static const zwp_pointer_gesture_pinch_v1_listener
+  static constexpr zwp_pointer_gesture_pinch_v1_listener
       zwp_pointer_gesture_pinch_v1_listener = {
           &WaylandZwpPointerGestures::OnPinchBegin,
           &WaylandZwpPointerGestures::OnPinchUpdate,

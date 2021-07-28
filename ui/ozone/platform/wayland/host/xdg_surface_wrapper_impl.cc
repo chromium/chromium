@@ -24,8 +24,8 @@ bool XDGSurfaceWrapperImpl::Initialize() {
     return false;
   }
 
-  static const xdg_surface_listener xdg_surface_listener = {
-      &XDGSurfaceWrapperImpl::Configure,
+  static constexpr xdg_surface_listener xdg_surface_listener = {
+      &Configure,
   };
 
   xdg_surface_.reset(xdg_wm_base_get_xdg_surface(

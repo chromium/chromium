@@ -36,7 +36,7 @@ class WaylandKeyboard::ZCRExtendedKeyboard {
                       zcr_extended_keyboard_v1* extended_keyboard)
       : keyboard_(keyboard), obj_(extended_keyboard) {
     static constexpr zcr_extended_keyboard_v1_listener kListener = {
-        &ZCRExtendedKeyboard::PeekKey,
+        &PeekKey,
     };
     zcr_extended_keyboard_v1_add_listener(obj_.get(), &kListener, this);
   }
@@ -87,10 +87,8 @@ WaylandKeyboard::WaylandKeyboard(
       delegate_(delegate),
       auto_repeat_handler_(this),
       layout_engine_(static_cast<LayoutEngine*>(layout_engine)) {
-  static const wl_keyboard_listener listener = {
-      &WaylandKeyboard::Keymap,    &WaylandKeyboard::Enter,
-      &WaylandKeyboard::Leave,     &WaylandKeyboard::Key,
-      &WaylandKeyboard::Modifiers, &WaylandKeyboard::RepeatInfo,
+  static constexpr wl_keyboard_listener listener = {
+      &Keymap, &Enter, &Leave, &Key, &Modifiers, &RepeatInfo,
   };
 
   wl_keyboard_add_listener(obj_.get(), &listener, this);
