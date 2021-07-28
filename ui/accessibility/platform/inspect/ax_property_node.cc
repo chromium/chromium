@@ -40,7 +40,7 @@ AXPropertyNode AXPropertyNode::From(
     return lvalue_root;
 
   AXPropertyNode* lvalue = &lvalue_root.arguments[0];
-  lvalue->original_property = property;
+  lvalue->original_property = std::string(property.begin(), lvalue_end);
   lvalue->line_indexes = line_indexes;
 
   // rvalue if any

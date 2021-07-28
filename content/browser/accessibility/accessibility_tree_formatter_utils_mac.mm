@@ -205,7 +205,7 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
         OptionalNSObject rvalue = Invoke(*property_node.rvalue);
         if (rvalue.IsNotNil()) {
           SetAttributeValueOf(target, attribute, *rvalue);
-          return OptionalNSObject::NotApplicable();
+          return {rvalue};
         }
         return rvalue;
       }

@@ -521,11 +521,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_SetAttribute) {
-  TestScript(R"~~(data:text/html,
+  TestScript(
+      R"~~(data:text/html,
                     <textarea id="textarea">Text</textarea>)~~",
-             {"textarea.AXSelectedTextMarkerRange = "
-              "textarea.AXTextMarkerRangeForUIElement(textarea)"},
-             "");
+      {"textarea.AXSelectedTextMarkerRange = "
+       "textarea.AXTextMarkerRangeForUIElement(textarea)"},
+      R"~~(textarea.AXSelectedTextMarkerRange={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+)~~");
 }
 
 }  // namespace content
