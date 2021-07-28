@@ -6,6 +6,10 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 static_library("bluetooth_config") {
   sources = [
+    "adapter_state_controller.cc",
+    "adapter_state_controller.h",
+    "adapter_state_controller_impl.cc",
+    "adapter_state_controller_impl.h",
     "cros_bluetooth_config.cc",
     "cros_bluetooth_config.h",
     "system_properties_provider.cc",
@@ -46,6 +50,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_adapter_state_controller.cc",
+    "fake_adapter_state_controller.h",
     "fake_system_properties_observer.cc",
     "fake_system_properties_observer.h",
   ]
@@ -63,6 +69,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "adapter_state_controller_impl_unittest.cc",
     "cros_bluetooth_config_unittest.cc",
     "system_properties_provider_impl_unittest.cc",
   ]

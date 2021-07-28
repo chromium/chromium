@@ -5,15 +5,13 @@
 #include "chromeos/services/bluetooth_config/system_properties_provider_impl.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -30,41 +28,12 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    mock_adapter_ =
-        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-    ON_CALL(*mock_adapter_, IsPresent())
-        .WillByDefault(
-            testing::Invoke([this]() { return is_adapter_present_; }));
-    ON_CALL(*mock_adapter_, IsPowered())
-        .WillByDefault(
-            testing::Invoke([this]() { return is_adapter_powered_; }));
-
-    provider_ = std::make_unique<SystemPropertiesProviderImpl>(mock_adapter_);
+    provider_ = std::make_unique<SystemPropertiesProviderImpl>(
+        &fake_adapter_state_controller_);
   }
 
-  void SetAdapterPresentState(bool present) {
-    if (is_adapter_present_ == present)
-      return;
-
-    is_adapter_present_ = present;
-
-    SystemPropertiesProviderImpl* impl =
-        static_cast<SystemPropertiesProviderImpl*>(provider_.get());
-    impl->AdapterPresentChanged(mock_adapter_.get(), present);
-
-    provider_->FlushForTesting();
-  }
-
-  void SetAdapterPoweredState(bool powered) {
-    if (is_adapter_powered_ == powered)
-      return;
-
-    is_adapter_powered_ = powered;
-
-    SystemPropertiesProviderImpl* impl =
-        static_cast<SystemPropertiesProviderImpl*>(provider_.get());
-    impl->AdapterPoweredChanged(mock_adapter_.get(), powered);
-
+  void SetSystemState(mojom::BluetoothSystemState system_state) {
+    fake_adapter_state_controller_.SetSystemState(system_state);
     provider_->FlushForTesting();
   }
 
@@ -77,11 +46,7 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  bool is_adapter_present_ = true;
-  bool is_adapter_powered_ = true;
-
-  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  FakeAdapterStateController fake_adapter_state_controller_;
 
   std::unique_ptr<SystemPropertiesProvider> provider_;
 };
@@ -95,16 +60,14 @@ TEST_F(SystemPropertiesProviderImplTest, SystemStateChanges) {
   EXPECT_EQ(mojom::BluetoothSystemState::kEnabled,
             observer->received_properties_list()[0]->system_state);
 
-  // Change the power state to false; observer should have been notified that
-  // Bluetooth is disabled.
-  SetAdapterPoweredState(false);
+  // Change the state to kDisabled and verify that the observer was notified.
+  SetSystemState(mojom::BluetoothSystemState::kDisabled);
   ASSERT_EQ(2u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothSystemState::kDisabled,
             observer->received_properties_list()[1]->system_state);
 
-  // Change the present state to false; observer should have been notified that
-  // Bluetooth is unavailable.
-  SetAdapterPresentState(false);
+  // Change the state to kUnavailable and verify that the observer was notified.
+  SetSystemState(mojom::BluetoothSystemState::kUnavailable);
   ASSERT_EQ(3u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothSystemState::kUnavailable,
             observer->received_properties_list()[2]->system_state);
@@ -118,9 +81,9 @@ TEST_F(SystemPropertiesProviderImplTest, DisconnectToStopObserving) {
   // Disconnect the Mojo pipe; this should stop observing.
   observer->DisconnectMojoPipe();
 
-  // Change the power state to false; this is a change in system properties, but
-  // the observer should not be notified since it is no longer connected.
-  SetAdapterPoweredState(false);
+  // Change the state to kDisabled; the observer should not be notified since it
+  // is no longer connected.
+  SetSystemState(mojom::BluetoothSystemState::kDisabled);
   EXPECT_EQ(1u, observer->received_properties_list().size());
 }
 

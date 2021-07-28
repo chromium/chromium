@@ -5,41 +5,35 @@
 #ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_SYSTEM_PROPERTIES_PROVIDER_IMPL_H_
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_SYSTEM_PROPERTIES_PROVIDER_IMPL_H_
 
-#include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
+#include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/system_properties_provider.h"
-#include "device/bluetooth/bluetooth_adapter.h"
 
 namespace chromeos {
 namespace bluetooth_config {
 
-// SystemPropertiesProvider implementation which uses BluetoothAdapter as the
-// source of properties.
+// SystemPropertiesProvider implementation which uses AdapterStateController as
+// the source of properties.
 class SystemPropertiesProviderImpl : public SystemPropertiesProvider,
-                                     public device::BluetoothAdapter::Observer {
+                                     public AdapterStateController::Observer {
  public:
   explicit SystemPropertiesProviderImpl(
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+      AdapterStateController* adapter_state_controller);
   ~SystemPropertiesProviderImpl() override;
 
  private:
   friend class SystemPropertiesProviderImplTest;
 
   // SystemPropertiesProvider:
-  mojom::BluetoothSystemPropertiesPtr GenerateProperties() override;
+  mojom::BluetoothSystemState ComputeSystemState() const override;
 
-  // device::BluetoothAdapter::Observer:
-  void AdapterPresentChanged(device::BluetoothAdapter* adapter,
-                             bool present) override;
-  void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
-                             bool powered) override;
+  // AdapterStateController::Observer:
+  void OnAdapterStateChanged() override;
 
-  mojom::BluetoothSystemState ComputeSystemState() const;
-
-  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  base::ScopedObservation<device::BluetoothAdapter,
-                          device::BluetoothAdapter::Observer>
-      adapter_observation_{this};
+  AdapterStateController* adapter_state_controller_;
+  base::ScopedObservation<AdapterStateController,
+                          AdapterStateController::Observer>
+      adapter_state_controller_observation_{this};
 };
 
 }  // namespace bluetooth_config

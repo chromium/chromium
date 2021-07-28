@@ -30,7 +30,7 @@ class SystemPropertiesProvider {
  protected:
   SystemPropertiesProvider();
 
-  virtual mojom::BluetoothSystemPropertiesPtr GenerateProperties() = 0;
+  virtual mojom::BluetoothSystemState ComputeSystemState() const = 0;
 
   // Notifies all observers of property changes; should be called by derived
   // types to notify observers of property changes.
@@ -38,6 +38,8 @@ class SystemPropertiesProvider {
 
  private:
   friend class SystemPropertiesProviderImplTest;
+
+  mojom::BluetoothSystemPropertiesPtr GenerateProperties();
 
   // Flushes queued Mojo messages in unit tests.
   void FlushForTesting();

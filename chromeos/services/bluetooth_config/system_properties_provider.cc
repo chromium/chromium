@@ -24,14 +24,21 @@ void SystemPropertiesProvider::NotifyPropertiesChanged() {
     NotifyObserver(observer.get(), properties.Clone());
 }
 
-void SystemPropertiesProvider::NotifyObserver(
-    mojom::SystemPropertiesObserver* observer,
-    mojom::BluetoothSystemPropertiesPtr properties) {
-  observer->OnPropertiesUpdated(std::move(properties));
+mojom::BluetoothSystemPropertiesPtr
+SystemPropertiesProvider::GenerateProperties() {
+  auto properties = mojom::BluetoothSystemProperties::New();
+  properties->system_state = ComputeSystemState();
+  return properties;
 }
 
 void SystemPropertiesProvider::FlushForTesting() {
   observers_.FlushForTesting();  // IN-TEST
+}
+
+void SystemPropertiesProvider::NotifyObserver(
+    mojom::SystemPropertiesObserver* observer,
+    mojom::BluetoothSystemPropertiesPtr properties) {
+  observer->OnPropertiesUpdated(std::move(properties));
 }
 
 }  // namespace bluetooth_config

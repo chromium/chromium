@@ -19,6 +19,7 @@ class BluetoothAdapter;
 namespace chromeos {
 namespace bluetooth_config {
 
+class AdapterStateController;
 class SystemPropertiesProvider;
 
 // Implements the CrosNetworkConfig API, which is used to support Bluetooth
@@ -42,6 +43,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
 
   mojo::ReceiverSet<mojom::CrosBluetoothConfig> receivers_;
 
+  std::unique_ptr<AdapterStateController> adapter_state_controller_;
   std::unique_ptr<SystemPropertiesProvider> system_properties_provider_;
 };
 

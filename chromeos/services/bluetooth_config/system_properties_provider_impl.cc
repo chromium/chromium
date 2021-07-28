@@ -8,40 +8,20 @@ namespace chromeos {
 namespace bluetooth_config {
 
 SystemPropertiesProviderImpl::SystemPropertiesProviderImpl(
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
-    : bluetooth_adapter_(std::move(bluetooth_adapter)) {
-  adapter_observation_.Observe(bluetooth_adapter_.get());
+    AdapterStateController* adapter_state_controller)
+    : adapter_state_controller_(adapter_state_controller) {
+  adapter_state_controller_observation_.Observe(adapter_state_controller_);
 }
 
 SystemPropertiesProviderImpl::~SystemPropertiesProviderImpl() = default;
 
-mojom::BluetoothSystemPropertiesPtr
-SystemPropertiesProviderImpl::GenerateProperties() {
-  auto properties = mojom::BluetoothSystemProperties::New();
-  properties->system_state = ComputeSystemState();
-  return properties;
-}
-
-void SystemPropertiesProviderImpl::AdapterPresentChanged(
-    device::BluetoothAdapter* adapter,
-    bool present) {
-  NotifyPropertiesChanged();
-}
-
-void SystemPropertiesProviderImpl::AdapterPoweredChanged(
-    device::BluetoothAdapter* adapter,
-    bool powered) {
+void SystemPropertiesProviderImpl::OnAdapterStateChanged() {
   NotifyPropertiesChanged();
 }
 
 mojom::BluetoothSystemState SystemPropertiesProviderImpl::ComputeSystemState()
     const {
-  if (!bluetooth_adapter_->IsPresent())
-    return mojom::BluetoothSystemState::kUnavailable;
-
-  return bluetooth_adapter_->IsPowered()
-             ? mojom::BluetoothSystemState::kEnabled
-             : mojom::BluetoothSystemState::kDisabled;
+  return adapter_state_controller_->GetAdapterState();
 }
 
 }  // namespace bluetooth_config
