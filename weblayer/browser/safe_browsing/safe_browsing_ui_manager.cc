@@ -12,15 +12,6 @@
 
 using content::BrowserThread;
 
-namespace {
-
-std::string GetProtocolConfigClientName() {
-  // Return a weblayer specific client name.
-  return "weblayer";
-}
-
-}  // namespace
-
 namespace weblayer {
 
 SafeBrowsingUIManager::SafeBrowsingUIManager(
@@ -36,17 +27,11 @@ void SafeBrowsingUIManager::SendSerializedThreatDetails(
     const std::string& serialized) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ping_manager_) {
-    ping_manager_ =
-        ::safe_browsing::PingManager::Create(safe_browsing::GetV4ProtocolConfig(
-            GetProtocolConfigClientName(), false /* auto_update */));
-  }
-
   if (serialized.empty())
     return;
 
   DVLOG(1) << "Sending serialized threat details";
-  ping_manager_->ReportThreatDetails(
+  safe_browsing_service_->GetPingManager()->ReportThreatDetails(
       safe_browsing_service_->GetURLLoaderFactory(), serialized);
 }
 

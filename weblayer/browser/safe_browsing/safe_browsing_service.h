@@ -31,6 +31,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace safe_browsing {
+class PingManager;
 class UrlCheckerDelegate;
 class RealTimeUrlLookupServiceBase;
 class RemoteSafeBrowsingDatabaseManager;
@@ -69,6 +70,8 @@ class SafeBrowsingService {
   // *accessed* only on the IO thread.
   scoped_refptr<safe_browsing::RemoteSafeBrowsingDatabaseManager>
   GetSafeBrowsingDBManager();
+
+  safe_browsing::PingManager* GetPingManager();
 
   scoped_refptr<SafeBrowsingUIManager> GetSafeBrowsingUIManager();
 
@@ -112,6 +115,9 @@ class SafeBrowsingService {
       safe_browsing_api_handler_;
 
   std::string user_agent_;
+
+  // Provides phishing and malware statistics. Accessed on UI thread.
+  std::unique_ptr<safe_browsing::PingManager> ping_manager_;
 
   // Whether |safe_browsing_db_manager_| has been started. Accessed only on the
   // IO thread.
