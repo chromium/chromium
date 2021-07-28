@@ -32,7 +32,7 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 // and invokes the |found_callback| when it finds a device within the
 // appropriate range.  |lost_callback| will be invoked when that device is lost
 // to the bluetooth adapter.
-class FastPairDiscoverableScanner : public FastPairScanner::Observer {
+class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
  public:
   FastPairDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
                               std::unique_ptr<RangeTracker> range_tracker,
@@ -41,7 +41,7 @@ class FastPairDiscoverableScanner : public FastPairScanner::Observer {
   FastPairDiscoverableScanner(const FastPairDiscoverableScanner&) = delete;
   FastPairDiscoverableScanner& operator=(const FastPairDiscoverableScanner&) =
       delete;
-  ~FastPairDiscoverableScanner() final;
+  ~FastPairDiscoverableScanner() override;
 
   // FastPairScanner::Observer
   void OnDeviceFound(device::BluetoothDevice* device) override;

@@ -13,12 +13,12 @@
 namespace ash {
 namespace {
 
-class OverlayNativeViewHost : public views::NativeViewHost {
+class OverlayNativeViewHost final : public views::NativeViewHost {
  public:
   OverlayNativeViewHost() = default;
   OverlayNativeViewHost(const OverlayNativeViewHost&) = delete;
   OverlayNativeViewHost& operator=(const OverlayNativeViewHost&) = delete;
-  ~OverlayNativeViewHost() final = default;
+  ~OverlayNativeViewHost() override = default;
   METADATA_HEADER(OverlayNativeViewHost);
 
   // views::NativeViewHost:

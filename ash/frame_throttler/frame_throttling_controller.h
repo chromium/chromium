@@ -32,7 +32,7 @@ namespace ash {
 
 constexpr uint8_t kDefaultThrottleFps = 20;
 
-class ASH_EXPORT FrameThrottlingController
+class ASH_EXPORT FrameThrottlingController final
     : public aura::WindowTreeHostObserver,
       public aura::WindowObserver {
  public:
@@ -40,7 +40,7 @@ class ASH_EXPORT FrameThrottlingController
   FrameThrottlingController(const FrameThrottlingController&) = delete;
   FrameThrottlingController& operator=(const FrameThrottlingController&) =
       delete;
-  ~FrameThrottlingController() final;
+  ~FrameThrottlingController() override;
 
   // ui::WindowTreeHostObserver overrides
   void OnCompositingFrameSinksToThrottleUpdated(

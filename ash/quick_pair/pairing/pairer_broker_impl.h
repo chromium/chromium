@@ -25,12 +25,12 @@ namespace quick_pair {
 struct Device;
 class FastPairPairer;
 
-class PairerBrokerImpl : public PairerBroker {
+class PairerBrokerImpl final : public PairerBroker {
  public:
   PairerBrokerImpl();
   PairerBrokerImpl(const PairerBrokerImpl&) = delete;
   PairerBrokerImpl& operator=(const PairerBrokerImpl&) = delete;
-  ~PairerBrokerImpl() final;
+  ~PairerBrokerImpl() override;
 
   // PairingBroker:
   void AddObserver(Observer* observer) override;

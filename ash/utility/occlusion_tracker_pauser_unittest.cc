@@ -15,12 +15,12 @@
 namespace ash {
 namespace {
 
-class TestObserver : public ui::CompositorAnimationObserver {
+class TestObserver final : public ui::CompositorAnimationObserver {
  public:
   TestObserver() = default;
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
-  ~TestObserver() final = default;
+  ~TestObserver() override = default;
 
   // ui::CompositorAnimationObserver:
   void OnAnimationStep(base::TimeTicks timestamp) override {}

@@ -27,12 +27,12 @@ using RangeTrackerCallback = base::OnceCallback<void(device::BluetoothDevice*)>;
 
 // RangeTracker provides an API to invoke a callback when a BluetoothDevice
 // enters a given threshold range.
-class RangeTracker : public device::BluetoothAdapter::Observer {
+class RangeTracker final : public device::BluetoothAdapter::Observer {
  public:
   explicit RangeTracker(scoped_refptr<device::BluetoothAdapter> adapter);
   RangeTracker(const RangeTracker&) = delete;
   RangeTracker& operator=(const RangeTracker&) = delete;
-  ~RangeTracker() final;
+  ~RangeTracker() override;
 
   // Start tracking |device| and invoke |callback| once it is within
   // |threshold_in_meters|. |callback| is invoked immediately if the device

@@ -20,9 +20,9 @@ struct Device;
 
 // Implements the Mediator design pattern for the components in the Quick Pair
 // system, e.g. the UI Broker, Scanning Broker and Pairing Broker.
-class Mediator : public FeatureStatusTracker::Observer,
-                 public ScannerBroker::Observer,
-                 public UIBroker::Observer {
+class Mediator final : public FeatureStatusTracker::Observer,
+                       public ScannerBroker::Observer,
+                       public UIBroker::Observer {
  public:
   class Factory {
    public:
@@ -39,7 +39,7 @@ class Mediator : public FeatureStatusTracker::Observer,
            std::unique_ptr<UIBroker> ui_broker);
   Mediator(const Mediator&) = delete;
   Mediator& operator=(const Mediator&) = delete;
-  ~Mediator() final;
+  ~Mediator() override;
 
   // QuickPairFeatureStatusTracker::Observer
   void OnFastPairEnabledChanged(bool is_enabled) override;
