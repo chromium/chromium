@@ -146,6 +146,12 @@ std::string SysInfo::OperatingSystemArchitecture() {
 }
 
 // static
+std::string SysInfo::CPUModelName() {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::string();
+}
+
+// static
 size_t SysInfo::VMAllocationGranularity() {
   return getpagesize();
 }
