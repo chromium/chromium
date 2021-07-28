@@ -7,6 +7,7 @@
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image_util.h"
@@ -69,7 +70,8 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::LensRegionSearchCaptureResult::FAILED_TO_OPEN_TAB);
     return;
   }
-  core_tab_helper->SearchWithLensInNewTab(image);
+  core_tab_helper->SearchWithLensInNewTab(
+      image, lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM);
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);
 }
 

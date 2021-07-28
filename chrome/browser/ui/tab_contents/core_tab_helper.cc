@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -94,7 +95,8 @@ void CoreTabHelper::SearchWithLensInNewTab(
                             lens::features::GetMaxPixelsForImageSearch());
 }
 
-void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image) {
+void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
+                                           lens::EntryPoint entry_point) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
@@ -119,6 +121,9 @@ void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image) {
   search_args.image_thumbnail_content.assign(image_bytes_begin,
                                              image_bytes_end);
   search_args.image_original_size = image.Size();
+  search_args.additional_query_params =
+      lens::GetQueryParameterFromEntryPoint(entry_point);
+
   TemplateURLRef::PostContent post_content;
   GURL result(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));
