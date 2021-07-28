@@ -740,7 +740,6 @@ crbug.com/1041847 virtual/gpu/fast/canvas/color-space/canvas-colorManaged-conver
 crbug.com/848799 [ Win10 ] http/tests/devtools/coverage/multiple-instances-merge.js [ Slow ]
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Slow ]
 crbug.com/1057807 http/tests/misc/destroy-middle-click-locked-target-crash.html [ Slow ]
-crbug.com/1071909 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.https.html [ Slow ]
 crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.html [ Slow ]
 crbug.com/984467 fast/canvas/canvas-composite-stroke-alpha.html [ Slow ]
 crbug.com/1078863 [ Mac ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Slow ]

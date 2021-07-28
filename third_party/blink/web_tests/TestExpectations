@@ -6124,9 +6124,6 @@ crbug.com/1120330 virtual/threaded/external/wpt/permissions-policy/experimental-
 
 crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Failure Pass ]
 
-# Sheriff 2020-11-20
-crbug.com/1071909 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw.https.html [ Pass Timeout ]
-
 # Mac11.0 rebaseline
 crbug.com/1122490 [ Mac11.0 ] virtual/text-antialias/mac-system-ui-trak.html [ Failure ]
 crbug.com/1123002 [ Mac11.0 ] external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html [ Failure ]
@@ -7247,7 +7244,6 @@ crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selecto
 crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Failure Pass ]
 crbug.com/835943 http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
-crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html?* [ Pass Timeout ]
 
 # Sheriff 2021-07-19
 crbug.com/1230534 [ Linux ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Timeout ]
