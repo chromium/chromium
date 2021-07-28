@@ -487,8 +487,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
   // Verify we loaded the extension.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetURL());
+  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
 
   // Make sure the embedder has the correct html boilerplate.
   EXPECT_EQ(1, content::EvalJs(embedder_web_contents,
@@ -529,8 +529,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetURL());
+  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
 
   // Verify that the plugin occupies all of the page area.
   const gfx::Rect embedder_rect = embedder_web_contents->GetContainerBounds();
@@ -558,8 +558,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetURL());
+  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
 }
 
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
@@ -604,8 +604,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetURL());
+  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
 }
 
 class PDFExtensionLoadTest
@@ -1825,7 +1825,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlLeft) {
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
-  const GURL& url = new_web_contents->GetURL();
+  const GURL& url = new_web_contents->GetVisibleURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
@@ -1850,7 +1850,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, Middle) {
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
-  const GURL& url = new_web_contents->GetURL();
+  const GURL& url = new_web_contents->GetVisibleURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
@@ -1872,7 +1872,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlShiftLeft) {
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
-  const GURL& url = active_web_contents->GetURL();
+  const GURL& url = active_web_contents->GetVisibleURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
@@ -1892,7 +1892,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftMiddle) {
   WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
-  const GURL& url = active_web_contents->GetURL();
+  const GURL& url = active_web_contents->GetVisibleURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
@@ -1914,7 +1914,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftLeft) {
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
-  const GURL& url = active_web_contents->GetURL();
+  const GURL& url = active_web_contents->GetVisibleURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
@@ -1935,7 +1935,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
   const char kPdfLinkClick[] = "document.getElementById('link').click();";
   ASSERT_TRUE(content::ExecuteScript(web_contents, kPdfLinkClick));
   navigation_observer.Wait();
-  const GURL& current_url = web_contents->GetURL();
+  const GURL& current_url = web_contents->GetLastCommittedURL();
   ASSERT_EQ("/pdf/test-link.pdf", current_url.path());
 
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
-  const GURL& url = new_web_contents->GetURL();
+  const GURL& url = new_web_contents->GetVisibleURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
@@ -2059,7 +2059,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, CtrlLeft) {
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
-  const GURL& url = new_web_contents->GetURL();
+  const GURL& url = new_web_contents->GetVisibleURL();
   EXPECT_EQ("/pdf/test-internal-link.pdf", url.path());
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
@@ -2085,7 +2085,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, Middle) {
   ASSERT_TRUE(new_web_contents);
   ASSERT_NE(web_contents, new_web_contents);
 
-  const GURL& url = new_web_contents->GetURL();
+  const GURL& url = new_web_contents->GetVisibleURL();
   EXPECT_EQ("/pdf/test-internal-link.pdf", url.path());
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
@@ -2108,7 +2108,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
-  const GURL& url = active_web_contents->GetURL();
+  const GURL& url = active_web_contents->GetVisibleURL();
   EXPECT_EQ("/pdf/test-internal-link.pdf", url.path());
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
@@ -2712,6 +2712,9 @@ class RequestWaiter {
     DCHECK(url_to_intercept.is_valid());
   }
 
+  RequestWaiter(const RequestWaiter&) = delete;
+  RequestWaiter& operator=(const RequestWaiter&) = delete;
+
   void WaitForRequest() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (!IsAlreadyIntercepted())
@@ -2745,8 +2748,6 @@ class RequestWaiter {
 
   base::Lock lock_;
   bool already_intercepted_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestWaiter);
 };
 
 // This is a regression test for a problem where DidStopLoading didn't get
@@ -3390,7 +3391,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   event_waiter.WaitForNotification();
 
   // Test that navigation occurred correctly.
-  const GURL& expected_url = GetActiveWebContents()->GetURL();
+  const GURL& expected_url = GetActiveWebContents()->GetLastCommittedURL();
   EXPECT_EQ("https://bing.com/", expected_url.spec());
 }
 
@@ -3437,10 +3438,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
   content::RenderFrameHost* prerendered_render_frame_host =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   ASSERT_TRUE(prerendered_render_frame_host);
-  ASSERT_EQ(web_contents->GetURL(), initial_url);
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), initial_url);
 
   prerender_helper().NavigatePrimaryPage(pdf_url);
-  ASSERT_EQ(web_contents->GetURL(), pdf_url);
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), pdf_url);
 }
 
 // TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
