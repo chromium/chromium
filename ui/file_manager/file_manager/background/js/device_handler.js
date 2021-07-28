@@ -8,6 +8,7 @@ import {AsyncUtil} from '../../common/js/async_util.js';
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {getFilesAppIconURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -642,7 +643,7 @@ DeviceHandler.Notification = class {
           type: 'basic',
           title: str(this.title),
           message: message || (str(this.message) + additionalMessage),
-          iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
+          iconUrl: getFilesAppIconURL().toString(),
           buttons: buttons,
           isClickable: this.isClickable
         },

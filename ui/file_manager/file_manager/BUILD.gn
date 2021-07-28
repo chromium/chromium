@@ -39,6 +39,7 @@ generate_grd("build_static_grdp") {
     "common/js/storage_adapter.js",
     "common/js/test_error_reporting.js",
     "common/js/volume_manager_types.js",
+    "common/js/url_constants.js",
     "common/js/xfm.js",
     "foreground/js/metadata/image_orientation.js",
     "externs/background/background_base.js",

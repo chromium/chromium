@@ -7,6 +7,7 @@ import {assertEquals,assertFalse, assertTrue} from 'chrome://test/chai_assert.js
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
+import {toFilesAppURL} from '../../common/js/url_constants.js';
 
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {MockProgressCenter} from './mock_progress_center.js';
@@ -26,8 +27,7 @@ let driveSyncHandler;
  * @return {string} Valid file URL
  */
 function asFileURL(name) {
-  return 'filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/' +
-      `external/${name}`;
+  return 'filesystem:' + toFilesAppURL(`external/${name}`).toString();
 }
 
 /**
