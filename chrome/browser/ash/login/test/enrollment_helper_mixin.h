@@ -78,8 +78,6 @@ class EnrollmentHelperMixin : public InProcessBrowserTestMixin {
                                 const std::string& expected_domain,
                                 const std::string& domain_join_config,
                                 const std::string& dm_token);
-  // Sets up expectations for token enrollment.
-  void ExpectTokenEnrollmentSuccess(const std::string& token);
 
   // InProcessBrowserTestMixin:
   void SetUpInProcessBrowserTestFixture() override;

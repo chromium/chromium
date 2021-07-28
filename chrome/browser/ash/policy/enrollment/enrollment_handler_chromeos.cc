@@ -91,9 +91,6 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     case EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
       return em::DeviceRegisterRequest::
           FLAVOR_ENROLLMENT_ATTESTATION_INITIAL_MANUAL_FALLBACK;
-    case EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN:
-      return em::DeviceRegisterRequest::
-          FLAVOR_ENROLLMENT_ATTESTATION_USB_ENROLLMENT;
   }
 
   NOTREACHED() << "Bad enrollment mode: " << mode;
@@ -191,9 +188,8 @@ EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
   dm_auth_ = std::move(dm_auth);
   CHECK(!client_->is_registered());
   CHECK_EQ(DM_STATUS_SUCCESS, client_->status());
-  if (enrollment_config_.is_mode_attestation()) {
-    CHECK(dm_auth_.empty() || dm_auth_.has_enrollment_token());
-  } else if (enrollment_config.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
+  if (enrollment_config_.is_mode_attestation() ||
+      enrollment_config.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
     CHECK(dm_auth_.empty());
   } else {
     CHECK(!dm_auth_.empty());

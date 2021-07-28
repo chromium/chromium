@@ -94,7 +94,6 @@ std::string EnrollmentModeToUIMode(policy::EnrollmentConfig::Mode mode) {
     case policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
     case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:
     case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
-    case policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN:
       return kEnrollmentModeUIForced;
     case policy::EnrollmentConfig::MODE_RECOVERY:
       return kEnrollmentModeUIRecovery;

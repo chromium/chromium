@@ -96,10 +96,6 @@ const char kDeviceRequisition[] = "deviceRequisition";
 // Boolean value, indicates that device was enrolled before rollback.
 const char kRestoreAfterRollback[] = "enrollmentRestoreAfterRollback";
 
-// String value containing an enrollment token that would be used during
-// enrollment to identify organization device is enrolled into.
-const char kEnrollmentToken[] = "enrollmentToken";
-
 // String value indicating what value would be propagated to Asset ID field
 // on Device Attributes step.
 const char kEnrollmentAssetId[] = "enrollmentAssetId";
@@ -139,8 +135,6 @@ constexpr struct {
     {kRestoreAfterRollback, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kDeviceRequisition, ValueType::STRING,
-     ConfigurationHandlerSide::HANDLER_CPP},
-    {kEnrollmentToken, ValueType::STRING,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kEnrollmentLocation, ValueType::STRING,
      ConfigurationHandlerSide::HANDLER_CPP},

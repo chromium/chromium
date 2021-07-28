@@ -25,8 +25,6 @@ const char* const kMetricEnrollmentForcedManualFallback =
 const char* const kMetricEnrollmentForcedInitialManualFallback =
     "Enterprise.EnrollmentForcedInitialManualFallback";
 const char* const kMetricEnrollmentRecovery = "Enterprise.EnrollmentRecovery";
-const char* const kMetricEnrollmentConfiguration =
-    "Enterprise.EnrollmentConfiguration";
 
 }  // namespace
 
@@ -67,9 +65,6 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
       break;
     case policy::EnrollmentConfig::MODE_RECOVERY:
       base::UmaHistogramSparse(kMetricEnrollmentRecovery, sample);
-      break;
-    case policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN:
-      base::UmaHistogramSparse(kMetricEnrollmentConfiguration, sample);
       break;
     case policy::EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
     case policy::EnrollmentConfig::MODE_NONE:

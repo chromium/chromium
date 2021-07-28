@@ -32,7 +32,6 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   // EnterpriseEnrollmentHelper:
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
-  void EnrollUsingEnrollmentToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
   void EnrollForOfflineDemo() override;
   void ClearAuth(base::OnceClosure callback) override;
@@ -75,7 +74,6 @@ class EnterpriseEnrollmentHelperImpl : public EnterpriseEnrollmentHelper {
   // Called by ProfileHelper when a signin profile clearance has finished.
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
-
 
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;

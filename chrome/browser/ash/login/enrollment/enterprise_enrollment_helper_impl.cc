@@ -131,13 +131,6 @@ void EnterpriseEnrollmentHelperImpl::EnrollUsingAttestation() {
   DoEnroll(policy::DMAuth::NoAuth());
 }
 
-void EnterpriseEnrollmentHelperImpl::EnrollUsingEnrollmentToken(
-    const std::string& token) {
-  CHECK_EQ(enrollment_config_.mode,
-           policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN);
-  DoEnroll(policy::DMAuth::FromEnrollmentToken(token));
-}
-
 void EnterpriseEnrollmentHelperImpl::EnrollForOfflineDemo() {
   CHECK_EQ(enrollment_config_.mode,
            policy::EnrollmentConfig::MODE_OFFLINE_DEMO);

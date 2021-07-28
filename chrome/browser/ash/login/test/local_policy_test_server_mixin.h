@@ -65,9 +65,6 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
                         const base::Value& recommended_policy,
                         const std::string& policy_user);
 
-  void ExpectTokenEnrollment(const std::string& enrollment_token,
-                             const std::string& token_creator);
-
   void SetUpdateDeviceAttributesPermission(bool allowed);
 
   // Configures fake attestation flow so that we can test attestation-based

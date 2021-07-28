@@ -295,26 +295,6 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestSkipUpdate) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
 }
 
-IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestEnrollUsingToken) {
-  chromeos::AttestationClient::Get()
-      ->GetTestInterface()
-      ->AllowlistSignSimpleChallengeKey(
-          /*username=*/"",
-          chromeos::attestation::GetKeyNameForProfile(
-              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-              ""));
-
-  policy_server_.SetUpdateDeviceAttributesPermission(false);
-  policy_server_.SetFakeAttestationFlow();
-
-  // Token from configuration file:
-  policy_server_.ExpectTokenEnrollment("00000000-1111-2222-3333-444444444444",
-                                       FakeGaiaMixin::kEnterpriseUser1);
-  LoadConfiguration();
-  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-}
-
 // Check that HID detection screen is shown if it is not specified by
 // configuration.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTestNoHID, TestShowHID) {

@@ -69,16 +69,6 @@ void LocalPolicyTestServerMixin::SetUpCommandLine(
                                   policy_test_server_->GetServiceURL().spec());
 }
 
-void LocalPolicyTestServerMixin::ExpectTokenEnrollment(
-    const std::string& enrollment_token,
-    const std::string& token_creator) {
-  base::Value token_enrollment(base::Value::Type::DICTIONARY);
-  token_enrollment.SetKey("token", base::Value(enrollment_token));
-  token_enrollment.SetKey("username", base::Value(token_creator));
-  server_config_.SetKey("token_enrollment", std::move(token_enrollment));
-  policy_test_server_->SetConfig(server_config_);
-}
-
 void LocalPolicyTestServerMixin::SetUpdateDeviceAttributesPermission(
     bool allowed) {
   server_config_.SetKey("allow_set_device_attributes", base::Value(allowed));

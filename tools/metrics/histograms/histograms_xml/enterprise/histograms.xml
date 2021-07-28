@@ -1040,6 +1040,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.EnrollmentConfiguration"
     enum="EnterpriseEnrollmentType" expires_after="2021-10-01">
+  <obsolete>
+    Removed 2021/07.
+  </obsolete>
   <owner>antrim@chromium.org</owner>
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>

@@ -171,14 +171,5 @@ void EnrollmentHelperMixin::SetupActiveDirectoryJoin(
           }));
 }
 
-void EnrollmentHelperMixin::ExpectTokenEnrollmentSuccess(
-    const std::string& token) {
-  ExpectEnrollmentMode(
-      policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN);
-  EXPECT_CALL(*mock_, EnrollUsingEnrollmentToken(token))
-      .WillOnce(InvokeWithoutArgs(
-          [this]() { mock_->status_consumer()->OnDeviceEnrolled(); }));
-}
-
 }  // namespace test
 }  // namespace chromeos

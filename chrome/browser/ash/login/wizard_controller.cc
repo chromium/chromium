@@ -2280,18 +2280,6 @@ void WizardController::StartEnrollmentScreen(bool force_interactive) {
             : policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT;
   }
 
-  // If enrollment token is specified via OOBE configuration use corresponding
-  // configuration.
-  auto* enrollment_token = wizard_context_->configuration.FindKeyOfType(
-      configuration::kEnrollmentToken, base::Value::Type::STRING);
-  if (enrollment_token && !enrollment_token->GetString().empty()) {
-    effective_config.mode =
-        policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN;
-    effective_config.auth_mechanism =
-        policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
-    effective_config.enrollment_token = enrollment_token->GetString();
-  }
-
   EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
   screen->SetEnrollmentConfig(effective_config);
   UpdateStatusAreaVisibilityForScreen(EnrollmentScreenView::kScreenId);

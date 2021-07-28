@@ -271,14 +271,7 @@ void EnrollmentScreen::AuthenticateUsingAttestation() {
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   view_->Show();
   CreateEnrollmentHelper();
-  if (enrollment_config_.mode ==
-      policy::EnrollmentConfig::MODE_ATTESTATION_ENROLLMENT_TOKEN) {
-    view_->ShowEnrollmentSpinnerScreen();
-    enrollment_helper_->EnrollUsingEnrollmentToken(
-        enrollment_config_.enrollment_token);
-  } else {
-    enrollment_helper_->EnrollUsingAttestation();
-  }
+  enrollment_helper_->EnrollUsingAttestation();
 }
 
 void EnrollmentScreen::OnLoginDone(const std::string& user,

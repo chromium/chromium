@@ -38,7 +38,6 @@ extern const char kUpdateSkipUpdate[];
 extern const char kWizardAutoEnroll[];
 
 extern const char kRestoreAfterRollback[];
-extern const char kEnrollmentToken[];
 extern const char kEnrollmentAssetId[];
 extern const char kEnrollmentLocation[];
 extern const char kEnrollmentAutoAttributes[];
@@ -71,7 +70,6 @@ using ::chromeos::configuration::kEnableDemoMode;
 using ::chromeos::configuration::kEnrollmentAssetId;
 using ::chromeos::configuration::kEnrollmentAutoAttributes;
 using ::chromeos::configuration::kEnrollmentLocation;
-using ::chromeos::configuration::kEnrollmentToken;
 using ::chromeos::configuration::kRestoreAfterRollback;
 using ::chromeos::configuration::kSkipHIDDetection;
 using ::chromeos::configuration::kUpdateSkipUpdate;
