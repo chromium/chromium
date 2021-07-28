@@ -5,7 +5,6 @@
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"

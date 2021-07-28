@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"

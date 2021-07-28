@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"

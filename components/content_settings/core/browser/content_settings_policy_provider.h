@@ -7,7 +7,6 @@
 
 // A content settings provider that takes its settings out of policies.
 
-#include <vector>
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
