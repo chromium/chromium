@@ -106,8 +106,6 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
   GrVkGetProc get_proc = [](const char* proc_name, VkInstance instance,
                             VkDevice device) {
     if (device) {
-      if (std::strcmp("vkQueueSubmit", proc_name) == 0)
-        return reinterpret_cast<PFN_vkVoidFunction>(&gpu::QueueSubmitHook);
       if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0)
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);

@@ -168,7 +168,7 @@ bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores,
   }
 
   result =
-      QueueSubmitHook(device_queue_->GetVulkanQueue(), 1, &submit_info, fence);
+      vkQueueSubmit(device_queue_->GetVulkanQueue(), 1, &submit_info, fence);
 
   if (VK_SUCCESS != result) {
     vkDestroyFence(device_queue_->GetVulkanDevice(), fence, nullptr);

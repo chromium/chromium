@@ -1629,10 +1629,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 
   destroy_after_swap_.clear();
   context_state_->UpdateSkiaOwnedMemorySize();
-#if BUILDFLAG(ENABLE_VULKAN)
-  if (is_using_vulkan())
-    gpu::ReportUMAPerSwapBuffers();
-#endif
 }
 
 bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {

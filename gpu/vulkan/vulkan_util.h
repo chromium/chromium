@@ -79,12 +79,6 @@ COMPONENT_EXPORT(VULKAN)
 std::string VkVersionToString(uint32_t version);
 
 COMPONENT_EXPORT(VULKAN)
-VKAPI_ATTR VkResult VKAPI_CALL QueueSubmitHook(VkQueue queue,
-                                               uint32_t submitCount,
-                                               const VkSubmitInfo* pSubmits,
-                                               VkFence fence);
-
-COMPONENT_EXPORT(VULKAN)
 VKAPI_ATTR VkResult VKAPI_CALL
 CreateGraphicsPipelinesHook(VkDevice device,
                             VkPipelineCache pipelineCache,
@@ -92,8 +86,6 @@ CreateGraphicsPipelinesHook(VkDevice device,
                             const VkGraphicsPipelineCreateInfo* pCreateInfos,
                             const VkAllocationCallbacks* pAllocator,
                             VkPipeline* pPipelines);
-
-COMPONENT_EXPORT(VULKAN) void ReportUMAPerSwapBuffers();
 
 COMPONENT_EXPORT(VULKAN)
 bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
