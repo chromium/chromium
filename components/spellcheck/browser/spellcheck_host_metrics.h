@@ -9,7 +9,6 @@
 
 #include <string>
 #include <unordered_set>
-#include <vector>
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
