@@ -282,12 +282,14 @@ TEST_F(KeyDataTest, KeysRotated) {
 
   MakeKeyData();
   const uint64_t first_id = key_data_->Id(kProjectOneHash);
+  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
 
   {
     // Advancing by 50 days, the key should not be rotated.
     time_.Advance(base::TimeDelta::FromDays(50));
     EXPECT_EQ(key_data_->Id(kProjectOneHash), first_id);
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
     SaveKeyData();
 
     ASSERT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day);
@@ -302,6 +304,7 @@ TEST_F(KeyDataTest, KeysRotated) {
     SaveKeyData();
 
     EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day + 90);
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day + 90);
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/1);
 
     // The rotation period could change here if it were ever updated in the xml.
@@ -317,6 +320,7 @@ TEST_F(KeyDataTest, KeysRotated) {
     SaveKeyData();
 
     EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day + 6 * 90);
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day + 6 * 90);
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/2);
   }
 }

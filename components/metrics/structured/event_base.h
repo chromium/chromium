@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 namespace structured {
@@ -66,6 +67,10 @@ class EventBase {
   // Finalizes the event and sends it for recording. After this call, the event
   // is left in an invalid state and should not be used further.
   void Record();
+
+  // Returns when the key for |project_name_hash| was last rotated, in days
+  // since epoch. Returns nullopt if the information is not available.
+  absl::optional<int> LastKeyRotation();
 
   std::vector<Metric> metrics() const { return metrics_; }
 

@@ -55,7 +55,7 @@ class ExternalMetrics;
 // On a call to ProvideCurrentSessionData, the cache of unsent logs is added to
 // a ChromeUserMetricsExtension for upload, and is then cleared.
 class StructuredMetricsProvider : public metrics::MetricsProvider,
-                                  public Recorder::Observer {
+                                  public Recorder::RecorderImpl {
  public:
   StructuredMetricsProvider();
   ~StructuredMetricsProvider() override;
@@ -83,9 +83,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void OnWrite(WriteStatus status);
   void OnExternalMetricsCollected(const EventsProto& events);
 
-  // Recorder::Observer:
+  // Recorder::RecorderImpl:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnRecord(const EventBase& event) override;
+  absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   // metrics::MetricsProvider:
   void OnRecordingEnabled() override;

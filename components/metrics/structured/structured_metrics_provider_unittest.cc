@@ -658,5 +658,23 @@ TEST_F(StructuredMetricsProviderTest,
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
 }
 
+// Check that LastKeyRotation returns a value in the correct range of possible
+// last rotations for a newly generated key.
+TEST_F(StructuredMetricsProviderTest, LastKeyRotation) {
+  Init();
+
+  // Record a metric so that the key is created.
+  events::test_project_one::TestEventOne().Record();
+
+  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  const absl::optional<int> last_rotation =
+      events::test_project_one::TestEventOne().LastKeyRotation();
+
+  // The last rotation should be a random day between today and 90 days in the
+  // past, ie. the rotation period for this project.
+  ASSERT_TRUE(last_rotation.has_value());
+  EXPECT_GE(last_rotation, today - 90);
+}
+
 }  // namespace structured
 }  // namespace metrics

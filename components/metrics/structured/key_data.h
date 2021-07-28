@@ -87,6 +87,10 @@ class KeyData {
   // StructuredMetricsProvider for more details.
   uint64_t Id(uint64_t project_name_hash);
 
+  // Returns when the key for |project_name_hash| was last rotated, in days
+  // since epoch. Returns nullopt if the key doesn't exist.
+  absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
+
   // Returns whether this KeyData instance has finished reading from disk and is
   // ready to be used. If false, both Id and HmacMetric will return 0u.
   bool is_initialized() { return is_initialized_; }

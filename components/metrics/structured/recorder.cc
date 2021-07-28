@@ -58,16 +58,26 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
     observer.OnProfileAdded(profile_path);
 }
 
+absl::optional<int> Recorder::LastKeyRotation(uint64_t project_name_hash) {
+  absl::optional<int> result;
+  // |observers_| will contain at most one observer, despite being an
+  // ObserverList.
+  for (auto& observer : observers_) {
+    result = observer.LastKeyRotation(project_name_hash);
+  }
+  return result;
+}
+
 void Recorder::SetUiTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   ui_task_runner_ = ui_task_runner;
 }
 
-void Recorder::AddObserver(Observer* observer) {
+void Recorder::AddObserver(RecorderImpl* observer) {
   observers_.AddObserver(observer);
 }
 
-void Recorder::RemoveObserver(Observer* observer) {
+void Recorder::RemoveObserver(RecorderImpl* observer) {
   observers_.RemoveObserver(observer);
 }
 

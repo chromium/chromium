@@ -255,6 +255,25 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   events_->QueueWrite();
 }
 
+absl::optional<int> StructuredMetricsProvider::LastKeyRotation(
+    const uint64_t project_name_hash) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  if (init_state_ != InitState::kInitialized)
+    return absl::nullopt;
+  DCHECK(profile_key_data_->is_initialized());
+  DCHECK(device_key_data_->is_initialized());
+
+  // |project_name_hash| could store its keys in either the profile or device
+  // key data, so check both. As they cannot both contain the same name hash, at
+  // most one will return a non-nullopt value.
+  absl::optional<int> profile_day =
+      profile_key_data_->LastKeyRotation(project_name_hash);
+  absl::optional<int> device_day =
+      device_key_data_->LastKeyRotation(project_name_hash);
+  DCHECK(!(profile_day && device_day));
+  return profile_day ? profile_day : device_day;
+}
+
 void StructuredMetricsProvider::OnRecordingEnabled() {
   DCHECK(base::CurrentUIThread::IsSet());
   // Enable recording only if structured metrics' feature flag is enabled.

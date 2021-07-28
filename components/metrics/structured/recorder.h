@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequenced_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -22,10 +23,12 @@ namespace structured {
 class EventBase;
 
 // Recorder is a singleton to help communicate with the
-// StructuredMetricsProvider. It serves two purposes:
+// StructuredMetricsProvider. It serves three purposes:
 // 1. Begin the initialization of the StructuredMetricsProvider (see class
 // comment for more details).
 // 2. Add an event for the StructuredMetricsProvider to record.
+// 3. Retrieving information about project's key, specifically the day it was
+// last rotated.
 //
 // The StructuredMetricsProvider is owned by the MetricsService, but it needs to
 // be accessible to any part of the codebase, via an EventBase subclass, to
@@ -34,12 +37,14 @@ class EventBase;
 // recording) or ProfileAdded (for initialization) are then forwarded to it.
 class Recorder {
  public:
-  class Observer : public base::CheckedObserver {
+  class RecorderImpl : public base::CheckedObserver {
    public:
     // Called on a call to Record.
     virtual void OnRecord(const EventBase& event) = 0;
     // Called on a call to ProfileAdded.
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
+    // Called on a call to LastKeyRotation.
+    virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };
 
   static Recorder* GetInstance();
@@ -56,6 +61,10 @@ class Recorder {
   // investigate whether initialization can be simplified for Chrome.
   void ProfileAdded(const base::FilePath& profile_path);
 
+  // Returns when the key for |project_name_hash| was last rotated, in days
+  // since epoch. Returns nullopt if the information is not available.
+  absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
+
   void SetUiTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
@@ -68,12 +77,12 @@ class Recorder {
   Recorder(const Recorder&) = delete;
   Recorder& operator=(const Recorder&) = delete;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void AddObserver(RecorderImpl* observer);
+  void RemoveObserver(RecorderImpl* observer);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<RecorderImpl> observers_;
 };
 
 }  // namespace structured

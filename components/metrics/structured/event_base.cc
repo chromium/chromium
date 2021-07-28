@@ -24,6 +24,10 @@ void EventBase::Record() {
   Recorder::GetInstance()->Record(std::move(*this));
 }
 
+absl::optional<int> EventBase::LastKeyRotation() {
+  return Recorder::GetInstance()->LastKeyRotation(project_name_hash_);
+}
+
 void EventBase::AddStringMetric(uint64_t name_hash, const std::string& value) {
   Metric metric(name_hash, MetricType::kString);
   metric.string_value = value;

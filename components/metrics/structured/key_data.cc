@@ -185,5 +185,18 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   return digest;
 }
 
+//-----
+// Misc
+//-----
+
+absl::optional<int> KeyData::LastKeyRotation(const uint64_t project_name_hash) {
+  const auto& keys = proto_.get()->get()->keys();
+  const auto& it = keys.find(project_name_hash);
+  if (it != keys.end()) {
+    return it->second.last_rotation();
+  }
+  return absl::nullopt;
+}
+
 }  // namespace structured
 }  // namespace metrics
