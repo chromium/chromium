@@ -97,7 +97,9 @@
     <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
       <visit-row visit="[[item]]"></visit-row>
     </template>
-    <iron-collapse opened="[[expanded_]]">
+    <!-- Disable animation on iron-collapse, as the parent iron-list can't
+         easily handle it. -->
+    <iron-collapse opened="[[expanded_]]" no-animation>
       <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
         <visit-row visit="[[item]]"></visit-row>
       </template>

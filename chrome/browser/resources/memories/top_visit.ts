@@ -100,6 +100,14 @@ class TopVisitElement extends PolymerElement {
 
   private onToggleButtonClick_() {
     this.expanded_ = !this.expanded_;
+
+    // Dispatch an event to notify the parent elements of a resize. Note that
+    // this simple solution only works because the child iron-collapse has
+    // animations disabled. Otherwise, it gets an incorrect mid-animation size.
+    this.dispatchEvent(new CustomEvent('iron-resize', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   //============================================================================
