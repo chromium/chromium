@@ -11,23 +11,16 @@ namespace feature_engagement {
 
 namespace events {
 
-// Desktop and IOS.
+// Desktop
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 // The user has explicitly opened a new tab via an entry point from inside of
 // Chrome.
 extern const char kNewTabOpened[];
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
-
-// Desktop
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
 // A new tab was opened when 5 (or more) tabs were already open.
 extern const char kSixthTabOpened[];
 // The user made a new tab group.
 extern const char kTabGroupCreated[];
-
 // A tab was closed when there are eight or more tabs in the browser.
 extern const char kClosedTabWithEightOrMore[];
 // A tab was added to reading list.
@@ -73,7 +66,7 @@ extern const char kDesktopPwaInstalled[];
 extern const char kUpdatedConnectionSecurityIndicatorDisplayed[];
 
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
 #if defined(OS_IOS)
 // The user has opened Chrome (cold start or from background).

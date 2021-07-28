@@ -30,8 +30,7 @@ mojom("interfaces") {
   }
 }
 
-# TODO(crbug/1056278): Enable this on Fuchsia
-if (safe_browsing_mode != 0 && !is_fuchsia) {
+if (safe_browsing_mode != 0) {
   source_set("file_type_policies") {
     sources = [
       "file_type_policies.cc",

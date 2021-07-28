@@ -48,8 +48,8 @@ PLATFORM_STRINGS = {
     'chrome.win': ['win'],
     'chrome.linux': ['linux'],
     'chrome.mac': ['mac'],
-    'chrome.*': ['win', 'mac', 'linux'],
-    'chrome.win7': ['win']
+    'chrome.*': ['win', 'mac', 'linux', 'fuchsia'],
+    'chrome.win7': ['win'],
 }
 
 
