@@ -25,9 +25,6 @@
 using content::BrowserThread;
 
 namespace browsing_data {
-namespace {
-const char kGlobalCookieSetURL[] = "chrome://cookieset";
-}  // namespace
 
 CookieHelper::CookieHelper(content::StoragePartition* storage_partition,
                            IsDeletionDisabledCallback callback)
@@ -67,27 +64,34 @@ CannedCookieHelper::~CannedCookieHelper() {
 
 void CannedCookieHelper::AddCookies(
     const content::CookieAccessDetails& details) {
-  for (const auto& add_cookie : details.cookie_list)
-    AddCookie(details.url, add_cookie);
+  for (const auto& cookie : details.cookie_list) {
+    auto existing_slot = origin_cookie_set_.find(cookie);
+    if (existing_slot != origin_cookie_set_.end()) {
+      // |cookie| already exists in the set. We need to remove the old instance
+      // and add this new one. Perform the equivalent of deleting
+      // the old instance from the set and inserting the new one by copying
+      // |cookie| into the instance it would replace in the set.
+      // Note that the set is keyed off of cookie name, domain, and path, but
+      // those properties are the same between the old and new cookies (which
+      // is the reason they matched in the first place). Other cookies
+      // properties are the only ones that may change.
+      const_cast<net::CanonicalCookie&>(*existing_slot) = cookie;
+    } else {
+      origin_cookie_set_.insert(cookie);
+    }
+  }
 }
 
 void CannedCookieHelper::Reset() {
-  origin_cookie_set_map_.clear();
+  origin_cookie_set_.clear();
 }
 
 bool CannedCookieHelper::empty() const {
-  for (const auto& pair : origin_cookie_set_map_) {
-    if (!pair.second->empty())
-      return false;
-  }
-  return true;
+  return origin_cookie_set_.empty();
 }
 
 size_t CannedCookieHelper::GetCookieCount() const {
-  size_t count = 0;
-  for (const auto& pair : origin_cookie_set_map_)
-    count += pair.second->size();
-  return count;
+  return origin_cookie_set_.size();
 }
 
 void CannedCookieHelper::StartFetching(FetchCallback callback) {
@@ -96,65 +100,12 @@ void CannedCookieHelper::StartFetching(FetchCallback callback) {
 }
 
 void CannedCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
-  for (const auto& pair : origin_cookie_set_map_)
-    pair.second.get()->erase(cookie);
+  origin_cookie_set_.erase(cookie);
   CookieHelper::DeleteCookie(cookie);
 }
 
 net::CookieList CannedCookieHelper::GetCookieList() {
-  net::CookieList cookie_list;
-  for (const auto& pair : origin_cookie_set_map_) {
-    cookie_list.insert(cookie_list.begin(), pair.second->begin(),
-                       pair.second->end());
-  }
-  return cookie_list;
-}
-
-canonical_cookie::CookieHashSet* CannedCookieHelper::GetCookiesFor(
-    const GURL& first_party_origin) {
-  std::unique_ptr<canonical_cookie::CookieHashSet>& entry =
-      origin_cookie_set_map_[first_party_origin];
-  if (entry)
-    return entry.get();
-
-  entry = std::make_unique<canonical_cookie::CookieHashSet>();
-  return entry.get();
-}
-
-void CannedCookieHelper::AddCookie(const GURL& frame_url,
-                                   const net::CanonicalCookie& cookie) {
-  // Storing cookies in separate cookie sets per frame origin makes the
-  // GetCookieCount method count a cookie multiple times if it is stored in
-  // multiple sets.
-  // E.g. let "example.com" be redirected to "www.example.com". A cookie set
-  // with the cookie string "A=B; Domain=.example.com" would be sent to both
-  // hosts. This means it would be stored in the separate cookie sets for both
-  // hosts ("example.com", "www.example.com"). The method GetCookieCount would
-  // count this cookie twice. To prevent this, we us a single global cookie
-  // set as a work-around to store all added cookies. Per frame URL cookie
-  // sets are currently not used. In the future they will be used for
-  // collecting cookies per origin in redirect chains.
-  // TODO(markusheintz): A) Change the GetCookiesCount method to prevent
-  // counting cookies multiple times if they are stored in multiple cookie
-  // sets.  B) Replace the GetCookieFor method call below with:
-  // "GetCookiesFor(frame_url.GetOrigin());"
-  static const base::NoDestructor<GURL> origin_cookie_url(kGlobalCookieSetURL);
-  canonical_cookie::CookieHashSet* cookie_set =
-      GetCookiesFor(*origin_cookie_url);
-  auto existing_slot = cookie_set->find(cookie);
-  if (existing_slot != cookie_set->end()) {
-    // |cookie| already exists in the set. We need to remove the old instance
-    // and add this new one. Perform the equivalent of deleting
-    // the old instance from the set and inserting the new one by copying
-    // |cookie| into the instance it would replace in the set.
-    // Note that the set is keyed off of cookie name, domain, and path, but
-    // those properties are the same between the old and new cookies (which
-    // is the reason they matched in the first place). Other cookies properties
-    // are the only ones that may change.
-    const_cast<net::CanonicalCookie&>(*existing_slot) = cookie;
-  } else {
-    cookie_set->insert(cookie);
-  }
+  return net::CookieList(origin_cookie_set_.begin(), origin_cookie_set_.end());
 }
 
 }  // namespace browsing_data

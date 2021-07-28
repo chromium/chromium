@@ -39,6 +39,8 @@ class CookieHelper : public base::RefCountedThreadSafe<CookieHelper> {
   using IsDeletionDisabledCallback = base::RepeatingCallback<bool(const GURL&)>;
   explicit CookieHelper(content::StoragePartition* storage_partition,
                         IsDeletionDisabledCallback callback);
+  CookieHelper(const CookieHelper&) = delete;
+  CookieHelper& operator=(const CookieHelper&) = delete;
 
   // Starts the fetching process, which will notify its completion via
   // callback.
@@ -56,8 +58,6 @@ class CookieHelper : public base::RefCountedThreadSafe<CookieHelper> {
  private:
   content::StoragePartition* storage_partition_;
   IsDeletionDisabledCallback delete_disabled_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieHelper);
 };
 
 // This class is a thin wrapper around CookieHelper that does not
@@ -79,6 +79,8 @@ class CannedCookieHelper : public CookieHelper {
 
   explicit CannedCookieHelper(content::StoragePartition* storage_partition,
                               IsDeletionDisabledCallback callback);
+  CannedCookieHelper(const CannedCookieHelper&) = delete;
+  CannedCookieHelper& operator=(const CannedCookieHelper&) = delete;
 
   // Adds the cookies from |details.cookie_list|. Current cookies that have the
   // same cookie name, cookie domain, cookie path, host-only-flag tuple as
@@ -88,7 +90,7 @@ class CannedCookieHelper : public CookieHelper {
   // Clears the list of canned cookies.
   void Reset();
 
-  // True if no cookie are currently stored.
+  // True if no cookies are currently stored.
   bool empty() const;
 
   // CookieHelper methods.
@@ -101,24 +103,16 @@ class CannedCookieHelper : public CookieHelper {
   // Directly returns stored cookies.
   net::CookieList GetCookieList();
 
-  // Returns the map that contains the cookie lists for all frame urls.
-  const OriginCookieSetMap& origin_cookie_set_map() {
-    return origin_cookie_set_map_;
+  // Returns the set of all cookies.
+  const canonical_cookie::CookieHashSet& origin_cookie_set() {
+    return origin_cookie_set_;
   }
 
  private:
   ~CannedCookieHelper() override;
 
-  // Returns the |CookieSet| for the given |origin|.
-  canonical_cookie::CookieHashSet* GetCookiesFor(const GURL& origin);
-
-  // Adds the |cookie| to the cookie set for the given |frame_url|.
-  void AddCookie(const GURL& frame_url, const net::CanonicalCookie& cookie);
-
-  // Map that contains the cookie sets for all frame origins.
-  OriginCookieSetMap origin_cookie_set_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CannedCookieHelper);
+  // The cookie set for all frame origins.
+  canonical_cookie::CookieHashSet origin_cookie_set_;
 };
 
 }  // namespace browsing_data

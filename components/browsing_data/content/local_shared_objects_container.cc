@@ -93,22 +93,15 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
   // to be a third party regarding the domain of the provided |origin|. E.g. if
   // the origin is "http://foo.com" then all cookies with domain foo.com,
   // a.foo.com, b.a.foo.com or *.foo.com will be counted.
-  typedef CannedCookieHelper::OriginCookieSetMap OriginCookieSetMap;
-  const OriginCookieSetMap& origin_cookies_set_map =
-      cookies()->origin_cookie_set_map();
-  for (auto it = origin_cookies_set_map.begin();
-       it != origin_cookies_set_map.end(); ++it) {
-    const canonical_cookie::CookieHashSet* cookie_list = it->second.get();
-    for (const auto& cookie : *cookie_list) {
-      // The |domain_url| is only created in order to use the
-      // SameDomainOrHost method below. It does not matter which scheme is
-      // used as the scheme is ignored by the SameDomainOrHost method.
-      GURL domain_url = net::cookie_util::CookieOriginToURL(
-          cookie.Domain(), false /* is_https */);
+  for (const auto& cookie : cookies()->origin_cookie_set()) {
+    // The |domain_url| is only created in order to use the
+    // SameDomainOrHost method below. It does not matter which scheme is
+    // used as the scheme is ignored by the SameDomainOrHost method.
+    GURL domain_url = net::cookie_util::CookieOriginToURL(cookie.Domain(),
+                                                          false /* is_https */);
 
-      if (origin.SchemeIsHTTPOrHTTPS() && SameDomainOrHost(origin, domain_url))
-        ++count;
-    }
+    if (origin.SchemeIsHTTPOrHTTPS() && SameDomainOrHost(origin, domain_url))
+      ++count;
   }
 
   // Count local storages for the domain of the given |origin|.
@@ -175,10 +168,8 @@ size_t LocalSharedObjectsContainer::GetObjectCountForDomain(
 size_t LocalSharedObjectsContainer::GetDomainCount() const {
   std::set<base::StringPiece> hosts;
 
-  for (const auto& it : cookies()->origin_cookie_set_map()) {
-    for (const auto& cookie : *it.second) {
-      hosts.insert(cookie.Domain());
-    }
+  for (const auto& cookie : cookies()->origin_cookie_set()) {
+    hosts.insert(cookie.Domain());
   }
 
   for (const auto& origin : local_storages()->GetOrigins())
