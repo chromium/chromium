@@ -34,6 +34,7 @@ extern const char kProcessTypeHost[];
 extern const char kProcessTypeRdpDesktopSession[];
 extern const char kProcessTypeEvaluateCapability[];
 extern const char kProcessTypeFileChooser[];
+extern const char kProcessTypeUrlForwarderConfigurator[];
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 extern const char kProcessTypeXSessionChooser[];
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -46,6 +47,9 @@ extern const char kEvaluateCapabilitySwitchName[];
 extern const char kEvaluateD3D[];
 // Executes Evaluate3dDisplayMode() function.
 extern const char kEvaluate3dDisplayMode[];
+// Used in combination with |kProcessTypeUrlForwarderConfigurator| to set up
+// the URL forwarder on Windows.
+extern const char kSetUpUrlForwarderSwitchName[];
 #endif
 
 // Used to pass the HWND for the parent process to a child process.

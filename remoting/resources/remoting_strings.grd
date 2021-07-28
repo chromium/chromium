@@ -851,6 +851,12 @@
       <message name="IDS_URL_FORWARDER_DESCRIPTION" desc="Description of an application that is used by Chrome Remote Desktop to forward URLs from the remote device to the client device.">
         Helper application to open a URL on the <ph name="PRODUCT_NAME">%s<ex>Chrome Remote Desktop</ex></ph> client
       </message>
+      <message name="IDS_SET_UP_URL_FORWARDER_PROMPT" desc="Prompt to be displayed to inform the user how they can set up the Chrome Remote Desktop URL forwarder.">
+        To allow links clicked on the remote device to be opened on the client browser, you need to change the system's web browser to "<ph name="URL_FORWARDER_NAME">%s<ex>Chrome Remote Desktop URL Forwarder</ex></ph>".
+      </message>
+      <message name="IDS_OPEN_DEFAULT_APPS_SETTINGS_BUTTON" desc="Label for the button to open the default apps settings page, which allows the user to change the system's default application that is associated with a specific file type or URL scheme.">
+        Open Default Apps Settings
+      </message>
       <if expr="is_macosx">
         <message name="IDS_HOST_AUTHENTICATION_PROMPT" desc="The prompt to be displayed in the authentication dialog when making changes to the system.  The system will add a sentence asking for an administrator's name and password.  Mac-only.">
           <ph name="PRODUCT_NAME">$1<ex>Chrome Remote Desktop</ex></ph> wants to make changes.

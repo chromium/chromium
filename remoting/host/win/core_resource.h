@@ -28,6 +28,7 @@
 #define IDS_DOWNLOAD_FILE_DIALOG_TITLE   118
 #define IDS_URL_FORWARDER_NAME           119
 #define IDS_URL_FORWARDER_DESCRIPTION    120
+#define IDD_SET_UP_URL_FORWARDER         121
 
 #define IDC_DISCONNECT                  1001
 #define IDC_DISCONNECT_SHARINGWITH      1002
@@ -35,6 +36,9 @@
 #define IDC_CONTINUE_MESSAGE            1004
 #define IDC_CONTINUE_DEFAULT            1005
 #define IDC_CONTINUE_CANCEL             1007
+#define IDC_SET_UP_URL_FORWARDER_DEFAULT 1008
+#define IDC_SET_UP_URL_FORWARDER_MESSAGE 1009
+#define IDC_SET_UP_URL_FORWARDER_CANCEL 1010
 
 // Next default values for new objects
 //
