@@ -7,15 +7,7 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-#import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
-
-// Delegate of sign-in screen coordinator.
-@protocol SigninScreenDelegate <FirstRunScreenDelegate>
-
-// Sets the flags that user choose not to sign in.
-- (void)userSkippedSignIn;
-
-@end
+@protocol FirstRunScreenDelegate;
 
 // Coordinator to present sign-in screen.
 @interface SigninScreenCoordinator : ChromeCoordinator
@@ -26,7 +18,7 @@
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
                                         delegate:
-                                            (id<SigninScreenDelegate>)delegate
+                                            (id<FirstRunScreenDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
