@@ -59,6 +59,8 @@ android_library("devui_java") {
     "java/src/org/chromium/android_webview/devui/MainActivity.java",
     "java/src/org/chromium/android_webview/devui/PersistentErrorView.java",
     "java/src/org/chromium/android_webview/devui/WebViewPackageError.java",
+    "java/src/org/chromium/android_webview/devui/util/ComponentInfo.java",
+    "java/src/org/chromium/android_webview/devui/util/ComponentsInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/CrashBugUrlFactory.java",
     "java/src/org/chromium/android_webview/devui/util/CrashInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/UnuploadedFilesStateLoader.java",
@@ -69,6 +71,7 @@ android_library("devui_java") {
   ]
   deps = [
     ":devui_resources",
+    ":services_java",
     ":system_webview_manifest",
     "//android_webview:common_aidl_java",
     "//android_webview:common_crash_java",
