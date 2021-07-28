@@ -317,6 +317,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 - (void)setContentOffsetToTop {
   [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
+  [self resetFakeOmnibox];
 }
 
 - (void)updateContentSuggestionForCurrentLayout {
@@ -332,7 +333,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Ensure initial fake omnibox layout.
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
   if (!self.viewDidAppear && ![self isInitialOffsetFromSavedState]) {
-    [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
+    [self setContentOffsetToTop];
   }
 }
 
