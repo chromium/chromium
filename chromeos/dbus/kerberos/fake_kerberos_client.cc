@@ -376,6 +376,9 @@ FakeKerberosClient::AccountData::AccountData(const std::string& principal_name)
 FakeKerberosClient::AccountData::AccountData(const AccountData& other) =
     default;
 
+FakeKerberosClient::AccountData& FakeKerberosClient::AccountData::operator=(
+    const AccountData& other) = default;
+
 bool FakeKerberosClient::AccountData::operator==(
     const AccountData& other) const {
   return principal_name == other.principal_name;

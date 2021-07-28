@@ -51,6 +51,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkTypePattern {
   // unsure, better use one of the matchers above.
   static NetworkTypePattern Primitive(const std::string& shill_network_type);
 
+  NetworkTypePattern(const NetworkTypePattern&) = default;
+  NetworkTypePattern& operator=(const NetworkTypePattern&) = default;
+
   bool Equals(const NetworkTypePattern& other) const;
   bool MatchesType(const std::string& shill_network_type) const;
 
@@ -69,8 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkTypePattern {
 
   // The bit array of the matching network types.
   int pattern_;
-
-  DISALLOW_ASSIGN(NetworkTypePattern);
 };
 
 }  // namespace chromeos

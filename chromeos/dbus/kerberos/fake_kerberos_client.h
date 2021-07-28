@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
 
     explicit AccountData(const std::string& principal_name);
     AccountData(const AccountData& other);
+    AccountData& operator=(const AccountData& other);
 
     // Only compares principal_name. For finding and erasing in vectors.
     bool operator==(const AccountData& other) const;

@@ -27,6 +27,7 @@ class Notification {
                 const std::string& package_name,
                 const gfx::Image& icon);
     AppMetadata(const AppMetadata& other);
+    AppMetadata& operator=(const AppMetadata& other);
 
     bool operator==(const AppMetadata& other) const;
     bool operator!=(const AppMetadata& other) const;

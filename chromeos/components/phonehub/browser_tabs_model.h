@@ -26,6 +26,7 @@ class BrowserTabsModel {
                        base::Time last_accessed_timestamp,
                        const gfx::Image& favicon);
     BrowserTabMetadata(const BrowserTabMetadata& other);
+    BrowserTabMetadata& operator=(const BrowserTabMetadata& other);
 
     bool operator==(const BrowserTabMetadata& other) const;
     bool operator!=(const BrowserTabMetadata& other) const;

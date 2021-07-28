@@ -20,6 +20,9 @@ Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
 
 Notification::AppMetadata::AppMetadata(const AppMetadata& other) = default;
 
+Notification::AppMetadata& Notification::AppMetadata::operator=(
+    const AppMetadata& other) = default;
+
 bool Notification::AppMetadata::operator==(const AppMetadata& other) const {
   return visible_app_name == other.visible_app_name &&
          package_name == other.package_name && icon == other.icon;

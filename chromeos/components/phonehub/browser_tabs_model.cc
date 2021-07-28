@@ -24,6 +24,10 @@ BrowserTabsModel::BrowserTabMetadata::BrowserTabMetadata(
 BrowserTabsModel::BrowserTabMetadata::BrowserTabMetadata(
     const BrowserTabMetadata& other) = default;
 
+BrowserTabsModel::BrowserTabMetadata&
+BrowserTabsModel::BrowserTabMetadata::operator=(
+    const BrowserTabMetadata& other) = default;
+
 bool BrowserTabsModel::BrowserTabMetadata::operator==(
     const BrowserTabMetadata& other) const {
   // The favicon is not compared because equality of gfx::Image is defined
