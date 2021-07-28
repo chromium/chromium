@@ -77,8 +77,7 @@ copy("browser_test_resources") {
   ]
 }
 
-# Run separately from the Chromium waterfall with the external component
-# extension.  See README.md
+# Run separately from the Chromium waterfall. See README.md for details.
 if (enable_downstream_media_tests) {
   group("media_router_e2e_tests") {
     testonly = true
@@ -87,10 +86,7 @@ if (enable_downstream_media_tests) {
       ":e2e_test_resources",
       "//chrome/test:browser_tests",
     ]
-    data = [
-      "$root_out_dir/mr_extension/",
-      "internal/",
-    ]
+    data = [ "internal/" ]
   }
 }
 
@@ -113,10 +109,7 @@ if (enable_downstream_media_tests) {
       ":browser_test_resources",
       "//chrome/test:browser_tests",
     ]
-    data = [
-      "internal/",
-      "$root_out_dir/mr_extension/",
-    ]
+    data = [ "internal/" ]
   }
 }
 
@@ -126,9 +119,7 @@ source_set("test_support") {
     "test_media_sinks_observer.cc",
     "test_media_sinks_observer.h",
   ]
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
   deps = [
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:test_support",
