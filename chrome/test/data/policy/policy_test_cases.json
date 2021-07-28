@@ -7266,7 +7266,6 @@
           }
         }
       }
-
     ]
   },
   "GaiaLockScreenOfflineSigninTimeLimitDays": {
@@ -7354,7 +7353,6 @@
           }
         }
       }
-
     ]
   },
   "DriveDisabled": {
@@ -9023,7 +9021,53 @@
           "AllowDinosaurEasterEgg": true
         },
         "prefs": {
-          "allow_dinosaur_easter_egg": {}
+          "allow_dinosaur_easter_egg": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowDinosaurEasterEgg": false
+        },
+        "prefs": {
+          "allow_dinosaur_easter_egg": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  "AllowDinosaurEasterEgg.CrOSDefault": {
+    "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "allow_dinosaur_easter_egg": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  "AllowDinosaurEasterEgg.NonCrOSDefault": {
+    "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "allow_dinosaur_easter_egg": {
+            "default_value": true
+          }
         }
       }
     ]
