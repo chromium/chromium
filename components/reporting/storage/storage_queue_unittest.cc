@@ -515,8 +515,10 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-TEST_P(StorageQueueTest,
-       WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
+// TODO(crbug.com/1194878) - this is very flaky on all platforms.
+TEST_P(
+    StorageQueueTest,
+    DISABLED_WriteIntoNewStorageQueueReopenWithMissingMetadataWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
