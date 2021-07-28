@@ -80,6 +80,8 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   void OnAcceleratedWidgetDestroyed() override;
   void OnActivationChanged(bool active) override;
   void OnMouseEnter() override;
+  void OnOcclusionStateChanged(
+      ui::PlatformWindowOcclusionState occlusion_state) override;
 
   // Overridden from aura::WindowTreeHost:
   bool CaptureSystemKeyEventsImpl(

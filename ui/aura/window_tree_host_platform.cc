@@ -296,4 +296,24 @@ void WindowTreeHostPlatform::OnMouseEnter() {
   }
 }
 
+void WindowTreeHostPlatform::OnOcclusionStateChanged(
+    ui::PlatformWindowOcclusionState occlusion_state) {
+  auto aura_occlusion_state = Window::OcclusionState::UNKNOWN;
+  switch (occlusion_state) {
+    case ui::PlatformWindowOcclusionState::kUnknown:
+      aura_occlusion_state = Window::OcclusionState::UNKNOWN;
+      break;
+    case ui::PlatformWindowOcclusionState::kVisible:
+      aura_occlusion_state = Window::OcclusionState::VISIBLE;
+      break;
+    case ui::PlatformWindowOcclusionState::kOccluded:
+      aura_occlusion_state = Window::OcclusionState::OCCLUDED;
+      break;
+    case ui::PlatformWindowOcclusionState::kHidden:
+      aura_occlusion_state = Window::OcclusionState::HIDDEN;
+      break;
+  }
+  SetNativeWindowOcclusionState(aura_occlusion_state);
+}
+
 }  // namespace aura
