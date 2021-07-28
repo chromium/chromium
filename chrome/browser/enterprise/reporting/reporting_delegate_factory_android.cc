@@ -22,7 +22,6 @@ ReportingDelegateFactoryAndroid::GetProfileReportGeneratorDelegate() {
 
 std::unique_ptr<ReportGenerator::Delegate>
 ReportingDelegateFactoryAndroid::GetReportGeneratorDelegate() {
-  // TODO(crbug.com/1228843) Implement ReportGenerator::Delegate for Android
   return nullptr;
 }
 

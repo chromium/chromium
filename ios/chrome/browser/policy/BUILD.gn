@@ -31,8 +31,6 @@ source_set("policy") {
     "reporting/browser_report_generator_ios.mm",
     "reporting/profile_report_generator_ios.h",
     "reporting/profile_report_generator_ios.mm",
-    "reporting/report_generator_ios.h",
-    "reporting/report_generator_ios.mm",
     "reporting/report_scheduler_ios.h",
     "reporting/report_scheduler_ios.mm",
     "reporting/reporting_delegate_factory_ios.h",
