@@ -81,7 +81,8 @@ class CONTENT_EXPORT AttributeInvoker final {
   AttributeInvoker(const id node, const LineIndexer* line_indexer);
 
   // Invokes an attribute matching to a property filter.
-  OptionalNSObject Invoke(const ui::AXPropertyNode& property_node) const;
+  OptionalNSObject Invoke(const ui::AXPropertyNode& property_node,
+                          bool no_object_parse = false) const;
   // Gets the value of a parameterized attribute by name.
   OptionalNSObject GetValue(const std::string& property_name,
                             const OptionalNSObject& param) const;
@@ -114,17 +115,30 @@ class CONTENT_EXPORT AttributeInvoker final {
   // Returns a parameterized attribute parameter by a property node.
   OptionalNSObject ParamByPropertyNode(const ui::AXPropertyNode&) const;
 
-  NSNumber* PropertyNodeToInt(const ui::AXPropertyNode&) const;
-  NSString* PropertyNodeToString(const ui::AXPropertyNode&) const;
-  NSArray* PropertyNodeToIntArray(const ui::AXPropertyNode&) const;
-  NSArray* PropertyNodeToTextMarkerArray(const ui::AXPropertyNode&) const;
-  NSValue* PropertyNodeToRange(const ui::AXPropertyNode&) const;
-  gfx::NativeViewAccessible PropertyNodeToUIElement(
-      const ui::AXPropertyNode&) const;
+  // Converts a given property node to NSObject. If not convertible, returns
+  // nil.
+  id PropertyNodeToNSObject(const ui::AXPropertyNode& property_node) const;
 
-  id DictNodeToTextMarker(const ui::AXPropertyNode&) const;
-  id PropertyNodeToTextMarker(const ui::AXPropertyNode&) const;
-  id PropertyNodeToTextMarkerRange(const ui::AXPropertyNode&) const;
+  NSNumber* PropertyNodeToInt(const ui::AXPropertyNode&,
+                              bool log_failure = true) const;
+  NSString* PropertyNodeToString(const ui::AXPropertyNode&,
+                                 bool log_failure = true) const;
+  NSArray* PropertyNodeToIntArray(const ui::AXPropertyNode&,
+                                  bool log_failure = true) const;
+  NSArray* PropertyNodeToTextMarkerArray(const ui::AXPropertyNode&,
+                                         bool log_failure = true) const;
+  NSValue* PropertyNodeToRange(const ui::AXPropertyNode&,
+                               bool log_failure = true) const;
+  gfx::NativeViewAccessible PropertyNodeToUIElement(
+      const ui::AXPropertyNode&,
+      bool log_failure = true) const;
+
+  id DictNodeToTextMarker(const ui::AXPropertyNode&,
+                          bool log_failure = true) const;
+  id PropertyNodeToTextMarker(const ui::AXPropertyNode&,
+                              bool log_failure = true) const;
+  id PropertyNodeToTextMarkerRange(const ui::AXPropertyNode&,
+                                   bool log_failure = true) const;
 
   gfx::NativeViewAccessible LineIndexToNode(
       const std::u16string line_index) const;

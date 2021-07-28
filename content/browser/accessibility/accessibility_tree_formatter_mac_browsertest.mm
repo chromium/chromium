@@ -448,6 +448,47 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_IntArray) {
+  TestScript("data:text/html,", {"var:= [3, 4]"},
+             R"~~(var=[3, 4]
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_NSRange) {
+  TestScript("data:text/html,", {"var:= {loc: 3, len: 2}"},
+             R"~~(var={loc: 3, len: 2}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_TextMarker) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"var:= {:2, 2, down}"},
+             R"~~(var={:2, 2, down}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_TextMarkerArray) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"var:= [{:2, 2, down}, {:1, 1, up}]"},
+             R"~~(var=[{:2, 2, down}, {:1, 1, up}]
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Object_TextMarkerRange) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"var:= {anchor: {:3, 0, down}, focus: {:3, 4, down}}"},
+             R"~~(var={anchor: {:3, 0, down}, focus: {:3, 4, down}}
+)~~");
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
   TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",

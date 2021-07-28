@@ -219,12 +219,65 @@ AXTextMarkerRangeForUIElement(
 ))~~");
 }
 
-TEST_F(AXPropertyNodeTest, Keys) {
+TEST_F(AXPropertyNodeTest, Variables) {
+  // Statement
   ParseAndCheckTree(
       "textmarker_range:= textarea.AXTextMarkerRangeForUIElement(textarea)",
       R"~~(textmarker_range:textarea.
 AXTextMarkerRangeForUIElement(
   textarea
+))~~");
+
+  // Integer array
+  ParseAndCheckTree("var:= [3, 4]",
+                    R"~~(var:[](
+  3,
+  4
+))~~");
+
+  // Range dictionary
+  ParseAndCheckTree("var:= {loc: 3, len: 2}",
+                    R"~~(var:{}(
+  loc:3,
+  len:2
+))~~");
+
+  // TextMarker dictionary
+  ParseAndCheckTree("var:= {:2, 2, down}",
+                    R"~~(var:{}(
+  :2,
+  2,
+  down
+))~~");
+
+  // TextMarker array
+  ParseAndCheckTree("var:= [{:2, 2, down}, {:1, 1, up}]",
+                    R"~~(var:[](
+  {}(
+    :2,
+    2,
+    down
+  ),
+  {}(
+    :1,
+    1,
+    up
+  )
+))~~");
+
+  // TextMarkerRange dictionary
+  ParseAndCheckTree("var:= {anchor: {:2, 1, down}, focus: {:2, 2, down} }",
+                    R"~~(var:{}(
+  anchor:{}(
+    :2,
+    1,
+    down
+  ),
+  focus:{}(
+    :2,
+    2,
+    down
+  )
 ))~~");
 }
 
