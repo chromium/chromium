@@ -58,9 +58,11 @@ class ContinuousSearchListProperties {
         public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
         public static final WritableIntPropertyKey PRIMARY_TEXT_STYLE =
                 new WritableIntPropertyKey();
+        public static final WritableIntPropertyKey SECONDARY_TEXT_STYLE =
+                new WritableIntPropertyKey();
 
         static final PropertyKey[] ALL_KEYS = {LABEL, URL, IS_SELECTED, BORDER_COLOR,
-                CLICK_LISTENER, BACKGROUND_COLOR, PRIMARY_TEXT_STYLE};
+                CLICK_LISTENER, BACKGROUND_COLOR, PRIMARY_TEXT_STYLE, SECONDARY_TEXT_STYLE};
     }
 
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
