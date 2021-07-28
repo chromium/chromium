@@ -4165,6 +4165,7 @@ ci.fyi_windows_builder(
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_profiler_service = "reclient-win",
+    reclient_publish_trace = True,
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.WINDOWS_DEFAULT,
