@@ -11,7 +11,6 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"

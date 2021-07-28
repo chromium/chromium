@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
