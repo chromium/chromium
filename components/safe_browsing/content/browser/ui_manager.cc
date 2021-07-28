@@ -147,12 +147,12 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   DisplayBlockingPage(resource);
 }
 
-// static
 bool SafeBrowsingUIManager::ShouldSendHitReport(const HitReport& hit_report,
                                                 WebContents* web_contents) {
   return web_contents &&
          hit_report.extended_reporting_level != SBER_LEVEL_OFF &&
-         !web_contents->GetBrowserContext()->IsOffTheRecord();
+         !web_contents->GetBrowserContext()->IsOffTheRecord() &&
+         delegate_->IsSendingOfHitReportsEnabled();
 }
 
 // A SafeBrowsing hit is sent after a blocking page for malware/phishing

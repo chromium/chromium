@@ -43,6 +43,7 @@ class ChromeSafeBrowsingUIManagerDelegate
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;
+  bool IsSendingOfHitReportsEnabled() override;
 };
 
 }  // namespace safe_browsing

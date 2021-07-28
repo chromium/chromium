@@ -189,6 +189,8 @@ class TestSafeBrowsingUIManagerDelegate
   }
   bool IsMetricsAndCrashReportingEnabled() override { return false; }
 
+  bool IsSendingOfHitReportsEnabled() override { return false; }
+
   void set_is_hosting_extension(bool is_hosting_extension) {
     is_hosting_extension_ = is_hosting_extension;
   }

@@ -118,6 +118,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
     // Returns true if metrics reporting is enabled.
     virtual bool IsMetricsAndCrashReportingEnabled() = 0;
+
+    // Returns true if sending of hit reports is enabled, in which case
+    // SafeBrowsingUIManager will send hit reports when it deems the context
+    // appropriate to do so (see ShouldSendHitReport()). If this method returns
+    // false, SafeBrowsingUIManager will never send hit reports.
+    // TODO(crbug.com/1232315): Eliminate this method if/once hit report sending
+    // is enabled in WebLayer.
+    virtual bool IsSendingOfHitReportsEnabled() = 0;
   };
 
   SafeBrowsingUIManager(
@@ -193,8 +201,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   // Helper method to ensure hit reports are only sent when the user has
   // opted in to extended reporting and is not currently in incognito mode.
-  static bool ShouldSendHitReport(const HitReport& hit_report,
-                                  content::WebContents* web_contents);
+  bool ShouldSendHitReport(const HitReport& hit_report,
+                           content::WebContents* web_contents);
 
  private:
   friend class SafeBrowsingUIManagerTest;
