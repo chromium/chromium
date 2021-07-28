@@ -32,6 +32,7 @@ generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
     "index.html",
+    "fake_shortcut_provider.js",
     "mojo_interface_provider.js",
     "shortcut_types.js",
   ]
@@ -54,6 +55,7 @@ js_type_check("closure_compile") {
     ":android_shortcuts_page",
     ":browser_shortcuts_page",
     ":chromeos_shortcuts_page",
+    ":fake_shortcut_provider",
     ":icons",
     ":input_key",
     ":mojo_interface_provider",
@@ -125,6 +127,13 @@ js_library("chromeos_shortcuts_page") {
   ]
 }
 
+js_library("fake_shortcut_provider") {
+  deps = [
+    "//ash/webui/common/resources:fake_method_resolver",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("icons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -138,7 +147,11 @@ js_library("input_key") {
 }
 
 js_library("mojo_interface_provider") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    ":fake_shortcut_provider",
+    ":shortcut_types",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("shortcut_customization_app") {

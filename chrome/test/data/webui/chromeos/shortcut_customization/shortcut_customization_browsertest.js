@@ -45,6 +45,8 @@ const debug_suites_list = [
   'AcceleratorEditViewTest',
   'AcceleratorViewTest',
   'AcceleratorRowTest',
+  // TODO(jimmyxgong): Alphabetize these.
+  'FakeShortcutProviderTest',
   'AcceleratorEditDialogTest',
 ];
 
