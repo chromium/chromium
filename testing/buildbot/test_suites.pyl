@@ -1471,6 +1471,9 @@
         },
         'mixins': ['fuchsia_runner_logs'],
       },
+      'color_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
       'components_unittests': {
         'mixins': ['fuchsia_runner_logs'],
         'args': [
@@ -1485,6 +1488,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter',
         ],
+      },
+      'courgette_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
       },
       'cronet_tests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1501,6 +1507,12 @@
       'events_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
+      'fuchsia_mojo_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'gcm_unit_tests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
       'gfx_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
@@ -1510,7 +1522,12 @@
       'google_apis_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
-      'gpu_unittests': {},
+      'gpu_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'gwp_asan_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
       'headless_browsertests': {
         'mixins': ['fuchsia_runner_logs'],
         'args': [
@@ -1532,6 +1549,9 @@
       'media_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
+      'midi_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
       'mojo_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
@@ -1546,6 +1566,15 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter',
         ],
+      },
+      'ozone_gl_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--child-arg=--ozone-platform=headless',
+        ],
+      },
+      'ozone_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
       },
       'perfetto_unittests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1583,8 +1612,17 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter',
         ],
       },
+      'ui_touch_selection_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
       'url_unittests': {
         'mixins': ['fuchsia_runner_logs'],
+      },
+      'views_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
+        ],
       },
       'viz_unittests': {
         'mixins': ['fuchsia_runner_logs'],
@@ -1598,25 +1636,10 @@
     },
 
     'fuchsia_experimental_gtests': {
-      'color_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
       'components_browsertests': {
         'mixins': ['fuchsia_runner_logs'],
       },
       'content_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'courgette_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'fuchsia_mojo_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gcm_unit_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gwp_asan_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
       'jingle_unittests': {
@@ -1625,29 +1648,8 @@
       'message_center_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
-      'midi_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'ozone_gl_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--child-arg=--ozone-platform=headless',
-        ],
-      },
-      'ozone_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'ui_touch_selection_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
       'views_examples_unittests': {
         'mixins': ['fuchsia_runner_logs'],
-      },
-      'views_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
-        ],
       },
       'wm_unittests': {
         'mixins': ['fuchsia_runner_logs'],
