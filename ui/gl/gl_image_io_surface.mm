@@ -216,7 +216,14 @@ bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
   format_ = format;
   io_surface_.reset(io_surface, base::scoped_policy::RETAIN);
   io_surface_id_ = io_surface_id;
-  io_surface_plane_ = io_surface_plane;
+
+  // YUV_420_BIPLANAR and P010 are not supported by BindTexImage. CopyTexImage
+  // is supported by these formats as that performs conversion to RGB as part of
+  // the copy operation.
+  if (format_ != gfx::BufferFormat::YUV_420_BIPLANAR &&
+      format_ != gfx::BufferFormat::P010) {
+    io_surface_plane_ = io_surface_plane;
+  }
   return true;
 }
 
@@ -251,13 +258,7 @@ unsigned GLImageIOSurface::GetDataType() {
 }
 
 GLImageIOSurface::BindOrCopy GLImageIOSurface::ShouldBindOrCopy() {
-  // YUV_420_BIPLANAR and P010 are not supported by BindTexImage. CopyTexImage
-  // is supported by these formats as that performs conversion to RGB as part of
-  // the copy operation.
-  return (format_ == gfx::BufferFormat::YUV_420_BIPLANAR ||
-          format_ == gfx::BufferFormat::P010)
-             ? COPY
-             : BIND;
+  return io_surface_plane_ == kInvalidIOSurfacePlane ? COPY : BIND;
 }
 
 bool GLImageIOSurface::BindTexImage(unsigned target) {
@@ -399,9 +400,16 @@ bool GLImageIOSurface::ScheduleOverlayPlane(
 void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                                     uint64_t process_tracing_id,
                                     const std::string& dump_name) {
-  // IOSurfaceGetAllocSize will return 0 if io_surface_ is invalid. In this case
-  // we log 0 for consistency with other GLImage memory dump functions.
-  size_t size_bytes = IOSurfaceGetAllocSize(io_surface_);
+  size_t size_bytes = 0;
+  if (io_surface_) {
+    if (io_surface_plane_ == kInvalidIOSurfacePlane) {
+      size_bytes = IOSurfaceGetAllocSize(io_surface_);
+    } else {
+      size_bytes =
+          IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_) *
+          IOSurfaceGetHeightOfPlane(io_surface_, io_surface_plane_);
+    }
+  }
 
   base::trace_event::MemoryAllocatorDump* dump =
       pmd->CreateAllocatorDump(dump_name);

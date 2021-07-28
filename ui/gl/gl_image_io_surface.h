@@ -119,7 +119,11 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
   gfx::GenericSharedMemoryId io_surface_id_;
-  uint32_t io_surface_plane_ = 0;
+
+  // The plane that is bound for this image. If the plane is invalid, then
+  // this is a multi-planar IOSurface, which will be copied instead of bound.
+  static constexpr uint32_t kInvalidIOSurfacePlane = -1;
+  uint32_t io_surface_plane_ = kInvalidIOSurfacePlane;
 
   base::ThreadChecker thread_checker_;
   // The default value of Rec. 601 is based on historical shader code.
