@@ -46,7 +46,6 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorage.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorageDialog.java",
-    "java/src/org/chromium/components/browser_ui/site_settings/ContentSetting.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingException.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingsResources.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",

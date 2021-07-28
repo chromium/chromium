@@ -143,17 +143,11 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW" desc="Summary text explaining that Chrome will allow a website to access some permission, e.g. JavaScript: allow.">
     Allow
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOW_DSE" desc="Summary text explaining that Chrome will allow the default search engine to access this permission, both when performed from the address bar and from search result pages. e.g. Location access: Allow for current search engine">
-    Allow for current search engine
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ALLOWED_DSE" desc="Status message explaining that the default search engine is allowed to access this permission. Displayed in Site Settings page. e.g. Location: Allowed for current search engine">
     Allowed for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK" desc="Summary text explaining that Chrome will block a website from accessing some permission, e.g. JavaScript: block.">
     Block
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK_DSE" desc="Summary text explaining that Chrome will block the default search engine from accessing this permission, both when performed from the address bar and from search result pages. e.g. Location access: Block for current search engine">
-    Block for current search engine
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCKED_DSE" desc="Status message explaining that the default search engine is blocked from accessing this permission. Displayed in Site Settings page. e.g. Location: Blocked for current search engine">
     Blocked for current search engine
@@ -237,9 +231,6 @@
 
   <message name="IDS_INTRUSIVE_ADS_INFORMATION" desc="The extra information at the top of the Site Details page when the site tends to show intrusive ads">
     This site shows intrusive or misleading ads
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_ADS_BLOCK" desc="The Blocked string for the ads permission on Site Details">
-     Block if site shows intrusive or misleading ads (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED" desc="A setting that, if turned on, will block intrusive or misleading ads on sites that have a history of showing such ads.">
     Block ads on sites that show intrusive or misleading ads

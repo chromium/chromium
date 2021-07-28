@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
-import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
@@ -150,15 +149,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             default:
                 return null;
         }
-    }
-
-
-    /**
-     * @return The status of the actionable content settings flag
-     */
-    private static boolean isActionableContentSettingsEnabled() {
-        return SiteSettingsFeatureList.isEnabled(
-                SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS);
     }
 
     // A list of preferences keys that will be hidden on this page if this boolean below is true
@@ -441,8 +431,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     private Drawable getContentSettingsIcon(@ContentSettingsType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value) {
-        return ContentSettingsResources.getContentSettingsIcon(getContext(), contentSettingsType,
-                isActionableContentSettingsEnabled() ? value : null);
+        return ContentSettingsResources.getContentSettingsIcon(
+                getContext(), contentSettingsType, value);
     }
 
     /**
@@ -485,9 +475,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void setupContentSettingsPreferences() {
         mMaxPermissionOrder = findPreference(PREF_PERMISSIONS_HEADER).getOrder();
         for (@ContentSettingsType int type : SiteSettingsUtil.SETTINGS_ORDER) {
-            Preference preference = isActionableContentSettingsEnabled()
-                    ? new ChromeSwitchPreference(getStyledContext())
-                    : new ListPreference(getStyledContext());
+            Preference preference = new ChromeSwitchPreference(getStyledContext());
             preference.setKey(getPreferenceKey(type));
 
             if (type == ContentSettingsType.ADS) {
@@ -576,7 +564,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         newPreference.setSummary(newSummary);
         @ContentSettingsType
         int contentType = getContentSettingsTypeFromPreferenceKey(newPreference.getKey());
-        if (isActionableContentSettingsEnabled() && contentType == mHighlightedPermission) {
+        if (contentType == mHighlightedPermission) {
             newPreference.setBackgroundColor(mHighlightColor);
         }
 
@@ -771,8 +759,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                             removePreferenceSafely(PREF_PERMISSIONS_HEADER);
                         }
                     });
-            if (isActionableContentSettingsEnabled()
-                    && info.getContentSettingsType() == mHighlightedPermission) {
+            if (info.getContentSettingsType() == mHighlightedPermission) {
                 preference.setBackgroundColor(mHighlightColor);
             }
 
@@ -900,16 +887,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void setupContentSettingsPreference(Preference preference,
             @ContentSettingValues @Nullable Integer value, boolean isEmbargoed) {
         if (value == null) return;
-
         setUpPreferenceCommon(preference, value);
 
-        if (!isActionableContentSettingsEnabled()) {
-            setUpListPreference(preference, value, isEmbargoed);
-            return;
-        }
-
         ChromeSwitchPreference switchPreference = (ChromeSwitchPreference) preference;
-
         switchPreference.setChecked(value == ContentSettingValues.ALLOW);
         switchPreference.setSummary(isEmbargoed
                         ? getString(R.string.automatically_blocked)
@@ -923,36 +903,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     }
 
     /**
-     * Initialize a ListPreference with a certain value.
-     * @param preference The ListPreference to initialize.
-     * @param value The value to initialize it to.
-     */
-    private void setUpListPreference(Preference preference,
-            @ContentSettingValues @Nullable Integer value, boolean isEmbargoed) {
-        ListPreference listPreference = (ListPreference) preference;
-
-        CharSequence[] keys = new String[2];
-        CharSequence[] descriptions = new String[2];
-        keys[0] = ContentSetting.toString(ContentSettingValues.ALLOW);
-        keys[1] = ContentSetting.toString(ContentSettingValues.BLOCK);
-        descriptions[0] =
-                getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.ALLOW));
-        descriptions[1] =
-                getString(ContentSettingsResources.getSiteSummary(ContentSettingValues.BLOCK));
-        listPreference.setEntryValues(keys);
-        listPreference.setEntries(descriptions);
-        listPreference.setOnPreferenceChangeListener(this);
-        listPreference.setSummary(isEmbargoed
-                        ? getString(R.string.automatically_blocked)
-                        : getString(ContentSettingsResources.getCategorySummary(value)));
-        // TODO(crbug.com/735110): Figure out if this is the correct thing to do - here we are
-        // effectively treating non-ALLOW values as BLOCK.
-        int index = (value == ContentSettingValues.ALLOW ? 0 : 1);
-        listPreference.setValueIndex(index);
-    }
-
-    /**
-     * Sets some properties that apply to both regular Preferences and ListPreferences, i.e.
+     * Sets some properties that apply to both regular Preferences and ChromeSwitchPreferences, i.e.
      * preference title, enabled-state, and icon, based on the preference's key.
      */
     private void setUpPreferenceCommon(
@@ -1078,15 +1029,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         }
         // Not possible to embargo ADS.
         setupContentSettingsPreference(preference, permission, false /* isEmbargoed */);
-
-        // The subresource filter permission has a custom BLOCK string.
-        if (preference instanceof ListPreference) {
-            ListPreference listPreference = (ListPreference) preference;
-            listPreference.setEntries(
-                    new String[] {getString(R.string.website_settings_permissions_allow),
-                            getString(R.string.website_settings_permissions_ads_block)});
-            listPreference.setValueIndex(permission == ContentSettingValues.ALLOW ? 0 : 1);
-        }
     }
 
     private String getDSECategorySummary(@ContentSettingValues int value) {
@@ -1113,14 +1055,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void updatePreferenceForDSESetting(
             Preference preference, @ContentSettingValues int value) {
         preference.setSummary(getDSECategorySummary(value));
-
-        if (preference instanceof ListPreference) {
-            ListPreference listPreference = (ListPreference) preference;
-            listPreference.setEntries(new String[] {
-                    getString(R.string.website_settings_permissions_allow_dse),
-                    getString(R.string.website_settings_permissions_block_dse),
-            });
-        }
     }
 
     public @ContentSettingsType int getContentSettingsTypeFromPreferenceKey(String preferenceKey) {
@@ -1146,7 +1080,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        // It is possible that this UI is destroyed while a ListPreference dialog is open because
+        // It is possible that this UI is destroyed while a dialog is open because
         // incognito mode is closed through the system notification.
         if (getView() == null) return true;
         BrowserContextHandle browserContextHandle =
@@ -1159,9 +1093,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         if (newValue instanceof Boolean) {
             permission =
                     (Boolean) newValue ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
-            // TODO(crbug.com/1165765): Remove when ListPreferences are no longer used.
-        } else if (newValue instanceof String) {
-            permission = ContentSetting.fromString((String) newValue);
         } else {
             permission = (Integer) newValue;
         }
