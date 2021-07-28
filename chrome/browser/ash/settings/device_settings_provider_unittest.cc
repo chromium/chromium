@@ -410,13 +410,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
-  void SetDeviceDataRoamingEnabled(bool data_roaming_enabled) {
-    em::DataRoamingEnabledProto* proto =
-        device_policy_->payload().mutable_data_roaming_enabled();
-    proto->set_data_roaming_enabled(data_roaming_enabled);
-    BuildAndInstallDevicePolicy();
-  }
-
   void VerifyDevicePrinterList(const char* policy_key,
                                std::vector<std::string>& values) {
     base::Value list(base::Value::Type::LIST);
@@ -1291,48 +1284,6 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledReboot) {
   expected_val.SetKey("day_of_month", base::Value(15));
   SetDeviceScheduledReboot(json_string);
   VerifyPolicyValue(kDeviceScheduledReboot, &expected_val);
-}
-
-TEST_F(DeviceSettingsProviderTest, DataRoamingEnabledWithFeatureFlag) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      ash::features::kCellularAllowPerNetworkRoaming);
-  SetDeviceDataRoamingEnabled(false);
-
-  profile_->ScopedCrosSettingsTestHelper()
-      ->InstallAttributes()
-      ->SetCloudManaged(policy::PolicyBuilder::kFakeDomain,
-                        policy::PolicyBuilder::kFakeDeviceId);
-  BuildAndInstallDevicePolicy();
-
-  // Cloud managed device value.
-  const base::Value* value = provider_->Get(kSignedDataRoamingEnabled);
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_bool());
-  EXPECT_FALSE(value->GetBool());
-
-  profile_->ScopedCrosSettingsTestHelper()
-      ->InstallAttributes()
-      ->SetConsumerOwned();
-  BuildAndInstallDevicePolicy();
-
-  // Consumer owned device value.
-  value = provider_->Get(kSignedDataRoamingEnabled);
-  ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetBool());
-}
-
-TEST_F(DeviceSettingsProviderTest, DataRoamingEnabledWithoutFeatureFlag) {
-  SetDeviceDataRoamingEnabled(false);
-
-  profile_->ScopedCrosSettingsTestHelper()
-      ->InstallAttributes()
-      ->SetConsumerOwned();
-
-  // Consumer owned device value.
-  const base::Value* value = provider_->Get(kSignedDataRoamingEnabled);
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_bool());
-  EXPECT_FALSE(value->GetBool());
 }
 
 // Checks that content_protection decodes correctly.

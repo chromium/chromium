@@ -54,7 +54,9 @@ void FakeNetworkDeviceHandler::ChangePin(
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {}
 
-void FakeNetworkDeviceHandler::SetCellularAllowRoaming(bool allow_roaming) {}
+void FakeNetworkDeviceHandler::SetCellularAllowRoaming(
+    bool allow_roaming,
+    bool policy_allow_roaming) {}
 
 void FakeNetworkDeviceHandler::SetUsbEthernetMacAddressSource(
     const std::string& source) {}

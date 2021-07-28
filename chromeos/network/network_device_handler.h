@@ -153,7 +153,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   // Enables/disables roaming of all cellular devices. This happens
   // asychronously in the background and applies also to devices which become
   // available in the future.
-  virtual void SetCellularAllowRoaming(bool allow_roaming) = 0;
+  virtual void SetCellularAllowRoaming(bool allow_roaming,
+                                       bool policy_allow_roaming) = 0;
 
   // Sets up MAC address randomization if available. This applies to devices
   // which become available in the future.

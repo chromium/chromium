@@ -34,6 +34,7 @@
 #include "chromeos/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/onc/onc_constants.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -101,15 +102,18 @@ class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
   FakeNetworkDeviceHandler()
       : allow_roaming_(false), mac_addr_randomization_(false) {}
 
-  void SetCellularAllowRoaming(bool allow_roaming) override {
+  void SetCellularAllowRoaming(bool allow_roaming,
+                               bool policy_allow_roaming) override {
     allow_roaming_ = allow_roaming;
+    policy_allow_roaming_ = policy_allow_roaming;
   }
 
   void SetMACAddressRandomizationEnabled(bool enabled) override {
     mac_addr_randomization_ = enabled;
   }
 
-  bool allow_roaming_;
+  bool allow_roaming_ = false;
+  bool policy_allow_roaming_ = true;
   bool mac_addr_randomization_;
 
  private:
@@ -499,13 +503,19 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
   chromeos::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 
-TEST_F(NetworkConfigurationUpdaterTest, CellularAllowRoaming) {
+TEST_F(NetworkConfigurationUpdaterTest, CellularRoamingDefaults) {
   // Ignore network config updates.
   EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      chromeos::kSignedDataRoamingEnabled, false);
+  CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
   EXPECT_FALSE(network_device_handler_.allow_roaming_);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
+}
+
+TEST_F(NetworkConfigurationUpdaterTest, CellularAllowRoaming) {
+  // Ignore network config updates.
+  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
 
   CreateNetworkConfigurationUpdaterForDevicePolicy();
   MarkPolicyProviderInitialized();
@@ -516,6 +526,45 @@ TEST_F(NetworkConfigurationUpdaterTest, CellularAllowRoaming) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kSignedDataRoamingEnabled, false);
   EXPECT_FALSE(network_device_handler_.allow_roaming_);
+}
+
+TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingManaged) {
+  // Ignore network config updates.
+  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
+
+  // Perform this test as though this "device" is enterprise managed.
+  scoped_stub_install_attributes_.Get()->SetCloudManaged(
+      policy::PolicyBuilder::kFakeDomain, policy::PolicyBuilder::kFakeDeviceId);
+  EXPECT_TRUE(chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
+
+  CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kSignedDataRoamingEnabled, true);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kSignedDataRoamingEnabled, false);
+  EXPECT_FALSE(network_device_handler_.policy_allow_roaming_);
+}
+
+TEST_F(NetworkConfigurationUpdaterTest, CellularPolicyAllowRoamingUnmanaged) {
+  // Ignore network config updates.
+  EXPECT_CALL(network_config_handler_, SetPolicy(_, _, _, _)).Times(AtLeast(1));
+
+  // Perform this test as though this "device" is unmanaged.
+  scoped_stub_install_attributes_.Get()->SetConsumerOwned();
+  EXPECT_FALSE(chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
+
+  CreateNetworkConfigurationUpdaterForDevicePolicy();
+  MarkPolicyProviderInitialized();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kSignedDataRoamingEnabled, true);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kSignedDataRoamingEnabled, false);
+  EXPECT_TRUE(network_device_handler_.policy_allow_roaming_);
 }
 
 TEST_F(NetworkConfigurationUpdaterTest, PolicyIsValidatedAndRepaired) {

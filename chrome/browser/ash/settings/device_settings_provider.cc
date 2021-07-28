@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -485,20 +484,12 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
 
 void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
                            PrefValueMap* new_values_cache) {
-  // Device-level cellular roaming should always be enabled for devices not
-  // enrolled in an enterprise policy when per-network cellular roaming
-  // configuration is enabled.
-  if (base::FeatureList::IsEnabled(
-          ash::features::kCellularAllowPerNetworkRoaming) &&
-      !chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    new_values_cache->SetBoolean(kSignedDataRoamingEnabled, true);
-  } else {
-    new_values_cache->SetBoolean(
-        kSignedDataRoamingEnabled,
-        policy.has_data_roaming_enabled() &&
-            policy.data_roaming_enabled().has_data_roaming_enabled() &&
-            policy.data_roaming_enabled().data_roaming_enabled());
-  }
+  // kSignedDataRoamingEnabled has a default value of false.
+  new_values_cache->SetBoolean(
+      kSignedDataRoamingEnabled,
+      policy.has_data_roaming_enabled() &&
+          policy.data_roaming_enabled().has_data_roaming_enabled() &&
+          policy.data_roaming_enabled().data_roaming_enabled());
   if (policy.has_system_proxy_settings()) {
     const em::SystemProxySettingsProto& settings_proto(
         policy.system_proxy_settings());

@@ -105,7 +105,8 @@ void ShellNetworkController::NetworkConnectionStateChanged(
 void ShellNetworkController::SetCellularAllowRoaming(bool allow_roaming) {
   chromeos::NetworkDeviceHandler* device_handler =
       chromeos::NetworkHandler::Get()->network_device_handler();
-  device_handler->SetCellularAllowRoaming(allow_roaming);
+  device_handler->SetCellularAllowRoaming(allow_roaming,
+                                          /*policy_allow_roaming=*/true);
 }
 
 const chromeos::NetworkState* ShellNetworkController::GetActiveWiFiNetwork() {
