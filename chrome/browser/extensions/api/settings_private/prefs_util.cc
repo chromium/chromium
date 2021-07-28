@@ -320,7 +320,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[translate::prefs::kOfferTranslateEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[language::prefs::kFluentLanguages] =
+  (*s_allowlist)[translate::prefs::kBlockedLanguages] =
       settings_api::PrefType::PREF_TYPE_LIST;
   (*s_allowlist)[language::prefs::kSelectedLanguages] =
       settings_api::PrefType::PREF_TYPE_STRING;

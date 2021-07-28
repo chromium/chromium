@@ -18,5 +18,8 @@ const char kPrefAlwaysTranslateList[] = "translate_whitelists";
 
 const char kPrefTranslateRecentTarget[] = "translate_recent_target";
 
+// Languages that the user marked as "do not translate".
+const char kBlockedLanguages[] = "translate_blocked_languages";
+
 }  // namespace prefs
 }  // namespace translate

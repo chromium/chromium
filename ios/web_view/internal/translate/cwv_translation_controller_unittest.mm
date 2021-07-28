@@ -98,8 +98,8 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterListPref(
         language::prefs::kForcedLanguages);
     pref_service_.registry()->RegisterListPref(
-        language::prefs::kFluentLanguages,
-        language::LanguagePrefs::GetDefaultFluentLanguages());
+        translate::prefs::kBlockedLanguages,
+        translate::TranslatePrefs::GetDefaultBlockedLanguages());
     pref_service_.registry()->RegisterBooleanPref(
         translate::prefs::kOfferTranslateEnabled, true);
     pref_service_.registry()->RegisterListPref(

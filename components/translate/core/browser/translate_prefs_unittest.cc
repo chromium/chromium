@@ -79,7 +79,7 @@ class TranslatePrefsTest : public testing::Test {
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& list) const {
     const base::Value* const never_prompt_list =
-        prefs_.GetList(language::prefs::kFluentLanguages);
+        prefs_.GetList(prefs::kBlockedLanguages);
     ExpectEqualLanguageLists(*never_prompt_list, list);
   }
 
@@ -332,6 +332,41 @@ TEST_F(TranslatePrefsTest, UnblockLanguage) {
   translate_prefs_->BlockLanguage("zh-CN");
   translate_prefs_->UnblockLanguage("zh-CN");
   ExpectBlockedLanguageListContent({"en", "zh-TW"});
+}
+
+TEST_F(TranslatePrefsTest, ResetEmptyBlockedLanguagesToDefaultTest) {
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en"});
+
+  translate_prefs_->BlockLanguage("fr");
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en", "fr"});
+
+  prefs_.Set(translate::prefs::kBlockedLanguages,
+             base::Value(base::Value::Type::LIST));
+  ExpectBlockedLanguageListContent({});
+  translate_prefs_->ResetEmptyBlockedLanguagesToDefaults();
+  ExpectBlockedLanguageListContent({"en"});
+}
+
+TEST_F(TranslatePrefsTest, GetNeverTranslateLanguagesTest) {
+  // Default Fluent language is "en".
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en"}));
+
+  // Add two languages with the same base.
+  translate_prefs_->BlockLanguage("fr-FR");
+  translate_prefs_->BlockLanguage("fr-CA");
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en", "fr"}));
+
+  // Add language that comes before English alphabetically. It should be
+  // appended to the list.
+  translate_prefs_->BlockLanguage("af");
+  EXPECT_THAT(translate_prefs_->GetNeverTranslateLanguages(),
+              ElementsAreArray({"en", "fr", "af"}));
 }
 
 TEST_F(TranslatePrefsTest, AddToLanguageList) {

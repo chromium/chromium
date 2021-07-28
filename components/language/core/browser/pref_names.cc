@@ -38,9 +38,6 @@ const char kUserLanguageProfile[] = "language_profile";
 // Important: Refer to header file for how to use this.
 const char kApplicationLocale[] = "intl.app_locale";
 
-// Originally translate blocked languages from TranslatePrefs.
-const char kFluentLanguages[] = "translate_blocked_languages";
-
 #if defined(OS_ANDROID)
 const char kAppLanguagePromptShown[] = "language.app_language_prompt_shown";
 #endif

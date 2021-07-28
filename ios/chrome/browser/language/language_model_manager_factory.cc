@@ -28,10 +28,9 @@ void PrepareLanguageModels(ChromeBrowserState* const chrome_state,
   // experiments.
   switch (language::GetOverrideLanguageModel()) {
     case language::OverrideLanguageModel::FLUENT:
-      manager->AddModel(
-          language::LanguageModelManager::ModelType::FLUENT,
-          std::make_unique<language::FluentLanguageModel>(
-              chrome_state->GetPrefs(), language::prefs::kAcceptLanguages));
+      manager->AddModel(language::LanguageModelManager::ModelType::FLUENT,
+                        std::make_unique<language::FluentLanguageModel>(
+                            chrome_state->GetPrefs()));
       manager->SetPrimaryModel(
           language::LanguageModelManager::ModelType::FLUENT);
       break;

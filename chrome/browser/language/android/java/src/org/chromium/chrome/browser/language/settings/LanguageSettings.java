@@ -210,7 +210,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 (LanguageItemListPreference) findPreference(NEVER_LANGUAGES_KEY);
         neverTranslatePreference.setFragmentListDelegate(
                 new NeverTranslateListFragment.ListDelegate());
-        mPrefChangeRegistrar.addObserver(Pref.FLUENT_LANGUAGES, neverTranslatePreference);
+        mPrefChangeRegistrar.addObserver(Pref.BLOCKED_LANGUAGES, neverTranslatePreference);
         setLanguageListPreferenceClickListener(neverTranslatePreference);
 
         // Setup translate switch to toggle advanced section on and off.

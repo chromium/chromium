@@ -187,8 +187,104 @@ void TranslatePrefs::ResetToDefaults() {
   prefs_->ClearPref(prefs::kOfferTranslateEnabled);
 }
 
+// static
+base::Value TranslatePrefs::GetDefaultBlockedLanguages() {
+  typename base::Value::ListStorage languages;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Preferred languages.
+  std::string language = language::kFallbackInputMethodLocale;
+  language::ToTranslateLanguageSynonym(&language);
+  languages.push_back(base::Value(std::move(language)));
+#else
+  // Accept languages.
+#pragma GCC diagnostic push
+// See comment above the |break;| in the loop just below for why.
+#pragma GCC diagnostic ignored "-Wunreachable-code"
+  for (std::string& language :
+       base::SplitString(l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    language::ToTranslateLanguageSynonym(&language);
+    languages.push_back(base::Value(std::move(language)));
+
+    // crbug.com/958348: The default value for Accept-Language *should* be the
+    // same as the one for Blocked Languages. However, Accept-Language contains
+    // English (and more) in addition to the local language in most locales due
+    // to historical reasons. Exiting early from this loop is a temporary fix
+    // that allows Blocked Languages to be at least populated with the UI
+    // language while still allowing Translate to trigger on other languages,
+    // most importantly English.
+    // Once the change to remove English from Accept-Language defaults lands,
+    // this break should be removed to enable the Blocked Language List and the
+    // Accept-Language list to be initialized to the same values.
+    break;
+#pragma GCC diagnostic pop
+  }
+#endif
+
+  std::sort(languages.begin(), languages.end());
+  languages.erase(std::unique(languages.begin(), languages.end()),
+                  languages.end());
+
+  return base::Value(std::move(languages));
+}
+
 bool TranslatePrefs::IsBlockedLanguage(base::StringPiece input_language) const {
-  return language_prefs_->IsFluent(input_language);
+  std::string canonical_lang(input_language);
+  language::ToTranslateLanguageSynonym(&canonical_lang);
+  const base::Value* blocked =
+      prefs_->GetList(translate::prefs::kBlockedLanguages);
+  return base::Contains(blocked->GetList(),
+                        base::Value(std::move(canonical_lang)));
+}
+
+void TranslatePrefs::BlockLanguage(base::StringPiece input_language) {
+  DCHECK(!input_language.empty());
+  if (!IsBlockedLanguage(input_language)) {
+    std::string canonical_lang(input_language);
+    language::ToTranslateLanguageSynonym(&canonical_lang);
+    ListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
+    update->Append(std::move(canonical_lang));
+  }
+  // Remove the blocked language from the always translate list if present.
+  SetLanguageAlwaysTranslateState(input_language, false);
+}
+
+void TranslatePrefs::UnblockLanguage(base::StringPiece input_language) {
+  DCHECK(!input_language.empty());
+  // Never remove last fluent language.
+  if (GetNeverTranslateLanguages().size() <= 1) {
+    return;
+  }
+  std::string canonical_lang(input_language);
+  language::ToTranslateLanguageSynonym(&canonical_lang);
+  ListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
+  update->EraseListValue(base::Value(std::move(canonical_lang)));
+}
+
+void TranslatePrefs::ResetEmptyBlockedLanguagesToDefaults() {
+  if (GetNeverTranslateLanguages().size() == 0) {
+    ResetBlockedLanguagesToDefault();
+  }
+}
+
+void TranslatePrefs::ResetBlockedLanguagesToDefault() {
+  prefs_->ClearPref(translate::prefs::kBlockedLanguages);
+}
+
+std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
+  const base::Value* fluent_languages_value =
+      prefs_->GetList(translate::prefs::kBlockedLanguages);
+  if (!fluent_languages_value) {
+    NOTREACHED() << "Fluent languages pref is unregistered";
+  }
+
+  std::vector<std::string> languages;
+  for (const auto& language : fluent_languages_value->GetList()) {
+    std::string chrome_language(language.GetString());
+    language::ToChromeLanguageSynonym(&chrome_language);
+    languages.push_back(chrome_language);
+  }
+  return languages;
 }
 
 // Note: the language codes used in the language settings list have the Chrome
@@ -452,18 +548,6 @@ void TranslatePrefs::GetTranslatableContentLanguages(
   }
 }
 
-void TranslatePrefs::BlockLanguage(base::StringPiece input_language) {
-  DCHECK(!input_language.empty());
-  language_prefs_->SetFluent(input_language);
-  // Remove the blocked language from the always translate list if present.
-  SetLanguageAlwaysTranslateState(input_language, false);
-}
-
-void TranslatePrefs::UnblockLanguage(base::StringPiece input_language) {
-  DCHECK(!input_language.empty());
-  language_prefs_->ClearFluent(input_language);
-}
-
 bool TranslatePrefs::IsSiteOnNeverPromptList(base::StringPiece site) const {
   return prefs_->GetDictionary(kPrefNeverPromptSitesWithTime)->FindKey(site);
 }
@@ -572,14 +656,6 @@ std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
     languages.push_back(chrome_language);
   }
   return languages;
-}
-
-std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
-  return language_prefs_->GetFluentLanguages();
-}
-
-void TranslatePrefs::ResetBlockedLanguagesToDefault() {
-  language_prefs_->ResetFluentLanguagesToDefaults();
 }
 
 void TranslatePrefs::ClearNeverPromptSiteList() {
@@ -845,7 +921,9 @@ void TranslatePrefs::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       kPrefForceTriggerTranslateCount, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
+  registry->RegisterListPref(translate::prefs::kBlockedLanguages,
+                             TranslatePrefs::GetDefaultBlockedLanguages(),
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #if defined(OS_ANDROID) || defined(OS_IOS)
   registry->RegisterDictionaryPref(
       kPrefTranslateAutoAlwaysCount,
@@ -881,10 +959,6 @@ void TranslatePrefs::MigrateNeverPromptSites() {
     }
   }
   migrated = true;
-}
-
-void TranslatePrefs::ResetEmptyBlockedLanguagesToDefaults() {
-  language_prefs_->ResetEmptyFluentLanguagesToDefault();
 }
 
 bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,
@@ -940,5 +1014,4 @@ bool TranslatePrefs::IsDictionaryEmpty(const char* pref_id) const {
   const base::Value* dict = prefs_->GetDictionary(pref_id);
   return (dict == nullptr || dict->DictEmpty());
 }
-
 }  // namespace translate

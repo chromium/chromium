@@ -153,9 +153,21 @@ class TranslatePrefs {
 
   // Before adding to, removing from, or checking the block list the source
   // language is converted to its translate synonym.
+  // A blocked language will not be offered to be translated. All blocked
+  // languages form the "Never translate" list.
   bool IsBlockedLanguage(base::StringPiece source_language) const;
   void BlockLanguage(base::StringPiece source_language);
   void UnblockLanguage(base::StringPiece source_language);
+  // Returns the languages that should be blocked by default as a
+  // base::(List)Value.
+  static base::Value GetDefaultBlockedLanguages();
+  void ResetBlockedLanguagesToDefault();
+  // Prevent empty blocked languages by resetting them to the default value.
+  // (crbug.com/902354)
+  void ResetEmptyBlockedLanguagesToDefaults();
+  // Get the languages that for which translation should never be prompted
+  // formatted as Chrome language codes.
+  std::vector<std::string> GetNeverTranslateLanguages() const;
 
   // Adds the language to the language list at chrome://settings/languages.
   // If the param |force_blocked| is set to true, the language is added to the
@@ -238,10 +250,6 @@ class TranslatePrefs {
   // Gets the languages that are set to always translate formatted as Chrome
   // language codes.
   std::vector<std::string> GetAlwaysTranslateLanguages() const;
-
-  // Get the languages that for which translation should never be prompted
-  // formatted as Chrome language codes.
-  std::vector<std::string> GetNeverTranslateLanguages() const;
 
   // These methods are used to track how many times the user has denied the
   // translation for a specific language. (So we can present a UI to blocklist
@@ -329,10 +337,6 @@ class TranslatePrefs {
   // sites to a timestamp of the creation of this entry.
   void MigrateNeverPromptSites();
 
-  // Prevent empty blocked languages by resetting them to the default value.
-  // (crbug.com/902354)
-  void ResetEmptyBlockedLanguagesToDefaults();
-
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
@@ -351,9 +355,9 @@ class TranslatePrefs {
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, MoveLanguageToTheTop);
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, MoveLanguageUp);
   FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, MoveLanguageDown);
+  FRIEND_TEST_ALL_PREFIXES(TranslatePrefsTest, ResetBlockedLanguagesToDefault);
   friend class TranslatePrefsTest;
 
-  void ResetBlockedLanguagesToDefault();
   void ClearNeverPromptSiteList();
   void ClearAlwaysTranslateLanguagePairs();
 
@@ -374,10 +378,6 @@ class TranslatePrefs {
   // Retrieves the dictionary mapping the number of times translation has been
   // accepted for a language, creating it if necessary.
   base::DictionaryValue* GetTranslationAcceptedCountDictionary() const;
-
-  // Returns the languages that should be blocked by default as a
-  // base::(List)Value.
-  static base::Value GetDefaultBlockedLanguages();
 
   PrefService* prefs_;  // Weak.
 

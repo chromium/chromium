@@ -46,8 +46,7 @@ void PrepareLanguageModels(WebViewBrowserState* const web_view_browser_state,
     case language::OverrideLanguageModel::FLUENT:
       manager->AddModel(language::LanguageModelManager::ModelType::FLUENT,
                         std::make_unique<language::FluentLanguageModel>(
-                            web_view_browser_state->GetPrefs(),
-                            language::prefs::kAcceptLanguages));
+                            web_view_browser_state->GetPrefs()));
       manager->SetPrimaryModel(
           language::LanguageModelManager::ModelType::FLUENT);
       break;

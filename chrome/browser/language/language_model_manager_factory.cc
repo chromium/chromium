@@ -33,8 +33,7 @@ void PrepareLanguageModels(Profile* const profile,
     case language::OverrideLanguageModel::FLUENT:
       manager->AddModel(
           language::LanguageModelManager::ModelType::FLUENT,
-          std::make_unique<language::FluentLanguageModel>(
-              profile->GetPrefs(), language::prefs::kAcceptLanguages));
+          std::make_unique<language::FluentLanguageModel>(profile->GetPrefs()));
       manager->SetPrimaryModel(
           language::LanguageModelManager::ModelType::FLUENT);
       break;

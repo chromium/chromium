@@ -21,6 +21,7 @@ static_library("language_model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/strings",
+    "//components/translate/core/browser",
     "//ui/base",
   ]
 }

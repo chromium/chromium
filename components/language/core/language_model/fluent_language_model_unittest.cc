@@ -13,6 +13,9 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+
+#include "components/translate/core/browser/translate_pref_names.h"
+#include "components/translate/core/browser/translate_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,10 +25,16 @@ using testing::ElementsAre;
 using Ld = LanguageModel::LanguageDetails;
 
 constexpr static float kFloatEps = 0.00001f;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const std::string& key = language::prefs::kPreferredLanguages;
+#else
+const std::string& key = language::prefs::kAcceptLanguages;
+#endif
 
 struct PrefRegistration {
-  PrefRegistration(user_prefs::PrefRegistrySyncable* registry) {
-    LanguagePrefs::RegisterProfilePrefs(registry);
+  explicit PrefRegistration(user_prefs::PrefRegistrySyncable* registry) {
+    language::LanguagePrefs::RegisterProfilePrefs(registry);
+    translate::TranslatePrefs::RegisterProfilePrefs(registry);
   }
 };
 
@@ -46,12 +55,10 @@ MATCHER_P(EqualsLd, lang_details, "") {
 }
 
 TEST_F(FluentLanguageModelTest, Defaults) {
-  // By default, accept languages should all be fluent..
-  const std::vector<std::string> accept_langs =
-      base::SplitString(prefs_->GetString(prefs::kAcceptLanguages), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  FluentLanguageModel model(prefs_.get(), prefs::kAcceptLanguages);
+  // By default, accept languages should all be fluent.
+  const std::vector<std::string> accept_langs = base::SplitString(
+      prefs_->GetString(key), ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  FluentLanguageModel model(prefs_.get());
   std::vector<Ld> languages = model.GetLanguages();
 
   EXPECT_EQ(accept_langs.size(), languages.size());
@@ -60,36 +67,36 @@ TEST_F(FluentLanguageModelTest, Defaults) {
 }
 
 TEST_F(FluentLanguageModelTest, AllFluent) {
-  prefs_->SetString(prefs::kAcceptLanguages, "ja,fr");
+  prefs_->SetString(key, "ja,fr");
   base::Value fluent_languages(base::Value::Type::LIST);
   fluent_languages.Append("fr");
   fluent_languages.Append("ja");
-  prefs_->Set(prefs::kFluentLanguages, fluent_languages);
+  prefs_->Set(translate::prefs::kBlockedLanguages, fluent_languages);
 
-  FluentLanguageModel model(prefs_.get(), prefs::kAcceptLanguages);
+  FluentLanguageModel model(prefs_.get());
   EXPECT_THAT(model.GetLanguages(), ElementsAre(EqualsLd(Ld("ja", 1.0f / 1)),
                                                 EqualsLd(Ld("fr", 1.0f / 2))));
 }
 
 TEST_F(FluentLanguageModelTest, OneNonFluent) {
-  prefs_->SetString(prefs::kAcceptLanguages, "ja,en,fr");
+  prefs_->SetString(key, "ja,en,fr");
   base::Value fluent_languages(base::Value::Type::LIST);
   fluent_languages.Append("fr");
   fluent_languages.Append("ja");
-  prefs_->Set(prefs::kFluentLanguages, fluent_languages);
+  prefs_->Set(translate::prefs::kBlockedLanguages, fluent_languages);
 
-  FluentLanguageModel model(prefs_.get(), prefs::kAcceptLanguages);
+  FluentLanguageModel model(prefs_.get());
   EXPECT_THAT(model.GetLanguages(), ElementsAre(EqualsLd(Ld("ja", 1.0f / 1)),
                                                 EqualsLd(Ld("fr", 1.0f / 2))));
 }
 
 TEST_F(FluentLanguageModelTest, OneFluent) {
-  prefs_->SetString(prefs::kAcceptLanguages, "ja,en,fr");
+  prefs_->SetString(key, "ja,en,fr");
   base::Value fluent_languages(base::Value::Type::LIST);
   fluent_languages.Append("ja");
-  prefs_->Set(prefs::kFluentLanguages, fluent_languages);
+  prefs_->Set(translate::prefs::kBlockedLanguages, fluent_languages);
 
-  FluentLanguageModel model(prefs_.get(), prefs::kAcceptLanguages);
+  FluentLanguageModel model(prefs_.get());
   EXPECT_THAT(model.GetLanguages(), ElementsAre(EqualsLd(Ld("ja", 1.0f / 1))));
 }
 

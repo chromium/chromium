@@ -30,8 +30,6 @@ extern const char kUserLanguageProfile[];
 // the user selected, if applicable.
 extern const char kApplicationLocale[];
 
-extern const char kFluentLanguages[];
-
 #if defined(OS_ANDROID)
 extern const char kAppLanguagePromptShown[];
 #endif

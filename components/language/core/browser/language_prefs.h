@@ -36,21 +36,6 @@ class LanguagePrefs {
   explicit LanguagePrefs(PrefService* user_prefs);
   ~LanguagePrefs();
 
-  // Return true iff the user is fluent in the given |language|.
-  bool IsFluent(base::StringPiece language) const;
-  // Mark that the user is fluent in the given |language|.
-  void SetFluent(base::StringPiece language);
-  // Remove the given |language| from the user's fluent languages.
-  void ClearFluent(base::StringPiece language);
-  // Reset the fluent languages to their defaults.
-  void ResetFluentLanguagesToDefaults();
-  // Get the default fluent languages for the user.
-  static base::Value GetDefaultFluentLanguages();
-  // Get the current list of fluent languages for the user formatted as Chrome
-  // language codes.
-  std::vector<std::string> GetFluentLanguages() const;
-  // If the list of fluent languages is empty, reset it to defaults.
-  void ResetEmptyFluentLanguagesToDefault();
   // Gets the language settings list containing combination of policy-forced and
   // user-selected languages. Language settings list follows the Chrome internal
   // format.
@@ -78,8 +63,6 @@ class LanguagePrefs {
   // Initializes the user selected language pref to ensure backwards
   // compatibility.
   void InitializeSelectedLanguagesPref();
-
-  size_t NumFluentLanguages() const;
 
   // Used for deduplication and reordering of languages.
   std::set<std::string> forced_languages_set_;

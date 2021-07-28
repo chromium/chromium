@@ -196,7 +196,8 @@ TEST_F(TranslateInfoBarDelegateTest, IsTranslatableLanguage) {
                                             testing::accept_languages_prefs);
   ON_CALL(*(client_.get()), GetTranslateAcceptLanguages())
       .WillByDefault(Return(&accept_languages));
-  ListPrefUpdate update(pref_service_.get(), language::prefs::kFluentLanguages);
+  ListPrefUpdate update(pref_service_.get(),
+                        translate::prefs::kBlockedLanguages);
   update->Append(kSourceLanguage);
   pref_service_->SetString(language::prefs::kAcceptLanguages, kSourceLanguage);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
