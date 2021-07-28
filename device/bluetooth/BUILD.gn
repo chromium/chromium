@@ -433,6 +433,8 @@ component("bluetooth") {
         "floss/floss_dbus_client.h",
         "floss/floss_features.cc",
         "floss/floss_features.h",
+        "floss/floss_manager_client.cc",
+        "floss/floss_manager_client.h",
       ]
       if (is_chromeos_ash) {
         configs += [ "//chromeos/dbus:use_real_dbus_clients_config" ]
