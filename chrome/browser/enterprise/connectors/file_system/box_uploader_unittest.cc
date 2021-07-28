@@ -82,14 +82,15 @@ TEST_F(BoxUploaderCreateTest, LoadFromReroutedInfo) {
   DownloadItemRerouteInfo rerouted_info;
   rerouted_info.set_service_provider(BoxUploader::kServiceProvider);
   rerouted_info.mutable_box()->set_file_id(kFileSystemBoxUploadResponseFileId);
+  rerouted_info.mutable_box()->set_folder_id(kFileSystemBoxFolderIdInPref);
   test_item_.SetRerouteInfo(rerouted_info);
 
   uploader_ = BoxUploader::Create(&test_item_);
   ASSERT_TRUE(uploader_);
   ASSERT_EQ(uploader_->GetUploadedFileUrl(),
             GURL(kFileSystemBoxUploadResponseFileUrl));
-  // TODO(https://crbug.com/1215847) Update to set folder id and check folder
-  // link too.
+  ASSERT_EQ(uploader_->GetDestinationFolderUrl(),
+            GURL(kFileSystemBoxUploadResponseFolderUrl));
 
   ASSERT_FALSE(authentication_retry_);
   EXPECT_FALSE(download_thread_cb_called_);
@@ -712,6 +713,7 @@ TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_Complete) {
   DownloadItemRerouteInfo rerouted_info;
   rerouted_info.set_service_provider(BoxUploader::kServiceProvider);
   rerouted_info.mutable_box()->set_file_id(kFileSystemBoxUploadResponseFileId);
+  rerouted_info.mutable_box()->set_folder_id(kFileSystemBoxFolderIdInPref);
   test_item_.SetRerouteInfo(rerouted_info);
 
   // Recreate uploader to load rerouted info.
@@ -719,8 +721,8 @@ TEST_F(BoxUploader_FileDeleteTest, LoadFromReroutedInfo_Complete) {
   ASSERT_TRUE(uploader_);
   ASSERT_EQ(uploader_->GetUploadedFileUrl(),
             GURL(kFileSystemBoxUploadResponseFileUrl));
-  // TODO(https://crbug.com/1215847) Update to set folder id and check folder
-  // link too.
+  ASSERT_EQ(uploader_->GetDestinationFolderUrl(),
+            GURL(kFileSystemBoxUploadResponseFolderUrl));
 
   ASSERT_FALSE(authentication_retry_);
   EXPECT_FALSE(download_thread_cb_called_);  // No upload call was made.

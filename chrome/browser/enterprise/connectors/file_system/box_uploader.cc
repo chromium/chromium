@@ -117,6 +117,8 @@ BoxUploader::BoxUploader(download::DownloadItem* download_item)
     DCHECK_EQ(is_completed, reroute_info.box().has_file_id());
     reroute_info_ = reroute_info;
     DCHECK_EQ(is_completed, GetUploadedFileUrl().is_valid());
+    DCHECK_EQ(reroute_info.box().has_folder_id(),
+              GetDestinationFolderUrl().is_valid());
     // TODO(https://crbug.com/1213761) If |is_completed| == false, load info to
     // resume upload from where it left off.
   } else {
@@ -330,7 +332,7 @@ std::unique_ptr<OAuth2ApiCallFlow> BoxUploader::MakePreflightCheckApiCall() {
   return std::make_unique<BoxPreflightCheckApiCallFlow>(
       base::BindOnce(&BoxUploader::OnPreflightCheckResponse,
                      weak_factory_.GetWeakPtr()),
-      GetUploadFileName(), folder_id_);
+      GetUploadFileName(), GetFolderId());
 }
 
 std::unique_ptr<OAuth2ApiCallFlow>
@@ -402,21 +404,23 @@ const base::FilePath BoxUploader::GetUploadFileName() const {
 }
 
 const std::string BoxUploader::GetFolderId() {
-  if (folder_id_.empty() && prefs_) {
-    folder_id_ =
-        GetDefaultFolderId(prefs_, kFileSystemServiceProviderPrefNameBox);
+  if ((!reroute_info().has_folder_id() || reroute_info().folder_id().empty()) &&
+      prefs_) {
+    SetFolderId(
+        GetDefaultFolderId(prefs_, kFileSystemServiceProviderPrefNameBox));
   }
   // TODO(https://crbug.com/1215847) Update to make API call to find folder id
   // if has file id.
-  return folder_id_;
+  return reroute_info().folder_id();
 }
 
 const std::string BoxUploader::GetFolderId() const {
-  return folder_id_;
+  return reroute_info().has_folder_id() ? reroute_info().folder_id()
+                                        : std::string();
 }
 
 void BoxUploader::SetFolderId(std::string folder_id) {
-  folder_id_ = folder_id;
+  reroute_info().set_folder_id(folder_id);
   SetDefaultFolder(
       prefs_, kFileSystemServiceProviderPrefNameBox, folder_id,
       GetDefaultFolderName(prefs_, kFileSystemServiceProviderPrefNameBox));
@@ -459,7 +463,7 @@ void BoxUploader::OnFileDeleted(InterruptReason upload_reason,
 // Helper methods for tests ////////////////////////////////////////////////////
 
 std::string BoxUploader::GetFolderIdForTesting() const {
-  return folder_id_;
+  return GetFolderId();
 }
 
 void BoxUploader::NotifyOAuth2ErrorForTesting() {
