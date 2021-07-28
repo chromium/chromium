@@ -128,11 +128,8 @@ void AccessTokenFetcher::VerifyScopeAccess() {
     return;
   }
 
-#if DCHECK_IS_ON()
   for (const std::string& scope : scopes_) {
-    // TODO(crbug.com/1172944): Change this to CHECK once we are confident
-    // that the list of scopes is correct.
-    DCHECK(!GetPrivilegedOAuth2Scopes().count(scope)) << base::StringPrintf(
+    CHECK(!GetPrivilegedOAuth2Scopes().count(scope)) << base::StringPrintf(
         "You are attempting to access a privileged scope '%s' without the "
         "required access, please file a bug for access at "
         "https://bugs.chromium.org/p/chromium/issues/"
@@ -143,14 +140,14 @@ void AccessTokenFetcher::VerifyScopeAccess() {
   // Only validate scope access if the user has not given sync consent.
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
     for (const std::string& scope : scopes_) {
-      DCHECK(GetUnconsentedOAuth2Scopes().count(scope)) << base::StringPrintf(
+      CHECK(GetUnconsentedOAuth2Scopes().count(scope)) << base::StringPrintf(
           "Consumer '%s' is requesting scope '%s' that requires user consent. "
           "Please check that the user has consented to Sync before "
           "using this API.",
           id().c_str(), scope.c_str());
     }
   }
-#endif  // DCHECK_IS_ON()
+
   VLOG(1) << id() << " has access rights to scopes: "
           << base::JoinString(
                  std::vector<std::string>(scopes_.begin(), scopes_.end()), ",");
