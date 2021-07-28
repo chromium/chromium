@@ -4810,11 +4810,11 @@ void NavigationRequest::SetupCSPEmbeddedEnforcement() {
 
 NavigationRequest::CSPEmbeddedEnforcementResult
 NavigationRequest::CheckCSPEmbeddedEnforcement() {
-  // We enforce CSPEE only for frames, not for portals.
+  // We enforce CSPEE only for subframes, not for portals.
   if (IsInMainFrame())
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
 
-  if (IsSameDocument() || IsServedFromBackForwardCache())
+  if (IsSameDocument())
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
 
   if (!required_csp_)
