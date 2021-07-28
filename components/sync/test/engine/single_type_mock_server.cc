@@ -7,6 +7,8 @@
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using google::protobuf::RepeatedPtrField;
 

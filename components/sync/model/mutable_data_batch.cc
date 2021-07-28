@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/sync/model/mutable_data_batch.h"
+#include "base/check.h"
+#include "components/sync/engine/entity_data.h"
 
 namespace syncer {
 

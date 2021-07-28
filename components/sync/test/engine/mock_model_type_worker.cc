@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

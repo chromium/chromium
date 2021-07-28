@@ -21,7 +21,6 @@
 
 using autofill::data_util::TruncateUTF8;
 using sync_pb::AutofillWalletSpecifics;
-using syncer::EntityData;
 
 namespace autofill {
 namespace {

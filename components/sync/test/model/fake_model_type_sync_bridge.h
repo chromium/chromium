@@ -11,7 +11,6 @@
 #include <unordered_set>
 
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -27,6 +26,7 @@ class EntitySpecifics;
 namespace syncer {
 
 class ClientTagHash;
+struct EntityData;
 
 // A basic, functional implementation of ModelTypeSyncBridge for testing
 // purposes. It uses the PREFERENCES type to provide a simple key/value

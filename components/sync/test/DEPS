@@ -3,5 +3,6 @@ include_rules = [
   "+components/sync",
   "+net",
   "+services/network/public/cpp",
+  "+third_party/protobuf/src/google/protobuf",
   "+ui/gfx/image",
 ]

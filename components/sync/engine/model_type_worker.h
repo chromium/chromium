@@ -28,7 +28,10 @@
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/sync_entity.pb.h"
+
+namespace sync_pb {
+class SyncEntity;
+}
 
 namespace syncer {
 

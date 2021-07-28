@@ -33,6 +33,7 @@
 #include "components/sync/protocol/loopback_server.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"

@@ -20,13 +20,19 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/net/server_connection_manager.h"
-#include "components/sync/protocol/client_commands.pb.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace sync_pb {
 class EntitySpecifics;
 class SyncEntity;
+class ClientCommand;
+class CommitMessage;
+class CommitResponse;
+class ClientToServerMessage;
+class ClientToServerResponse;
+class DataTypeProgressMarker;
+class GetUpdatesResponse;
+class ClientCommand;
 }  // namespace sync_pb
 
 namespace syncer {

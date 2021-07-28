@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
     fake_server::FakeServer* fake_server,

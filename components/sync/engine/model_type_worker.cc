@@ -38,6 +38,7 @@
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace syncer {
 

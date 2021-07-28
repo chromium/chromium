@@ -25,6 +25,8 @@
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "components/sync/protocol/sync_entity.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -538,14 +540,14 @@ void FakeServer::SetClientCommand(
 }
 
 void FakeServer::TriggerCommitError(
-    const sync_pb::SyncEnums::ErrorType& error_type) {
+    const sync_pb::SyncEnums_ErrorType& error_type) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(error_type == sync_pb::SyncEnums::SUCCESS || !HasTriggeredError());
 
   commit_error_type_ = error_type;
 }
 
-void FakeServer::TriggerError(const sync_pb::SyncEnums::ErrorType& error_type) {
+void FakeServer::TriggerError(const sync_pb::SyncEnums_ErrorType& error_type) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(error_type == sync_pb::SyncEnums::SUCCESS || !HasTriggeredError());
 
@@ -553,7 +555,7 @@ void FakeServer::TriggerError(const sync_pb::SyncEnums::ErrorType& error_type) {
 }
 
 void FakeServer::TriggerActionableError(
-    const sync_pb::SyncEnums::ErrorType& error_type,
+    const sync_pb::SyncEnums_ErrorType& error_type,
     const std::string& description,
     const std::string& url,
     const sync_pb::SyncEnums::Action& action) {

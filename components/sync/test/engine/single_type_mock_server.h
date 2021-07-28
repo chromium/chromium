@@ -16,12 +16,15 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;
 class EntitySpecifics;
+class SyncEntity;
+class ClientToServerMessage;
+class ClientToServerResponse;
+class DataTypeProgressMarker;
+class DataTypeContext;
 }  // namespace sync_pb
 
 namespace syncer {
