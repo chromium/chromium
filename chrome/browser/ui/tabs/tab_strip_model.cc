@@ -118,7 +118,7 @@ InstallRenderWigetVisibilityTracker(const TabStripSelectionChange& selection) {
 
 // This tracks (and reports via UMA and tracing) how long it takes before a
 // RenderWidgetHost is requested to become visible.
-class RenderWidgetHostVisibilityTracker
+class RenderWidgetHostVisibilityTracker final
     : public content::RenderWidgetHostObserver {
  public:
   explicit RenderWidgetHostVisibilityTracker(content::RenderWidgetHost* host) {
@@ -129,7 +129,7 @@ class RenderWidgetHostVisibilityTracker
                                       "TabSwitchVisibilityRequest", this,
                                       "render_widget_host", host);
   }
-  ~RenderWidgetHostVisibilityTracker() final = default;
+  ~RenderWidgetHostVisibilityTracker() override = default;
   RenderWidgetHostVisibilityTracker(const RenderWidgetHostVisibilityTracker&) =
       delete;
   RenderWidgetHostVisibilityTracker& operator=(

@@ -18,18 +18,18 @@ enum AuthStatus {
   kAllowed,
 };
 
-class MediaAuthorizationWrapperTest
+class MediaAuthorizationWrapperTest final
     : public system_media_permissions::MediaAuthorizationWrapper {
  public:
   MediaAuthorizationWrapperTest() = default;
-  ~MediaAuthorizationWrapperTest() final = default;
+  ~MediaAuthorizationWrapperTest() override = default;
   void SetMockMediaPermissionStatus(AuthStatus status);
 
   // MediaAuthorizationWrapper:
   NSInteger AuthorizationStatusForMediaType(NSString* media_type) override;
   void RequestAccessForMediaType(NSString* media_type,
                                  base::OnceClosure callback,
-                                 const base::TaskTraits& traits) final {}
+                                 const base::TaskTraits& traits) override {}
 
  private:
   AuthStatus permission_status_ = kNotDetermined;

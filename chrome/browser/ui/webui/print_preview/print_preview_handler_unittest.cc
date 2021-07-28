@@ -269,7 +269,7 @@ class FakePrintPreviewUI : public PrintPreviewUI {
   void OnClosePrintPreviewDialog() override {}
 };
 
-class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
+class TestPrintPreviewPrintRenderFrame final : public FakePrintRenderFrame {
  public:
   explicit TestPrintPreviewPrintRenderFrame(
       blink::AssociatedInterfaceProvider* provider)
@@ -278,7 +278,7 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
       delete;
   TestPrintPreviewPrintRenderFrame& operator=(
       const TestPrintPreviewPrintRenderFrame&) = delete;
-  ~TestPrintPreviewPrintRenderFrame() final = default;
+  ~TestPrintPreviewPrintRenderFrame() override = default;
 
   const base::Value& GetSettings() { return settings_; }
 
@@ -288,7 +288,7 @@ class TestPrintPreviewPrintRenderFrame : public FakePrintRenderFrame {
 
  private:
   // FakePrintRenderFrame:
-  void PrintPreview(base::Value settings) final {
+  void PrintPreview(base::Value settings) override {
     settings_ = std::move(settings);
     std::move(closure_).Run();
   }

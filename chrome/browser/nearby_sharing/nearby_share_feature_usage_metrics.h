@@ -11,7 +11,7 @@ class PrefService;
 
 // Tracks Nearby Share feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
-class NearbyShareFeatureUsageMetrics
+class NearbyShareFeatureUsageMetrics final
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -27,11 +27,11 @@ class NearbyShareFeatureUsageMetrics
   };
 
   explicit NearbyShareFeatureUsageMetrics(PrefService* pref_service);
-  ~NearbyShareFeatureUsageMetrics() final;
+  ~NearbyShareFeatureUsageMetrics() override;
 
   // feature_usage::FeatureUsageMetrics::Delegate:
-  bool IsEligible() const final;
-  bool IsEnabled() const final;
+  bool IsEligible() const override;
+  bool IsEnabled() const override;
 
   NearbyShareEnabledState GetNearbyShareEnabledState() const;
   void RecordUsage(bool success);

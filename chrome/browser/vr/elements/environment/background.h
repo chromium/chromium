@@ -36,10 +36,10 @@ class Background : public UiElement {
   void SetIncognitoFactor(float factor);
   void SetFullscreenFactor(float factor);
 
-  class Renderer : public BaseRenderer {
+  class Renderer final : public BaseRenderer {
    public:
     Renderer();
-    ~Renderer() final;
+    ~Renderer() override;
 
     void Draw(const gfx::Transform& view_proj_matrix,
               int texture_data_handle,

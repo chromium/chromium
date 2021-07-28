@@ -948,7 +948,7 @@ void PopulateRouteMessages(std::vector<RouteMessagePtr>* batch1,
 // messages being received from the router are correct and in-sequence. The
 // checks here correspond to the expected messages in PopulateRouteMessages()
 // above.
-class ExpectedMessagesObserver : public RouteMessageObserver {
+class ExpectedMessagesObserver final : public RouteMessageObserver {
  public:
   ExpectedMessagesObserver(MediaRouter* router,
                            const MediaRoute::Id& route_id,
@@ -956,10 +956,10 @@ class ExpectedMessagesObserver : public RouteMessageObserver {
       : RouteMessageObserver(router, route_id),
         expected_messages_(std::move(expected_messages)) {}
 
-  ~ExpectedMessagesObserver() final { CheckReceivedMessages(); }
+  ~ExpectedMessagesObserver() override { CheckReceivedMessages(); }
 
  private:
-  void OnMessagesReceived(std::vector<RouteMessagePtr> messages) final {
+  void OnMessagesReceived(std::vector<RouteMessagePtr> messages) override {
     for (auto& message : messages)
       messages_.emplace_back(std::move(message));
   }

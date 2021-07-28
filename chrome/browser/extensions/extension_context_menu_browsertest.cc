@@ -56,14 +56,14 @@ using extensions::MenuManager;
 using extensions::StateStore;
 
 // Observe when an extension's context menu data is written to the state store.
-class StateStoreObserver : public StateStore::TestObserver {
+class StateStoreObserver final : public StateStore::TestObserver {
  public:
   explicit StateStoreObserver(content::BrowserContext* context)
       : state_store_(extensions::ExtensionSystem::Get(context)->state_store()) {
     observed_.Observe(state_store_);
   }
 
-  ~StateStoreObserver() final = default;
+  ~StateStoreObserver() override = default;
 
   void WaitForExtension(const std::string& extension_id) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

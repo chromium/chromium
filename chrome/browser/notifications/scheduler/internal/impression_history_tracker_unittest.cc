@@ -99,12 +99,12 @@ class MockImpressionStore : public CollectionStore<ClientState> {
                void(const std::string&, base::OnceCallback<void(bool)>));
 };
 
-class MockDelegate : public ImpressionHistoryTracker::Delegate {
+class MockDelegate final : public ImpressionHistoryTracker::Delegate {
  public:
   MockDelegate() = default;
   MockDelegate(const MockDelegate&) = delete;
   MockDelegate& operator=(const MockDelegate&) = delete;
-  ~MockDelegate() final = default;
+  ~MockDelegate() override = default;
   MOCK_METHOD2(GetThrottleConfig,
                void(SchedulerClientType,
                     base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)>));

@@ -37,12 +37,12 @@ bool UsingFakeMediaDevices() {
 MediaAuthorizationWrapper* g_media_authorization_wrapper_for_tests = nullptr;
 
 // Implementation of OS call wrapper that does the actual OS calls.
-class MediaAuthorizationWrapperImpl : public MediaAuthorizationWrapper {
+class MediaAuthorizationWrapperImpl final : public MediaAuthorizationWrapper {
  public:
   MediaAuthorizationWrapperImpl() = default;
-  ~MediaAuthorizationWrapperImpl() final = default;
+  ~MediaAuthorizationWrapperImpl() override = default;
 
-  NSInteger AuthorizationStatusForMediaType(AVMediaType media_type) final {
+  NSInteger AuthorizationStatusForMediaType(AVMediaType media_type) override {
     if (@available(macOS 10.14, *)) {
       return [AVCaptureDevice authorizationStatusForMediaType:media_type];
     } else {
@@ -53,7 +53,7 @@ class MediaAuthorizationWrapperImpl : public MediaAuthorizationWrapper {
 
   void RequestAccessForMediaType(AVMediaType media_type,
                                  base::OnceClosure callback,
-                                 const base::TaskTraits& traits) final {
+                                 const base::TaskTraits& traits) override {
     if (@available(macOS 10.14, *)) {
       __block base::OnceClosure block_callback = std::move(callback);
       [AVCaptureDevice requestAccessForMediaType:media_type

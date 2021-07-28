@@ -16,13 +16,13 @@ namespace quick_pair {
 
 // QuickPairBrowserDelegate implementation which handles all browser dependency
 // requests for the Quick Pair system.
-class QuickPairBrowserDelegateImpl : public QuickPairBrowserDelegate {
+class QuickPairBrowserDelegateImpl final : public QuickPairBrowserDelegate {
  public:
   QuickPairBrowserDelegateImpl();
   QuickPairBrowserDelegateImpl(const QuickPairBrowserDelegateImpl&) = delete;
   QuickPairBrowserDelegateImpl& operator=(const QuickPairBrowserDelegateImpl*) =
       delete;
-  ~QuickPairBrowserDelegateImpl() final;
+  ~QuickPairBrowserDelegateImpl() override;
 
   // QuickPairBrowserDelegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

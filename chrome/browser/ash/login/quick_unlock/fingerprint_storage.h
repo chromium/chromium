@@ -32,7 +32,8 @@ enum class FingerprintUnlockResult {
 // `FingerprintStorage` manages fingerprint user preferences. Keeps them in sync
 // with the actual fingerprint records state. The class also reports fingerprint
 // metrics.
-class FingerprintStorage : public feature_usage::FeatureUsageMetrics::Delegate {
+class FingerprintStorage final
+    : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
   static const int kMaximumUnlockAttempts = 5;
 
@@ -40,11 +41,11 @@ class FingerprintStorage : public feature_usage::FeatureUsageMetrics::Delegate {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit FingerprintStorage(Profile* profile);
-  ~FingerprintStorage() final;
+  ~FingerprintStorage() override;
 
   // feature_usage::FeatureUsageMetrics::Delegate:
-  bool IsEligible() const final;
-  bool IsEnabled() const final;
+  bool IsEligible() const override;
+  bool IsEnabled() const override;
 
   // Called after a fingerprint unlock attempt to record the result.
   // `num_attempts`:  Only valid when auth success to record number of attempts.

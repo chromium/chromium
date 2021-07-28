@@ -71,7 +71,7 @@ LastResponse& GetLastResponse() {
 
 // A permissions::PermissionRequest to allow MediaDrmBridge to use per-device
 // provisioning.
-class PerDeviceProvisioningPermissionRequest
+class PerDeviceProvisioningPermissionRequest final
     : public permissions::PermissionRequest {
  public:
   PerDeviceProvisioningPermissionRequest(
@@ -109,7 +109,7 @@ class PerDeviceProvisioningPermissionRequest
 
  private:
   // Can only be self-destructed. See DeleteRequest().
-  ~PerDeviceProvisioningPermissionRequest() final = default;
+  ~PerDeviceProvisioningPermissionRequest() override = default;
 
   void UpdateLastResponse(bool allowed) {
     GetLastResponse().Update(origin_, allowed);
