@@ -438,6 +438,7 @@ void WebOTPService::OnUserConsentComplete(UserConsentResult result) {
       CompleteRequest(SmsStatus::kSuccess);
       break;
     case UserConsentResult::kNoDelegate:
+    case UserConsentResult::kInactiveRenderFrameHost:
       CompleteRequest(SmsStatus::kCancelled);
       break;
     case UserConsentResult::kDenied:

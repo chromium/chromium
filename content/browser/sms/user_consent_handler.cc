@@ -43,8 +43,14 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
     return;
   }
 
-  DCHECK_EQ(frame_host_->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kActive);
+  if (!frame_host_->IsActive()) {
+    // Skips showing the SMS prompt if the RFH is inactive. e.g. it's stored in
+    // BackForwardCache or waiting to be unloaded and deleted.
+    // TODO(crbug.com/1230106): Record how often the RFH is inactive upon
+    // requesting user consent.
+    std::move(on_complete).Run(UserConsentResult::kInactiveRenderFrameHost);
+    return;
+  }
 
   on_complete_ = std::move(on_complete);
   is_prompt_open_ = true;
