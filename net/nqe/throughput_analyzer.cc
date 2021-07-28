@@ -403,7 +403,7 @@ bool ThroughputAnalyzer::DegradesAccuracy(const URLRequest& request) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool private_network_request =
-      nqe::internal::IsRequestForPrivateHost(request);
+      nqe::internal::IsRequestForPrivateHost(request, net_log_);
 
   return !(use_localhost_requests_for_tests_ || !private_network_request) ||
          request.creation_time() < last_connection_change_;
