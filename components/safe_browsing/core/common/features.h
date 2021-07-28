@@ -70,6 +70,9 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // and implementation are validated experimentally.
 extern const base::Feature kFileAnalysisMimeTypeSniff;
 
+// Enable omitting non-user gesture from referrer chain.
+extern const base::Feature kOmitNonUserGesturesFromReferrerChain;
+
 // Enable GAIA password protection for signed-in users.
 extern const base::Feature kPasswordProtectionForSignedInUsers;
 

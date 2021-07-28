@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
@@ -41,6 +43,9 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     navigation_observer_ =
         new SafeBrowsingNavigationObserver(web_contents(), settings_map_.get(),
                                            navigation_observer_manager_.get());
+
+    scoped_feature_list_.InitAndEnableFeature(
+        kOmitNonUserGesturesFromReferrerChain);
   }
   void TearDown() override {
     delete navigation_observer_;
@@ -99,6 +104,60 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     return nav_event_ptr;
   }
 
+  void CreateNonUserGestureReferrerChain() {
+    user_gesture_map()->clear();
+    base::Time now = base::Time::Now();
+    base::Time one_hour_ago =
+        base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+    base::Time two_hours_ago =
+        base::Time::FromDoubleT(now.ToDoubleT() - 2 * 60.0 * 60.0);
+
+    // Add 13 navigations and one starting page. The first is BROWSER_INITIATED
+    // to A. Then from A to B, then 10 redirects to C, then back to A.
+    std::unique_ptr<NavigationEvent> first_navigation =
+        std::make_unique<NavigationEvent>();
+    first_navigation->original_request_url = GURL("http://A.com");
+    first_navigation->last_updated = two_hours_ago;
+    first_navigation->navigation_initiation =
+        ReferrerChainEntry::BROWSER_INITIATED;
+    navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
+
+    std::unique_ptr<NavigationEvent> second_navigation =
+        std::make_unique<NavigationEvent>();
+    second_navigation->source_url = GURL("http://A.com");
+    second_navigation->original_request_url = GURL("http://B.com");
+    second_navigation->last_updated = one_hour_ago;
+    second_navigation->navigation_initiation =
+        ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+    navigation_event_list()->RecordNavigationEvent(
+        std::move(second_navigation));
+
+    GURL prev_url = GURL("http://B.com");
+    GURL current_url = GURL("http://C.com?utm=0");
+    for (int i = 1; i < 11; i++) {
+      std::unique_ptr<NavigationEvent> navigation =
+          std::make_unique<NavigationEvent>();
+      navigation->source_url = prev_url;
+      navigation->original_request_url = current_url;
+      navigation->last_updated = one_hour_ago;
+      navigation->navigation_initiation =
+          ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE;
+      navigation_event_list()->RecordNavigationEvent(std::move(navigation));
+      prev_url = current_url;
+      current_url = GURL("http://C.com?utm=" + base::NumberToString(i));
+    }
+
+    std::unique_ptr<NavigationEvent> last_navigation =
+        std::make_unique<NavigationEvent>();
+    last_navigation->source_url = prev_url;
+    last_navigation->original_request_url = GURL("http://A.com");
+    last_navigation->last_updated = now;
+    last_navigation->navigation_initiation =
+        ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+    navigation_event_list()->RecordNavigationEvent(std::move(last_navigation));
+    ASSERT_EQ(13U, navigation_event_list()->NavigationEventsSize());
+  }
+
   void CleanUpNavigationEvents() {
     navigation_observer_manager_->CleanUpNavigationEvents();
   }
@@ -117,6 +176,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
   SafeBrowsingNavigationObserver* navigation_observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SBNavigationObserverTest);
@@ -460,6 +520,80 @@ TEST_F(SBNavigationObserverTest, TimestampIsDecreasing) {
             referrer_chain[1].navigation_time_msec());
   EXPECT_GE(referrer_chain[1].navigation_time_msec(),
             referrer_chain[2].navigation_time_msec());
+}
+
+TEST_F(SBNavigationObserverTest,
+       RemoveMiddleNonUserGestureEntriesForRecentNavigation) {
+  CreateNonUserGestureReferrerChain();
+
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->AppendRecentNavigations(10, &referrer_chain);
+
+  int utm_counter = 9;
+  GURL expected_current_url =
+      GURL("http://C.com?utm=" + base::NumberToString(utm_counter));
+  GURL expected_prev_url;
+
+  // AppendRecentNavigations skips some entries based on the time.
+  // Before:
+  // Gesture(0...1) -> NonGesture(2..11) -> Gesture(12)
+  // After:
+  // Non Gesture(0...2) -> Empty(3...4) -> NG(5...8) -> G(9..10)
+  // (on recording into referrer chain, the navigations are recorded in a
+  // reverse order and the first two are skipped due to timing)
+  for (int i = 0; i < 9; i++) {
+    expected_prev_url = expected_current_url;
+    utm_counter--;
+    expected_current_url =
+        GURL("http://C.com?utm=" + base::NumberToString(utm_counter));
+    // The middle entries should have an empty ReferrerChainEntry.
+    if (i == 3 || i == 4) {
+      EXPECT_EQ("", referrer_chain[i].url());
+    } else {
+      EXPECT_EQ(expected_prev_url, referrer_chain[i].url());
+      EXPECT_EQ(expected_current_url, referrer_chain[i].referrer_url());
+    }
+  }
+  expected_prev_url = expected_current_url;
+  EXPECT_EQ(expected_prev_url, referrer_chain[9].url());
+  EXPECT_EQ(GURL("http://B.com"), referrer_chain[9].referrer_url());
+  EXPECT_EQ(GURL("http://B.com"), referrer_chain[10].url());
+  EXPECT_EQ(GURL("http://A.com"), referrer_chain[10].referrer_url());
+}
+
+TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
+  CreateNonUserGestureReferrerChain();
+
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      GURL("http://A.com/"), SessionID::InvalidValue(), 10, &referrer_chain);
+
+  int utm_counter = 10;
+  GURL expected_current_url = GURL("http://A.com");
+  GURL expected_prev_url;
+  for (int i = 0; i < 10; i++) {
+    expected_prev_url = expected_current_url;
+    utm_counter--;
+    expected_current_url =
+        GURL("http://C.com?utm=" + base::NumberToString(utm_counter));
+    // The middle entries should have an empty ReferrerChainEntry.
+    // Before:
+    // Gesture(0...1) -> NonGesture(2..11) -> Gesture(12)
+    // After:
+    // Gesture(0) -> Non Gesture(1...2) -> Empty(5...7) -> NG(8...9) ->
+    // G(10...11)
+    if (i == 5 || i == 6 || i == 7) {
+      EXPECT_EQ("", referrer_chain[i].url());
+    } else {
+      EXPECT_EQ(expected_prev_url, referrer_chain[i].url());
+      EXPECT_EQ(expected_current_url, referrer_chain[i].referrer_url());
+    }
+  }
+  expected_prev_url = expected_current_url;
+  EXPECT_EQ(expected_prev_url, referrer_chain[10].url());
+  EXPECT_EQ(GURL("http://B.com"), referrer_chain[10].referrer_url());
+  EXPECT_EQ(GURL("http://B.com"), referrer_chain[11].url());
+  EXPECT_EQ(GURL("http://A.com"), referrer_chain[11].referrer_url());
 }
 
 TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {

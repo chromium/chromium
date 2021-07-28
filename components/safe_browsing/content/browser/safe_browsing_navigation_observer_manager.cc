@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -15,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager_util.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -455,7 +457,14 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByEventURL(
   GetRemainingReferrerChain(nav_event, user_gesture_count,
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
-
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         out_referrer_chain->size() <= kReferrerChainMaxLength);
+  if (omit_non_user_gestures_is_enabled) {
+    MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
+                                             kReferrerChainMaxLength);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
@@ -482,6 +491,14 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByPendingEventURL(
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
 
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         out_referrer_chain->size() <= kReferrerChainMaxLength);
+  if (omit_non_user_gestures_is_enabled) {
+    MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
+                                             kReferrerChainMaxLength);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
@@ -543,6 +560,14 @@ SafeBrowsingNavigationObserverManager::IdentifyReferrerChainByHostingPage(
                             user_gesture_count_limit, out_referrer_chain,
                             &result);
 
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         out_referrer_chain->size() <= kReferrerChainMaxLength);
+  if (omit_non_user_gestures_is_enabled) {
+    MaybeRemoveNonUserGestureReferrerEntries(out_referrer_chain,
+                                             kReferrerChainMaxLength);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
   return result;
 }
@@ -619,6 +644,10 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
       "SafeBrowsing.NavigationObserver.AppendRecentNavigationsTime");
   if (recent_navigation_count <= 0u)
     return;
+  size_t allowed_entries = recent_navigation_count;
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
+
   int current_referrer_chain_size = out_referrer_chain->size();
   double last_navigation_time_msec =
       current_referrer_chain_size == 0
@@ -626,17 +655,31 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
           : out_referrer_chain->Get(current_referrer_chain_size - 1)
                 .navigation_time_msec();
   auto it = navigation_event_list_.navigation_events().rbegin();
-  while (it != navigation_event_list_.navigation_events().rend() &&
-         recent_navigation_count > 0u) {
+  ReferrerChain navigation_chain;
+  while (it != navigation_event_list_.navigation_events().rend()) {
     // Skip navigations that happened after |last_navigation_time_msec|.
     if (it->get()->last_updated.ToJavaTime() < last_navigation_time_msec) {
-      AddToReferrerChain(out_referrer_chain, it->get(), GURL(),
+      AddToReferrerChain(&navigation_chain, it->get(), GURL(),
                          ReferrerChainEntry::RECENT_NAVIGATION);
-      recent_navigation_count--;
+      allowed_entries--;
+      if (allowed_entries == 0 && !omit_non_user_gestures_is_enabled) {
+        break;
+      }
     }
     it++;
   }
 
+  DCHECK(omit_non_user_gestures_is_enabled ||
+         (size_t)navigation_chain.size() <= recent_navigation_count);
+  if (omit_non_user_gestures_is_enabled) {
+    MaybeRemoveNonUserGestureReferrerEntries(&navigation_chain,
+                                             recent_navigation_count);
+  }
+
+  // Add the navigation entries into the referrer chain.
+  for (ReferrerChainEntry entry : navigation_chain) {
+    out_referrer_chain->Add()->Swap(&entry);
+  }
   RemoveSafeBrowsingAllowlistDomains(out_referrer_chain);
 }
 
@@ -744,6 +787,8 @@ void SafeBrowsingNavigationObserverManager::GetRemainingReferrerChain(
     int user_gesture_count_limit,
     ReferrerChain* out_referrer_chain,
     SafeBrowsingNavigationObserverManager::AttributionResult* out_result) {
+  bool omit_non_user_gestures_is_enabled = base::FeatureList::IsEnabled(
+      safe_browsing::kOmitNonUserGesturesFromReferrerChain);
   GURL last_main_frame_url_traced(last_nav_event_traced->source_main_frame_url);
   while (current_user_gesture_count < user_gesture_count_limit) {
     // Back trace to the next nav_event that was initiated by the user.
@@ -760,8 +805,10 @@ void SafeBrowsingNavigationObserverManager::GetRemainingReferrerChain(
                          ReferrerChainEntry::CLIENT_REDIRECT);
       // Stop searching if the size of out_referrer_chain already reached its
       // limit.
-      if (out_referrer_chain->size() == kReferrerChainMaxLength)
+      if (!omit_non_user_gestures_is_enabled &&
+          (out_referrer_chain->size() == kReferrerChainMaxLength)) {
         return;
+      }
       last_main_frame_url_traced = last_nav_event_traced->source_main_frame_url;
     }
 
@@ -773,15 +820,16 @@ void SafeBrowsingNavigationObserverManager::GetRemainingReferrerChain(
         last_nav_event_traced->source_tab_id);
     if (!last_nav_event_traced)
       return;
-
     AddToReferrerChain(out_referrer_chain, last_nav_event_traced,
                        last_main_frame_url_traced,
                        GetURLTypeAndAdjustAttributionResult(
                            current_user_gesture_count, out_result));
     // Stop searching if the size of out_referrer_chain already reached its
     // limit.
-    if (out_referrer_chain->size() == kReferrerChainMaxLength)
+    if (!omit_non_user_gestures_is_enabled &&
+        (out_referrer_chain->size() == kReferrerChainMaxLength)) {
       return;
+    }
     last_main_frame_url_traced = last_nav_event_traced->source_main_frame_url;
   }
 }

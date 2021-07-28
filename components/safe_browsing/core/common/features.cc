@@ -69,6 +69,9 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kOmitNonUserGesturesFromReferrerChain{
+    "kOmitNonUserGesturesFromReferrerChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kPasswordProtectionForSignedInUsers {
   "SafeBrowsingPasswordProtectionForSignedInUsers",
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -164,6 +167,7 @@ constexpr struct {
     {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
+    {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},

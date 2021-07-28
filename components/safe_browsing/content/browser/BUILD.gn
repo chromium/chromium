@@ -121,6 +121,8 @@ source_set("browser") {
       "safe_browsing_navigation_observer.h",
       "safe_browsing_navigation_observer_manager.cc",
       "safe_browsing_navigation_observer_manager.h",
+      "safe_browsing_navigation_observer_manager_util.cc",
+      "safe_browsing_navigation_observer_manager_util.h",
     ]
 
     deps += [
@@ -198,7 +200,10 @@ source_set("unit_tests") {
 
   # TODO(sgurun): enable tests for safe_browsing==2.
   if (safe_browsing_mode == 1) {
-    sources += [ "safe_browsing_navigation_observer_unittest.cc" ]
+    sources += [
+      "safe_browsing_navigation_observer_manager_util_unittest.cc",
+      "safe_browsing_navigation_observer_unittest.cc",
+    ]
   }
 
   deps += [
