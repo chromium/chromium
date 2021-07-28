@@ -139,7 +139,10 @@ network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
 // Tests allowing ambient authentication with default credentials based on the
 // profile type.
 bool IsAmbientAuthAllowedForProfile(Profile* profile) {
-  if (profile->IsRegularProfile())
+  // Ambient authentication is always enabled for regular and system profiles.
+  // System profiles (used in profile picker) may require authentication to let
+  // user login.
+  if (profile->IsRegularProfile() || profile->IsSystemProfile())
     return true;
 
   // Non-primary OTR profiles are not used to create browser windows and are
@@ -164,10 +167,6 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
     return type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
            type == net::AmbientAuthAllowedProfileTypes::ALL;
   }
-
-  // System profile does not need ambient authentication.
-  if (profile->IsSystemProfile())
-    return false;
 
   // Profile type not yet supported.
   NOTREACHED();
