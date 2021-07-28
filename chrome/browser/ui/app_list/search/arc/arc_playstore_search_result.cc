@@ -131,7 +131,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
     apps::ArcRawIconPngDataToImageSkia(
         std::move(data_->icon),
         ash::SharedAppListConfig::instance().search_tile_icon_dimension(),
-        base::BindOnce(&ArcPlayStoreSearchResult::SetIcon,
+        base::BindOnce(&ArcPlayStoreSearchResult::OnIconDecoded,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -141,7 +141,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
     // TODO(crbug.com/1083331): Remove the icon_png related change, when the ARC
     // change is rolled in Chrome OS.
     icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcPlayStoreSearchResult::SetIcon,
+        base::BindOnce(&ArcPlayStoreSearchResult::OnIconDecoded,
                        weak_ptr_factory_.GetWeakPtr()),
         ash::SharedAppListConfig::instance().search_tile_icon_dimension());
     icon_decode_request_->set_normalized(true);
@@ -150,7 +150,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   }
 
   icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-      base::BindOnce(&ArcPlayStoreSearchResult::SetIcon,
+      base::BindOnce(&ArcPlayStoreSearchResult::OnIconDecoded,
                      weak_ptr_factory_.GetWeakPtr()),
       ash::SharedAppListConfig::instance().search_tile_icon_dimension());
   icon_decode_request_->set_normalized(true);
@@ -179,6 +179,10 @@ void ArcPlayStoreSearchResult::ExecuteLaunchCommand(int event_flags) {
 
 AppContextMenu* ArcPlayStoreSearchResult::GetAppContextMenu() {
   return context_menu_.get();
+}
+
+void ArcPlayStoreSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
+  SetIcon(IconInfo(icon));
 }
 
 }  // namespace app_list

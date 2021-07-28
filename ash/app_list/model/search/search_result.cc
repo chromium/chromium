@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/app_list/model/search/search_result_observer.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
@@ -27,10 +28,15 @@ void SearchResult::SetMetadata(std::unique_ptr<SearchResultMetadata> metadata) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetIcon(const gfx::ImageSkia& icon) {
+void SearchResult::SetIcon(const IconInfo& icon) {
   metadata_->icon = icon;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
+}
+
+size_t SearchResult::IconDimension() const {
+  return metadata_->icon.dimension.value_or(
+      SharedAppListConfig::instance().search_list_icon_dimension());
 }
 
 void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {

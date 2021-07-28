@@ -273,8 +273,22 @@ void OmniboxResult::InvokeAction(int action_index) {
 }
 
 void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
-  if (bitmap)
-    SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+  if (bitmap) {
+    IconInfo icon_info(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+
+    // Both rich entity and weather answer results have their icon fetched by
+    // this method. These display differently, so set the size and shape as
+    // needed.
+    if (omnibox_type() == OmniboxType::kAnswer) {
+      CHECK(match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER);
+      icon_info.dimension = ash::SharedAppListConfig::instance()
+                                .search_list_answer_icon_dimension();
+    } else {
+      icon_info.dimension = ash::SharedAppListConfig::instance()
+                                .search_list_image_icon_dimension();
+      icon_info.shape = IconShape::kRoundedRectangle;
+    }
+  }
 }
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {
@@ -347,7 +361,9 @@ GURL OmniboxResult::DestinationURL() const {
 void OmniboxResult::UpdateIcon() {
   switch (omnibox_type()) {
     case OmniboxType::kCalculatorAnswer:
-      SetIcon(CreateAnswerIcon(omnibox::kCalculatorIcon));
+      SetIcon(IconInfo(CreateAnswerIcon(omnibox::kCalculatorIcon),
+                       ash::SharedAppListConfig::instance()
+                           .search_list_answer_icon_dimension()));
       return;
     case OmniboxType::kAnswer:
       if (match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER &&
@@ -356,7 +372,10 @@ void OmniboxResult::UpdateIcon() {
         // default answer icon can be used as a fallback if the URL is missing.
         FetchRichEntityImage(match_.answer->image_url());
       } else {
-        SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
+        SetIcon(
+            IconInfo(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())),
+                     ash::SharedAppListConfig::instance()
+                         .search_list_answer_icon_dimension()));
       }
       return;
     case OmniboxType::kRichImage:
@@ -374,7 +393,9 @@ void OmniboxResult::UpdateIcon() {
                            weak_factory_.GetWeakPtr()));
         if (!icon.IsEmpty()) {
           SetOmniboxType(OmniboxType::kFavicon);
-          SetIcon(icon.AsImageSkia());
+          SetIcon(IconInfo(icon.AsImageSkia(),
+                           ash::SharedAppListConfig::instance()
+                               .search_list_favicon_dimension()));
           return;
         }
       }
@@ -385,15 +406,19 @@ void OmniboxResult::UpdateIcon() {
           BookmarkModelFactory::GetForBrowserContext(profile_);
       if (bookmark_model &&
           bookmark_model->IsBookmarked(match_.destination_url)) {
-        SetIcon(gfx::CreateVectorIcon(
-            omnibox::kBookmarkIcon,
-            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-            kListIconColor));
+        SetIcon(IconInfo(
+            gfx::CreateVectorIcon(omnibox::kBookmarkIcon,
+                                  ash::SharedAppListConfig::instance()
+                                      .search_list_icon_dimension(),
+                                  kListIconColor),
+            ash::SharedAppListConfig::instance().search_list_icon_dimension()));
       } else {
-        SetIcon(gfx::CreateVectorIcon(
-            TypeToVectorIcon(match_.type),
-            ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-            kListIconColor));
+        SetIcon(IconInfo(
+            gfx::CreateVectorIcon(TypeToVectorIcon(match_.type),
+                                  ash::SharedAppListConfig::instance()
+                                      .search_list_icon_dimension(),
+                                  kListIconColor),
+            ash::SharedAppListConfig::instance().search_list_icon_dimension()));
       }
   }
 }
@@ -474,7 +499,9 @@ void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.IsEmpty());
   SetOmniboxType(OmniboxType::kFavicon);
-  SetIcon(icon.AsImageSkia());
+  SetIcon(IconInfo(
+      icon.AsImageSkia(),
+      ash::SharedAppListConfig::instance().search_list_favicon_dimension()));
 }
 
 void OmniboxResult::SetZeroSuggestionActions() {

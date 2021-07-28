@@ -654,7 +654,7 @@ bool ArcAppReinstallSearchProvider::ResultsIdentical(
   for (size_t i = 0; i < old_results.size(); ++i) {
     const ChromeSearchResult& old_result = *(old_results[i]);
     const ChromeSearchResult& new_result = *(new_results[i]);
-    if (!old_result.icon().BackedBySameObjectAs(new_result.icon())) {
+    if (!old_result.icon().icon.BackedBySameObjectAs(new_result.icon().icon)) {
       return false;
     }
     if (old_result.title() != new_result.title()) {

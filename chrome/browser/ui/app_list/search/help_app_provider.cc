@@ -160,7 +160,7 @@ HelpAppResult::HelpAppResult(
   SetResultType(ResultType::kHelpApp);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::HELP_APP_DEFAULT);
-  SetIcon(icon);
+  SetIcon(IconInfo(icon));
   SetDetails(result->main_category);
 }
 

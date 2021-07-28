@@ -59,44 +59,59 @@ constexpr int kSearchResultTitleTextSizeDelta = 2;
 // Corner radius for downloaded image icons.
 constexpr int kImageIconCornerRadius = 4;
 
-class RoundedCornerImageView : public views::ImageView {
- public:
-  RoundedCornerImageView() = default;
+}  // namespace
 
-  RoundedCornerImageView(const RoundedCornerImageView&) = delete;
-  RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
+// static
+const char SearchResultView::kViewClassName[] = "ui/app_list/SearchResultView";
+
+// An ImageView that optionally masks the image into a circle or rectangle with
+// rounded corners.
+class MaskedImageView : public views::ImageView {
+ public:
+  MaskedImageView() = default;
+
+  MaskedImageView(const MaskedImageView&) = delete;
+  MaskedImageView& operator=(const MaskedImageView&) = delete;
+
+  void set_shape(SearchResult::IconShape shape) {
+    if (shape_ == shape)
+      return;
+    shape_ = shape;
+    SchedulePaint();
+  }
 
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override {
     SkPath mask;
-    mask.addRoundRect(gfx::RectToSkRect(GetImageBounds()),
-                      kImageIconCornerRadius, kImageIconCornerRadius);
-    canvas->ClipPath(mask, true);
+    const gfx::Rect& bounds = GetImageBounds();
+
+    switch (shape_) {
+      case SearchResult::IconShape::kDefault:
+      case SearchResult::IconShape::kRectangle:
+        // Noop.
+        break;
+      case SearchResult::IconShape::kRoundedRectangle:
+        mask.addRoundRect(gfx::RectToSkRect(bounds), kImageIconCornerRadius,
+                          kImageIconCornerRadius);
+        canvas->ClipPath(mask, true);
+        break;
+      case SearchResult::IconShape::kCircle:
+        // Calculate the radius of the circle based on the minimum of width and
+        // height in case the icon isn't square.
+        mask.addCircle(bounds.x() + bounds.width() / 2,
+                       bounds.y() + bounds.height() / 2,
+                       std::min(bounds.width(), bounds.height()) / 2);
+        canvas->ClipPath(mask, true);
+        break;
+    }
+
     ImageView::OnPaint(canvas);
   }
+
+ private:
+  SearchResult::IconShape shape_;
 };
-
-int OmniboxDisplayTypeToDimension(const SearchResultOmniboxDisplayType type) {
-  const auto& config = SharedAppListConfig::instance();
-  switch (type) {
-    case SearchResultOmniboxDisplayType::kAnswer:
-    case SearchResultOmniboxDisplayType::kCalculatorAnswer:
-      return config.search_list_answer_icon_dimension();
-    case SearchResultOmniboxDisplayType::kRichImage:
-      return config.search_list_image_icon_dimension();
-    case SearchResultOmniboxDisplayType::kFavicon:
-      return config.search_list_favicon_dimension();
-    case SearchResultOmniboxDisplayType::kDefault:
-    default:
-      return config.search_list_icon_dimension();
-  }
-}
-
-}  // namespace
-
-// static
-const char SearchResultView::kViewClassName[] = "ui/app_list/SearchResultView";
 
 SearchResultView::SearchResultView(SearchResultListView* list_view,
                                    AppListViewDelegate* view_delegate)
@@ -105,15 +120,13 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
   SetCallback(base::BindRepeating(&SearchResultView::OnButtonPressed,
                                   base::Unretained(this)));
 
-  icon_ = AddChildView(std::make_unique<views::ImageView>());
-  image_icon_ = AddChildView(std::make_unique<RoundedCornerImageView>());
+  icon_ = AddChildView(std::make_unique<MaskedImageView>());
   badge_icon_ = AddChildView(std::make_unique<views::ImageView>());
   auto* actions_view =
       AddChildView(std::make_unique<SearchResultActionsView>(this));
   set_actions_view(actions_view);
 
   icon_->SetCanProcessEventsWithinSubtree(false);
-  image_icon_->SetCanProcessEventsWithinSubtree(false);
   badge_icon_->SetCanProcessEventsWithinSubtree(false);
 
   set_context_menu_controller(this);
@@ -232,16 +245,13 @@ void SearchResultView::Layout() {
 
   gfx::Rect icon_bounds(rect);
 
-  const bool use_image_icon =
-      IsRichImage() && !image_icon_->GetImage().isNull();
-  views::ImageView* icon = use_image_icon ? image_icon_ : icon_;
   int left_right_padding =
-      (kPreferredIconViewWidth - icon->GetImage().width()) / 2;
-  int top_bottom_padding = (rect.height() - icon->GetImage().height()) / 2;
+      (kPreferredIconViewWidth - icon_->GetImage().width()) / 2;
+  int top_bottom_padding = (rect.height() - icon_->GetImage().height()) / 2;
   icon_bounds.set_width(kPreferredIconViewWidth);
   icon_bounds.Inset(left_right_padding, top_bottom_padding);
   icon_bounds.Intersect(rect);
-  icon->SetBoundsRect(icon_bounds);
+  icon_->SetBoundsRect(icon_bounds);
 
   gfx::Rect badge_icon_bounds;
 
@@ -404,27 +414,19 @@ void SearchResultView::OnMetadataChanged() {
   // looks nicer to keep the stale icon for a little while on screen instead of
   // clearing it out. It should work correctly as long as the SearchResult does
   // not forget to SetIcon when it's ready.
-  if (result() && !result()->icon().isNull()) {
-    gfx::ImageSkia image = result()->icon();
+  if (result() && !result()->icon().icon.isNull()) {
+    const SearchResult::IconInfo& icon_info = result()->icon();
+    const gfx::ImageSkia& image = icon_info.icon;
 
     // Calculate the image dimensions. Images could be rectangular, and we
     // should preserve the aspect ratio.
-    const int dimension =
-        OmniboxDisplayTypeToDimension(result()->omnibox_type());
+    const size_t dimension = result()->IconDimension();
     const int max = std::max(image.width(), image.height());
     const bool is_square = image.width() == image.height();
     const int width = is_square ? dimension : dimension * image.width() / max;
     const int height = is_square ? dimension : dimension * image.height() / max;
-
-    if (IsRichImage()) {
-      SetIconImage(image, image_icon_, gfx::Size(width, height));
-      icon_->SetVisible(false);
-      image_icon_->SetVisible(true);
-    } else {
-      SetIconImage(image, icon_, gfx::Size(width, height));
-      icon_->SetVisible(true);
-      image_icon_->SetVisible(false);
-    }
+    SetIconImage(image, icon_, gfx::Size(width, height));
+    icon_->set_shape(icon_info.shape);
   }
 
   // Updates |badge_icon_|.

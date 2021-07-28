@@ -31,6 +31,26 @@ OmniBoxZeroStateAction GetOmniBoxZeroStateAction(int button_index) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// SearchResultIconInfo:
+
+SearchResultIconInfo::SearchResultIconInfo() = default;
+
+SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon) : icon(icon) {}
+
+SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon, int dimension)
+    : icon(icon), dimension(dimension) {}
+
+SearchResultIconInfo::SearchResultIconInfo(gfx::ImageSkia icon,
+                                           int dimension,
+                                           SearchResultIconShape shape)
+    : icon(icon), dimension(dimension), shape(shape) {}
+
+SearchResultIconInfo::SearchResultIconInfo(const SearchResultIconInfo& other)
+    : icon(other.icon), dimension(other.dimension), shape(other.shape) {}
+
+SearchResultIconInfo::~SearchResultIconInfo() = default;
+
+////////////////////////////////////////////////////////////////////////////////
 // SearchResultTag:
 
 SearchResultTag::SearchResultTag() = default;

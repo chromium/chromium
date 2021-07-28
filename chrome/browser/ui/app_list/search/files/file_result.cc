@@ -146,7 +146,7 @@ FileResult::FileResult(const std::string& schema,
       SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
       break;
     case DisplayType::kList:
-      SetIcon(ash::GetIconForPath(filepath, dark_background));
+      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
       break;
     default:
       NOTREACHED();
@@ -177,13 +177,13 @@ FileResult::FileResult(const std::string& schema,
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
   switch (type) {
     case Type::kFile:
-      SetIcon(ash::GetIconForPath(filepath, dark_background));
+      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
       break;
     case Type::kDirectory:
-      SetIcon(ash::GetIconFromType("folder", dark_background));
+      SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background)));
       break;
     case Type::kSharedDirectory:
-      SetIcon(ash::GetIconFromType("shared", dark_background));
+      SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background)));
       break;
   }
 }

@@ -229,7 +229,7 @@ void AppServiceAppResult::OnLoadIcon(bool chip,
   if (chip) {
     SetChipIcon(icon_value->uncompressed);
   } else {
-    SetIcon(icon_value->uncompressed);
+    SetIcon(IconInfo(icon_value->uncompressed));
   }
 
   if (icon_value->is_placeholder_icon) {

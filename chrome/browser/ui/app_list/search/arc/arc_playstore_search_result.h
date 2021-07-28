@@ -59,6 +59,9 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   // ChromeSearchResult overrides:
   AppContextMenu* GetAppContextMenu() override;
 
+  // Callback passed to |icon_decode_request_|.
+  void OnIconDecoded(const gfx::ImageSkia&);
+
   arc::mojom::AppDiscoveryResultPtr data_;
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 

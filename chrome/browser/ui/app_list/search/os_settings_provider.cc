@@ -126,7 +126,7 @@ OsSettingsResult::OsSettingsResult(
   SetResultType(ResultType::kOsSettings);
   SetDisplayType(DisplayType::kList);
   SetMetricsType(ash::OS_SETTINGS);
-  SetIcon(icon);
+  SetIcon(IconInfo(icon));
 
   // If the result is not a top-level section, set the display text with
   // information about the result's 'parent' category. This is the last element

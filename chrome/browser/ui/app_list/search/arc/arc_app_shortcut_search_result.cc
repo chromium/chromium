@@ -66,12 +66,12 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
     DCHECK(data_->icon);
     apps::ArcRawIconPngDataToImageSkia(
         std::move(data_->icon), icon_dimension,
-        base::BindOnce(&ArcAppShortcutSearchResult::SetIcon,
+        base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
                        weak_ptr_factory_.GetWeakPtr()));
   } else if (data_->icon && data_->icon->icon_png_data &&
              !data_->icon->icon_png_data->empty()) {
     icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcAppShortcutSearchResult::SetIcon,
+        base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
                        weak_ptr_factory_.GetWeakPtr()),
         icon_dimension);
     icon_decode_request_->StartWithOptions(data_->icon->icon_png_data.value());
@@ -79,7 +79,7 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
     // TODO(crbug.com/1083331): Remove when the ARC change is rolled in Chrome
     // OS.
     icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
-        base::BindOnce(&ArcAppShortcutSearchResult::SetIcon,
+        base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
                        weak_ptr_factory_.GetWeakPtr()),
         icon_dimension);
     icon_decode_request_->StartWithOptions(data_->icon_png);
@@ -124,6 +124,10 @@ std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
   return l10n_util::GetStringFUTF16(IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME,
                                     base::UTF8ToUTF16(data_->short_label),
                                     base::UTF8ToUTF16(app_info->name));
+}
+
+void ArcAppShortcutSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {
+  SetIcon(IconInfo(icon));
 }
 
 }  // namespace app_list

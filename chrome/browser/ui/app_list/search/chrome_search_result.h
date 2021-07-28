@@ -38,6 +38,8 @@ class ChromeSearchResult {
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
   using OmniboxType = ash::SearchResultOmniboxDisplayType;
+  using IconInfo = ash::SearchResultIconInfo;
+  using IconShape = ash::SearchResultIconShape;
 
   ChromeSearchResult();
   virtual ~ChromeSearchResult();
@@ -70,7 +72,7 @@ class ChromeSearchResult {
   const absl::optional<std::string>& equivalent_result_id() const {
     return metadata_->equivalent_result_id;
   }
-  const gfx::ImageSkia& icon() const { return metadata_->icon; }
+  const IconInfo& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
 
@@ -100,7 +102,7 @@ class ChromeSearchResult {
   void SetIsInstalling(bool is_installing);
   void SetQueryUrl(const GURL& url);
   void SetEquivalentResutlId(const std::string& equivlanet_result_id);
-  void SetIcon(const gfx::ImageSkia& icon);
+  void SetIcon(const IconInfo& icon);
   void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
   void SetUseBadgeIconBackground(bool use_badge_icon_background);

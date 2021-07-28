@@ -61,7 +61,7 @@ ArcAppReinstallAppResult::ArcAppReinstallAppResult(
   set_relevance(kAppReinstallRelevance);
   SetNotifyVisibilityChange(true);
   const gfx::ImageSkia masked_app_icon(ApplyBackgroundAndMask(app_icon));
-  SetIcon(masked_app_icon);
+  SetIcon(IconInfo(masked_app_icon));
   SetChipIcon(masked_app_icon);
   SetBadgeIcon(ui::ImageModel::FromVectorIcon(
       vector_icons::kCloudDownloadIcon,

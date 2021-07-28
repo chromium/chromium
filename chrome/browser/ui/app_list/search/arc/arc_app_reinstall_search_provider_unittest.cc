@@ -465,9 +465,9 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultListComparison) {
                      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                          IDR_EXTENSION_DEFAULT_ICON);
   ASSERT_FALSE(aimg.BackedBySameObjectAs(bimg));
-  a[0]->SetIcon(aimg);
-  b[0]->SetIcon(bimg);
+  a[0]->SetIcon(ChromeSearchResult::IconInfo(aimg));
+  b[0]->SetIcon(ChromeSearchResult::IconInfo(bimg));
   EXPECT_FALSE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
-  b[0]->SetIcon(aimg);
+  b[0]->SetIcon(ChromeSearchResult::IconInfo(aimg));
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
 }

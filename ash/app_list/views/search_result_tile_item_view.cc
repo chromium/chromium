@@ -198,7 +198,7 @@ void SearchResultTileItemView::OnResultChanged() {
 
   // If the new icon is null, it's being decoded asynchronously. Not updating it
   // now to prevent flickering from showing an empty icon while decoding.
-  if (!result()->icon().isNull())
+  if (!result()->icon().icon.isNull())
     OnMetadataChanged();
 
   UpdateAccessibleName();
@@ -312,7 +312,7 @@ gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {
 }
 
 void SearchResultTileItemView::OnMetadataChanged() {
-  SetIcon(result()->icon());
+  SetIcon(result()->icon().icon);
   SetTitle(result()->title());
   SetTitleTags(result()->title_tags());
   SetBadgeIcon(result()->badge_icon(), result()->use_badge_icon_background());

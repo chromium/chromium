@@ -122,8 +122,8 @@ void ChromeSearchResult::SetEquivalentResutlId(
     updater->SetSearchResultMetadata(id(), CloneMetadata());
 }
 
-void ChromeSearchResult::SetIcon(const gfx::ImageSkia& icon) {
-  icon.EnsureRepsForSupportedScales();
+void ChromeSearchResult::SetIcon(const IconInfo& icon) {
+  icon.icon.EnsureRepsForSupportedScales();
   metadata_->icon = icon;
   SetSearchResultMetadata();
 }

@@ -211,6 +211,40 @@ enum OmniBoxZeroStateAction {
   kZeroStateActionMax
 };
 
+// The shape to mask a search result icon with.
+enum class SearchResultIconShape {
+  kDefault,
+  kRectangle,
+  kRoundedRectangle,
+  kCircle,
+};
+
+struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
+  SearchResultIconInfo();
+  // TODO(crbug.com/1232897): Make the search backend explicitly set dimension
+  // and shape for all icons by removing the one- and two-argument versions of
+  // the constructor.
+  explicit SearchResultIconInfo(gfx::ImageSkia icon);
+  SearchResultIconInfo(gfx::ImageSkia icon, int dimension);
+  SearchResultIconInfo(gfx::ImageSkia icon,
+                       int dimension,
+                       SearchResultIconShape shape);
+
+  SearchResultIconInfo(const SearchResultIconInfo&);
+
+  ~SearchResultIconInfo();
+
+  // The icon itself.
+  gfx::ImageSkia icon;
+
+  // The size to display the icon at, while preserving aspect ratio. Only
+  // used for the results list view.
+  absl::optional<int> dimension;
+
+  // The shape to mask the icon with. Only used by the results list view.
+  SearchResultIconShape shape = SearchResultIconShape::kDefault;
+};
+
 // Returns OmniBoxZeroStateAction mapped for |button_index|.
 ASH_PUBLIC_EXPORT OmniBoxZeroStateAction
 GetOmniBoxZeroStateAction(int button_index);
@@ -333,10 +367,12 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   absl::optional<std::string> equivalent_result_id;
 
   // The icon of this result.
-  gfx::ImageSkia icon;
+  SearchResultIconInfo icon;
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.
+  // TODO(crbug.com/1225161): Remove this and replace it with |icon| and an
+  // appropriately set |icon_dimension|.
   gfx::ImageSkia chip_icon;
 
   // The badge icon of this result that indicates its type, e.g. installable

@@ -29,11 +29,13 @@ class ImageView;
 }  // namespace views
 
 namespace ash {
+
 namespace test {
 class SearchResultListViewTest;
 }  // namespace test
 
 class AppListViewDelegate;
+class MaskedImageView;
 class SearchResult;
 class SearchResultListView;
 
@@ -114,9 +116,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   AppListViewDelegate* view_delegate_;
 
-  views::ImageView* icon_;  // Owned by views hierarchy.
-  // Rich image results will show |image_icon_| instead of |icon_|.
-  views::ImageView* image_icon_;  // Owned by views hierarchy.
+  MaskedImageView* icon_;         // Owned by views hierarchy.
   views::ImageView* badge_icon_;  // Owned by views hierarchy.
   std::unique_ptr<gfx::RenderText> title_text_;
   std::unique_ptr<gfx::RenderText> details_text_;

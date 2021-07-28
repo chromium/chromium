@@ -105,7 +105,7 @@ ArcAppDataSearchResult::ArcAppDataSearchResult(
   // TODO(warx): set default images when icon_png_data() is not available.
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     if (!data_->icon) {
-      SetIcon(gfx::ImageSkia());
+      SetIcon(IconInfo(gfx::ImageSkia()));
       return;
     }
 
@@ -122,7 +122,7 @@ ArcAppDataSearchResult::ArcAppDataSearchResult(
   if ((!data_->icon || !data_->icon->icon_png_data ||
        data_->icon->icon_png_data->empty()) &&
       !data_->icon_png_data) {
-    SetIcon(gfx::ImageSkia());
+    SetIcon(IconInfo(gfx::ImageSkia()));
     return;
   }
 
@@ -147,12 +147,12 @@ void ArcAppDataSearchResult::Open(int event_flags) {
 
 void ArcAppDataSearchResult::ApplyIcon(const gfx::ImageSkia& icon) {
   if (data_->type == arc::mojom::AppDataResultType::PERSON) {
-    SetIcon(
+    SetIcon(IconInfo(
         gfx::ImageSkia(std::make_unique<AvatarImageSource>(icon, kAvatarSize),
-                       gfx::Size(kAvatarSize, kAvatarSize)));
+                       gfx::Size(kAvatarSize, kAvatarSize))));
     return;
   }
-  SetIcon(icon);
+  SetIcon(IconInfo(icon));
 }
 
 }  // namespace app_list

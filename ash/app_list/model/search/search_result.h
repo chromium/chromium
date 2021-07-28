@@ -41,14 +41,18 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
   using OmniboxType = ash::SearchResultOmniboxDisplayType;
+  using IconInfo = ash::SearchResultIconInfo;
+  using IconShape = ash::SearchResultIconShape;
 
   SearchResult();
   SearchResult(const SearchResult&) = delete;
   SearchResult& operator=(const SearchResult&) = delete;
   virtual ~SearchResult();
 
-  const gfx::ImageSkia& icon() const { return metadata_->icon; }
-  void SetIcon(const gfx::ImageSkia& icon);
+  const IconInfo& icon() const { return metadata_->icon; }
+  void SetIcon(const IconInfo& icon);
+
+  size_t IconDimension() const;
 
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   void SetChipIcon(const gfx::ImageSkia& chip_icon);
