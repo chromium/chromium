@@ -177,6 +177,12 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // transformed by this matrix.
   bool Preserves2dAxisAlignment() const;
 
+  // Returns true if axis-aligned 2d rects will remain axis-aligned and not
+  // clipped by perspective (w > 0) after being transformed by this matrix,
+  // and distinct points in the x/y plane will remain distinct after being
+  // transformed by this matrix and mapped back to the x/y plane.
+  bool NonDegeneratePreserves2dAxisAlignment() const;
+
   // Returns true if the matrix has any perspective component that would
   // change the w-component of a homogeneous point.
   bool HasPerspective() const { return matrix_.hasPerspective(); }

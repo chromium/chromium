@@ -370,6 +370,8 @@ gfx::Rect MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
     const gfx::Transform& transform,
     const gfx::Rect& rect) {
   DCHECK(transform.Preserves2dAxisAlignment());
+  DCHECK_GT(transform.matrix().get(3, 3), 0);
+  DCHECK(std::isnormal(transform.matrix().get(3, 3)));
 
   if (transform.IsIdentityOrIntegerTranslation()) {
     gfx::Vector2d offset(static_cast<int>(transform.matrix().getFloat(0, 3)),

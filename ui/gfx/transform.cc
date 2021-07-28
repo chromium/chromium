@@ -391,6 +391,27 @@ bool Transform::Preserves2dAxisAlignment() const {
       !has_x_or_y_perspective;
 }
 
+bool Transform::NonDegeneratePreserves2dAxisAlignment() const {
+  // See comments above for Preserves2dAxisAlignment.
+
+  // This function differs from it by requiring:
+  //  (1) that there are exactly two nonzero values on a diagonal in
+  //      the upper left 2x2 submatrix, and
+  //  (2) that the w perspective value is positive.
+
+  bool has_x_or_y_perspective =
+      matrix_.get(3, 0) != 0 || matrix_.get(3, 1) != 0;
+  bool positive_w_perspective = matrix_.get(3, 3) > kEpsilon;
+
+  bool have_0_0 = std::abs(matrix_.get(0, 0)) > kEpsilon;
+  bool have_0_1 = std::abs(matrix_.get(0, 1)) > kEpsilon;
+  bool have_1_0 = std::abs(matrix_.get(1, 0)) > kEpsilon;
+  bool have_1_1 = std::abs(matrix_.get(1, 1)) > kEpsilon;
+
+  return have_0_0 == have_1_1 && have_0_1 == have_1_0 && have_0_0 != have_0_1 &&
+         !has_x_or_y_perspective && positive_w_perspective;
+}
+
 void Transform::Transpose() {
   matrix_.transpose();
 }

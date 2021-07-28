@@ -1210,7 +1210,8 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
         if (last_sqs->opacity == 1 && last_sqs->are_contents_opaque &&
             (last_sqs->blend_mode == SkBlendMode::kSrcOver ||
              last_sqs->blend_mode == SkBlendMode::kSrc) &&
-            last_sqs->quad_to_target_transform.Preserves2dAxisAlignment()) {
+            last_sqs->quad_to_target_transform
+                .NonDegeneratePreserves2dAxisAlignment()) {
           gfx::Rect sqs_rect_in_target =
               cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
                   last_sqs->quad_to_target_transform,

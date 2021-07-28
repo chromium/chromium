@@ -2456,37 +2456,40 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
     SkScalar c;  // row 2, column 1
     SkScalar d;  // row 2, column 2
     bool expected;
+    bool degenerate;
   } test_cases[] = {
-    { 3.f, 0.f,
-      0.f, 4.f, true }, // basic case
-    { 0.f, 4.f,
-      3.f, 0.f, true }, // rotate by 90
-    { 0.f, 0.f,
-      0.f, 4.f, true }, // degenerate x
-    { 3.f, 0.f,
-      0.f, 0.f, true }, // degenerate y
-    { 0.f, 0.f,
-      3.f, 0.f, true }, // degenerate x + rotate by 90
-    { 0.f, 4.f,
-      0.f, 0.f, true }, // degenerate y + rotate by 90
-    { 3.f, 4.f,
-      0.f, 0.f, false },
-    { 0.f, 0.f,
-      3.f, 4.f, false },
-    { 0.f, 3.f,
-      0.f, 4.f, false },
-    { 3.f, 0.f,
-      4.f, 0.f, false },
-    { 3.f, 4.f,
-      5.f, 0.f, false },
-    { 3.f, 4.f,
-      0.f, 5.f, false },
-    { 3.f, 0.f,
-      4.f, 5.f, false },
-    { 0.f, 3.f,
-      4.f, 5.f, false },
-    { 2.f, 3.f,
-      4.f, 5.f, false },
+      // clang-format off
+      { 3.f, 0.f,
+        0.f, 4.f, true, false },  // basic case
+      { 0.f, 4.f,
+        3.f, 0.f, true, false },  // rotate by 90
+      { 0.f, 0.f,
+        0.f, 4.f, true, true },   // degenerate x
+      { 3.f, 0.f,
+        0.f, 0.f, true, true },   // degenerate y
+      { 0.f, 0.f,
+        3.f, 0.f, true, true },   // degenerate x + rotate by 90
+      { 0.f, 4.f,
+        0.f, 0.f, true, true },   // degenerate y + rotate by 90
+      { 3.f, 4.f,
+        0.f, 0.f, false, true },
+      { 0.f, 0.f,
+        3.f, 4.f, false, true },
+      { 0.f, 3.f,
+        0.f, 4.f, false, true },
+      { 3.f, 0.f,
+        4.f, 0.f, false, true },
+      { 3.f, 4.f,
+        5.f, 0.f, false, false },
+      { 3.f, 4.f,
+        0.f, 5.f, false, false },
+      { 3.f, 0.f,
+        4.f, 5.f, false, false },
+      { 0.f, 3.f,
+        4.f, 5.f, false, false },
+      { 2.f, 3.f,
+        4.f, 5.f, false, false },
+      // clang-format on
   };
 
   Transform transform;
@@ -2501,9 +2504,15 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
     if (value.expected) {
       EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
       EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+      if (value.degenerate) {
+        EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
+      } else {
+        EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
+      }
     } else {
       EXPECT_FALSE(EmpiricallyPreserves2dAxisAlignment(transform));
       EXPECT_FALSE(transform.Preserves2dAxisAlignment());
+      EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
     }
   }
 
@@ -2529,9 +2538,15 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
     if (value.expected) {
       EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
       EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+      if (value.degenerate) {
+        EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
+      } else {
+        EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
+      }
     } else {
       EXPECT_FALSE(EmpiricallyPreserves2dAxisAlignment(transform));
       EXPECT_FALSE(transform.Preserves2dAxisAlignment());
+      EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
     }
   }
 
@@ -2560,6 +2575,7 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
 
     EXPECT_FALSE(EmpiricallyPreserves2dAxisAlignment(transform));
     EXPECT_FALSE(transform.Preserves2dAxisAlignment());
+    EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
   }
 
   // Try a few more practical situations to check precision
@@ -2567,49 +2583,58 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
   transform.RotateAboutZAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutZAxis(180.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutZAxis(270.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutYAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutXAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutZAxis(90.0);
   transform.RotateAboutYAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutZAxis(90.0);
   transform.RotateAboutXAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutYAxis(90.0);
   transform.RotateAboutZAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutZAxis(45.0);
   EXPECT_FALSE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_FALSE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   // 3-d case; In 2d after an orthographic projection, this case does
   // preserve 2d axis alignment. But in 3d, it does not preserve axis
@@ -2618,11 +2643,13 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
   transform.RotateAboutYAxis(45.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.RotateAboutXAxis(45.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   // Perspective cases.
   transform.MakeIdentity();
@@ -2630,12 +2657,44 @@ TEST(XFormTest, Preserves2dAxisAlignment) {
   transform.RotateAboutYAxis(45.0);
   EXPECT_FALSE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_FALSE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 
   transform.MakeIdentity();
   transform.ApplyPerspectiveDepth(10.0);
   transform.RotateAboutZAxis(90.0);
   EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
   EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
+
+  transform.MakeIdentity();
+  transform.ApplyPerspectiveDepth(-10.0);
+  transform.RotateAboutZAxis(90.0);
+  EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
+  EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_TRUE(transform.NonDegeneratePreserves2dAxisAlignment());
+
+  // To be non-degenerate, the constant contribution to perspective must
+  // be positive.
+
+  // clang-format off
+  transform = Transform(1.0, 0.0, 0.0, 0.0,
+                        0.0, 1.0, 0.0, 0.0,
+                        0.0, 0.0, 1.0, 0.0,
+                        0.0, 0.0, 0.0, -1.0);
+  // clang-format on
+  EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
+  EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
+
+  // clang-format off
+  transform = Transform(2.0, 0.0, 0.0, 0.0,
+                        0.0, 5.0, 0.0, 0.0,
+                        0.0, 0.0, 1.0, 0.0,
+                        0.0, 0.0, 0.0, 0.0);
+  // clang-format on
+  EXPECT_TRUE(EmpiricallyPreserves2dAxisAlignment(transform));
+  EXPECT_TRUE(transform.Preserves2dAxisAlignment());
+  EXPECT_FALSE(transform.NonDegeneratePreserves2dAxisAlignment());
 }
 
 TEST(XFormTest, To2dTranslation) {
