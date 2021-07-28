@@ -883,7 +883,10 @@ void URLRequestHttpJob::ProcessExpectCTHeader() {
 
   HttpResponseHeaders* headers = GetResponseHeaders();
   std::string value;
-  if (headers->GetNormalizedHeader("Expect-CT", &value)) {
+  bool has_expect_ct_header = headers->GetNormalizedHeader("Expect-CT", &value);
+  base::UmaHistogramBoolean("Net.ExpectCT.HeaderPresentOnResponse",
+                            has_expect_ct_header);
+  if (has_expect_ct_header) {
     security_state->ProcessExpectCTHeader(
         value, HostPortPair::FromURL(request_info_.url), ssl_info,
         request_->isolation_info().network_isolation_key());

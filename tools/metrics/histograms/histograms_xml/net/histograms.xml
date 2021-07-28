@@ -297,7 +297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.CertificateTransparency.SCTOrigin" enum="SCTOrigin"
-    expires_after="M85">
+    expires_after="M95">
   <owner>estark@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -1721,6 +1721,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of entries loaded from the Expect-CT database when Chrome starts
     up.
+  </summary>
+</histogram>
+
+<histogram name="Net.ExpectCT.HeaderPresentOnResponse" units="BooleanPresent"
+    expires_after="M95">
+  <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Recorded whenever headers are received on an HTTP response. True if an
+    Expect-CT header was present on the response, and false otherwise.
   </summary>
 </histogram>
 
