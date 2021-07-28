@@ -92,6 +92,10 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   // The size and color of the chip are set in VisualsChanged().
   title_chip_ = AddChildView(std::make_unique<views::View>());
 
+  // Disable events processing (like tooltip handling)
+  // for children of TabGroupHeader.
+  title_chip_->SetCanProcessEventsWithinSubtree(false);
+
   // The text and color of the title are set in VisualsChanged().
   title_ = title_chip_->AddChildView(std::make_unique<views::Label>());
   title_->SetCollapseWhenHidden(true);
@@ -285,16 +289,16 @@ void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-views::View* TabGroupHeader::GetTooltipHandlerForPoint(
-    const gfx::Point& point) {
-  return this;
-}
-
 std::u16string TabGroupHeader::GetTooltipText(const gfx::Point& p) const {
-  if (!title_->GetText().empty())
-    return title_->GetText();
-  else
-    return l10n_util::GetStringUTF16(IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP);
+  if (!title_->GetText().empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, title_->GetText(),
+        tab_strip_->controller()->GetGroupContentString(group().value()));
+  } else {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
+        tab_strip_->controller()->GetGroupContentString(group().value()));
+  }
 }
 
 TabSlotView::ViewType TabGroupHeader::GetTabSlotViewType() const {

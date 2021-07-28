@@ -46,6 +46,7 @@ class TabGroupHeader : public TabSlotView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
@@ -62,12 +63,6 @@ class TabGroupHeader : public TabSlotView,
 
   // Removes {editor_bubble_tracker_} from observing the widget.
   void RemoveObserverFromWidget(views::Widget* widget);
-
-  // Assigns this view as the tooltip handler to avoid delegation to child views.
-  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-
-  // Updates tooltip text as either name of group or static text if unnamed
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
