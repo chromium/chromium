@@ -836,16 +836,24 @@ static void isConfigSupportedWithHardwareOnly(
 class FindAnySupported final : public NewScriptFunction::Callable {
  public:
   ScriptValue Call(ScriptState* state, ScriptValue value) override {
-    NonThrowableExceptionState exception_state;
+    ExceptionContext context(
+        ExceptionContext::Context::kConstructorOperationInvoke,
+        "VideoEncoderSupport");
+    ExceptionState exception_state(state->GetIsolate(), context);
     HeapVector<Member<VideoEncoderSupport>> supports =
         NativeValueTraits<IDLSequence<VideoEncoderSupport>>::NativeValue(
             state->GetIsolate(), value.V8Value(), exception_state);
 
     VideoEncoderSupport* result = nullptr;
-    for (auto& support : supports) {
-      result = support;
-      if (result->supported())
-        break;
+    // We don't really expect exceptions here, but if isConfigSupported() is
+    // given a VideoEncoderConfig with uint64 values above max JS int (2^53 - 1)
+    // creation of |supports| vector will fail. This can happen during fuzzing.
+    if (!exception_state.HadException()) {
+      for (auto& support : supports) {
+        result = support;
+        if (result->supported())
+          break;
+      }
     }
     return ScriptValue::From(state, result);
   }
