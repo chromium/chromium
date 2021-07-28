@@ -15,28 +15,28 @@ namespace {
 
 void AppendModifier(Modifier modifier, std::string& append_target) {
   switch (modifier) {
-    case Modifier::kNone:
+    case Modifier::kZeroOrMore:
+      append_target += '*';
       break;
     case Modifier::kOptional:
       append_target += '?';
       break;
-    case Modifier::kZeroOrMore:
-      append_target += '*';
-      break;
     case Modifier::kOneOrMore:
       append_target += '+';
+      break;
+    case Modifier::kNone:
       break;
   }
 }
 
 size_t ModifierLength(Modifier modifier) {
   switch (modifier) {
-    case Modifier::kNone:
-      return 0;
-    case Modifier::kOptional:
     case Modifier::kZeroOrMore:
+    case Modifier::kOptional:
     case Modifier::kOneOrMore:
       return 1;
+    case Modifier::kNone:
+      return 0;
   }
 }
 

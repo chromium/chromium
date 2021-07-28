@@ -1488,6 +1488,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter search
 [Worker]     setter username
 [Worker] interface URLPattern
+[Worker]     static method compareComponent
 [Worker]     attribute @@toStringTag
 [Worker]     getter hash
 [Worker]     getter hostname

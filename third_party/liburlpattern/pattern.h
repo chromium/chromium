@@ -13,33 +13,37 @@
 
 namespace liburlpattern {
 
+// Numeric values are set such that more restrictive values come last.  This
+// is important for comparison routines in calling code, like URLPattern.
 enum class PartType {
-  // A fixed, non-variable part of the pattern.  Consists of kChar and
-  // kEscapedChar Tokens.
-  kFixed,
-
-  // A part with a custom regular expression.
-  kRegex,
+  // A part that matches any character to the end of the input string.
+  kFullWildcard = 0,
 
   // A part that matches any character to the next segment separator.
-  kSegmentWildcard,
+  kSegmentWildcard = 1,
 
-  // A part that matches any character to the end of the input string.
-  kFullWildcard,
+  // A part with a custom regular expression.
+  kRegex = 2,
+
+  // A fixed, non-variable part of the pattern.  Consists of kChar and
+  // kEscapedChar Tokens.
+  kFixed = 3,
 };
 
+// Numeric values are set such that more restrictive values come last.  This
+// is important for comparison routines in calling code, like URLPattern.
 enum class Modifier {
-  // No modifier.
-  kNone,
+  // The `*` modifier.
+  kZeroOrMore = 0,
 
   // The `?` modifier.
-  kOptional,
-
-  // The `*` modifier.
-  kZeroOrMore,
+  kOptional = 1,
 
   // The `+` modifier.
-  kOneOrMore,
+  kOneOrMore = 2,
+
+  // No modifier.
+  kNone = 3,
 };
 
 // A structure representing one part of a parsed Pattern.  A full Pattern

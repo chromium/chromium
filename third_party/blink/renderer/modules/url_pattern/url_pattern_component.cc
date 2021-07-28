@@ -92,10 +92,12 @@ liburlpattern::EncodeCallback GetEncodeCallback(Component::Type type,
 // Utility method to get the correct liburlpattern parse options for a given
 // type.
 const liburlpattern::Options& GetOptions(Component::Type type) {
+  using liburlpattern::Options;
+
   // The liburlpattern::Options to use for most component patterns.  We
   // default to strict mode and case sensitivity.  In addition, most
   // components have no concept of a delimiter or prefix character.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(liburlpattern::Options, default_options,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Options, default_options,
                                   ({.delimiter_list = "",
                                     .prefix_list = "",
                                     .sensitive = true,
@@ -106,7 +108,7 @@ const liburlpattern::Options& GetOptions(Component::Type type) {
   // by default.  Note, hostnames are case insensitive but we require case
   // sensitivity here.  This assumes that the hostname values have already
   // been normalized to lower case as in URL().
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(liburlpattern::Options, hostname_options,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Options, hostname_options,
                                   ({.delimiter_list = ".",
                                     .prefix_list = "",
                                     .sensitive = true,
@@ -116,7 +118,7 @@ const liburlpattern::Options& GetOptions(Component::Type type) {
   // "/" delimiter controlling how far a named group like ":bar" will match
   // by default.  It also configures "/" to be treated as an automatic
   // prefix before groups.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(liburlpattern::Options, pathname_options,
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Options, pathname_options,
                                   ({.delimiter_list = "/",
                                     .prefix_list = "/",
                                     .sensitive = true,
@@ -136,6 +138,88 @@ const liburlpattern::Options& GetOptions(Component::Type type) {
       return default_options;
   }
   NOTREACHED();
+}
+
+// Utility function to return a statically allocated Part list.
+const std::vector<liburlpattern::Part>& GetWildcardOnlyPartList() {
+  using liburlpattern::Modifier;
+  using liburlpattern::Part;
+  using liburlpattern::PartType;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      std::vector<Part>, instance,
+      ({Part(PartType::kFullWildcard,
+             /*name=*/"",
+             /*prefix=*/"", /*value=*/"", /*suffix=*/"", Modifier::kNone)}));
+  return instance;
+}
+
+int ComparePart(const liburlpattern::Part& lh, const liburlpattern::Part& rh) {
+  // We prioritize PartType in the ordering so we can favor fixed text.  The
+  // type ordering is:
+  //
+  //  kFixed > kRegex > kSegmentWildcard > kFullWildcard.
+  //
+  // We considered kRegex greater than the wildcards because it is likely to be
+  // used for imposing some constraint and not just duplicating wildcard
+  // behavior.
+  //
+  // This comparison depends on the PartType enum in liburlpattern having the
+  // correct corresponding numeric values.
+  //
+  // Next the Modifier is considered:
+  //
+  //  kNone > kOneOrMore > kOptional > kZeroOrMore.
+  //
+  // The rationale here is that requring the match group to exist is more
+  // restrictive then making it optional and requiring an exact count is more
+  // restrictive than repeating.
+  //
+  // This comparison depends on the Modifier enum in liburlpattern having the
+  // correct corresponding numeric values.
+  //
+  // Finally we lexicographically compare the text components from left to
+  // right; `prefix`, `value`, and `suffix`.  Its ok to depend on simple
+  // byte-wise string comparison here because the values have all been URL
+  // encoded.  This guarantees the strings contain only ASCII.
+  auto left = std::tie(lh.type, lh.modifier, lh.prefix, lh.value, lh.suffix);
+  auto right = std::tie(rh.type, rh.modifier, rh.prefix, rh.value, rh.suffix);
+  if (left < right)
+    return -1;
+  else if (left == right)
+    return 0;
+  else
+    return 1;
+}
+
+// Utility method to compare two part lists.
+int ComparePartList(const std::vector<liburlpattern::Part>& lh,
+                    const std::vector<liburlpattern::Part>& rh) {
+  using liburlpattern::Modifier;
+  using liburlpattern::Part;
+  using liburlpattern::PartType;
+
+  // Begin by comparing each Part in the lists with each other.  If any
+  // are not equal, then we are done.
+  size_t i = 0;
+  for (; i < lh.size() && i < rh.size(); ++i) {
+    int r = ComparePart(lh[i], rh[i]);
+    if (r)
+      return r;
+  }
+
+  // We reached the end of at least one of the lists without finding a
+  // difference.  However, we must handle the case where one list is longer
+  // than the other.  In this case we compare the next Part from the
+  // longer list to a synthetically created empty kFixed Part.  This is
+  // necessary in order for "/foo/" to be considered more restrictive, and
+  // therefore greater, than "/foo/*".
+  if (i == lh.size() && i != rh.size())
+    return ComparePart(Part(PartType::kFixed, "", Modifier::kNone), rh[i]);
+  else if (i != lh.size() && i == rh.size())
+    return ComparePart(lh[i], Part(PartType::kFixed, "", Modifier::kNone));
+
+  // No differences were found, so declare them equal.
+  return 0;
 }
 
 }  // anonymous namespace
@@ -216,6 +300,31 @@ Component* Component::Compile(const String& pattern,
   return MakeGarbageCollected<Component>(
       type, std::move(parse_result.value()), std::move(regexp),
       std::move(wtf_name_list), base::PassKey<Component>());
+}
+
+// static
+int Component::Compare(const Component& lh, const Component& rh) {
+  using liburlpattern::Modifier;
+  using liburlpattern::Part;
+  using liburlpattern::PartType;
+
+  // If both the left and right components are empty wildcards, then they are
+  // effectively equal.
+  if (!lh.pattern_.has_value() && !rh.pattern_.has_value())
+    return 0;
+
+  // If one side has a real pattern and the other side is an empty component,
+  // then we have to compare to a part list with a single full wildcard.
+  if (lh.pattern_.has_value() && !rh.pattern_.has_value()) {
+    return ComparePartList(lh.pattern_->PartList(), GetWildcardOnlyPartList());
+  }
+
+  if (!lh.pattern_.has_value() && rh.pattern_.has_value()) {
+    return ComparePartList(GetWildcardOnlyPartList(), rh.pattern_->PartList());
+  }
+
+  // Otherwise compare the part lists of the patterns on each side.
+  return ComparePartList(lh.pattern_->PartList(), rh.pattern_->PartList());
 }
 
 Component::Component(Type type,

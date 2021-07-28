@@ -52,6 +52,13 @@ class Component final : public GarbageCollected<Component> {
                             Component* protocol_component,
                             ExceptionState& exception_state);
 
+  // Compare the pattern strings in the two given components.  This provides a
+  // mostly lexicographical ordering based on fixed text in the patterns.
+  // Matching groups and modifiers are treated such that more restrictive
+  // patterns are greater in value.  Group names are not considered in the
+  // comparison.
+  static int Compare(const Component& lh, const Component& rh);
+
   // Constructs a Component with a real `pattern` that compiled to the given
   // `regexp`.
   Component(Type type,

@@ -1,4 +1,3 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +6,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_url_pattern_component.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/liburlpattern/parse.h"
@@ -68,6 +68,10 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
   String pathname() const;
   String search() const;
   String hash() const;
+
+  static int compareComponent(const V8URLPatternComponent& component,
+                              const URLPattern* left,
+                              const URLPattern* right);
 
   void Trace(Visitor* visitor) const override;
 

@@ -390,6 +390,36 @@ String URLPattern::hash() const {
   return hash_->GeneratePatternString();
 }
 
+// static
+int URLPattern::compareComponent(const V8URLPatternComponent& component,
+                                 const URLPattern* left,
+                                 const URLPattern* right) {
+  switch (component.AsEnum()) {
+    case V8URLPatternComponent::Enum::kProtocol:
+      return url_pattern::Component::Compare(*left->protocol_,
+                                             *right->protocol_);
+    case V8URLPatternComponent::Enum::kUsername:
+      return url_pattern::Component::Compare(*left->username_,
+                                             *right->username_);
+    case V8URLPatternComponent::Enum::kPassword:
+      return url_pattern::Component::Compare(*left->password_,
+                                             *right->password_);
+    case V8URLPatternComponent::Enum::kHostname:
+      return url_pattern::Component::Compare(*left->hostname_,
+                                             *right->hostname_);
+    case V8URLPatternComponent::Enum::kPort:
+      return url_pattern::Component::Compare(*left->port_, *right->port_);
+    case V8URLPatternComponent::Enum::kPathname:
+      return url_pattern::Component::Compare(*left->pathname_,
+                                             *right->pathname_);
+    case V8URLPatternComponent::Enum::kSearch:
+      return url_pattern::Component::Compare(*left->search_, *right->search_);
+    case V8URLPatternComponent::Enum::kHash:
+      return url_pattern::Component::Compare(*left->hash_, *right->hash_);
+  }
+  NOTREACHED();
+}
+
 void URLPattern::Trace(Visitor* visitor) const {
   visitor->Trace(protocol_);
   visitor->Trace(username_);

@@ -1611,6 +1611,7 @@ interface URL
     setter search
     setter username
 interface URLPattern
+    static method compareComponent
     attribute @@toStringTag
     getter hash
     getter hostname
