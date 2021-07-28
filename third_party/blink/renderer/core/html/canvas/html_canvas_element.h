@@ -323,6 +323,8 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool IsCanvasClear() { return canvas_is_clear_; }
 
+  bool IsPlaceholder() const override { return IsOffscreenCanvasRegistered(); }
+
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
 

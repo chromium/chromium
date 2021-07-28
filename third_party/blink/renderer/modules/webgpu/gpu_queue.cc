@@ -174,18 +174,33 @@ scoped_refptr<Image> GetImageFromExternalImage(
       break;
   }
 
+  // Neutered external image.
+  if (source->IsNeutered()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "External Image has been detached.");
+    return nullptr;
+  }
+
+  // Placeholder source is not allowed.
+  if (source->IsPlaceholder()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot copy from a canvas that has had "
+                                      "transferControlToOffscreen() called.");
+    return nullptr;
+  }
+
+  // Canvas element contains cross-origin data and may not be loaded
+  if (source->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "The external image is tainted by cross-origin data.");
+    return nullptr;
+  }
+
   if (canvas && !(canvas->IsWebGL() || canvas->IsRenderingContext2D())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
         "CopyExternalImageToTexture doesn't support canvas without 2d, webgl "
         "or webgl2 context");
-    return nullptr;
-  }
-
-  // Neutered external image.
-  if (source->IsNeutered()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "External Image has been detached.");
     return nullptr;
   }
 
@@ -195,13 +210,6 @@ scoped_refptr<Image> GetImageFromExternalImage(
   FloatSize image_size = source->ElementSize(
       FloatSize(),  // It will be ignored and won't affect size.
       kRespectImageOrientation);
-
-  // Canvas element contains cross-origin data and may not be loaded
-  if (source->WouldTaintOrigin()) {
-    exception_state.ThrowSecurityError(
-        "The external image is tainted by cross-origin data.");
-    return nullptr;
-  }
 
   // TODO(crbug.com/1197369): Ensure kUnpremultiplyAlpha impl will also make
   // image live on GPU if possible.

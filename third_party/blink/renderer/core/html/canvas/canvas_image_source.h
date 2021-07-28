@@ -82,6 +82,10 @@ class CORE_EXPORT CanvasImageSource {
   //  https://html.spec.whatwg.org/multipage/canvas.html#check-the-usability-of-the-image-argument
   virtual bool IsNeutered() const { return false; }
 
+  // Spec about placeholder context:
+  // https://html.spec.whatwg.org/multipage/canvas.html#offscreencanvas-placeholder
+  virtual bool IsPlaceholder() const { return false; }
+
   virtual FloatSize ElementSize(const FloatSize& default_object_size,
                                 const RespectImageOrientationEnum) const = 0;
   virtual FloatSize DefaultDestinationSize(
