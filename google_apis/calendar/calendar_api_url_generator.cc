@@ -31,11 +31,6 @@ CalendarApiUrlGenerator& CalendarApiUrlGenerator::operator=(
 
 CalendarApiUrlGenerator::~CalendarApiUrlGenerator() = default;
 
-// TODO(https://crbug.com/1222483): get this from GaiaUrls class instead.
-// The same for the DriveApiUrlGenerator.
-const char CalendarApiUrlGenerator::kBaseUrlForProduction[] =
-    "https://www.googleapis.com";
-
 GURL CalendarApiUrlGenerator::GetCalendarEventListUrl(
     const base::Time& start_time,
     const base::Time& end_time) const {

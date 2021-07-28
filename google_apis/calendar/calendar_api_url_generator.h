@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
 
 namespace google_apis {
@@ -23,9 +24,6 @@ class CalendarApiUrlGenerator {
   CalendarApiUrlGenerator& operator=(const CalendarApiUrlGenerator& src);
   ~CalendarApiUrlGenerator();
 
-  // The base URL for communicating with the production calendar api server.
-  static const char kBaseUrlForProduction[];
-
   // Returns a URL to fetch a list of calendar events.
   GURL GetCalendarEventListUrl(const base::Time& start_time,
                                const base::Time& end_time) const;
@@ -37,7 +35,7 @@ class CalendarApiUrlGenerator {
   void SetBaseUrlForTesting(const std::string& url) { base_url_ = GURL(url); }
 
  private:
-  GURL base_url_{CalendarApiUrlGenerator::kBaseUrlForProduction};
+  GURL base_url_{GaiaUrls::GetInstance()->google_apis_origin_url()};
 };
 
 }  // namespace calendar

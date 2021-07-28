@@ -61,6 +61,9 @@ class GaiaUrls {
 
   const GURL& gaia_login_form_realm() const;
 
+  // The base URL for communicating with the google api server.
+  const GURL& google_apis_origin_url() const;
+
   GURL ListAccountsURLWithSource(const std::string& source);
   GURL LogOutURLWithSource(const std::string& source);
   GURL GetCheckConnectionInfoURLWithSource(const std::string& source);

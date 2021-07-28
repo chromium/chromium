@@ -58,6 +58,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 #include "google_apis/drive/drive_api_url_generator.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -100,7 +101,7 @@ SyncEngine::DriveServiceFactory::CreateDriveService(
     base::SequencedTaskRunner* blocking_task_runner) {
   return std::make_unique<drive::DriveAPIService>(
       identity_manager, url_loader_factory, blocking_task_runner,
-      GURL(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction),
+      GaiaUrls::GetInstance()->google_apis_origin_url(),
       GURL(google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction),
       std::string(), /* custom_user_agent */
       kSyncFileSystemTrafficAnnotation);

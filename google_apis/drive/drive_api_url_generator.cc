@@ -84,9 +84,6 @@ DriveApiUrlGenerator::~DriveApiUrlGenerator() {
   // Do nothing.
 }
 
-const char DriveApiUrlGenerator::kBaseUrlForProduction[] =
-    "https://www.googleapis.com";
-
 const char DriveApiUrlGenerator::kBaseThumbnailUrlForProduction[] =
     "https://lh3.googleusercontent.com";
 

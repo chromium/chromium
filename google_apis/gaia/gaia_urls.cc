@@ -311,6 +311,10 @@ const GURL& GaiaUrls::gaia_login_form_realm() const {
   return gaia_login_form_realm_;
 }
 
+const GURL& GaiaUrls::google_apis_origin_url() const {
+  return google_apis_origin_url_;
+}
+
 GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
   if (source.empty()) {
     return list_accounts_url_;
