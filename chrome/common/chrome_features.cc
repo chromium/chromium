@@ -561,7 +561,7 @@ const base::Feature kIntentPickerPWAPersistence{
 // If enabled, CloudPolicyInvalidator and RemoteCommandInvalidator instances
 // will have unique owner name.
 const base::Feature kInvalidatorUniqueOwnerName{
-    "InvalidatorUniqueOwnerName", base::FEATURE_DISABLED_BY_DEFAULT};
+    "InvalidatorUniqueOwnerName", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kKernelnextVMs{"KernelnextVMs",
