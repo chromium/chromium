@@ -20,7 +20,6 @@ struct InstallableParams {
 
   // Check whether the current WebContents is eligible to be installed, i.e it:
   //  - is served over HTTPS
-  //  - is a top-level frame
   //  - is not in an incognito profile.
   bool check_eligibility = false;
 
@@ -47,7 +46,8 @@ struct InstallableParams {
   bool fetch_screenshots = false;
 
   // Check whether the site has a service worker controlling the manifest start
-  // URL and the current URL.
+  // URL and the current URL. A value of true also indicates that the current
+  // WebContents is a top-level frame.
   bool has_worker = false;
 
   // Whether or not to wait indefinitely for a service worker. If this is set to

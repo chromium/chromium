@@ -606,7 +606,7 @@ void InstallableManager::WorkOnTask() {
 }
 
 void InstallableManager::CheckEligiblity() {
-  // Fail if this is an incognito window, non-main frame, or insecure context.
+  // Fail if this is an incognito window or insecure context.
   content::WebContents* web_contents = GetWebContents();
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     eligibility_->errors.push_back(IN_INCOGNITO);
@@ -711,6 +711,11 @@ bool InstallableManager::IsManifestValidForWebApp(
 void InstallableManager::CheckServiceWorker() {
   DCHECK(!worker_->fetched);
   DCHECK(!manifest().IsEmpty());
+  // Service workers need a StorageKey (storage partitioning key), since we only
+  // install for top-level frames we can assume the StorageKey will always be in
+  // a 1P context. DCHECK this just to be sure.
+  DCHECK(GetWebContents() &&
+         GetWebContents()->GetMainFrame()->GetParent() == nullptr);
 
   if (!service_worker_context_)
     return;
