@@ -483,7 +483,8 @@ TEST_P(StorageQueueTest, WriteIntoNewStorageQueueAndUploadWithFailures) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
-TEST_P(StorageQueueTest, WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
+// TODO(crbug.com/1233846): This test is very flaky.
+TEST_P(StorageQueueTest, DISABLED_WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   WriteStringOrDie(kData[0]);
   WriteStringOrDie(kData[1]);
