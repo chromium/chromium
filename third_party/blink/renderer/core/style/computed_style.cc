@@ -27,6 +27,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
@@ -1398,11 +1399,10 @@ bool ComputedStyle::SetEffectiveZoom(float f) {
   // Record UMA for the effective zoom in order to assess the relative
   // importance of sub-pixel behavior, and related features and bugs.
   // Clamp to a max of 400%, to make the histogram behave better at no
-  // real cost to our understanding of the zooms in use. Use a local clamp
-  // for speed, as base::clamp has a CHECK and this is a hot path.
-  float uma_clamped_effective_zoom =
-      std::min(std::max(clamped_effective_zoom * 100, 0.0f), 400.0f);
-  base::UmaHistogramSparse("Blink.EffectiveZoom", uma_clamped_effective_zoom);
+  // real cost to our understanding of the zooms in use.
+  base::UmaHistogramSparse(
+      "Blink.EffectiveZoom",
+      base::clamp<float>(clamped_effective_zoom * 100, 0, 400));
   return true;
 }
 
