@@ -80,6 +80,20 @@ DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
   }
 }
 
+// Formats supported by CreateSharedImage(GMB) and CreateSharedImageVideoPlanes.
+DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
+  switch (buffer_format) {
+    case gfx::BufferFormat::RGBA_8888:
+      return DXGI_FORMAT_R8G8B8A8_TYPELESS;
+    case gfx::BufferFormat::BGRA_8888:
+      return DXGI_FORMAT_B8G8R8A8_TYPELESS;
+    case gfx::BufferFormat::RGBA_F16:
+      return DXGI_FORMAT_R16G16B16A16_TYPELESS;
+    default:
+      return DXGI_FORMAT_UNKNOWN;
+  }
+}
+
 Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     const gfx::GpuMemoryBufferHandle& handle,
@@ -123,7 +137,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> ValidateAndOpenSharedHandle(
     return nullptr;
   }
 
-  if (desc.Format != GetDXGIFormat(format)) {
+  if ((desc.Format != GetDXGIFormat(format)) &&
+      (desc.Format != GetDXGITypelessFormat(format))) {
     DLOG(ERROR) << "Format must match texture being opened";
     return nullptr;
   }
