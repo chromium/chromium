@@ -17,6 +17,7 @@
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net_benchmarking.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -362,6 +363,13 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
         mojo::PendingAssociatedReceiver<
             content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == lite_video::mojom::LiteVideoService::Name_) {
+    LiteVideoObserver::BindLiteVideoService(
+        mojo::PendingAssociatedReceiver<lite_video::mojom::LiteVideoService>(
+            std::move(*handle)),
         render_frame_host);
     return true;
   }

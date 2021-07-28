@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 class EmbeddedSearchClientFactoryImpl;
-class LiteVideoObserver;
 class OfflinePageTabHelper;
 class SupervisedUserNavigationObserver;
 class SyncEncryptionKeysTabHelper;
@@ -114,7 +113,6 @@ class WebContentsFrameReceiverSetPassKey {
   WebContentsFrameReceiverSetPassKey() = default;
 
   friend class ::EmbeddedSearchClientFactoryImpl;
-  friend class ::LiteVideoObserver;
   friend class ::SupervisedUserNavigationObserver;
   friend class ::SyncEncryptionKeysTabHelper;
   friend class ::chrome_browser_net::NetErrorTabHelper;
