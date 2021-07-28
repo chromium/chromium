@@ -99,7 +99,7 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
   auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
 
   DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
-  event_destination->set_url(src_pattern);
+  event_destination->set_url(dst_pattern);
   event.set_allocated_destination(event_destination);
 
   return event;

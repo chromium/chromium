@@ -43,10 +43,10 @@ TEST_F(DlpReportingManagerTest, ReportEvent) {
                        DlpRulesManager::Level::kBlock);
 
   EXPECT_EQ(events_.size(), 1);
-  EXPECT_THAT(events_[0],
-              IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                  kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kBlock)));
+  EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
+  EXPECT_FALSE(events_[0].has_destination());
+  EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_PRINTING);
+  EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
@@ -56,10 +56,11 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
                        DlpRulesManager::Level::kBlock);
 
   EXPECT_EQ(events_.size(), 1);
-  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kCompanyPattern, dst_pattern,
-                              DlpRulesManager::Restriction::kClipboard,
-                              DlpRulesManager::Level::kBlock)));
+  EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
+  EXPECT_EQ(events_[0].destination().url(), dst_pattern);
+  EXPECT_FALSE(events_[0].destination().has_component());
+  EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_CLIPBOARD);
+  EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
@@ -68,10 +69,12 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
                        DlpRulesManager::Level::kBlock);
 
   EXPECT_EQ(events_.size(), 1);
-  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                              kCompanyPattern, DlpRulesManager::Component::kArc,
-                              DlpRulesManager::Restriction::kClipboard,
-                              DlpRulesManager::Level::kBlock)));
+  EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
+  EXPECT_FALSE(events_[0].destination().has_url());
+  EXPECT_EQ(events_[0].destination().component(),
+            DlpPolicyEventDestination_Component_ARC);
+  EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_CLIPBOARD);
+  EXPECT_EQ(events_[0].mode(), DlpPolicyEvent_Mode_BLOCK);
 }
 
 TEST_F(DlpReportingManagerTest, MetricsReported) {
