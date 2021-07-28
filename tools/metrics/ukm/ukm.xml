@@ -12098,6 +12098,13 @@ be describing additional metrics about the same event.
       'mark_fully_loaded' name to mark that the page is fully loaded. If the
       mark is called more than once, the last is used.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PageTiming.UserTimingMarkFullyVisible">
     <summary>
@@ -12105,6 +12112,13 @@ be describing additional metrics about the same event.
       'mark_fully_visible' name to mark that the page is fully visible. If the
       mark is called more than once, the last is used.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PageTiming.UserTimingMarkInteractive">
     <summary>
@@ -12112,6 +12126,13 @@ be describing additional metrics about the same event.
       'mark_interactive' name to mark that the page is interactive. If the mark
       is called more than once, the last is used.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PaintTiming.NavigationToExperimentalLargestContentfulPaint">
     <obsolete>
