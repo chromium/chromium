@@ -54,6 +54,8 @@ const int kNewTabButtonTrailingSpace = 20;
   _mode = mode;
   // Reset selected tabs count when mode changes.
   self.selectedTabsCount = 0;
+  // Reset the Select All button to its default title.
+  [self configureSelectAllButtonTitle];
   [self setItemsForTraitCollection:self.traitCollection];
 }
 
@@ -62,7 +64,6 @@ const int kNewTabButtonTrailingSpace = 20;
   if (_selectedTabsCount == 0) {
     _selectedTabsLabel.text =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_TABS_TITLE);
-
   } else {
     _selectedTabsLabel.text = l10n_util::GetPluralNSStringF(
         IDS_IOS_TAB_GRID_SELECTED_TABS_TITLE, _selectedTabsCount);
@@ -241,12 +242,6 @@ const int kNewTabButtonTrailingSpace = 20;
   _closeAllOrUndoButton.tintColor =
       UIColorFromRGB(kTabGridToolbarTextButtonColor);
   [self useUndoCloseAll:NO];
-  _selectAllButton = [[UIBarButtonItem alloc] init];
-  _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
-  _selectAllButton.title =
-      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
-  _selectAllButton.accessibilityIdentifier =
-      kTabGridEditSelectAllButtonIdentifier;
 
   // The segmented control has an intrinsic size.
   _pageControl = [[TabGridPageControl alloc] init];
@@ -264,6 +259,13 @@ const int kNewTabButtonTrailingSpace = 20;
     _editButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
     _editButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON);
     _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
+
+    _selectAllButton = [[UIBarButtonItem alloc] init];
+    _selectAllButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _selectAllButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
+    _selectAllButton.accessibilityIdentifier =
+        kTabGridEditSelectAllButtonIdentifier;
 
     _selectedTabsLabel = [[UILabel alloc] init];
     _selectedTabsLabel.text =
