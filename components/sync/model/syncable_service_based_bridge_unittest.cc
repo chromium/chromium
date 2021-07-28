@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"

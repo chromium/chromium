@@ -12,12 +12,12 @@
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_error.h"
 
 namespace syncer {
 
 struct DataTypeActivationRequest;
+struct DataTypeActivationResponse;
 struct TypeEntitiesCount;
 
 // The ModelTypeControllerDelegate handles communication of ModelTypeController

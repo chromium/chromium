@@ -10,6 +10,7 @@
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/processor_entity.h"

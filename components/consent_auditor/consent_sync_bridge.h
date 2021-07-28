@@ -8,7 +8,14 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+
+namespace syncer {
+class ModelTypeControllerDelegate;
+}
+
+namespace sync_pb {
+class UserConsentSpecifics;
+}
 
 namespace consent_auditor {
 
