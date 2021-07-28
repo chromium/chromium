@@ -3529,7 +3529,7 @@ TEST_F(ExtensionServiceTest, RemoveExtensionFromBlocklist) {
   // prefs should be set.
   auto* prefs = ExtensionPrefs::Get(profile());
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good0));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good0, prefs));
   EXPECT_EQ(
       BitMapBlocklistState::BLOCKLISTED_MALWARE,
       blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(good0, prefs));
@@ -3541,7 +3541,7 @@ TEST_F(ExtensionServiceTest, RemoveExtensionFromBlocklist) {
   // The extension should be enabled, both "blocklist" and "blocklist_state"
   // should be cleared.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good0));
-  EXPECT_FALSE(prefs->IsExtensionBlocklisted(good0));
+  EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good0, prefs));
   EXPECT_EQ(
       BitMapBlocklistState::NOT_BLOCKLISTED,
       blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(good0, prefs));
@@ -4690,13 +4690,13 @@ TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
   service()->PerformActionBasedOnOmahaAttributes(good_crx, attributes);
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
             prefs->GetDisableReasons(good_crx));
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good_crx));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 
   attributes.SetKey("_malware", base::Value(false));
   service()->PerformActionBasedOnOmahaAttributes(good_crx, attributes);
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ(0, prefs->GetDisableReasons(good_crx));
-  EXPECT_FALSE(prefs->IsExtensionBlocklisted(good_crx));
+  EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 }
 
 // Tests not re-enabling previously remotely disabled extension if it's not the
@@ -4717,14 +4717,14 @@ TEST_F(ExtensionServiceTest, NoEnableRemotelyDisabledExtension) {
                                   disable_reason::DISABLE_USER_ACTION);
   EXPECT_TRUE(registry()->disabled_extensions().GetByID(good_crx));
   service()->BlocklistExtensionForTest(good_crx);
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good_crx));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 
   base::Value empty_attr(base::Value::Type::DICTIONARY);
   service()->PerformActionBasedOnOmahaAttributes(good_crx, empty_attr);
   EXPECT_TRUE(registry()->disabled_extensions().GetByID(good_crx));
   EXPECT_FALSE(prefs->GetDisableReasons(good_crx) &
                disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
-  EXPECT_FALSE(prefs->IsExtensionBlocklisted(good_crx));
+  EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 }
 
 TEST_F(ExtensionServiceTest, CanAddDisableReasonToBlocklistedExtension) {
@@ -4738,8 +4738,8 @@ TEST_F(ExtensionServiceTest, CanAddDisableReasonToBlocklistedExtension) {
   blocklist.SetBlocklistState(good0, BLOCKLISTED_MALWARE, true);
   blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, true);
   task_environment()->RunUntilIdle();
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good0));
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good1));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good0, prefs));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good1, prefs));
 
   // Test that a disable reason can be added to a blocklisted extension.
   prefs->AddDisableReason(good0, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
@@ -4750,7 +4750,7 @@ TEST_F(ExtensionServiceTest, CanAddDisableReasonToBlocklistedExtension) {
   service()->DisableExtension(good1, disable_reason::DISABLE_BLOCKED_BY_POLICY);
   EXPECT_TRUE(prefs->HasDisableReason(
       good1, disable_reason::DISABLE_BLOCKED_BY_POLICY));
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good1));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good1, prefs));
   // Even though the extension was disabled with a new disable reason, it should
   // remain in the blocklisted set (which can't be re-enabled by the user).
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good1));
@@ -4762,14 +4762,14 @@ TEST_F(ExtensionServiceTest, CanAddDisableReasonToBlocklistedExtension) {
   service()->ReloadExtensionsForTest();
   EXPECT_TRUE(prefs->HasDisableReason(
       good1, disable_reason::DISABLE_BLOCKED_BY_POLICY));
-  EXPECT_TRUE(prefs->IsExtensionBlocklisted(good1));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good1, prefs));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good1));
   EXPECT_FALSE(registry()->disabled_extensions().Contains(good1));
 
   // Test that the extension is disabled when unblocklisted.
   blocklist.SetBlocklistState(good1, NOT_BLOCKLISTED, true);
   task_environment()->RunUntilIdle();
-  EXPECT_FALSE(prefs->IsExtensionBlocklisted(good1));
+  EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good1, prefs));
   EXPECT_TRUE(prefs->IsExtensionDisabled(good1));
   EXPECT_FALSE(registry()->blocklisted_extensions().Contains(good1));
   EXPECT_TRUE(registry()->disabled_extensions().Contains(good1));
@@ -7490,7 +7490,8 @@ TEST_F(ExtensionServiceTest, InstallBlocklistedExtension) {
   EXPECT_FALSE(registry()->enabled_extensions().Contains(id));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(id));
 
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->IsExtensionBlocklisted(id));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(
+      id, ExtensionPrefs::Get(profile())));
   EXPECT_TRUE(
       ExtensionPrefs::Get(profile())->IsBlocklistedExtensionAcknowledged(id));
 }
@@ -7510,13 +7511,15 @@ TEST_F(ExtensionServiceTest, CannotEnableBlocklistedExtension) {
   EXPECT_FALSE(registry()->enabled_extensions().Contains(id));
   EXPECT_FALSE(registry()->disabled_extensions().Contains(id));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(id));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->IsExtensionBlocklisted(id));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(
+      id, ExtensionPrefs::Get(profile())));
 
   service()->DisableExtension(id, disable_reason::DISABLE_USER_ACTION);
   EXPECT_FALSE(registry()->enabled_extensions().Contains(id));
   EXPECT_FALSE(registry()->disabled_extensions().Contains(id));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(id));
-  EXPECT_TRUE(ExtensionPrefs::Get(profile())->IsExtensionBlocklisted(id));
+  EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(
+      id, ExtensionPrefs::Get(profile())));
 }
 
 // Test that calls to disable Shared Modules do not work.

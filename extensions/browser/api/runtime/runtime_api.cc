@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 #include "extensions/browser/extension_host.h"
@@ -567,8 +568,8 @@ void RuntimeEventRouter::OnExtensionUninstalled(
   }
 
   // Blocklisted extensions should not open uninstall_url.
-  if (extensions::ExtensionPrefs::Get(context)->IsExtensionBlocklisted(
-          extension_id)) {
+  if (blocklist_prefs::IsExtensionBlocklisted(
+          extension_id, extensions::ExtensionPrefs::Get(context))) {
     return;
   }
 

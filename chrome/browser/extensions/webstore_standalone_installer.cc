@@ -21,6 +21,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -206,7 +207,8 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
 
     ExtensionService* extension_service =
         ExtensionSystem::Get(profile_)->extension_service();
-    if (ExtensionPrefs::Get(profile_)->IsExtensionBlocklisted(id_)) {
+    if (blocklist_prefs::IsExtensionBlocklisted(
+            id_, ExtensionPrefs::Get(profile_))) {
       // Don't install a blocklisted extension.
       install_result = webstore_install::BLOCKLISTED;
       install_message = webstore_install::kExtensionIsBlocklisted;

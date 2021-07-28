@@ -398,14 +398,6 @@ class ExtensionPrefs : public KeyedService {
   void SetInstallLocation(const std::string& extension_id,
                           mojom::ManifestLocation location);
 
-  // Returns whether the extension with |id| has its blocklist bit set.
-  //
-  // WARNING: this only checks the extension's entry in prefs, so by definition
-  // can only check extensions that prefs knows about. There may be other
-  // sources of blocklist information, such as safebrowsing. You probably want
-  // to use Blocklist::GetBlocklistedIDs rather than this method.
-  bool IsExtensionBlocklisted(const std::string& id) const;
-
   // Increment the count of how many times we prompted the user to acknowledge
   // the given extension, and return the new count.
   int IncrementAcknowledgePromptCount(const std::string& extension_id);

@@ -190,7 +190,7 @@ void SetSafeBrowsingExtensionBlocklistState(
     BitMapBlocklistState bitmap_blocklist_state,
     ExtensionPrefs* extension_prefs) {
   bool currently_blocklisted =
-      extension_prefs->IsExtensionBlocklisted(extension_id);
+      IsExtensionBlocklisted(extension_id, extension_prefs);
   BlocklistState state =
       BitMapBlocklistStateToBlocklistState(bitmap_blocklist_state);
   bool is_blocklisted = state == BLOCKLISTED_MALWARE;
@@ -219,7 +219,7 @@ void SetSafeBrowsingExtensionBlocklistState(
 BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs) {
-  if (extension_prefs->IsExtensionBlocklisted(extension_id)) {
+  if (IsExtensionBlocklisted(extension_id, extension_prefs)) {
     return BitMapBlocklistState::BLOCKLISTED_MALWARE;
   }
 
@@ -232,6 +232,15 @@ BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
   }
 
   return BitMapBlocklistState::NOT_BLOCKLISTED;
+}
+
+bool IsExtensionBlocklisted(const std::string& extension_id,
+                            ExtensionPrefs* extension_prefs) {
+  bool is_blocklisted = false;
+  return extension_prefs->ReadPrefAsBoolean(
+             extension_id, extension_prefs->GetPrefBlocklistKey(),
+             &is_blocklisted) &&
+         is_blocklisted;
 }
 
 }  // namespace blocklist_prefs

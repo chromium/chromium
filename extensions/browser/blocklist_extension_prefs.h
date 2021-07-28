@@ -86,6 +86,18 @@ BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs);
 
+// Returns whether the extension with |extension_id| has its blocklist bit set.
+//
+// WARNING: this only checks the extension's entry in prefs, so by definition
+// can only check extensions that prefs knows about. There may be other
+// sources of blocklist information, such as safebrowsing. You probably want
+// to use GetExtensionBlocklistState rather than this method.
+// TODO(crbug.com/1232243): Call GetExtensionBlocklistState to take both Safe
+// Browsing and Omaha attribute blocklist states into account, since most
+// callers don't need to differentiate the source of the blocklist state.
+bool IsExtensionBlocklisted(const std::string& extension_id,
+                            ExtensionPrefs* extension_prefs);
+
 }  // namespace blocklist_prefs
 }  // namespace extensions
 

@@ -234,4 +234,32 @@ TEST_F(BlocklistExtensionPrefsUnitTest, SafeBrowsingExtensionBlocklistState) {
                 kExtensionId, extension_prefs()));
 }
 
+TEST_F(BlocklistExtensionPrefsUnitTest, IsExtensionBlocklisted) {
+  EXPECT_FALSE(
+      blocklist_prefs::IsExtensionBlocklisted(kExtensionId, extension_prefs()));
+
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs());
+  EXPECT_TRUE(
+      blocklist_prefs::IsExtensionBlocklisted(kExtensionId, extension_prefs()));
+
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+      extension_prefs());
+  EXPECT_FALSE(
+      blocklist_prefs::IsExtensionBlocklisted(kExtensionId, extension_prefs()));
+
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs());
+  EXPECT_TRUE(
+      blocklist_prefs::IsExtensionBlocklisted(kExtensionId, extension_prefs()));
+
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      kExtensionId, BitMapBlocklistState::NOT_BLOCKLISTED, extension_prefs());
+  EXPECT_FALSE(
+      blocklist_prefs::IsExtensionBlocklisted(kExtensionId, extension_prefs()));
+}
+
 }  // namespace extensions

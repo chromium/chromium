@@ -816,50 +816,6 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
 PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() {
 }
 
-// Tests the blocklist state. Old "blocklist" preference should take precedence
-// over new "blocklist_state".
-// TODO(crbug.com/1193695): Remove this test once kPrefBlocklist is deprecated.
-class ExtensionPrefsBlocklistState : public ExtensionPrefsTest {
- public:
-  ~ExtensionPrefsBlocklistState() override {}
-
-  void Initialize() override { extension_a_ = prefs_.AddExtension("a"); }
-
-  void Verify() override {
-    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-        extension_a_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
-    EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
-              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                  extension_a_->id(), prefs()));
-
-    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-        extension_a_->id(),
-        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED, prefs());
-    EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
-              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                  extension_a_->id(), prefs()));
-    EXPECT_FALSE(prefs()->IsExtensionBlocklisted(extension_a_->id()));
-
-    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-        extension_a_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
-    EXPECT_TRUE(prefs()->IsExtensionBlocklisted(extension_a_->id()));
-    EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
-              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                  extension_a_->id(), prefs()));
-
-    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
-        extension_a_->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
-    EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
-              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                  extension_a_->id(), prefs()));
-    EXPECT_FALSE(prefs()->IsExtensionBlocklisted(extension_a_->id()));
-  }
-
- private:
-  scoped_refptr<const Extension> extension_a_;
-};
-TEST_F(ExtensionPrefsBlocklistState, ExtensionPrefsBlocklistState) {}
-
 // Tests clearing the last launched preference.
 class ExtensionPrefsClearLastLaunched : public ExtensionPrefsTest {
  public:
