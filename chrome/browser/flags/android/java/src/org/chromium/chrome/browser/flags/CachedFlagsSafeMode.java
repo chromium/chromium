@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.flags;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -18,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Controls Safe Mode for {@link CachedFeatureFlags}.
@@ -49,7 +51,7 @@ class CachedFlagsSafeMode {
         int NUM_ENTRIES = 5;
     }
 
-    private @Behavior int mBehavior = Behavior.UNKNOWN;
+    private AtomicInteger mBehavior = new AtomicInteger(Behavior.UNKNOWN);
 
     CachedFlagsSafeMode() {}
 
@@ -57,26 +59,30 @@ class CachedFlagsSafeMode {
      * Call right before any flag is checked. The first time this is called, check if safe mode
      * should be engaged, and engages it if necessary.
      */
+    @AnyThread
     void onFlagChecked() {
-        if (mBehavior == Behavior.UNKNOWN) {
+        synchronized (mBehavior) {
+            if (mBehavior.get() != Behavior.UNKNOWN) return;
             if (shouldEnterSafeMode()) {
                 String cachedVersion = SharedPreferencesManager.getInstance().readString(
                         ChromePreferenceKeys.FLAGS_CACHED_SAFE_VALUES_VERSION, "");
+                int behavior;
                 if (cachedVersion.isEmpty()) {
-                    mBehavior = Behavior.ENGAGED_WITHOUT_SAFE_VALUES;
+                    behavior = Behavior.ENGAGED_WITHOUT_SAFE_VALUES;
                 } else if (!cachedVersion.equals(ChromeVersionInfo.getProductVersion())) {
-                    mBehavior = Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES;
+                    behavior = Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES;
                 } else {
-                    mBehavior = Behavior.ENGAGED_WITH_SAFE_VALUES;
+                    behavior = Behavior.ENGAGED_WITH_SAFE_VALUES;
                 }
+                mBehavior.set(behavior);
                 RecordHistogram.recordEnumeratedHistogram(
-                        "Variations.SafeModeCachedFlags.Engaged", mBehavior, Behavior.NUM_ENTRIES);
+                        "Variations.SafeModeCachedFlags.Engaged", behavior, Behavior.NUM_ENTRIES);
                 engageSafeModeInNative();
                 restoreSafeValues();
             } else {
-                mBehavior = Behavior.NOT_ENGAGED_BELOW_THRESHOLD;
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Variations.SafeModeCachedFlags.Engaged", mBehavior, Behavior.NUM_ENTRIES);
+                mBehavior.set(Behavior.NOT_ENGAGED_BELOW_THRESHOLD);
+                RecordHistogram.recordEnumeratedHistogram("Variations.SafeModeCachedFlags.Engaged",
+                        Behavior.NOT_ENGAGED_BELOW_THRESHOLD, Behavior.NUM_ENTRIES);
             }
         }
     }
@@ -90,7 +96,7 @@ class CachedFlagsSafeMode {
         SharedPreferencesManager.getInstance().incrementInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE);
         RecordHistogram.recordEnumeratedHistogram(
-                "Variations.SafeModeCachedFlags.WillCache", mBehavior, Behavior.NUM_ENTRIES);
+                "Variations.SafeModeCachedFlags.WillCache", mBehavior.get(), Behavior.NUM_ENTRIES);
     }
 
     /**
@@ -104,7 +110,7 @@ class CachedFlagsSafeMode {
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE, currentStreak - 1);
         RecordHistogram.recordEnumeratedHistogram(
-                "Variations.SafeModeCachedFlags.Pause", mBehavior, Behavior.NUM_ENTRIES);
+                "Variations.SafeModeCachedFlags.Pause", mBehavior.get(), Behavior.NUM_ENTRIES);
     }
 
     /**
@@ -116,7 +122,7 @@ class CachedFlagsSafeMode {
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE, 0);
         writeSafeValues(safeValuesReturned);
         RecordHistogram.recordEnumeratedHistogram(
-                "Variations.SafeModeCachedFlags.Cached", mBehavior, Behavior.NUM_ENTRIES);
+                "Variations.SafeModeCachedFlags.Cached", mBehavior.get(), Behavior.NUM_ENTRIES);
     }
 
     private void engageSafeModeInNative() {
@@ -158,10 +164,10 @@ class CachedFlagsSafeMode {
 
     @Behavior
     int getBehaviorForTesting() {
-        return mBehavior;
+        return mBehavior.get();
     }
 
     void clearForTesting() {
-        mBehavior = Behavior.UNKNOWN;
+        mBehavior.set(Behavior.UNKNOWN);
     }
 }
