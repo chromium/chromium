@@ -58,6 +58,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/about_settings/HyperlinkPreference.java",
   "java/src/org/chromium/chrome/browser/about_settings/LegalInformationSettings.java",
   "java/src/org/chromium/chrome/browser/accessibility/FontSizePrefs.java",
+  "java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilityPageZoomPreference.java",
   "java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettings.java",
   "java/src/org/chromium/chrome/browser/accessibility/settings/TextScalePreference.java",
   "java/src/org/chromium/chrome/browser/accessibility_tab_switcher/AccessibilityTabModelAdapter.java",
