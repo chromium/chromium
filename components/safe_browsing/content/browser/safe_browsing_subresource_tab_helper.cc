@@ -17,28 +17,6 @@ namespace safe_browsing {
 
 SafeBrowsingSubresourceTabHelper::~SafeBrowsingSubresourceTabHelper() {}
 
-// static
-void SafeBrowsingSubresourceTabHelper::CreateForWebContents(
-    content::WebContents* web_contents,
-    SafeBrowsingUIManager* manager) {
-  if (FromWebContents(web_contents))
-    return;
-
-  web_contents->SetUserData(
-      kSafeBrowsingSubresourceTabHelperWebContentsUserDataKey,
-      std::make_unique<SafeBrowsingSubresourceTabHelper>(web_contents,
-                                                         manager));
-}
-
-// static
-SafeBrowsingSubresourceTabHelper*
-SafeBrowsingSubresourceTabHelper::FromWebContents(
-    content::WebContents* web_contents) {
-  return static_cast<SafeBrowsingSubresourceTabHelper*>(
-      web_contents->GetUserData(
-          kSafeBrowsingSubresourceTabHelperWebContentsUserDataKey));
-}
-
 void SafeBrowsingSubresourceTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->GetNetErrorCode() == net::ERR_BLOCKED_BY_CLIENT) {
@@ -63,8 +41,6 @@ SafeBrowsingSubresourceTabHelper::SafeBrowsingSubresourceTabHelper(
     SafeBrowsingUIManager* manager)
     : WebContentsObserver(web_contents), manager_(manager) {}
 
-const char SafeBrowsingSubresourceTabHelper::
-    kSafeBrowsingSubresourceTabHelperWebContentsUserDataKey[] =
-        "safe_browsing_subresource_tab_helper";
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingSubresourceTabHelper)
 
 }  // namespace safe_browsing
