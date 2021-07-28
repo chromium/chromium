@@ -13,10 +13,10 @@
 namespace device {
 class XRTestHookWrapper;
 
-class XRServiceTestHook : public device_test::mojom::XRServiceTestHook {
+class XRServiceTestHook final : public device_test::mojom::XRServiceTestHook {
  public:
   XRServiceTestHook();
-  ~XRServiceTestHook() final;
+  ~XRServiceTestHook() override;
 
   using DeviceCrashCallback = device_test::mojom::XRServiceTestHook::
       TerminateDeviceServiceProcessForTestingCallback;

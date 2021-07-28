@@ -37,11 +37,11 @@ namespace content {
 
 namespace {
 
-class MockStreamFactory : public audio::FakeStreamFactory,
-                          public media::mojom::LocalMuter {
+class MockStreamFactory final : public audio::FakeStreamFactory,
+                                public media::mojom::LocalMuter {
  public:
   MockStreamFactory() = default;
-  ~MockStreamFactory() final = default;
+  ~MockStreamFactory() override = default;
 
   bool IsConnected() const { return receiver_.is_bound(); }
   bool IsMuterConnected() const { return muter_receiver_.is_bound(); }
@@ -49,7 +49,7 @@ class MockStreamFactory : public audio::FakeStreamFactory,
  private:
   void BindMuter(
       mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
-      const base::UnguessableToken& group_id) final {
+      const base::UnguessableToken& group_id) override {
     muter_receiver_.Bind(std::move(receiver));
     muter_receiver_.set_disconnect_handler(base::BindOnce(
         &MockStreamFactory::MuterDisconnected, base::Unretained(this)));
@@ -79,10 +79,10 @@ class MockBroker : public AudioStreamBroker {
   DISALLOW_COPY_AND_ASSIGN(MockBroker);
 };
 
-class MockBrokerFactory : public AudioStreamBrokerFactory {
+class MockBrokerFactory final : public AudioStreamBrokerFactory {
  public:
-  MockBrokerFactory() {}
-  ~MockBrokerFactory() final {
+  MockBrokerFactory() = default;
+  ~MockBrokerFactory() override {
     EXPECT_TRUE(prepared_input_stream_brokers_.empty())
         << "Input broker creation was expected but didn't happen";
     EXPECT_TRUE(prepared_output_stream_brokers_.empty())
@@ -111,7 +111,7 @@ class MockBrokerFactory : public AudioStreamBrokerFactory {
       bool enable_agc,
       AudioStreamBroker::DeleterCallback deleter,
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
-          renderer_factory_client) final {
+          renderer_factory_client) override {
     std::unique_ptr<MockBroker> prepared_broker =
         std::move(prepared_input_stream_brokers_.front());
     prepared_input_stream_brokers_.pop();
@@ -131,7 +131,7 @@ class MockBrokerFactory : public AudioStreamBrokerFactory {
       const base::UnguessableToken& group_id,
       AudioStreamBroker::DeleterCallback deleter,
       mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client)
-      final {
+      override {
     std::unique_ptr<MockBroker> prepared_broker =
         std::move(prepared_output_stream_brokers_.front());
     prepared_output_stream_brokers_.pop();
@@ -151,7 +151,7 @@ class MockBrokerFactory : public AudioStreamBrokerFactory {
       bool mute_source,
       AudioStreamBroker::DeleterCallback deleter,
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
-          renderer_factory_client) final {
+          renderer_factory_client) override {
     std::unique_ptr<MockBroker> prepared_broker =
         std::move(prepared_loopback_stream_brokers_.front());
     prepared_loopback_stream_brokers_.pop();

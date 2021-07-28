@@ -22,10 +22,10 @@
 namespace content {
 namespace {
 
-class FakeOverlay : public MouseCursorOverlayController::Overlay {
+class FakeOverlay final : public MouseCursorOverlayController::Overlay {
  public:
   FakeOverlay() = default;
-  ~FakeOverlay() final = default;
+  ~FakeOverlay() override = default;
 
   const SkBitmap& image() const { return image_; }
   const gfx::RectF& bounds() const { return bounds_; }

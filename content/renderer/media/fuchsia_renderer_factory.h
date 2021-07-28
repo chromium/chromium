@@ -30,7 +30,8 @@ namespace content {
 
 // RendererFactory implementation used on Fuchsia. It works the same as
 // DefaultRendererFactory, except that it uses FuchsiaAudioRenderer for audio.
-class CONTENT_EXPORT FuchsiaRendererFactory : public media::RendererFactory {
+class CONTENT_EXPORT FuchsiaRendererFactory final
+    : public media::RendererFactory {
  public:
   using GetGpuFactoriesCB =
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>;
@@ -39,7 +40,7 @@ class CONTENT_EXPORT FuchsiaRendererFactory : public media::RendererFactory {
                          media::DecoderFactory* decoder_factory,
                          GetGpuFactoriesCB get_gpu_factories_cb,
                          blink::BrowserInterfaceBrokerProxy* interface_broker);
-  ~FuchsiaRendererFactory() final;
+  ~FuchsiaRendererFactory() override;
 
   // RendererFactory interface.
   std::unique_ptr<media::Renderer> CreateRenderer(
@@ -48,7 +49,7 @@ class CONTENT_EXPORT FuchsiaRendererFactory : public media::RendererFactory {
       media::AudioRendererSink* audio_renderer_sink,
       media::VideoRendererSink* video_renderer_sink,
       media::RequestOverlayInfoCB request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) final;
+      const gfx::ColorSpace& target_color_space) override;
 
  private:
   std::vector<std::unique_ptr<media::VideoDecoder>> CreateVideoDecoders(

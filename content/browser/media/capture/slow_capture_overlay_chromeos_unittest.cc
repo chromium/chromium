@@ -157,9 +157,9 @@ TEST_F(SlowCaptureOverlayChromeOSTest, ImageRenderedOnFrame) {
 }
 
 TEST_F(SlowCaptureOverlayChromeOSTest, ReportsLostMojoConnection) {
-  class MockOwner : public SlowCaptureOverlayChromeOS::Owner {
+  class MockOwner final : public SlowCaptureOverlayChromeOS::Owner {
    public:
-    ~MockOwner() final = default;
+    ~MockOwner() override = default;
     MOCK_METHOD1(OnOverlayConnectionLost,
                  void(SlowCaptureOverlayChromeOS* overlay));
   } mock_owner;

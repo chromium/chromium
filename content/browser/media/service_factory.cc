@@ -44,7 +44,7 @@ base::FilePath GetSigFilePath(const base::FilePath& file_path) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-class SeatbeltExtensionTokenProviderImpl
+class SeatbeltExtensionTokenProviderImpl final
     : public media::mojom::SeatbeltExtensionTokenProvider {
  public:
   explicit SeatbeltExtensionTokenProviderImpl(const base::FilePath& cdm_path)
@@ -53,9 +53,9 @@ class SeatbeltExtensionTokenProviderImpl
       const SeatbeltExtensionTokenProviderImpl&) = delete;
   SeatbeltExtensionTokenProviderImpl operator=(
       const SeatbeltExtensionTokenProviderImpl&) = delete;
-  ~SeatbeltExtensionTokenProviderImpl() final = default;
+  ~SeatbeltExtensionTokenProviderImpl() override = default;
 
-  void GetTokens(GetTokensCallback callback) final {
+  void GetTokens(GetTokensCallback callback) override {
     DVLOG(1) << __func__;
 
     std::vector<sandbox::SeatbeltExtensionToken> tokens;

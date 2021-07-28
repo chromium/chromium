@@ -28,7 +28,7 @@ class RenderFrameHost;
 // Monitors the WebContents instance and notifies the parent
 // WebContentsVideoCaptureDevice |device| class any time the frame sink or
 // main render frame's view changes.
-class CONTENT_EXPORT WebContentsFrameTracker
+class CONTENT_EXPORT WebContentsFrameTracker final
     : public WebContentsObserver,
       public base::SupportsWeakPtr<WebContentsFrameTracker> {
  public:
@@ -65,7 +65,7 @@ class CONTENT_EXPORT WebContentsFrameTracker
   WebContentsFrameTracker& operator=(const WebContentsFrameTracker&&) = delete;
   WebContentsFrameTracker& operator=(const WebContentsFrameTracker&) = delete;
 
-  ~WebContentsFrameTracker() final;
+  ~WebContentsFrameTracker() override;
 
   void WillStartCapturingWebContents(const gfx::Size& capture_size);
   void DidStopCapturingWebContents();
@@ -78,12 +78,12 @@ class CONTENT_EXPORT WebContentsFrameTracker
   gfx::Size CalculatePreferredSize(const gfx::Size& capture_size);
 
   // WebContentsObserver overrides.
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) final;
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) final;
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
-                              RenderFrameHost* new_host) final;
-  void WebContentsDestroyed() final;
-  void CaptureTargetChanged() final;
+                              RenderFrameHost* new_host) override;
+  void WebContentsDestroyed() override;
+  void CaptureTargetChanged() override;
 
   void SetWebContentsAndContextFromRoutingId(const GlobalRenderFrameHostId& id);
 

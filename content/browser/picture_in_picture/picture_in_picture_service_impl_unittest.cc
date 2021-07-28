@@ -29,15 +29,15 @@ using testing::_;
 
 namespace content {
 
-class DummyPictureInPictureSessionObserver
+class DummyPictureInPictureSessionObserver final
     : public blink::mojom::PictureInPictureSessionObserver {
  public:
   DummyPictureInPictureSessionObserver() = default;
-  ~DummyPictureInPictureSessionObserver() final = default;
+  ~DummyPictureInPictureSessionObserver() override = default;
 
   // Implementation of PictureInPictureSessionObserver.
-  void OnWindowSizeChanged(const gfx::Size&) final {}
-  void OnStopped() final {}
+  void OnWindowSizeChanged(const gfx::Size&) override {}
+  void OnStopped() override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DummyPictureInPictureSessionObserver);

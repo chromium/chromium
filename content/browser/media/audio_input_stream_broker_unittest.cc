@@ -84,10 +84,10 @@ class MockRendererAudioInputStreamFactoryClient
   DISALLOW_COPY_AND_ASSIGN(MockRendererAudioInputStreamFactoryClient);
 };
 
-class MockStreamFactory : public audio::FakeStreamFactory {
+class MockStreamFactory final : public audio::FakeStreamFactory {
  public:
-  MockStreamFactory() {}
-  ~MockStreamFactory() final {}
+  MockStreamFactory() = default;
+  ~MockStreamFactory() override = default;
 
   // State of an expected stream creation. |device_id| and |params| are set
   // ahead of time and verified during request. The other fields are filled in

@@ -27,14 +27,14 @@ namespace viz {
 class Gpu;
 }  // namespace viz
 
-class IsolatedXRRuntimeProvider
+class IsolatedXRRuntimeProvider final
     : public device::mojom::IsolatedXRRuntimeProvider {
  public:
   explicit IsolatedXRRuntimeProvider(
       mojo::PendingRemote<device::mojom::XRDeviceServiceHost>
           device_service_host,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-  ~IsolatedXRRuntimeProvider() final;
+  ~IsolatedXRRuntimeProvider() override;
 
   void RequestDevices(
       mojo::PendingRemote<device::mojom::IsolatedXRRuntimeProviderClient>

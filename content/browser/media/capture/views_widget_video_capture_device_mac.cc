@@ -16,7 +16,7 @@
 
 namespace content {
 
-class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate
+class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
     : public remote_cocoa::ScopedCGWindowID::Observer {
  public:
   UIThreadDelegate(uint32_t cg_window_id,
@@ -34,7 +34,7 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate
                        base::Unretained(this)));
   }
 
-  ~UIThreadDelegate() final {
+  ~UIThreadDelegate() override {
     // This is called by a task posted by ViewsWidgetVideoCaptureDeviceMac's
     // destructor.
     DCHECK_CURRENTLY_ON(BrowserThread::UI);

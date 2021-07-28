@@ -216,12 +216,12 @@ void TargetAutoAttacher::DidFinishNavigation(
   NOTREACHED();
 }
 
-class BrowserAutoAttacher : public TargetAutoAttacher,
-                            public ServiceWorkerDevToolsManager::Observer,
-                            public DevToolsAgentHostObserver {
+class BrowserAutoAttacher final : public TargetAutoAttacher,
+                                  public ServiceWorkerDevToolsManager::Observer,
+                                  public DevToolsAgentHostObserver {
  public:
   BrowserAutoAttacher() = default;
-  ~BrowserAutoAttacher() final = default;
+  ~BrowserAutoAttacher() override = default;
 
  protected:
   // ServiceWorkerDevToolsManager::Observer implementation.

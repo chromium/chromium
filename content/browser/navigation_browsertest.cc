@@ -209,16 +209,16 @@ class EmbedderVisibleUrlTracker : public WebContentsDelegate {
 };
 
 // Helper class. Immediately run a callback when a navigation starts.
-class DidStartNavigationCallback : public WebContentsObserver {
+class DidStartNavigationCallback final : public WebContentsObserver {
  public:
   explicit DidStartNavigationCallback(
       WebContents* web_contents,
       base::OnceCallback<void(NavigationHandle*)> callback)
       : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
-  ~DidStartNavigationCallback() final = default;
+  ~DidStartNavigationCallback() override = default;
 
  private:
-  void DidStartNavigation(NavigationHandle* navigation_handle) final {
+  void DidStartNavigation(NavigationHandle* navigation_handle) override {
     if (callback_)
       std::move(callback_).Run(navigation_handle);
   }
@@ -226,16 +226,16 @@ class DidStartNavigationCallback : public WebContentsObserver {
 };
 
 // Helper class. Immediately run a callback when a navigation finishes.
-class DidFinishNavigationCallback : public WebContentsObserver {
+class DidFinishNavigationCallback final : public WebContentsObserver {
  public:
   explicit DidFinishNavigationCallback(
       WebContents* web_contents,
       base::OnceCallback<void(NavigationHandle*)> callback)
       : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
-  ~DidFinishNavigationCallback() final = default;
+  ~DidFinishNavigationCallback() override = default;
 
  private:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) final {
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (callback_)
       std::move(callback_).Run(navigation_handle);
   }
