@@ -6139,6 +6139,7 @@ test("unit_tests") {
       "../browser/nearby_sharing/fake_nearby_connections_manager.cc",
       "../browser/nearby_sharing/fake_nearby_connections_manager.h",
       "../browser/nearby_sharing/fast_initiation/fast_initiation_advertiser_unittest.cc",
+      "../browser/nearby_sharing/fast_initiation/fast_initiation_scanner_unittest.cc",
       "../browser/nearby_sharing/incoming_frames_reader_unittest.cc",
       "../browser/nearby_sharing/instantmessaging/fake_token_fetcher.cc",
       "../browser/nearby_sharing/instantmessaging/fake_token_fetcher.h",

@@ -35,6 +35,7 @@
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl.h"
 #include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_advertiser.h"
+#include "chrome/browser/nearby_sharing/fast_initiation/fast_initiation_scanner.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
@@ -104,16 +105,6 @@ bool IsBackgroundScanningFeatureEnabled() {
              features::kNearbySharingBackgroundScanning) &&
          chromeos::features::IsBluetoothAdvertisementMonitoringEnabled();
 }
-
-// Background scanning filter values.
-constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
-    base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
-    base::TimeDelta::FromSeconds(3);
-// This pattern value encodes the Fast Initiation service ID of 0xfe2c and the
-// model ID of 0xfc128e.
-constexpr uint8_t kBackgroundScanningFilterPatternValue[] = {0x2c, 0xfe, 0xfc,
-                                                             0x12, 0x8e};
 
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
@@ -367,7 +358,7 @@ void NearbySharingServiceImpl::Shutdown() {
 
   StopAdvertising();
   if (IsBackgroundScanningFeatureEnabled()) {
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
   }
   StopFastInitiationAdvertising();
   StopScanning();
@@ -1320,51 +1311,6 @@ void NearbySharingServiceImpl::SuspendDone() {
   InvalidateSurfaceState();
 }
 
-void NearbySharingServiceImpl::OnSessionStarted(
-    device::BluetoothLowEnergyScanSession* scan_session,
-    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
-        error_code) {
-  if (error_code) {
-    NS_LOG(WARNING) << __func__ << ": Error";
-    StopBackgroundScanning();
-    return;
-  }
-
-  NS_LOG(VERBOSE) << __func__ << ": Success";
-}
-
-void NearbySharingServiceImpl::OnDeviceFound(
-    device::BluetoothLowEnergyScanSession* scan_session,
-    device::BluetoothDevice* device) {
-  NS_LOG(VERBOSE) << __func__;
-
-  devices_attempting_to_share_.insert(device->GetAddress());
-  // This shows a notification indicating that a device nearby is attempting to
-  // share. When the notification is clicked it will take the user through the
-  // onboarding flow if needed and then enable high visibility mode.
-  nearby_notification_manager_->ShowOnboarding();
-}
-
-void NearbySharingServiceImpl::OnDeviceLost(
-    device::BluetoothLowEnergyScanSession* scan_session,
-    device::BluetoothDevice* device) {
-  NS_LOG(VERBOSE) << __func__;
-  devices_attempting_to_share_.erase(device->GetAddress());
-  if (devices_attempting_to_share_.size() != 0) {
-    return;
-  }
-
-  // This will just dismiss the "onboarding" notification, it does not have any
-  // effect on the actual onboarding or high visibility UI.
-  nearby_notification_manager_->CloseOnboarding();
-}
-
-void NearbySharingServiceImpl::OnSessionInvalidated(
-    device::BluetoothLowEnergyScanSession* scan_session) {
-  NS_LOG(INFO) << __func__;
-  StopBackgroundScanning();
-}
-
 base::ObserverList<TransferUpdateCallback>&
 NearbySharingServiceImpl::GetReceiveCallbacksFromState(
     ReceiveSurfaceState state) {
@@ -1900,7 +1846,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
 void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
   InvalidateAdvertisingState();
   if (IsBackgroundScanningFeatureEnabled()) {
-    InvalidateBackgroundScanning();
+    InvalidateFastInitiationScanning();
   }
 }
 
@@ -2144,7 +2090,7 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
   InvalidateSurfaceState();
 }
 
-void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
+void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
   // Nothing to do if we're shutting down the profile.
   if (!profile_)
     return;
@@ -2153,7 +2099,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because the system is suspended.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2162,7 +2108,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because the screen is locked.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2170,7 +2116,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because bluetooth is powered down.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2180,7 +2126,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping background scanning because Nearby Sharing is disabled.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2189,7 +2135,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping background scanning because we're scanning "
                        "for other devices.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2198,7 +2144,7 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
                     << ": Stopping background scanning because we're currently "
                        "in the midst of "
                        "a transfer.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
@@ -2206,54 +2152,60 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping background scanning because we're already "
                        "in high visibility mode.";
-    StopBackgroundScanning();
+    StopFastInitiationScanning();
     return;
   }
 
   process_shutdown_pending_timer_.Stop();
 
-  if (background_scan_session_) {
+  if (fast_initiation_scanner_) {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, already background scanning.";
     return;
   }
 
-  StartBackgroundScanning();
+  StartFastInitiationScanning();
 }
 
-void NearbySharingServiceImpl::StartBackgroundScanning() {
-  DCHECK(!background_scan_session_);
+void NearbySharingServiceImpl::StartFastInitiationScanning() {
+  DCHECK(!fast_initiation_scanner_);
   NS_LOG(VERBOSE) << __func__ << ": Starting background scanning.";
-
-  auto pattern_value =
-      std::vector<uint8_t>(std::begin(kBackgroundScanningFilterPatternValue),
-                           std::end(kBackgroundScanningFilterPatternValue));
-  device::BluetoothLowEnergyScanFilter::Pattern pattern(
-      /*start_position=*/0,
-      device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
-      std::move(pattern_value));
-  auto filter = device::BluetoothLowEnergyScanFilter::Create(
-      device::BluetoothLowEnergyScanFilter::Range::kNear,
-      kBackgroundScanningDeviceFoundTimeout,
-      kBackgroundScanningDeviceLostTimeout, {pattern});
-  if (!filter) {
-    NS_LOG(ERROR) << __func__
-                  << ": Failed to start background scanning due to failure to "
-                     "create filter.";
-    return;
-  }
-
-  background_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
-      std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  fast_initiation_scanner_ = std::make_unique<FastInitiationScanner>(
+      bluetooth_adapter_,
+      base::BindRepeating(
+          &NearbySharingServiceImpl::OnFastInitiationDeviceFound,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&NearbySharingServiceImpl::OnFastInitiationDeviceLost,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&NearbySharingServiceImpl::StopFastInitiationScanning,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbySharingServiceImpl::StopBackgroundScanning() {
-  if (!background_scan_session_) {
+void NearbySharingServiceImpl::OnFastInitiationDeviceFound() {
+  NS_LOG(VERBOSE) << __func__;
+
+  // This shows a notification indicating that a device nearby is attempting to
+  // share. When the notification is clicked it will take the user through the
+  // onboarding flow if needed and then enable high visibility mode.
+  nearby_notification_manager_->ShowOnboarding();
+}
+
+void NearbySharingServiceImpl::OnFastInitiationDeviceLost() {
+  NS_LOG(VERBOSE) << __func__;
+
+  // This will just dismiss the "onboarding" notification, it does not have any
+  // effect on the actual onboarding or high visibility UI.
+  if (!fast_initiation_scanner_->AreFastInitiationDevicesDetected()) {
+    nearby_notification_manager_->CloseOnboarding();
+  }
+}
+
+void NearbySharingServiceImpl::StopFastInitiationScanning() {
+  if (!fast_initiation_scanner_) {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, not background scanning.";
     return;
   }
-  devices_attempting_to_share_.clear();
   nearby_notification_manager_->CloseOnboarding();
-  background_scan_session_.reset();
+  fast_initiation_scanner_.reset();
   NS_LOG(VERBOSE) << __func__ << ": Stopped background scanning.";
 }
 

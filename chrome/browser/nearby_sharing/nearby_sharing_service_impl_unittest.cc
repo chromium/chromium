@@ -1892,7 +1892,7 @@ TEST_F(NearbySharingServiceImplTest,
 
 TEST_F(
     NearbySharingServiceImplTest,
-    UnregisterForegroundReceiveSurfaceVisibilityAllContactsRestartsAdvertising) {
+    UnregisterForegroundReceiveSurfaceVisibilityAllContactsRestartAdvertising) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
   prefs_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                     static_cast<int>(Visibility::kAllContacts));
@@ -4520,7 +4520,7 @@ TEST_F(NearbySharingServiceImplTest, NoShutdownTimerWithoutProcessRef) {
   EXPECT_FALSE(IsProcessShutdownTimerRunning());
 }
 
-TEST_F(NearbySharingServiceImplTest, BackgroundScanningStartAndStop) {
+TEST_F(NearbySharingServiceImplTest, FastInitiationScanningStartAndStop) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
   EXPECT_TRUE(mock_scan_session_);
   SetBluetoothIsPowered(false);

@@ -46,10 +46,10 @@
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "net/base/network_change_notifier.h"
 
 class FastInitiationAdvertiser;
+class FastInitiationScanner;
 class NearbyConnectionsManager;
 class NearbyShareContactManager;
 class NearbyShareCertificateManager;
@@ -73,8 +73,7 @@ class NearbySharingServiceImpl
       public NearbyConnectionsManager::DiscoveryListener,
       public ash::SessionObserver,
       public PowerClient::Observer,
-      public net::NetworkChangeNotifier::NetworkChangeObserver,
-      public device::BluetoothLowEnergyScanSession::Delegate {
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   // The number of unexpected nearby process shutdowns that we allow during a
   // fixed window before deciding not to restart the process.
@@ -183,18 +182,6 @@ class NearbySharingServiceImpl
   void SuspendImminent() override;
   void SuspendDone() override;
 
-  // device::BluetoothLowEnergyScanSession::Delegate
-  void OnSessionStarted(
-      device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
-          error_code) override;
-  void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
-                     device::BluetoothDevice* device) override;
-  void OnDeviceLost(device::BluetoothLowEnergyScanSession* scan_session,
-                    device::BluetoothDevice* device) override;
-  void OnSessionInvalidated(
-      device::BluetoothLowEnergyScanSession* scan_session) override;
-
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
   bool IsVisibleInBackground(Visibility visibility);
@@ -247,9 +234,11 @@ class NearbySharingServiceImpl
   StatusCodes StopScanning();
   void StopAdvertisingAndInvalidateSurfaceState();
 
-  void InvalidateBackgroundScanning();
-  void StartBackgroundScanning();
-  void StopBackgroundScanning();
+  void InvalidateFastInitiationScanning();
+  void StartFastInitiationScanning();
+  void OnFastInitiationDeviceFound();
+  void OnFastInitiationDeviceLost();
+  void StopFastInitiationScanning();
 
   void ScheduleRotateBackgroundAdvertisementTimer();
   void OnRotateBackgroundAdvertisementTimerFired();
@@ -423,7 +412,12 @@ class NearbySharingServiceImpl
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+  // Advertiser which is non-null when we are attempting to share and
+  // broadcasting Fast Initiation advertisements.
   std::unique_ptr<FastInitiationAdvertiser> fast_initiation_advertiser_;
+  // Scanner which is non-null when we are performing a background scan for
+  // remote devices that are attempting to share.
+  std::unique_ptr<FastInitiationScanner> fast_initiation_scanner_;
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
   NearbyShareHttpNotifier nearby_share_http_notifier_;
   std::unique_ptr<NearbyShareClientFactory> http_client_factory_;
@@ -535,13 +529,6 @@ class NearbySharingServiceImpl
   // the time between an incoming share being accepted and the first payload
   // byte being processed.
   base::TimeTicks incoming_share_accepted_timestamp_;
-  // Scan session which is non-null when we are performing a background scan for
-  // remote devices that are attempting to share.
-  std::unique_ptr<device::BluetoothLowEnergyScanSession>
-      background_scan_session_ = nullptr;
-  // Set of remote devices that are emitting fast init advertisements.
-  base::flat_set<std::string> devices_attempting_to_share_;
-
   int recent_nearby_process_unexpected_shutdown_count_ = 0;
   base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;
 
