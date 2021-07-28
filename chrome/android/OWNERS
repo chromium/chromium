@@ -22,4 +22,4 @@ per-file BUILD.gn=bsheedy@chromium.org
 per-file *.gn*=file://build/android/OWNERS
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS
