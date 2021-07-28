@@ -866,11 +866,16 @@ const gfx::FontList* AppMenu::GetLabelFontList(int command_id) const {
 absl::optional<SkColor> AppMenu::GetLabelColor(int command_id) const {
   // Only return a color if there's a font list - otherwise this method will
   // return a color for every recent tab item, not just the header.
+  // Ensure that we call GetColor() using the `root_`'s SubmenuView as this is
+  // the content view for the menu's widget. The root MenuItemView itself is not
+  // a member of a Widget hierarchy and thus does not have the necessary context
+  // to correctly determine the label color as this requires querying the View's
+  // hosting widget (crbug.com/1233392).
   // TODO(ellyjones): Use CONTEXT_MENU instead of CONTEXT_LABEL.
   return GetLabelFontList(command_id)
-             ? absl::optional<SkColor>(
-                   views::style::GetColor(*root_, views::style::CONTEXT_LABEL,
-                                          views::style::STYLE_PRIMARY))
+             ? absl::optional<SkColor>(views::style::GetColor(
+                   *root_->GetSubmenu(), views::style::CONTEXT_LABEL,
+                   views::style::STYLE_PRIMARY))
              : absl::nullopt;
 }
 
