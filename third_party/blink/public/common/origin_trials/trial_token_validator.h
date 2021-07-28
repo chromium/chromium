@@ -58,6 +58,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
                                          base::Time current_time) const;
 
   // |request| must not be nullptr.
+  // NOTE: This is not currently used, but remains here for future trials.
   bool RequestEnablesFeature(const net::URLRequest* request,
                              base::StringPiece feature_name,
                              base::Time current_time) const;
