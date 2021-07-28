@@ -49,6 +49,12 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) ServiceConnection {
 
   // Binds the receiver to a Clone of the primordial top-level interface.
   // May be called from any sequence.
+  // Note: A mojo::Remote<mojom::MachineLearningService> bound using this method
+  // does not control the lifetime of the underlying ML Service daemon. It is
+  // safe to release the mojo::Remote<mojom::MachineLearningService> as soon as
+  // you are finished called methods on it and processing callbacks. The ML
+  // Service daemon (and any other mojo remotes subsequently bound to it) will
+  // continue.
   virtual void BindMachineLearningService(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) = 0;
 
