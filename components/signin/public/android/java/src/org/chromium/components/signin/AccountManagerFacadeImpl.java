@@ -236,7 +236,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             for (Account account : accounts) {
                 canOfferExtendedSyncPromos.put(AccountUtils.canonicalizeName(account.name),
                         mDelegate.hasCapability(account, CAN_OFFER_EXTENDED_CHROME_SYNC_PROMOS)
-                                != CapabilityResponse.NO);
+                                == CapabilityResponse.YES);
             }
             mCanOfferExtendedSyncPromos.set(canOfferExtendedSyncPromos);
         });
