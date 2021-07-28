@@ -24,7 +24,7 @@ enum class InstallResultCode;
 class WebAppRegistrar;
 class OsIntegrationManager;
 class InstallFinalizer;
-class InstallManager;
+class WebAppInstallManager;
 class WebAppUiManager;
 
 enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
@@ -80,7 +80,7 @@ class ExternallyManagedAppManager {
                      OsIntegrationManager* os_integration_manager,
                      WebAppUiManager* ui_manager,
                      InstallFinalizer* finalizer,
-                     InstallManager* install_manager);
+                     WebAppInstallManager* install_manager);
 
   // Queues an installation operation with the highest priority. Essentially
   // installing the app immediately if there are no ongoing operations or
@@ -152,7 +152,7 @@ class ExternallyManagedAppManager {
   }
   WebAppUiManager* ui_manager() { return ui_manager_; }
   InstallFinalizer* finalizer() { return finalizer_; }
-  InstallManager* install_manager() { return install_manager_; }
+  WebAppInstallManager* install_manager() { return install_manager_; }
 
   virtual void OnRegistrationFinished(const GURL& launch_url,
                                       RegistrationResultCode result);
@@ -188,7 +188,7 @@ class ExternallyManagedAppManager {
   OsIntegrationManager* os_integration_manager_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
   InstallFinalizer* finalizer_ = nullptr;
-  InstallManager* install_manager_ = nullptr;
+  WebAppInstallManager* install_manager_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>
       synchronize_requests_;

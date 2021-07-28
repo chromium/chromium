@@ -1206,7 +1206,7 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
 
   attempting_web_app_install_page_ordinal_ = install_info->page_ordinal;
 
-  web_app::InstallManager::OnceInstallCallback install_complete_callback =
+  web_app::WebAppInstallManager::OnceInstallCallback install_complete_callback =
       base::BindOnce(
           [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
              const web_app::AppId& app_id,

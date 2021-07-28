@@ -39,7 +39,7 @@ bool HaveProtocolHandlersChanged(
 class AppIconManager;
 class WebAppRegistrar;
 class WebAppUiManager;
-class InstallManager;
+class WebAppInstallManager;
 class OsIntegrationManager;
 enum class InstallResultCode;
 
@@ -93,7 +93,7 @@ class ManifestUpdateTask final
                      const WebAppRegistrar& registrar,
                      const AppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
-                     InstallManager* install_manager,
+                     WebAppInstallManager* install_manager,
                      OsIntegrationManager& os_integration_manager);
 
   ~ManifestUpdateTask() override;
@@ -149,7 +149,7 @@ class ManifestUpdateTask final
   const WebAppRegistrar& registrar_;
   const AppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
-  InstallManager& install_manager_;
+  WebAppInstallManager& install_manager_;
   OsIntegrationManager& os_integration_manager_;
 
   Stage stage_;

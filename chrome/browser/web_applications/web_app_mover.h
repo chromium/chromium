@@ -12,8 +12,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -40,7 +40,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
       Profile* profile,
       WebAppRegistrar* registrar,
       InstallFinalizer* install_finalizer,
-      InstallManager* install_manager,
+      WebAppInstallManager* install_manager,
       AppRegistryController* controller);
 
   static void DisableForTesting();
@@ -50,7 +50,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   WebAppMover(Profile* profile,
               WebAppRegistrar* registrar,
               InstallFinalizer* install_finalizer,
-              InstallManager* install_manager,
+              WebAppInstallManager* install_manager,
               AppRegistryController* controller,
               UninstallMode mode,
               std::string uninstall_url_prefix_or_pattern,
@@ -84,7 +84,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   void OnInstallManifestFetched(
       base::ScopedClosureRunner complete_callback_runner,
       std::unique_ptr<content::WebContents> web_contents,
-      InstallManager::InstallableCheckResult result,
+      WebAppInstallManager::InstallableCheckResult result,
       absl::optional<AppId> app_id);
 
   void OnAllUninstalled(
@@ -103,7 +103,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   Profile* profile_;
   WebAppRegistrar* registrar_;
   InstallFinalizer* install_finalizer_;
-  InstallManager* install_manager_;
+  WebAppInstallManager* install_manager_;
   AppRegistryController* controller_;
 
   UninstallMode uninstall_mode_;

@@ -40,8 +40,8 @@ AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
                          const GURL& app_url);
 
-// Synchronous version of InstallManager::InstallWebAppFromInfo. May be used in
-// unit tests and browser tests.
+// Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
+// used in unit tests and browser tests.
 AppId InstallWebApp(Profile* profile, std::unique_ptr<WebApplicationInfo>);
 
 #if defined(OS_WIN) || defined(OS_MAC) || \

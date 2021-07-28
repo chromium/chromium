@@ -30,7 +30,7 @@ namespace web_app {
 class WebAppUrlLoader;
 class OsIntegrationManager;
 class InstallFinalizer;
-class InstallManager;
+class WebAppInstallManager;
 class WebAppUiManager;
 enum class InstallResultCode;
 
@@ -56,7 +56,7 @@ class ExternallyManagedAppInstallTask {
       OsIntegrationManager* os_integration_manager,
       WebAppUiManager* ui_manager,
       InstallFinalizer* install_finalizer,
-      InstallManager* install_manager,
+      WebAppInstallManager* install_manager,
       ExternalInstallOptions install_options);
 
   ExternallyManagedAppInstallTask(const ExternallyManagedAppInstallTask&) =
@@ -113,7 +113,7 @@ class ExternallyManagedAppInstallTask {
   WebAppRegistrar* const registrar_;
   OsIntegrationManager* const os_integration_manager_;
   InstallFinalizer* const install_finalizer_;
-  InstallManager* const install_manager_;
+  WebAppInstallManager* const install_manager_;
   WebAppUiManager* const ui_manager_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;

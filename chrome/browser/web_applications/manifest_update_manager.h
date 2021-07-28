@@ -24,7 +24,7 @@ class WebContents;
 namespace web_app {
 
 class WebAppUiManager;
-class InstallManager;
+class WebAppInstallManager;
 class OsIntegrationManager;
 class SystemWebAppManager;
 
@@ -47,7 +47,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
   void SetSubsystems(WebAppRegistrar* registrar,
                      AppIconManager* icon_manager,
                      WebAppUiManager* ui_manager,
-                     InstallManager* install_manager,
+                     WebAppInstallManager* install_manager,
                      SystemWebAppManager* system_web_app_manager,
                      OsIntegrationManager* os_integration_manager);
   void Start();
@@ -88,7 +88,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
   WebAppRegistrar* registrar_ = nullptr;
   AppIconManager* icon_manager_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;
-  InstallManager* install_manager_ = nullptr;
+  WebAppInstallManager* install_manager_ = nullptr;
   SystemWebAppManager* system_web_app_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
 

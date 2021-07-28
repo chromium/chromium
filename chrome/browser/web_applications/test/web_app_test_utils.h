@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 
 struct WebApplicationInfo;
 class GURL;
@@ -30,13 +30,15 @@ void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    InstallManager::WebAppInstallationAcceptanceCallback acceptance_callback);
+    WebAppInstallManager::WebAppInstallationAcceptanceCallback
+        acceptance_callback);
 
 void TestDeclineDialogCallback(
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
-    InstallManager::WebAppInstallationAcceptanceCallback acceptance_callback);
+    WebAppInstallManager::WebAppInstallationAcceptanceCallback
+        acceptance_callback);
 
 }  // namespace test
 }  // namespace web_app

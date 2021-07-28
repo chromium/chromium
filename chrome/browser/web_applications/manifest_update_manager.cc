@@ -30,7 +30,7 @@ void ManifestUpdateManager::SetSubsystems(
     WebAppRegistrar* registrar,
     AppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
-    InstallManager* install_manager,
+    WebAppInstallManager* install_manager,
     SystemWebAppManager* system_web_app_manager,
     OsIntegrationManager* os_integration_manager) {
   registrar_ = registrar;

@@ -96,8 +96,8 @@ class WebAppProvider : public KeyedService {
   WebAppRegistrar& registrar();
   // The app registry controller.
   AppRegistryController& registry_controller();
-  // UIs can use InstallManager for user-initiated Web Apps install.
-  InstallManager& install_manager();
+  // UIs can use WebAppInstallManager for user-initiated Web Apps install.
+  WebAppInstallManager& install_manager();
   // Implements persistence for Web Apps install.
   InstallFinalizer& install_finalizer();
   // Keeps app metadata up to date with site manifests.

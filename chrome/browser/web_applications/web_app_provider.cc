@@ -139,7 +139,7 @@ AppRegistryController& WebAppProvider::registry_controller() {
   return *registry_controller_;
 }
 
-InstallManager& WebAppProvider::install_manager() {
+WebAppInstallManager& WebAppProvider::install_manager() {
   CheckIsConnected();
   return *install_manager_;
 }

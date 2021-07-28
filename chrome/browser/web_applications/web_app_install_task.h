@@ -12,12 +12,12 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
-#include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,7 +68,8 @@ class WebAppInstallTask : content::WebContentsObserver {
     return expected_app_id_;
   }
 
-  void SetInstallParams(const InstallManager::InstallParams& install_params);
+  void SetInstallParams(
+      const WebAppInstallManager::InstallParams& install_params);
 
   using LoadWebAppAndCheckManifestCallback = base::OnceCallback<void(
       std::unique_ptr<content::WebContents> web_contents,
@@ -86,8 +87,8 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       bool bypass_service_worker_check,
       webapps::WebappInstallSource install_source,
-      InstallManager::WebAppInstallDialogCallback dialog_callback,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::WebAppInstallDialogCallback dialog_callback,
+      WebAppInstallManager::OnceInstallCallback callback);
 
   // This method infers WebApp info from the blink renderer process
   // and then retrieves a manifest in a way similar to
@@ -97,8 +98,8 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       bool force_shortcut_app,
       webapps::WebappInstallSource install_source,
-      InstallManager::WebAppInstallDialogCallback dialog_callback,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::WebAppInstallDialogCallback dialog_callback,
+      WebAppInstallManager::OnceInstallCallback callback);
 
   // Load |launch_url| and do silent background install with
   // |InstallWebAppFromManifestWithFallback|. Posts |LoadUrl| task to
@@ -108,7 +109,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       WebAppUrlLoader* url_loader,
       webapps::WebappInstallSource install_source,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::OnceInstallCallback callback);
 
   // Fetches the icon URLs in |web_application_info| to populate the icon
   // bitmaps. Once fetched uses the contents of |web_application_info| as the
@@ -117,16 +118,16 @@ class WebAppInstallTask : content::WebContentsObserver {
       content::WebContents* web_contents,
       std::unique_ptr<WebApplicationInfo> web_application_info,
       InstallFinalizer::FinalizeOptions finalize_options,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::OnceInstallCallback callback);
 
   // Starts a web app installation process using prefilled
   // |web_application_info| which holds all the data needed for installation.
-  // InstallManager doesn't fetch a manifest.
+  // WebAppInstallManager doesn't fetch a manifest.
   void InstallWebAppFromInfo(
       std::unique_ptr<WebApplicationInfo> web_application_info,
       ForInstallableSite for_installable_site,
       webapps::WebappInstallSource install_source,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::OnceInstallCallback callback);
 
   // Starts a background web app installation process for a given
   // |web_contents|. This method infers WebApp info from the blink renderer
@@ -134,16 +135,16 @@ class WebAppInstallTask : content::WebContentsObserver {
   // |InstallWebAppFromManifestWithFallback|.
   void InstallWebAppWithParams(
       content::WebContents* web_contents,
-      const InstallManager::InstallParams& install_params,
+      const WebAppInstallManager::InstallParams& install_params,
       webapps::WebappInstallSource install_source,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::OnceInstallCallback callback);
 
   void UpdateWebAppFromInfo(
       content::WebContents* web_contents,
       const AppId& app_id,
       std::unique_ptr<WebApplicationInfo> web_application_info,
       bool update_product_icons,
-      InstallManager::OnceInstallCallback callback);
+      WebAppInstallManager::OnceInstallCallback callback);
 
   // Obtains WebApplicationInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
@@ -195,7 +196,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // Makes amendments to |web_app_info| based on the options set in
   // |install_params|.
   void ApplyParamsToWebApplicationInfo(
-      const InstallManager::InstallParams& install_params,
+      const WebAppInstallManager::InstallParams& install_params,
       WebApplicationInfo& web_app_info);
 
   void OnDidPerformInstallableCheck(
@@ -258,10 +259,10 @@ class WebAppInstallTask : content::WebContentsObserver {
   // installation.
   bool only_retrieve_web_application_info_ = false;
 
-  InstallManager::WebAppInstallDialogCallback dialog_callback_;
-  InstallManager::OnceInstallCallback install_callback_;
+  WebAppInstallManager::WebAppInstallDialogCallback dialog_callback_;
+  WebAppInstallManager::OnceInstallCallback install_callback_;
   RetrieveWebApplicationInfoWithIconsCallback retrieve_info_callback_;
-  absl::optional<InstallManager::InstallParams> install_params_;
+  absl::optional<WebAppInstallManager::InstallParams> install_params_;
   absl::optional<AppId> expected_app_id_;
   bool background_installation_ = false;
 

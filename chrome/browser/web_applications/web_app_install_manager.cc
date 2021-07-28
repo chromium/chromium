@@ -28,14 +28,14 @@ namespace web_app {
 
 namespace {
 
-InstallManager::InstallParams CreateSyncInstallParams(
+WebAppInstallManager::InstallParams CreateSyncInstallParams(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url,
     const std::u16string& app_name,
     DisplayMode user_display_mode) {
   const bool locally_install_we_apps_on_sync = AreAppsLocallyInstalledBySync();
 
-  InstallManager::InstallParams params;
+  WebAppInstallManager::InstallParams params;
   params.override_manifest_id = manifest_id;
   params.user_display_mode = user_display_mode;
   params.fallback_start_url = start_url;
@@ -57,8 +57,7 @@ bool TaskExpectsAppId(const WebAppInstallTask* task, const AppId& app_id) {
 }  // namespace
 
 WebAppInstallManager::WebAppInstallManager(Profile* profile)
-    : InstallManager(profile),
-      url_loader_(std::make_unique<WebAppUrlLoader>()) {
+    : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {
   data_retriever_factory_ = base::BindRepeating(
       []() { return std::make_unique<WebAppDataRetriever>(); });
 }
@@ -79,6 +78,15 @@ void WebAppInstallManager::Shutdown() {
   web_contents_.reset();
 
   started_ = false;
+}
+
+void WebAppInstallManager::SetSubsystems(
+    WebAppRegistrar* registrar,
+    OsIntegrationManager* os_integration_manager,
+    InstallFinalizer* finalizer) {
+  registrar_ = registrar;
+  os_integration_manager_ = os_integration_manager;
+  finalizer_ = finalizer;
 }
 
 void WebAppInstallManager::LoadWebAppAndCheckManifest(
@@ -138,6 +146,13 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
 
   tasks_.insert(std::move(task));
 }
+
+WebAppInstallManager::InstallParams::InstallParams() = default;
+
+WebAppInstallManager::InstallParams::~InstallParams() = default;
+
+WebAppInstallManager::InstallParams::InstallParams(const InstallParams&) =
+    default;
 
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
