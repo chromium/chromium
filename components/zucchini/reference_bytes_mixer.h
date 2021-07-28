@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/image_utils.h"
