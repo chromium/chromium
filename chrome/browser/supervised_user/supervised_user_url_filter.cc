@@ -301,20 +301,32 @@ bool SupervisedUserURLFilter::HasFilteredScheme(const GURL& url) {
 bool SupervisedUserURLFilter::HostMatchesPattern(
     const std::string& canonical_host,
     const std::string& pattern) {
-  // If |canonical_host| starts with |www.| but |pattern| starts with neither
-  // |www.| nor |*.| then trim |www.| part of canonical host.
-  bool is_host_www =
-      base::StartsWith(canonical_host, "www.", base::CompareCase::SENSITIVE);
-  bool patern_accepts =
-      base::StartsWith(pattern, "www.", base::CompareCase::SENSITIVE) ||
-      base::StartsWith(pattern, "*.", base::CompareCase::SENSITIVE);
-
+  std::string trimmed_pattern = pattern;
   std::string trimmed_host = canonical_host;
-  if (is_host_www && !patern_accepts) {
-    trimmed_host = url_formatter::StripWWW(canonical_host);
+
+  // If pattern starts with https:// or http:// trim it.
+  if (base::StartsWith(pattern, "https://", base::CompareCase::SENSITIVE)) {
+    trimmed_pattern = trimmed_pattern.substr(8);
+  } else if (base::StartsWith(pattern, "http://",
+                              base::CompareCase::SENSITIVE)) {
+    trimmed_pattern = trimmed_pattern.substr(7);
   }
 
-  std::string trimmed_pattern = pattern;
+  bool host_starts_with_www =
+      base::StartsWith(canonical_host, "www.", base::CompareCase::SENSITIVE);
+  bool pattern_starts_with_www =
+      base::StartsWith(trimmed_pattern, "www.", base::CompareCase::SENSITIVE);
+
+  // Trim the initial "www." if it appears on either the host or the pattern,
+  // but not if it appears on both.
+  if (host_starts_with_www != pattern_starts_with_www) {
+    if (host_starts_with_www) {
+      trimmed_host = trimmed_host.substr(4);
+    } else if (pattern_starts_with_www) {
+      trimmed_pattern = trimmed_pattern.substr(4);
+    }
+  }
+
   if (base::EndsWith(pattern, ".*", base::CompareCase::SENSITIVE)) {
     size_t registry_length = GetCanonicalHostRegistryLength(
         trimmed_host, EXCLUDE_UNKNOWN_REGISTRIES, EXCLUDE_PRIVATE_REGISTRIES);

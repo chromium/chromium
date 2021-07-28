@@ -371,9 +371,8 @@ TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
   EXPECT_FALSE(
       SupervisedUserURLFilter::HostMatchesPattern("www.google",
                                                   "www.google.*"));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HostMatchesPattern("google.com",
-                                                  "www.google.*"));
+  EXPECT_TRUE(SupervisedUserURLFilter::HostMatchesPattern("google.com",
+                                                          "www.google.*"));
   EXPECT_FALSE(
       SupervisedUserURLFilter::HostMatchesPattern("mail.google.com",
                                                   "www.google.*"));
