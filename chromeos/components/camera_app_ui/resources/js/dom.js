@@ -10,7 +10,7 @@ import {assertInstanceof} from './chrome_util.js';
 /**
  * Gets an element matching css selector under the target element and checks its
  * type.
- * @param {!Node} target
+ * @param {!ParentNode} target
  * @param {string} selector
  * @param {function(new: T, ...?)} type The expected element type.
  * @return {T}
@@ -23,7 +23,7 @@ export function getFrom(target, selector, type) {
 /**
  * Gets all elements matching css selector under the target element and asserts
  * their type to be specific type.
- * @param {!Node} target
+ * @param {!ParentNode} target
  * @param {string} selector
  * @param {function(new: T, ...?)} type The expected element type.
  * @return {!NodeListOf<T>}
@@ -34,6 +34,10 @@ export function getAllFrom(target, selector, type) {
   for (const el of elements) {
     assertInstanceof(el, type);
   }
+  // TODO(pihsun): Closure compiler doesn't support bounded generic, so we
+  // can't correctly bound T as subtype of Element. Fix the type bound of T
+  // after we fully transit to TypeScript.
+  // @ts-ignore
   return elements;
 }
 
