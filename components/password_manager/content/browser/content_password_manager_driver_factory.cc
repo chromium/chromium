@@ -5,7 +5,6 @@
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"

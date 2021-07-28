@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_POSSIBLE_USERNAME_DATA_H_
 
 #include <string>
-#include <vector>
 
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"

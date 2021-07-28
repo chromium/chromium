@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/possible_username_data.h"
 
 #include <string>
-#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
