@@ -5690,21 +5690,6 @@
             ]
         }
     ],
-    "OopRasterizationDDL": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OopRasterizationDDL"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizationHintsDesktopM91": [
         {
             "platforms": [
