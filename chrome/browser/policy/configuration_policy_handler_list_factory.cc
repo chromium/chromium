@@ -1182,7 +1182,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSuggestedContentEnabled,
     chromeos::prefs::kSuggestedContentEnabled,
     base::Value::Type::BOOLEAN },
-    { key::kExtensionInstallEventLoggingEnabled,
+  { key::kExtensionInstallEventLoggingEnabled,
     prefs::kExtensionInstallEventLoggingEnabled,
     base::Value::Type::BOOLEAN },
   { key::kRequiredClientCertificateForUser,
@@ -1206,7 +1206,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSystemFeaturesDisableMode,
     policy::policy_prefs::kSystemFeaturesDisableMode,
     base::Value::Type::STRING },
-    { key::kIntegratedWebAuthenticationAllowed,
+  { key::kIntegratedWebAuthenticationAllowed,
     prefs::kIntegratedWebAuthenticationAllowed,
     base::Value::Type::BOOLEAN },
   { key::kDeviceSystemWideTracingEnabled,
@@ -1218,6 +1218,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDevicePciPeripheralDataAccessEnabled,
     ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
+    prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
+    base::Value::Type::LIST },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)

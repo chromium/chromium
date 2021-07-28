@@ -1063,6 +1063,11 @@ const char kEduCoexistenceArcMigrationCompleted[] =
 // proxies secured with NTLM authentication.
 const char kIntegratedWebAuthenticationAllowed[] =
     "auth.integrated_web_authentication_allowed";
+
+// List pref containing extension IDs that are exempt from the restricted
+// managed guest session clean-up procedure.
+const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
+    "restricted_managed_guest_session_extension_cleanup_exempt_list";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)

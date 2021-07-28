@@ -485,6 +485,9 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterDictionaryPref(
       chromeos::prefs::kLauncherSearchNormalizerParameters);
+
+  registry->RegisterListPref(
+      ::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

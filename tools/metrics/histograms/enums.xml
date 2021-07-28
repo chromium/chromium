@@ -25879,6 +25879,8 @@ Called by update_document_policy_enum.py.-->
   <int value="876" label="ReportDeviceNetworkStatus"/>
   <int value="877" label="DataLeakPreventionClipboardCheckSizeLimit"/>
   <int value="878" label="CrossOriginWebAssemblyModuleSharingAllowed"/>
+  <int value="879"
+      label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

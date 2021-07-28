@@ -26642,6 +26642,30 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       Setting the policy to True will forcefully override certain policies for features, which persist sensitive user data and are not handled by the clean-up mechanism used for in-session user switches with Imprivata shared workstation mode.
       Setting the policy to False or leaving it unset will not override any policies.''',
     },
+    {
+      'name': 'RestrictedManagedGuestSessionExtensionCleanupExemptList',
+      'owners': ['mpetrisor@chromium.org', 'hendrich@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          'pattern': '^[a-p]{32}$',
+        },
+      },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': ['abcdefghijklmnopabcdefghijklmnop', 'bcdefghijklmnopabcdefghijklmnopa'],
+      'id': 879,
+      'caption': '''Configure the list of extension IDs exempt from the restricted managed guest session clean-up procedure''',
+      'tags': [],
+      'desc': '''The policy only applies to managed guest sessions.
+      Setting the policy specifies a list of extension IDs that are exempt from the restricted managed guest session clean-up procedure (see <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME">RestrictedManagedGuestSessionEnabled</ph>).
+      Leaving the policy unset means no extensions are exempt from the reset procedure.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -27583,6 +27607,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 878,
+  'highest_id_currently_used': 879,
   'highest_atomic_group_id_currently_used': 40
 }
