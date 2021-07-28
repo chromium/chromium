@@ -132,4 +132,9 @@ PrefService* ChromeScanningAppDelegate::GetPrefs() const {
   return Profile::FromWebUI(web_ui_)->GetPrefs();
 }
 
+void ChromeScanningAppDelegate::SetRemoveableMediaPathForTesting(
+    const base::FilePath& path) {
+  file_path_helper_.SetRemoveableMediaPathForTesting(path);
+}
+
 }  // namespace ash

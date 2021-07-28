@@ -57,6 +57,8 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
   void SetValidPaths(const base::FilePath& google_drive_path,
                      const base::FilePath& my_files_path);
 
+  void SetRemoveableMediaPathForTesting(const base::FilePath& path);
+
  private:
   // Returns the PrefService for the active Profile.
   PrefService* GetPrefs() const;
