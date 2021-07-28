@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
 #if !defined(OS_IOS)
@@ -295,11 +296,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Resets when PrepareToFetchCreditCard() is called, if not already reset.
   // Signaled when OnDidGetUnmaskDetails() is called or after timeout.
   // Authenticate() is called when signaled.
-  base::WaitableEvent ready_to_start_authentication_;
-
-  // Tracks the Authenticate() task that is signaled by
-  // |ready_to_start_authentication_|, allowing it to be canceled if necessary.
-  base::CancelableTaskTracker cancelable_authenticate_task_tracker_;
+  WaitForSignalOrTimeout ready_to_start_authentication_;
 
   // Required to avoid any unnecessary preflight calls to Payments servers.
   // Initial state is signaled. Resets when PrepareToFetchCreditCard() is

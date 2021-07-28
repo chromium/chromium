@@ -18,7 +18,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -45,13 +44,6 @@ namespace {
 constexpr int64_t kUnmaskDetailsResponseTimeoutMs = 3 * 1000;  // 3 sec
 // Time to wait between multiple calls to GetUnmaskDetails().
 constexpr int64_t kDelayForGetUnmaskDetails = 3 * 60 * 1000;  // 3 min
-
-// Used for asynchronously waiting for |event| to be signaled.
-bool WaitForEvent(base::WaitableEvent* event) {
-  event->declare_only_used_while_idle();
-  return event->TimedWait(
-      base::TimeDelta::FromMilliseconds(kUnmaskDetailsResponseTimeoutMs));
-}
 }  // namespace
 
 CreditCardAccessManager::CreditCardAccessManager(
@@ -64,9 +56,6 @@ CreditCardAccessManager::CreditCardAccessManager(
       payments_client_(client_->GetPaymentsClient()),
       personal_data_manager_(personal_data_manager),
       form_event_logger_(form_event_logger),
-      ready_to_start_authentication_(
-          base::WaitableEvent::ResetPolicy::AUTOMATIC,
-          base::WaitableEvent::InitialState::NOT_SIGNALED),
       can_fetch_unmask_details_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                                 base::WaitableEvent::InitialState::SIGNALED) {
 }
@@ -329,12 +318,10 @@ void CreditCardAccessManager::FetchCreditCard(
 
     // Wait for |ready_to_start_authentication_| to be signaled by
     // OnDidGetUnmaskDetails() or until timeout before calling Authenticate().
-    auto task_runner = base::ThreadPool::CreateTaskRunner({base::MayBlock()});
-    cancelable_authenticate_task_tracker_.PostTaskAndReplyWithResult(
-        task_runner.get(), FROM_HERE,
-        base::BindOnce(&WaitForEvent, &ready_to_start_authentication_),
+    ready_to_start_authentication_.OnEventOrTimeOut(
         base::BindOnce(&CreditCardAccessManager::Authenticate,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::TimeDelta::FromMilliseconds(kUnmaskDetailsResponseTimeoutMs));
   } else {
     Authenticate(get_unmask_details_returned);
   }
@@ -699,7 +686,6 @@ void CreditCardAccessManager::HandleDialogUserResponse(
     case WebauthnDialogCallbackType::kVerificationCancelled:
       // TODO(crbug.com/949269): Add tests and logging for canceling verify
       // pending dialog.
-      cancelable_authenticate_task_tracker_.TryCancelAll();
       payments_client_->CancelRequest();
       SignalCanFetchUnmaskDetails();
       ready_to_start_authentication_.Reset();
