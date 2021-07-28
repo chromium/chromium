@@ -45,6 +45,16 @@ struct ScopedHCRYPTMSGTraits {
 };
 using ScopedHCRYPTMSG = base::ScopedGeneric<HCRYPTMSG, ScopedHCRYPTMSGTraits>;
 
+// Helper for scoped tracking an PCCERT_CONTEXT.
+struct ScopedPCCERT_CONTEXTTraits {
+  static PCCERT_CONTEXT InvalidValue() { return nullptr; }
+  static void Free(PCCERT_CONTEXT context) {
+    ::CertFreeCertificateContext(context);
+  }
+};
+using ScopedPCCERT_CONTEXT =
+    base::ScopedGeneric<PCCERT_CONTEXT, ScopedPCCERT_CONTEXTTraits>;
+
 // Returns the "Subject" field from the digital signature in the provided
 // binary, if any is present. Returns an empty string on failure.
 std::u16string GetSubjectNameInFile(const base::FilePath& filename) {
@@ -86,19 +96,19 @@ std::u16string GetSubjectNameInFile(const base::FilePath& filename) {
 
   // Search for the signer certificate.
   CERT_INFO CertInfo = {0};
-  PCCERT_CONTEXT cert_context = nullptr;
   CertInfo.Issuer = signer_info->Issuer;
   CertInfo.SerialNumber = signer_info->SerialNumber;
 
-  cert_context = CertFindCertificateInStore(
+  ScopedPCCERT_CONTEXT cert_context(CertFindCertificateInStore(
       store.get(), X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, 0,
-      CERT_FIND_SUBJECT_CERT, &CertInfo, nullptr);
-  if (!cert_context)
+      CERT_FIND_SUBJECT_CERT, &CertInfo, nullptr));
+  if (!cert_context.is_valid())
     return std::u16string();
 
   // Determine the size of the Subject name.
-  DWORD subject_name_size = CertGetNameString(
-      cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, nullptr, 0);
+  DWORD subject_name_size =
+      CertGetNameString(cert_context.get(), CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
+                        nullptr, nullptr, 0);
   if (!subject_name_size)
     return std::u16string();
 
@@ -106,7 +116,7 @@ std::u16string GetSubjectNameInFile(const base::FilePath& filename) {
   subject_name.resize(subject_name_size);
 
   // Get subject name.
-  if (!(CertGetNameString(cert_context, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
+  if (!(CertGetNameString(cert_context.get(), CERT_NAME_SIMPLE_DISPLAY_TYPE, 0,
                           nullptr, const_cast<LPWSTR>(subject_name.c_str()),
                           subject_name_size))) {
     return std::u16string();
