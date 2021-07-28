@@ -121,4 +121,12 @@ export function wifiInfoTestSuite() {
           wifiInfoElement, '#security', expectedHeader, '');
     });
   });
+
+  test('SignalStrengthZeroDisplaysEmptyString', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({signalStrength: 0}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      assertEquals(getDataPointValue(wifiInfoElement, '#signalStrength'), '');
+    });
+  });
 }

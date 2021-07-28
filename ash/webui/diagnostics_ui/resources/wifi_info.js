@@ -29,6 +29,16 @@ Polymer({
     network: {
       type: Object,
     },
+
+    /**
+     * @protected
+     * @type {string}
+     */
+    signalStrength_: {
+      type: String,
+      computed:
+          'computeSignalStrength_(network.typeProperties.wifi.signalStrength)'
+    }
   },
 
   /**
@@ -48,4 +58,15 @@ Polymer({
     const ghz = (frequency / 1000).toFixed(3);
     return `${channel || '?'} (${ghz} GHz)`;
   },
+
+  /**
+   * @return {string}
+   */
+  computeSignalStrength_() {
+    if (this.network.typeProperties && this.network.typeProperties.wifi &&
+        this.network.typeProperties.wifi.signalStrength > 0) {
+      return `${this.network.typeProperties.wifi.signalStrength}`;
+    }
+    return '';
+  }
 });
