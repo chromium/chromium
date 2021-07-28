@@ -399,12 +399,6 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::OnAccessibilityEvent(
     if (!tree_source) {
       tree_source = CreateFromKey(key, window);
       SetChildAxTreeIDForWindow(window, tree_source->ax_tree_id());
-      if (ash::AccessibilityManager::Get() &&
-          ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
-        // Record metrics only when SpokenFeedback is enabled in order to
-        // compare this with TalkBack usage.
-        base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", false);
-      }
     }
 
     UpdateWindowProperties(window);
@@ -522,7 +516,6 @@ void ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed(
   }
 
   UpdateWindowProperties(window);
-  base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", !enabled);
 }
 
 AXTreeSourceArc* ArcAccessibilityTreeTracker::GetFromTreeId(
@@ -548,6 +541,13 @@ AXTreeSourceArc* ArcAccessibilityTreeTracker::CreateFromKey(
   auto tree = std::make_unique<AXTreeSourceArc>(tree_source_delegate_, window);
   AXTreeSourceArc* tree_ptr = tree.get();
   trees_.insert(std::make_pair(std::move(key), std::move(tree)));
+
+  if (ash::AccessibilityManager::Get() &&
+      ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled()) {
+    // Record metrics only when SpokenFeedback is enabled in order to
+    // compare this with TalkBack usage.
+    base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", false);
+  }
   return tree_ptr;
 }
 
@@ -646,6 +646,12 @@ void ArcAccessibilityTreeTracker::DispatchCustomSpokenFeedbackToggled(
           kEventName,
       std::move(event_args)));
   extensions::EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
+
+  if (!enabled) {
+    // Only record when TalkBack is enabled because ChromeVox usage is trakced
+    // when AXTreeSourceArc instance is created on CreateFromKey().
+    base::UmaHistogramBoolean("Arc.AccessibilityWithTalkBack", !enabled);
+  }
 }
 
 aura::Window* ArcAccessibilityTreeTracker::GetFocusedArcWindow() const {
