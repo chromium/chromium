@@ -26,18 +26,18 @@
 @interface SigninPromoView : UIView
 
 @property(nonatomic, weak) id<SigninPromoViewDelegate> delegate;
-@property(nonatomic) SigninPromoViewMode mode;
-@property(nonatomic, readonly) UIImageView* imageView;
-@property(nonatomic, readonly) UILabel* textLabel;
-@property(nonatomic, readonly) UIButton* primaryButton;
-@property(nonatomic, readonly) UIButton* secondaryButton;
+@property(nonatomic, assign) SigninPromoViewMode mode;
+@property(nonatomic, strong, readonly) UIImageView* imageView;
+@property(nonatomic, strong, readonly) UILabel* textLabel;
+@property(nonatomic, strong, readonly) UIButton* primaryButton;
+@property(nonatomic, strong, readonly) UIButton* secondaryButton;
 // Hidden by default.
-@property(nonatomic, readonly) UIButton* closeButton;
+@property(nonatomic, strong, readonly) UIButton* closeButton;
 
 // Horizontal padding used for |textLabel|, |primaryButton| and
 // |secondaryButton|. Used to compute the preferred max layout width of
 // |textLabel|.
-@property(nonatomic, readonly) CGFloat horizontalPadding;
+@property(nonatomic, assign, readonly) CGFloat horizontalPadding;
 
 // Designated initializer.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
