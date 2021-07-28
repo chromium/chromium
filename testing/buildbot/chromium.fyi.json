@@ -71369,64 +71369,12 @@
   },
   "lacros-amd64-generic-rel (goma cache silo)": {
     "additional_compile_targets": [
-      "chrome",
-      "lacros_version_metadata",
-      "linux_symbols",
-      "symupload",
-      "strip_chrome_binary"
-    ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "chrome_sizes",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "chrome_sizes",
-        "resultdb": {
-          "enable": false
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "pool": "chrome.tests"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
-      }
+      "chrome"
     ]
   },
   "lacros-amd64-generic-rel (reclient)": {
     "additional_compile_targets": [
-      "chrome",
-      "lacros_version_metadata",
-      "linux_symbols",
-      "symupload",
-      "strip_chrome_binary"
-    ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "chrome_sizes",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "chrome_sizes",
-        "resultdb": {
-          "enable": false
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "pool": "chrome.tests"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
-      }
+      "chrome"
     ]
   },
   "lacros-amd64-generic-rel-fyi": {
