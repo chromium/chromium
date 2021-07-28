@@ -88,8 +88,9 @@ class MockDataCache : public SiteDataCache {
   }
   std::unique_ptr<SiteDataWriter> GetWriterForOrigin(
       const url::Origin& origin) override {
-    scoped_refptr<internal::SiteDataImpl> fake_impl = base::WrapRefCounted(
-        new internal::SiteDataImpl(origin, &delegate_, &data_store_));
+    scoped_refptr<internal::SiteDataImpl> fake_impl =
+        base::WrapRefCounted(new internal::SiteDataImpl(
+            origin, delegate_.GetWeakPtr(), &data_store_));
 
     return std::make_unique<MockDataWriter>(origin, fake_impl);
   }

@@ -260,4 +260,19 @@ TEST_F(SiteDataCacheImplTest, InspectorWorks) {
                 browser_context_.UniqueId()));
 }
 
+// TODO(https://crbug.com/1231933): Turn this into a death test to verify that
+//     the data cache asserts that no readers outlive the cache.
+TEST_F(SiteDataCacheImplTest, NoUAFWhenReaderHeldAfterTeardown) {
+  {
+    // Hold on to this reader while destroying the data cache.
+    // This is a violation of the data cache contract. For the purpose
+    // of quick-fixing https://crbug.com/1231933, allow and survive this
+    // for now.
+    auto reader = data_cache_->GetReaderForOrigin(origin_);
+
+    // This should not UAF under ASAN.
+    data_cache_.reset();
+  }
+}
+
 }  // namespace performance_manager

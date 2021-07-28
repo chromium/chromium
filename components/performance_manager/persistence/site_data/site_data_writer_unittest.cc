@@ -24,7 +24,7 @@ class SiteDataWriterTest : public ::testing::Test {
   SiteDataWriterTest()
       : test_impl_(base::WrapRefCounted(
             new internal::SiteDataImpl(url::Origin::Create(GURL("foo.com")),
-                                       &delegate_,
+                                       delegate_.GetWeakPtr(),
                                        &data_store_))) {
     SiteDataWriter* writer = new SiteDataWriter(test_impl_.get());
     writer_ = base::WrapUnique(writer);
