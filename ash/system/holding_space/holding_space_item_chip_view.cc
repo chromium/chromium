@@ -14,11 +14,13 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
@@ -311,10 +313,39 @@ HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
 
 views::View* HoldingSpaceItemChipView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
-  // Tooltips for this view are handled by `primary_label_`, which will only
-  // show tooltips if the underlying text has been elided due to insufficient
-  // space.
-  return HitTestPoint(point) ? primary_label_ : nullptr;
+  // Tooltip events should be handled top level, not by descendents.
+  return HitTestPoint(point) ? this : nullptr;
+}
+
+std::u16string HoldingSpaceItemChipView::GetTooltipText(
+    const gfx::Point& point) const {
+  std::u16string primary_tooltip = primary_label_->GetTooltipText(point);
+  std::u16string secondary_tooltip = secondary_label_->GetTooltipText(point);
+
+  // If there is neither a primary nor a secondary tooltip which should be
+  // shown, then there is no tooltip to be shown at all.
+  if (primary_tooltip.empty() && secondary_tooltip.empty())
+    return base::EmptyString16();
+
+  // If there is no primary tooltip, fallback to using the primary text. This
+  // would occur if the `primary_label_` is not elided in same way.
+  if (primary_tooltip.empty())
+    primary_tooltip = primary_label_->GetText();
+
+  // If there is no secondary tooltip, fallback to using the secondary text.
+  // This would occur if the `secondary_label_` is not elided in some way.
+  if (secondary_tooltip.empty())
+    secondary_tooltip = secondary_label_->GetText();
+
+  // If there still is no secondary tooltip, only the primary tooltip should be
+  // shown. This would occur if there is no visible `secondary_label_`.
+  if (secondary_tooltip.empty())
+    return primary_tooltip;
+
+  // Otherwise, concatenate and return the primary and secondary tooltips. This
+  // will look something of the form: "filename.txt, Paused, 10/100 MB".
+  return l10n_util::GetStringFUTF16(IDS_ASH_HOLDING_SPACE_CHIP_TOOLTIP,
+                                    primary_tooltip, secondary_tooltip);
 }
 
 void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
@@ -463,6 +494,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                         HoldingSpaceViewDelegate::SelectionUi::kMultiSelect;
 
   // Primary.
+  const std::u16string last_primary_text = primary_label_->GetText();
   primary_label_->SetText(item()->GetText());
   primary_label_->SetEnabledColor(
       selected() && multiselect
@@ -471,6 +503,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
                 AshColorProvider::ContentLayerType::kTextColorPrimary));
 
   // Secondary.
+  const std::u16string last_secondary_text = secondary_label_->GetText();
   secondary_label_->SetText(
       item()->secondary_text().value_or(base::EmptyString16()));
   secondary_label_->SetEnabledColor(
@@ -479,6 +512,12 @@ void HoldingSpaceItemChipView::UpdateLabels() {
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorSecondary));
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
+
+  // Tooltip.
+  if (primary_label_->GetText() != last_primary_text ||
+      secondary_label_->GetText() != last_secondary_text) {
+    TooltipTextChanged();
+  }
 }
 
 void HoldingSpaceItemChipView::UpdateSecondaryAction() {
