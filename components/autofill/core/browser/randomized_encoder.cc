@@ -169,13 +169,6 @@ AutofillRandomizedValue_EncodingType GetEncodingType(const std::string& seed) {
       break;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Autofill.Upload.MetadataConfigIsValid",
-                        config_is_valid);
-  base::SparseHistogram::FactoryGet(
-      "Autofill.Upload.MetadataEncodingType",
-      base::HistogramBase::kUmaTargetedHistogramFlag)
-      ->Add(encoding_type_as_int);
-
   // Cast back to a valid encoding type value.
   DCHECK(AutofillRandomizedValue_EncodingType_IsValid(encoding_type_as_int));
   const auto encoding_type =

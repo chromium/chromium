@@ -2693,6 +2693,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.Upload.MetadataConfigIsValid" enum="BooleanValid"
     expires_after="M77">
+  <obsolete>
+    Metric removed in M94
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2705,6 +2708,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.Upload.MetadataEncodingType"
     enum="AutofillMetadataEncodingType" expires_after="M77">
+  <obsolete>
+    Metric removed in M94
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>

@@ -1925,10 +1925,6 @@ TEST_P(AutofillUploadTest, RichMetadata) {
         AutofillMetrics::SubmissionSourceToUploadEventMetric(submission_source),
         1, 1);
 
-    // Three encoding events should be sent.
-    histogram_tester.ExpectUniqueSample("Autofill.Upload.MetadataConfigIsValid",
-                                        true, 1);
-
     ASSERT_EQ(1u, payloads_.size());
     AutofillUploadRequest request;
     ASSERT_TRUE(request.ParseFromString(payloads_.front()));
