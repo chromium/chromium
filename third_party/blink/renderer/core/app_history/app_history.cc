@@ -372,11 +372,11 @@ ScriptPromise AppHistory::goTo(ScriptState* script_state,
 }
 
 bool AppHistory::canGoBack() const {
-  return current_index_ > 0;
+  return GetSupplementable()->GetFrame() && current_index_ > 0;
 }
 
 bool AppHistory::canGoForward() const {
-  return current_index_ != -1 &&
+  return GetSupplementable()->GetFrame() && current_index_ != -1 &&
          static_cast<size_t>(current_index_) < entries_.size() - 1;
 }
 
