@@ -14,13 +14,17 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 #include "content/browser/interest_group/interest_group_manager.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -661,7 +665,9 @@ class SameThreadAuctionProcessManager : public AuctionProcessManager {
       auction_worklet_services_;
 };
 
-class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
+class AuctionRunnerTest : public testing::Test,
+                          public AuctionRunner::Delegate,
+                          public DebuggableAuctionWorkletTracker::Observer {
  protected:
   // Output of the RunAuctionCallback passed to AuctionRunner::CreateAndStart().
   struct Result {
@@ -689,9 +695,12 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &AuctionRunnerTest::OnBadMessage, base::Unretained(this)));
+    DebuggableAuctionWorkletTracker::GetInstance()->AddObserver(this);
   }
 
   ~AuctionRunnerTest() override {
+    DebuggableAuctionWorkletTracker::GetInstance()->RemoveObserver(this);
+
     // Any bad message should have been inspected and cleared before the end of
     // the test.
     EXPECT_EQ(std::string(), bad_message_);
@@ -930,6 +939,28 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override {
     return &url_loader_factory_;
   }
+  RenderFrameHostImpl* GetFrame() override { return nullptr; }
+
+  // DebuggableAuctionWorkletTracker::Observer implementation
+  void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,
+                             bool& should_pause_on_start) override {
+    should_pause_on_start = false;  // Should be a no-op.
+    observer_log_.push_back(base::StrCat({"Create ", worklet->url().spec()}));
+  }
+
+  void AuctionWorkletDestroyed(DebuggableAuctionWorklet* worklet) override {
+    observer_log_.push_back(base::StrCat({"Destroy ", worklet->url().spec()}));
+  }
+
+  // Gets script URLs of currently live DebuggableAuctionWorklet.
+  std::vector<std::string> LiveDebuggables() {
+    std::vector<std::string> result;
+    for (DebuggableAuctionWorklet* debuggable :
+         DebuggableAuctionWorkletTracker::GetInstance()->GetAll()) {
+      result.push_back(debuggable->url().spec());
+    }
+    return result;
+  }
 
   // Enables use of a mock AuctionProcessManager when the next auction is run.
   void UseMockWorkletService() {
@@ -1007,6 +1038,8 @@ class AuctionRunnerTest : public testing::Test, public AuctionRunner::Delegate {
   std::string bad_message_;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+
+  std::vector<std::string> observer_log_;
 };
 
 // Runs the standard auction, but without adding any interest groups to the
@@ -1070,6 +1103,12 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   1 /* expected_interest_groups */, 1 /* expected_owners */);
+  EXPECT_THAT(observer_log_,
+              testing::UnorderedElementsAre(
+                  "Create https://adstuff.publisher1.com/auction.js",
+                  "Create https://adplatform.com/offers.js",
+                  "Destroy https://adplatform.com/offers.js",
+                  "Destroy https://adstuff.publisher1.com/auction.js"));
 }
 
 // An auction with two successful bids.
@@ -1107,6 +1146,14 @@ TEST_F(AuctionRunnerTest, Basic) {
   EXPECT_THAT(res.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
+  EXPECT_THAT(observer_log_,
+              testing::UnorderedElementsAre(
+                  "Create https://adstuff.publisher1.com/auction.js",
+                  "Create https://adplatform.com/offers.js",
+                  "Create https://anotheradthing.com/bids.js",
+                  "Destroy https://adplatform.com/offers.js",
+                  "Destroy https://anotheradthing.com/bids.js",
+                  "Destroy https://adstuff.publisher1.com/auction.js"));
 }
 
 // An auction where one bid is successful, another's script 404s.
@@ -1144,6 +1191,17 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
                            "HTTP status = 404 Not Found."));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
+
+  // 404 is detected after the worklet is created, so there are still events
+  // for it.
+  EXPECT_THAT(observer_log_,
+              testing::UnorderedElementsAre(
+                  "Create https://adstuff.publisher1.com/auction.js",
+                  "Create https://adplatform.com/offers.js",
+                  "Create https://anotheradthing.com/bids.js",
+                  "Destroy https://adplatform.com/offers.js",
+                  "Destroy https://anotheradthing.com/bids.js",
+                  "Destroy https://adstuff.publisher1.com/auction.js"));
 }
 
 // An auction where one bid is successful, another's script does not provide a
@@ -1699,6 +1757,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerDelaysAuction) {
 
 TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
   for (bool seller_worklet_loads_first : {false, true}) {
+    observer_log_.clear();
     SCOPED_TRACE(seller_worklet_loads_first);
 
     StartStandardAuctionWithMockService();
@@ -1717,6 +1776,18 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
     }
     EXPECT_FALSE(auction_complete_);
 
+    EXPECT_THAT(observer_log_,
+                testing::UnorderedElementsAre(
+                    "Create https://adstuff.publisher1.com/auction.js",
+                    "Create https://adplatform.com/offers.js",
+                    "Create https://anotheradthing.com/bids.js"));
+
+    EXPECT_THAT(LiveDebuggables(),
+                testing::UnorderedElementsAre(
+                    "https://adplatform.com/offers.js",
+                    "https://anotheradthing.com/bids.js",
+                    "https://adstuff.publisher1.com/auction.js"));
+
     // Have to keep the callbacks around, since the AuctionWorkletService is
     // still live. Closing it here causes more issues than its worth (seller
     // worklet can't complete loading if it hasn't already). In production,
@@ -1728,6 +1799,18 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
     bidder2_worklet.reset();
 
     base::RunLoop().RunUntilIdle();
+
+    EXPECT_THAT(observer_log_,
+                testing::UnorderedElementsAre(
+                    "Create https://adstuff.publisher1.com/auction.js",
+                    "Create https://adplatform.com/offers.js",
+                    "Create https://anotheradthing.com/bids.js",
+                    "Destroy https://adplatform.com/offers.js",
+                    "Destroy https://anotheradthing.com/bids.js",
+                    "Destroy https://adstuff.publisher1.com/auction.js"));
+
+    EXPECT_THAT(LiveDebuggables(), testing::ElementsAre());
+
     // The auction isn't failed until the seller worklet has completed loading.
     if (!seller_worklet_loads_first)
       seller_worklet->CompleteLoading();
@@ -1764,6 +1847,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     SCOPED_TRACE(other_bidder_finishes_first);
     for (bool seller_worklet_loads_first : {false, true}) {
       SCOPED_TRACE(seller_worklet_loads_first);
+      observer_log_.clear();
       StartStandardAuctionWithMockService();
       auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
       ASSERT_TRUE(seller_worklet);
@@ -1791,6 +1875,18 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
       // Can't flush the closed pipe without reaching into AuctionRunner, so use
       // RunUntilIdle() instead.
       base::RunLoop().RunUntilIdle();
+
+      EXPECT_THAT(observer_log_,
+                  testing::ElementsAre(
+                      "Create https://adstuff.publisher1.com/auction.js",
+                      "Create https://adplatform.com/offers.js",
+                      "Create https://anotheradthing.com/bids.js",
+                      "Destroy https://adplatform.com/offers.js"));
+
+      EXPECT_THAT(LiveDebuggables(),
+                  testing::UnorderedElementsAre(
+                      "https://adstuff.publisher1.com/auction.js",
+                      "https://anotheradthing.com/bids.js"));
 
       if (!seller_worklet_loads_first)
         seller_worklet->CompleteLoading();
@@ -1870,6 +1966,20 @@ TEST_F(AuctionRunnerTest, LosingBidderCrashWhileScoring) {
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();
+
+  // Still expect bidder2 and seller around for reporting.
+  EXPECT_THAT(observer_log_,
+              testing::UnorderedElementsAre(
+                  "Create https://adstuff.publisher1.com/auction.js",
+                  "Create https://adplatform.com/offers.js",
+                  "Create https://anotheradthing.com/bids.js",
+                  "Destroy https://adplatform.com/offers.js"));
+
+  EXPECT_THAT(
+      LiveDebuggables(),
+      testing::UnorderedElementsAre("https://adstuff.publisher1.com/auction.js",
+                                    "https://anotheradthing.com/bids.js"));
+
   seller_worklet->InvokeReportResultCallback();
   bidder2_worklet->WaitForReportWin();
   bidder2_worklet->InvokeReportWinCallback();
@@ -1889,6 +1999,18 @@ TEST_F(AuctionRunnerTest, LosingBidderCrashWhileScoring) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
+
+  // Everything cleaned up at the end.
+  EXPECT_THAT(observer_log_,
+              testing::UnorderedElementsAre(
+                  "Create https://adstuff.publisher1.com/auction.js",
+                  "Create https://adplatform.com/offers.js",
+                  "Create https://anotheradthing.com/bids.js",
+                  "Destroy https://adplatform.com/offers.js",
+                  "Destroy https://anotheradthing.com/bids.js",
+                  "Destroy https://adstuff.publisher1.com/auction.js"));
+
+  EXPECT_THAT(LiveDebuggables(), testing::UnorderedElementsAre());
 }
 
 // If the winning bidder crashes while scoring, the auction should fail.
@@ -1923,6 +2045,19 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileScoring) {
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();
+
+  EXPECT_THAT(
+      observer_log_,
+      testing::ElementsAre("Create https://adstuff.publisher1.com/auction.js",
+                           "Create https://adplatform.com/offers.js",
+                           "Create https://anotheradthing.com/bids.js",
+                           "Destroy https://anotheradthing.com/bids.js"));
+
+  EXPECT_THAT(LiveDebuggables(),
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js",
+                  "https://adstuff.publisher1.com/auction.js"));
+
   seller_worklet->InvokeReportResultCallback();
   // AuctionRunner discovered Bidder1 crashed before calling its ReportWin
   // method.
@@ -1941,6 +2076,18 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileScoring) {
                   "%s crashed while idle.", kBidder1Url.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kWinningBidderWorkletCrashed,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
+
+  // Everything cleaned up at the end.
+  EXPECT_THAT(observer_log_,
+              testing::UnorderedElementsAre(
+                  "Create https://adstuff.publisher1.com/auction.js",
+                  "Create https://adplatform.com/offers.js",
+                  "Create https://anotheradthing.com/bids.js",
+                  "Destroy https://adplatform.com/offers.js",
+                  "Destroy https://anotheradthing.com/bids.js",
+                  "Destroy https://adstuff.publisher1.com/auction.js"));
+
+  EXPECT_THAT(LiveDebuggables(), testing::UnorderedElementsAre());
 }
 
 // If the winning bidder crashes while coming up with the reporting URL, the
@@ -1961,7 +2108,7 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   bidder1_worklet->CompleteLoadingAndBid(7 /* bid */, GURL("https://ad1.com/"));
   bidder2_worklet->CompleteLoadingAndBid(5 /* bid */, GURL("https://ad2.com/"));
 
-  // Bidder1 crashes while scoring its bid.
+  // Score Bidder1's bid.
   auto score_ad_params = seller_worklet->WaitForScoreAd();
   EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
   EXPECT_EQ(7, score_ad_params->bid);
@@ -1973,6 +2120,7 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_EQ(5, score_ad_params->bid);
   seller_worklet->InvokeScoreAdCallback(10 /* score */);
 
+  // Bidder1 crashes while running ReportWin.
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback();
   bidder1_worklet->WaitForReportWin();
@@ -2470,6 +2618,19 @@ TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletFirstBidderLoses) {
   // still be the winning bid.
   EXPECT_FALSE(bidder1_worklet->PipeIsClosed());
 
+  // The debug peers are also around.
+  EXPECT_THAT(
+      observer_log_,
+      testing::ElementsAre("Create https://adstuff.publisher1.com/auction.js",
+                           "Create https://adplatform.com/offers.js",
+                           "Create https://anotheradthing.com/bids.js"));
+
+  EXPECT_THAT(LiveDebuggables(),
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js",
+                  "https://anotheradthing.com/bids.js",
+                  "https://adstuff.publisher1.com/auction.js"));
+
   // Bidder2 returns a bid, which is then scored.
   bidder2_worklet->CompleteLoadingAndBid(7 /* bid */, GURL("https://ad2.com/"));
   score_ad_params = seller_worklet->WaitForScoreAd();
@@ -2481,6 +2642,18 @@ TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletFirstBidderLoses) {
   seller_worklet->Flush();
   // The losing bidder should now be destroyed.
   EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
+
+  EXPECT_THAT(
+      observer_log_,
+      testing::ElementsAre("Create https://adstuff.publisher1.com/auction.js",
+                           "Create https://adplatform.com/offers.js",
+                           "Create https://anotheradthing.com/bids.js",
+                           "Destroy https://adplatform.com/offers.js"));
+
+  EXPECT_THAT(LiveDebuggables(),
+              testing::UnorderedElementsAre(
+                  "https://anotheradthing.com/bids.js",
+                  "https://adstuff.publisher1.com/auction.js"));
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();
@@ -2527,6 +2700,18 @@ TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletLastBidderLoses) {
   EXPECT_EQ(5, score_ad_params->bid);
   seller_worklet->InvokeScoreAdCallback(11 /* score */);
 
+  EXPECT_THAT(
+      observer_log_,
+      testing::ElementsAre("Create https://adstuff.publisher1.com/auction.js",
+                           "Create https://adplatform.com/offers.js",
+                           "Create https://anotheradthing.com/bids.js"));
+
+  EXPECT_THAT(LiveDebuggables(),
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js",
+                  "https://anotheradthing.com/bids.js",
+                  "https://adstuff.publisher1.com/auction.js"));
+
   // Bidder2 returns a bid, which is then scored.
   bidder2_worklet->CompleteLoadingAndBid(7 /* bid */, GURL("https://ad2.com/"));
   score_ad_params = seller_worklet->WaitForScoreAd();
@@ -2538,6 +2723,18 @@ TEST_F(AuctionRunnerTest, DestroyLosingBidderWorkletLastBidderLoses) {
   seller_worklet->Flush();
   // The losing bidder should now be destroyed.
   EXPECT_TRUE(bidder2_worklet->PipeIsClosed());
+
+  EXPECT_THAT(
+      observer_log_,
+      testing::ElementsAre("Create https://adstuff.publisher1.com/auction.js",
+                           "Create https://adplatform.com/offers.js",
+                           "Create https://anotheradthing.com/bids.js",
+                           "Destroy https://anotheradthing.com/bids.js"));
+
+  EXPECT_THAT(LiveDebuggables(),
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js",
+                  "https://adstuff.publisher1.com/auction.js"));
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();

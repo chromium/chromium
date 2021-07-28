@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+//#include "content/browser/interest_group/debuggable_worklet.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -29,7 +30,9 @@
 namespace content {
 
 class AuctionURLLoaderFactoryProxy;
+class DebuggableAuctionWorklet;
 class InterestGroupManager;
+class RenderFrameHostImpl;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
@@ -69,6 +72,9 @@ class CONTENT_EXPORT AuctionRunner {
 
     // Trusted URLLoaderFactory used to load bidder worklets.
     virtual network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() = 0;
+
+    // Get containing frame. (Passed to debugging hooks).
+    virtual RenderFrameHostImpl* GetFrame() = 0;
   };
 
   // Result of an auction. Used for histograms. Only recorded for valid
@@ -194,7 +200,8 @@ class CONTENT_EXPORT AuctionRunner {
     BidState(BidState&) = delete;
     BidState& operator=(BidState&) = delete;
 
-    // Convenient function to destroy `bidder_worklet` and `process_handle`.
+    // Convenient function to destroy `bidder_worklet`, `bidder_worklet_debug`,
+    // and `process_handle`.
     // Safe to call if they're already null.
     void ClosePipes();
 
@@ -209,6 +216,7 @@ class CONTENT_EXPORT AuctionRunner {
     std::unique_ptr<AuctionProcessManager::ProcessHandle> process_handle;
 
     mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet;
+    std::unique_ptr<DebuggableAuctionWorklet> bidder_worklet_debug;
     auction_worklet::mojom::BidderWorkletBidPtr bid_result;
     // Points to the InterestGroupAd within `bidder` that won the auction. Only
     // nullptr when `bid_result` is also nullptr.
@@ -340,6 +348,7 @@ class CONTENT_EXPORT AuctionRunner {
   std::unique_ptr<AuctionProcessManager::ProcessHandle>
       seller_worklet_process_handle_;
   mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;
+  std::unique_ptr<DebuggableAuctionWorklet> seller_worklet_debug_;
 
   // This is true if the seller script has been loaded successfully --- if the
   // load failed, the entire process is aborted since there is nothing useful

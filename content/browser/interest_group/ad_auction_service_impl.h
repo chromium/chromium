@@ -25,6 +25,7 @@ namespace content {
 
 class AuctionRunner;
 class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
@@ -44,6 +45,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // AuctionRunner::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
+  RenderFrameHostImpl* GetFrame() override;
 
   using DocumentServiceBase::origin;
   using DocumentServiceBase::render_frame_host;

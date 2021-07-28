@@ -247,6 +247,10 @@ AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
   return trusted_url_loader_factory_.get();
 }
 
+RenderFrameHostImpl* AdAuctionServiceImpl::GetFrame() {
+  return static_cast<RenderFrameHostImpl*>(render_frame_host());
+}
+
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
