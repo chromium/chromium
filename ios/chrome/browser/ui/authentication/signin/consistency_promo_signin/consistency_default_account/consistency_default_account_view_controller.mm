@@ -89,9 +89,12 @@ constexpr CGFloat kContentSpacing = 16.;
   titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
   titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
   UIBarButtonItem* leftItem =
       [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
   self.navigationItem.leftBarButtonItem = leftItem;
+
   // Set the skip button in the right bar button item.
   UIBarButtonItem* anotherButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP)
