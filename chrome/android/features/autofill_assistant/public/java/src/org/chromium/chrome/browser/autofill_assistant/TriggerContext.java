@@ -37,14 +37,9 @@ public class TriggerContext {
                     if (value == null) {
                         continue;
                     }
-                    if (key.startsWith(INTENT_SPECIAL_PREFIX)) {
-                        if (key.equals(INTENT_SPECIAL_PREFIX + PARAMETER_EXPERIMENT_IDS)) {
-                            mTriggerContext.addExperimentIds(value.toString());
-                        }
-                        // There are no other special parameters.
-                    } else if (key.startsWith(INTENT_EXTRA_PREFIX)) {
+                    if (key.startsWith(INTENT_EXTRA_PREFIX)) {
                         if (key.equals(INTENT_EXTRA_PREFIX + PARAMETER_EXPERIMENT_IDS)) {
-                            mTriggerContext.addExperimentIds(value.toString());
+                            mTriggerContext.addExperimentIds(decode(value.toString()));
                         }
                         mTriggerContext.mScriptParameters.put(
                                 key.substring(INTENT_EXTRA_PREFIX.length()), value);
@@ -70,6 +65,14 @@ public class TriggerContext {
         }
     }
 
+    private static String decode(String value) {
+        try {
+            return URLDecoder.decode(value, UTF8);
+        } catch (java.io.UnsupportedEncodingException e) {
+            throw new IllegalStateException("Encoding not available.", e);
+        }
+    }
+
     /** Used for logging. */
     private static final String TAG = "AutofillAssistant";
 
@@ -78,14 +81,10 @@ public class TriggerContext {
     /**
      * Prefix for Intent extras relevant to this feature.
      *
-     * <p>Intent starting with this prefix are reported to the controller as parameters, except for
-     * the ones starting with {@code INTENT_SPECIAL_PREFIX}.
+     * <p>Extras starting with this prefix are reported to the controller as script parameters.
      */
     private static final String INTENT_EXTRA_PREFIX =
             "org.chromium.chrome.browser.autofill_assistant.";
-
-    /** Prefix for intent extras which are not parameters. */
-    private static final String INTENT_SPECIAL_PREFIX = INTENT_EXTRA_PREFIX + "special.";
 
     /** Special parameter that enables the feature. */
     public static final String PARAMETER_ENABLED = "ENABLED";
@@ -116,12 +115,6 @@ public class TriggerContext {
      * them from a remote backend. Takes precedence over PARAMETER_REQUEST_TRIGGER_SCRIPT.
      */
     static final String PARAMETER_TRIGGER_SCRIPTS_BASE64 = "TRIGGER_SCRIPTS_BASE64";
-
-    /**
-     * Special output boolean parameter that will be set to true for regular scripts that were
-     * started with a trigger script.
-     */
-    static final String PARAMETER_STARTED_WITH_TRIGGER_SCRIPT = "STARTED_WITH_TRIGGER_SCRIPT";
 
     /**
      * Identifier used by parameters/or special intent that indicates experiments passed from
@@ -160,8 +153,8 @@ public class TriggerContext {
     }
 
     /**
-     * In M74 experiment ids might come from parameters. This function merges both experiment ids
-     * from special intent and parameters.
+     * Adds {@code experimentIds} to the list of experiment ids. Ignores empty and null values.
+     * Expects the incoming string to be a comma-separated list of experiments.
      */
     private void addExperimentIds(@Nullable String experimentIds) {
         if (TextUtils.isEmpty(experimentIds)) {
@@ -196,14 +189,6 @@ public class TriggerContext {
         }
 
         return decode((String) value);
-    }
-
-    private String decode(String value) {
-        try {
-            return URLDecoder.decode(value, UTF8);
-        } catch (java.io.UnsupportedEncodingException e) {
-            throw new IllegalStateException("Encoding not available.", e);
-        }
     }
 
     public Map<String, String> getParameters() {
