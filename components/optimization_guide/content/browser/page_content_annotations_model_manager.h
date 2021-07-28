@@ -31,6 +31,10 @@ class PageContentAnnotationsModelManager {
       const PageContentAnnotationsModelManager&) = delete;
 
   // Requests to annotate |text|, will invoke |callback| when completed.
+  //
+  // This will execute all supported models in the following order:
+  // * Page entities
+  // * Page topics
   void Annotate(const std::string& text, PageContentAnnotatedCallback callback);
 
   // Returns the version of the page topics model that is currently being used
@@ -41,17 +45,62 @@ class PageContentAnnotationsModelManager {
  private:
   friend class PageContentAnnotationsModelManagerTest;
 
-  // Invoked when the page topics model has finished executing.
+  // Requests to execute the page entities model with |text|, populate
+  // |current_annotations| with detected entities on success, and proceed to
+  // execute any subsequent models.
+  //
+  // |current_annotations| and |callback| will be passed through a series of
+  /// callbacks and will be invoked after the last model executes.
+  void ExecutePageEntitiesModel(
+      const std::string& text,
+      std::unique_ptr<history::VisitContentModelAnnotations>
+          current_annotations,
+      PageContentAnnotatedCallback callback);
+
+  // Invoked when the page entities model has finished executing. If |output| is
+  // populated, |current_annotations| will be populated with the detected
+  // entities. Regardless of success, this will proceed to execute any
+  // subsequent models. If it is the last model to execute, it will invoke
+  // |callback| with the contents of |current_annotations| after it has
+  // populated it based on |output|.
+  void OnPageEntitiesModelExecutionCompleted(
+      const std::string& text,
+      std::unique_ptr<history::VisitContentModelAnnotations>
+          current_annotations,
+      PageContentAnnotatedCallback callback,
+      const absl::optional<std::vector<tflite::task::core::Category>>& output);
+
+  // Requests to execute the page topics model with |text|, populate
+  // |current_annotations| with detected topics on success, and proceed to
+  // execute any subsequent models.
+  //
+  // |current_annotations| and |callback| will be passed through a series of
+  /// callbacks and will be invoked after the last model executes.
+  void ExecutePageTopicsModel(
+      const std::string& text,
+      std::unique_ptr<history::VisitContentModelAnnotations>
+          current_annotations,
+      PageContentAnnotatedCallback callback);
+
+  // Invoked when the page topics model has finished executing. If |output| is
+  // populated, |current_annotations| will be populated based on that.
+  // Regardless of success, this will proceed to execute any subsequent models.
+  // If it is the last model to execute, it will invoke |callback| with the
+  // contents of |current_annotations| after it has populated it based on
+  // |output|.
   void OnPageTopicsModelExecutionCompleted(
+      std::unique_ptr<history::VisitContentModelAnnotations>
+          current_annotations,
       PageContentAnnotatedCallback callback,
       const proto::PageTopicsModelMetadata& model_metadata,
       const absl::optional<std::vector<tflite::task::core::Category>>& output);
 
-  // Converts |model_output| into content model annotations based on
+  // Populates |out_content_annotations| based on |model_output| and
   // |model_metadata|.
-  history::VisitContentModelAnnotations GetContentModelAnnotationsFromOutput(
+  void PopulateContentModelAnnotationsFromPageTopicsModelOutput(
       const proto::PageTopicsModelMetadata& model_metadata,
-      const std::vector<tflite::task::core::Category>& model_output) const;
+      const std::vector<tflite::task::core::Category>& model_output,
+      history::VisitContentModelAnnotations* out_content_annotations) const;
 
   // The model executor responsible for executing the page topics model.
   std::unique_ptr<BertModelExecutorHandle> page_topics_model_executor_handle_;
