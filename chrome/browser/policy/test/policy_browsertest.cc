@@ -31,8 +31,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -55,7 +53,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -165,7 +162,6 @@
 #endif
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #endif
@@ -183,19 +179,6 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-int CountScreenshots() {
-  DownloadPrefs* download_prefs =
-      DownloadPrefs::FromBrowserContext(ProfileManager::GetActiveUserProfile());
-  base::FileEnumerator enumerator(download_prefs->DownloadPath(), false,
-                                  base::FileEnumerator::FILES, "Screenshot*");
-  int count = 0;
-  while (!enumerator.Next().empty())
-    count++;
-  return count;
-}
 #endif
 
 // Checks if WebGL is enabled in the given WebContents.
@@ -327,19 +310,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_IncognitoEnabled) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Flaky on MSan (crbug.com/476964) and regular Chrome OS (crbug.com/645769).
-IN_PROC_BROWSER_TEST_F(PolicyTest, DISABLED_DisableScreenshotsFile) {
-  int screenshot_count = CountScreenshots();
-
-  // Make sure screenshots are counted correctly.
-  TestScreenshotFile(true);
-  ASSERT_EQ(CountScreenshots(), screenshot_count + 1);
-
-  // Check if trying to take a screenshot fails when disabled by policy.
-  TestScreenshotFile(false);
-  ASSERT_EQ(CountScreenshots(), screenshot_count + 1);
-}
 
 // Disabled, see http://crbug.com/554728.
 IN_PROC_BROWSER_TEST_F(PolicyTest,

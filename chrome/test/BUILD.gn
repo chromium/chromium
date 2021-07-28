@@ -2354,6 +2354,7 @@ if (!is_android) {
         "../browser/policy/test/assistant_policy_browsertest.cc",
         "../browser/policy/test/audio_output_allowed_browsertest.cc",
         "../browser/policy/test/note_taking_on_lock_screen_policy_browsertest.cc",
+        "../browser/policy/test/screenshot_policy_browsertest.cc",
         "../browser/policy/test/session_length_limit_policy_browsertest.cc",
         "../browser/policy/test/suggested_content_policy_browsertest.cc",
         "../browser/policy/test/system_features_policy_browsertest.cc",

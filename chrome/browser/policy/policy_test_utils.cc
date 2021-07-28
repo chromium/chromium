@@ -4,8 +4,6 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
-#include "ash/public/cpp/capture_mode_api.h"
-#include "ash/public/cpp/capture_mode_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,10 +38,6 @@
 #include "net/http/transport_security_state.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/snapshot/screenshot_grabber.h"
-#endif
 
 using content::BrowserThread;
 using testing::_;
@@ -117,14 +111,6 @@ void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
       {{"sendingThreshold", "1.0"}}, command_line);
 }
 
-void PolicyTest::SetScreenshotPolicy(bool enabled) {
-  PolicyMap policies;
-  policies.Set(key::kDisableScreenshots, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(!enabled),
-               nullptr);
-  UpdateProviderPolicy(policies);
-}
-
 void PolicyTest::SetRequireCTForTesting(bool required) {
   if (content::IsOutOfProcessNetworkService()) {
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
@@ -144,19 +130,6 @@ void PolicyTest::SetRequireCTForTesting(bool required) {
       base::BindOnce(&net::TransportSecurityState::SetRequireCTForTesting,
                      required));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void PolicyTest::TestScreenshotFile(bool enabled) {
-  base::RunLoop run_loop;
-  ash::CaptureModeTestApi().SetOnCaptureFileSavedCallback(
-      base::BindLambdaForTesting(
-          [&run_loop](const base::FilePath& path) { run_loop.Quit(); }));
-
-  SetScreenshotPolicy(enabled);
-  ash::CaptureScreenshotsOfAllDisplays();
-  run_loop.Run();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
     const base::FilePath::StringType& name) {
