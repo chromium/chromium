@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Test history.length</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/session-history-test-util.js"></script>
+<body>
+  <script>
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testLocationAssignInPrerender"),
+        "Passed"
+      );
+    }, "location.assign navigates independently with replacement in a prerender");
+
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testLocationReplaceInPrerender"),
+        "Passed"
+      );
+    }, "location.replace navigates independently in a prerender");
+
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testSetLocationHrefInPrerender"),
+        "Passed"
+      );
+    }, "Setting location.href navigates independently with replacement in a prerender");
+
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testLocationReloadInPrerender"),
+        "Passed"
+      );
+    }, "location.reload() navigates independently in a prerender");
+  </script>
+</body>

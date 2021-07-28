@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Test history.length</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/session-history-test-util.js"></script>
+<body>
+  <script>
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testSyntheticAnchorClickInPrerender"),
+        "Passed"
+      );
+    }, "Synthetic anchor click navigates independently with replacement in a prerender");
+
+    promise_test(async () => {
+      assert_equals(
+        await runTestInPrerender("testHistoryGoInPrerender"),
+        "Passed"
+      );
+    }, "history.go(0) navigates independently in a prerender");
+  </script>
+</body>
