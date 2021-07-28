@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Anonymous iframes get partitioned service workers. assert_false: expected false got true
+Harness: the test ran to completion.
+
