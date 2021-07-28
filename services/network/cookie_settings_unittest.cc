@@ -390,60 +390,13 @@ TEST_F(CookieSettingsTest, LegacyCookieAccessDefault) {
   CookieSettings settings;
   ContentSetting setting;
 
-  // Test SameSite-by-default enabled (default semantics is NONLEGACY)
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(net::features::kSameSiteByDefaultCookies);
-    settings.GetSettingForLegacyCookieAccess(kDomain, &setting);
-    EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-    EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
-              settings.GetCookieAccessSemanticsForDomain(kDomain));
-  }
-
-  // Test SameSite-by-default disabled (default semantics is LEGACY)
-  // TODO(crbug.com/953306): Remove this when legacy code path is removed.
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        net::features::kSameSiteByDefaultCookies);
-    settings.GetSettingForLegacyCookieAccess(kDomain, &setting);
-    EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
-    EXPECT_EQ(net::CookieAccessSemantics::LEGACY,
-              settings.GetCookieAccessSemanticsForDomain(kDomain));
-  }
+  settings.GetSettingForLegacyCookieAccess(kDomain, &setting);
+  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
+            settings.GetCookieAccessSemanticsForDomain(kDomain));
 }
 
-// Test SameSite-by-default disabled (default semantics is LEGACY)
-// TODO(crbug.com/953306): Remove this when legacy code path is removed.
-TEST_F(CookieSettingsTest,
-       CookieAccessSemanticsForDomain_SameSiteByDefaultDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kSameSiteByDefaultCookies);
-  CookieSettings settings;
-  settings.set_content_settings_for_legacy_cookie_access(
-      {CreateSetting(kDomain, "*", CONTENT_SETTING_BLOCK)});
-  const struct {
-    net::CookieAccessSemantics status;
-    std::string cookie_domain;
-  } kTestCases[] = {
-      // These two test cases are NONLEGACY because they match the setting.
-      {net::CookieAccessSemantics::NONLEGACY, kDomain},
-      {net::CookieAccessSemantics::NONLEGACY, kDotDomain},
-      // These two test cases default into LEGACY.
-      // Subdomain does not match pattern.
-      {net::CookieAccessSemantics::LEGACY, kSubDomain},
-      {net::CookieAccessSemantics::LEGACY, kOtherDomain}};
-  for (const auto& test : kTestCases) {
-    EXPECT_EQ(test.status,
-              settings.GetCookieAccessSemanticsForDomain(test.cookie_domain));
-  }
-}
-
-// Test SameSite-by-default enabled (default semantics is NONLEGACY)
-TEST_F(CookieSettingsTest,
-       CookieAccessSemanticsForDomain_SameSiteByDefaultEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kSameSiteByDefaultCookies);
+TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomain) {
   CookieSettings settings;
   settings.set_content_settings_for_legacy_cookie_access(
       {CreateSetting(kDomain, "*", CONTENT_SETTING_ALLOW)});
@@ -464,37 +417,7 @@ TEST_F(CookieSettingsTest,
   }
 }
 
-// Test SameSite-by-default disabled (default semantics is LEGACY)
-// TODO(crbug.com/953306): Remove this when legacy code path is removed.
-TEST_F(CookieSettingsTest,
-       CookieAccessSemanticsForDomainWithWildcard_SameSiteByDefaultDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kSameSiteByDefaultCookies);
-  CookieSettings settings;
-  settings.set_content_settings_for_legacy_cookie_access(
-      {CreateSetting(kDomainWildcardPattern, "*", CONTENT_SETTING_BLOCK)});
-  const struct {
-    net::CookieAccessSemantics status;
-    std::string cookie_domain;
-  } kTestCases[] = {
-      // These three test cases are NONLEGACY because they match the setting.
-      {net::CookieAccessSemantics::NONLEGACY, kDomain},
-      {net::CookieAccessSemantics::NONLEGACY, kDotDomain},
-      // Subdomain also matches pattern.
-      {net::CookieAccessSemantics::NONLEGACY, kSubDomain},
-      // This test case defaults into LEGACY.
-      {net::CookieAccessSemantics::LEGACY, kOtherDomain}};
-  for (const auto& test : kTestCases) {
-    EXPECT_EQ(test.status,
-              settings.GetCookieAccessSemanticsForDomain(test.cookie_domain));
-  }
-}
-
-// Test SameSite-by-default enabled (default semantics is NONLEGACY)
-TEST_F(CookieSettingsTest,
-       CookieAccessSemanticsForDomainWithWildcard_SameSiteByDefaultEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kSameSiteByDefaultCookies);
+TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
   CookieSettings settings;
   settings.set_content_settings_for_legacy_cookie_access(
       {CreateSetting(kDomainWildcardPattern, "*", CONTENT_SETTING_ALLOW)});

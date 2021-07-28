@@ -53,9 +53,7 @@ void CookieSettings::GetSettingForLegacyCookieAccess(
   DCHECK(setting);
 
   // Default to match what was registered in the ContentSettingsRegistry.
-  *setting = net::cookie_util::IsSameSiteByDefaultCookiesEnabled()
-                 ? CONTENT_SETTING_BLOCK
-                 : CONTENT_SETTING_ALLOW;
+  *setting = CONTENT_SETTING_BLOCK;
 
   if (settings_for_legacy_cookie_access_.empty())
     return;

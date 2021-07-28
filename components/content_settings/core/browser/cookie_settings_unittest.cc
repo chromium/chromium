@@ -21,7 +21,6 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,13 +84,11 @@ class CookieSettingsTest : public testing::Test {
         kHttpsSubdomainSite("https://www.example.com"),
         kHttpsSite8080("https://example.com:8080"),
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
-    feature_list_.InitWithFeatures(
-        {
 #ifdef OS_IOS
-            kImprovedCookieControls,
+    feature_list_.InitAndEnableFeature(kImprovedCookieControls);
+#else
+    feature_list_.Init();
 #endif
-        },
-        {net::features::kSameSiteByDefaultCookies});
   }
 
   ~CookieSettingsTest() override { settings_map_->ShutdownOnUIThread(); }
@@ -771,81 +768,7 @@ TEST_F(CookieSettingsTest, LegacyCookieAccessBlockAll) {
             cookie_settings_->GetCookieAccessSemanticsForDomain(kDotDomain));
 }
 
-// Test SameSite-by-default disabled (default semantics is LEGACY)
-// TODO(crbug.com/953306): Remove this when legacy code path is removed.
-TEST_F(CookieSettingsTest,
-       LegacyCookieAccessAllowDomainPattern_SameSiteByDefaultDisabled) {
-  // Override the policy provider for this test, since the legacy cookie access
-  // setting can only be set by policy.
-  TestUtils::OverrideProvider(
-      settings_map_.get(), std::make_unique<MockProvider>(),
-      HostContentSettingsMap::ProviderType::POLICY_PROVIDER);
-  settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromString(kDomain),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_BLOCK);
-  const struct {
-    net::CookieAccessSemantics status;
-    std::string cookie_domain;
-  } kTestCases[] = {
-      // These two test cases are NONLEGACY because they match the setting.
-      {net::CookieAccessSemantics::NONLEGACY, kDomain},
-      {net::CookieAccessSemantics::NONLEGACY, kDotDomain},
-      // These two test cases default into LEGACY.
-      // Subdomain does not match pattern.
-      {net::CookieAccessSemantics::LEGACY, kSubDomain},
-      {net::CookieAccessSemantics::LEGACY, kOtherDomain}};
-  for (const auto& test : kTestCases) {
-    EXPECT_EQ(test.status, cookie_settings_->GetCookieAccessSemanticsForDomain(
-                               test.cookie_domain));
-  }
-}
-
-// Test SameSite-by-default disabled (default semantics is LEGACY)
-// TODO(crbug.com/953306): Remove this when legacy code path is removed.
-TEST_F(CookieSettingsTest,
-       LegacyCookieAccessAllowDomainWildcardPattern_SameSiteByDefaultDisabled) {
-  // Override the policy provider for this test, since the legacy cookie access
-  // setting can only be set by policy.
-  TestUtils::OverrideProvider(
-      settings_map_.get(), std::make_unique<MockProvider>(),
-      HostContentSettingsMap::ProviderType::POLICY_PROVIDER);
-  settings_map_->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromString(kDomainWildcardPattern),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_BLOCK);
-  const struct {
-    net::CookieAccessSemantics status;
-    std::string cookie_domain;
-  } kTestCases[] = {
-      // These three test cases are NONLEGACY because they match the setting.
-      {net::CookieAccessSemantics::NONLEGACY, kDomain},
-      {net::CookieAccessSemantics::NONLEGACY, kDotDomain},
-      // Subdomain matches pattern.
-      {net::CookieAccessSemantics::NONLEGACY, kSubDomain},
-      // This test case defaults into LEGACY.
-      {net::CookieAccessSemantics::LEGACY, kOtherDomain}};
-  for (const auto& test : kTestCases) {
-    EXPECT_EQ(test.status, cookie_settings_->GetCookieAccessSemanticsForDomain(
-                               test.cookie_domain));
-  }
-}
-
-// Test fixture with SameSiteByDefaultCookies enabled.
-class SameSiteByDefaultCookieSettingsTest : public CookieSettingsTest {
- public:
-  SameSiteByDefaultCookieSettingsTest() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kSameSiteByDefaultCookies);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test SameSite-by-default enabled (default semantics is NONLEGACY)
-TEST_F(SameSiteByDefaultCookieSettingsTest,
-       LegacyCookieAccessAllowDomainPattern_SameSiteByDefaultEnabled) {
+TEST_F(CookieSettingsTest, LegacyCookieAccessAllowDomainPattern) {
   // Override the policy provider for this test, since the legacy cookie access
   // setting can only be set by policy.
   TestUtils::OverrideProvider(
@@ -872,9 +795,7 @@ TEST_F(SameSiteByDefaultCookieSettingsTest,
   }
 }
 
-// Test SameSite-by-default enabled (default semantics is NONLEGACY)
-TEST_F(SameSiteByDefaultCookieSettingsTest,
-       LegacyCookieAccessAllowDomainWildcardPattern_SameSiteByDefaultEnabled) {
+TEST_F(CookieSettingsTest, LegacyCookieAccessAllowDomainWildcardPattern) {
   // Override the policy provider for this test, since the legacy cookie access
   // setting can only be set by policy.
   TestUtils::OverrideProvider(
