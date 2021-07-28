@@ -116,7 +116,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /** @private */
       showImage_: {
         type: Boolean,
-        computed: 'computeShowImage_(image_, isLoading_)',
+        computed: 'computeShowImage_(image_)',
       },
 
       /** @private */
@@ -210,12 +210,11 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
-   * @param {boolean} loading
    * @return {boolean}
    * @private
    */
-  computeShowImage_(image, loading) {
-    return !loading && !!image;
+  computeShowImage_(image) {
+    return !!image;
   }
 
   /**
