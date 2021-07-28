@@ -178,6 +178,7 @@ struct FullTaskDescriptor {
       bool is_file_extension_match);
 
   FullTaskDescriptor(const FullTaskDescriptor& other);
+  FullTaskDescriptor& operator=(const FullTaskDescriptor& other);
 
   // Unique ID for the task.
   TaskDescriptor task_descriptor;

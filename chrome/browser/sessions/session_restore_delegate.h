@@ -29,7 +29,8 @@ class SessionRestoreDelegate {
                 bool is_app,
                 bool is_pinned,
                 const absl::optional<tab_groups::TabGroupId>& group);
-    RestoredTab(const RestoredTab& other);
+    RestoredTab(const RestoredTab&);
+    RestoredTab& operator=(const RestoredTab&);
 
     bool operator<(const RestoredTab& right) const;
 

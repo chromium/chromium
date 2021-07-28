@@ -213,6 +213,7 @@ class Browser : public TabStripModelObserver,
     explicit CreateParams(Profile* profile, bool user_gesture);
     CreateParams(Type type, Profile* profile, bool user_gesture);
     CreateParams(const CreateParams& other);
+    CreateParams& operator=(const CreateParams& other);
 
     static CreateParams CreateForApp(const std::string& app_name,
                                      bool trusted_source,

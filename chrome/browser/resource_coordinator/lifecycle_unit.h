@@ -44,6 +44,7 @@ class LifecycleUnit {
     explicit SortKey(base::TimeTicks last_focused_time);
 
     SortKey(const SortKey& other);
+    SortKey& operator=(const SortKey& other);
 
     bool operator<(const SortKey& other) const;
     bool operator>(const SortKey& other) const;

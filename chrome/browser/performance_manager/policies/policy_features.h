@@ -94,7 +94,8 @@ extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
 
 struct TrimOnMemoryPressureParams {
   TrimOnMemoryPressureParams();
-  TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams& other);
+  TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams&);
+  TrimOnMemoryPressureParams& operator=(const TrimOnMemoryPressureParams&);
 
   // GetParams will return this struct with the populated parameters below.
   static TrimOnMemoryPressureParams GetParams();

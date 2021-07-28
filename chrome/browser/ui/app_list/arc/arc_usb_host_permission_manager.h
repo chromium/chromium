@@ -34,6 +34,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
                    uint16_t vendor_id,
                    uint16_t product_id);
     UsbDeviceEntry(const UsbDeviceEntry& other);
+    UsbDeviceEntry& operator=(const UsbDeviceEntry& other);
     // Returns if the device entry is considered as persistent. Granted
     // permission for persistent device will persist when device is
     // removed.

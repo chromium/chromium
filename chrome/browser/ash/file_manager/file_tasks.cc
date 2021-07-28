@@ -389,6 +389,9 @@ FullTaskDescriptor::FullTaskDescriptor(const TaskDescriptor& in_task_descriptor,
 FullTaskDescriptor::FullTaskDescriptor(const FullTaskDescriptor& other) =
     default;
 
+FullTaskDescriptor& FullTaskDescriptor::operator=(
+    const FullTaskDescriptor& other) = default;
+
 void UpdateDefaultTask(PrefService* pref_service,
                        const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,

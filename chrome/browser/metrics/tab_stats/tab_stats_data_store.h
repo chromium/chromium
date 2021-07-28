@@ -39,6 +39,7 @@ class TabStatsDataStore : public TabStatsObserver {
     // Constructor, initializes everything to zero.
     TabsStats();
     TabsStats(const TabsStats& other);
+    TabsStats& operator=(const TabsStats& other);
 
     // The total number of tabs opened across all the windows.
     size_t total_tab_count;

@@ -83,6 +83,9 @@ Adapter::AdapterDecision::AdapterDecision() = default;
 Adapter::AdapterDecision::AdapterDecision(const AdapterDecision& decision) =
     default;
 
+Adapter::AdapterDecision& Adapter::AdapterDecision::operator=(
+    const AdapterDecision& decision) = default;
+
 Adapter::Adapter(Profile* profile,
                  AlsReader* als_reader,
                  BrightnessMonitor* brightness_monitor,

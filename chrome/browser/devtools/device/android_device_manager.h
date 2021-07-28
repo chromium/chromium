@@ -44,6 +44,7 @@ class AndroidDeviceManager {
   struct BrowserInfo {
     BrowserInfo();
     BrowserInfo(const BrowserInfo& other);
+    BrowserInfo& operator=(const BrowserInfo& other);
 
     enum Type {
       kTypeChrome,

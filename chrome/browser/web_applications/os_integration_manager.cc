@@ -88,6 +88,8 @@ class OsIntegrationManager::OsHooksBarrier
 InstallOsHooksOptions::InstallOsHooksOptions() = default;
 InstallOsHooksOptions::InstallOsHooksOptions(
     const InstallOsHooksOptions& other) = default;
+InstallOsHooksOptions& InstallOsHooksOptions::operator=(
+    const InstallOsHooksOptions& other) = default;
 
 OsIntegrationManager::OsIntegrationManager(
     Profile* profile,

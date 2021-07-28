@@ -139,6 +139,7 @@ class Adapter : public AlsReader::Observer,
   struct AdapterDecision {
     AdapterDecision();
     AdapterDecision(const AdapterDecision& decision);
+    AdapterDecision& operator=(const AdapterDecision& decision);
     // If |no_brightness_change_cause| is not nullopt, then brightness
     // should not be changed.
     // If |brightness_change_cause| is not nullopt, then brightness should be

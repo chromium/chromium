@@ -366,6 +366,9 @@ Browser::CreateParams::CreateParams(Type type,
 
 Browser::CreateParams::CreateParams(const CreateParams& other) = default;
 
+Browser::CreateParams& Browser::CreateParams::operator=(
+    const CreateParams& other) = default;
+
 // static
 Browser::CreateParams Browser::CreateParams::CreateForAppBase(
     bool is_popup,

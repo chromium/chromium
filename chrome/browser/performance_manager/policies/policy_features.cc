@@ -84,7 +84,9 @@ const base::FeatureParam<int> kNodeTrimBackoffTimeSec = {
 
 TrimOnMemoryPressureParams::TrimOnMemoryPressureParams() = default;
 TrimOnMemoryPressureParams::TrimOnMemoryPressureParams(
-    const TrimOnMemoryPressureParams& other) = default;
+    const TrimOnMemoryPressureParams&) = default;
+TrimOnMemoryPressureParams& TrimOnMemoryPressureParams::operator=(
+    const TrimOnMemoryPressureParams&) = default;
 
 TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
   TrimOnMemoryPressureParams params;

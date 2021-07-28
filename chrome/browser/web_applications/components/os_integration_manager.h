@@ -46,6 +46,7 @@ using OsHooksResults = std::bitset<OsHookType::kMaxValue + 1>;
 struct InstallOsHooksOptions {
   InstallOsHooksOptions();
   InstallOsHooksOptions(const InstallOsHooksOptions& other);
+  InstallOsHooksOptions& operator=(const InstallOsHooksOptions& other);
 
   OsHooksResults os_hooks;
   bool add_to_desktop = false;

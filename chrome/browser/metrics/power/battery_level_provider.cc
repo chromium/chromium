@@ -18,6 +18,9 @@ BatteryLevelProvider::BatteryState::BatteryState(
 
 BatteryLevelProvider::BatteryState::BatteryState(const BatteryState&) = default;
 
+BatteryLevelProvider::BatteryState&
+BatteryLevelProvider::BatteryState::operator=(const BatteryState&) = default;
+
 BatteryLevelProvider::BatteryInterface::BatteryInterface(
     bool battery_present_in)
     : battery_present(battery_present_in) {}

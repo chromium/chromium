@@ -22,6 +22,7 @@ namespace web_app {
 struct TabState {
   TabState(GURL tab_url, bool is_tab_installable)
       : url(tab_url), is_installable(is_tab_installable) {}
+  TabState(const TabState&) = default;
   TabState& operator=(const TabState&) = default;
   bool operator==(const TabState& other) const {
     return url == other.url && is_installable == other.is_installable;

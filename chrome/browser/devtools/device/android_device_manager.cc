@@ -395,6 +395,9 @@ AndroidDeviceManager::BrowserInfo::BrowserInfo()
 AndroidDeviceManager::BrowserInfo::BrowserInfo(const BrowserInfo& other) =
     default;
 
+AndroidDeviceManager::BrowserInfo& AndroidDeviceManager::BrowserInfo::operator=(
+    const BrowserInfo& other) = default;
+
 AndroidDeviceManager::DeviceInfo::DeviceInfo()
     : model(kModelOffline), connected(false) {
 }
