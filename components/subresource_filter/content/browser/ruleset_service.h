@@ -33,7 +33,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/files/file.h"

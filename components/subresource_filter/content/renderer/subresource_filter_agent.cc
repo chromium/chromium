@@ -5,7 +5,6 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
