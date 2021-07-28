@@ -4212,7 +4212,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/page/zoom-zoom-coords.xhtm
 crbug.com/1179585 [ Mac10.12 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Mac10.13 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Mac10.14 ] virtual/layout_ng_svg_text/* [ Skip ]
-crbug.com/1179585 [ Mac11.0 ] virtual/layout_ng_svg_text/* [ Skip ]
 crbug.com/1179585 [ Win7 ] virtual/layout_ng_svg_text/* [ Skip ]
 
 # [css-animations]
