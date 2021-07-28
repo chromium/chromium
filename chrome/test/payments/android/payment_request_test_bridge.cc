@@ -81,6 +81,7 @@ struct NativeObserverCallbacks {
   base::RepeatingClosure on_abort_called;
   base::RepeatingClosure on_complete_called;
   base::RepeatingClosure on_minimal_ui_ready;
+  base::RepeatingClosure on_ui_displayed;
 };
 
 static NativeObserverCallbacks& GetNativeObserverCallbacks() {
@@ -100,7 +101,8 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_connection_terminated,
     base::RepeatingClosure on_abort_called,
     base::RepeatingClosure on_complete_called,
-    base::RepeatingClosure on_minimal_ui_ready) {
+    base::RepeatingClosure on_minimal_ui_ready,
+    base::RepeatingClosure on_ui_displayed) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   // Store ownership of the callbacks so that we can pass a pointer to Java.
@@ -120,6 +122,7 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
   callbacks.on_abort_called = std::move(on_abort_called);
   callbacks.on_complete_called = std::move(on_complete_called);
   callbacks.on_minimal_ui_ready = std::move(on_minimal_ui_ready);
+  callbacks.on_ui_displayed = std::move(on_ui_displayed);
 
   Java_PaymentRequestTestBridge_setUseNativeObserverForTest(
       env, reinterpret_cast<jlong>(&callbacks.on_can_make_payment_called),
@@ -133,7 +136,8 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
       reinterpret_cast<jlong>(&callbacks.on_connection_terminated),
       reinterpret_cast<jlong>(&callbacks.on_abort_called),
       reinterpret_cast<jlong>(&callbacks.on_complete_called),
-      reinterpret_cast<jlong>(&callbacks.on_minimal_ui_ready));
+      reinterpret_cast<jlong>(&callbacks.on_minimal_ui_ready),
+      reinterpret_cast<jlong>(&callbacks.on_ui_displayed));
 }
 
 // This runs callbacks given to SetUseNativeObserverOnPaymentRequestForTesting()

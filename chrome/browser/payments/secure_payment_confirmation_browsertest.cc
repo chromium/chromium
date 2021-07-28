@@ -112,25 +112,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
                       "getSecurePaymentConfirmationStatus()"));
 }
 
-#if defined(OS_ANDROID)
-// TODO(https://crbug.com/1110320): Implement SetHasAuthenticator() for Android,
-// so secure payment confirmation can be tested on Android as well.
-#define MAYBE_NoInstrumentInStorage DISABLED_NoInstrumentInStorage
-#define MAYBE_CheckInstrumentInStorageAfterCanMakePayment \
-  DISABLED_CheckInstrumentInStorageAfterCanMakePayment
-#define MAYBE_PaymentSheetShowsApp DISABLED_PaymentSheetShowsApp
-#define MAYBE_CanMakePayment_HasAuthenticator \
-  DISABLED_CanMakePayment_HasAuthenticator
-#else
-#define MAYBE_NoInstrumentInStorage NoInstrumentInStorage
-#define MAYBE_CheckInstrumentInStorageAfterCanMakePayment \
-  CheckInstrumentInStorageAfterCanMakePayment
-#define MAYBE_PaymentSheetShowsApp PaymentSheetShowsApp
-#define MAYBE_CanMakePayment_HasAuthenticator CanMakePayment_HasAuthenticator
-#endif  // OS_ANDROID
-
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
-                       MAYBE_NoInstrumentInStorage) {
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoInstrumentInStorage) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -142,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
-                       MAYBE_CheckInstrumentInStorageAfterCanMakePayment) {
+                       CheckInstrumentInStorageAfterCanMakePayment) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -155,8 +137,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
               "getSecurePaymentConfirmationStatusAfterCanMakePayment()")));
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
-                       MAYBE_PaymentSheetShowsApp) {
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
@@ -214,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisableDebugTest,
 // platforms with a compatible authenticator regardless of the presence of
 // payment credentials.
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
-                       MAYBE_CanMakePayment_HasAuthenticator) {
+                       CanMakePayment_HasAuthenticator) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 

@@ -177,6 +177,7 @@ public class PaymentRequestService
         void onAbortCalled();
         void onCompleteHandled();
         void onMinimalUIReady();
+        void onUiDisplayed();
         void onPaymentUiServiceCreated(PaymentUiServiceTestInterface uiService);
         void onClosed();
     }
@@ -888,6 +889,9 @@ public class PaymentRequestService
 
             if (success) {
                 mJourneyLogger.setShown();
+                if (sNativeObserverForTest != null) {
+                    sNativeObserverForTest.onUiDisplayed();
+                }
                 return null;
             } else {
                 mSpcAuthnUiController = null;

@@ -67,7 +67,8 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_connection_terminated,
     base::RepeatingClosure on_abort_called,
     base::RepeatingClosure on_complete_called,
-    base::RepeatingClosure on_minimal_ui_ready);
+    base::RepeatingClosure on_minimal_ui_ready,
+    base::RepeatingClosure on_ui_displayed);
 
 }  // namespace payments
 
