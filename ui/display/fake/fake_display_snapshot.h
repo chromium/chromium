@@ -35,6 +35,9 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     std::unique_ptr<FakeDisplaySnapshot> Build();
 
     Builder& SetId(int64_t id);
+    Builder& SetPortDisplayId(int64_t id);
+    Builder& SetEdidDisplayId(int64_t id);
+    Builder& SetConnectorIndex(uint16_t index);
     // Adds display mode with |size| and set as native mode. If a display mode
     // with |size| already exists then it will be reused.
     Builder& SetNativeMode(const gfx::Size& size);
@@ -86,6 +89,9 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     const DisplayMode* AddOrFindDisplayMode(std::unique_ptr<DisplayMode> mode);
 
     int64_t id_ = kInvalidDisplayId;
+    int64_t port_display_id_ = kInvalidDisplayId;
+    int64_t edid_display_id_ = kInvalidDisplayId;
+    uint16_t connector_index_ = 0u;
     gfx::Point origin_;
     float dpi_ = 96.0;
     DisplayConnectionType type_ = DISPLAY_CONNECTION_TYPE_UNKNOWN;
@@ -110,6 +116,9 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
   };
 
   FakeDisplaySnapshot(int64_t display_id,
+                      int64_t port_display_id,
+                      int64_t edid_display_id,
+                      uint16_t connector_index,
                       const gfx::Point& origin,
                       const gfx::Size& physical_size,
                       DisplayConnectionType type,

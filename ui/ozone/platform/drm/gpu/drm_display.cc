@@ -140,7 +140,7 @@ uint32_t DrmDisplay::connector() const {
 
 std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
     HardwareDisplayControllerInfo* info,
-    size_t device_index) {
+    uint8_t device_index) {
   std::unique_ptr<display::DisplaySnapshot> params = CreateDisplaySnapshot(
       info, drm_->get_fd(), drm_->device_path(), device_index, origin_);
   crtc_ = info->crtc()->crtc_id;

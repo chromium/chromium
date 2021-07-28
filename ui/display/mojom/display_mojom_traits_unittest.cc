@@ -77,6 +77,8 @@ void CheckDisplaySnapShotMojoEqual(const DisplaySnapshot& input,
   // was correctly serialized and deserialized.
   EXPECT_NE(&input, &output);  // Make sure they aren't the same object.
   EXPECT_EQ(input.display_id(), output.display_id());
+  EXPECT_EQ(input.port_display_id(), output.port_display_id());
+  EXPECT_EQ(input.edid_display_id(), output.edid_display_id());
   EXPECT_EQ(input.origin(), output.origin());
   EXPECT_EQ(input.physical_size(), output.physical_size());
   EXPECT_EQ(input.type(), output.type());
@@ -255,7 +257,9 @@ TEST(DisplayStructTraitsTest, BasicGammaRampRGBEntry) {
 // One display mode, current and native mode nullptr.
 TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   // Prepare sample input with random values.
-  const int64_t display_id = 7;
+  const int64_t port_display_id = 7;
+  const int64_t edid_display_id = 19;
+  const uint16_t connector_index = 0x0001;
   const gfx::Point origin(1, 2);
   const gfx::Size physical_size(5, 9);
   const gfx::Size maximum_cursor_size(3, 5);
@@ -285,7 +289,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const std::vector<uint8_t> edid = {1};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,
@@ -301,7 +306,9 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
 // One display mode that is the native mode and no current mode.
 TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   // Prepare sample input with random values.
-  const int64_t display_id = 6;
+  const int64_t port_display_id = 6;
+  const int64_t edid_display_id = 17;
+  const uint16_t connector_index = 0x0101;
   const gfx::Point origin(11, 32);
   const gfx::Size physical_size(55, 49);
   const gfx::Size maximum_cursor_size(13, 95);
@@ -331,7 +338,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const std::vector<uint8_t> edid = {1};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,
@@ -347,7 +355,9 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
 // Multiple display modes, both native and current mode set.
 TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   // Prepare sample input from external display.
-  const int64_t display_id = 9834293210466051;
+  const int64_t port_display_id = 9834293210466051;
+  const int64_t edid_display_id = 1428;
+  const uint16_t connector_index = 0x0002;
   const gfx::Point origin(0, 1760);
   const gfx::Size physical_size(520, 320);
   const gfx::Size maximum_cursor_size(4, 5);
@@ -381,7 +391,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const std::vector<uint8_t> edid = {2, 3, 4, 5};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,
@@ -396,7 +407,9 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
 
 TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   // Prepare sample input from Pixel's internal display.
-  const int64_t display_id = 13761487533244416;
+  const int64_t port_display_id = 13761487533244416;
+  const int64_t edid_display_id = 39927;
+  const uint16_t connector_index = 0x0103;
   const gfx::Point origin(0, 0);
   const gfx::Size physical_size(270, 180);
   const gfx::Size maximum_cursor_size(64, 64);
@@ -427,7 +440,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const std::vector<uint8_t> edid = {2, 3};
 
   std::unique_ptr<DisplaySnapshot> input = std::make_unique<DisplaySnapshot>(
-      display_id, origin, physical_size, type, base_connector_id, path_topology,
+      port_display_id, port_display_id, edid_display_id, connector_index,
+      origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
       has_color_correction_matrix, color_correction_in_linear_space,
       display_color_space, bits_per_channel, hdr_static_metadata, display_name,

@@ -41,7 +41,7 @@ class DrmDisplay {
 
   std::unique_ptr<display::DisplaySnapshot> Update(
       HardwareDisplayControllerInfo* info,
-      size_t device_index);
+      uint8_t device_index);
 
   void SetOrigin(const gfx::Point origin) { origin_ = origin; }
   bool GetHDCPState(display::HDCPState* state,

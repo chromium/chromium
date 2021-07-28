@@ -114,6 +114,13 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
   size_t device_index = 0;
   for (const auto& drm : devices) {
+    if (device_index >= kMaxDrmCount) {
+      LOG(WARNING) << "Reached the current limit of " << kMaxDrmCount
+                   << " connected DRM devices. Ignoring the remaining "
+                   << devices.size() - kMaxDrmCount << " connected devices.";
+      break;
+    }
+
     // Receiving a signal that DRM state was updated. Need to reset the plane
     // manager's resource cache since IDs may have changed.
     drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
@@ -130,8 +137,8 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
         displays_.push_back(std::make_unique<DrmDisplay>(drm));
       }
 
-      auto display_snapshot =
-          displays_.back()->Update(display_info.get(), device_index);
+      auto display_snapshot = displays_.back()->Update(
+          display_info.get(), static_cast<uint8_t>(device_index));
       if (display_snapshot) {
         params_list.push_back(std::move(display_snapshot));
       } else {
