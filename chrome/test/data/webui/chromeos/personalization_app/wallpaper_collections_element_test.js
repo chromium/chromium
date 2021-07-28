@@ -137,9 +137,9 @@ export function WallpaperCollectionsTest() {
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
     // No error displayed while loading.
-    const error =
-        wallpaperCollectionsElement.shadowRoot.querySelector('#error');
-    assertTrue(error.hidden);
+    let error =
+        wallpaperCollectionsElement.shadowRoot.querySelector('wallpaper-error');
+    assertTrue(error === null);
 
     personalizationStore.data.loading = {
       ...personalizationStore.data.loading,
@@ -149,7 +149,9 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    assertFalse(error.hidden);
+    error =
+        wallpaperCollectionsElement.shadowRoot.querySelector('wallpaper-error');
+    assertTrue(!!error);
 
     // Iframe should be hidden if there is an error.
     assertTrue(

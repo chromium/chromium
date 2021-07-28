@@ -47,6 +47,11 @@ styles.innerHTML = `
       position: relative;
       width: 100%;
     }
+    .photo-inner-container.photo-loading-failure {
+      cursor: default;
+      filter: grayscale(100%);
+      opacity: 0.3;
+    }
     @keyframes ripple {
       /* 0 ms */
       from {

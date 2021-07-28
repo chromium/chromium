@@ -23,6 +23,12 @@
         font_weight: 500,
         line_height: 22,
       },
+      body_1: {
+        font_family: '$font_family_roboto',
+        font_size: 14,
+        font_weight: 400,
+        line_height: 20,
+      },
       body_2: {
         font_family: '$font_family_roboto',
         font_size: 13,
