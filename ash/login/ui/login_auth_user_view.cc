@@ -1546,8 +1546,15 @@ gfx::Size LoginAuthUserView::CalculatePreferredSize() const {
 void LoginAuthUserView::RequestFocus() {
   if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
     pin_input_view_->RequestFocus();
-  else
-    password_view_->RequestFocus();
+  else if (password_view_->GetEnabled())
+    RequestFocusOnPasswordView();
+}
+
+void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
+  // The textfield area may be too small for the user to successfully tap
+  // inside it at their first attempt. We also want to bring up the virtual
+  // keyboard if the user taps in the auth user view area.
+  RequestFocus();
 }
 
 void LoginAuthUserView::OnThemeChanged() {
@@ -1686,6 +1693,17 @@ void LoginAuthUserView::AttemptAuthenticateWithChallengeResponse() {
                          weak_factory_.GetWeakPtr()));
 }
 
+void LoginAuthUserView::RequestFocusOnPasswordView() {
+  password_view_->RequestFocus();
+
+  const UiState current_state{this};
+  // Bring up the virtual keyboard if enabled as soon as we get the focus.
+  // This way, the user does not have to type twice (on the user pod and
+  // additionally on the textfield or user view).
+  if (GetInputMethod() && !current_state.has_pinpad)
+    GetInputMethod()->ShowVirtualKeyboardIfEnabled();
+}
+
 void LoginAuthUserView::UpdateFocus() {
   DCHECK(previous_state_);
   const UiState current_state{this};
@@ -1700,7 +1718,7 @@ void LoginAuthUserView::UpdateFocus() {
   if (current_state.has_challenge_response)
     challenge_response_view_->RequestFocus();
   if (current_state.has_password && !previous_state_->has_password)
-    password_view_->RequestFocus();
+    RequestFocusOnPasswordView();
   if (current_state.has_pin_input)
     pin_input_view_->RequestFocus();
   // Tapping the user view will trigger the online sign-in flow when

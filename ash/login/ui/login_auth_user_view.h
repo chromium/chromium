@@ -180,6 +180,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // NonAccessibleView:
   void OnThemeChanged() override;
@@ -229,6 +230,10 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Called when the user triggered the challenge-response authentication. It
   // starts the asynchronous authentication process against a security token.
   void AttemptAuthenticateWithChallengeResponse();
+
+  // Requests focus on the password view and shows the virtual keyboard if
+  // enabled and if the PIN pad is not shown already.
+  void RequestFocusOnPasswordView();
 
   // Updates the element in focus. Used in `ApplyAnimationPostLayout`.
   void UpdateFocus();

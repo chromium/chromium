@@ -516,6 +516,13 @@ class ASH_EXPORT LockContentsView
   // to show the PIN keyboard or not.
   bool keyboard_shown_ = false;
 
+  // Whether there is an ongoing auth layout. The keyboard visibility might
+  // change during an auth layout, if triggered by a focus request on the
+  // password view. Since a keyboard visibility change triggers an auth layout
+  // and since we do not want an auth layout during an auth layout, we cancel
+  // the new layout request (the new keyboard visibility info is useless).
+  bool ongoing_auth_layout_ = false;
+
   // Accelerators handled by login screen.
   std::map<ui::Accelerator, LoginAcceleratorAction> accel_map_;
 

@@ -1443,7 +1443,8 @@ void LockContentsView::OnKeyboardVisibilityChanged(bool is_visible) {
     return;
 
   keyboard_shown_ = is_visible;
-  LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
+  if (!ongoing_auth_layout_)
+    LayoutAuth(CurrentBigUserView(), nullptr /*opt_to_hide*/, true /*animate*/);
 }
 
 void LockContentsView::SuspendImminent(
@@ -2001,6 +2002,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
       view->auth_user()->ApplyAnimationPostLayout(animate);
   };
 
+  ongoing_auth_layout_ = true;
   // The high-level layout flow:
   capture_animation_state_pre_layout(to_update);
   capture_animation_state_pre_layout(opt_to_hide);
@@ -2009,6 +2011,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
   Layout();
   apply_animation_post_layout(to_update);
   apply_animation_post_layout(opt_to_hide);
+  ongoing_auth_layout_ = false;
 }
 
 void LockContentsView::SwapToBigUser(int user_index) {
