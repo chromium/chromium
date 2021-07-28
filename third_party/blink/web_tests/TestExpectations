@@ -4180,7 +4180,6 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-dom-transform-attr.html [ Failure Pass ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/dynamic-updates/SVGTextElement-svgdom-lengthAdjust-prop.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/filters/feComponentTransfer-style-crash.xhtml [ Pass ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/filters/feDisplacementMap.svg [ Pass Timeout ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/filters/filter-on-filter-for-text.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/filters/filter-on-tspan.svg [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/hittest/text-multiple-dx-values.svg [ Failure Pass ]

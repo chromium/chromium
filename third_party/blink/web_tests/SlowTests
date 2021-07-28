@@ -541,6 +541,7 @@ crbug.com/1091716 svg/as-object/sizing/svg-in-object-placeholder-percentage-fixe
 crbug.com/1091716 svg/as-object/sizing/svg-in-object-placeholder-percentage-fixed-no-intrinsic-ratio.html [ Slow ]
 crbug.com/1091716 svg/as-object/sizing/svg-in-object-placeholder-percentage-percentage-intrinsic-ratio.html [ Slow ]
 crbug.com/1091716 svg/as-object/sizing/svg-in-object-placeholder-percentage-percentage-no-intrinsic-ratio.html [ Slow ]
+crbug.com/1233743 svg/filters/feDisplacementMap.svg [ Slow ]
 
 crbug.com/1043669 [ Mac ] inspector-protocol/emulation/set-vision-deficiency.js [ Slow ]
 crbug.com/1092121 fast/css/large-list-of-rules-crash.html [ Slow ]
