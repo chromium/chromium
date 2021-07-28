@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -104,6 +105,7 @@ void PaintTiming::MarkFirstPaint() {
   // markFirstPaint().
   if (!first_paint_.is_null())
     return;
+  DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   SetFirstPaint(clock_->NowTicks());
 }
 
@@ -114,12 +116,15 @@ void PaintTiming::MarkFirstContentfulPaint() {
   // markFirstContentfulPaint().
   if (!first_contentful_paint_.is_null())
     return;
+  if (IgnorePaintTimingScope::IgnoreDepth() > 0)
+    return;
   SetFirstContentfulPaint(clock_->NowTicks());
 }
 
 void PaintTiming::MarkFirstImagePaint() {
   if (!first_image_paint_.is_null())
     return;
+  DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   first_image_paint_ = clock_->NowTicks();
   SetFirstContentfulPaint(first_image_paint_);
   RegisterNotifyPresentationTime(PaintEvent::kFirstImagePaint);
@@ -176,6 +181,8 @@ void PaintTiming::SetFirstMeaningfulPaint(
 void PaintTiming::NotifyPaint(bool is_first_paint,
                               bool text_painted,
                               bool image_painted) {
+  if (IgnorePaintTimingScope::IgnoreDepth() > 0)
+    return;
   if (is_first_paint)
     MarkFirstPaint();
   if (text_painted)
@@ -223,6 +230,7 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
   if (!first_paint_.is_null())
     return;
 
+  DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   LocalFrame* frame = GetFrame();
   if (frame && frame->GetDocument()) {
     Document* document = frame->GetDocument();
@@ -238,6 +246,7 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
 void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
   if (!first_contentful_paint_.is_null())
     return;
+  DCHECK_EQ(IgnorePaintTimingScope::IgnoreDepth(), 0);
   SetFirstPaint(stamp);
   first_contentful_paint_ = stamp;
   RegisterNotifyPresentationTime(PaintEvent::kFirstContentfulPaint);
