@@ -43,9 +43,7 @@ class MODULES_EXPORT FetchRespondWithObserver : public RespondWithObserver {
   void OnResponseRejected(mojom::ServiceWorkerResponseError) override;
   void OnResponseFulfilled(ScriptState*,
                            const ScriptValue&,
-                           ExceptionState::ContextType context_type,
-                           const char* interface_name,
-                           const char* property_name) override;
+                           const ExceptionContext& exception_context) override;
   void OnNoResponse() override;
 
   void SetEvent(FetchEvent* event);

@@ -110,10 +110,10 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
   return "";
 }
 
-String GetSamplePrefix(const ExceptionState& exception_state,
+String GetSamplePrefix(const ExceptionContext& exception_context,
                        const String& value) {
-  const char* interface_name = exception_state.InterfaceName();
-  const char* property_name = exception_state.PropertyName();
+  const char* interface_name = exception_context.GetClassName();
+  const char* property_name = exception_context.GetPropertyName();
 
   // We have two sample formats, one for eval and one for assignment.
   // If we don't have the required values being passed in, just leave the
@@ -153,13 +153,13 @@ const char* GetElementName(const ScriptElementBase::Type type) {
 HeapVector<ScriptValue> GetDefaultCallbackArgs(
     v8::Isolate* isolate,
     const char* type,
-    const ExceptionState& exception_state,
+    const ExceptionContext& exception_context,
     const String& value = g_empty_string) {
   ScriptState* script_state = ScriptState::Current(isolate);
   HeapVector<ScriptValue> args;
   args.push_back(ScriptValue::From(script_state, type));
-  args.push_back(
-      ScriptValue::From(script_state, GetSamplePrefix(exception_state, value)));
+  args.push_back(ScriptValue::From(script_state,
+                                   GetSamplePrefix(exception_context, value)));
   return args;
 }
 
@@ -183,7 +183,7 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   if (execution_context->GetTrustedTypes())
     execution_context->GetTrustedTypes()->CountTrustedTypeAssignmentError();
 
-  String prefix = GetSamplePrefix(exception_state, value);
+  String prefix = GetSamplePrefix(exception_state.GetContext(), value);
   bool allow =
       execution_context->GetContentSecurityPolicy()
           ->AllowTrustedTypeAssignmentFailure(
@@ -277,7 +277,7 @@ String GetStringFromScriptHelper(
   TrustedScript* result = default_policy->CreateScript(
       context->GetIsolate(), script,
       GetDefaultCallbackArgs(context->GetIsolate(), "TrustedScript",
-                             exception_state, script),
+                             exception_state.GetContext(), script),
       exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
@@ -333,7 +333,7 @@ String TrustedTypesCheckForHTML(String html,
   TrustedHTML* result = default_policy->CreateHTML(
       execution_context->GetIsolate(), html,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedHTML",
-                             exception_state),
+                             exception_state.GetContext()),
       exception_state);
   if (exception_state.HadException()) {
     return g_empty_string;
@@ -382,7 +382,7 @@ String TrustedTypesCheckForScript(String script,
   TrustedScript* result = default_policy->CreateScript(
       execution_context->GetIsolate(), script,
       GetDefaultCallbackArgs(execution_context->GetIsolate(), "TrustedScript",
-                             exception_state, script),
+                             exception_state.GetContext(), script),
       exception_state);
   DCHECK_EQ(!result, exception_state.HadException());
   if (exception_state.HadException()) {
@@ -434,7 +434,7 @@ String TrustedTypesCheckForScriptURL(String script_url,
   TrustedScriptURL* result = default_policy->CreateScriptURL(
       execution_context->GetIsolate(), script_url,
       GetDefaultCallbackArgs(execution_context->GetIsolate(),
-                             "TrustedScriptURL", exception_state),
+                             "TrustedScriptURL", exception_state.GetContext()),
       exception_state);
 
   if (exception_state.HadException()) {

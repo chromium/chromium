@@ -224,12 +224,6 @@ class PLATFORM_EXPORT ExceptionState {
     return main_context_;
   }
 
-  // Deprecated APIs to get information about where this ExceptionState has
-  // been created.
-  ContextType Context() const { return GetContext().GetContext(); }
-  const char* PropertyName() const { return GetContext().GetPropertyName(); }
-  const char* InterfaceName() const { return GetContext().GetClassName(); }
-
  protected:
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
   void SetExceptionCode(ExceptionCode);

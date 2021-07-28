@@ -44,12 +44,9 @@ void CanMakePaymentRespondWithObserver::OnResponseRejected(
 void CanMakePaymentRespondWithObserver::OnResponseFulfilled(
     ScriptState* script_state,
     const ScriptValue& value,
-    ExceptionState::ContextType context_type,
-    const char* interface_name,
-    const char* property_name) {
+    const ExceptionContext& exception_context) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), context_type,
-                                 interface_name, property_name);
+  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
   if (is_minimal_ui_) {
     OnResponseFulfilledForMinimalUI(script_state, value, exception_state);
     return;
