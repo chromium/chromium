@@ -36,10 +36,24 @@ class SymbolizeTraceTestCase(unittest.TestCase):
 
   def setUp(self):
     self.options = TestOptions()
+
+    # Function stashing so mocking doesn't mutate other tests.
+    self.RunSymbolizer = symbolize_trace._RunSymbolizer
+    self.GetTraceBreakpadSymbols = symbol_fetcher.GetTraceBreakpadSymbols
+    self.MetadataExtractor = metadata_extractor.MetadataExtractor
+    self.ExtractBreakpadFiles = breakpad_file_extractor.ExtractBreakpadFiles
+
     symbolize_trace._RunSymbolizer = MagicMock(side_effect=self.side_effect)
     symbol_fetcher.GetTraceBreakpadSymbols = MagicMock()
     metadata_extractor.MetadataExtractor = MagicMock()
     breakpad_file_extractor.ExtractBreakpadFiles = MagicMock()
+
+  def tearDown(self):
+    # Unstash functions.
+    symbolize_trace._RunSymbolizer = self.RunSymbolizer
+    symbol_fetcher.GetTraceBreakpadSymbols = self.GetTraceBreakpadSymbols
+    metadata_extractor.MetadataExtractor = self.MetadataExtractor
+    breakpad_file_extractor.ExtractBreakpadFiles = self.ExtractBreakpadFiles
 
   def testNoLocalOrOutputBreakpadDir(self):
     # Test the case with no breakpad output directory specified.
@@ -275,6 +289,44 @@ class SymbolizeTraceTestCase(unittest.TestCase):
     os.remove(trace_file)
     os.remove(self.options.output_file)
     shutil.rmtree(self.options.local_breakpad_dir)
+
+  def testLocalNoBreakpadExtracted(self):
+    # Unmock breakpad extraction function.
+    breakpad_file_extractor.ExtractBreakpadFiles = self.ExtractBreakpadFiles
+
+    # Set up option arguments to run extract breakpad on local build directory.
+    self.options.breakpad_output_dir = tempfile.mkdtemp()
+    self.options.local_build_dir = tempfile.mkdtemp()
+    trace_file = None
+    with tempfile.NamedTemporaryFile(mode='w+',
+                                     delete=False) as test_trace_file:
+      test_trace_file.write('Trace data.')
+      trace_file = test_trace_file.name
+    dump_syms_dir = tempfile.mkdtemp()
+    self.options.dump_syms_path = os.path.join(dump_syms_dir, 'dump_syms')
+    with open(self.options.dump_syms_path, 'w') as _:
+      pass
+
+    unstripped_dir = os.path.join(self.options.local_build_dir,
+                                  'lib.unstripped')
+    exception_msg = (
+        'No breakpad symbols could be extracted from files in: %s xor %s' %
+        (self.options.local_build_dir, unstripped_dir))
+
+    # Test when there is no 'lib.unstripped' subdirectory.
+    with self.assertRaisesRegex(Exception, exception_msg):
+      symbolize_trace.SymbolizeTrace(trace_file, self.options)
+
+    # Test when there is a 'lib.unstripped' subdirectory.
+    os.mkdir(unstripped_dir)
+    with self.assertRaisesRegex(Exception, exception_msg):
+      symbolize_trace.SymbolizeTrace(trace_file, self.options)
+
+    # Remove files and temp directory.
+    os.remove(trace_file)
+    shutil.rmtree(self.options.local_build_dir)
+    shutil.rmtree(dump_syms_dir)
+    shutil.rmtree(self.options.breakpad_output_dir)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
-Uses dump_syms to extract brekapad symbol files
+Uses dump_syms to extract breakpad symbol files
 """
 
 import os
@@ -10,21 +10,30 @@ import logging
 import subprocess
 
 
-def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
+def ExtractBreakpadFiles(dump_syms_path,
+                         build_dir,
+                         breakpad_output_dir,
+                         search_unstripped=True):
   """Uses dump_syms to extract breakpad files.
 
   Args:
     dump_syms_path: The path to the dump_syms binary that should be run.
     build_dir: The path to the input directory containing the binaries that
-      dump_syms will use. If the directory '|build_dir|/lib.unstipped'
-      exists, dump_syms is run on this directory instead.
+      dump_syms will use.
     breakpad_base_dir: The output directory for the breakpad symbol files
       produced.
+    search_unstripped: Boolean flag for whether to search for 'lib.unstripped'
+      subdirectory or not. If specified and '|build_dir|/lib.unstripped'
+      exists, dump_syms is run on this directory instead. If not specified,
+      dump_syms is run on |build_dir|.
+
+  Returns:
+    True if at least one breakpad file could be extracted from |build_dir|;
+    False, otherwise
 
   Raises:
     FileNotFoundError: If the dump_syms binary or the input and output
       directories cannot be found.
-    Exception: If none of the files in |build_dir| could be symbolized.
   """
   # Check to see if |dump_syms_path| is a file.
   dump_syms_binary = _GetDumpSyms(dump_syms_path, build_dir)
@@ -41,23 +50,22 @@ def ExtractBreakpadFiles(dump_syms_path, build_dir, breakpad_output_dir):
 
   # If on Android, lib.unstripped will hold symbols for binaries.
   symbol_dir = build_dir
-  if os.path.isdir(os.path.join(build_dir, 'lib.unstripped')):
+  if search_unstripped and os.path.isdir(
+      os.path.join(build_dir, 'lib.unstripped')):
     symbol_dir = os.path.join(build_dir, 'lib.unstripped')
 
   breakpad_file_count = 0
-  for file in os.listdir(symbol_dir):
-    input_file_path = os.path.join(symbol_dir, file)
+  for file_iter in os.listdir(symbol_dir):
+    input_file_path = os.path.join(symbol_dir, file_iter)
     if os.path.isfile(input_file_path) and _IsValidBinaryPath(input_file_path):
       # Construct absolute file paths for input and output files.
-      output_file_path = os.path.join(breakpad_output_dir, file + '.breakpad')
+      output_file_path = os.path.join(breakpad_output_dir,
+                                      file_iter + '.breakpad')
       if _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
         breakpad_file_count += 1
 
   # Extracting breakpad symbols should be successful with at least one file.
-  if breakpad_file_count == 0:
-    raise Exception(
-        'Could not create breakpad symbols from any files from {symbol_dir}.'.
-        format(symbol_dir=symbol_dir))
+  return breakpad_file_count > 0
 
 
 def _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
@@ -109,5 +117,5 @@ def _IsValidBinaryPath(path):
   if file_name.endswith('partition.so') or file_name.endswith(
       '.dwp') or file_name.endswith('.dwo') or '_combined' in file_name:
     return False
-  return 'chrome' in file_name or file_name.endswith(
+  return file_name == 'chrome' or file_name.endswith(
       '.so') or file_name.endswith('.exe')

@@ -38,9 +38,9 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     test_input_file = tempfile.NamedTemporaryFile(suffix='.so', dir=build_dir)
     # |test_output_file_path| requires a specific name, so NamedTemporaryFile()
     # is not used.
-    intput_file_name = os.path.split(test_input_file.name)[1]
+    input_file_name = os.path.split(test_input_file.name)[1]
     test_output_file_path = '{output_path}.breakpad'.format(
-        output_path=os.path.join(breakpad_dir, intput_file_name))
+        output_path=os.path.join(breakpad_dir, input_file_name))
     with open(test_output_file_path, 'w'):
       pass
 
@@ -49,6 +49,10 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     temp_java_file = tempfile.NamedTemporaryFile(suffix='.java', dir=build_dir)
     temp_zip_file = tempfile.NamedTemporaryFile(suffix='.zip', dir=build_dir)
     temp_apk_file = tempfile.NamedTemporaryFile(suffix='_apk', dir=build_dir)
+    temp_dwp_file = tempfile.NamedTemporaryFile(suffix='.so.dwp', dir=build_dir)
+    temp_dwo_file = tempfile.NamedTemporaryFile(suffix='.so.dwo', dir=build_dir)
+    monochrome_zip = tempfile.NamedTemporaryFile(suffix='_chromesymbols.zip',
+                                                 dir=build_dir)
 
     breakpad_file_extractor._RunDumpSyms = MagicMock()
     breakpad_file_extractor.ExtractBreakpadFiles(dump_syms_path, build_dir,
@@ -80,16 +84,25 @@ class ExtractBreakpadTestCase(unittest.TestCase):
                                     self.test_build_dir, self.test_breakpad_dir)
 
   def testMultipleBinaryFiles(self):
-    # Create files in |test_build_dir|.
-    input_files = []
-    suffixes = ['.so', '.exe', '_chrome']
+    # Create files in |test_build_dir|. All files are removed when
+    # |test_build_dir| is recursively deleted.
+    input_filenames = []
+    suffixes = ['.so', '.exe']
     for suffix in suffixes:
-      file = tempfile.NamedTemporaryFile(suffix=suffix, dir=self.test_build_dir)
-      input_files.append(file)
+      new_file = tempfile.NamedTemporaryFile(suffix=suffix,
+                                             dir=self.test_build_dir,
+                                             delete=False)
+      input_filenames.append(new_file.name)
+    # Add chrome file. Is not a temp file because it needs to be named 'chrome'.
+    chrome_file = os.path.join(self.test_build_dir, 'chrome')
+    with open(chrome_file, 'w') as _:
+      pass
+    input_filenames.append(chrome_file)
 
+    # Form output file paths.
     output_file_paths = []
-    for file in input_files:
-      input_file_name = os.path.split(file.name)[1]
+    for file_iter in input_filenames:
+      input_file_name = os.path.split(file_iter)[1]
       test_output_file_path = '{output_path}.breakpad'.format(
           output_path=os.path.join(self.test_breakpad_dir, input_file_name))
       with open(test_output_file_path, 'w'):
@@ -103,23 +116,20 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Check that each call expected call to _RunDumpSyms() has been made.
     expected_calls = [
-        call(self.test_dump_syms_binary, input_files[0].name,
-             output_file_paths[0]),
-        call(self.test_dump_syms_binary, input_files[1].name,
-             output_file_paths[1]),
-        call(self.test_dump_syms_binary, input_files[2].name,
-             output_file_paths[2])
+        call(self.test_dump_syms_binary, input_filename,
+             output_file_paths[file_iter])
+        for file_iter, input_filename in enumerate(input_filenames)
     ]
     breakpad_file_extractor._RunDumpSyms.assert_has_calls(expected_calls,
                                                           any_order=True)
 
     # Check that the expected files exist in the output directory.
     expected_files = [
-        os.path.basename(f.name) + '.breakpad' for f in input_files
+        os.path.basename(f) + '.breakpad' for f in input_filenames
     ]
     file_count = 0
-    for file in os.listdir(self.test_breakpad_dir):
-      file_path = os.path.join(self.test_breakpad_dir, file)
+    for filename in os.listdir(self.test_breakpad_dir):
+      file_path = os.path.join(self.test_breakpad_dir, filename)
       if os.path.isfile(file_path):
         file_count += 1
     self.assertEqual(file_count, 3)
@@ -146,41 +156,46 @@ class ExtractBreakpadTestCase(unittest.TestCase):
                                                    self.test_breakpad_dir)
 
   def testSymbolizedNoFiles(self):
-    with self.assertRaisesRegex(
-        Exception, 'Could not create breakpad symbols from any files'):
-      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                   self.test_build_dir,
-                                                   self.test_breakpad_dir)
+    did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
+        self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir)
+    self.assertFalse(did_extract)
 
-  def testIgnoredwp(self):
-    dwp_file1 = os.path.join(self.test_build_dir, 'name.so.dwp')
-    dwp_file2 = os.path.join(self.test_build_dir, 'name.so.dwo')
-    with open(dwp_file1, 'w') as file1:
-      file1.write('MODULE Linux x86_64 34984AB4EF948C name1.so')
-    with open(dwp_file2, 'w') as file2:
-      file2.write('MODULE Linux x86_64 34984AB4EF948C name2.so')
+  def testNotSearchUnstripped(self):
+    # Make 'lib.unstripped' directory and file. Our script should not run
+    # dump_syms on this file.
+    lib_unstripped = os.path.join(self.test_build_dir, 'lib.unstripped')
+    os.mkdir(lib_unstripped)
+    lib_unstripped_file = os.path.join(lib_unstripped, 'unstripped.so')
+    with open(lib_unstripped_file, 'w') as _:
+      pass
 
-    exception_msg = ('Could not create breakpad symbols from any files from ' +
-                     self.test_build_dir + '.')
-    with self.assertRaisesRegex(Exception, exception_msg):
-      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                   self.test_build_dir,
-                                                   self.test_breakpad_dir)
+    # Make file to run dump_syms on in input directory.
+    extracted_file_name = 'extracted.so'
+    extracted_file = os.path.join(self.test_build_dir, extracted_file_name)
+    with open(extracted_file, 'w') as _:
+      pass
 
-    os.remove(dwp_file1)
-    os.remove(dwp_file2)
+    breakpad_file_extractor._RunDumpSyms = MagicMock()
+    breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
+                                                 self.test_build_dir,
+                                                 self.test_breakpad_dir,
+                                                 search_unstripped=False)
+
+    # Check that _RunDumpSyms() only called for extracted file and not the
+    # lib.unstripped files.
+    extracted_output_path = '{output_path}.breakpad'.format(
+        output_path=os.path.join(self.test_breakpad_dir, extracted_file_name))
+    breakpad_file_extractor._RunDumpSyms.assert_called_once_with(
+        self.test_dump_syms_binary, extracted_file, extracted_output_path)
 
   def testIgnorePartitionFiles(self):
     partition_file = os.path.join(self.test_build_dir, 'partition.so')
     with open(partition_file, 'w') as file1:
       file1.write('MODULE Linux x86_64 34984AB4EF948C name1.so')
 
-    exception_msg = ('Could not create breakpad symbols from any files from ' +
-                     self.test_build_dir + '.')
-    with self.assertRaisesRegex(Exception, exception_msg):
-      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                   self.test_build_dir,
-                                                   self.test_breakpad_dir)
+    did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
+        self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir)
+    self.assertFalse(did_extract)
 
     os.remove(partition_file)
 
@@ -192,12 +207,9 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     with open(combined_file2, 'w') as file2:
       file2.write('MODULE Linux x86_64 34984AB4EF948C name2.so')
 
-    exception_msg = ('Could not create breakpad symbols from any files from ' +
-                     self.test_build_dir + '.')
-    with self.assertRaisesRegex(Exception, exception_msg):
-      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                   self.test_build_dir,
-                                                   self.test_breakpad_dir)
+    did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
+        self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir)
+    self.assertFalse(did_extract)
 
     os.remove(combined_file1)
     os.remove(combined_file2)

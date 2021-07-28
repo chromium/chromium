@@ -28,14 +28,11 @@ def SymbolizeTrace(trace_file, options):
 
   Args:
     trace_file: path to proto trace file to symbolize.
-    cloud_storage_bucket: bucket in cloud storage where symbols reside.
-    trace_processor_path: path to the trace_processor executable. If not
-      specified, trace processor binary will be automatically downloaded.
-    breakpad_output_dir: empty local base directory of where to save
-      breakpad symbols.
+    options: The options set by the command line args.
 
   Raises:
     Exception: if breakpad_output_dir is not empty.
+    FileNotFoundError: if path to local breakpad directory is invalid.
   """
   need_cleanup = False
   if options.local_breakpad_dir is None:
@@ -81,18 +78,28 @@ def _EnsureBreakpadSymbols(trace_file, options):
 
   Args:
     trace_file: The trace file to be symbolized.
-    options: The options set by the commandline args. This is used to check if
+    options: The options set by the command line args. This is used to check if
       symbols need to be fetched, extracted, or if they are already present.
+
+  Raises:
+    Exception: if no breakpad files could be extracted.
   """
   # If |options.local_breakpad_dir| is not None, then this can be skipped and
   # |trace_file| can be symbolized using those symbols.
-  if options.local_breakpad_dir:
+  if options.local_breakpad_dir is not None:
     return
-  if options.local_build_dir:
+  if options.local_build_dir is not None:
     # Extract breakpad symbol files from binaries in |options.local_build_dir|.
-    breakpad_file_extractor.ExtractBreakpadFiles(options.dump_syms_path,
-                                                 options.local_build_dir,
-                                                 options.breakpad_output_dir)
+    if not breakpad_file_extractor.ExtractBreakpadFiles(
+        options.dump_syms_path,
+        options.local_build_dir,
+        options.breakpad_output_dir,
+        search_unstripped=True):
+      raise Exception(
+          'No breakpad symbols could be extracted from files in: %s xor %s' %
+          (options.local_build_dir,
+           os.path.join(options.local_build_dir, 'lib.unstripped')))
+
     symbol_fetcher.RenameBreakpadFiles(options.breakpad_output_dir,
                                        options.breakpad_output_dir)
     return
@@ -108,9 +115,8 @@ def _EnsureBreakpadSymbols(trace_file, options):
   logging.info('Fetching and extracting trace breakpad symbols.')
   symbol_fetcher.GetTraceBreakpadSymbols(options.cloud_storage_bucket,
                                          trace_metadata,
-                                         options.breakpad_output_dir)
-  symbol_fetcher.RenameBreakpadFiles(options.breakpad_output_dir,
-                                     options.breakpad_output_dir)
+                                         options.breakpad_output_dir,
+                                         options.dump_syms_path)
 
 
 def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
