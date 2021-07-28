@@ -78,16 +78,6 @@ export class FileManagerUI {
     this.dialogType_ = launchParam.type;
 
     /**
-     * <hr> elements in Menu.
-     * This is a workaround for crbug.com/689255. This member variable is just
-     * for keeping explicit reference to decorated <hr>s to prevent GC from
-     * collecting <hr> wrappers, and not used anywhere.
-     * TODO(fukino): Remove this member variable once the root cause is fixed.
-     * @private {!Array<!Element>}
-     */
-    this.separators_ = [].slice.call(document.querySelectorAll('cr-menu > hr'));
-
-    /**
      * Alert dialog.
      * @type {!FilesAlertDialog}
      * @const
