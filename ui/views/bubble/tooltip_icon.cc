@@ -93,9 +93,8 @@ void TooltipIcon::ShowBubble() {
 
   SetDrawAsHovered(true);
 
-  bubble_ = new InfoBubble(this, tooltip_);
+  bubble_ = new InfoBubble(this, anchor_point_arrow_, tooltip_);
   bubble_->set_preferred_width(preferred_width_);
-  bubble_->SetArrow(anchor_point_arrow_);
   // When shown due to a gesture event, close on deactivate (i.e. don't use
   // "focusless").
   bubble_->SetCanActivate(!mouse_inside_);
