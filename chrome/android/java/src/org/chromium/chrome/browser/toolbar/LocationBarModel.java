@@ -245,7 +245,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         String url = getCurrentUrl();
         if (NativePage.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)
-                || TextUtils.isEmpty(url)) {
+                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
             return UrlBarData.EMPTY;
         }
 
