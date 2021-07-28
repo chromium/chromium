@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
