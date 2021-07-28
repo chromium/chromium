@@ -47,6 +47,9 @@ class MockPage : public read_later::mojom::Page {
 
   MOCK_METHOD1(ItemsChanged,
                void(read_later::mojom::ReadLaterEntriesByStatusPtr));
+  MOCK_METHOD2(CurrentPageActionButtonStateChanged,
+               void(read_later::mojom::CurrentPageActionButtonState,
+                    const GURL&));
 };
 
 void ExpectNewReadLaterEntry(const read_later::mojom::ReadLaterEntry* entry,
@@ -309,6 +312,33 @@ TEST_F(TestReadLaterPageHandlerTest, NoUpdateWhenHidden) {
       /* unread_size= */ 1u, /* read_size= */ 0u,
       /* expected_unread_data= */
       {std::make_pair(GURL(kTabUrl1), kTabName1)},
+      /* expected_read_data= */ {});
+}
+
+TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
+  // Check that OpenURL opens a new tab when not on the NTP.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
+  handler()->OpenURL(GURL(kTabUrl3), true);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 5);
+  model()->AddEntry(GURL(kTabUrl3), kTabName3,
+                    reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
+
+  // Expect ItemsChanged to be called 4 times.
+  // Twice for the two AddEntry calls in SetUp().
+  // Once for the OpenURL call above, and once for the AddEntry call above.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called once when the
+  // current page is added while on that page.
+  EXPECT_CALL(page_,
+              CurrentPageActionButtonStateChanged(testing::_, testing::_))
+      .Times(1);
+
+  // Get Read later entries.
+  GetAndVerifyReadLaterEntries(
+      /* unread_size= */ 2u, /* read_size= */ 0u,
+      /* expected_unread_data= */
+      {std::make_pair(GURL(kTabUrl3), kTabName3),
+       std::make_pair(GURL(kTabUrl1), kTabName1)},
       /* expected_read_data= */ {});
 }
 

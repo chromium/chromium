@@ -59,10 +59,21 @@ interface PageHandler {
   CloseUI();
 };
 
+enum CurrentPageActionButtonState {
+  kAdd = 0,
+  kRemove = 1,
+  kDisabled = 2,
+};
+
 // WebUI-side handler for requests from the browser.
 interface Page {
   // Callback when any item in read later is changed/removed. `entries` is a
   // collection of all read later entries by read/unread status. This data
   // structure is always present, even if the read/unread lists are empty.
   ItemsChanged(ReadLaterEntriesByStatus entries);
+  // Callback when active tab or reading list model changes trigger the need
+  // to update the state of the current page action button to `state` and
+  // passes the url.
+  CurrentPageActionButtonStateChanged(CurrentPageActionButtonState state,
+                                      url.mojom.Url url);
 };

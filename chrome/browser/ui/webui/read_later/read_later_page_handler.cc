@@ -18,6 +18,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -238,8 +239,10 @@ void ReadLaterPageHandler::ShowContextMenuForURL(const GURL& url,
 
 void ReadLaterPageHandler::ShowUI() {
   auto embedder = read_later_ui_->embedder();
-  if (embedder)
+  if (embedder) {
     embedder->ShowUI();
+    UpdateCurrentPageActionButton();
+  }
 }
 
 void ReadLaterPageHandler::CloseUI() {
@@ -254,6 +257,7 @@ void ReadLaterPageHandler::ReadingListModelCompletedBatchUpdates(
   if (web_contents_->GetVisibility() == content::Visibility::HIDDEN)
     return;
   page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
+  UpdateCurrentPageActionButton();
 }
 
 void ReadLaterPageHandler::ReadingListModelBeingDeleted(
@@ -272,6 +276,26 @@ void ReadLaterPageHandler::ReadingListDidApplyChanges(ReadingListModel* model) {
     return;
   }
   page_->ItemsChanged(CreateReadLaterEntriesByStatusData());
+  UpdateCurrentPageActionButton();
+}
+
+const absl::optional<GURL> ReadLaterPageHandler::GetActiveTabURL() {
+  if (active_tab_url_)
+    return active_tab_url_.value();
+  Browser* browser = chrome::FindLastActive();
+  if (browser) {
+    return chrome::GetURLToBookmark(
+        browser->tab_strip_model()->GetActiveWebContents());
+  }
+  return absl::nullopt;
+}
+
+void ReadLaterPageHandler::SetActiveTabURL(const GURL& url) {
+  if (active_tab_url_ && active_tab_url_.value() == url)
+    return;
+
+  active_tab_url_ = url;
+  UpdateCurrentPageActionButton();
 }
 
 read_later::mojom::ReadLaterEntryPtr ReadLaterPageHandler::GetEntryData(
@@ -327,4 +351,27 @@ std::string ReadLaterPageHandler::GetTimeSinceLastUpdate(
   return base::UTF16ToUTF8(
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                              ui::TimeFormat::LENGTH_SHORT, elapsed_time));
+}
+
+void ReadLaterPageHandler::UpdateCurrentPageActionButton() {
+  if (web_contents_->GetVisibility() == content::Visibility::HIDDEN)
+    return;
+
+  const absl::optional<GURL> url = GetActiveTabURL();
+  if (!url.has_value())
+    return;
+
+  read_later::mojom::CurrentPageActionButtonState new_state;
+  if (!reading_list_model_->IsUrlSupported(url.value())) {
+    new_state = read_later::mojom::CurrentPageActionButtonState::kDisabled;
+  } else if (reading_list_model_->GetEntryByURL(url.value()) &&
+             !reading_list_model_->GetEntryByURL(url.value())->IsRead()) {
+    new_state = read_later::mojom::CurrentPageActionButtonState::kRemove;
+  } else {
+    new_state = read_later::mojom::CurrentPageActionButtonState::kAdd;
+  }
+  if (current_page_action_button_state_ != new_state) {
+    current_page_action_button_state_ = new_state;
+    page_->CurrentPageActionButtonStateChanged(new_state, url.value());
+  }
 }

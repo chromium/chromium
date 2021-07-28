@@ -121,7 +121,8 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 void StarView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
   if (reading_list::switches::IsReadingListEnabled() &&
-      !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog)) {
+      !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) &&
+      !base::FeatureList::IsEnabled(features::kSidePanel)) {
     FeaturePromoController* feature_promo_controller =
         browser_->window()->GetFeaturePromoController();
     if (feature_promo_controller &&

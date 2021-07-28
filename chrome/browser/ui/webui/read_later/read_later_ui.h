@@ -37,6 +37,8 @@ class ReadLaterUI : public ui::MojoBubbleWebUIController,
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandlerFactory>
           receiver);
 
+  void SetActiveTabURL(const GURL& url);
+
  private:
   // read_later::mojom::PageHandlerFactory:
   void CreatePageHandler(

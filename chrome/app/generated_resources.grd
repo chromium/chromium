@@ -6058,6 +6058,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_LATER_ADD_CURRENT_TAB" desc="Label for button to add the current tab to Read later">
         Add current tab
       </message>
+      <message name="IDS_READ_LATER_CANT_ADD_CURRENT_TAB" desc="Label for button when the current tab cannot be added to read later">
+        Can't add current tab
+      </message>
+      <message name="IDS_READ_LATER_REMOVE_CURRENT_TAB" desc="Label for button to remove the current tab from read later">
+        Remove current tab
+      </message>
 
       <!-- Read Later context menu -->
       <if expr="use_titlecase">
