@@ -5,7 +5,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/constrained_window/constrained_window_views_client.h"
