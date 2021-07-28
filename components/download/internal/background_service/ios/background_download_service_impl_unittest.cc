@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -32,6 +33,10 @@ const char kURL[] = "https://www.example.com/test";
 const char kGuid[] = "1234";
 const base::FilePath::CharType kFilePath[] =
     FILE_PATH_LITERAL("downloaded_file.zip");
+const char kCompletionHistogram[] = "Download.Service.Finish.Type";
+const char kStartResultHistogram[] = "Download.Service.Request.StartResult";
+const char kServiceStartUpResultHistogram[] =
+    "Download.Service.StartUpStatus.Initialization";
 
 namespace download {
 namespace {
@@ -71,7 +76,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     auto client_set = std::make_unique<ClientSet>(std::move(clients));
     auto download_helper = std::make_unique<MockBackgroundDownloadTaskHelper>();
     download_helper_ = download_helper.get();
-    auto file_monitor = std::make_unique<MockFileMonitor>();
+    auto file_monitor = std::make_unique<NiceMock<MockFileMonitor>>();
     file_monitor_ = file_monitor.get();
     service_ = std::make_unique<BackgroundDownloadServiceImpl>(
         std::move(client_set), std::move(model), std::move(download_helper),
@@ -105,6 +110,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
   test::MockClient* client_;
   base::MockCallback<DownloadParams::StartCallback> start_callback_;
   MockFileMonitor* file_monitor_;
+  base::HistogramTester histogram_tester_;
 
  private:
   std::unique_ptr<BackgroundDownloadServiceImpl> service_;
@@ -115,6 +121,8 @@ TEST_F(BackgroundDownloadServiceImplTest, InitSuccess) {
   EXPECT_CALL(*client_, OnServiceInitialized(false, _));
   Init();
   EXPECT_EQ(ServiceStatus::READY, service()->GetStatus());
+  histogram_tester_.ExpectBucketCount(kServiceStartUpResultHistogram,
+                                      stats::StartUpResult::SUCCESS, 1);
 }
 
 TEST_F(BackgroundDownloadServiceImplTest, InitDbFailure) {
@@ -123,6 +131,9 @@ TEST_F(BackgroundDownloadServiceImplTest, InitDbFailure) {
   store_->TriggerInit(/*success=*/false, empty_entries());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(ServiceStatus::UNAVAILABLE, service()->GetStatus());
+  histogram_tester_.ExpectBucketCount(
+      kServiceStartUpResultHistogram,
+      stats::StartUpResult::FAILURE_REASON_MODEL, 1);
 }
 
 TEST_F(BackgroundDownloadServiceImplTest, InitFileMonitorFailure) {
@@ -132,6 +143,9 @@ TEST_F(BackgroundDownloadServiceImplTest, InitFileMonitorFailure) {
   file_monitor_->TriggerInit(/*success=*/false);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(ServiceStatus::UNAVAILABLE, service()->GetStatus());
+  histogram_tester_.ExpectBucketCount(
+      kServiceStartUpResultHistogram,
+      stats::StartUpResult::FAILURE_REASON_FILE_MONITOR, 1);
 }
 
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadDbFailure) {
@@ -142,8 +156,11 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadDbFailure) {
   store_->TriggerUpdate(/*success=*/false);
   EXPECT_EQ(kGuid, store_->LastUpdatedEntry()->guid);
   task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      kStartResultHistogram, DownloadParams::StartResult::INTERNAL_ERROR, 1);
 }
 
+// Verifies the case for failure in platform api.
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadHelperFailure) {
   Init();
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
@@ -157,8 +174,11 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadHelperFailure) {
   store_->TriggerUpdate(/*success=*/true);
   EXPECT_EQ(kGuid, store_->LastRemovedEntry());
   task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(kCompletionHistogram,
+                                      CompletionType::FAIL, 1);
 }
 
+// Verifies the case for a successful download.
 TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
   Init();
   EXPECT_CALL(start_callback_, Run(kGuid, StartResult::ACCEPTED));
@@ -176,6 +196,8 @@ TEST_F(BackgroundDownloadServiceImplTest, StartDownloadSuccess) {
   EXPECT_EQ(clock_.Now(), store_->LastUpdatedEntry()->completion_time);
   EXPECT_EQ(Entry::State::COMPLETE, store_->LastUpdatedEntry()->state);
   task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(kCompletionHistogram,
+                                      CompletionType::SUCCEED, 1);
 }
 
 // Verifies Client::OnDownloadUpdated() is called.

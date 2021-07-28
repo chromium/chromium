@@ -103,18 +103,6 @@ std::string FileCleanupReasonToHistogramSuffix(FileCleanupReason reason) {
   return std::string();
 }
 
-// Helper method to log StartUpResult.
-void LogStartUpResult(bool in_recovery, StartUpResult result) {
-  if (in_recovery) {
-    base::UmaHistogramEnumeration("Download.Service.StartUpStatus.Recovery",
-                                  result, StartUpResult::COUNT);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Download.Service.StartUpStatus.Initialization", result,
-        StartUpResult::COUNT);
-  }
-}
-
 // Helper method to log the pause reason for a particular download.
 void LogDownloadPauseReason(PauseReason reason, bool on_upload_data_received) {
   std::string name(on_upload_data_received
@@ -140,6 +128,17 @@ void LogControllerStartupStatus(bool in_recovery, const StartupStatus& status) {
     LogStartUpResult(in_recovery, StartUpResult::FAILURE_REASON_MODEL);
   if (!status.file_monitor_ok.value())
     LogStartUpResult(in_recovery, StartUpResult::FAILURE_REASON_FILE_MONITOR);
+}
+
+void LogStartUpResult(bool in_recovery, StartUpResult result) {
+  if (in_recovery) {
+    base::UmaHistogramEnumeration("Download.Service.StartUpStatus.Recovery",
+                                  result, StartUpResult::COUNT);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Download.Service.StartUpStatus.Initialization", result,
+        StartUpResult::COUNT);
+  }
 }
 
 void LogServiceApiAction(DownloadClient client, ServiceApiAction action) {

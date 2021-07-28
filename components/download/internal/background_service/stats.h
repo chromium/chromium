@@ -131,6 +131,9 @@ enum class DownloadEvent {
 // if |status| contains more than one initialization failure.
 void LogControllerStartupStatus(bool in_recovery, const StartupStatus& status);
 
+// Logs the service starting up result.
+void LogStartUpResult(bool in_recovery, StartUpResult result);
+
 // Logs an action taken on the service API.
 void LogServiceApiAction(DownloadClient client, ServiceApiAction action);
 
