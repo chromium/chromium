@@ -228,7 +228,8 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 // Tests opening a popup using the chrome.browserAction.openPopup API. This test
 // opens a popup in the starting window, closes the popup, creates a new window
 // and opens a popup in the new window. Both popups should succeed in opening.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
+// TODO(crbug.com/1233996): Test flaking frequently.
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
   auto browserActionBar = ExtensionActionTestHelper::Create(browser());
   // Setup extension message listener to wait for javascript to finish running.
   ExtensionTestMessageListener listener("ready", true);
