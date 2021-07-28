@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 class SomeClass;
 
@@ -10,7 +10,7 @@ class SomeClass;
 #define GUARDED_BY(lock) __attribute__((guarded_by(lock)))
 
 class MyClass {
-  // Expected rewrite: CheckedPtr<SomeClass> field GUARDED_BY(lock);
-  CheckedPtr<SomeClass> field GUARDED_BY(lock);
+  // Expected rewrite: raw_ptr<SomeClass> field GUARDED_BY(lock);
+  raw_ptr<SomeClass> field GUARDED_BY(lock);
   int lock;
 };

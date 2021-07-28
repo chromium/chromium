@@ -1352,7 +1352,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   (e) utilized_slot_size
   //   (f) slot_size
   //
-  // - Ref-count may or may not exist in the slot, depending on CheckedPtr
+  // - Ref-count may or may not exist in the slot, depending on raw_ptr<T>
   //   implementation.
   // - Cookies exist only when DCHECK is on.
   // - Think of raw_size as the minimum size required internally to satisfy

@@ -8,7 +8,7 @@ class SomeClass;
 #define GUARDED_BY(lock) __attribute__((guarded_by(lock)))
 
 class MyClass {
-  // Expected rewrite: CheckedPtr<SomeClass> field GUARDED_BY(lock);
+  // Expected rewrite: raw_ptr<SomeClass> field GUARDED_BY(lock);
   SomeClass* field GUARDED_BY(lock);
   int lock;
 };

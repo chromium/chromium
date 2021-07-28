@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // This is implementation of a clang tool that rewrites raw pointer fields into
-// CheckedPtr<T>:
+// raw_ptr<T>:
 //     Pointee* field_
 // becomes:
-//     CheckedPtr<Pointee> field_
+//     raw_ptr<Pointee> field_
 //
 // Note that the tool always emits two kinds of output:
 // 1. Fields to exclude:
@@ -61,12 +61,12 @@ using namespace clang::ast_matchers;
 
 namespace {
 
-// Include path that needs to be added to all the files where CheckedPtr<...>
+// Include path that needs to be added to all the files where raw_ptr<...>
 // replaces a raw pointer.
-const char kIncludePath[] = "base/memory/checked_ptr.h";
+const char kIncludePath[] = "base/memory/raw_ptr.h";
 
 // Name of a cmdline parameter that can be used to specify a file listing fields
-// that should not be rewritten to use CheckedPtr<T>.
+// that should not be rewritten to use raw_ptr<T>.
 //
 // See also:
 // - OutputSectionHelper
@@ -235,8 +235,8 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
 
       case clang::Language::C:
       case clang::Language::ObjC:
-        // CheckedPtr requires C++.  In particular, attempting to #include
-        // "base/memory/checked_ptr.h" from C-only compilation units will lead
+        // raw_ptr<T> requires C++.  In particular, attempting to #include
+        // "base/memory/raw_ptr.h" from C-only compilation units will lead
         // to compilation errors.
         return true;
 
@@ -819,8 +819,8 @@ AST_MATCHER_P2(clang::InitListExpr,
 }
 
 // Rewrites |SomeClass* field| (matched as "affectedFieldDecl") into
-// |CheckedPtr<SomeClass> field| and for each file rewritten in such way adds an
-// |#include "base/memory/checked_ptr.h"|.
+// |raw_ptr<SomeClass> field| and for each file rewritten in such way adds an
+// |#include "base/memory/raw_ptr.h"|.
 class FieldDeclRewriter : public MatchFinder::MatchCallback {
  public:
   explicit FieldDeclRewriter(OutputHelper* output_helper)
@@ -882,7 +882,7 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
 
     // Preserve qualifiers.
     assert(!pointer_type.isRestrictQualified() &&
-           "|restrict| is a C-only qualifier and CheckedPtr<T> needs C++");
+           "|restrict| is a C-only qualifier and raw_ptr<T> needs C++");
     if (pointer_type.isConstQualified())
       result += "const ";
     if (pointer_type.isVolatileQualified())
@@ -893,7 +893,7 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
     printing_policy.SuppressScope = 1;  // s/blink::Pointee/Pointee/
     std::string pointee_type_as_string =
         pointee_type.getAsString(printing_policy);
-    result += llvm::formatv("CheckedPtr<{0}> ", pointee_type_as_string);
+    result += llvm::formatv("raw_ptr<{0}> ", pointee_type_as_string);
 
     return result;
   }
@@ -962,7 +962,7 @@ int main(int argc, const char* argv[]) {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmParser();
   llvm::cl::OptionCategory category(
-      "rewrite_raw_ptr_fields: changes |T* field_| to |CheckedPtr<T> field_|.");
+      "rewrite_raw_ptr_fields: changes |T* field_| to |raw_ptr<T> field_|.");
   llvm::cl::opt<std::string> exclude_fields_param(
       kExcludeFieldsParamName, llvm::cl::value_desc("filepath"),
       llvm::cl::desc("file listing fields to be blocked (not rewritten)"));
@@ -1035,7 +1035,7 @@ int main(int argc, const char* argv[]) {
   match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
 
   // Matches expressions that used to return a value of type |SomeClass*|
-  // but after the rewrite return an instance of |CheckedPtr<SomeClass>|.
+  // but after the rewrite return an instance of |raw_ptr<SomeClass>|.
   // Many such expressions might need additional changes after the rewrite:
   // - Some expressions (printf args, const_cast args, etc.) might need |.get()|
   //   appended.

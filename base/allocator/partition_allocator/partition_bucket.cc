@@ -51,8 +51,8 @@ template <bool thread_safe>
 // |start| has to be aligned to kSuperPageSize, but |end| doesn't. This means
 // that a partial super page is allowed at the end. Since the block list uses
 // kSuperPageSize granularity, a partial super page is considered blocked if
-// there is a CheckedPtr anywhere in that super page, even if doesn't point to
-// that partially allocated region.
+// there is a raw_ptr<T> pointing anywhere in that super page, even if doesn't
+// point to that partially allocated region.
 bool AreAllowedSuperPagesForBRPPool(const char* start, const char* end) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(start) % kSuperPageSize));
   for (const char* super_page = start; super_page < end;
@@ -139,7 +139,7 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
 #if !defined(PA_HAS_64_BITS_POINTERS)
   // Only mark the region as belonging to the pool after it has passed the
   // blocklist check in order to avoid a potential race with destructing a
-  // `CheckedPtr` object that points to non-PA memory in another thread.
+  // raw_ptr<T> object that points to non-PA memory in another thread.
   // If `MarkUsed` was called earlier, the other thread could incorrectly
   // determine that the allocation had come form PartitionAlloc.
   if (ptr)

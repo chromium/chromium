@@ -8,7 +8,7 @@
 // files:
 // 1. We want to minimize the delta between the upstream third-party repo and
 //    the Chromium copy
-// 2. Such files very often limit themselves to C-only and CheckedPtr requires
+// 2. Such files very often limit themselves to C-only and raw_ptr requires
 //    C++11.  (OTOH, if needed this item might be more directly addressable by
 //    looking at |extern "C"| context declarations, or by looking at the
 //    language of the source code - as determined by

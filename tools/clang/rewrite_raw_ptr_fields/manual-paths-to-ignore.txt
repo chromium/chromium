@@ -16,10 +16,11 @@
 #   (i.e. hopefully just the paths under out/.../gen/... directory)
 #   via the isInGeneratedLocation AST matcher in RewriteRawPtrFields.cpp.
 
-# Exclude to prevent PartitionAlloc<->CheckedPtr cyclical dependency.
+# Exclude to prevent PartitionAlloc<->raw_ptr<T> cyclical dependency.
 base/allocator/
 
-# Exclude dependences of checked_ptr.h
+# Exclude dependences of raw_ptr.h
+# TODO(bartekn): Update the list of dependencies.
 base/logging.h
 base/synchronization/lock_impl.h
 

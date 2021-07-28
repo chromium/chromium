@@ -19,7 +19,7 @@
 //
 // We assume that NoNewOperator classes are never allocated on the heap (i.e.
 // are never managed by PartitionAlloc) and therefore would not benefit from
-// the protection of CheckedPtr.  This assumption/heuristic is generally true,
+// the protection of raw_ptr.  This assumption/heuristic is generally true,
 // but not always - for details how WTF::Vector can allocate elements without
 // operator new, see (Google-internal)
 // https://groups.google.com/a/google.com/g/chrome-memory-safety/c/GybWkNGqSyk/m/pUOjMvK5CQAJ
@@ -28,7 +28,7 @@ class NoNewOperator {
 
   // Based on the deleted-oparator-new assumption/heuristic above, we assume
   // that NoNewOperator will always be allocated on the stack or in OilPan and
-  // therefore doesn't need CheckedPtr protection (since it will be protected
+  // therefore doesn't need raw_ptr protection (since it will be protected
   // either by StackScanning or by OilPan's tracing and GC).  Therefore,
   // |no_operator_new_struct| should be emitted as candidates for the
   // --field-filter-file with "embedder-has-no-operator-new" tag.
@@ -38,7 +38,7 @@ class NoNewOperator {
 struct MyStruct {
   // Based on the deleted-oparator-new assumption/heuristic above, we assume
   // that NoNewOperator is never allocated on the PartitionAlloc-managed heap.
-  // This means that CheckedPtr would always be disabled for the field below and
+  // This means that raw_ptr would always be disabled for the field below and
   // therefore the test below checks that |no_operator_new_pointee| is emitted
   // as a candidate for the --field-filter-file with
   // "pointee-has-no-operator-new" tag.

@@ -74,11 +74,11 @@ void foo() {
   // No rewrite expected.
   auto* not_affected_field_var = ConvertSomeClassToSomeClass(my_struct.ptr);
 
-  // Test for pointer |auto| assigned from non-CheckedPtr-elligible field.
+  // Test for pointer |auto| assigned from non-raw_ptr-elligible field.
   // No rewrite expected.
   auto* func_ptr_var = my_struct.func_ptr_field;
 
-  // Test for non-pointer |auto| assigned from CheckedPtr-elligible field.
+  // Test for non-pointer |auto| assigned from raw_ptr-elligible field.
   // No rewrite expected.
   auto non_pointer_auto_var = my_struct.ptr;
 
@@ -151,7 +151,7 @@ void foo(int x) {
   SomeClass* other_ptr = nullptr;
 
   // To avoid the following error type:
-  //     conditional expression is ambiguous; 'const CheckedPtr<SomeClass>'
+  //     conditional expression is ambiguous; 'const raw_ptr<SomeClass>'
   //     can be converted to 'SomeClass *' and vice versa
   // we need to append |.get()| to |my_struct.ptr| below.
   //
@@ -180,7 +180,7 @@ void foo(int x) {
 
   // To avoid the following error type:
   //   error: invalid operands to binary expression ... basic_string ... and ...
-  //   CheckedPtr ...
+  //   raw_ptr ...
   // we need to append |.get()| to |my_struct.const_char_ptr| below.
   //
   // Expected rewrite: ... my_struct.const_char_ptr.get() ...
@@ -238,7 +238,7 @@ void AffectedFunctionWithDeepT(MyTemplate<T>* blah) {}
 
 // StructWithPointerToTemplate is used to test AffectedFunctionWithDeepT.
 // StructWithPointerToTemplate mimics ResourceArrayOutputAdapter<T>
-// (and its |output_| field that will be converted to a CheckedPtr)
+// (and its |output_| field that will be converted to a raw_ptr)
 // from //ppapi/cpp/array_output.h
 template <typename T>
 struct StructWithPointerToTemplate {
@@ -302,7 +302,7 @@ void foo() {
   // Expected rewrite - appending: .get().  This avoids the following error:
   // error: no matching function for call to 'FunctionTakingBasicStringPiece'
   // note: candidate function not viable: no known conversion from
-  // 'base::CheckedPtr<const char>' to 'templated_functions::StringPiece' (aka
+  // 'base::raw_ptr<const char>' to 'templated_functions::StringPiece' (aka
   // 'BasicStringPiece<char>') for 1st argument
   FunctionTakingBasicStringPiece(my_struct.const_char_ptr);
   FunctionTakingBasicStringPieceRef(my_struct.const_char_ptr);
