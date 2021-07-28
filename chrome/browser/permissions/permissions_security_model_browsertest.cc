@@ -627,4 +627,44 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
                                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS)
                           .ExtractString());
 }
+
+// Verifies that permissions are not supported for file:/// with changed URL to
+// `about:blank`.
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
+                       UniversalAccessFromFileUrlsAboutBlank) {
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+
+  // Activate the preference to allow universal access from file URLs.
+  blink::web_pref::WebPreferences prefs =
+      embedder_contents->GetOrCreateWebPreferences();
+  prefs.allow_universal_access_from_file_urls = true;
+  embedder_contents->SetWebPreferences(prefs);
+
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+          browser(), CreateFileURL(), 1);
+  ASSERT_TRUE(main_rfh);
+  EXPECT_TRUE(main_rfh->GetLastCommittedURL().SchemeIsFile());
+  EXPECT_TRUE(main_rfh->GetLastCommittedOrigin().GetURL().SchemeIsFile());
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(embedder_contents);
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ true);
+
+  content::EvalJsResult result = content::EvalJs(
+      embedder_contents, "history.pushState({}, {}, 'about:blank');");
+  EXPECT_EQ(std::string(), result.error);
+  EXPECT_EQ("about:blank", main_rfh->GetLastCommittedURL().spec());
+  EXPECT_TRUE(main_rfh->GetLastCommittedURL().IsAboutBlank());
+
+  VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
+}
 }  // anonymous namespace
