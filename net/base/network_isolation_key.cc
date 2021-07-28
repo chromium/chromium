@@ -75,11 +75,6 @@ NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
   return key;
 }
 
-NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameOrigin(
-    const url::Origin& new_frame_origin) const {
-  return CreateWithNewFrameSite(SchemefulSite(new_frame_origin));
-}
-
 std::string NetworkIsolationKey::ToString() const {
   if (IsTransient())
     return "";

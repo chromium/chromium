@@ -79,18 +79,6 @@ class NET_EXPORT NetworkIsolationKey {
   NetworkIsolationKey CreateWithNewFrameSite(
       const SchemefulSite& new_frame_site) const;
 
-  // Creates a new key using |top_frame_site_| and |new_frame_origin|.
-  // TODO(https://crbug.com/1145294):  Remove this in favor of above method.
-  NetworkIsolationKey CreateWithNewFrameOrigin(
-      const url::Origin& new_frame_origin) const;
-
-  // Intended for temporary use in locations that should be using a non-empty
-  // NetworkIsolationKey(), but are not yet. This both reduces the chance of
-  // accidentally copying the lack of a NIK where one should be used, and
-  // provides a reasonable way of locating callsites that need to have their
-  // NetworkIsolationKey filled in.
-  static NetworkIsolationKey Todo() { return NetworkIsolationKey(); }
-
   // Intended for temporary use in locations that should be using main frame and
   // frame origin, but are currently only using frame origin, because the
   // creating object may be shared across main frame objects. Having a special
