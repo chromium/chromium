@@ -6,7 +6,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/android/base_jni_onload.h"
 #include "base/android/build_info.h"
