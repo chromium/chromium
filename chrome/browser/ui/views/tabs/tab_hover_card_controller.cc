@@ -15,14 +15,12 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event_observer.h"
+#include "ui/events/types/event_type.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
-
-#if defined(USE_AURA)
-#include "ui/aura/window.h"
-#include "ui/gfx/native_widget_types.h"
-#endif
 
 namespace {
 
@@ -102,81 +100,44 @@ base::TimeDelta GetShowDelay(int tab_width) {
 //-------------------------------------------------------------------
 // TabHoverCardController::EventSniffer
 
-// Listens in on the browser event stream (as a pre target event handler) and
-// hides an associated hover card on any keypress.
-class TabHoverCardController::EventSniffer : public ui::EventHandler,
-                                             public views::WidgetObserver {
-// On Mac, events should be added to the root view.
-#if defined(USE_AURA)
-  using OwnerView = gfx::NativeWindow;
-#else
-  using OwnerView = views::View*;
-#endif
-
+// Listens in on the browser event stream and hides an associated hover card
+// on any keypress, mouse click, or gesture.
+class TabHoverCardController::EventSniffer : public ui::EventObserver {
  public:
   explicit EventSniffer(TabHoverCardController* controller)
-      : controller_(controller),
-#if defined(USE_AURA)
-        owner_view_(controller->tab_strip_->GetWidget()->GetNativeWindow()) {
-#else
-        owner_view_(controller->tab_strip_->GetWidget()->GetRootView()) {
-#endif
-    AddPreTargetHandler();
+      : controller_(controller) {
+    // Note that null is a valid value for the second parameter here; if for
+    // some reason there is no native window it simply falls back to
+    // application-wide event-sniffing, which for this case is better than not
+    // watching events at all.
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, controller_->tab_strip_->GetWidget()->GetNativeWindow(),
+        {ui::ET_KEY_PRESSED, ui::ET_KEY_RELEASED, ui::ET_MOUSE_PRESSED,
+         ui::ET_MOUSE_RELEASED, ui::ET_GESTURE_BEGIN, ui::ET_GESTURE_END});
   }
 
-  ~EventSniffer() override { RemovePreTargetHandler(); }
+  ~EventSniffer() override = default;
 
  protected:
-  void AddPreTargetHandler() {
-    widget_observation_.Observe(controller_->tab_strip_->GetWidget());
-    if (owner_view_)
-      owner_view_->AddPreTargetHandler(this);
-  }
-
-  void RemovePreTargetHandler() {
-    widget_observation_.Reset();
-    if (owner_view_) {
-      owner_view_->RemovePreTargetHandler(this);
-      owner_view_ = nullptr;
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    bool close_hover_card = true;
+    if (event.IsKeyEvent()) {
+      // Hover card needs to be dismissed (and regenerated) if the keypress
+      // would select the tab (this also takes focus out of the tabstrip).
+      close_hover_card = event.AsKeyEvent()->key_code() == ui::VKEY_RETURN ||
+                         event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE ||
+                         !controller_->tab_strip_->IsFocusInTabs();
     }
-  }
-
-  // views::WidgetObesrver:
-  void OnWidgetClosing(views::Widget* widget) override {
-    // We can't wait until destruction to do this if the widget is going away
-    // because we might try to access the NativeWidget after it's disposed.
-    RemovePreTargetHandler();
-  }
-
-  // ui::EventTarget:
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    // Hover card needs to be dismissed (and regenerated) if the keypress would
-    // select the tab (this also takes focus out of the tabstrip).
-    const bool is_select = event->key_code() == ui::VKEY_RETURN ||
-                           event->key_code() == ui::VKEY_ESCAPE;
-    if (is_select || !controller_->tab_strip_->IsFocusInTabs()) {
+    if (close_hover_card) {
       controller_->UpdateHoverCard(nullptr,
                                    TabController::HoverCardUpdateType::kEvent);
     }
-  }
-
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->IsAnyButton()) {
-      controller_->UpdateHoverCard(nullptr,
-                                   TabController::HoverCardUpdateType::kEvent);
-    }
-  }
-
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    controller_->UpdateHoverCard(nullptr,
-                                 TabController::HoverCardUpdateType::kEvent);
   }
 
  private:
   TabHoverCardController* const controller_;
-  OwnerView owner_view_;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
+  std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
 //-------------------------------------------------------------------
