@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -193,7 +194,8 @@ void OverviewButtonTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
 }
 
 void OverviewButtonTray::UpdateIconVisibility() {
-  if (base::FeatureList::IsEnabled(features::kOverviewButton)) {
+  if (desks_restore_util::HasPrimaryUserUsedDesksRecently() &&
+      base::FeatureList::IsEnabled(features::kOverviewButton)) {
     SetVisiblePreferred(true);
     return;
   }

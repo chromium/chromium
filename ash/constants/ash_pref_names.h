@@ -289,7 +289,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuggestLogoutAfterClosingLastWindow[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserWallpaperInfo[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUserHasUsedDesksRecently[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kWallpaperColors[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSyncableWallpaperInfo[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kWallpaperCollectionId[];

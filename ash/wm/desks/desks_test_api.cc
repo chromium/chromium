@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/expanded_state_new_desk_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_context_menu.h"
@@ -99,14 +100,8 @@ bool DesksTestApi::IsDesksBarRightGradientVisible() {
 }
 
 // static
-void DesksTestApi::OverrideDeskClock(Desk* desk, base::Clock* test_clock) {
-  DCHECK(!desk->override_clock_);
-  desk->override_clock_ = test_clock;
-}
-
-// static
 void DesksTestApi::ResetDeskVisitedMetrics(Desk* desk) {
-  const int current_date = desk->GetDaysFromLocalEpoch();
+  const int current_date = desks_restore_util::GetDaysFromLocalEpoch();
   desk->first_day_visited_ = current_date;
   desk->last_day_visited_ = current_date;
 }

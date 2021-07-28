@@ -9,6 +9,11 @@
 
 class PrefRegistrySimple;
 
+namespace base {
+class Clock;
+class Time;
+}  // namespace base
+
 namespace ash {
 
 namespace desks_restore_util {
@@ -32,6 +37,20 @@ ASH_EXPORT void UpdatePrimaryUserDeskMetricsPrefs();
 // Called to update the active desk restore prefs for the primary user whenever
 // the primary user switches an active desk.
 void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index);
+
+// Returns true if pref `kUserHasUsedDesksRecently` of the primary user is true.
+ASH_EXPORT bool HasPrimaryUserUsedDesksRecently();
+
+// Returns the time from `g_override_clock_` if it is not nullptr, or time from
+// base::Time::Now() otherwise.
+const base::Time GetTimeNow();
+
+// Returns the time from GetTimeNow() to Jan 1, 2010 in the local timezeone in
+// days as an int. We use Jan 1, 2010 as an arbitrary epoch since it is a
+// well-known date in the past.
+ASH_EXPORT int GetDaysFromLocalEpoch();
+
+ASH_EXPORT void OverrideClockForTesting(base::Clock* test_clock);
 
 }  // namespace desks_restore_util
 
