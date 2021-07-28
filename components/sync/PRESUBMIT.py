@@ -46,7 +46,7 @@ MAP_ENTRY_FIELD_COUNT = 6
 FIELD_NUMBER_PREFIX = 'sync_pb::EntitySpecifics::k'
 
 # Start and end regexes for finding the EntitySpecifics definition in
-# sync.proto.
+# entity_specifics.proto.
 PROTO_DEFINITION_START_PATTERN = '^  oneof specifics_variant \{'
 PROTO_DEFINITION_END_PATTERN = '^\}'
 
@@ -57,9 +57,9 @@ MODEL_TYPE_END_PATTERN = '^\};'
 
 # Strings relating to files we'll need to read.
 # model_type.cc is where the ModelTypeInfoMap is
-# sync.proto is where the proto definitions for ModelTypes are.
-PROTO_FILE_PATH = './protocol/sync.proto'
-PROTO_FILE_NAME = 'sync.proto'
+# entity_specifics.proto is where the proto definitions for ModelTypes are.
+PROTO_FILE_PATH = './protocol/entity_specifics.proto'
+PROTO_FILE_NAME = 'entity_specifics.proto'
 MODEL_TYPE_FILE_NAME = 'model_type.cc'
 
 SYNC_SOURCE_FILES = (r'^components[\\/]sync[\\/].*\.(cc|h)$',)
@@ -95,7 +95,7 @@ def CheckModelTypeInfoMap(input_api, output_api, model_type_file):
 
   if not check_map:
     return []
-  proto_field_definitions = ParseSyncProtoFieldIdentifiers(
+  proto_field_definitions = ParseEntitySpecificsProtoFieldIdentifiers(
     input_api, os.path.abspath(PROTO_FILE_PATH))
   accumulated_problems.extend(
     CheckNoDuplicatedFieldValues(output_api, map_entries))
@@ -183,7 +183,7 @@ def ParseModelTypeEntries(input_api, model_type_cc_path):
   return results
 
 
-def ParseSyncProtoFieldIdentifiers(input_api, sync_proto_path):
+def ParseEntitySpecificsProtoFieldIdentifiers(input_api, proto_path):
   """Parses proto field identifiers from the EntitySpecifics definition.
   Args:
     input_api: presubmit_support InputAPI instance
@@ -193,7 +193,7 @@ def ParseSyncProtoFieldIdentifiers(input_api, sync_proto_path):
     e.g. {'AutofillSpecifics': 'autofill'}
   """
   proto_field_definitions = {}
-  proto_file_contents = input_api.ReadFile(sync_proto_path).splitlines()
+  proto_file_contents = input_api.ReadFile(proto_path).splitlines()
   start_pattern = input_api.re.compile(PROTO_DEFINITION_START_PATTERN)
   end_pattern = input_api.re.compile(PROTO_DEFINITION_END_PATTERN)
   in_proto_def = False
@@ -238,9 +238,10 @@ def FormatPresubmitError(output_api, message, affected_lines):
 
 def CheckNotificationTypeMatchesProtoMessageName(
   output_api, map_entry, proto_field_definitions):
-  """Check that map_entry's notification type matches sync.proto.
+  """Check that map_entry's notification type matches entity_specifics.proto.
   Verifies that the notification_type matches the name of the field defined
-  in the sync.proto by looking it up in the proto_field_definitions map.
+  in the entity_specifics.proto by looking it up in the proto_field_definitions
+  map.
   Args:
     output_api: presubmit_support OutputApi instance
     map_entry: ModelTypeEnumEntry instance
@@ -258,7 +259,7 @@ def CheckNotificationTypeMatchesProtoMessageName(
       FormatPresubmitError(
         output_api,'In the construction of ModelTypeInfo: notification type'
         ' "%s" does not match proto message'
-        ' name defined in sync.proto: ' '"%s"' %
+        ' name defined in entity_specifics.proto: ' '"%s"' %
         (map_entry.notification_type, proto_message_name),
         map_entry.affected_lines)]
   return []
