@@ -70,6 +70,8 @@ class HardwareRenderer {
       OverlaysParams::MergeTransactionFn merge_transaction) = 0;
   virtual void AbandonContext() = 0;
 
+  void SetChildFrameForTesting(std::unique_ptr<ChildFrame> child_frame);
+
  protected:
   explicit HardwareRenderer(RenderThreadManager* state);
 
