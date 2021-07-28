@@ -7159,7 +7159,6 @@ crbug.com/1216587 [ Win7 ] accessibility/scroll-window-sends-notification.html [
 
 # Sheriff 2021-07-01
 # Now also flakily timing-out.
-crbug.com/1223773 external/wpt/webrtc/simulcast/getStats.https.html [ Failure Pass Timeout ]
 crbug.com/1193920 virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-02
@@ -7220,8 +7219,6 @@ crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/fetch/
 # Sheriff 2021-07-14
 crbug.com/1229039 [ Linux ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Pass Timeout ]
 crbug.com/1229039 [ Mac ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Pass Timeout ]
-crbug.com/1225643 [ Linux ] external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
-crbug.com/1225643 [ Mac ] external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
 
 # Test fails due to more accurate size reporting in heap snapshots.
 crbug.com/1229212 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Failure ]
@@ -7238,16 +7235,12 @@ crbug.com/1229701 virtual/synchronous_html_parser/http/tests/inspector-protocol/
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Failure Pass ]
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Crash Failure Pass ]
-crbug.com/1229785 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Pass Timeout ]
 crbug.com/1087232 http/tests/devtools/network/network-worker-fetch-blocked.js [ Failure Pass ]
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Failure Pass ]
 crbug.com/835943 http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
-
-# Sheriff 2021-07-19
-crbug.com/1230534 [ Linux ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Timeout ]
 
 # Sheriff 2021-07-21
 crbug.com/1231431 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
