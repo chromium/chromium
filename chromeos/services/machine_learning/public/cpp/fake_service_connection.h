@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/graph_executor.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/handwriting_recognizer.mojom.h"
@@ -48,6 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       public mojom::GraphExecutor,
       public mojom::SodaRecognizer,
       public mojom::TextSuggester,
+      public mojom::DocumentScanner,
       public web_platform::mojom::HandwritingRecognizer {
  public:
   FakeServiceConnectionImpl();
@@ -117,6 +119,11 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       mojo::PendingReceiver<mojom::TextSuggester> receiver,
       mojom::TextSuggesterSpecPtr spec,
       mojom::MachineLearningService::LoadTextSuggesterCallback callback)
+      override;
+
+  void LoadDocumentScanner(
+      mojo::PendingReceiver<mojom::DocumentScanner> receiver,
+      mojom::MachineLearningService::LoadDocumentScannerCallback callback)
       override;
 
   // mojom::Model:
@@ -195,6 +202,16 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void SetOutputTextSuggesterResult(
       const mojom::TextSuggesterResultPtr& result);
 
+  // Call SetOutputDetectCornersResult() before
+  // DetectCornersFrom{NV12/JPEG}Image() to set the output of corners detection.
+  void SetOutputDetectCornersResult(
+      const mojom::DetectCornersResultPtr& result);
+
+  // Call SetOutputDoPostProcessingResult() before DoPostProcessing() to set the
+  // output of document post processing.
+  void SetOutputDoPostProcessingResult(
+      const mojom::DoPostProcessingResultPtr& result);
+
   // mojom::TextClassifier:
   void Annotate(mojom::TextAnnotationRequestPtr request,
                 mojom::TextClassifier::AnnotateCallback callback) override;
@@ -234,6 +251,20 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   // mojom::TextSuggester:
   void Suggest(mojom::TextSuggesterQueryPtr query,
                mojom::TextSuggester::SuggestCallback callback) override;
+
+  // mojom::DocumentScanner:
+  void DetectCornersFromNV12Image(
+      base::ReadOnlySharedMemoryRegion nv12_image,
+      mojom::DocumentScanner::DetectCornersFromNV12ImageCallback callback)
+      override;
+  void DetectCornersFromJPEGImage(
+      base::ReadOnlySharedMemoryRegion jpeg_image,
+      mojom::DocumentScanner::DetectCornersFromJPEGImageCallback callback)
+      override;
+  void DoPostProcessing(
+      base::ReadOnlySharedMemoryRegion jpeg_image,
+      const std::vector<gfx::PointF>& corners,
+      mojom::DocumentScanner::DoPostProcessingCallback callback) override;
 
  private:
   void ScheduleCall(base::OnceClosure call);
@@ -294,6 +325,19 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   void HandleTextSuggesterSuggestCall(
       mojom::TextSuggesterQueryPtr query,
       mojom::TextSuggester::SuggestCallback callback);
+  void HandleLoadDocumentScannerCall(
+      mojo::PendingReceiver<mojom::DocumentScanner> receiver,
+      mojom::MachineLearningService::LoadDocumentScannerCallback callback);
+  void HandleDocumentScannerDetectNV12Call(
+      base::ReadOnlySharedMemoryRegion nv12_image,
+      mojom::DocumentScanner::DetectCornersFromNV12ImageCallback callback);
+  void HandleDocumentScannerDetectJPEGCall(
+      base::ReadOnlySharedMemoryRegion jpeg_image,
+      mojom::DocumentScanner::DetectCornersFromJPEGImageCallback callback);
+  void HandleDocumentScannerPostProcessingCall(
+      base::ReadOnlySharedMemoryRegion jpeg_image,
+      const std::vector<gfx::PointF>& corners,
+      mojom::DocumentScanner::DoPostProcessingCallback callback);
 
   void HandleStopCall();
   void HandleStartCall();
@@ -312,6 +356,7 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
   mojo::ReceiverSet<mojom::GrammarChecker> grammar_checker_receivers_;
   mojo::ReceiverSet<mojom::SodaRecognizer> soda_recognizer_receivers_;
   mojo::ReceiverSet<mojom::TextSuggester> text_suggester_receivers_;
+  mojo::ReceiverSet<mojom::DocumentScanner> document_scanner_receivers_;
   mojo::RemoteSet<mojom::SodaClient> soda_client_remotes_;
   mojom::TensorPtr output_tensor_;
   mojom::LoadHandwritingModelResult load_handwriting_model_result_;
@@ -329,6 +374,8 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       web_platform_handwriting_result_;
   mojom::GrammarCheckerResultPtr grammar_checker_result_;
   mojom::TextSuggesterResultPtr text_suggester_result_;
+  mojom::DetectCornersResultPtr detect_corners_result_;
+  mojom::DoPostProcessingResultPtr do_post_processing_result_;
 
   bool async_mode_;
   std::vector<base::OnceClosure> pending_calls_;

@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom_component("mojom") {
   sources = [
+    "document_scanner.mojom",
     "grammar_checker.mojom",
     "graph_executor.mojom",
     "handwriting_recognizer.mojom",

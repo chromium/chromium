@@ -31,6 +31,7 @@ static_library("camera_app_ui") {
   ]
 
   deps = [
+    ":document_scanning",
     ":mojo_bindings",
     ":mojo_bindings_js",
     ":window_managemet",
@@ -67,6 +68,22 @@ source_set("window_managemet") {
   ]
 }
 
+source_set("document_scanning") {
+  sources = [
+    "document_scanner_service_client.cc",
+    "document_scanner_service_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/device_event_log",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -92,7 +109,10 @@ group("closure_compile") {
 mojom("mojo_bindings") {
   sources = [ "camera_app_helper.mojom" ]
 
-  deps = [ "//components/arc/mojom:camera_intent" ]
+  deps = [
+    "//components/arc/mojom:camera_intent",
+    "//ui/gfx/geometry/mojom",
+  ]
 }
 
 cca_grd_prefix = "chromeos_camera_app"
