@@ -439,6 +439,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Comment) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+             {"// textbox.AXRolio"},
+             R"~~(// textbox.AXRolio
+)~~");
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
   TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",

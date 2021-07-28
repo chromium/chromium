@@ -135,6 +135,11 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
   std::map<std::string, id> storage;
   AttributeInvoker invoker(&line_indexer, &storage);
   for (size_t index = start_index; index < end_index; index++) {
+    if (instructions[index].IsComment()) {
+      scripts.Append(instructions[index].AsComment());
+      continue;
+    }
+
     DCHECK(instructions[index].IsScript());
     const AXPropertyNode& property_node = instructions[index].AsScript();
     OptionalNSObject value = invoker.Invoke(property_node);

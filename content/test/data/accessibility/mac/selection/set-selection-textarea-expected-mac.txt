@@ -1,3 +1,4 @@
+// Select the 3rd word.
 text_range={anchor: {:3, 0, down}, focus: {:3, 45, down}}
 marker_0={:3, 0, down}
 marker_1={:3, 3, down}
