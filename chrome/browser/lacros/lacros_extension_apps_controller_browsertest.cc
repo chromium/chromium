@@ -50,4 +50,81 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, OpenNativeSettings) {
       base::Contains(GetActiveWebContents()->GetURL().spec(), extension->id()));
 }
 
+// Test uninstalling an app.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, Uninstall) {
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+
+  // Store the extension id since it will be uninstalled.
+  std::string extension_id = extension->id();
+
+  // Check that the app is installed.
+  EXPECT_TRUE(lacros_extension_apps_utility::MaybeGetPackagedV2App(
+      profile(), extension_id));
+
+  // Uninstall the extension.
+  LacrosExtensionAppsController controller;
+  controller.Uninstall(
+      lacros_extension_apps_utility::MuxId(profile(), extension),
+      apps::mojom::UninstallSource::kAppList, /*clear_site_data=*/true,
+      /*report_abuse=*/true);
+
+  // Check that the app is no longer installed.
+  EXPECT_FALSE(lacros_extension_apps_utility::MaybeGetPackagedV2App(
+      profile(), extension_id));
+}
+
+// Test loading an icon
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LoadIcon) {
+  const extensions::Extension* extension_minimal =
+      LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  const extensions::Extension* extension_with_icon =
+      LoadExtension(test_data_dir_.AppendASCII("platform_apps/app_icon"));
+
+  // Two for loops are much easier to set up then a doubly parameterized test.
+  for (int i = 0; i <= 1; ++i) {
+    // Regardless of whether we use an extension with an custom icon or not, an
+    // icon should always load.
+    const extensions::Extension* extension =
+        (i == 0) ? extension_minimal : extension_with_icon;
+
+    for (int j = 0; j <= 1; ++j) {
+      // Check that both the compressed and uncompressed images load correctly.
+      bool compressed = (j == 0);
+
+      // Set up the LoadIconCallback which quits the nested run loop and
+      // populates |output|.
+      apps::mojom::IconValuePtr output;
+      base::RunLoop run_loop;
+      LacrosExtensionAppsController::LoadIconCallback callback = base::BindOnce(
+          [](base::RunLoop* run_loop, apps::mojom::IconValuePtr* output,
+             apps::mojom::IconValuePtr input) {
+            *output = std::move(input);
+            run_loop->QuitClosure().Run();
+          },
+          &run_loop, &output);
+
+      // Load the icon
+      auto icon_key = apps::mojom::IconKey::New(0, 0, 0);
+      auto icon_type = compressed ? apps::mojom::IconType::kCompressed
+                                  : apps::mojom::IconType::kUncompressed;
+      LacrosExtensionAppsController controller;
+      controller.LoadIcon(
+          lacros_extension_apps_utility::MuxId(profile(), extension),
+          std::move(icon_key), icon_type,
+          /*size_hint_in_dip=*/1, std::move(callback));
+      run_loop.Run();
+
+      if (compressed) {
+        ASSERT_TRUE(output->compressed);
+        EXPECT_GT(output->compressed->size(), 0u);
+      } else {
+        EXPECT_FALSE(output->uncompressed.isNull());
+        EXPECT_GT(output->uncompressed.width(), 0);
+        EXPECT_GT(output->uncompressed.height(), 0);
+      }
+    }
+  }
+}
+
 }  // namespace
