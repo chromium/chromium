@@ -26,6 +26,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/guid.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_locale.h"
@@ -1327,6 +1328,11 @@ class HoldingSpaceUiInProgressDownloadsBrowserTest
               // Calling `download::DownloadItem::Cancel()` results in updates.
               mock_download_item->NotifyObserversDownloadUpdated();
             }));
+
+    // Mock `download::DownloadItem::GetGuid()`.
+    ON_CALL(*mock_download_item, GetGuid)
+        .WillByDefault(testing::ReturnRefOfCopy(
+            base::GUID::GenerateRandomV4().AsLowercaseString()));
 
     // Mock `download::DownloadItem::GetFullPath()`.
     ON_CALL(*mock_download_item, GetFullPath)

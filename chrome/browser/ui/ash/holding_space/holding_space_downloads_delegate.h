@@ -55,6 +55,7 @@ class HoldingSpaceDownloadsDelegate
 
  private:
   class InProgressDownload;
+  class InProgressAshDownload;
 
   // HoldingSpaceKeyedServiceDelegate:
   void Init() override;
