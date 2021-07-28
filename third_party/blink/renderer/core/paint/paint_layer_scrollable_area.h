@@ -225,29 +225,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
     static int count_;
   };
 
-  // Possible root for scrollbar freezing. When established, the root box itself
-  // may freeze individual scrollbars, while all descendants will freeze both
-  // scrollbars.
-  class FreezeScrollbarsRootScope {
-    STACK_ALLOCATED();
-
-   public:
-    // Attempt to establish a scope for scrollbar freezing. If established, this
-    // will freeze the selected scrollbars (if any) on the specified LayoutBox,
-    // and freeze both scrollbars on all descendants. It will not be established
-    // (i.e. creating the FreezeScrollbarsRootScope will have no effect) if a
-    // FreezeScrollbarScope is already active, if the specified box isn't
-    // scrollable, or if no scrollbars have been selected.
-    FreezeScrollbarsRootScope(const LayoutBox&,
-                              bool freeze_horizontal,
-                              bool freeze_vertical);
-    ~FreezeScrollbarsRootScope();
-
-   private:
-    PaintLayerScrollableArea* scrollable_area_;
-    absl::optional<FreezeScrollbarsScope> freezer_;
-  };
-
   // If a DelayScrollOffsetClampScope object is alive, updateAfterLayout() will
   // not clamp scroll offsets to ensure they are in the valid range.  When the
   // last DelayScrollOffsetClampScope object is destructed, all
@@ -634,19 +611,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // For CompositeAfterPaint.
   bool ShouldDirectlyCompositeScrollbar(const Scrollbar&) const;
 
-  void EstablishScrollbarRoot(bool freeze_horizontal, bool freeze_vertical);
-  void ClearScrollbarRoot();
-  bool IsHorizontalScrollbarFrozen() const {
-    if (is_scrollbar_freeze_root_)
-      return is_horizontal_scrollbar_frozen_;
-    return FreezeScrollbarsScope::ScrollbarsAreFrozen();
-  }
-  bool IsVerticalScrollbarFrozen() const {
-    if (is_scrollbar_freeze_root_)
-      return is_vertical_scrollbar_frozen_;
-    return FreezeScrollbarsScope::ScrollbarsAreFrozen();
-  }
-
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
   // background paint location.
@@ -776,10 +740,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   unsigned had_vertical_scrollbar_before_relayout_ : 1;
   unsigned had_resizer_before_relayout_ : 1;
   unsigned scroll_origin_changed_ : 1;
-
-  unsigned is_scrollbar_freeze_root_ : 1;
-  unsigned is_horizontal_scrollbar_frozen_ : 1;
-  unsigned is_vertical_scrollbar_frozen_ : 1;
 
   // There are 6 possible combinations of writing mode and direction. Scroll
   // origin will be non-zero in the x or y axis if there is any reversed

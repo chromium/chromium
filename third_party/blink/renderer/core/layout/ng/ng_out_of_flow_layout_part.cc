@@ -1107,50 +1107,37 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
     return offset_info.initial_layout_result;
   }
 
-  NGBoxStrut scrollbars_before =
-      ComputeScrollbarsForNonAnonymous(node_info.node);
-  scoped_refptr<const NGLayoutResult> layout_result =
-      Layout(oof_node_to_layout, offset_info, fragmentainer_constraint_space);
-  NGBoxStrut scrollbars_after =
-      ComputeScrollbarsForNonAnonymous(node_info.node);
+  absl::optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
+      freeze_scrollbars;
+  do {
+    scoped_refptr<const NGLayoutResult> layout_result =
+        Layout(oof_node_to_layout, offset_info, fragmentainer_constraint_space);
 
-  // Since out-of-flow positioning sets up a constraint space with fixed
-  // inline-size, the regular layout code (|NGBlockNode::Layout()|) cannot
-  // re-layout if it discovers that a scrollbar was added or removed. Handle
-  // that situation here. The assumption is that if intrinsic logical widths are
-  // dirty after layout, AND its inline-size depends on the intrinsic logical
-  // widths, it means that scrollbars appeared or disappeared.
-  if (node_info.node.GetLayoutBox()->IntrinsicLogicalWidthsDirty() &&
-      offset_info.inline_size_depends_on_min_max_sizes) {
-    WritingDirectionMode writing_mode_direction =
-        node_info.node.Style().GetWritingDirection();
-    bool freeze_horizontal = false, freeze_vertical = false;
-    do {
-      // Freeze any scrollbars that appeared, and relayout. Repeat until both
-      // have appeared, or until the scrollbar situation doesn't change,
-      // whichever comes first.
-      AddScrollbarFreeze(scrollbars_before, scrollbars_after,
-                         writing_mode_direction, &freeze_horizontal,
-                         &freeze_vertical);
-      scrollbars_before = scrollbars_after;
-      PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
-          *node_info.node.GetLayoutBox(), freeze_horizontal, freeze_vertical);
+    if (!freeze_scrollbars.has_value()) {
+      // Since out-of-flow positioning sets up a constraint space with fixed
+      // inline-size, the regular layout code (|NGBlockNode::Layout()|) cannot
+      // re-layout if it discovers that a scrollbar was added or removed. Handle
+      // that situation here. The assumption is that if intrinsic logical widths
+      // are dirty after layout, AND its inline-size depends on the intrinsic
+      // logical widths, it means that scrollbars appeared or disappeared. We
+      // have the same logic in legacy layout in
+      // |LayoutBlockFlow::UpdateBlockLayout()|.
+      if (node_info.node.GetLayoutBox()->IntrinsicLogicalWidthsDirty() &&
+          offset_info.inline_size_depends_on_min_max_sizes) {
+        // Freeze the scrollbars for this layout pass. We don't want them to
+        // change *again*.
+        freeze_scrollbars.emplace();
+        // The offset itself does not need to be recalculated. However, the
+        // |node_dimensions| and |initial_layout_result| may need to be updated,
+        // so recompute the OffsetInfo.
+        offset_info = CalculateOffset(node_info, only_layout,
+                                      /* is_first_run */ false);
+        continue;
+      }
+    }
 
-      // The offset itself does not need to be recalculated. However, the
-      // |node_dimensions| and |initial_layout_result| may need to be updated,
-      // so recompute the OffsetInfo.
-      offset_info = CalculateOffset(node_info, only_layout,
-                                    /* is_first_run */ false);
-      layout_result = Layout(oof_node_to_layout, offset_info,
-                             fragmentainer_constraint_space);
-
-      scrollbars_after = ComputeScrollbarsForNonAnonymous(node_info.node);
-      DCHECK(!freeze_horizontal || !freeze_vertical ||
-             scrollbars_after == scrollbars_before);
-    } while (scrollbars_after != scrollbars_before);
-  }
-
-  return layout_result;
+    return layout_result;
+  } while (true);
 }
 
 NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
