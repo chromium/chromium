@@ -43,6 +43,10 @@ bool IsSyncable(const Extension* extension) {
     return false;
   }
 
+  // Boomkark extensions are deprecated. See crbug.com/1065748
+  if (extension->from_bookmark())
+    return false;
+
   switch (extension->GetType()) {
     case Manifest::TYPE_EXTENSION:
     case Manifest::TYPE_HOSTED_APP:
