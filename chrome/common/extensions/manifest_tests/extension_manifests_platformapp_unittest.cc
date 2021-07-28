@@ -55,12 +55,12 @@ TEST_F(PlatformAppsManifestTest, PlatformApps) {
           "apps, but this is a packaged app."),
       Testcase("init_invalid_platform_app_4.json",
                "'background' is only allowed for extensions, legacy packaged "
-               "apps, hosted apps, and login screen extensions, but this is a "
-               "packaged app."),
+               "apps, hosted apps, login screen extensions, and chromeos "
+               "system extensions, but this is a packaged app."),
       Testcase("init_invalid_platform_app_5.json",
                "'background' is only allowed for extensions, legacy packaged "
-               "apps, hosted apps, and login screen extensions, but this is a "
-               "packaged app."),
+               "apps, hosted apps, login screen extensions, and chromeos "
+               "system extensions, but this is a packaged app."),
       Testcase("incognito_invalid_platform_app.json",
                "'incognito' is only allowed for extensions and legacy packaged "
                "apps, "

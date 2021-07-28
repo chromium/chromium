@@ -1,0 +1,57 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/chromeos/extensions/api/api_sources.gni")
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/json_schema_compiler/json_schema_api.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("api") {
+  sources = [
+    "telemetry_api.cc",
+    "telemetry_api.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common/chromeos/extensions/api",
+    "//chromeos/components/telemetry_extension_ui/mojom",
+    "//chromeos/components/telemetry_extension_ui/services:telemetry_services",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+}
+
+function_registration("api_registration") {
+  sources = chromeos_system_extensions_api_schema_sources
+  impl_dir = "//chrome/browser/chromeos/extensions/telemetry/api"
+  configs = [ "//build/config:precompiled_headers" ]
+  bundle_name = "ChromeOS"
+  root_namespace = chromeos_system_extensions_api_root_namespace
+  schema_include_rules = chromeos_system_extensions_api_schema_include_rules
+
+  deps = [
+    ":api",
+    "//base",
+    "//extensions/common",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "telemetry_api_browsertest.cc" ]
+
+  deps = [
+    ":api",
+    "//chrome/test:test_support",
+    "//chromeos/dbus/cros_healthd",
+    "//chromeos/services/cros_healthd/public/cpp",
+    "//chromeos/services/cros_healthd/public/mojom",
+    "//extensions:test_support",
+  ]
+}

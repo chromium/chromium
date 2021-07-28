@@ -7,8 +7,11 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "chrome/common/chromeos/extensions/api/api_features.h"
+#include "chrome/common/chromeos/extensions/api/generated_schemas.h"
 #include "chrome/common/chromeos/extensions/api/manifest_features.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_handler.h"
+#include "chrome/common/chromeos/extensions/grit/chromeos_system_extensions_resources.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/json_feature_provider_source.h"
 #include "extensions/common/manifest_handler.h"
@@ -23,7 +26,9 @@ ChromeOSSystemExtensionsAPIProvider::~ChromeOSSystemExtensionsAPIProvider() =
     default;
 
 void ChromeOSSystemExtensionsAPIProvider::AddAPIFeatures(
-    extensions::FeatureProvider* provider) {}
+    extensions::FeatureProvider* provider) {
+  AddChromeOSSystemExtensionsAPIFeatures(provider);
+}
 
 void ChromeOSSystemExtensionsAPIProvider::AddManifestFeatures(
     extensions::FeatureProvider* provider) {
@@ -39,16 +44,18 @@ void ChromeOSSystemExtensionsAPIProvider::AddBehaviorFeatures(
 }
 
 void ChromeOSSystemExtensionsAPIProvider::AddAPIJSONSources(
-    extensions::JSONFeatureProviderSource* json_source) {}
+    extensions::JSONFeatureProviderSource* json_source) {
+  json_source->LoadJSON(IDR_CHROMEOS_SYSTEM_EXTENSIONS_API__API_FEATURES_JSON);
+}
 
 bool ChromeOSSystemExtensionsAPIProvider::IsAPISchemaGenerated(
     const std::string& name) {
-  return false;
+  return api::ChromeOSGeneratedSchemas::IsGenerated(name);
 }
 
 base::StringPiece ChromeOSSystemExtensionsAPIProvider::GetAPISchema(
     const std::string& name) {
-  return "";
+  return api::ChromeOSGeneratedSchemas::Get(name);
 }
 
 void ChromeOSSystemExtensionsAPIProvider::RegisterPermissions(

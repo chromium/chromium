@@ -28784,6 +28784,7 @@ Called by update_extension_histograms.py.-->
   <int value="1562" label="WMDESKSPRIVATE_LAUNCHDESKTEMPLATE"/>
   <int value="1563" label="AUTOTESTPRIVATE_SETSHELFICONPIN"/>
   <int value="1564" label="SCRIPTING_GETREGISTEREDCONTENTSCRIPTS"/>
+  <int value="1565" label="OS_TELEMETRY_GETVPDINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

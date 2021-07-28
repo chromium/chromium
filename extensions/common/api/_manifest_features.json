@@ -51,18 +51,16 @@
     "channel": "stable",
     "extension_types": [
       // Platform apps specify their background page via app.background.
-      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension"
-    ]
+      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension", "chromeos_system_extension" ]
   },
   "background.persistent": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app", "login_screen_extension"
-    ]
+      "extension", "legacy_packaged_app", "login_screen_extension" ]
   },
   "background.service_worker": {
     "channel": "stable",
-    "extension_types": ["extension"]
+    "extension_types": ["extension", "chromeos_system_extension"]
   },
   "bluetooth": [{
     // Note: The "bluetooth" manifest permission is used by the

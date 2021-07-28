@@ -376,6 +376,10 @@
     "META": {"align": 100},
     "includes": [2320],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/common/chromeos/extensions/chromeos_system_extensions_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [2330],
+  },
   "chrome/credential_provider/gaiacp/gaia_resources.grd": {
     "includes": [2340],
     "messages": [2360],
