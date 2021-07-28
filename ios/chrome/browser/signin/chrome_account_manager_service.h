@@ -51,10 +51,10 @@ class ChromeAccountManagerService : public KeyedService,
   ~ChromeAccountManagerService() override;
 
   // Returns true if there is at least one identity known by the service.
-  bool HasIdentities();
+  bool HasIdentities() const;
 
   // Returns whether |identity| is valid and known by the service.
-  bool IsValidIdentity(ChromeIdentity* identity);
+  bool IsValidIdentity(ChromeIdentity* identity) const;
 
   // Returns whether |email| is restricted.
   bool IsEmailRestricted(base::StringPiece email) const;
@@ -62,16 +62,16 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns the ChromeIdentity with gaia ID equals to |gaia_id| or nil if
   // no matching identity is found. There are two overloads to reduce the
   // need to convert between NSString* and std::string.
-  ChromeIdentity* GetIdentityWithGaiaID(NSString* gaia_id);
-  ChromeIdentity* GetIdentityWithGaiaID(base::StringPiece gaia_id);
+  ChromeIdentity* GetIdentityWithGaiaID(NSString* gaia_id) const;
+  ChromeIdentity* GetIdentityWithGaiaID(base::StringPiece gaia_id) const;
 
   // Returns all ChromeIdentity objects, sorted by the ordering used in the
   // account manager, which is typically based on the keychain ordering of
   // accounts.
-  NSArray<ChromeIdentity*>* GetAllIdentities();
+  NSArray<ChromeIdentity*>* GetAllIdentities() const;
 
   // Returns the first ChromeIdentity object.
-  ChromeIdentity* GetDefaultIdentity();
+  ChromeIdentity* GetDefaultIdentity() const;
 
   // KeyedService implementation.
   void Shutdown() override;

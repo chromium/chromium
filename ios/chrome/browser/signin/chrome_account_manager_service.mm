@@ -158,7 +158,7 @@ ChromeAccountManagerService::ChromeAccountManagerService(
 
 ChromeAccountManagerService::~ChromeAccountManagerService() {}
 
-bool ChromeAccountManagerService::HasIdentities() {
+bool ChromeAccountManagerService::HasIdentities() const {
   FunctorHasIdentities helper(restriction_);
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
@@ -166,7 +166,8 @@ bool ChromeAccountManagerService::HasIdentities() {
   return helper.has_identities();
 }
 
-bool ChromeAccountManagerService::IsValidIdentity(ChromeIdentity* identity) {
+bool ChromeAccountManagerService::IsValidIdentity(
+    ChromeIdentity* identity) const {
   return GetIdentityWithGaiaID(identity.gaiaID) != nil;
 }
 
@@ -176,7 +177,7 @@ bool ChromeAccountManagerService::IsEmailRestricted(
 }
 
 ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
-    NSString* gaia_id) {
+    NSString* gaia_id) const {
   // Do not iterate if the gaia ID is invalid.
   if (!gaia_id.length)
     return nil;
@@ -189,7 +190,7 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
 }
 
 ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
-    base::StringPiece gaia_id) {
+    base::StringPiece gaia_id) const {
   // Do not iterate if the gaia ID is invalid. This is duplicated here
   // to avoid allocating a NSString unnecessarily.
   if (gaia_id.empty())
@@ -199,7 +200,8 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
   return GetIdentityWithGaiaID(base::SysUTF8ToNSString(gaia_id));
 }
 
-NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
+NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities()
+    const {
   FunctorCollectIdentities helper(restriction_);
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
@@ -207,7 +209,7 @@ NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities() {
   return [helper.identities() copy];
 }
 
-ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() {
+ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() const {
   FunctorGetFirstIdentity helper(restriction_);
   ios::GetChromeBrowserProvider()
       .GetChromeIdentityService()
