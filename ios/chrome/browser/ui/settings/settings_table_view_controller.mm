@@ -43,7 +43,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
@@ -190,7 +190,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 @interface SettingsTableViewController () <
     BooleanObserver,
-    ChromeIdentityServiceObserver,
+    ChromeAccountManagerServiceObserver,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ManageSyncSettingsCoordinatorDelegate,
@@ -255,7 +255,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   // Identity object and observer used for Account Item refresh.
   ChromeIdentity* _identity;
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
 
   // PrefMember for voice locale code.
   StringPrefMember _voiceLocaleCode;
@@ -296,6 +297,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 // phase to avoid observing services for a profile that is being killed.
 - (void)stopBrowserStateServiceObservers;
 
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
 @end
 
 @implementation SettingsTableViewController
@@ -323,6 +327,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         ios::TemplateURLServiceFactory::GetForBrowserState(_browserState)));
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(_browserState);
+    _accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
     // It is expected that |identityManager| should never be nil except in
     // tests. In that case, the tests should be fixed.
     DCHECK(identityManager);
@@ -340,8 +346,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForBrowserState(_browserState);
     _identity = authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    _identityServiceObserver.reset(
-        new ChromeIdentityServiceObserverBridge(self));
+    _accountManagerServiceObserver.reset(
+        new ChromeAccountManagerServiceObserverBridge(self,
+                                                      _accountManagerService));
 
     PrefService* prefService = _browserState->GetPrefs();
 
@@ -403,7 +410,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (void)stopBrowserStateServiceObservers {
   _syncObserverBridge.reset();
   _identityObserverBridge.reset();
-  _identityServiceObserver.reset();
+  _accountManagerServiceObserver.reset();
   [_showMemoryDebugToolsEnabled setObserver:nil];
   [_articlesEnabled setObserver:nil];
   [_allowChromeSigninPreference setObserver:nil];
@@ -556,8 +563,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     // Create the sign-in promo mediator if it doesn't exist.
     if (!_signinPromoViewMediator) {
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                            GetForBrowserState(_browserState)
+          initWithAccountManagerService:self.accountManagerService
                             authService:AuthenticationServiceFactory::
                                             GetForBrowserState(_browserState)
                             prefService:_browserState->GetPrefs()
@@ -1810,16 +1816,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   }
 }
 
-#pragma mark ChromeIdentityServiceObserver
+#pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
   }
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 #pragma mark - BooleanObserver
