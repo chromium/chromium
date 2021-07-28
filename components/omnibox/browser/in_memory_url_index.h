@@ -11,7 +11,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
 
 #include <unordered_map>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_offset_string_conversions.h"
