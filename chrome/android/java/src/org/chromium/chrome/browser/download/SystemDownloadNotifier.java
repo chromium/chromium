@@ -4,20 +4,17 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.os.Handler;
-import android.os.SystemClock;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.components.browser_ui.notifications.PendingNotificationTask;
+import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.PendingState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Iterator;
-import java.util.PriorityQueue;
 
 /**
  * DownloadNotifier implementation that creates and updates download notifications.
@@ -25,24 +22,7 @@ import java.util.PriorityQueue;
  * to the latter to issue calls to show and update notifications.
  */
 public class SystemDownloadNotifier implements DownloadNotifier {
-    // To avoid notification updates being throttled by Android, using 220 ms as the interavl
-    // so that no more than 5 updates are posted per second.
-    private static final long UPDATE_DELAY_MILLIS = 220;
-    private final PriorityQueue<NotificationInfo> mPendingNotificationUpdates =
-            new PriorityQueue<NotificationInfo>(5,
-                    (n1, n2)
-                            -> n1.mPriority == n2.mPriority ? (int) (n1.mTimestamp - n2.mTimestamp)
-                                                            : n1.mPriority - n2.mPriority);
-    private Handler mHandler;
     private DownloadNotificationService mDownloadNotificationService;
-    private boolean mIsNotificationUpdateScheduled;
-
-    @IntDef({NotificationPriority.HIGH, NotificationPriority.LOW})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface NotificationPriority {
-        int HIGH = 0;
-        int LOW = 1;
-    }
 
     /**
      * Notification type for constructing the notification later on.
@@ -67,8 +47,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     private static final class NotificationInfo {
         final @NotificationType int mType;
         final DownloadInfo mInfo;
-        final @NotificationPriority int mPriority;
-        long mTimestamp;
+        final @PendingNotificationTask.Priority int mPriority;
         long mStartTime;
         long mSystemDownloadId;
         boolean mCanResolve;
@@ -78,12 +57,11 @@ public class SystemDownloadNotifier implements DownloadNotifier {
         @PendingState
         int mPendingState;
 
-        NotificationInfo(
-                @NotificationType int type, DownloadInfo info, @NotificationPriority int priority) {
+        NotificationInfo(@NotificationType int type, DownloadInfo info,
+                @PendingNotificationTask.Priority int priority) {
             mType = type;
             mInfo = info;
             mPriority = priority;
-            mTimestamp = SystemClock.uptimeMillis();
         }
     }
 
@@ -104,21 +82,9 @@ public class SystemDownloadNotifier implements DownloadNotifier {
         mDownloadNotificationService = downloadNotificationService;
     }
 
-    private Handler getHandler() {
-        if (mHandler == null) {
-            mHandler = new Handler();
-        }
-        return mHandler;
-    }
-
-    @VisibleForTesting
-    void setHandler(Handler handler) {
-        mHandler = handler;
-    }
-
     @Override
     public void notifyDownloadCanceled(ContentId id) {
-        removePendingNotificationAndGetTimestamp(id);
+        ThrottlingNotificationScheduler.getInstance().cancelPendingNotificationTask(id);
         getDownloadNotificationService().notifyDownloadCanceled(id, false);
     }
 
@@ -127,8 +93,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
             boolean canResolve, boolean isSupportedMimeType) {
         if (info.getOfflineItemSchedule() != null) return;
 
-        NotificationInfo notificationInfo =
-                new NotificationInfo(NotificationType.SUCCEEDED, info, NotificationPriority.HIGH);
+        NotificationInfo notificationInfo = new NotificationInfo(
+                NotificationType.SUCCEEDED, info, PendingNotificationTask.Priority.HIGH);
         notificationInfo.mSystemDownloadId = systemDownloadId;
         notificationInfo.mCanResolve = canResolve;
         notificationInfo.mIsSupportedMimeType = isSupportedMimeType;
@@ -139,8 +105,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     public void notifyDownloadFailed(DownloadInfo info) {
         if (info.getOfflineItemSchedule() != null) return;
 
-        NotificationInfo notificationInfo =
-                new NotificationInfo(NotificationType.FAILED, info, NotificationPriority.HIGH);
+        NotificationInfo notificationInfo = new NotificationInfo(
+                NotificationType.FAILED, info, PendingNotificationTask.Priority.HIGH);
         addPendingNotification(notificationInfo);
     }
 
@@ -149,8 +115,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
             DownloadInfo info, long startTime, boolean canDownloadWhileMetered) {
         if (info.getOfflineItemSchedule() != null) return;
 
-        NotificationInfo notificationInfo =
-                new NotificationInfo(NotificationType.PROGRESS, info, NotificationPriority.LOW);
+        NotificationInfo notificationInfo = new NotificationInfo(
+                NotificationType.PROGRESS, info, PendingNotificationTask.Priority.LOW);
         notificationInfo.mStartTime = startTime;
         notificationInfo.mCanDownloadWhileMetered = canDownloadWhileMetered;
         addPendingNotification(notificationInfo);
@@ -160,8 +126,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     public void notifyDownloadPaused(DownloadInfo info) {
         if (info.getOfflineItemSchedule() != null) return;
 
-        NotificationInfo notificationInfo =
-                new NotificationInfo(NotificationType.PAUSED, info, NotificationPriority.HIGH);
+        NotificationInfo notificationInfo = new NotificationInfo(
+                NotificationType.PAUSED, info, PendingNotificationTask.Priority.HIGH);
         addPendingNotification(notificationInfo);
     }
 
@@ -170,8 +136,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
             DownloadInfo info, boolean isAutoResumable, @PendingState int pendingState) {
         if (info.getOfflineItemSchedule() != null) return;
 
-        NotificationInfo notificationInfo =
-                new NotificationInfo(NotificationType.INTERRUPTED, info, NotificationPriority.HIGH);
+        NotificationInfo notificationInfo = new NotificationInfo(
+                NotificationType.INTERRUPTED, info, PendingNotificationTask.Priority.HIGH);
         notificationInfo.mIsAutoResumable = isAutoResumable;
         notificationInfo.mPendingState = pendingState;
         addPendingNotification(notificationInfo);
@@ -179,7 +145,8 @@ public class SystemDownloadNotifier implements DownloadNotifier {
 
     @Override
     public void removeDownloadNotification(int notificationId, DownloadInfo info) {
-        removePendingNotificationAndGetTimestamp(info.getContentId());
+        ThrottlingNotificationScheduler.getInstance().cancelPendingNotificationTask(
+                info.getContentId());
         getDownloadNotificationService().cancelNotification(notificationId, info.getContentId());
     }
 
@@ -198,38 +165,10 @@ public class SystemDownloadNotifier implements DownloadNotifier {
      * @param notificationInfo Notification to be displayed.
      */
     void addPendingNotification(NotificationInfo notificationInfo) {
-        long timestamp =
-                removePendingNotificationAndGetTimestamp(notificationInfo.mInfo.getContentId());
-        if (timestamp > 0) {
-            // Use the old timestamp, so notifications won't starve.
-            notificationInfo.mTimestamp = timestamp;
-        }
-        if (mIsNotificationUpdateScheduled) {
-            mPendingNotificationUpdates.add(notificationInfo);
-        } else {
-            mIsNotificationUpdateScheduled = true;
-            updateNotification(notificationInfo);
-            getHandler().postDelayed(() -> { handlePendingNotifications(); }, UPDATE_DELAY_MILLIS);
-        }
-    }
-
-    /**
-     * Removes a enqueued notification given its content Id, and returns its timestamp.
-     * If the notification is not found, return -1.
-     * @param contentId ContentId of the notification.
-     * @return Timestamp of the removed notification, or -1 if not found.
-     */
-    private long removePendingNotificationAndGetTimestamp(ContentId contentId) {
-        Iterator<NotificationInfo> iter = mPendingNotificationUpdates.iterator();
-        while (iter.hasNext()) {
-            NotificationInfo info = iter.next();
-            if (info.mInfo.getContentId().equals(contentId)) {
-                long timestamp = info.mTimestamp;
-                iter.remove();
-                return timestamp;
-            }
-        }
-        return -1;
+        ThrottlingNotificationScheduler.getInstance().addPendingNotificationTask(
+                new PendingNotificationTask(notificationInfo.mInfo.getContentId(),
+                        notificationInfo.mPriority,
+                        () -> { updateNotification(notificationInfo); }));
     }
 
     /**
@@ -281,19 +220,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                         info.getOriginalUrl(), info.getShouldPromoteOrigin(), false, false,
                         notificationInfo.mPendingState);
                 break;
-        }
-    }
-
-    /**
-     * Process the pending notifications from the priority queue.
-     */
-    private void handlePendingNotifications() {
-        NotificationInfo info = mPendingNotificationUpdates.poll();
-        if (info != null) {
-            updateNotification(info);
-            getHandler().postDelayed(() -> { handlePendingNotifications(); }, UPDATE_DELAY_MILLIS);
-        } else {
-            mIsNotificationUpdateScheduled = false;
         }
     }
 }

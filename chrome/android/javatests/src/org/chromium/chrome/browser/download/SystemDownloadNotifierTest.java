@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.os.Handler;
 import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
@@ -50,7 +49,6 @@ public class SystemDownloadNotifierTest {
     public void setUp() {
         mMockDownloadNotificationService = new MockDownloadNotificationService();
         mSystemDownloadNotifier.setDownloadNotificationService(mMockDownloadNotificationService);
-        mSystemDownloadNotifier.setHandler(new Handler(Looper.getMainLooper()));
     }
 
     private DownloadInfo getDownloadInfo(ContentId id) {
