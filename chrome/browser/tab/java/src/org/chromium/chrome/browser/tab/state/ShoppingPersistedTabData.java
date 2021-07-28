@@ -41,8 +41,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -90,6 +92,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private PriceDropData mPriceDropData = new PriceDropData();
     private PriceDropMetricsLogger mPriceDropMetricsLogger;
+    private Map<String, CurrencyFormatter> mCurrencyFormatterMap = new HashMap<>();
 
     @VisibleForTesting
     protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
@@ -738,8 +741,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     // TODO(crbug.com/1130068) support all currencies
     private String formatPrice(long priceMicros) {
-        CurrencyFormatter currencyFormatter =
-                new CurrencyFormatter(mPriceDropData.currencyCode, Locale.getDefault());
+        if (mPriceDropData.currencyCode == null) {
+            return "";
+        }
+        CurrencyFormatter currencyFormatter = getCurrencyFormatter(mPriceDropData.currencyCode);
         String formattedPrice;
         if (priceMicros < TEN_UNITS) {
             currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_LESS_THAN_TEN_UNITS);
@@ -752,6 +757,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             (double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
         }
         return currencyFormatter.format(formattedPrice);
+    }
+
+    private CurrencyFormatter getCurrencyFormatter(String currencyCode) {
+        if (mCurrencyFormatterMap.get(currencyCode) == null) {
+            mCurrencyFormatterMap.put(currencyCode,
+                    new CurrencyFormatter(mPriceDropData.currencyCode, Locale.getDefault()));
+        }
+        return mCurrencyFormatterMap.get(currencyCode);
     }
 
     @Override
@@ -832,6 +845,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @Override
     public void destroy() {
         mTab.removeObserver(mUrlUpdatedObserver);
+        for (CurrencyFormatter currencyFormatter : mCurrencyFormatterMap.values()) {
+            assert currencyFormatter != null;
+            currencyFormatter.destroy();
+        }
+        mCurrencyFormatterMap.clear();
         super.destroy();
     }
 
