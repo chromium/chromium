@@ -117,6 +117,21 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     public static final int ACTION_IME_ENTER = 0x01020054;
     public static final int ACTION_PRESS_AND_HOLD = 0x0102004a;
 
+    // Constants defined for AccessibilityNodeInfo Bundle extras keys.
+    public static final String EXTRAS_KEY_CHROME_ROLE = "AccessibilityNodeInfo.chromeRole";
+    public static final String EXTRAS_KEY_HAS_IMAGE = "AccessibilityNodeInfo.hasImage";
+    public static final String EXTRAS_KEY_HINT = "AccessibilityNodeInfo.hint";
+    public static final String EXTRAS_KEY_OFFSCREEN = "AccessibilityNodeInfo.offscreen";
+    public static final String EXTRAS_KEY_ROLE_DESCRIPTION =
+            "AccessibilityNodeInfo.roleDescription";
+    public static final String EXTRAS_KEY_SUPPORTED_ELEMENTS =
+            "ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES";
+    public static final String EXTRAS_KEY_TARGET_URL = "AccessibilityNodeInfo.targetUrl";
+    public static final String EXTRAS_KEY_UNCLIPPED_TOP = "AccessibilityNodeInfo.unclippedTop";
+    public static final String EXTRAS_KEY_UNCLIPPED_BOTTOM =
+            "AccessibilityNodeInfo.unclippedBottom";
+    public static final String EXTRAS_KEY_URL = "url";
+
     // Constant for no granularity selected.
     private static final int NO_GRANULARITY_SELECTED = 0;
 
@@ -730,7 +745,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         WebContents webContents = mDelegate.getWebContents();
         if (webContents != null && !webContents.isDestroyed()) {
             Bundle extras = viewRoot.getExtras();
-            extras.putCharSequence("url", webContents.getVisibleUrl().getSpec());
+            extras.putCharSequence(EXTRAS_KEY_URL, webContents.getVisibleUrl().getSpec());
         }
 
         mDelegate.requestAccessibilitySnapshot(viewRoot, new Runnable() {
@@ -1587,7 +1602,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
         if (hasImage) {
             Bundle bundle = node.getExtras();
-            bundle.putCharSequence("AccessibilityNodeInfo.hasImage", "true");
+            bundle.putCharSequence(EXTRAS_KEY_HAS_IMAGE, "true");
         }
 
         node.setMovementGranularities(AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER
@@ -1719,15 +1734,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
-        bundle.putCharSequence("AccessibilityNodeInfo.chromeRole", role);
-        bundle.putCharSequence("AccessibilityNodeInfo.roleDescription", roleDescription);
-        bundle.putCharSequence("AccessibilityNodeInfo.hint", hint);
+        bundle.putCharSequence(EXTRAS_KEY_CHROME_ROLE, role);
+        bundle.putCharSequence(EXTRAS_KEY_ROLE_DESCRIPTION, roleDescription);
+        bundle.putCharSequence(EXTRAS_KEY_HINT, hint);
         if (!targetUrl.isEmpty()) {
-            bundle.putCharSequence("AccessibilityNodeInfo.targetUrl", targetUrl);
+            bundle.putCharSequence(EXTRAS_KEY_TARGET_URL, targetUrl);
         }
         if (isRoot) {
-            bundle.putCharSequence(
-                    "ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES", mSupportedHtmlElementTypes);
+            bundle.putCharSequence(EXTRAS_KEY_SUPPORTED_ELEMENTS, mSupportedHtmlElementTypes);
         }
 
         node.setCanOpenPopup(canOpenPopup);
@@ -1865,11 +1879,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         int viewportRectTop = viewLocation[1] + (int) ac.getContentOffsetYPix();
         int viewportRectBottom = viewportRectTop + ac.getLastFrameViewportHeightPixInt();
         if (rect.top < viewportRectTop) {
-            extras.putInt("AccessibilityNodeInfo.unclippedTop", rect.top);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
             rect.top = viewportRectTop;
         }
         if (rect.bottom > viewportRectBottom) {
-            extras.putInt("AccessibilityNodeInfo.unclippedBottom", rect.bottom);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, rect.bottom);
             rect.bottom = viewportRectBottom;
         }
     }
@@ -1902,7 +1916,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @CalledByNative
     protected void setAccessibilityNodeInfoLocation(AccessibilityNodeInfo node,
             final int virtualViewId, int absoluteLeft, int absoluteTop, int parentRelativeLeft,
-            int parentRelativeTop, int width, int height, boolean isRootNode) {
+            int parentRelativeTop, int width, int height, boolean isRootNode, boolean isOffscreen) {
         // First set the bounds in parent.
         Rect boundsInParent = new Rect(parentRelativeLeft, parentRelativeTop,
                 parentRelativeLeft + width, parentRelativeTop + height);
@@ -1917,6 +1931,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         convertWebRectToAndroidCoordinates(rect, node.getExtras());
 
         node.setBoundsInScreen(rect);
+
+        // For nodes that are considered visible to the user, but are offscreen (because they are
+        // scrolled offscreen or obscured from view but not programmatically hidden, e.g. through
+        // CSS), add to the extras Bundle to inform interested accessibility services.
+        if (isOffscreen) {
+            node.getExtras().putBoolean(EXTRAS_KEY_OFFSCREEN, true);
+        } else {
+            // In case of a cached node, remove the offscreen extra if it is there.
+            if (node.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN)) {
+                node.getExtras().remove(EXTRAS_KEY_OFFSCREEN);
+            }
+        }
 
         // Work around a bug in the Android framework where if the object with accessibility
         // focus moves, the accessibility focus rect is not updated - both the visual highlight,
