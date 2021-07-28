@@ -108,9 +108,24 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();
 
-// Returns true if the process is running with elevated privileges of a
-// user in the an administrator group.
-bool IsRunningElevated();
+// Sets `is_user_admin` to true if the user is running as an elevated
+// administrator.
+HRESULT IsUserAdmin(bool& is_user_admin);
+
+// Sets `is_user_non_elevated_admin` to true if the user is running as a
+// non-elevated administrator.
+HRESULT IsUserNonElevatedAdmin(bool& is_user_non_elevated_admin);
+
+// Sets `is_uac_on` to true if the UAC is enabled.
+HRESULT IsUACOn(bool& is_uac_on);
+
+// Sets `is_elevated_with_uac_on` to true if running at high integrity with
+// UAC on.
+HRESULT IsElevatedWithUACOn(bool& is_elevated_with_uac_on);
+
+// Returns a string representing the UAC settings and elevation state for the
+// caller. The value can be used for logging purposes.
+std::string GetUACState();
 
 }  // namespace updater
 

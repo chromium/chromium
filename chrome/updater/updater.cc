@@ -33,6 +33,7 @@
 #if defined(OS_WIN)
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
+#include "chrome/updater/win/win_util.h"
 #endif
 
 #if defined(OS_MAC)
@@ -117,6 +118,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   InitializeCrashReporting(updater_scope);
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+
+#if defined(OS_WIN)
+  VLOG(1) << GetUACState();
+#endif
 
   if (command_line->HasSwitch(kCrashMeSwitch)) {
     // Records a backtrace in the log, crashes the program, saves a crash dump,

@@ -567,6 +567,9 @@ if (is_win || is_mac) {
       "//chrome/common:constants",
       "//testing/gtest",
     ]
+    if (is_win) {
+      deps += [ ":base" ]
+    }
 
     data_deps = [ "//chrome/updater/test/test_app" ]
     if (is_mac) {
@@ -588,6 +591,9 @@ if (is_win || is_mac) {
       "//chrome/common:constants",
       "//testing/gtest",
     ]
+    if (is_win) {
+      deps += [ ":base" ]
+    }
 
     data_deps = [ ":updater_integration_tests_helper" ]
     if (is_mac) {
