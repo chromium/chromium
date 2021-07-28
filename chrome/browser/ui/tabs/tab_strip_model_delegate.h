@@ -103,9 +103,6 @@ class TabStripModelDelegate {
   virtual void MoveToExistingWindow(const std::vector<int>& indices,
                                     int browser_index) = 0;
 
-  // Get the list of existing windows that tabs can be moved to.
-  virtual std::vector<std::u16string> GetExistingWindowsForMoveMenu() = 0;
-
   // Returns whether the contents at |indices| can be moved from the current
   // tabstrip to a different window.
   virtual bool CanMoveTabsToWindow(const std::vector<int>& indices) = 0;

@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
@@ -452,6 +453,8 @@ Browser::Browser(const CreateParams& params)
       tab_strip_model_(
           std::make_unique<TabStripModel>(tab_strip_model_delegate_.get(),
                                           params.profile)),
+      tab_menu_model_delegate_(
+          std::make_unique<chrome::BrowserTabMenuModelDelegate>(this)),
       app_name_(params.app_name),
       is_trusted_source_(params.trusted_source),
       session_id_(SessionID::NewUnique()),

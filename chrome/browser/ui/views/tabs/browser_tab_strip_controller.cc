@@ -118,7 +118,8 @@ class BrowserTabStripController::TabContextMenuContents
         controller_(controller),
         feature_promo_controller_(feature_promo_controller) {
     model_ = controller_->menu_model_factory_->Create(
-        this, controller->model_, controller->tabstrip_->GetModelIndexOf(tab));
+        this, controller->browser()->tab_menu_model_delegate(),
+        controller->model_, controller->tabstrip_->GetModelIndexOf(tab));
 
     // If IPH is showing, continue into the menu. IsCommandIdAlerted()
     // is called on |menu_runner_| construction, and we check

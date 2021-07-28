@@ -13,6 +13,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -25,9 +26,11 @@
 using base::UserMetricsAction;
 
 TabMenuModel::TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                           TabMenuModelDelegate* tab_menu_model_delegate,
                            TabStripModel* tab_strip,
                            int index)
-    : ui::SimpleMenuModel(delegate) {
+    : ui::SimpleMenuModel(delegate),
+      tab_menu_model_delegate_(tab_menu_model_delegate) {
   Build(tab_strip, index);
 }
 
@@ -85,8 +88,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   if (ExistingWindowSubMenuModel::ShouldShowSubmenu(tab_strip->profile())) {
     // Create submenu with existing windows
     add_to_existing_window_submenu_ =
-        std::make_unique<ExistingWindowSubMenuModel>(delegate(), tab_strip,
-                                                     index);
+        std::make_unique<ExistingWindowSubMenuModel>(
+            delegate(), tab_menu_model_delegate_, tab_strip, index);
     AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),

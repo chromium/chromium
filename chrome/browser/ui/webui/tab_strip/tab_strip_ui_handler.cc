@@ -134,7 +134,10 @@ class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
   WebUITabContextMenu(Browser* browser,
                       const ui::AcceleratorProvider* accelerator_provider,
                       int tab_index)
-      : TabMenuModel(this, browser->tab_strip_model(), tab_index),
+      : TabMenuModel(this,
+                     browser->tab_menu_model_delegate(),
+                     browser->tab_strip_model(),
+                     tab_index),
         browser_(browser),
         accelerator_provider_(accelerator_provider),
         tab_index_(tab_index) {}

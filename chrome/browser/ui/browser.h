@@ -65,6 +65,7 @@ class ScopedProfileKeepAlive;
 class StatusBubble;
 class TabStripModel;
 class TabStripModelDelegate;
+class TabMenuModelDelegate;
 
 namespace blink {
 enum class ProtocolHandlerSecurityLevel;
@@ -378,6 +379,16 @@ class Browser : public TabStripModelObserver,
 
   // Never nullptr.
   TabStripModel* tab_strip_model() const { return tab_strip_model_.get(); }
+
+  // Never nullptr.
+  TabStripModelDelegate* tab_strip_model_delegate() const {
+    return tab_strip_model_delegate_.get();
+  }
+
+  // Never nullptr.
+  TabMenuModelDelegate* tab_menu_model_delegate() const {
+    return tab_menu_model_delegate_.get();
+  }
 
   chrome::BrowserCommandController* command_controller() {
     return command_controller_.get();
@@ -1102,6 +1113,8 @@ class Browser : public TabStripModelObserver,
 
   std::unique_ptr<TabStripModelDelegate> const tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> const tab_strip_model_;
+
+  std::unique_ptr<TabMenuModelDelegate> const tab_menu_model_delegate_;
 
   // The application name that is also the name of the window to the shell.
   // This name should be set when:

@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -18,17 +19,21 @@
 
 ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
     ui::SimpleMenuModel::Delegate* parent_delegate,
+    TabMenuModelDelegate* tab_menu_model_delegate,
     TabStripModel* model,
     int context_index)
     : ExistingBaseSubMenuModel(parent_delegate,
                                model,
                                context_index,
                                kMinExistingWindowCommandId) {
+  static constexpr int kWindowTitleForMenuMaxWidth = 400;
   std::vector<MenuItemInfo> menu_item_infos;
-  auto window_titles = model->GetExistingWindowsForMoveMenu();
+  auto existing_browsers =
+      tab_menu_model_delegate->GetExistingWindowsForMoveMenu();
 
-  for (auto& window_title : window_titles) {
-    menu_item_infos.emplace_back(MenuItemInfo{window_title});
+  for (auto* browser : existing_browsers) {
+    menu_item_infos.emplace_back(MenuItemInfo{
+        browser->GetWindowTitleForMaxWidth(kWindowTitleForMenuMaxWidth)});
     menu_item_infos.back().may_have_mnemonics = false;
   }
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW, menu_item_infos);

@@ -156,14 +156,18 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   AddTabWithTitle(browser_4.get(), kLongTabTitleExample);
 
   // Create menu from browser 1.
-  ExistingWindowSubMenuModel menu1(nullptr, browser()->tab_strip_model(), 0);
+  ExistingWindowSubMenuModel menu1(nullptr,
+                                   browser()->tab_menu_model_delegate(),
+                                   browser()->tab_strip_model(), 0);
   ASSERT_EQ(5, menu1.GetItemCount());
   CheckBrowserTitle(menu1.GetLabelAt(2), kLongTabTitleExample, 3);
   CheckBrowserTitle(menu1.GetLabelAt(3), "Browser 3 Tab 2", 2);
   CheckBrowserTitle(menu1.GetLabelAt(4), kLongTabTitleExample, 1);
 
   // Create menu from browser 2.
-  ExistingWindowSubMenuModel menu2(nullptr, browser_2->tab_strip_model(), 0);
+  ExistingWindowSubMenuModel menu2(nullptr,
+                                   browser_2->tab_menu_model_delegate(),
+                                   browser_2->tab_strip_model(), 0);
   ASSERT_EQ(5, menu2.GetItemCount());
   CheckBrowserTitle(menu2.GetLabelAt(2), kLongTabTitleExample, 3);
   CheckBrowserTitle(menu2.GetLabelAt(3), "Browser 3 Tab 2", 2);
@@ -173,7 +177,9 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuOrder) {
   BrowserList::SetLastActive(browser());
   BrowserList::SetLastActive(browser_2.get());
 
-  ExistingWindowSubMenuModel menu3(nullptr, browser_3->tab_strip_model(), 0);
+  ExistingWindowSubMenuModel menu3(nullptr,
+                                   browser_3->tab_menu_model_delegate(),
+                                   browser_3->tab_strip_model(), 0);
   ASSERT_EQ(5, menu3.GetItemCount());
   CheckBrowserTitle(menu3.GetLabelAt(2), kLongTabTitleExample, 1);
   CheckBrowserTitle(menu3.GetLabelAt(3), "Browser 1", 1);
@@ -208,14 +214,16 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   const std::u16string kIncognitoBrowser2ExpectedTitle = u"Incognito Browser 2";
 
   // Test that a non-incognito browser only shows non-incognito windows.
-  ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);
+  ExistingWindowSubMenuModel menu(nullptr, browser()->tab_menu_model_delegate(),
+                                  browser()->tab_strip_model(), 0);
   ASSERT_EQ(4, menu.GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu.GetLabelAt(2));
   ASSERT_EQ(kBrowser2ExpectedTitle, menu.GetLabelAt(3));
 
   // Test that a incognito browser only shows incognito windows.
   ExistingWindowSubMenuModel menu_incognito(
-      nullptr, incognito_browser_1->tab_strip_model(), 0);
+      nullptr, incognito_browser_1->tab_menu_model_delegate(),
+      incognito_browser_1->tab_strip_model(), 0);
   ASSERT_EQ(3, menu_incognito.GetItemCount());
   ASSERT_EQ(kIncognitoBrowser2ExpectedTitle, menu_incognito.GetLabelAt(2));
 
@@ -243,7 +251,8 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   const std::u16string kBrowser3ExpectedTitle = u"Browser 3";
 
   // Test that popups do not show.
-  ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);
+  ExistingWindowSubMenuModel menu(nullptr, browser()->tab_menu_model_delegate(),
+                                  browser()->tab_strip_model(), 0);
   ASSERT_EQ(4, menu.GetItemCount());
   ASSERT_EQ(kBrowser3ExpectedTitle, menu.GetLabelAt(2));
   ASSERT_EQ(kBrowser2ExpectedTitle, menu.GetLabelAt(3));

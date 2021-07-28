@@ -547,9 +547,6 @@ class TabStripModel : public TabGroupController {
   // If |context_index| is selected the command applies to all selected tabs.
   void ExecuteAddToExistingWindowCommand(int context_index, int browser_index);
 
-  // Get the list of existing windows that tabs can be moved to.
-  std::vector<std::u16string> GetExistingWindowsForMoveMenu();
-
   // Returns true if 'CommandToggleSiteMuted' will mute. |index| is the
   // index supplied to |ExecuteContextMenuCommand|.
   bool WillContextMenuMuteSites(int index);

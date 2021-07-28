@@ -12,10 +12,12 @@
 
 class Profile;
 class TabStripModel;
+class TabMenuModelDelegate;
 
 class ExistingWindowSubMenuModel : public ExistingBaseSubMenuModel {
  public:
   ExistingWindowSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
+                             TabMenuModelDelegate* tab_menu_model_delegate,
                              TabStripModel* model,
                              int context_index);
   ExistingWindowSubMenuModel(const ExistingWindowSubMenuModel&) = delete;

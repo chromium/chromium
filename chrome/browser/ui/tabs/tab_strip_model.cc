@@ -1521,10 +1521,6 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
                                    browser_index);
 }
 
-std::vector<std::u16string> TabStripModel::GetExistingWindowsForMoveMenu() {
-  return delegate()->GetExistingWindowsForMoveMenu();
-}
-
 bool TabStripModel::WillContextMenuMuteSites(int index) {
   return !chrome::AreAllSitesMuted(*this, GetIndicesForCommand(index));
 }

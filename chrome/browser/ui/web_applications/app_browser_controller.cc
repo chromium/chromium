@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -83,6 +84,7 @@ class TerminalTabMenuModelFactory : public TabMenuModelFactory {
  public:
   std::unique_ptr<ui::SimpleMenuModel> Create(
       ui::SimpleMenuModel::Delegate* delegate,
+      TabMenuModelDelegate* tab_menu_model_delegate,
       TabStripModel*,
       int) override {
     return std::make_unique<TerminalTabMenuModel>(delegate);

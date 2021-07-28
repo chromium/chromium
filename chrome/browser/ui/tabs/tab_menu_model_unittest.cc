@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -19,7 +20,8 @@ class TabMenuModelTest : public MenuModelTest,
 
 TEST_F(TabMenuModelTest, Basics) {
   chrome::NewTab(browser());
-  TabMenuModel model(&delegate_, browser()->tab_strip_model(), 0);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
 
   // Verify it has items. The number varies by platform, so we don't check
   // the exact number.
@@ -34,7 +36,8 @@ TEST_F(TabMenuModelTest, Basics) {
 
 TEST_F(TabMenuModelTest, MoveToNewWindow) {
   chrome::NewTab(browser());
-  TabMenuModel model(&delegate_, browser()->tab_strip_model(), 0);
+  TabMenuModel model(&delegate_, browser()->tab_menu_model_delegate(),
+                     browser()->tab_strip_model(), 0);
 
   // Verify that CommandMoveTabsToNewWindow is in the menu.
   EXPECT_GT(
@@ -53,7 +56,8 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
   tab_strip_model->AddToNewGroup({1});
   tab_strip_model->AddToNewGroup({2});
 
-  TabMenuModel menu(&delegate_, tab_strip_model, 3);
+  TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
+                    tab_strip_model, 3);
 
   int submenu_index =
       menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup);
@@ -84,7 +88,8 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
   tab_strip_model->AddToNewGroup({1});
   tab_strip_model->AddToNewGroup({2});
 
-  TabMenuModel menu(&delegate_, tab_strip_model, 1);
+  TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
+                    tab_strip_model, 1);
 
   int submenu_index =
       menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup);
@@ -113,7 +118,8 @@ TEST_F(TabMenuModelTest, AddToExistingGroupAfterGroupDestroyed) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tab_strip_model->AddToNewGroup({0});
 
-  TabMenuModel menu(&delegate_, tab_strip_model, 1);
+  TabMenuModel menu(&delegate_, browser()->tab_menu_model_delegate(),
+                    tab_strip_model, 1);
 
   int submenu_index =
       menu.GetIndexOfCommandId(TabStripModel::CommandAddToExistingGroup);

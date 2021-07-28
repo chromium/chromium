@@ -9,6 +9,7 @@
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
+class TabMenuModelDelegate;
 
 // A menu model that builds the contents of the tab context menu. To make sure
 // the menu reflects the real state of the tab a new TabMenuModel should be
@@ -25,6 +26,7 @@ class TabStripModel;
 class TabMenuModel : public ui::SimpleMenuModel {
  public:
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+               TabMenuModelDelegate* tab_menu_model_delegate,
                TabStripModel* tab_strip,
                int index);
   TabMenuModel(const TabMenuModel&) = delete;
@@ -40,6 +42,8 @@ class TabMenuModel : public ui::SimpleMenuModel {
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
+
+  TabMenuModelDelegate* tab_menu_model_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_H_

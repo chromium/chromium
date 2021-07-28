@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/chrome_switches.h"
@@ -121,37 +122,14 @@ void BrowserTabStripModelDelegate::DuplicateContentsAt(int index) {
 void BrowserTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
     int browser_index) {
-  size_t existing_browser_count = existing_browsers_for_menu_list_.size();
+  auto existing_browsers =
+      browser_->tab_menu_model_delegate()->GetExistingWindowsForMoveMenu();
+  size_t existing_browser_count = existing_browsers.size();
   if (static_cast<size_t>(browser_index) < existing_browser_count &&
-      existing_browsers_for_menu_list_[browser_index]) {
-    chrome::MoveTabsToExistingWindow(
-        browser_, existing_browsers_for_menu_list_[browser_index].get(),
-        indices);
+      existing_browsers[browser_index]) {
+    chrome::MoveTabsToExistingWindow(browser_, existing_browsers[browser_index],
+                                     indices);
   }
-}
-
-std::vector<std::u16string>
-BrowserTabStripModelDelegate::GetExistingWindowsForMoveMenu() {
-  static constexpr int kWindowTitleForMenuMaxWidth = 400;
-  std::vector<std::u16string> window_titles;
-  existing_browsers_for_menu_list_.clear();
-
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (BrowserList::const_reverse_iterator it =
-           browser_list->begin_browsers_ordered_by_activation();
-       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
-    Browser* browser = *it;
-
-    // We can only move into a tabbed view of the same profile, and not the same
-    // window we're currently in.
-    if (browser != browser_ && browser->is_type_normal() &&
-        browser->profile() == browser_->profile()) {
-      existing_browsers_for_menu_list_.push_back(browser->AsWeakPtr());
-      window_titles.push_back(
-          browser->GetWindowTitleForMaxWidth(kWindowTitleForMenuMaxWidth));
-    }
-  }
-  return window_titles;
 }
 
 bool BrowserTabStripModelDelegate::CanMoveTabsToWindow(

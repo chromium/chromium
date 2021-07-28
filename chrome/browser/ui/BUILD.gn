@@ -910,6 +910,8 @@ static_library("ui") {
       "browser_navigator.h",
       "browser_otr_state.cc",
       "browser_otr_state.h",
+      "browser_tab_menu_model_delegate.cc",
+      "browser_tab_menu_model_delegate.h",
       "browser_tab_restorer.cc",
       "browser_tab_strip_model_delegate.cc",
       "browser_tab_strip_model_delegate.h",
