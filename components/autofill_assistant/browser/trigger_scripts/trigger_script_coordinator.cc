@@ -106,6 +106,10 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
     return;
   }
   if (script_parameters.has_value()) {
+    // Note that we need to merge the new script parameters with the old set
+    // (the new values have precedence). This is because not all parameters were
+    // sent to the backend in the first place due to privacy considerations.
+    (*script_parameters)->MergeWith(trigger_context_->GetScriptParameters());
     trigger_context_->SetScriptParameters(std::move(*script_parameters));
   }
   trigger_condition_check_interval_ =

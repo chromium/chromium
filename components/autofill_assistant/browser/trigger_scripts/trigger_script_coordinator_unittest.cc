@@ -36,6 +36,7 @@ using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList(
@@ -1144,8 +1145,9 @@ TEST_F(TriggerScriptCoordinatorTest, BackendCanOverrideScriptParameters) {
           TriggerContext::Options()),
       mock_callback_.Get());
   EXPECT_THAT(coordinator_->GetTriggerContext().GetScriptParameters().ToProto(),
-              ElementsAre(std::make_pair("name_1", "new_value_1"),
-                          std::make_pair("name_2", "new_value_2")));
+              UnorderedElementsAre(std::make_pair("name_1", "new_value_1"),
+                                   std::make_pair("name_2", "new_value_2"),
+                                   std::make_pair("name_3", "value_3")));
 }
 
 TEST_F(TriggerScriptCoordinatorTest, StoppingTwiceDoesNotCrash) {
