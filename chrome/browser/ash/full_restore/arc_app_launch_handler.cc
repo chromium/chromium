@@ -701,7 +701,7 @@ void ArcAppLaunchHandler::StartCpuUsageCount() {
       FROM_HERE,
       base::TimeDelta::FromSeconds(kCpuUsageRefreshIntervalInSeconds),
       base::BindRepeating(&ArcAppLaunchHandler::UpdateCpuUsage,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcAppLaunchHandler::StopCpuUsageCount() {
@@ -709,6 +709,8 @@ void ArcAppLaunchHandler::StopCpuUsageCount() {
 }
 
 void ArcAppLaunchHandler::UpdateCpuUsage() {
+  if (!probe_service_.is_connected())
+    return;
   probe_service_->ProbeTelemetryInfo(
       {chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu},
       base::BindOnce(&ArcAppLaunchHandler::OnCpuUsageUpdated,
