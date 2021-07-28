@@ -305,8 +305,10 @@ void SyncFileSystemGetFileStatusesFunction::DidGetFileStatus(
     sync_file_system::FileStatus file_status =
         SyncFileStatusToExtensionEnum(it->second.second);
 
-    dict->Set("entry", CreateDictionaryValueForFileSystemEntry(
-                           url, ::sync_file_system::SYNC_FILE_TYPE_FILE));
+    dict->SetKey(
+        "entry",
+        base::Value::FromUniquePtrValue(CreateDictionaryValueForFileSystemEntry(
+            url, ::sync_file_system::SYNC_FILE_TYPE_FILE)));
     dict->SetString("status", ToString(file_status));
 
     if (file_error == ::sync_file_system::SYNC_STATUS_OK)

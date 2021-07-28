@@ -75,8 +75,9 @@ TEST_F(MetricsWebContentsObserverTest,
   manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.SetString(extensions::manifest_keys::kName, "TestExtension");
   manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.Set("web_accessible_resources",
-               extensions::ListBuilder().Append("main.html").Build());
+  manifest.SetKey("web_accessible_resources",
+                  base::Value::FromUniquePtrValue(
+                      extensions::ListBuilder().Append("main.html").Build()));
   std::string error;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(

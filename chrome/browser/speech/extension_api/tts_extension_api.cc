@@ -373,12 +373,12 @@ ExtensionFunction::ResponseAction TtsGetVoicesFunction::Run() {
     if (!voice.engine_id.empty())
       result_voice->SetString(constants::kExtensionIdKey, voice.engine_id);
 
-    auto event_types = std::make_unique<base::ListValue>();
-    for (auto iter = voice.events.begin(); iter != voice.events.end(); ++iter) {
-      const char* event_name_constant = TtsEventTypeToString(*iter);
-      event_types->AppendString(event_name_constant);
+    base::ListValue event_types;
+    for (auto& event : voice.events) {
+      const char* event_name_constant = TtsEventTypeToString(event);
+      event_types.AppendString(event_name_constant);
     }
-    result_voice->Set(constants::kEventTypesKey, std::move(event_types));
+    result_voice->SetKey(constants::kEventTypesKey, std::move(event_types));
 
     result_voices->Append(std::move(result_voice));
   }

@@ -206,8 +206,7 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
 
   base::DictionaryValue pref_value;
   base::Value value("2G");
-  pref_value.Set("network_id_foo",
-                 base::Value::ToUniquePtrValue(value.Clone()));
+  pref_value.SetKey("network_id_foo", value.Clone());
   state->SetValue("net.network_qualities",
                   base::Value::ToUniquePtrValue(pref_value.Clone()), 0);
 

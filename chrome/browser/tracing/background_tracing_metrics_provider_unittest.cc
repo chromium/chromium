@@ -32,15 +32,15 @@ class BackgroundTracingMetricsProviderTest : public testing::Test {
     dict.SetString("custom_categories",
                    tracing::TraceStartupConfig::kDefaultStartupCategories);
 
-    std::unique_ptr<base::ListValue> rules_list(new base::ListValue());
+    base::ListValue rules_list;
     {
       std::unique_ptr<base::DictionaryValue> rules_dict(
           new base::DictionaryValue());
       rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
       rules_dict->SetString("trigger_name", "test");
-      rules_list->Append(std::move(rules_dict));
+      rules_list.Append(std::move(rules_dict));
     }
-    dict.Set("configs", std::move(rules_list));
+    dict.SetKey("configs", std::move(rules_list));
 
     std::unique_ptr<content::BackgroundTracingConfig> config(
         content::BackgroundTracingConfig::FromDict(&dict));

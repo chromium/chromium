@@ -91,11 +91,12 @@ static scoped_refptr<Extension> CreateExtension(
   manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
   manifest.SetString(extensions::manifest_keys::kName, name);
-  auto permissions = std::make_unique<base::ListValue>();
+  base::ListValue permissions;
   if (background_permission) {
-    permissions->AppendString("background");
+    permissions.AppendString("background");
   }
-  manifest.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
+  manifest.SetKey(extensions::manifest_keys::kPermissions,
+                  std::move(permissions));
 
   std::string error;
   scoped_refptr<Extension> extension;

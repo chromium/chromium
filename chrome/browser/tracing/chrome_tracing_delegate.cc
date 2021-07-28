@@ -447,11 +447,11 @@ ChromeTracingDelegate::GenerateMetadataDict() {
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
                                                    &variations);
 
-  std::unique_ptr<base::ListValue> variations_list(new base::ListValue());
+  base::ListValue variations_list;
   for (const auto& it : variations)
-    variations_list->AppendString(it);
+    variations_list.AppendString(it);
 
-  metadata_dict->Set("field-trials", std::move(variations_list));
+  metadata_dict->SetKey("field-trials", std::move(variations_list));
   metadata_dict->SetString("revision", version_info::GetLastChange());
   return metadata_dict;
 }

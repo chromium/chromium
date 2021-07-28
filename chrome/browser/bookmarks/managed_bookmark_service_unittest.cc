@@ -114,7 +114,8 @@ class ManagedBookmarkServiceTest : public testing::Test {
       std::unique_ptr<base::ListValue> children) {
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("name", title);
-    dict->Set("children", std::move(children));
+    dict->SetKey("children",
+                 base::Value::FromUniquePtrValue(std::move(children)));
     return dict;
   }
 

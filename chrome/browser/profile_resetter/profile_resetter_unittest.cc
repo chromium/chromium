@@ -360,8 +360,8 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
   manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
     case extensions::Manifest::TYPE_THEME:
-      manifest.Set(extensions::manifest_keys::kTheme,
-                   std::make_unique<base::DictionaryValue>());
+      manifest.SetKey(extensions::manifest_keys::kTheme,
+                      base::DictionaryValue());
       break;
     case extensions::Manifest::TYPE_HOSTED_APP:
       manifest.SetString(extensions::manifest_keys::kLaunchWebURL,

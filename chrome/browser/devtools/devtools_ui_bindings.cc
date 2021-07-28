@@ -266,16 +266,16 @@ std::unique_ptr<base::DictionaryValue> BuildObjectForResponse(
   response->SetInteger("netError", net_error);
   response->SetString("netErrorName", net::ErrorToString(net_error));
 
-  auto headers = std::make_unique<base::DictionaryValue>();
+  base::DictionaryValue headers;
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers->SetString(name, value);
+    headers.SetString(name, value);
 
-  response->Set("headers", std::move(headers));
+  response->SetKey("headers", std::move(headers));
   return response;
 }
 
@@ -1142,36 +1142,31 @@ void DevToolsUIBindings::SetDevicesDiscoveryConfig(
 
 void DevToolsUIBindings::DevicesDiscoveryConfigUpdated() {
   base::DictionaryValue config;
-  config.Set(kConfigDiscoverUsbDevices,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigPortForwardingEnabled,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigPortForwardingConfig,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsPortForwardingConfig)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigNetworkDiscoveryEnabled,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
-                     ->GetValue()
-                     ->Clone()));
-  config.Set(kConfigNetworkDiscoveryConfig,
-             base::Value::ToUniquePtrValue(
-                 profile_->GetPrefs()
-                     ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
-                     ->GetValue()
-                     ->Clone()));
+  config.SetKey(kConfigDiscoverUsbDevices,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsDiscoverUsbDevicesEnabled)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigPortForwardingEnabled,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsPortForwardingEnabled)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigPortForwardingConfig,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsPortForwardingConfig)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigNetworkDiscoveryEnabled,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsDiscoverTCPTargetsEnabled)
+                    ->GetValue()
+                    ->Clone());
+  config.SetKey(kConfigNetworkDiscoveryConfig,
+                profile_->GetPrefs()
+                    ->FindPreference(prefs::kDevToolsTCPDiscoveryConfig)
+                    ->GetValue()
+                    ->Clone());
   CallClientMethod("DevToolsAPI", "devicesDiscoveryConfigChanged",
                    std::move(config));
 }
