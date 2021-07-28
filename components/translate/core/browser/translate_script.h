@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
