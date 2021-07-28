@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/wallpaper/local_image_info.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
@@ -20,7 +21,6 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app_mojom_traits.h"
+#include "chromeos/components/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -64,61 +65,6 @@ const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
 }
 
 }  // namespace
-
-namespace mojo {
-
-template <>
-struct TypeConverter<
-    chromeos::personalization_app::mojom::WallpaperCollectionPtr,
-    backdrop::Collection> {
-  static chromeos::personalization_app::mojom::WallpaperCollectionPtr Convert(
-      const backdrop::Collection& collection) {
-    // All wallpaper collections are expected to have one preview image. For
-    // now, continue even if it is missing.
-    // TODO(b/185580965) switch to using StructTraits and reject if preview is
-    // missing.
-    absl::optional<GURL> preview_url;
-    if (collection.preview_size() > 0)
-      preview_url = GURL(collection.preview(0).image_url());
-
-    return chromeos::personalization_app::mojom::WallpaperCollection::New(
-        collection.collection_id(), collection.collection_name(), preview_url);
-  }
-};
-
-template <>
-struct TypeConverter<chromeos::personalization_app::mojom::WallpaperImagePtr,
-                     backdrop::Image> {
-  static chromeos::personalization_app::mojom::WallpaperImagePtr Convert(
-      const backdrop::Image& image) {
-    if (!image.has_image_url() || !image.has_asset_id())
-      return nullptr;
-
-    GURL image_url(image.image_url());
-    if (!image_url.is_valid())
-      return nullptr;
-
-    std::vector<std::string> attribution;
-    for (const auto& attr : image.attribution())
-      attribution.push_back(attr.text());
-
-    return chromeos::personalization_app::mojom::WallpaperImage::New(
-        GURL(image.image_url()), std::move(attribution), image.asset_id());
-  }
-};
-
-template <>
-struct TypeConverter<chromeos::personalization_app::mojom::LocalImagePtr,
-                     base::FilePath> {
-  static chromeos::personalization_app::mojom::LocalImagePtr Convert(
-      const base::FilePath& path) {
-    auto token = base::UnguessableToken::Create();
-    std::string name = path.BaseName().value();
-    return chromeos::personalization_app::mojom::LocalImage::New(token, name);
-  }
-};
-
-}  // namespace mojo
 
 ChromePersonalizationAppUiDelegate::ChromePersonalizationAppUiDelegate(
     content::WebUI* web_ui)
@@ -180,12 +126,12 @@ void ChromePersonalizationAppUiDelegate::GetLocalImages(
 void ChromePersonalizationAppUiDelegate::GetLocalImageThumbnail(
     const base::UnguessableToken& id,
     GetLocalImageThumbnailCallback callback) {
-  const auto& entry = local_image_id_map_.find(id);
-  if (entry == local_image_id_map_.end()) {
+  const auto& entry = local_image_info_map_.find(id);
+  if (entry == local_image_info_map_.end()) {
     mojo::ReportBadMessage("Invalid local image id received");
     return;
   }
-  const base::FilePath& file_path = entry->second;
+  const base::FilePath& file_path = entry->second.path;
 
   if (!thumbnail_loader_)
     thumbnail_loader_ = std::make_unique<ash::ThumbnailLoader>(profile_);
@@ -307,9 +253,9 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 void ChromePersonalizationAppUiDelegate::SelectLocalImage(
     const base::UnguessableToken& id,
     SelectLocalImageCallback callback) {
-  const auto& it = local_image_id_map_.find(id);
+  const auto& it = local_image_info_map_.find(id);
 
-  if (it == local_image_id_map_.end()) {
+  if (it == local_image_info_map_.end()) {
     mojo::ReportBadMessage("Invalid local image id selected");
     return;
   }
@@ -324,7 +270,7 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
   const auto& account_id = user->GetAccountId();
 
   controller->SetCustomWallpaper(
-      account_id, client->GetFilesId(account_id), it->second,
+      account_id, client->GetFilesId(account_id), it->second.path,
       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false, std::move(callback));
 }
@@ -363,19 +309,9 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollections(
     bool success,
     const std::vector<backdrop::Collection>& collections) {
   DCHECK(wallpaper_collection_info_fetcher_);
-
-  using ResultType =
-      std::vector<chromeos::personalization_app::mojom::WallpaperCollectionPtr>;
-
-  absl::optional<ResultType> result;
+  absl::optional<std::vector<backdrop::Collection>> result;
   if (success && !collections.empty()) {
-    ResultType data;
-    std::transform(
-        collections.cbegin(), collections.cend(), std::back_inserter(data),
-        chromeos::personalization_app::mojom::WallpaperCollection::From<
-            backdrop::Collection>);
-
-    result = std::move(data);
+    result = std::move(collections);
   }
   std::move(callback).Run(std::move(result));
   wallpaper_collection_info_fetcher_.reset();
@@ -388,26 +324,18 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
     const std::vector<backdrop::Image>& images) {
   DCHECK(wallpaper_images_info_fetcher_);
 
-  using ResultType =
-      std::vector<chromeos::personalization_app::mojom::WallpaperImagePtr>;
-
-  absl::optional<ResultType> result;
+  absl::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
-    ResultType data;
     for (const auto& proto_image : images) {
-      auto mojom_image =
-          chromeos::personalization_app::mojom::WallpaperImage::From<
-              backdrop::Image>(proto_image);
-
-      if (mojom_image.is_null()) {
+      if (!proto_image.has_asset_id() || !proto_image.has_image_url()) {
         LOG(WARNING) << "Invalid image discarded";
         continue;
       }
       image_asset_id_map_.insert(
-          {mojom_image->asset_id, {mojom_image->url, collection_id}});
-      data.push_back(std::move(mojom_image));
+          {proto_image.asset_id(),
+           {GURL(proto_image.image_url()), collection_id}});
     }
-    result = std::move(data);
+    result = std::move(images);
   }
   std::move(callback).Run(std::move(result));
   wallpaper_images_info_fetcher_.reset();
@@ -416,15 +344,13 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
 void ChromePersonalizationAppUiDelegate::OnGetLocalImages(
     GetLocalImagesCallback callback,
     const std::vector<base::FilePath>& images) {
-  local_image_id_map_.clear();
-  std::vector<chromeos::personalization_app::mojom::LocalImagePtr> result;
+  local_image_info_map_.clear();
+  std::vector<ash::LocalImageInfo> result;
   for (const auto& image_path : images) {
-    auto local_image =
-        chromeos::personalization_app::mojom::LocalImage::From<base::FilePath>(
-            image_path);
-
-    local_image_id_map_.insert({local_image->id, image_path});
-    result.push_back(std::move(local_image));
+    ash::LocalImageInfo local_image_info = {base::UnguessableToken::Create(),
+                                            image_path};
+    local_image_info_map_.insert({local_image_info.id, local_image_info});
+    result.push_back(local_image_info);
   }
   std::move(callback).Run(std::move(result));
 }
@@ -457,11 +383,11 @@ void ChromePersonalizationAppUiDelegate::OnGetOnlineImageAttribution(
   std::vector<std::string> attribution;
   if (success && !images.empty()) {
     for (const auto& proto_image : images) {
-      auto mojom_image =
-          chromeos::personalization_app::mojom::WallpaperImage::From<
-              backdrop::Image>(proto_image);
-      if (!mojom_image.is_null() && mojom_image->asset_id == asset_id) {
-        attribution = mojom_image->attribution;
+      if (!proto_image.has_image_url() || !proto_image.has_asset_id())
+        break;
+      if (proto_image.asset_id() == info.asset_id) {
+        for (const auto& attr : proto_image.attribution())
+          attribution.push_back(attr.text());
         break;
       }
     }

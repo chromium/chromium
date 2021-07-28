@@ -65,7 +65,6 @@ source_set("chromeos") {
 
   deps = [
     ":attestation_proto",
-    ":backdrop_wallpaper_proto",
     ":device_configuration_proto",
     ":device_policy_remover_generated",
     ":dlp_policy_event_proto",
@@ -161,6 +160,7 @@ source_set("chromeos") {
     "//chromeos/components/personalization_app",
     "//chromeos/components/personalization_app",
     "//chromeos/components/personalization_app/mojom",
+    "//chromeos/components/personalization_app/proto",
     "//chromeos/components/phonehub",
     "//chromeos/components/power",
     "//chromeos/components/print_management",
@@ -4552,11 +4552,6 @@ proto_library("user_charging_event_proto") {
 
 proto_library("user_activity_event_proto") {
   sources = [ "../ash/power/ml/user_activity_event.proto" ]
-}
-
-proto_library("backdrop_wallpaper_proto") {
-  sources = [ "../ash/backdrop_wallpaper_handlers/backdrop_wallpaper.proto" ]
-  generate_python = false
 }
 
 proto_library("device_configuration_proto") {

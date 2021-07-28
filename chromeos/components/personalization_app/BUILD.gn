@@ -21,6 +21,7 @@ static_library("personalization_app") {
     "//ash/constants:constants",
     "//ash/public/cpp",
     "//chromeos/components/personalization_app/mojom",
+    "//chromeos/components/personalization_app/proto",
     "//chromeos/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
@@ -61,6 +62,7 @@ source_set("browser_test_support") {
     "//ash/public/cpp",
     "//chrome/test:test_support_ui",
     "//chromeos/components/personalization_app/mojom",
+    "//chromeos/components/personalization_app/proto",
     "//chromeos/components/web_applications/test:test_support",
   ]
 

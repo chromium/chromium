@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/wallpaper/local_image_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
@@ -142,9 +143,9 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
   std::map<uint64_t, ImageInfo> image_asset_id_map_;
 
   // When local images are fetched, assign each one a random |UnguessableToken|
-  // id. Store a mapping from these tokens to |FilePath|. The SWA passes a token
-  // id to get an image thumbnail preview.
-  std::map<base::UnguessableToken, base::FilePath> local_image_id_map_;
+  // id. Store a mapping from these tokens to |ash::LocalImageInfo|. The SWA
+  // passes a token id to get an image thumbnail preview.
+  std::map<base::UnguessableToken, ash::LocalImageInfo> local_image_info_map_;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;

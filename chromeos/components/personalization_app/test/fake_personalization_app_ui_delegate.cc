@@ -5,12 +5,14 @@
 #include "chromeos/components/personalization_app/test/fake_personalization_app_ui_delegate.h"
 
 #include <stdint.h>
+#include <vector>
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
+#include "chromeos/components/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -32,11 +34,14 @@ void FakePersonalizationAppUiDelegate::BindInterface(
 
 void FakePersonalizationAppUiDelegate::FetchCollections(
     FetchCollectionsCallback callback) {
-  std::vector<chromeos::personalization_app::mojom::WallpaperCollectionPtr>
-      collections;
-  collections.push_back(
-      chromeos::personalization_app::mojom::WallpaperCollection::New(
-          kFakeCollectionId, "Test Collection", absl::optional<GURL>()));
+  std::vector<backdrop::Collection> collections;
+  backdrop::Collection collection;
+  collection.set_collection_id(kFakeCollectionId);
+  collection.set_collection_name("Test Collection");
+  backdrop::Image* image = collection.add_preview();
+  image->set_asset_id(1);
+  image->set_image_url(std::string());
+  collections.push_back(collection);
   std::move(callback).Run(std::move(collections));
 }
 
@@ -44,9 +49,12 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
   DCHECK_EQ(collection_id, kFakeCollectionId);
-  std::vector<chromeos::personalization_app::mojom::WallpaperImagePtr> images;
-  images.push_back(chromeos::personalization_app::mojom::WallpaperImage::New(
-      GURL(), std::vector<std::string>(), 0));
+  std::vector<backdrop::Image> images;
+  backdrop::Image image;
+  image.set_asset_id(1);
+  image.set_image_url(std::string());
+  image.add_attribution()->set_text("test");
+  images.push_back(image);
   std::move(callback).Run(std::move(images));
 }
 
