@@ -4,7 +4,7 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
-import {AccountInfo, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {isChildVisible, waitAfterNextRender} from '../test_util.m.js';
@@ -42,7 +42,7 @@ suite('DiceWebSigninInterceptTest', function() {
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
       primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2}
     });
-    DiceWebSigninInterceptBrowserProxyImpl.instance_ = browserProxy;
+    DiceWebSigninInterceptBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     app = /** @type {!DiceWebSigninInterceptAppElement} */ (
         document.createElement('dice-web-signin-intercept-app'));

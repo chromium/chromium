@@ -11,7 +11,7 @@ suite('SigninSyncConfirmationTest', function() {
   let app;
   setup(async function() {
     const browserProxy = new TestSyncConfirmationBrowserProxy();
-    SyncConfirmationBrowserProxyImpl.instance_ = browserProxy;
+    SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     app = document.createElement('sync-confirmation-app');
     document.body.append(app);
@@ -43,7 +43,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
         'Cannot verify strings for the ' + navigator.language + 'locale.');
 
     browserProxy = new TestSyncConfirmationBrowserProxy();
-    SyncConfirmationBrowserProxyImpl.instance_ = browserProxy;
+    SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
     app = document.createElement('sync-confirmation-app');

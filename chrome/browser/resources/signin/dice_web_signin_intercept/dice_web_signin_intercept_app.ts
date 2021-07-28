@@ -11,20 +11,15 @@ import './signin_vars_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AccountInfo, DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const DiceWebSigninInterceptAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 export class DiceWebSigninInterceptAppElement extends
     DiceWebSigninInterceptAppElementBase {
   static get is() {
@@ -37,16 +32,16 @@ export class DiceWebSigninInterceptAppElement extends
 
   static get properties() {
     return {
-      /** @private {InterceptionParameters} */
-      InterceptionParameters_: Object,
+      interceptionParameters_: {
+        type: Object,
+        value: null,
+      },
 
-      /** @private {boolean} */
       acceptButtonClicked_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {string} */
       guestLink_: {
         type: String,
         value() {
@@ -56,19 +51,13 @@ export class DiceWebSigninInterceptAppElement extends
     };
   }
 
+  private interceptionParameters_: InterceptionParameters;
+  private acceptButtonClicked_: boolean;
+  private guestLink_: string;
+  private diceWebSigninInterceptBrowserProxy_:
+      DiceWebSigninInterceptBrowserProxy =
+          DiceWebSigninInterceptBrowserProxyImpl.getInstance();
 
-  constructor() {
-    super();
-
-    /** @private {!DiceWebSigninInterceptBrowserProxy} */
-    this.diceWebSigninInterceptBrowserProxy_ =
-        DiceWebSigninInterceptBrowserProxyImpl.getInstance();
-
-    /** @private {?InterceptionParameters} */
-    this.interceptionParameters_ = null;
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -81,25 +70,22 @@ export class DiceWebSigninInterceptAppElement extends
       // |showGuestOption| is constant during the lifetime of this bubble,
       // therefore it's safe to set the listener only during initialization.
       if (this.interceptionParameters_.showGuestOption) {
-        this.shadowRoot.querySelector('#footer-description a')
+        this.shadowRoot!.querySelector('#footer-description a')!
             .addEventListener('click', () => this.onGuest_());
       }
     });
   }
 
-  /** @private */
-  onAccept_() {
+  private onAccept_() {
     this.acceptButtonClicked_ = true;
     this.diceWebSigninInterceptBrowserProxy_.accept();
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     this.diceWebSigninInterceptBrowserProxy_.cancel();
   }
 
-  /** @private */
-  onGuest_() {
+  private onGuest_() {
     if (this.acceptButtonClicked_) {
       return;
     }
@@ -107,12 +93,8 @@ export class DiceWebSigninInterceptAppElement extends
     this.diceWebSigninInterceptBrowserProxy_.guest();
   }
 
-  /**
-   * Called when the interception parameters are updated.
-   * @param {!InterceptionParameters} parameters
-   * @private
-   */
-  handleParametersChanged_(parameters) {
+  /** Called when the interception parameters are updated. */
+  private handleParametersChanged_(parameters: InterceptionParameters) {
     this.interceptionParameters_ = parameters;
     this.style.setProperty(
         '--header-background-color', parameters.headerBackgroundColor);

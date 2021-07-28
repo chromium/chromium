@@ -2,35 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [
-    ":profile_customization_app",
-    ":profile_customization_browser_proxy",
-  ]
-}
-
-js_library("profile_customization_app") {
-  deps = [
-    ":profile_customization_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("profile_customization_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 html_to_js("web_components") {
-  js_files = [ "profile_customization_app.js" ]
+  js_files = [ "profile_customization_app.ts" ]
 }

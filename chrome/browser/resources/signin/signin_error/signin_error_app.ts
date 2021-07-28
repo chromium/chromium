@@ -10,19 +10,14 @@ import './strings.m.js';
 import './signin_shared_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SigninErrorAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SigninErrorAppElement extends SigninErrorAppElementBase {
   static get is() {
     return 'signin-error-app';
@@ -34,19 +29,16 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
 
   static get properties() {
     return {
-      /** @private {boolean} */
       isSystemProfile_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isSystemProfile'),
       },
 
-      /** @private {boolean} */
       switchButtonUnavailable_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       hideNormalError_: {
         type: Boolean,
         value: () => loadTimeData.getString('signinErrorMessage').length === 0,
@@ -57,7 +49,6 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
        * should be hidden. Position 0 corresponds to the
        * #profile-blocking-error-message container, and subsequent positions
        * correspond to each of the 3 related messages respectively.
-       * @private {!Array<boolean>}
        */
       hideProfileBlockingErrors_: {
         type: Array,
@@ -77,29 +68,30 @@ class SigninErrorAppElement extends SigninErrorAppElementBase {
     };
   }
 
-  /** @override */
+  private isSystemProfile_: boolean;
+  private switchButtonUnavailable_: boolean;
+  private hideNormalError_: boolean;
+  private hideProfileBlockingErrors_: boolean[];
+
   connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener('switch-button-unavailable', () => {
       this.switchButtonUnavailable_ = true;
       // Move focus to the only displayed button in this case.
-      this.shadowRoot.querySelector('#confirmButton').focus();
+      (this.shadowRoot!.querySelector('#confirmButton') as HTMLElement).focus();
     });
   }
 
-  /** @private */
-  onConfirm_() {
+  private onConfirm_() {
     chrome.send('confirm');
   }
 
-  /** @private */
-  onSwitchToExistingProfile_() {
+  private onSwitchToExistingProfile_() {
     chrome.send('switchToExistingProfile');
   }
 
-  /** @private */
-  onLearnMore_() {
+  private onLearnMore_() {
     chrome.send('learnMore');
   }
 }

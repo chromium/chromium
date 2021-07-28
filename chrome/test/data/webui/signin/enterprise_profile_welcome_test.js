@@ -4,7 +4,7 @@
 
 import {EnterpriseProfileWelcomeAppElement} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_app.js';
 
-import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_browser_proxy.js';
+import {EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
@@ -33,7 +33,7 @@ suite('EnterpriseProfileWelcomeTest', function() {
       enterpriseInfo: 'enterprise_info',
       proceedLabel: 'proceed_label',
     });
-    EnterpriseProfileWelcomeBrowserProxyImpl.instance_ = browserProxy;
+    EnterpriseProfileWelcomeBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     app = /** @type {!EnterpriseProfileWelcomeAppElement} */ (
         document.createElement('enterprise-profile-welcome-app'));

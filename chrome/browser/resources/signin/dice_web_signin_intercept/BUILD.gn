@@ -2,32 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":dice_web_signin_intercept_app",
-    ":dice_web_signin_intercept_browser_proxy",
-  ]
-}
-
-js_library("dice_web_signin_intercept_app") {
-  deps = [
-    ":dice_web_signin_intercept_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("dice_web_signin_intercept_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 html_to_js("web_components") {
-  js_files = [ "dice_web_signin_intercept_app.js" ]
+  js_files = [ "dice_web_signin_intercept_app.ts" ]
 }

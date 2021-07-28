@@ -559,7 +559,6 @@ group("closure_compile") {
     "new_tab_page:closure_compile",
     "read_later:closure_compile",
     "settings:closure_compile",
-    "signin:closure_compile",
     "tab_search:closure_compile",
     "tab_strip:closure_compile",
 

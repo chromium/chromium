@@ -11,7 +11,7 @@ import './signin_shared_css.js';
 import './signin_vars_css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EnterpriseProfileInfo, EnterpriseProfileWelcomeBrowserProxy, EnterpriseProfileWelcomeBrowserProxyImpl} from './enterprise_profile_welcome_browser_proxy.js';
@@ -30,15 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.style.width = 'auto';
 });
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const EnterpriseProfileWelcomeAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 export class EnterpriseProfileWelcomeAppElement extends
     EnterpriseProfileWelcomeAppElementBase {
   static get is() {
@@ -66,7 +61,6 @@ export class EnterpriseProfileWelcomeAppElement extends
       /** The detailed info about enterprise management */
       enterpriseInfo_: String,
 
-      /** @private */
       isModalDialog_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -78,57 +72,46 @@ export class EnterpriseProfileWelcomeAppElement extends
       /** The label for the button to proceed with the flow */
       proceedLabel_: String,
 
-      /** @private */
-      disable_proceed_button_: {
+      disableProceedButton_: {
         type: Boolean,
         value: false,
       }
     };
   }
 
-  constructor() {
-    super();
+  private showEnterpriseBadge_: boolean;
+  private pictureUrl_: string;
+  private enterpriseTitle_: string;
+  private enterpriseInfo_: string;
+  private isModalDialog_: boolean;
+  private proceedLabel_: string;
+  private disableProceedButton_: boolean;
+  private enterpriseProfileWelcomeBrowserProxy_:
+      EnterpriseProfileWelcomeBrowserProxy =
+          EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
 
-    /** @private {!EnterpriseProfileWelcomeBrowserProxy} */
-    this.enterpriseProfileWelcomeBrowserProxy_ =
-        EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
-  }
-
-
-  /** @override */
   ready() {
     super.ready();
 
     this.addWebUIListener(
         'on-profile-info-changed',
-        (/** @type {!EnterpriseProfileInfo} */ info) =>
-            this.setProfileInfo_(info));
+        (info: EnterpriseProfileInfo) => this.setProfileInfo_(info));
     this.enterpriseProfileWelcomeBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
   }
 
-  /**
-   * Called when the proceed button is clicked.
-   * @private
-   */
-  onProceed_() {
-    this.disable_proceed_button_ = true;
+  /** Called when the proceed button is clicked. */
+  private onProceed_() {
+    this.disableProceedButton_ = true;
     this.enterpriseProfileWelcomeBrowserProxy_.proceed();
   }
 
-  /**
-   * Called when the cancel button is clicked.
-   * @private
-   */
-  onCancel_() {
+  /** Called when the cancel button is clicked. */
+  private onCancel_() {
     this.enterpriseProfileWelcomeBrowserProxy_.cancel();
   }
 
-  /**
-   * @param {!EnterpriseProfileInfo} info
-   * @private
-   */
-  setProfileInfo_(info) {
+  private setProfileInfo_(info: EnterpriseProfileInfo) {
     this.style.setProperty('--header-background-color', info.backgroundColor);
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;

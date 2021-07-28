@@ -2,84 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir"
   in_files = [ "profile_card_menu_test.js" ]
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://signin-dice-web-intercept/=../../chrome/browser/resources/signin/dice_web_signin_intercept/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://profile-customization/=../../chrome/browser/resources/signin/profile_customization/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://profile-picker/=../../chrome/browser/resources/signin/profile_picker/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://enterprise-profile-welcome/=../../chrome/browser/resources/signin/enterprise_profile_welcome/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    ":dice_web_signin_intercept_test",
-    ":enterprise_profile_welcome_test",
-    ":test_dice_web_signin_intercept_browser_proxy",
-    ":test_enterprise_profile_welcome_browser_proxy",
-    ":test_profile_customization_browser_proxy",
-  ]
-}
-
-js_library("dice_web_signin_intercept_test") {
-  deps = [
-    ":test_dice_web_signin_intercept_browser_proxy",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/signin/dice_web_signin_intercept:dice_web_signin_intercept_app",
-    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("enterprise_profile_welcome_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_browser_proxy.m",
-    "..:test_util.m",
-    "//chrome/browser/resources/signin/enterprise_profile_welcome:enterprise_profile_welcome_app",
-  ]
-}
-
-js_library("profile_customization_test") {
-  deps = [
-    ":test_profile_customization_browser_proxy",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/signin/profile_customization:profile_customization_app",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_dice_web_signin_intercept_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/signin/dice_web_signin_intercept:dice_web_signin_intercept_browser_proxy",
-  ]
-}
-
-js_library("test_profile_customization_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/signin/profile_customization:profile_customization_browser_proxy",
-  ]
-}
-
-js_library("test_enterprise_profile_welcome_browser_proxy") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/signin/enterprise_profile_welcome:enterprise_profile_welcome_browser_proxy",
-  ]
 }

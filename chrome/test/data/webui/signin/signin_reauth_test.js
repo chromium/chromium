@@ -20,7 +20,7 @@ suite('SigninReauthTest', function() {
 
   setup(function() {
     browserProxy = new TestSigninReauthBrowserProxy();
-    SigninReauthBrowserProxyImpl.instance_ = browserProxy;
+    SigninReauthBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     app = document.createElement('signin-reauth-app');
     document.body.append(app);

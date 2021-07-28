@@ -11,8 +11,12 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {SyncConfirmationBrowserProxy, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
+interface SyncDisabledConfirmationAppElement {
+  $: {
+    confirmButton: HTMLElement,
+  };
+}
 
-/** @polymer */
 class SyncDisabledConfirmationAppElement extends PolymerElement {
   static get is() {
     return 'sync-disabled-confirmation-app';
@@ -22,15 +26,9 @@ class SyncDisabledConfirmationAppElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  constructor() {
-    super();
+  private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
+      SyncConfirmationBrowserProxyImpl.getInstance();
 
-    /** @private {!SyncConfirmationBrowserProxy} */
-    this.syncConfirmationBrowserProxy_ =
-        SyncConfirmationBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -38,23 +36,18 @@ class SyncDisabledConfirmationAppElement extends PolymerElement {
         'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onConfirm_(e) {
+  private onConfirm_(e: Event) {
     this.syncConfirmationBrowserProxy_.confirm(
         this.getConsentDescription_(),
-        this.getConsentConfirmation_(e.composedPath()));
+        this.getConsentConfirmation_(e.composedPath() as Array<HTMLElement>));
   }
 
   /**
-   * @param {!Array<!HTMLElement>} path Path of the click event. Must contain
-   *     a consent confirmation element.
-   * @return {string} The text of the consent confirmation element.
-   * @private
+   * @param path Path of the click event. Must contain a consent confirmation
+   *     element.
+   * @return The text of the consent confirmation element.
    */
-  getConsentConfirmation_(path) {
+  private getConsentConfirmation_(path: Array<HTMLElement>): string {
     for (const element of path) {
       if (element.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
           element.hasAttribute('consent-confirmation')) {
@@ -65,36 +58,29 @@ class SyncDisabledConfirmationAppElement extends PolymerElement {
     return '';
   }
 
-  /**
-   * @return {!Array<string>} Text of the consent description elements.
-   * @private
-   */
-  getConsentDescription_() {
+  /** @return Text of the consent description elements. */
+  private getConsentDescription_(): string[] {
     const consentDescription =
-        Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
+        Array.from(this.shadowRoot!.querySelectorAll('[consent-description]'))
             .filter(element => element.clientWidth * element.clientHeight > 0)
             .map(element => element.innerHTML.trim());
     assert(consentDescription);
     return consentDescription;
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     // If the currently focused element isn't something that performs an action
     // on "enter" being pressed and the user hits "enter", perform the default
     // action of the dialog, which is "OK, Got It".
     if (e.key == 'Enter' &&
-        !/^(A|PAPER-(BUTTON|CHECKBOX))$/.test(document.activeElement.tagName)) {
+        !/^(A|PAPER-(BUTTON|CHECKBOX))$/.test(
+            document.activeElement!.tagName)) {
       this.$.confirmButton.click();
       e.preventDefault();
     }
   }
 
-  /** @private */
-  onUndo_() {
+  private onUndo_() {
     this.syncConfirmationBrowserProxy_.undo();
   }
 }

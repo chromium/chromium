@@ -140,7 +140,6 @@ if (enable_js_type_check) {
         "quota_internals:closure_compile",
         "read_later:closure_compile",
         "settings:closure_compile",
-        "signin:closure_compile",
         "sync_file_system_internals:closure_compile",
         "tab_search:closure_compile",
         "usb_internals:closure_compile",

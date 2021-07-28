@@ -12,7 +12,14 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+interface SigninEmailConfirmationAppElement {
+  $: {
+    dialogTitle: HTMLElement,
+    createNewUserRadioButtonSubtitle: HTMLElement,
+    startSyncRadioButtonSubtitle: HTMLElement,
+  };
+}
+
 class SigninEmailConfirmationAppElement extends PolymerElement {
   static get is() {
     return 'signin-email-confirmation-app';
@@ -22,12 +29,10 @@ class SigninEmailConfirmationAppElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  /** @override */
   ready() {
     super.ready();
 
-    const args = /** @type {{lastEmail: string, newEmail: string}} */
-        (JSON.parse(chrome.getVariableValue('dialogArguments')));
+    const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
     const {lastEmail, newEmail} = args;
     this.$.dialogTitle.textContent =
         loadTimeData.getStringF('signinEmailConfirmationTitle', lastEmail);
@@ -38,14 +43,12 @@ class SigninEmailConfirmationAppElement extends PolymerElement {
         'signinEmailConfirmationStartSyncButtonSubtitle', newEmail);
   }
 
-  /** @private */
-  onConfirm_() {
-    const action = this.shadowRoot.querySelector('cr-radio-group').selected;
+  private onConfirm_() {
+    const action = this.shadowRoot!.querySelector('cr-radio-group')!.selected;
     chrome.send('dialogClose', [JSON.stringify({'action': action})]);
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     chrome.send('dialogClose', [JSON.stringify({'action': 'cancel'})]);
   }
 }

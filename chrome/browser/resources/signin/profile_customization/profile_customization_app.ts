@@ -12,22 +12,24 @@ import './strings.m.js';
 import './signin_shared_css.js';
 import './signin_vars_css.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ProfileCustomizationBrowserProxy, ProfileCustomizationBrowserProxyImpl, ProfileInfo} from './profile_customization_browser_proxy.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const ProfileCustomizationAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+interface ProfileCustomizationAppElement {
+  $: {
+    nameInput: CrInputElement,
+  };
+}
 
-/** @polymer */
+const ProfileCustomizationAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
+
 class ProfileCustomizationAppElement extends
     ProfileCustomizationAppElementBase {
   static get is() {
@@ -60,17 +62,13 @@ class ProfileCustomizationAppElement extends
     };
   }
 
-  constructor() {
-    super();
+  private isManaged_: boolean;
+  private profileName_: string;
+  private pictureUrl_: string;
+  private welcomeTitle_: string;
+  private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
+      ProfileCustomizationBrowserProxyImpl.getInstance();
 
-    /** @private {!ProfileCustomizationBrowserProxy} */
-    this.profileCustomizationBrowserProxy_ =
-        ProfileCustomizationBrowserProxyImpl.getInstance();
-  }
-
-
-
-  /** @override */
   ready() {
     super.ready();
 
@@ -79,7 +77,7 @@ class ProfileCustomizationAppElement extends
     this.profileName_ = loadTimeData.getString('profileName');
     this.addWebUIListener(
         'on-profile-info-changed',
-        (/** @type {!ProfileInfo} */ info) => this.setProfileInfo_(info));
+        (info: ProfileInfo) => this.setProfileInfo_(info));
     this.profileCustomizationBrowserProxy_.initialized().then(
         info => this.setProfileInfo_(info));
   }
@@ -87,26 +85,16 @@ class ProfileCustomizationAppElement extends
   /**
    * Called when the Done button is clicked. Sends the profile name back to
    * native.
-   * @private
    */
-  onDoneCustomizationClicked_() {
+  private onDoneCustomizationClicked_() {
     this.profileCustomizationBrowserProxy_.done(this.profileName_);
   }
 
-  /**
-   * Returns whether the Done button should be disabled.
-   * @return Boolean
-   * @private
-   */
-  isDoneButtonDisabled_() {
+  private isDoneButtonDisabled_(): boolean {
     return !this.profileName_ || !this.$.nameInput.validate();
   }
 
-  /**
-   * @param {!ProfileInfo} profileInfo
-   * @private
-   */
-  setProfileInfo_(profileInfo) {
+  private setProfileInfo_(profileInfo: ProfileInfo) {
     this.style.setProperty(
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;

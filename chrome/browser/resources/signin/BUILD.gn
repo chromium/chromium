@@ -14,20 +14,6 @@ assert(!is_android)
 
 preprocess_folder = "preprocessed"
 
-group("closure_compile") {
-  deps = [ "sync_confirmation:closure_compile" ]
-  if (!is_chromeos_ash) {
-    deps += [
-      "dice_web_signin_intercept:closure_compile",
-      "enterprise_profile_welcome:closure_compile",
-      "profile_customization:closure_compile",
-      "signin_email_confirmation:closure_compile",
-      "signin_error:closure_compile",
-      "signin_reauth:closure_compile",
-    ]
-  }
-}
-
 group("web_components") {
   public_deps = [
     ":web_components_local",
@@ -47,8 +33,8 @@ group("web_components") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "signin_shared_css.js",
-    "signin_vars_css.js",
+    "signin_shared_css.ts",
+    "signin_vars_css.ts",
   ]
 }
 
@@ -105,17 +91,17 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "sync_confirmation/sync_confirmation_browser_proxy.js",
-    "sync_confirmation/sync_confirmation.js",
+    "sync_confirmation/sync_confirmation_browser_proxy.ts",
+    "sync_confirmation/sync_confirmation.ts",
   ]
 
   if (!is_chromeos_ash) {
     in_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.js",
-      "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.js",
-      "profile_customization/profile_customization_browser_proxy.js",
-      "signin_error/signin_error.js",
-      "signin_reauth/signin_reauth_browser_proxy.js",
+      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
+      "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
+      "profile_customization/profile_customization_browser_proxy.ts",
+      "signin_error/signin_error.ts",
+      "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
 }
@@ -124,20 +110,20 @@ preprocess_if_expr("preprocess_gen") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "signin_shared_css.js",
-    "signin_vars_css.js",
-    "sync_confirmation/sync_confirmation_app.js",
-    "sync_confirmation/sync_disabled_confirmation_app.js",
+    "signin_shared_css.ts",
+    "signin_vars_css.ts",
+    "sync_confirmation/sync_confirmation_app.ts",
+    "sync_confirmation/sync_disabled_confirmation_app.ts",
   ]
 
   if (!is_chromeos_ash) {
     in_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_app.js",
-      "enterprise_profile_welcome/enterprise_profile_welcome_app.js",
-      "profile_customization/profile_customization_app.js",
-      "signin_email_confirmation/signin_email_confirmation_app.js",
-      "signin_error/signin_error_app.js",
-      "signin_reauth/signin_reauth_app.js",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
+      "enterprise_profile_welcome/enterprise_profile_welcome_app.ts",
+      "profile_customization/profile_customization_app.ts",
+      "signin_email_confirmation/signin_email_confirmation_app.ts",
+      "signin_error/signin_error_app.ts",
+      "signin_reauth/signin_reauth_app.ts",
     ]
   }
 
@@ -149,29 +135,31 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "signin_shared_css.js",
-    "signin_vars_css.js",
-    "sync_confirmation/sync_confirmation_app.js",
-    "sync_confirmation/sync_confirmation_browser_proxy.js",
-    "sync_confirmation/sync_confirmation.js",
-    "sync_confirmation/sync_disabled_confirmation_app.js",
+    "signin_shared_css.ts",
+    "signin_vars_css.ts",
+    "sync_confirmation/sync_confirmation_app.ts",
+    "sync_confirmation/sync_confirmation_browser_proxy.ts",
+    "sync_confirmation/sync_confirmation.ts",
+    "sync_confirmation/sync_disabled_confirmation_app.ts",
   ]
 
   if (!is_chromeos_ash) {
     in_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_app.js",
-      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.js",
-      "enterprise_profile_welcome/enterprise_profile_welcome_app.js",
-      "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.js",
-      "profile_customization/profile_customization_app.js",
-      "profile_customization/profile_customization_browser_proxy.js",
-      "signin_email_confirmation/signin_email_confirmation_app.js",
-      "signin_error/signin_error_app.js",
-      "signin_error/signin_error.js",
-      "signin_reauth/signin_reauth_app.js",
-      "signin_reauth/signin_reauth_browser_proxy.js",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
+      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
+      "enterprise_profile_welcome/enterprise_profile_welcome_app.ts",
+      "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
+      "profile_customization/profile_customization_app.ts",
+      "profile_customization/profile_customization_browser_proxy.ts",
+      "signin_email_confirmation/signin_email_confirmation_app.ts",
+      "signin_error/signin_error_app.ts",
+      "signin_error/signin_error.ts",
+      "signin_reauth/signin_reauth_app.ts",
+      "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
+
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   deps = [
     "//third_party/polymer/v3_0:library",

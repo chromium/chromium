@@ -10,20 +10,21 @@ import './signin_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SigninReauthBrowserProxy, SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SigninReauthAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+interface SigninReauthAppElement {
+  $: {
+    confirmButton: HTMLElement,
+  };
+}
 
-/** @polymer */
+const SigninReauthAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
+
 class SigninReauthAppElement extends SigninReauthAppElementBase {
   static get is() {
     return 'signin-reauth-app';
@@ -35,7 +36,6 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
 
   static get properties() {
     return {
-      /** @private */
       accountImageSrc_: {
         type: String,
         value() {
@@ -43,23 +43,18 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
         },
       },
 
-      /** @private */
       confirmButtonHidden_: {type: Boolean, value: true},
 
-      /** @private */
       cancelButtonHidden_: {type: Boolean, value: true}
     };
   }
 
-  constructor() {
-    super();
+  private accountImageSrc_: string;
+  private confirmButtonHidden_: boolean;
+  private cancelButtonHidden_: boolean;
+  private signinReauthBrowserProxy_: SigninReauthBrowserProxy =
+      SigninReauthBrowserProxyImpl.getInstance();
 
-    /** @private {!SigninReauthBrowserProxy} */
-    this.signinReauthBrowserProxy_ = SigninReauthBrowserProxyImpl.getInstance();
-  }
-
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -68,36 +63,30 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
     this.signinReauthBrowserProxy_.initialize();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onConfirm_(e) {
+  private onConfirm_(e: Event) {
     this.signinReauthBrowserProxy_.confirm(
         this.getConsentDescription_(),
-        this.getConsentConfirmation_(e.composedPath()));
+        this.getConsentConfirmation_(e.composedPath() as Array<HTMLElement>));
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     this.signinReauthBrowserProxy_.cancel();
   }
 
   /**
-   * @param {boolean} requiresReauth Whether the user will be asked to
+   * @param requiresReauth Whether the user will be asked to
    *     reauthenticate after clicking on the confirm button.
-   * @private
    */
-  onReauthTypeReceived_(requiresReauth) {
+  private onReauthTypeReceived_(_requiresReauth: boolean) {
     this.confirmButtonHidden_ = false;
     this.$.confirmButton.focus();
     this.cancelButtonHidden_ = false;
   }
 
-  /** @return {!Array<string>} Text of the consent description elements. */
-  getConsentDescription_() {
+  /** @return Text of the consent description elements. */
+  private getConsentDescription_(): string[] {
     const consentDescription =
-        Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
+        Array.from(this.shadowRoot!.querySelectorAll('[consent-description]'))
             .filter(element => element.clientWidth * element.clientHeight > 0)
             .map(element => element.innerHTML.trim());
     assert(consentDescription);
@@ -105,12 +94,11 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
   }
 
   /**
-   * @param {!Array<!HTMLElement>} path Path of the click event. Must contain
-   *     a consent confirmation element.
-   * @return {string} The text of the consent confirmation element.
-   * @private
+   * @param path Path of the click event. Must contain a consent confirmation
+   *     element.
+   * @return The text of the consent confirmation element.
    */
-  getConsentConfirmation_(path) {
+  private getConsentConfirmation_(path: Array<HTMLElement>): string {
     for (const element of path) {
       if (element.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
           element.hasAttribute('consent-confirmation')) {

@@ -40,7 +40,7 @@ suite('ProfileCustomizationTest', function() {
       isManaged: false,
       welcomeTitle: WELCOME_TEXT_1,
     });
-    ProfileCustomizationBrowserProxyImpl.instance_ = browserProxy;
+    ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     app = /** @type {!ProfileCustomizationAppElement} */ (
         document.createElement('profile-customization-app'));
