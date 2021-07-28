@@ -41,10 +41,11 @@ namespace cast_streaming {
 // sender.SendVideoBuffer(video_buffer);
 // sender.Stop();
 // sender.RunUntilStopped();
-class CastStreamingTestSender : public openscreen::cast::SenderSession::Client {
+class CastStreamingTestSender final
+    : public openscreen::cast::SenderSession::Client {
  public:
   CastStreamingTestSender();
-  ~CastStreamingTestSender() final;
+  ~CastStreamingTestSender() override;
 
   CastStreamingTestSender(const CastStreamingTestSender&) = delete;
   CastStreamingTestSender& operator=(const CastStreamingTestSender&) = delete;
@@ -93,9 +94,9 @@ class CastStreamingTestSender : public openscreen::cast::SenderSession::Client {
   void OnNegotiated(const openscreen::cast::SenderSession* session,
                     openscreen::cast::SenderSession::ConfiguredSenders senders,
                     openscreen::cast::capture_recommendations::Recommendations
-                        capture_recommendations) final;
+                        capture_recommendations) override;
   void OnError(const openscreen::cast::SenderSession* session,
-               openscreen::Error error) final;
+               openscreen::Error error) override;
 
   openscreen_platform::TaskRunner task_runner_;
   openscreen::cast::Environment environment_;

@@ -29,12 +29,12 @@ class CastStreamingVideoDemuxerStream;
 // guaranteed to outlive this object.
 // TODO(crbug.com/1082821): Simplify the CastStreamingDemuxer initialization
 // sequence when the CastStreamingReceiver Component has been implemented.
-class CastStreamingDemuxer : public media::Demuxer {
+class CastStreamingDemuxer final : public media::Demuxer {
  public:
   CastStreamingDemuxer(
       CastStreamingReceiver* receiver,
       const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner);
-  ~CastStreamingDemuxer() final;
+  ~CastStreamingDemuxer() override;
 
   CastStreamingDemuxer(const CastStreamingDemuxer&) = delete;
   CastStreamingDemuxer& operator=(const CastStreamingDemuxer&) = delete;
@@ -48,29 +48,29 @@ class CastStreamingDemuxer : public media::Demuxer {
       mojom::VideoStreamInfoPtr video_stream_info);
 
   // media::Demuxer implementation.
-  std::vector<media::DemuxerStream*> GetAllStreams() final;
-  std::string GetDisplayName() const final;
+  std::vector<media::DemuxerStream*> GetAllStreams() override;
+  std::string GetDisplayName() const override;
   void Initialize(media::DemuxerHost* host,
-                  media::PipelineStatusCallback status_cb) final;
-  void AbortPendingReads() final;
-  void StartWaitingForSeek(base::TimeDelta seek_time) final;
-  void CancelPendingSeek(base::TimeDelta seek_time) final;
+                  media::PipelineStatusCallback status_cb) override;
+  void AbortPendingReads() override;
+  void StartWaitingForSeek(base::TimeDelta seek_time) override;
+  void CancelPendingSeek(base::TimeDelta seek_time) override;
   void Seek(base::TimeDelta time,
-            media::PipelineStatusCallback status_cb) final;
-  void Stop() final;
-  base::TimeDelta GetStartTime() const final;
-  base::Time GetTimelineOffset() const final;
-  int64_t GetMemoryUsage() const final;
+            media::PipelineStatusCallback status_cb) override;
+  void Stop() override;
+  base::TimeDelta GetStartTime() const override;
+  base::Time GetTimelineOffset() const override;
+  int64_t GetMemoryUsage() const override;
   absl::optional<media::container_names::MediaContainerName>
-  GetContainerForMetrics() const final;
+  GetContainerForMetrics() const override;
   void OnEnabledAudioTracksChanged(
       const std::vector<media::MediaTrack::Id>& track_ids,
       base::TimeDelta curr_time,
-      TrackChangeCB change_completed_cb) final;
+      TrackChangeCB change_completed_cb) override;
   void OnSelectedVideoTrackChanged(
       const std::vector<media::MediaTrack::Id>& track_ids,
       base::TimeDelta curr_time,
-      TrackChangeCB change_completed_cb) final;
+      TrackChangeCB change_completed_cb) override;
 
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> original_task_runner_;

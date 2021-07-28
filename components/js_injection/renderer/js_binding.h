@@ -31,8 +31,8 @@ class JsCommunication;
 // JsCommunication will own at most one instance of this class. When the
 // RenderFrame gone or another DidClearWindowObject comes, the instance will be
 // destroyed.
-class JsBinding : public gin::Wrappable<JsBinding>,
-                  public mojom::BrowserToJsMessaging {
+class JsBinding final : public gin::Wrappable<JsBinding>,
+                        public mojom::BrowserToJsMessaging {
  public:
   static gin::WrapperInfo kWrapperInfo;
 
@@ -46,7 +46,7 @@ class JsBinding : public gin::Wrappable<JsBinding>,
 
   void ReleaseV8GlobalObjects();
 
-  ~JsBinding() final;
+  ~JsBinding() override;
 
  private:
   explicit JsBinding(content::RenderFrame* render_frame,
@@ -55,7 +55,7 @@ class JsBinding : public gin::Wrappable<JsBinding>,
 
   // gin::Wrappable implementation
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
-      v8::Isolate* isolate) final;
+      v8::Isolate* isolate) override;
 
   // For jsObject.postMessage(message[, ports]) JavaScript API.
   void PostMessage(gin::Arguments* args);

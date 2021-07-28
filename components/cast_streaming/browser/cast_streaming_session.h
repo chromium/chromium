@@ -101,7 +101,7 @@ class CastStreamingSession {
  private:
   // Owns the Open Screen ReceiverSession. The Streaming Session is tied to the
   // lifespan of this object.
-  class ReceiverSessionClient
+  class ReceiverSessionClient final
       : public openscreen::cast::ReceiverSession::Client {
    public:
     ReceiverSessionClient(
@@ -109,7 +109,7 @@ class CastStreamingSession {
         std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
         std::unique_ptr<cast_api_bindings::MessagePort> message_port,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
-    ~ReceiverSessionClient() final;
+    ~ReceiverSessionClient() override;
 
     ReceiverSessionClient(const ReceiverSessionClient&) = delete;
     ReceiverSessionClient& operator=(const ReceiverSessionClient&) = delete;
@@ -130,13 +130,13 @@ class CastStreamingSession {
         const openscreen::cast::VideoCaptureConfig& video_capture_config);
 
     // openscreen::cast::ReceiverSession::Client implementation.
-    void OnNegotiated(
-        const openscreen::cast::ReceiverSession* session,
-        openscreen::cast::ReceiverSession::ConfiguredReceivers receivers) final;
+    void OnNegotiated(const openscreen::cast::ReceiverSession* session,
+                      openscreen::cast::ReceiverSession::ConfiguredReceivers
+                          receivers) override;
     void OnReceiversDestroying(const openscreen::cast::ReceiverSession* session,
-                               ReceiversDestroyingReason reason) final;
+                               ReceiversDestroyingReason reason) override;
     void OnError(const openscreen::cast::ReceiverSession* session,
-                 openscreen::Error error) final;
+                 openscreen::Error error) override;
 
     void OnDataTimeout();
     void OnCastChannelClosed();

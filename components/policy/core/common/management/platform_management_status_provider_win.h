@@ -12,29 +12,29 @@
 namespace policy {
 
 #if defined(OS_WIN)
-class POLICY_EXPORT DomainEnrollmentStatusProvider
+class POLICY_EXPORT DomainEnrollmentStatusProvider final
     : public ManagementStatusProvider {
  public:
   DomainEnrollmentStatusProvider();
-  ~DomainEnrollmentStatusProvider() final;
+  ~DomainEnrollmentStatusProvider() override;
 
   // ManagementStatusProvider impl
-  bool IsManaged() final;
-  EnterpriseManagementAuthority GetAuthority() final;
+  bool IsManaged() override;
+  EnterpriseManagementAuthority GetAuthority() override;
 
   static bool IsEnrolledToDomain();
 };
 #endif
 
-class POLICY_EXPORT EnterpriseMDMManagementStatusProvider
+class POLICY_EXPORT EnterpriseMDMManagementStatusProvider final
     : public ManagementStatusProvider {
  public:
   EnterpriseMDMManagementStatusProvider();
-  ~EnterpriseMDMManagementStatusProvider() final;
+  ~EnterpriseMDMManagementStatusProvider() override;
 
   // ManagementStatusProvider impl
-  bool IsManaged() final;
-  EnterpriseManagementAuthority GetAuthority() final;
+  bool IsManaged() override;
+  EnterpriseManagementAuthority GetAuthority() override;
 
   static bool IsEnrolledToDomain();
 };
