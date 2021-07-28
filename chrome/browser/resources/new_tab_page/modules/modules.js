@@ -330,6 +330,10 @@ export class ModulesElement extends mixinBehaviors
     dragElement.parentElement.style.width = `${dragElementRect.width}px`;
     dragElement.parentElement.style.height = `${dragElementRect.height}px`;
 
+    const undraggedModuleWrappers =
+        [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].filter(
+            moduleWrapper => moduleWrapper !== dragElement);
+
     const dragOver = e => {
       e.preventDefault();
       if (e.dataTransfer) {
@@ -350,13 +354,36 @@ export class ModulesElement extends mixinBehaviors
       const dragContainer = moduleContainers[dragIndex];
       const previousContainer = moduleContainers[dropIndex];
 
+      // To animate the modules as they are reordered we use the FLIP
+      // (First, Last, Invert, Play) animation approach by @paullewis.
+      // https://aerotwist.com/blog/flip-your-animations/
+
+      // The first and last positions of the modules are used to
+      // calculate how the modules have changed.
+      const firstRects = undraggedModuleWrappers.map(moduleWrapper => {
+        return moduleWrapper.getBoundingClientRect();
+      });
+
       dragContainer.remove();
       previousContainer.insertAdjacentElement(positionType, dragContainer);
-    };
 
-    const undraggedModuleWrappers =
-        [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].filter(
-            moduleWrapper => moduleWrapper !== dragElement);
+      undraggedModuleWrappers.forEach((moduleWrapper, i) => {
+        const lastRect = moduleWrapper.getBoundingClientRect();
+        const invertX = firstRects[i].left - lastRect.left;
+        const invertY = firstRects[i].top - lastRect.top;
+        moduleWrapper.animate(
+            [
+              // A translation is applied to invert the module and make it
+              // appear to be in its first position when it actually is in its
+              // final position already.
+              {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 0},
+              // Removing the inversion translation animates the module from
+              // the fake first position to its current (final) position.
+              {transform: 'translate(0)', zIndex: 0},
+            ],
+            {duration: 800, easing: 'ease'});
+      });
+    };
 
     undraggedModuleWrappers.forEach(moduleWrapper => {
       moduleWrapper.addEventListener('dragenter', dragEnter);
@@ -370,9 +397,26 @@ export class ModulesElement extends mixinBehaviors
         moduleWrapper.removeEventListener('dragenter', dragEnter);
       });
 
+      // The FLIP approach is also used for the dropping animation
+      // of the dragged module because of the position changes caused
+      // by removing the dragging styles. (Removing the styles after
+      // the animation causes the animation to be fixed.)
+      const firstRect = dragElement.getBoundingClientRect();
+
       dragElement.removeAttribute('dragging');
       dragElement.style.removeProperty('left');
       dragElement.style.removeProperty('top');
+
+      const lastRect = dragElement.parentElement.getBoundingClientRect();
+      const invertX = firstRect.left - lastRect.left;
+      const invertY = firstRect.top - lastRect.top;
+
+      dragElement.animate(
+          [
+            {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 2},
+            {transform: 'translate(0)', zIndex: 2},
+          ],
+          {duration: 800, easing: 'ease'});
 
       const moduleIds =
           [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].map(
