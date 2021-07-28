@@ -63,7 +63,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -420,22 +419,6 @@ public class PageInfoViewTest {
     }
 
     /**
-     * Tests the permissions page of the PageInfo UI with permissions and actionable flag
-     * enabled.
-     */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @Features.EnableFeatures(SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS)
-    public void testShowPermissionsActionableSubpage() throws IOException {
-        addSomePermissions(mTestServerRule.getServer().getURL("/"));
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        onView(withId(R.id.page_info_permissions_row)).perform(click());
-        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_PermissionsSubpage_Actionable");
-    }
-
-    /**
      * Tests the cookies page of the PageInfo UI.
      */
     @Test
@@ -597,10 +580,8 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures({PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME,
-            SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
-    public void
-    testShowPermissionsSubpageWithHighlight() throws IOException {
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_DISCOVERABILITY_NAME)
+    public void testShowPermissionsSubpageWithHighlight() throws IOException {
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfoWithPermission(
                 mTestServerRule.getServer().getURL(sSimpleHtml), ContentSettingsType.GEOLOCATION);
