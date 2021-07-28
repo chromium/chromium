@@ -6,7 +6,6 @@
 #define COMPONENTS_URL_MATCHER_STRING_PATTERN_H_
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/url_matcher/url_matcher_export.h"
