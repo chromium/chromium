@@ -250,7 +250,10 @@ public class ProcessInitializationHandler {
 
         if (VersionConstants.CHANNEL == Channel.CANARY
                 || VersionConstants.CHANNEL == Channel.DEFAULT) {
-            QuickActionSearchWidgetProvider.initialize();
+            // Changing the widget enabled state, which is only required during the experimentation
+            // phase, can trigger disk access. This can be removed when the QuickActionSearchWidget
+            // launches.
+            PostTask.postTask(TaskTraits.BEST_EFFORT, QuickActionSearchWidgetProvider::initialize);
         }
 
         HistoryDeletionBridge.getInstance().addObserver(new ContentCaptureHistoryDeletionObserver(

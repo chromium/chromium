@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetType;
@@ -115,8 +116,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * @param shouldEnableDinoVariant a boolean indicating whether the widget component of the Dino
      *         variant should be enabled.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void setWidgetEnabled(
+    private static void setWidgetEnabled(
             boolean shouldEnableQuickActionSearchWidget, boolean shouldEnableDinoVariant) {
         setWidgetComponentEnabled(
                 QuickActionSearchWidgetProviderSmall.class, shouldEnableQuickActionSearchWidget);
@@ -138,6 +138,10 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     private static void setWidgetComponentEnabled(
             final Class<? extends QuickActionSearchWidgetProvider> component,
             final boolean shouldEnableWidgetComponent) {
+        // The initialization must be performed on a background thread because the following logic
+        // can trigger disk access. The PostTask in ProcessInitializationHandler can be removed once
+        // the experimentation phase is over.
+        ThreadUtils.assertOnBackgroundThread();
         Context context = ContextUtils.getApplicationContext();
 
         int componentEnabledState = shouldEnableWidgetComponent
