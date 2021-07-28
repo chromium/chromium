@@ -240,13 +240,13 @@ class ResultReceiver {
 };
 
 // Accumulates the list of ConnectionTypes notified via OnConnectionTypeChanged.
-class FakeConnectionTypeObserver
+class FakeConnectionTypeObserver final
     : public NetworkChangeNotifier::ConnectionTypeObserver {
  public:
   FakeConnectionTypeObserver() {
     NetworkChangeNotifier::AddConnectionTypeObserver(this);
   }
-  ~FakeConnectionTypeObserver() final {
+  ~FakeConnectionTypeObserver() override {
     NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
   }
 
@@ -257,7 +257,7 @@ class FakeConnectionTypeObserver
 
   // ConnectionTypeObserver implementation.
   void OnConnectionTypeChanged(
-      NetworkChangeNotifier::ConnectionType type) final {
+      NetworkChangeNotifier::ConnectionType type) override {
     receiver_.AddEntry(type);
   }
 
@@ -266,13 +266,13 @@ class FakeConnectionTypeObserver
 };
 
 // Accumulates the list of ConnectionTypes notified via OnConnectionTypeChanged.
-class FakeNetworkChangeObserver
+class FakeNetworkChangeObserver final
     : public NetworkChangeNotifier::NetworkChangeObserver {
  public:
   FakeNetworkChangeObserver() {
     NetworkChangeNotifier::AddNetworkChangeObserver(this);
   }
-  ~FakeNetworkChangeObserver() final {
+  ~FakeNetworkChangeObserver() override {
     NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   }
 
@@ -282,7 +282,7 @@ class FakeNetworkChangeObserver
   }
 
   // NetworkChangeObserver implementation.
-  void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) final {
+  void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) override {
     receiver_.AddEntry(type);
   }
 
@@ -291,10 +291,11 @@ class FakeNetworkChangeObserver
 };
 
 // Accumulates the list of ConnectionTypes notified via OnConnectionTypeChanged.
-class FakeIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
+class FakeIPAddressObserver final
+    : public NetworkChangeNotifier::IPAddressObserver {
  public:
   FakeIPAddressObserver() { NetworkChangeNotifier::AddIPAddressObserver(this); }
-  ~FakeIPAddressObserver() final {
+  ~FakeIPAddressObserver() override {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
     EXPECT_EQ(ip_change_count_, 0u);
   }
@@ -312,7 +313,7 @@ class FakeIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
   }
 
   // IPAddressObserver implementation.
-  void OnIPAddressChanged() final {
+  void OnIPAddressChanged() override {
     ip_change_count_++;
     if (quit_loop_ && ip_change_count_ >= expected_count_)
       std::move(quit_loop_).Run();
