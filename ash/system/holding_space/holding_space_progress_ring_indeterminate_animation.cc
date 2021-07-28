@@ -35,7 +35,8 @@ float ConvertFromAngleToPosition(float angle_in_degrees) {
 
 HoldingSpaceProgressRingIndeterminateAnimation::
     HoldingSpaceProgressRingIndeterminateAnimation()
-    : HoldingSpaceProgressRingAnimation(kAnimationDuration,
+    : HoldingSpaceProgressRingAnimation(Type::kIndeterminate,
+                                        kAnimationDuration,
                                         /*is_cyclic=*/true) {}
 
 HoldingSpaceProgressRingIndeterminateAnimation::
@@ -44,7 +45,8 @@ HoldingSpaceProgressRingIndeterminateAnimation::
 void HoldingSpaceProgressRingIndeterminateAnimation::UpdateAnimatableProperties(
     double fraction,
     float* start_position,
-    float* end_position) {
+    float* end_position,
+    float* opacity) {
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time();
 
   // Since `elapsed_time` is used rather than the animation `fraction`, it is

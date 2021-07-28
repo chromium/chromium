@@ -298,19 +298,23 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
   if (progress_ == 1.f && !animation)
     return;
 
-  float start, end;
+  float start, end, opacity;
   if (animation) {
     start = animation->start_position();
     end = animation->end_position();
+    opacity = animation->opacity();
   } else {
     start = 0.f;
     end = progress_.value();
+    opacity = 1.f;
   }
 
   DCHECK_GE(start, 0.f);
   DCHECK_LE(start, 1.f);
   DCHECK_GE(end, 0.f);
   DCHECK_LE(end, 1.f);
+  DCHECK_GE(opacity, 0.f);
+  DCHECK_LE(opacity, 1.f);
 
   ui::PaintRecorder recorder(context, layer()->size());
   gfx::Canvas* canvas = recorder.canvas();
@@ -335,11 +339,11 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
       AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   // Track.
-  flags.setColor(SkColorSetA(color, 0xFF * kTrackOpacity));
+  flags.setColor(SkColorSetA(color, 0xFF * kTrackOpacity * opacity));
   canvas->DrawPath(path, flags);
 
   // Ring.
-  flags.setColor(color);
+  flags.setColor(SkColorSetA(color, 0xFF * opacity));
   if (start <= end) {
     // If `start` <= `end`, only a single path segment is necessary.
     canvas->DrawPath(CreatePathSegment(path, start, end), flags);

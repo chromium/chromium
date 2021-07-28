@@ -998,6 +998,8 @@ component("ash") {
     "system/holding_space/holding_space_progress_ring_animation.h",
     "system/holding_space/holding_space_progress_ring_indeterminate_animation.cc",
     "system/holding_space/holding_space_progress_ring_indeterminate_animation.h",
+    "system/holding_space/holding_space_progress_ring_pulse_animation.cc",
+    "system/holding_space/holding_space_progress_ring_pulse_animation.h",
     "system/holding_space/holding_space_tray.cc",
     "system/holding_space/holding_space_tray.h",
     "system/holding_space/holding_space_tray_bubble.cc",

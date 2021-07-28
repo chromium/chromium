@@ -21,11 +21,20 @@ namespace ash {
 // determinate progress ring that would otherwise be painted.
 class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
  public:
+  enum class Type {
+    kIndeterminate,  // See `HoldingSpaceProgressRingIndeterminateAnimation`.
+    kPulse,          // See `HoldingSpaceProgressRingPulseAnimation`.
+  };
+
   HoldingSpaceProgressRingAnimation(const HoldingSpaceProgressRingAnimation&) =
       delete;
   HoldingSpaceProgressRingAnimation& operator=(
       const HoldingSpaceProgressRingAnimation&) = delete;
   ~HoldingSpaceProgressRingAnimation() override;
+
+  // Returns a created progress ring animation of the specified `type`.
+  static std::unique_ptr<HoldingSpaceProgressRingAnimation> CreateOfType(
+      Type type);
 
   // Adds the specified `callback` to be notified of animation updates. The
   // `callback` will continue to receive events so long as both `this` and the
@@ -36,21 +45,25 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   // Immediately starts this animation.
   void Start();
 
-  // Returns the time at which this animation was `Start()`-ed.
+  Type type() const { return type_; }
   base::TimeTicks start_time() const { return start_time_; }
 
   // Returns animatable properties.
   float start_position() const { return start_position_; }
   float end_position() const { return end_position_; }
+  float opacity() const { return opacity_; }
 
  protected:
-  HoldingSpaceProgressRingAnimation(base::TimeDelta duration, bool is_cyclic);
+  HoldingSpaceProgressRingAnimation(Type type,
+                                    base::TimeDelta duration,
+                                    bool is_cyclic);
 
   // Implementing classes should update any desired animatable properties as
   // appropriate for the specified animation `fraction`.
   virtual void UpdateAnimatableProperties(double fraction,
                                           float* start_position,
-                                          float* end_position) = 0;
+                                          float* end_position,
+                                          float* opacity) = 0;
 
  private:
   // gfx::AnimationDelegate:
@@ -60,6 +73,9 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   // Immediately start this animation. If `is_cyclic_restart` is `true`, this
   // animation is being restarted after completion of a full animation cycle.
   void StartInternal(bool is_cyclic_restart);
+
+  // The specific type of this animation.
+  const Type type_;
 
   // The duration for this animation.
   const base::TimeDelta duration_;
@@ -75,7 +91,8 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
 
   // Animatable properties.
   float start_position_ = 0.f;
-  float end_position_ = 0.f;
+  float end_position_ = 1.f;
+  float opacity_ = 1.f;
 
   // The list of callbacks for which to notify animation updates.
   base::RepeatingClosureList animation_updated_callback_list_;
