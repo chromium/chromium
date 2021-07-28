@@ -9,7 +9,7 @@ import {fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fak
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
-import {assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
+import {assertDataPointHasExpectedHeaderAndValue, assertTextContains, getDataPointValue} from './diagnostics_test_utils.js';
 
 export function wifiInfoTestSuite() {
   /** @type {?WifiInfoElement} */
@@ -110,6 +110,15 @@ export function wifiInfoTestSuite() {
         /** @type {!WiFiStateProperties} */ ({frequency: 0}));
     return initializeWifiInfo(testNetwork).then(() => {
       assertEquals(getDataPointValue(wifiInfoElement, '#channel'), '');
+    });
+  });
+
+  test('WiFiInfoSecurityBasedOnNetwork', () => {
+    return initializeWifiInfo().then(() => {
+      const expectedHeader = wifiInfoElement.i18n('networkSecurityLabel');
+      // TODO(ashleydp): Update test when security data provided.
+      assertDataPointHasExpectedHeaderAndValue(
+          wifiInfoElement, '#security', expectedHeader, '');
     });
   });
 }

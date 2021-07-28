@@ -136,6 +136,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkStateNotConnectedText", IDS_NETWORK_HEALTH_STATE_NOT_CONNECTED},
       {"networkStateOnlineText", IDS_NETWORK_HEALTH_STATE_ONLINE},
       {"networkStatePortalText", IDS_NETWORK_HEALTH_STATE_PORTAL},
+      {"networkSecurityLabel", IDS_NETWORK_DIAGNOSTICS_SECURITY},
       {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},
       {"notEnoughAvailableMemoryMessage",
        IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
