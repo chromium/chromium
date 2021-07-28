@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
@@ -387,13 +388,14 @@ void NGInlineLayoutStateStack::UpdateAfterReorder(
     box_data.fragment_start = box_data.fragment_end = 0;
 
   // Scan children and update start/end from their box_data_index.
-  unsigned box_count = box_data_list_.size();
+  Vector<BoxData> fragmented_boxes;
   for (unsigned index = 0; index < line_box->size();)
-    index = UpdateBoxDataFragmentRange(line_box, index);
+    index = UpdateBoxDataFragmentRange(line_box, index, &fragmented_boxes);
 
-  // If any inline fragmentation due to BiDi reorder, adjust box edges.
-  if (box_count != box_data_list_.size())
-    UpdateFragmentedBoxDataEdges();
+  // If any inline fragmentation occurred due to BiDi reorder, append them and
+  // adjust box edges.
+  if (UNLIKELY(!fragmented_boxes.IsEmpty()))
+    UpdateFragmentedBoxDataEdges(&fragmented_boxes);
 
 #if DCHECK_IS_ON()
   // Check all BoxData have ranges.
@@ -410,7 +412,8 @@ void NGInlineLayoutStateStack::UpdateAfterReorder(
 
 unsigned NGInlineLayoutStateStack::UpdateBoxDataFragmentRange(
     NGLogicalLineItems* line_box,
-    unsigned index) {
+    unsigned index,
+    Vector<BoxData>* fragmented_boxes) {
   // Find the first line box item that should create a box fragment.
   for (; index < line_box->size(); index++) {
     NGLogicalLineItem* start = &(*line_box)[index];
@@ -438,7 +441,7 @@ unsigned NGInlineLayoutStateStack::UpdateBoxDataFragmentRange(
       // It also changes other BoxData, but not the one we're dealing with here
       // because the update is limited only when its |box_data_index| is lower.
       while (end->box_data_index && end->box_data_index < box_data_index) {
-        UpdateBoxDataFragmentRange(line_box, index);
+        UpdateBoxDataFragmentRange(line_box, index, fragmented_boxes);
       }
 
       if (box_data_index != end->box_data_index)
@@ -453,14 +456,9 @@ unsigned NGInlineLayoutStateStack::UpdateBoxDataFragmentRange(
     } else {
       // This box is fragmented by BiDi reordering. Add a new BoxData for the
       // fragmented range.
-      box_data_list_[box_data_index - 1].fragmented_box_data_index =
-          box_data_list_.size();
-      // Do not use `emplace_back()` here because adding to |box_data_list_| may
-      // reallocate the buffer, but the `BoxData` ctor must run before the
-      // reallocation. Create a new instance and |push_back()| instead.
-      BoxData fragmented_box_data(box_data_list_[box_data_index - 1],
-                                  start_index, index);
-      box_data_list_.push_back(fragmented_box_data);
+      BoxData& fragmented_box = fragmented_boxes->emplace_back(
+          box_data_list_[box_data_index - 1], start_index, index);
+      fragmented_box.fragmented_box_data_index = box_data_index;
     }
     // If this box has parent boxes, we need to process it again.
     if (box_data_list_[box_data_index - 1].parent_box_data_index)
@@ -470,7 +468,43 @@ unsigned NGInlineLayoutStateStack::UpdateBoxDataFragmentRange(
   return index;
 }
 
-void NGInlineLayoutStateStack::UpdateFragmentedBoxDataEdges() {
+void NGInlineLayoutStateStack::UpdateFragmentedBoxDataEdges(
+    Vector<BoxData>* fragmented_boxes) {
+  DCHECK(!fragmented_boxes->IsEmpty());
+  // Append in the descending order of |fragmented_box_data_index| because the
+  // indices will change as boxes are inserted into |box_data_list_|.
+  std::sort(fragmented_boxes->begin(), fragmented_boxes->end(),
+            [](const BoxData& a, const BoxData& b) {
+              if (a.fragmented_box_data_index != b.fragmented_box_data_index) {
+                return a.fragmented_box_data_index <
+                       b.fragmented_box_data_index;
+              }
+              DCHECK_NE(a.fragment_start, b.fragment_start);
+              return a.fragment_start < b.fragment_start;
+            });
+  for (BoxData& fragmented_box : base::Reversed(*fragmented_boxes)) {
+    // Insert the fragmented box to right after the box it was fragmented from.
+    // The order in the |box_data_list_| is critical when propagating child
+    // fragment data such as OOF to ancestors.
+    const unsigned insert_at = fragmented_box.fragmented_box_data_index;
+    DCHECK_GT(insert_at, 0u);
+    fragmented_box.fragmented_box_data_index = 0;
+    box_data_list_.insert(insert_at, fragmented_box);
+
+    // Adjust box data indices by the insertion.
+    for (BoxData& box_data : box_data_list_) {
+      if (box_data.fragmented_box_data_index >= insert_at)
+        ++box_data.fragmented_box_data_index;
+    }
+
+    // Set the index of the last fragment to the original box. This is needed to
+    // update fragment edges.
+    const unsigned fragmented_from = insert_at - 1;
+    if (!box_data_list_[fragmented_from].fragmented_box_data_index)
+      box_data_list_[fragmented_from].fragmented_box_data_index = insert_at;
+  }
+
+  // Move the line-right edge to the last fragment.
   for (BoxData& box_data : box_data_list_) {
     if (box_data.fragmented_box_data_index)
       box_data.UpdateFragmentEdges(box_data_list_);
