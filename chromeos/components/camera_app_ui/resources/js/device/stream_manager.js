@@ -51,7 +51,7 @@ export class CaptureStream {
   /**
    * @param {string} deviceId Device id of currently working video device
    * @param {!MediaStream} stream Capture stream
-   * @private
+   * @public
    */
   constructor(deviceId, stream) {
     /**
