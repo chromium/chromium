@@ -27,7 +27,6 @@ source_set("scanning") {
     "//ash/quick_pair/common",
     "//base",
     "//device/bluetooth",
-    "//device/bluetooth/public/cpp",
   ]
 }
 
