@@ -218,10 +218,11 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
     DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
     const std::string* enterprise_id =
         user_info.FindStringPath(kBoxEnterpriseIdFieldName);
-    DLOG(ERROR) << settings_.enterprise_id;
-    DLOG(ERROR) << *enterprise_id;
-    DCHECK(enterprise_id);
-    if (settings_.enterprise_id.compare(*enterprise_id) != 0) {
+    if (!settings_.enterprise_id.empty()) {
+      DCHECK(enterprise_id);
+    }
+    if (!settings_.enterprise_id.empty() &&
+        settings_.enterprise_id.compare(*enterprise_id) != 0) {
       // User is logged in to wrong account which doesn't match enterprise_id.
       // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
       // This is handled as case 1c (other errors) by FileSystemRenameHandler.
@@ -246,11 +247,13 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
 
 void FileSystemSigninDialogDelegate::OnAuthFlowDone(
     const GoogleServiceAuthError& status) {
-  // The tokens must be empty iff it's status is in an error state
-  DCHECK(access_token_.empty() ==
-         (status.state() != GoogleServiceAuthError::NONE));
-  DCHECK(refresh_token_.empty() ==
-         (status.state() != GoogleServiceAuthError::NONE));
+  if (status.state() == GoogleServiceAuthError::NONE) {
+    DCHECK(!access_token_.empty());
+    DCHECK(!refresh_token_.empty());
+  } else {
+    access_token_ = std::string();
+    refresh_token_ = std::string();
+  }
   std::move(callback_).Run(status, access_token_, refresh_token_);
   GetWidget()->Close();
 }
