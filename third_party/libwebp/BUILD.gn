@@ -81,6 +81,7 @@ static_library("libwebp_dec") {
   if (use_dsp_neon) {
     deps += [ ":libwebp_dsp_neon" ]
   }
+  allow_circular_includes_from = [ ":libwebp_dsp" ]
 }
 
 static_library("libwebp_demux") {
@@ -186,6 +187,11 @@ static_library("libwebp_dsp") {
       "WEBP_HAVE_SSE41",
     ]
   }
+  allow_circular_includes_from = [
+    ":libwebp_dsp_sse2",
+    ":libwebp_dsp_sse41",
+    ":libwebp_utils",
+  ]
 }
 
 static_library("libwebp_dsp_sse41") {
@@ -213,6 +219,7 @@ static_library("libwebp_dsp_sse41") {
       cflags = [ "-msse4.1" ]
     }
   }
+  deps = [ ":libwebp_dsp_sse2" ]
 }
 
 static_library("libwebp_dsp_sse2") {
@@ -245,6 +252,7 @@ static_library("libwebp_dsp_sse2") {
       cflags = [ "-msse2" ]
     }
   }
+  public_deps = [ ":libwebp_utils" ]
 }
 
 if (use_dsp_neon) {
@@ -322,9 +330,13 @@ static_library("libwebp_enc") {
   all_dependent_configs = [ ":libwebp_config" ]
 
   deps = [
+    ":libwebp_dec",
+    ":libwebp_dsp",
     ":libwebp_utils",
     ":libwebp_webp",
   ]
+
+  allow_circular_includes_from = [ ":libwebp_dsp" ]
 }
 
 config("libwebp_utils_warnings") {
