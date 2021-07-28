@@ -6,8 +6,14 @@
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"]
 namespace os.telemetry {
   dictionary VpdInfo {
+    // Device model name.
+    DOMString? modelName;
+
     // Device serial number.
     DOMString? serialNumber;
+
+    // Device SKU number, a.k.a. model number.
+    DOMString? skuNumber;
   };
 
   callback VpdInfoCallback = void (VpdInfo vpdInfo);

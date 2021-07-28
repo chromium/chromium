@@ -39,9 +39,17 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
   api::os_telemetry::VpdInfo result;
 
   const auto& vpd_info = ptr->vpd_result->get_vpd_info();
+  if (vpd_info->model_name.has_value()) {
+    result.model_name =
+        std::make_unique<std::string>(vpd_info->model_name.value());
+  }
   if (vpd_info->serial_number.has_value()) {
     result.serial_number =
         std::make_unique<std::string>(vpd_info->serial_number.value());
+  }
+  if (vpd_info->sku_number.has_value()) {
+    result.sku_number =
+        std::make_unique<std::string>(vpd_info->sku_number.value());
   }
 
   Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));

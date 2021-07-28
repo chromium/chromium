@@ -81,7 +81,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest, GetVpdInfoSuccess) {
       auto os_version = cros_healthd::mojom::OsVersion::New();
 
       auto system_info = cros_healthd::mojom::SystemInfo::New();
+      system_info->product_model_name = "COOL-LAPTOP-CHROME";
       system_info->product_serial_number = "5CD9132880";
+      system_info->product_sku_number = "sku15";
       system_info->os_version = std::move(os_version);
 
       telemetry_info->system_result =
@@ -99,7 +101,9 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest, GetVpdInfoSuccess) {
     chrome.test.runTests([
       async function getVpdInfo() {
         const result = await chrome.os.telemetry.getVpdInfo();
+        chrome.test.assertEq("COOL-LAPTOP-CHROME", result.modelName);
         chrome.test.assertEq("5CD9132880", result.serialNumber);
+        chrome.test.assertEq("sku15", result.skuNumber);
         chrome.test.succeed();
       }
     ]);
