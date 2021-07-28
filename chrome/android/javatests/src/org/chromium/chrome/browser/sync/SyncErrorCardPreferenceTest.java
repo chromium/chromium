@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -34,9 +35,12 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Test suite for SyncErrorCardPreference
@@ -46,7 +50,7 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class SyncErrorCardPreferenceTest {
-    // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_error badge
+    // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_error badge
     // for Sync error card.
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
@@ -301,6 +305,18 @@ public class SyncErrorCardPreferenceTest {
     }
 
     private View getPersonalizedSyncPromoView() {
+        // Ensure that AccountInfoServiceProvider populated ProfileDataCache before checking the
+        // view.
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccountInfoServiceProvider.getPromise().then(
+                    accountInfoService -> { callbackHelper.notifyCalled(); });
+        });
+        try {
+            callbackHelper.waitForFirst();
+        } catch (TimeoutException e) {
+            throw new RuntimeException("Timed out waiting for callback", e);
+        }
         return mSettingsActivityTestRule.getActivity().findViewById(R.id.signin_promo_view_wrapper);
     }
 }

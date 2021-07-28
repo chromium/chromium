@@ -77,7 +77,9 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void setUpRule() {
         if (mFakeAccountInfoService != null) {
-            AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
+            });
         }
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }

@@ -102,7 +102,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
     private final @Nullable ProfileDataSource mProfileDataSource;
-    private final AccountInfoService mAccountInfoService;
 
     @VisibleForTesting
     ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
@@ -113,10 +112,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         mProfileDataSource = ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
                 ? null
                 : AccountManagerFacadeProvider.getInstance().getProfileDataSource();
-        mAccountInfoService = AccountInfoServiceProvider.get();
-        if (mProfileDataSource == null) {
-            populateCache();
-        }
+        AccountInfoServiceProvider.getPromise().then(this::populateCache);
     }
 
     /**
@@ -178,7 +174,8 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
                 mProfileDataSource.addObserver(this);
                 populateCacheLegacy();
             }
-            mAccountInfoService.addObserver(this);
+            AccountInfoServiceProvider.getPromise().then(
+                    accountInfoService -> { accountInfoService.addObserver(this); });
         }
         mObservers.addObserver(observer);
     }
@@ -193,18 +190,20 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
             if (mProfileDataSource != null) {
                 mProfileDataSource.removeObserver(this);
             }
-            mAccountInfoService.removeObserver(this);
+            AccountInfoServiceProvider.getPromise().then(
+                    accountInfoService -> { accountInfoService.removeObserver(this); });
         }
     }
 
     @Override
+    @Deprecated
     public void onProfileDataUpdated(ProfileDataSource.ProfileData profileData) {
         ThreadUtils.assertOnUiThread();
         final String email = profileData.getAccountEmail();
         Bitmap avatar = profileData.getAvatar();
         if (avatar == null) {
             // If the avatar is null, try to fetch the monogram from IdentityManager
-            mAccountInfoService.getAccountInfoByEmail(email).then(accountInfo -> {
+            AccountInfoServiceProvider.get().getAccountInfoByEmail(email).then(accountInfo -> {
                 updateCacheAndNotifyObservers(email,
                         accountInfo != null ? accountInfo.getAccountImage() : null,
                         profileData.getFullName(), profileData.getGivenName());
@@ -231,10 +230,10 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         }
     }
 
-    private void populateCache() {
+    private void populateCache(AccountInfoService accountInfoService) {
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             for (Account account : accounts) {
-                mAccountInfoService.getAccountInfoByEmail(account.name)
+                accountInfoService.getAccountInfoByEmail(account.name)
                         .then(this::onAccountInfoUpdated);
             }
         });
