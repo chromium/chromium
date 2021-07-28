@@ -12,7 +12,9 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/mouse_watcher_view_host.h"
+#include "ui/views/style/platform_style.h"
 
 namespace views {
 
@@ -21,7 +23,12 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
       tooltip_icon_size_(tooltip_icon_size),
       mouse_inside_(false),
       bubble_(nullptr),
-      preferred_width_(0) {}
+      preferred_width_(0) {
+  SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
+  // TODO(pbos): This default FocusRing looks unpolished in this context,
+  // TooltipIcon should probably have padding and focus should show be a circle.
+  FocusRing::Install(this);
+}
 
 TooltipIcon::~TooltipIcon() {
   for (auto& observer : observers_)
@@ -42,6 +49,14 @@ void TooltipIcon::OnMouseExited(const ui::MouseEvent& event) {
 bool TooltipIcon::OnMousePressed(const ui::MouseEvent& event) {
   // Swallow the click so that the parent doesn't process it.
   return true;
+}
+
+void TooltipIcon::OnFocus() {
+  ShowBubble();
+}
+
+void TooltipIcon::OnBlur() {
+  HideBubble();
 }
 
 void TooltipIcon::OnGestureEvent(ui::GestureEvent* event) {

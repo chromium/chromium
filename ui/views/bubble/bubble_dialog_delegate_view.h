@@ -176,6 +176,14 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   // Whether focus can traverse from the anchor view into the bubble. Only
   // meaningful if there is an anchor view.
+  // TODO(pbos): See if this can be inferred from if the bubble is activatable
+  // or if there's anything focusable within the dialog. This is currently used
+  // for bubbles that should never receive focus and we should be able have
+  // focus go through a bubble if nothing's focusable within it. Without this
+  // set to `false`, the existence of an InfoBubble in the QR reader bubble will
+  // break focus order in the parent dialog. This is a bug for which
+  // set_focus_traversable_from_anchor_view(false) is used as a workaround. See
+  // if fixing that bug removes the need for this for other dialogs.
   void set_focus_traversable_from_anchor_view(bool focusable) {
     focus_traversable_from_anchor_view_ = focusable;
   }

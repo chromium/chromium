@@ -57,6 +57,11 @@ InfoBubble::InfoBubble(View* anchor,
   set_margins(LayoutProvider::Get()->GetInsetsMetric(
       InsetsMetric::INSETS_TOOLTIP_BUBBLE));
   SetCanActivate(false);
+  SetAccessibleRole(ax::mojom::Role::kAlertDialog);
+  // TODO(pbos): This hacks around a bug where focus order in the parent dialog
+  // breaks because it tries to focus InfoBubble without anything focusable in
+  // it. FocusSearch should handle this case and this should be removable.
+  set_focus_traversable_from_anchor_view(false);
 
   SetLayoutManager(std::make_unique<FillLayout>());
   label_ = AddChildView(std::make_unique<Label>(message));
