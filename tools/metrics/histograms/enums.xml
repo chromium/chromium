@@ -41885,6 +41885,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Tapped close button"/>
   <int value="2" label="Indirectly closed while visible"/>
   <int value="3" label="Indirectly closed while hidden"/>
+  <int value="4" label="Unknown dismissal reason"/>
 </enum>
 
 <enum name="InfoBarIdentifier">

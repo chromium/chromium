@@ -5,11 +5,16 @@
 package org.chromium.chrome.browser.survey;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -51,6 +56,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
@@ -79,9 +86,13 @@ public class ChromeSurveyControllerFlowTest {
     static class ShadowChromeFeatureList {
         static final Map<String, String> sParamValues = new HashMap<>();
         static boolean sEnableSurvey;
+        static boolean sEnableMessages;
 
         @Implementation
         public static boolean isEnabled(String featureName) {
+            if (featureName.equals(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)) {
+                return sEnableMessages;
+            }
             return featureName.equals(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
                     && sEnableSurvey;
         }
@@ -107,8 +118,7 @@ public class ChromeSurveyControllerFlowTest {
         static PayloadCallbackHelper<SurveyInfoBarDelegate> sShowInfoBarCallback;
 
         @Implementation
-        public static void showSurveyInfoBar(WebContents webContents, String siteId,
-                boolean showAsBottomSheet, int displayLogoResId,
+        public static void showSurveyInfoBar(WebContents webContents, int displayLogoResId,
                 SurveyInfoBarDelegate surveyInfoBarDelegate) {
             Assert.assertNotNull("sShowInfoBarCallback is null.", sShowInfoBarCallback);
             sShowInfoBarCallback.notifyCalled(surveyInfoBarDelegate);
@@ -141,6 +151,10 @@ public class ChromeSurveyControllerFlowTest {
     InfoBarContainer mMockInfoBarContainer;
     @Mock
     ActivityLifecycleDispatcher mMockLifecycleDispatcher;
+    @Mock
+    Activity mActivity;
+    @Mock
+    MessageDispatcher mMessageDispatcher;
 
     private final TestSurveyController mTestSurveyController = new TestSurveyController();
 
@@ -174,6 +188,9 @@ public class ChromeSurveyControllerFlowTest {
         mPrefKeyDownloadAttempts =
                 ChromePreferenceKeys.CHROME_SURVEY_DOWNLOAD_ATTEMPTS.createKey(TEST_TRIGGER_ID);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+
+        Mockito.when(mActivity.getResources())
+                .thenReturn(ApplicationProvider.getApplicationContext().getResources());
     }
 
     @After
@@ -181,6 +198,7 @@ public class ChromeSurveyControllerFlowTest {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowChromeFeatureList.sEnableSurvey = false;
+        ShadowChromeFeatureList.sEnableMessages = false;
         ShadowRecordHistogram.reset();
 
         CommandLine.getInstance().removeSwitch(ChromeSurveyController.COMMAND_LINE_PARAM_NAME);
@@ -298,6 +316,41 @@ public class ChromeSurveyControllerFlowTest {
         assertDownloadAttempted(false);
         initializeChromeSurveyController();
         assertDownloadAttempted(true);
+    }
+
+    @Test
+    public void testSurveyInfobarUI() {
+        setupTabMocks();
+        initializeChromeSurveyController();
+        assertCallbackAssignedInSurveyController();
+
+        // Verify the survey should be attempted to present on a valid tab.
+        mockTabReady();
+        // Verify that the feature flag for the survey messages UI is disabled
+        Assert.assertFalse(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY));
+        mTestSurveyController.onDownloadSuccessRunnable.run();
+        assertSurveyInfoBarShown(true);
+        verifyNoMoreInteractions(mMessageDispatcher);
+    }
+
+    @Test
+    public void testSurveyMessagesUI() {
+        setupTabMocks();
+        initializeChromeSurveyController();
+        assertCallbackAssignedInSurveyController();
+
+        // Verify the survey should be attempted to present on a valid tab.
+        mockTabReady();
+        ShadowChromeFeatureList.sEnableMessages = true;
+        // Verify that the feature flag for the survey messages UI is enabled
+        Assert.assertTrue(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY));
+        Assert.assertNotNull(mMessageDispatcher);
+        mTestSurveyController.onDownloadSuccessRunnable.run();
+        assertSurveyInfoBarShown(false);
+        verify(mMessageDispatcher)
+                .enqueueMessage(any(), eq(mMockWebContent), eq(MessageScopeType.WINDOW), eq(false));
     }
 
     @Test
@@ -482,7 +535,8 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     private void initializeChromeSurveyController() {
-        ChromeSurveyController.initialize(mMockModelSelector, mMockLifecycleDispatcher);
+        ChromeSurveyController.initialize(
+                mMockModelSelector, mMockLifecycleDispatcher, mActivity, mMessageDispatcher);
         try {
             BackgroundShadowAsyncTask.runBackgroundTasks();
         } catch (Exception e) {

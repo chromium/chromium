@@ -186,6 +186,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -1877,7 +1878,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
 
-            ChromeSurveyController.initialize(mTabModelSelector, getLifecycleDispatcher());
+            ChromeSurveyController.initialize(mTabModelSelector, getLifecycleDispatcher(),
+                    ChromeTabbedActivity.this, MessageDispatcherProvider.from(getWindowAndroid()));
 
             if (mStartSurfaceSupplier.get() != null && mOverviewShownOnStart) {
                 mStartSurfaceSupplier.get().onOverviewShownAtLaunch(getOnCreateTimestampMs());

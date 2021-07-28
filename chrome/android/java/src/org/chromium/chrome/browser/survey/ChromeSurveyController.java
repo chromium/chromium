@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.survey;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -39,6 +42,12 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
+import org.chromium.components.messages.DismissReason;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -96,49 +105,61 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
      * Note: these values must match the InfoBarClosingStates enum in enums.xml.
      */
     @IntDef({InfoBarClosingState.ACCEPTED_SURVEY, InfoBarClosingState.CLOSE_BUTTON,
-            InfoBarClosingState.VISIBLE_INDIRECT, InfoBarClosingState.HIDDEN_INDIRECT})
+            InfoBarClosingState.VISIBLE_INDIRECT, InfoBarClosingState.HIDDEN_INDIRECT,
+            InfoBarClosingState.UNKNOWN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface InfoBarClosingState {
         int ACCEPTED_SURVEY = 0;
         int CLOSE_BUTTON = 1;
         int VISIBLE_INDIRECT = 2;
         int HIDDEN_INDIRECT = 3;
+        int UNKNOWN = 4;
         // Number of entries
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     private TabModelSelector mTabModelSelector;
     private Handler mLoggingHandler;
-    private Tab mSurveyInfoBarTab;
+    private Tab mSurveyPromptTab;
     private TabModelSelectorObserver mTabModelObserver;
 
     private final String mTriggerId;
     private final String mPrefKeyPromptDisplayed;
     private final String mPrefKeyDownloadAttempts;
     private final @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Activity mActivity;
+    private final MessageDispatcher mMessageDispatcher;
 
     @VisibleForTesting
-    ChromeSurveyController(
-            String triggerId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
+    ChromeSurveyController(String triggerId,
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher, Activity activity,
+            MessageDispatcher messageDispatcher) {
         mTriggerId = triggerId;
         mPrefKeyPromptDisplayed =
                 ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(mTriggerId);
         mPrefKeyDownloadAttempts =
                 ChromePreferenceKeys.CHROME_SURVEY_DOWNLOAD_ATTEMPTS.createKey(mTriggerId);
         mLifecycleDispatcher = lifecycleDispatcher;
+        mActivity = activity;
+        mMessageDispatcher = messageDispatcher;
     }
 
     /**
      * Checks if the conditions to show the survey are met and starts the process if they are.
      * @param tabModelSelector The tab model selector to access the tab on which the survey will be
      *                         shown.
+     * @param lifecycleDispatcher Dispatcher for activity lifecycle events.
+     * @param activity The {@link Activity} on which the survey will be shown.
+     * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
     public static void initialize(TabModelSelector tabModelSelector,
-            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher, Activity activity,
+            MessageDispatcher messageDispatcher) {
         assert tabModelSelector != null;
         if (!isSurveyEnabled() || TextUtils.isEmpty(getTriggerId())) return;
-        new StartDownloadIfEligibleTask(
-                new ChromeSurveyController(getTriggerId(), lifecycleDispatcher), tabModelSelector)
+        new StartDownloadIfEligibleTask(new ChromeSurveyController(getTriggerId(),
+                                                lifecycleDispatcher, activity, messageDispatcher),
+                tabModelSelector)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -165,7 +186,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     }
 
     /**
-     * Called when the survey has finished downloading to show the survey info bar.
+     * Called when the survey has finished downloading to show the survey prompt.
      * @param siteId The site id of the survey to display.
      */
     @VisibleForTesting
@@ -184,11 +205,11 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     }
 
     /**
-     * Show the survey info bar on the passed in tab if the tab is finished loading.
-     * Else, it adds a listener to the tab to show the info bar once conditions are met.
-     * @param tab The tab to attempt to attach the survey info bar.
+     * Show the survey prompt on the passed in tab if the tab is finished loading.
+     * Else, it adds a listener to the tab to show the prompt once conditions are met.
+     * @param tab The tab to attempt to attach the survey prompt.
      * @param siteId The site id of the survey to display.
-     * @return If the infobar was successfully shown.
+     * @return If the survey prompt was successfully shown.
      */
     private boolean attemptToShowOnTab(Tab tab, String siteId) {
         if (!isValidTabForSurvey(tab)) return false;
@@ -198,25 +219,82 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             return false;
         }
 
-        showSurveyInfoBar(tab, siteId);
+        showSurveyPrompt(tab, siteId);
         return true;
     }
 
     /**
-     * Shows the survey info bar.
-     * @param tab The tab to attach the survey info bar.
+     * Shows the survey prompt as an infobar or a message.
+     * @param tab The tab to attach the survey prompt.
      * @param siteId The site id of the survey to display.
      */
     @VisibleForTesting
-    void showSurveyInfoBar(Tab tab, String siteId) {
-        mSurveyInfoBarTab = tab;
-        InfoBarContainer.get(tab).addAnimationListener(this);
-        SurveyInfoBar.showSurveyInfoBar(tab.getWebContents(), siteId, true,
-                R.drawable.chrome_sync_logo, getSurveyInfoBarDelegate());
+    void showSurveyPrompt(@NonNull Tab tab, String siteId) {
+        mSurveyPromptTab = tab;
 
-        RecordUserAction.record("Android.Survey.ShowSurveyInfoBar");
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
+                && mMessageDispatcher != null) {
+            Resources resources = mActivity.getResources();
 
-        mTabModelSelector.removeObserver(mTabModelObserver);
+            PropertyModel message =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.CHROME_SURVEY)
+                            .with(MessageBannerProperties.TITLE,
+                                    resources.getString(R.string.chrome_survey_message_title))
+                            .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                                    R.drawable.chrome_sync_logo)
+                            .with(MessageBannerProperties.ICON_TINT_COLOR,
+                                    MessageBannerProperties.TINT_NONE)
+                            .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                    resources.getString(R.string.chrome_survey_message_button))
+                            .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                                    () -> showSurvey(siteId))
+                            .with(MessageBannerProperties.ON_DISMISSED,
+                                    this::recordSurveyPromptMetrics)
+                            .build();
+
+            mMessageDispatcher.enqueueMessage(
+                    message, tab.getWebContents(), MessageScopeType.WINDOW, false);
+        } else {
+            InfoBarContainer.get(tab).addAnimationListener(this);
+
+            SurveyInfoBar.showSurveyInfoBar(
+                    tab.getWebContents(), R.drawable.chrome_sync_logo, getSurveyInfoBarDelegate());
+
+            RecordUserAction.record("Android.Survey.ShowSurveyInfoBar");
+            mTabModelSelector.removeObserver(mTabModelObserver);
+        }
+    }
+
+    /**
+     * Shows the survey and closes the survey prompt.
+     * @param siteId The site id of the survey to display.
+     */
+    private void showSurvey(String siteId) {
+        SurveyController.getInstance().showSurveyIfAvailable(
+                mActivity, siteId, true, R.drawable.chrome_sync_logo, mLifecycleDispatcher);
+    }
+
+    /**
+     * Record metrics for user actions on the survey prompt.
+     * @param dismissReason The reason for dismissal of the survey prompt.
+     */
+    private void recordSurveyPromptMetrics(@DismissReason int dismissReason) {
+        if (dismissReason == DismissReason.GESTURE) {
+            // Survey prompt was dismissed by the user
+            recordInfoBarClosingState(InfoBarClosingState.CLOSE_BUTTON);
+        } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
+            // Survey was accepted by the user
+            recordInfoBarClosingState(InfoBarClosingState.ACCEPTED_SURVEY);
+            recordSurveyAccepted();
+        } else if (dismissReason == DismissReason.TIMER) {
+            // Survey prompt was auto-dismissed from the front
+            recordInfoBarClosingState(InfoBarClosingState.VISIBLE_INDIRECT);
+        } else {
+            recordInfoBarClosingState(InfoBarClosingState.UNKNOWN);
+        }
+        recordInfoBarDisplayed();
     }
 
     /**
@@ -253,7 +331,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     void showInfoBarIfApplicable(Tab tab, String siteId, TabObserver observer) {
         if (!tab.isUserInteractable() || tab.isLoading()) return;
 
-        showSurveyInfoBar(tab, siteId);
+        showSurveyPrompt(tab, siteId);
         tab.removeObserver(observer);
     }
 
@@ -381,7 +459,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         return new SurveyInfoBarDelegate() {
             @Override
             public void onSurveyInfoBarTabInteractabilityChanged(boolean isInteractable) {
-                if (mSurveyInfoBarTab == null) return;
+                if (mSurveyPromptTab == null) return;
 
                 if (!isInteractable) {
                     mLoggingHandler.removeCallbacksAndMessages(null);
@@ -395,7 +473,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             @Override
             public void onSurveyInfoBarTabHidden() {
                 mLoggingHandler.removeCallbacksAndMessages(null);
-                mSurveyInfoBarTab = null;
+                mSurveyPromptTab = null;
             }
 
             @Override
@@ -414,9 +492,8 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
             @Override
             public void onSurveyTriggered() {
-                recordInfoBarClosingState(InfoBarClosingState.ACCEPTED_SURVEY);
-                recordInfoBarDisplayed();
-                recordSurveyAccepted();
+                recordSurveyPromptMetrics(DismissReason.PRIMARY_ACTION);
+                showSurvey(mTriggerId);
             }
 
             @Override
@@ -437,16 +514,16 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     void recordInfoBarDisplayed() {
         // This can be called multiple times e.g. by mLoggingHandler & onSurveyInfoBarClosed().
         // Return early to allow only one call to this method (http://crbug.com/791076).
-        if (mSurveyInfoBarTab == null) return;
+        if (mSurveyPromptTab == null) return;
 
-        InfoBarContainer container = InfoBarContainer.get(mSurveyInfoBarTab);
+        InfoBarContainer container = InfoBarContainer.get(mSurveyPromptTab);
         if (container != null) container.removeAnimationListener(this);
 
         mLoggingHandler.removeCallbacksAndMessages(null);
 
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
         preferences.writeLong(mPrefKeyPromptDisplayed, System.currentTimeMillis());
-        mSurveyInfoBarTab = null;
+        mSurveyPromptTab = null;
     }
 
     @VisibleForTesting

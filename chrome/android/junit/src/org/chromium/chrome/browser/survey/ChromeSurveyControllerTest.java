@@ -10,6 +10,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+
+import androidx.annotation.NonNull;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,12 +29,15 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.survey.ChromeSurveyController.FilteringResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -56,10 +63,17 @@ public class ChromeSurveyControllerTest {
     WebContents mWebContents;
     @Mock
     TabModelSelector mSelector;
+    @Mock
+    ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock
+    Activity mActivity;
+    @Mock
+    MessageDispatcher mMessageDispatcher;
 
     @Before
     public void before() {
-        mTestController = new TestChromeSurveyController(TEST_SURVEY_TRIGGER_ID);
+        mTestController = new TestChromeSurveyController(TEST_SURVEY_TRIGGER_ID,
+                mActivityLifecycleDispatcher, mActivity, mMessageDispatcher);
         mTestController.setTabModelSelector(mSelector);
         mSharedPreferences = SharedPreferencesManager.getInstance();
         Assert.assertNull("Tab should be null", mTestController.getLastTabInfobarShown());
@@ -75,8 +89,10 @@ public class ChromeSurveyControllerTest {
         final String triggerId1 = "triggerId1";
         final String triggerId2 = "triggerId2";
 
-        TestChromeSurveyController controller1 = new TestChromeSurveyController(triggerId1);
-        TestChromeSurveyController controller2 = new TestChromeSurveyController(triggerId2);
+        TestChromeSurveyController controller1 = new TestChromeSurveyController(
+                triggerId1, mActivityLifecycleDispatcher, mActivity, mMessageDispatcher);
+        TestChromeSurveyController controller2 = new TestChromeSurveyController(
+                triggerId2, mActivityLifecycleDispatcher, mActivity, mMessageDispatcher);
 
         String prefKey1 =
                 ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(triggerId1);
@@ -164,6 +180,7 @@ public class ChromeSurveyControllerTest {
     }
 
     @Test
+    @Features.DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY})
     public void testSurveyAvailableWebContentsLoaded() {
         doReturn(mTab).when(mSelector).getCurrentTab();
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -265,7 +282,7 @@ public class ChromeSurveyControllerTest {
         private int mMaxNumber;
 
         RiggedSurveyController(int randomNumberToReturn, int dayOfYear, int maxNumber) {
-            super(TEST_SURVEY_TRIGGER_ID, null);
+            super(TEST_SURVEY_TRIGGER_ID, null, null, null);
             mRandomNumberToReturn = randomNumberToReturn;
             mDayOfYear = dayOfYear;
             mMaxNumber = maxNumber;
@@ -290,12 +307,14 @@ public class ChromeSurveyControllerTest {
     static class TestChromeSurveyController extends ChromeSurveyController {
         private Tab mTab;
 
-        public TestChromeSurveyController(String triggerId) {
-            super(triggerId, null);
+        public TestChromeSurveyController(String triggerId,
+                ActivityLifecycleDispatcher activityLifecycleDispatcher, Activity activity,
+                MessageDispatcher messageDispatcher) {
+            super(triggerId, activityLifecycleDispatcher, activity, messageDispatcher);
         }
 
         @Override
-        void showSurveyInfoBar(Tab tab, String siteId) {
+        void showSurveyPrompt(@NonNull Tab tab, String siteId) {
             mTab = tab;
         }
 
