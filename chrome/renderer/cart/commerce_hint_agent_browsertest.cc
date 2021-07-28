@@ -8,6 +8,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -256,6 +258,9 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                       .spec(),
                   expected[i].second.merchant_cart_url());
       }
+    } else {
+      VLOG(3) << "Found " << found.size() << " but expecting "
+              << expected.size();
     }
     std::move(closure).Run();
   }
@@ -541,21 +546,33 @@ class CommerceHintCacaoTest : public CommerceHintAgentTest {
         {});
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    CommerceHintAgentTest::SetUpCommandLine(command_line);
-    // This bloom filter rejects "walmart.com" as a shopping site.
-    command_line->AppendSwitchASCII("optimization_guide_hints_override",
-                                    "Eg8IDxILCBsQJxoFiUzKeE4=");
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky. crbug.com/1183852
-IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, DISABLED_Rejected) {
-  NavigateToURL("https://www.walmart.com/");
+IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Passed) {
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  // Need the non-default port here.
+  optimization_guide_decider->AddHintForTesting(
+      https_server_.GetURL("www.guitarcenter.com", "/"),
+      optimization_guide::proto::SHOPPING_PAGE_PREDICTOR, absl::nullopt);
+  optimization_guide_decider->AddHintForTesting(
+      GURL("https://www.guitarcenter.com/cart"),
+      optimization_guide::proto::SHOPPING_PAGE_PREDICTOR, absl::nullopt);
+
+  NavigateToURL("https://www.guitarcenter.com/");
   SendXHR("/add-to-cart", "product: 123");
+  WaitForCartCount(kExpectedExampleFallbackCart);
+}
+
+// If command line argument "optimization_guide_hints_override" is not given,
+// nothing is specified in AddHintForTesting(), and the real hints are not
+// downloaded, all the URLs are considered non-shopping.
+IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Rejected) {
+  NavigateToURL("https://www.guitarcenter.com/");
+  SendXHR("/add-to-cart", "product: 123");
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout() * 30);
   WaitForCartCount(kEmptyExpected);
 }
 
