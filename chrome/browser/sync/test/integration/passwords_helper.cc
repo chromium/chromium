@@ -21,7 +21,6 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
@@ -35,7 +34,6 @@
 #include "url/gurl.h"
 
 using password_manager::PasswordForm;
-using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using sync_datatype_helper::test;
 
@@ -131,34 +129,16 @@ void RemoveLogins(PasswordStoreInterface* store) {
                                     /*delete_end=*/base::Time::Max(),
                                     /*completion=*/base::NullCallback());
 }
-
-PasswordStore* GetPasswordStore(int index) {
-  return PasswordStoreFactory::GetForProfile(test()->GetProfile(index),
-                                             ServiceAccessType::IMPLICIT_ACCESS)
-      .get();
-}
-
 PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
   return PasswordStoreFactory::GetForProfile(test()->GetProfile(index),
                                              ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 
-PasswordStore* GetVerifierPasswordStore() {
-  return PasswordStoreFactory::GetForProfile(test()->verifier(),
-                                             ServiceAccessType::IMPLICIT_ACCESS)
-      .get();
-}
 
 PasswordStoreInterface* GetVerifierProfilePasswordStoreInterface() {
   return PasswordStoreFactory::GetForProfile(test()->verifier(),
                                              ServiceAccessType::IMPLICIT_ACCESS)
-      .get();
-}
-
-PasswordStore* GetAccountPasswordStore(int index) {
-  return AccountPasswordStoreFactory::GetForProfile(
-             test()->GetProfile(index), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 

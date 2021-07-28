@@ -29,10 +29,8 @@ using passwords_helper::CreateTestPasswordForm;
 using passwords_helper::GetAllLogins;
 using passwords_helper::GetLogins;
 using passwords_helper::GetPasswordCount;
-using passwords_helper::GetPasswordStore;
 using passwords_helper::GetProfilePasswordStoreInterface;
 using passwords_helper::GetVerifierPasswordCount;
-using passwords_helper::GetVerifierPasswordStore;
 using passwords_helper::GetVerifierProfilePasswordStoreInterface;
 using passwords_helper::RemoveLogins;
 

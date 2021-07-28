@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
 
   SetupSyncTransportWithPasswordAccountStorage();
-  auto* account_store = passwords_helper::GetAccountPasswordStore(0);
+  auto* account_store = passwords_helper::GetAccountPasswordStoreInterface(0);
 
   // Make sure the password show up in the account store and on the server.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // This simulates the case (for the following test) where the user revoked
   // their opt-in, but the account store was *not* cleared correctly, e.g. due
   // to a poorly-timed crash.
-  auto* account_store = passwords_helper::GetAccountPasswordStore(0);
+  auto* account_store = passwords_helper::GetAccountPasswordStoreInterface(0);
   account_store->AddLogin(CreateTestPasswordForm("accountuser", "accountpass"));
 
   // Also add a credential to the profile store.
