@@ -15,7 +15,8 @@ namespace ash {
 class AppListViewDelegate;
 
 // An apps grid that shows all the apps in a long scrolling list. Used for
-// the clamshell mode bubble launcher.
+// the clamshell mode bubble launcher. Implemented as a single "page" of apps.
+// GridIndex in this class always has a page of 0.
 class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
  public:
   METADATA_HEADER(ScrollableAppsGridView);
@@ -31,12 +32,21 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void Layout() override;
 
   // AppsGridView:
+  void Init() override;
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
   int GetPaddingBetweenPages() const override;
   bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
+  GridIndex GetIndexFromModelIndex(int model_index) const override;
+  int GetModelIndexFromIndex(const GridIndex& index) const override;
+  GridIndex GetLastTargetIndex() const override;
+  GridIndex GetLastTargetIndexOfPage(int page) const override;
+  int GetTargetModelIndexForMove(AppListItemView* moved_view,
+                                 const GridIndex& index) const override;
+  size_t GetTargetItemListIndexForMove(AppListItemView* moved_view,
+                                       const GridIndex& index) const override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:

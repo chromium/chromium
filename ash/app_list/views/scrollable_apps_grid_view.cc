@@ -4,7 +4,6 @@
 
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 
-#include <limits>
 #include <memory>
 #include <string>
 
@@ -35,12 +34,19 @@ ScrollableAppsGridView::ScrollableAppsGridView(
                    a11y_announcer,
                    view_delegate,
                    folder_delegate) {
-  // TODO(crbug.com/1211608): Get rid of rows_per_page in this class.
-  SetLayout(/*cols=*/5, /*rows_per_page=*/std::numeric_limits<int>::max());
+  view_structure_.set_ignore_page_breaks();
 }
 
 ScrollableAppsGridView::~ScrollableAppsGridView() {
   EndDrag(/*cancel=*/true);
+}
+
+void ScrollableAppsGridView::Init() {
+  // `rows_per_page` is an arbitrary large number, chosen to be small enough
+  // that cols*rows_per_page will not overflow.
+  // TODO(crbug.com/1211608): Get rid of rows_per_page_ in the base class.
+  SetLayout(/*cols=*/5, /*rows_per_page=*/100000);
+  AppsGridView::Init();
 }
 
 void ScrollableAppsGridView::Layout() {
@@ -125,6 +131,58 @@ void ScrollableAppsGridView::CalculateIdealBounds() {
     ++model_index;
     ++grid_index;
   }
+}
+
+GridIndex ScrollableAppsGridView::GetIndexFromModelIndex(
+    int model_index) const {
+  return GridIndex(0, model_index);
+}
+
+int ScrollableAppsGridView::GetModelIndexFromIndex(
+    const GridIndex& index) const {
+  DCHECK_EQ(index.page, 0);
+  return index.slot;
+}
+
+GridIndex ScrollableAppsGridView::GetLastTargetIndex() const {
+  DCHECK_GT(view_model()->view_size(), 0);
+  int view_index = view_model()->view_size() - 1;
+  return GetIndexFromModelIndex(view_index);
+}
+
+GridIndex ScrollableAppsGridView::GetLastTargetIndexOfPage(int page) const {
+  DCHECK_EQ(page, 0);
+  return GetLastTargetIndex();
+}
+
+int ScrollableAppsGridView::GetTargetModelIndexForMove(
+    AppListItemView* moved_view,
+    const GridIndex& index) const {
+  DCHECK_EQ(index.page, 0);
+  return GetModelIndexFromIndex(index);
+}
+
+size_t ScrollableAppsGridView::GetTargetItemListIndexForMove(
+    AppListItemView* moved_view,
+    const GridIndex& index) const {
+  DCHECK_EQ(index.page, 0);
+  GridIndex current_index(0, 0);
+  size_t current_item_index = 0;
+
+  // Skip the leading "page break" items.
+  while (current_item_index < item_list()->item_count() &&
+         item_list()->item_at(current_item_index)->is_page_break()) {
+    ++current_item_index;
+  }
+
+  while (current_item_index < item_list()->item_count() &&
+         current_index != index) {
+    if (!item_list()->item_at(current_item_index)->is_page_break())
+      ++current_index.slot;
+    ++current_item_index;
+  }
+  DCHECK_EQ(current_index, index);
+  return current_item_index;
 }
 
 void ScrollableAppsGridView::RecordAppMovingTypeMetrics(

@@ -10,6 +10,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace ash {
 
@@ -178,6 +179,17 @@ AppListItem* AppListItemList::AddPageBreakItemAfter(
   app_list_items_.insert(app_list_items_.begin() + index,
                          std::move(page_break_item));
   return item;
+}
+
+std::string AppListItemList::ToString() {
+  std::string out;
+  for (size_t i = 0; i < app_list_items_.size(); ++i) {
+    out.append(base::NumberToString(i));
+    out.append(": ");
+    out.append(app_list_items_[i]->id());
+    out.append("\n");
+  }
+  return out;
 }
 
 // AppListItemList private

@@ -68,6 +68,9 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   }
   size_t item_count() const { return app_list_items_.size(); }
 
+  // For debugging only.
+  std::string ToString();
+
  private:
   friend class AppListItemListTest;
   friend class AppListModel;

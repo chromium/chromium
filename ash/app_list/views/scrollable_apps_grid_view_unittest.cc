@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_folder_item.h"
@@ -18,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/guid.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -27,6 +29,13 @@ namespace {
 void AddAppListItem(const std::string& id) {
   Shell::Get()->app_list_controller()->GetModel()->AddItem(
       std::make_unique<AppListItem>(id));
+}
+
+void AddPageBreakItem() {
+  auto page_break_item = std::make_unique<AppListItem>(base::GenerateGUID());
+  page_break_item->set_is_page_break(true);
+  Shell::Get()->app_list_controller()->GetModel()->AddItem(
+      std::move(page_break_item));
 }
 
 void PopulateApps(int n) {
@@ -119,6 +128,72 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   ASSERT_EQ(2u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id1", item_list->item_at(1)->id());
+}
+
+TEST_F(ScrollableAppsGridViewTest, ItemIndicesForMove) {
+  AddAppListItem("aaa");  // App list item index 0, visual index 0,0.
+  AddPageBreakItem();     // Not visible.
+  AddAppListItem("bbb");  // App list item index 2, visual index 0,1.
+  AddPageBreakItem();     // Not visible.
+  AddAppListItem("ccc");  // App list item index 4, visual index 0,2.
+  ShowAppList();
+
+  // Simulate dragging the last item.
+  auto* view = GetScrollableAppsGridView();
+
+  // The last visual index is 0,2.
+  EXPECT_EQ(GridIndex(0, 2), view->GetLastTargetIndex());
+  EXPECT_EQ(GridIndex(0, 2), view->GetLastTargetIndexOfPage(0));
+
+  // Visual index directly maps to target index in "view model".
+  EXPECT_EQ(0, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 0)));
+  EXPECT_EQ(1, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 1)));
+  EXPECT_EQ(2, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 2)));
+  EXPECT_EQ(3, view->GetTargetModelIndexForMove(nullptr, GridIndex(0, 3)));
+
+  // Target is the front.
+  EXPECT_EQ(0u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 0)));
+  // Target is after "aaa".
+  EXPECT_EQ(1u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 1)));
+  // Target is after "aaa" + break + "bbb".
+  EXPECT_EQ(3u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 2)));
+  // Target is after "aaa" + break + "bbb" + break + "ccc".
+  EXPECT_EQ(5u, view->GetTargetItemListIndexForMove(nullptr, GridIndex(0, 3)));
+}
+
+TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
+  // Simulate data from another device that has a page break after 20 items.
+  PopulateApps(20);
+  AddPageBreakItem();
+  AddAppListItem("aaa");
+  AddAppListItem("bbb");
+  ShowAppList();
+
+  // "aaa" and "bbb" are the last two items.
+  AppListItemList* item_list =
+      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  ASSERT_EQ(23u, item_list->item_count());
+  ASSERT_EQ("aaa", item_list->item_at(21)->id());
+  ASSERT_EQ("bbb", item_list->item_at(22)->id());
+
+  // Scroll down to the "aaa" item.
+  auto* apps_grid_view = GetScrollableAppsGridView();
+  AppListItemView* item = apps_grid_view->GetItemViewAt(20);
+  ASSERT_EQ("aaa", item->item()->id());
+  item->ScrollViewToVisible();
+
+  // Drag the "aaa" item to the right.
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(item->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  item->FireMouseDragTimerForTest();
+  gfx::Size tile_size = apps_grid_view->GetTileViewSize();
+  generator->MoveMouseBy(tile_size.width() * 2, 0);
+  generator->ReleaseLeftButton();
+
+  // The last 2 items were reordered.
+  EXPECT_EQ("bbb", item_list->item_at(21)->id()) << item_list->ToString();
+  EXPECT_EQ("aaa", item_list->item_at(22)->id()) << item_list->ToString();
 }
 
 TEST_F(ScrollableAppsGridViewTest, LeftAndRightArrowKeysMoveSelection) {

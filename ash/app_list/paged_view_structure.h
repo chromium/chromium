@@ -95,6 +95,8 @@ class ASH_EXPORT PagedViewStructure {
 
   const Pages& pages() const { return pages_; }
 
+  void set_ignore_page_breaks() { ignore_page_breaks_ = true; }
+
  private:
   // Skips the item view being dragged if it exists in the specified
   // |page|.
@@ -111,6 +113,12 @@ class ASH_EXPORT PagedViewStructure {
   Pages pages_;
 
   AppsGridView* const apps_grid_view_;  // Not owned.
+
+  // Ignores page breaks in the data model, resulting in a structure with a
+  // single long page.
+  // TODO(crbug.com/1211608): Eliminate ScrollableAppsGridView's dependence on
+  // this class, then remove this member.
+  bool ignore_page_breaks_ = false;
 };
 
 }  // namespace ash

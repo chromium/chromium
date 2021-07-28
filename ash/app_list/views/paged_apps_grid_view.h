@@ -69,6 +69,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void Layout() override;
 
   // AppsGridView:
+  void Init() override;
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
@@ -78,6 +79,14 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void MaybeEndCardifiedView() override;
   void MaybeStartPageFlip() override;
   void MaybeStopPageFlip() override;
+  GridIndex GetIndexFromModelIndex(int model_index) const override;
+  int GetModelIndexFromIndex(const GridIndex& index) const override;
+  GridIndex GetLastTargetIndex() const override;
+  GridIndex GetLastTargetIndexOfPage(int page) const override;
+  int GetTargetModelIndexForMove(AppListItemView* moved_view,
+                                 const GridIndex& index) const override;
+  size_t GetTargetItemListIndexForMove(AppListItemView* moved_view,
+                                       const GridIndex& index) const override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
 
   // AppListItemView::GridDelegate:

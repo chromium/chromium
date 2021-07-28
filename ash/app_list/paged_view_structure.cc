@@ -25,10 +25,20 @@ PagedViewStructure::PagedViewStructure(const PagedViewStructure& other) =
 PagedViewStructure::~PagedViewStructure() = default;
 
 void PagedViewStructure::LoadFromMetadata() {
-  int model_index = 0;
   pages_.clear();
   pages_.emplace_back();
 
+  // When ignoring page breaks, just copy the view model.
+  if (ignore_page_breaks_) {
+    auto* view_model = apps_grid_view_->view_model();
+    pages_[0].reserve(view_model->view_size());
+    for (int i = 0; i < view_model->view_size(); ++i) {
+      pages_[0].push_back(view_model->view_at(i));
+    }
+    return;
+  }
+
+  int model_index = 0;
   for (size_t i = 0; i < apps_grid_view_->item_list_->item_count(); ++i) {
     const auto* item = apps_grid_view_->item_list_->item_at(i);
     if (item->is_page_break()) {
@@ -54,6 +64,11 @@ void PagedViewStructure::LoadFromMetadata() {
 }
 
 void PagedViewStructure::SaveToMetadata() {
+  // When ignoring page breaks we don't need to add or remove page breaks from
+  // the data model.
+  if (ignore_page_breaks_)
+    return;
+
   auto* item_list = apps_grid_view_->item_list_;
   size_t item_index = 0;
   AppListModel* model = apps_grid_view_->model_;
@@ -241,6 +256,8 @@ int PagedViewStructure::GetTargetModelIndexForMove(
 int PagedViewStructure::GetTargetItemIndexForMove(
     AppListItemView* moved_view,
     const GridIndex& index) const {
+  // Should only be called from PagedAppsGridView, which uses page breaks.
+  DCHECK(!ignore_page_breaks_);
   GridIndex current_index(0, 0);
   size_t current_item_index = 0;
   size_t offset = 0;
