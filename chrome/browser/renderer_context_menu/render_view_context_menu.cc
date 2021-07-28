@@ -1838,6 +1838,10 @@ void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
       GetHandlersForLinkUrl();
   if (handlers.empty())
     return;
+
+  protocol_handler_registry_observation_.Observe(protocol_handler_registry_);
+  is_protocol_submenu_valid_ = true;
+
   size_t max = IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_LAST -
                IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST;
   for (size_t i = 0; i < handlers.size() && i <= max; i++) {
@@ -2602,6 +2606,10 @@ RenderViewContextMenu::GetHandlersForLinkUrl() {
   return handlers;
 }
 
+void RenderViewContextMenu::OnProtocolHandlerRegistryChanged() {
+  is_protocol_submenu_valid_ = false;
+}
+
 void RenderViewContextMenu::NotifyMenuShown() {
   auto* cb = GetMenuShownCallback();
   if (!cb->is_null())
@@ -2897,6 +2905,13 @@ void RenderViewContextMenu::ExecOpenWebApp() {
 
 void RenderViewContextMenu::ExecProtocolHandler(int event_flags,
                                                 int handler_index) {
+  if (!is_protocol_submenu_valid_) {
+    // A protocol was changed since the time that the menu was built, so the
+    // index passed in isn't valid. The only thing that can be done now safely
+    // is to bail.
+    return;
+  }
+
   ProtocolHandlerRegistry::ProtocolHandlerList handlers =
       GetHandlersForLinkUrl();
   if (handlers.empty())
