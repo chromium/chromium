@@ -16,14 +16,16 @@ OverlayPlane::OverlayPlane(scoped_refptr<gfx::NativePixmap> pixmap,
                            gfx::OverlayTransform plane_transform,
                            const gfx::Rect& display_bounds,
                            const gfx::RectF& crop_rect,
-                           bool enable_blend)
+                           bool enable_blend,
+                           const gfx::Rect& damage_rect)
     : pixmap(std::move(pixmap)),
       gpu_fence(std::move(gpu_fence)),
       z_order(z_order),
       plane_transform(plane_transform),
       display_bounds(display_bounds),
       crop_rect(crop_rect),
-      enable_blend(enable_blend) {}
+      enable_blend(enable_blend),
+      damage_rect(damage_rect) {}
 
 OverlayPlane::OverlayPlane(OverlayPlane&& other) = default;
 

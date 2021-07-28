@@ -141,6 +141,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // is an estimate when 'EstimateOccludedDamage' function is used.
   int damage_area_estimate = 0;
 
+  // Rect indicating damage for this candidate's quad.
+  gfx::RectF damage_rect;
+
   static constexpr uint32_t kInvalidDamageIndex = UINT_MAX;
   // Damage index for |SurfaceDamageRectList|.
   uint32_t overlay_damage_index = kInvalidDamageIndex;

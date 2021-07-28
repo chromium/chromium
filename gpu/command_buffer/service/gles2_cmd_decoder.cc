@@ -90,6 +90,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -13736,7 +13737,7 @@ error::Error GLES2DecoderImpl::HandleScheduleOverlayPlaneCHROMIUM(
           c.plane_z_order, transform, image,
           gfx::Rect(c.bounds_x, c.bounds_y, c.bounds_width, c.bounds_height),
           gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height), c.enable_blend,
-          std::move(gpu_fence))) {
+          /*damage_rect=*/gfx::Rect(), std::move(gpu_fence))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
                        "glScheduleOverlayPlaneCHROMIUM",
                        "failed to schedule overlay");

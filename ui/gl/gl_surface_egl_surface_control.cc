@@ -313,6 +313,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     const gfx::Rect& bounds_rect,
     const gfx::RectF& crop_rect,
     bool enable_blend,
+    const gfx::Rect& damage_rect,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
   if (surface_lost_) {
     LOG(ERROR) << "ScheduleOverlayPlane failed because surface is lost";

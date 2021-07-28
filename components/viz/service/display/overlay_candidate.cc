@@ -353,11 +353,22 @@ bool OverlayCandidate::FromDrawQuadResource(
   candidate->is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate->has_mask_filter = !sqs->mask_filter_info.IsEmpty();
+
+  const auto damage_rect = GetDamageRect(quad, surface_damage_rect_list);
+  auto transformed_damage = gfx::RectF(damage_rect);
+  gfx::Transform inv;
+  if (transform.GetInverse(&inv)) {
+    inv.TransformRect(&transformed_damage);
+  } else {
+    // If not invertible, set to full damage.
+    transformed_damage =
+        gfx::RectF(gfx::SizeF(candidate->resource_size_in_pixels));
+  }
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
-  candidate->damage_area_estimate =
-      GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
+  candidate->damage_area_estimate = damage_rect.size().GetArea();
+  candidate->damage_rect = transformed_damage;
   candidate->resource_id = resource_id;
 
   if (resource_id != kInvalidResourceId) {
@@ -433,11 +444,24 @@ bool OverlayCandidate::FromVideoHoleQuad(
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
   candidate->has_mask_filter =
       !quad->shared_quad_state->mask_filter_info.IsEmpty();
+
+  const auto damage_rect = GetDamageRect(quad, surface_damage_rect_list);
+  auto transformed_damage = gfx::RectF(damage_rect);
+  gfx::Transform inv;
+  if (transform.GetInverse(&inv)) {
+    inv.TransformRect(&transformed_damage);
+  } else {
+    // If not invertible, set to full damage.
+    transformed_damage =
+        gfx::RectF(gfx::SizeF(candidate->resource_size_in_pixels));
+  }
+
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
-  candidate->damage_area_estimate =
-      GetDamageRect(quad, surface_damage_rect_list).size().GetArea();
+  candidate->damage_area_estimate = damage_rect.size().GetArea();
+  candidate->damage_rect = transformed_damage;
+
   return true;
 }
 

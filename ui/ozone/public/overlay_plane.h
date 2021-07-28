@@ -31,7 +31,8 @@ struct COMPONENT_EXPORT(OZONE_BASE) OverlayPlane {
                gfx::OverlayTransform plane_transform,
                const gfx::Rect& display_bounds,
                const gfx::RectF& crop_rect,
-               bool enable_blend);
+               bool enable_blend,
+               const gfx::Rect& damage_rect);
   OverlayPlane(OverlayPlane&& other);
   OverlayPlane& operator=(OverlayPlane&& other);
   ~OverlayPlane();
@@ -60,6 +61,9 @@ struct COMPONENT_EXPORT(OZONE_BASE) OverlayPlane {
 
   // Whether alpha blending should be enabled.
   bool enable_blend = false;
+
+  // Damage on the buffer.
+  gfx::Rect damage_rect;
 };
 
 }  // namespace ui

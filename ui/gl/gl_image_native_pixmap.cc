@@ -327,13 +327,8 @@ bool GLImageNativePixmap::ScheduleOverlayPlane(
     const gfx::RectF& crop_rect,
     bool enable_blend,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  DCHECK(pixmap_);
-  std::vector<gfx::GpuFence> acquire_fences;
-  if (gpu_fence)
-    acquire_fences.push_back(std::move(*gpu_fence));
-  return pixmap_->ScheduleOverlayPlane(widget, z_order, transform, bounds_rect,
-                                       crop_rect, enable_blend,
-                                       std::move(acquire_fences), {});
+  NOTREACHED();
+  return false;
 }
 
 void GLImageNativePixmap::Flush() {

@@ -251,6 +251,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
     gl_surface_->ScheduleOverlayPlane(
         0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
         primary_plane_rect_, unity_rect, /* enable_blend */ true,
+        gfx::Rect(buffers_[back_buffer_]->size()),
         /* gpu_fence */ nullptr);
   }
 
@@ -258,6 +259,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
     gl_surface_->ScheduleOverlayPlane(
         1, gfx::OVERLAY_TRANSFORM_NONE, overlay_buffer_[back_buffer_]->image(),
         overlay_rect, unity_rect, /* enable_blend */ true,
+        gfx::Rect(buffers_[back_buffer_]->size()),
         /* gpu_fence */ nullptr);
   }
 

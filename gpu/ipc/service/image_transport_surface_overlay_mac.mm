@@ -302,6 +302,7 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
     const gfx::Rect& pixel_frame_rect,
     const gfx::RectF& crop_rect,
     bool enable_blend,
+    const gfx::Rect& damage_rect,
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
   if (transform != gfx::OVERLAY_TRANSFORM_NONE) {
     DLOG(ERROR) << "Invalid overlay plane transform.";

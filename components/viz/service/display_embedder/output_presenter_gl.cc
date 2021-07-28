@@ -375,10 +375,14 @@ void OutputPresenterGL::SchedulePrimaryPlane(
 
   // Output surface is also z-order 0.
   constexpr int kPlaneZOrder = 0;
-  gl_surface_->ScheduleOverlayPlane(kPlaneZOrder, plane.transform, gl_image,
-                                    ToNearestRect(plane.display_rect),
-                                    plane.uv_rect, plane.enable_blending,
-                                    std::move(fence));
+  // TODO(edcourtney): We pass a full damage rect - actual damage is passed via
+  // PostSubBuffer. As part of unifying the handling of the primary plane and
+  // overlays, damage should be added to OutputSurfaceOverlayPlane and passed in
+  // here.
+  gl_surface_->ScheduleOverlayPlane(
+      kPlaneZOrder, plane.transform, gl_image,
+      ToNearestRect(plane.display_rect), plane.uv_rect, plane.enable_blending,
+      gfx::Rect(plane.resource_size), std::move(fence));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
@@ -394,7 +398,8 @@ void OutputPresenterGL::ScheduleBackground(Image* image) {
   gl_surface_->ScheduleOverlayPlane(
       kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE, gl_image, gfx::Rect(),
       /*crop_rect=*/kUVRect,
-      /*enable_blend=*/false, /*gpu_fence=*/nullptr);
+      /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
+      /*gpu_fence=*/nullptr);
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(
@@ -428,7 +433,8 @@ void OutputPresenterGL::ScheduleOverlays(
       gl_surface_->ScheduleOverlayPlane(
           overlay.plane_z_order, overlay.transform, gl_image,
           ToNearestRect(overlay.display_rect), overlay.uv_rect,
-          !overlay.is_opaque, TakeGpuFence(accesses[i]->TakeAcquireFences()));
+          !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
+          TakeGpuFence(accesses[i]->TakeAcquireFences()));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
