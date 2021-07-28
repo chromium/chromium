@@ -179,7 +179,7 @@ class MockDRT(object):
         self._driver = self._port.create_driver(0)
 
     def run(self):
-        self._stdout.write('#READY\n')
+        self._stdout.write(b'#READY\n')
         self._stdout.flush()
         while True:
             line = self._stdin.readline()
@@ -194,8 +194,8 @@ class MockDRT(object):
             self.write_test_output(driver_input, output, is_reftest)
 
     def input_from_line(self, line):
-        vals = line.strip().split("'")
-        uri = vals[0]
+        vals = line.strip().split(b"'")
+        uri = vals[0].decode('utf-8')
         checksum = None
         if len(vals) == 2:
             checksum = vals[1]
@@ -217,13 +217,13 @@ class MockDRT(object):
         actual_checksum = None
         if is_reftest:
             # Make up some output for reftests.
-            actual_text = 'reference text\n'
-            actual_checksum = 'mock-checksum'
-            actual_image = 'blank'
+            actual_text = b'reference text\n'
+            actual_checksum = b'mock-checksum'
+            actual_image = b'blank'
             if test_input.test_name.endswith('-mismatch.html'):
-                actual_text = 'not reference text\n'
-                actual_checksum = 'not-mock-checksum'
-                actual_image = 'not blank'
+                actual_text = b'not reference text\n'
+                actual_checksum = b'not-mock-checksum'
+                actual_image = b'not blank'
         elif test_input.image_hash:
             actual_checksum = port.expected_checksum(test_input.test_name)
             actual_image = port.expected_image(test_input.test_name)
@@ -253,30 +253,31 @@ class MockDRT(object):
 
     def write_test_output(self, test_input, output, is_reftest):
         if output.audio:
-            self._stdout.write('Content-Type: audio/wav\n')
-            self._stdout.write('Content-Transfer-Encoding: base64\n')
+            self._stdout.write(b'Content-Type: audio/wav\n')
+            self._stdout.write(b'Content-Transfer-Encoding: base64\n')
             self._stdout.write(base64.b64encode(output.audio))
-            self._stdout.write('\n')
+            self._stdout.write(b'\n')
         else:
-            self._stdout.write('Content-Type: text/plain\n')
+            self._stdout.write(b'Content-Type: text/plain\n')
             # FIXME: Note that we don't ensure there is a trailing newline!
             # This mirrors actual (Mac) DRT behavior but is a bug.
             if output.text:
                 self._stdout.write(output.text)
 
-        self._stdout.write('#EOF\n')
+        self._stdout.write(b'#EOF\n')
 
         if output.image_hash:
-            self._stdout.write('\n')
-            self._stdout.write('ActualHash: %s\n' % output.image_hash)
-            self._stdout.write('ExpectedHash: %s\n' % test_input.image_hash)
+            self._stdout.write(b'\n')
+            self._stdout.write(b'ActualHash: ' + output.image_hash + b'\n')
+            self._stdout.write(b'ExpectedHash: ' + test_input.image_hash +
+                               b'\n')
             if output.image_hash != test_input.image_hash:
-                self._stdout.write('Content-Type: image/png\n')
-                self._stdout.write('Content-Length: %s\n' % len(output.image))
+                self._stdout.write(b'Content-Type: image/png\n')
+                self._stdout.write(b'Content-Length: %s\n' % len(output.image))
                 self._stdout.write(output.image)
-        self._stdout.write('#EOF\n')
+        self._stdout.write(b'#EOF\n')
         self._stdout.flush()
-        self._stderr.write('#EOF\n')
+        self._stderr.write(b'#EOF\n')
         self._stderr.flush()
 
 

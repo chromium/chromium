@@ -51,8 +51,8 @@ class MockProcess(object):
 
     def poll(self):
         # Consider the process completed when all the stdout and stderr has been read.
-        if (self.stdout.len != self.stdout.tell()
-                or self.stderr.len != self.stderr.tell()):
+        if (len(self.stdout.getvalue()) != self.stdout.tell()
+                or len(self.stderr.getvalue()) != self.stderr.tell()):
             return None
         return self.returncode
 
@@ -185,7 +185,7 @@ class MockExecutive(object):
         pass
 
     def popen(self, args, cwd=None, env=None, **_):
-        assert all(isinstance(arg, basestring) for arg in args)
+        assert all(isinstance(arg, six.string_types) for arg in args)
         self._append_call(args, cwd=cwd, env=env)
         if self._should_log:
             cwd_string = ''

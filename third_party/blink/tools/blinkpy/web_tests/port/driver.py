@@ -570,7 +570,7 @@ class Driver(object):
                 self._port.sample_process(self._crashed_process_name,
                                           self._crashed_pid)
                 # We want to show this since it's not a regular crash and probably we don't have a crash log.
-                self.error_from_test += error_line
+                self.error_from_test += error_line.encode('utf-8')
             return True
         return self.has_crashed()
 
@@ -733,7 +733,7 @@ class ContentBlock(object):
         self.stdin_path = None
 
     def decode_content(self):
-        if self.encoding == 'base64' and self.content is not None:
+        if self.encoding == b'base64' and self.content is not None:
             self.decoded_content = base64.b64decode(self.content)
         else:
             self.decoded_content = self.content

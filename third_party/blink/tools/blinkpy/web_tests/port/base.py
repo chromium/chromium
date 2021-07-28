@@ -316,7 +316,7 @@ class Port(object):
             if name in configs:
                 raise ValueError('{} contains duplicated name {}.'.format(
                     config_file, name))
-            if args in configs.itervalues():
+            if args in configs.values():
                 raise ValueError(
                     '{}: name "{}" has the same args as another entry.'.format(
                         config_file, name))
@@ -363,8 +363,10 @@ class Port(object):
         # increases test run time by 2-5X, but provides more consistent results
         # [less state leaks between tests].
         if (self.get_option('reset_shell_between_tests')
-                or self.get_option('repeat_each') > 1
-                or self.get_option('iterations') > 1):
+                or (self.get_option('repeat_each')
+                    and self.get_option('repeat_each') > 1)
+                or (self.get_option('iterations')
+                    and self.get_option('iterations') > 1)):
             flags += ['--reset-shell-between-tests']
         return flags
 

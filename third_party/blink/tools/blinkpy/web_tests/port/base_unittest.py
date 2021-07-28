@@ -66,9 +66,9 @@ class PortTest(LoggingTestCase):
         for wpt_path in Port.WPT_DIRS.keys():
             self.assertFalse(wpt_path.endswith('/'))
         # Values should not be empty (except the last one).
-        for url_prefix in Port.WPT_DIRS.values()[:-1]:
+        for url_prefix in list(Port.WPT_DIRS.values())[:-1]:
             self.assertNotEqual(url_prefix, '/')
-        self.assertEqual(Port.WPT_DIRS.values()[-1], '/')
+        self.assertEqual(list(Port.WPT_DIRS.values())[-1], '/')
 
     def test_validate_wpt_regex(self):
         self.assertEquals(
@@ -481,13 +481,14 @@ class PortTest(LoggingTestCase):
 
     def test_additional_expectations_empty(self):
         port = self._make_port_for_test_additional_expectations()
-        self.assertEqual(port.expectations_dict().values(), [])
+        self.assertEqual(list(port.expectations_dict().values()), [])
 
     def test_additional_expectations_1(self):
         port = self._make_port_for_test_additional_expectations({
             'additional_expectations': ['/tmp/additional-expectations-1.txt']
         })
-        self.assertEqual(port.expectations_dict().values(), ['content1\n'])
+        self.assertEqual(list(port.expectations_dict().values()),
+                         ['content1\n'])
 
     def test_additional_expectations_2(self):
         port = self._make_port_for_test_additional_expectations({
@@ -496,7 +497,7 @@ class PortTest(LoggingTestCase):
                 '/tmp/additional-expectations-2.txt'
             ]
         })
-        self.assertEqual(port.expectations_dict().values(),
+        self.assertEqual(list(port.expectations_dict().values()),
                          ['content1\n', 'content2\n'])
 
     def test_additional_expectations_additional_flag(self):
@@ -507,7 +508,7 @@ class PortTest(LoggingTestCase):
             ],
             'additional_driver_flag': ['--special-flag']
         })
-        self.assertEqual(port.expectations_dict().values(),
+        self.assertEqual(list(port.expectations_dict().values()),
                          ['content3', 'content1\n', 'content2\n'])
 
     def test_flag_specific_expectations(self):
@@ -519,7 +520,7 @@ class PortTest(LoggingTestCase):
         port.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'FlagExpectations/README.txt', 'cc')
 
-        self.assertEqual(port.expectations_dict().values(), [])
+        self.assertEqual(list(port.expectations_dict().values()), [])
         # all_expectations_dict() is an OrderedDict, but its order depends on
         # file system walking order.
         self.assertEqual(
