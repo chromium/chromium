@@ -582,11 +582,6 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
 
   domain_fade_label_->SetText(domain_label_->GetText());
   domain_label_->SetText(domain);
-
-  // Because we may have changed the card's contents, if the card has yet to be
-  // shown, ensure that it starts at the correct size.
-  if (!GetWidget()->IsVisible())
-    SizeToContents();
 }
 
 void TabHoverCardBubbleView::SetTextFade(double percent) {

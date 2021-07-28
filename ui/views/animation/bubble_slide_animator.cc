@@ -47,6 +47,19 @@ void BubbleSlideAnimator::SnapToAnchorView(View* desired_anchor_view) {
   slide_complete_callbacks_.Notify(this);
 }
 
+void BubbleSlideAnimator::UpdateTargetBounds() {
+  if (is_animating()) {
+    // This will cause a mid-animation pop due to the fact that we're not
+    // resetting the starting bounds but it's not clear that it's a better
+    // solution than rewinding and/or changing the duration of the animation.
+    target_bubble_bounds_ = CalculateTargetBounds(desired_anchor_view_);
+  } else {
+    View* const anchor_view = bubble_delegate_->GetAnchorView();
+    DCHECK(anchor_view);
+    SnapToAnchorView(anchor_view);
+  }
+}
+
 void BubbleSlideAnimator::StopAnimation() {
   slide_animation_.Stop();
   desired_anchor_view_ = nullptr;
