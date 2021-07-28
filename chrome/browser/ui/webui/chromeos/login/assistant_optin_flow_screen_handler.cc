@@ -27,6 +27,7 @@
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
@@ -110,13 +111,21 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("assistantVoiceMatchTitle", IDS_ASSISTANT_VOICE_MATCH_TITLE);
   builder->Add("assistantVoiceMatchTitleForChild",
                IDS_ASSISTANT_VOICE_MATCH_TITLE_CHILD);
-  builder->AddF("assistantVoiceMatchMessage",
+  builder->AddF("assistantVoiceMatchMessage", IDS_ASSISTANT_VOICE_MATCH_MESSAGE,
                 chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
-                    ? IDS_ASSISTANT_VOICE_MATCH_MESSAGE
-                    : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE,
-                ui::GetChromeOSDeviceName());
-  builder->Add("assistantVoiceMatchMessageForChild",
-               IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD);
+                    ? IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE
+                    : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE);
+  // Keep the child name placeholder as `$1`, so it could be set correctly
+  // after user logs in.
+  builder->AddF(
+      "assistantVoiceMatchMessageForChild",
+      IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD, u"$1",
+      ui::GetChromeOSDeviceName(),
+      chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
+          ? l10n_util::GetStringUTF16(
+                IDS_ASSISTANT_VOICE_MATCH_NOTICE_MESSAGE_CHILD)
+          : l10n_util::GetStringUTF16(
+                IDS_ASSISTANT_VOICE_MATCH_NO_DSP_NOTICE_MESSAGE_CHILD));
   builder->Add("assistantVoiceMatchRecording",
                IDS_ASSISTANT_VOICE_MATCH_RECORDING);
   builder->Add("assistantVoiceMatchRecordingForChild",
@@ -552,7 +561,6 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   dictionary.SetKey("voiceMatchEnforcedOff",
                     base::Value(IsVoiceMatchEnforcedOff(prefs)));
-  dictionary.SetKey("deviceName", base::Value(ui::GetChromeOSDeviceName()));
   dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
   ReloadContent(dictionary);
 

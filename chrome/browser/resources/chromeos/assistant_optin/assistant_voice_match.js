@@ -45,14 +45,6 @@ Polymer({
       type: String,
       value: '',
     },
-
-    /**
-     * The name of the Chrome device.
-     */
-    deviceName_: {
-      type: String,
-      value: '',
-    }
   },
 
   /**
@@ -143,7 +135,6 @@ Polymer({
   reloadContent(data) {
     this.equalWeightButtons_ = data['equalWeightButtons'];
     this.childName_ = data['childName'];
-    this.deviceName_ = data['deviceName'];
   },
 
   /**
@@ -249,11 +240,11 @@ Polymer({
   /**
    * Returns the text for subtitle.
    */
-  getSubtitleMessage_(locale, uiStep, childName, deviceName) {
+  getSubtitleMessage_(locale, uiStep, childName) {
     if (uiStep == VoiceMatchUIState.INTRO) {
       return childName ? this.i18nAdvanced(
                              'assistantVoiceMatchMessageForChild',
-                             {substitutions: [deviceName, childName]}) :
+                             {substitutions: [childName]}) :
                          this.i18nAdvanced('assistantVoiceMatchMessage');
     } else if (uiStep === VoiceMatchUIState.RECORDING) {
       return this.i18nAdvanced(
