@@ -3799,11 +3799,11 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Debugd notification strings -->
-      <message name="IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED" desc="The label used for the notification to indicate network packet capture operation has started on the device.">
-        Network packet capture started
+      <message name="IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED" desc="The label used for the notification to indicate network packet capture operation has started and network information is being collected on the device.">
+        Collecting network information
       </message>
       <message name="IDS_ASH_DEBUG_PACKET_CAPTURE_DESCRIPTION" desc="The message shown on notification bubble about ongoing network packet capture operation and the description of how to stop by clicking the button.">
-        Click stop to stop ongoing packet capture operations.
+        You can stop packet capture at any time.
       </message>
       <message name="IDS_ASH_DEBUG_STOP_PACKET_CAPTURE_BUTTON" desc="The label on notification button for user to stop the ongoing packet capture operation.">
         Stop
