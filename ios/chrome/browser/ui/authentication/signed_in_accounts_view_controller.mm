@@ -15,7 +15,7 @@
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#include "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
@@ -29,7 +29,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -64,14 +63,19 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 }  // namespace
 
 @interface SignedInAccountsCollectionViewController
-    : CollectionViewController<ChromeIdentityServiceObserver> {
+    : CollectionViewController <ChromeAccountManagerServiceObserver> {
   ChromeBrowserState* _browserState;  // Weak.
-  std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
   ResizedAvatarCache* _avatarCache;
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, CollectionViewItem*>* _identityMap;
 }
+
+// Account manager service to retrieve Chrome identities.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
+
 @end
 
 @implementation SignedInAccountsCollectionViewController
@@ -83,8 +87,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   if (self) {
     _browserState = browserState;
     _avatarCache = [[ResizedAvatarCache alloc] init];
-    _identityServiceObserver.reset(
-        new ChromeIdentityServiceObserverBridge(self));
+    _accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
+    _accountManagerServiceObserver.reset(
+        new ChromeAccountManagerServiceObserverBridge(self,
+                                                      _accountManagerService));
     // TODO(crbug.com/764578): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
     [self loadModel];
@@ -115,14 +122,11 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   NSMutableDictionary<NSString*, CollectionViewItem*>* mutableIdentityMap =
       [[NSMutableDictionary alloc] init];
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
-
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
     ChromeIdentity* identity =
-        accountManagerService->GetIdentityWithGaiaID(account.gaia);
+        self.accountManagerService->GetIdentityWithGaiaID(account.gaia);
 
     // If the account with a refresh token is invalidated during this operation
     // then |identity| will be nil. Do not process it in this case.
@@ -170,19 +174,15 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   return YES;
 }
 
-#pragma mark ChromeIdentityServiceObserver
+#pragma mark ChromeAccountManagerServiceObserver
 
-- (void)profileUpdate:(ChromeIdentity*)identity {
+- (void)identityChanged:(ChromeIdentity*)identity {
   CollectionViewAccountItem* item =
       base::mac::ObjCCastStrict<CollectionViewAccountItem>(
           [_identityMap objectForKey:identity.gaiaID]);
   [self updateAccountItem:item withIdentity:identity];
   NSIndexPath* indexPath = [self.collectionViewModel indexPathForItem:item];
   [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
-}
-
-- (void)chromeIdentityServiceWillBeDestroyed {
-  _identityServiceObserver.reset();
 }
 
 @end
