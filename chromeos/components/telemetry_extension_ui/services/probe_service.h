@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_H_
-#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_H_
-
-#if defined(OFFICIAL_BUILD)
-#error Probe service should only be included in unofficial builds.
-#endif
+#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_H_
+#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_H_
 
 #include <vector>
 
@@ -50,4 +46,4 @@ class ProbeService : public health::mojom::ProbeService {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_H_
+#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_H_

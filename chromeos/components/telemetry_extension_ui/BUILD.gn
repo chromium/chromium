@@ -2,78 +2,47 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 assert(is_chromeos, "Telemetry Extension is Chrome OS only")
 assert(!is_official_build,
        "Telemetry Extension is only built for unofficial builds")
 
-source_set("telemetry_extension_ui") {
-  sources = [
-    "bluetooth_observer.cc",
-    "bluetooth_observer.h",
-    "convert_ptr.h",
-    "diagnostics_service.cc",
-    "diagnostics_service.h",
-    "diagnostics_service_converters.cc",
-    "diagnostics_service_converters.h",
-    "lid_observer.cc",
-    "lid_observer.h",
-    "power_observer.cc",
-    "power_observer.h",
-    "probe_service.cc",
-    "probe_service.h",
-    "probe_service_converters.cc",
-    "probe_service_converters.h",
-    "system_events_service.cc",
-    "system_events_service.h",
-    "telemetry_extension_ui.cc",
-    "telemetry_extension_ui.h",
-    "telemetry_extension_untrusted_ui.cc",
-    "telemetry_extension_untrusted_ui.h",
-    "url_constants.cc",
-    "url_constants.h",
-  ]
+if (is_chromeos_ash) {
+  source_set("telemetry_extension_ui") {
+    sources = [
+      "telemetry_extension_ui.cc",
+      "telemetry_extension_ui.h",
+      "telemetry_extension_untrusted_ui.cc",
+      "telemetry_extension_untrusted_ui.h",
+      "url_constants.cc",
+      "url_constants.h",
+    ]
 
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
-    "//chromeos/components/telemetry_extension_ui/mojom",
-    "//chromeos/resources:telemetry_extension_resources",
-    "//chromeos/services/cros_healthd/public/cpp",
-    "//chromeos/services/cros_healthd/public/mojom",
-    "//content/public/browser",
-    "//mojo/public/js:resources",
-    "//ui/webui",
-  ]
+    deps = [
+      "services:telemetry_services",
+      "//ash/constants",
+      "//base",
+      "//chromeos/components/telemetry_extension_ui/mojom",
+      "//chromeos/resources:telemetry_extension_resources",
+      "//content/public/browser",
+      "//mojo/public/js:resources",
+      "//ui/webui",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "convert_ptr_unittest.cc",
-    "diagnostics_service_converters_unittest.cc",
-    "probe_service_converters_unittest.cc",
-    "probe_service_unittest.cc",
-    "system_events_service_unittest.cc",
-  ]
-  deps = [
-    ":telemetry_extension_ui",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
-    "//chromeos/components/telemetry_extension_ui/mojom",
-    "//chromeos/dbus/cros_healthd",
-    "//chromeos/services/cros_healthd/public/cpp",
-    "//chromeos/services/cros_healthd/public/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+  deps = [ "services:unit_tests" ]
 }
 
-group("closure_compile") {
-  testonly = true
-  deps = [
-    "resources:closure_compile",
-    "test:closure_compile",
-  ]
+if (is_chromeos_ash) {
+  group("closure_compile") {
+    testonly = true
+    deps = [
+      "resources:closure_compile",
+      "test:closure_compile",
+    ]
+  }
 }

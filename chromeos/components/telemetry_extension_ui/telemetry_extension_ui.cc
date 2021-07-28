@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/telemetry_extension_ui/diagnostics_service.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom.h"
-#include "chromeos/components/telemetry_extension_ui/probe_service.h"
-#include "chromeos/components/telemetry_extension_ui/system_events_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/diagnostics_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/probe_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/system_events_service.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "chromeos/grit/chromeos_telemetry_extension_resources.h"
 #include "content/public/browser/web_contents.h"

@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(OFFICIAL_BUILD)
-#error System events service unit tests should only be included in unofficial builds.
-#endif
-
-#include "chromeos/components/telemetry_extension_ui/system_events_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/system_events_service.h"
 
 #include <memory>
 

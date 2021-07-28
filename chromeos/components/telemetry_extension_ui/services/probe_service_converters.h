@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_CONVERTERS_H_
-#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_CONVERTERS_H_
-
-#if defined(OFFICIAL_BUILD)
-#error Probe service convertors should only be included in unofficial builds.
-#endif
+#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_CONVERTERS_H_
+#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_CONVERTERS_H_
 
 #include <cstdint>
 #include <vector>
@@ -143,4 +139,4 @@ std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
 }  // namespace converters
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_CONVERTERS_H_
+#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_PROBE_SERVICE_CONVERTERS_H_

@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(OFFICIAL_BUILD)
-#error Probe service unit tests should only be included in unofficial builds.
-#endif
-
-#include "chromeos/components/telemetry_extension_ui/probe_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/probe_service.h"
 
 #include <cstdint>
 #include <utility>

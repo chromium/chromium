@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/probe_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/probe_service.h"
 
 #include <utility>
 
 #include "base/bind.h"
-#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
-#include "chromeos/components/telemetry_extension_ui/probe_service_converters.h"
+#include "chromeos/components/telemetry_extension_ui/services/convert_ptr.h"
+#include "chromeos/components/telemetry_extension_ui/services/probe_service_converters.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 

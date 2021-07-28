@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/system_events_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/system_events_service.h"
 
 #include <utility>
 
@@ -32,9 +32,9 @@ void SystemEventsService::AddPowerObserver(
 }
 
 void SystemEventsService::FlushForTesting() {
-  bluetooth_observer_.FlushForTesting();
-  lid_observer_.FlushForTesting();
-  power_observer_.FlushForTesting();
+  bluetooth_observer_.FlushForTesting();  // IN-TEST
+  lid_observer_.FlushForTesting();        // IN-TEST
+  power_observer_.FlushForTesting();      // IN-TEST
 }
 
 }  // namespace chromeos

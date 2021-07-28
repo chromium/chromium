@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/lid_observer.h"
+#include "chromeos/components/telemetry_extension_ui/services/lid_observer.h"
 
 #include <utility>
 
@@ -48,7 +48,7 @@ void LidObserver::Connect() {
 }
 
 void LidObserver::FlushForTesting() {
-  receiver_.FlushForTesting();
+  receiver_.FlushForTesting();  // IN-TEST
 }
 
 }  // namespace chromeos

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SYSTEM_EVENTS_SERVICE_H_
-#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SYSTEM_EVENTS_SERVICE_H_
+#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_SYSTEM_EVENTS_SERVICE_H_
+#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_SYSTEM_EVENTS_SERVICE_H_
 
-#if defined(OFFICIAL_BUILD)
-#error System events service should only be included in unofficial builds.
-#endif
-
-#include "chromeos/components/telemetry_extension_ui/bluetooth_observer.h"
-#include "chromeos/components/telemetry_extension_ui/lid_observer.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom.h"
-#include "chromeos/components/telemetry_extension_ui/power_observer.h"
+#include "chromeos/components/telemetry_extension_ui/services/bluetooth_observer.h"
+#include "chromeos/components/telemetry_extension_ui/services/lid_observer.h"
+#include "chromeos/components/telemetry_extension_ui/services/power_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,4 +44,4 @@ class SystemEventsService : public health::mojom::SystemEventsService {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SYSTEM_EVENTS_SERVICE_H_
+#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_SYSTEM_EVENTS_SERVICE_H_

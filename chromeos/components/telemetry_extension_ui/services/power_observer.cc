@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/power_observer.h"
+#include "chromeos/components/telemetry_extension_ui/services/power_observer.h"
 
 #include <utility>
 
@@ -60,7 +60,7 @@ void PowerObserver::Connect() {
 }
 
 void PowerObserver::FlushForTesting() {
-  receiver_.FlushForTesting();
+  receiver_.FlushForTesting();  // IN-TEST
 }
 
 }  // namespace chromeos

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/diagnostics_service.h"
+#include "chromeos/components/telemetry_extension_ui/services/diagnostics_service.h"
 
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
-#include "chromeos/components/telemetry_extension_ui/diagnostics_service_converters.h"
+#include "chromeos/components/telemetry_extension_ui/services/convert_ptr.h"
+#include "chromeos/components/telemetry_extension_ui/services/diagnostics_service_converters.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 
@@ -66,26 +66,24 @@ void DiagnosticsService::GetRoutineUpdate(
 
 void DiagnosticsService::RunBatteryCapacityRoutine(
     RunBatteryCapacityRoutineCallback callback) {
-  GetService()->RunBatteryCapacityRoutine(
-      base::BindOnce(
-          [](health::mojom::DiagnosticsService::
-                 RunBatteryCapacityRoutineCallback callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
-          },
-          std::move(callback)));
+  GetService()->RunBatteryCapacityRoutine(base::BindOnce(
+      [](health::mojom::DiagnosticsService::RunBatteryCapacityRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+      },
+      std::move(callback)));
 }
 
 void DiagnosticsService::RunBatteryHealthRoutine(
     RunBatteryHealthRoutineCallback callback) {
-  GetService()->RunBatteryHealthRoutine(
-      base::BindOnce(
-          [](health::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
-                 callback,
-             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
-          },
-          std::move(callback)));
+  GetService()->RunBatteryHealthRoutine(base::BindOnce(
+      [](health::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
+             callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+      },
+      std::move(callback)));
 }
 
 void DiagnosticsService::RunSmartctlCheckRoutine(

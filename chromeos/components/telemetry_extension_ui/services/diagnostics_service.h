@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_H_
-#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_H_
-
-#if defined(OFFICIAL_BUILD)
-#error Diagnostics service should only be included in unofficial builds.
-#endif
+#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
+#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_
 
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -87,4 +83,4 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_H_
+#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/diagnostics_service_converters.h"
+#include "chromeos/components/telemetry_extension_ui/services/diagnostics_service_converters.h"
 
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"

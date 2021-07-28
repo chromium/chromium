@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/telemetry_extension_ui/bluetooth_observer.h"
+#include "chromeos/components/telemetry_extension_ui/services/bluetooth_observer.h"
 
 #include <utility>
 
@@ -72,7 +72,7 @@ void BluetoothObserver::Connect() {
 }
 
 void BluetoothObserver::FlushForTesting() {
-  receiver_.FlushForTesting();
+  receiver_.FlushForTesting();  // IN-TEST
 }
 
 }  // namespace chromeos

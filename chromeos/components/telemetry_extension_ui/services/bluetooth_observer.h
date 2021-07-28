@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_BLUETOOTH_OBSERVER_H_
-#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_BLUETOOTH_OBSERVER_H_
-
-#if defined(OFFICIAL_BUILD)
-#error Bluetooth observer should only be included in unofficial builds.
-#endif
+#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_BLUETOOTH_OBSERVER_H_
+#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_BLUETOOTH_OBSERVER_H_
 
 #include "chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom-forward.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -48,4 +44,4 @@ class BluetoothObserver
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_BLUETOOTH_OBSERVER_H_
+#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_BLUETOOTH_OBSERVER_H_

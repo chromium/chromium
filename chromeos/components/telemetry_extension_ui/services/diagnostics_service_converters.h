@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_CONVERTERS_H_
-#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_CONVERTERS_H_
-
-#if defined(OFFICIAL_BUILD)
-#error Diagnostics service should only be included in unofficial builds.
-#endif
+#ifndef CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_CONVERTERS_H_
+#define CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_CONVERTERS_H_
 
 #include <string>
 #include <utility>
@@ -70,4 +66,4 @@ cros_healthd::mojom::DiskReadRoutineTypeEnum Convert(
 }  // namespace converters
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_CONVERTERS_H_
+#endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_SERVICES_DIAGNOSTICS_SERVICE_CONVERTERS_H_
