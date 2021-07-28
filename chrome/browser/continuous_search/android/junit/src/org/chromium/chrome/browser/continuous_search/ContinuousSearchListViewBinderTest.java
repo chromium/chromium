@@ -10,13 +10,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
 import android.text.TextUtils;
-import android.text.TextUtils.TruncateAt;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -73,47 +71,23 @@ public class ContinuousSearchListViewBinderTest {
     @Test
     public void testBindListItem() {
         View view = mock(View.class);
-        ContinuousSearchChipView chipView = mock(ContinuousSearchChipView.class);
+        ChipView chipView = mock(ChipView.class);
         TextView textView = mock(TextView.class);
         InOrder inOrder = inOrder(view, chipView, textView);
         PropertyModel model = new PropertyModel(ListItemProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(
                 model, view, ContinuousSearchListViewBinder::bindListItem);
 
-        Resources resources = mock(Resources.class);
         doReturn(chipView).when(view).findViewById(anyInt());
-        doReturn(resources).when(view).getResources();
-
-        final int maxWidth = 20;
-        final String label = "Label";
-        final String anotherLabel = "AnotherLabel";
-        final GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-        final GURL anotherUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-        doReturn(maxWidth).when(resources).getDimensionPixelSize(anyInt());
         when(chipView.getPrimaryTextView()).thenReturn(textView);
-        when(chipView.getSecondaryTextView()).thenReturn(textView);
 
-        // Test label and url setup based on whether we should show result titles.
-        when(chipView.isTwoLineChipView()).thenReturn(false);
-        model.set(ListItemProperties.LABEL, label);
-        inOrder.verify(chipView, times(0)).getPrimaryTextView();
-        model.set(ListItemProperties.URL, url);
-        inOrder.verify(chipView).getPrimaryTextView();
-        when(chipView.isTwoLineChipView()).thenReturn(true);
-        model.set(ListItemProperties.LABEL, anotherLabel);
-        inOrder.verify(chipView).getPrimaryTextView();
-        model.set(ListItemProperties.URL, anotherUrl);
-        inOrder.verify(chipView).getSecondaryTextView();
-
-        model.set(ListItemProperties.LABEL, label);
-        checkTextViewSetup(inOrder, textView, label, maxWidth, TruncateAt.END);
-
+        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         final String safeUrl = "example.com";
         doReturn(safeUrl)
                 .when(mUrlFormatterJniMock)
                 .formatUrlForSecurityDisplay(eq(url), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS));
         model.set(ListItemProperties.URL, url);
-        checkTextViewSetup(inOrder, textView, safeUrl, maxWidth, TruncateAt.START);
+        inOrder.verify(textView).setText(eq(safeUrl));
 
         int backgroundColor = 0xCCBBAA;
         model.set(ListItemProperties.BACKGROUND_COLOR, backgroundColor);
@@ -121,6 +95,7 @@ public class ContinuousSearchListViewBinderTest {
 
         int borderWidth = 10;
         int borderColor = 0xAABBCC;
+        Resources resources = mock(Resources.class);
         when(chipView.getResources()).thenReturn(resources);
         doReturn(borderWidth).when(resources).getDimensionPixelSize(anyInt());
         model.set(ListItemProperties.BORDER_COLOR, borderColor);
@@ -137,15 +112,6 @@ public class ContinuousSearchListViewBinderTest {
         inOrder.verify(textView).setTextAppearance(any(), eq(id));
     }
 
-    private void checkTextViewSetup(InOrder inOrder, TextView textView, String text, int maxWidth,
-            TextUtils.TruncateAt truncateAt) {
-        inOrder.verify(textView).setEllipsize(truncateAt);
-        inOrder.verify(textView).setMaxLines(1);
-        inOrder.verify(textView).setTextDirection(View.TEXT_DIRECTION_LTR);
-        inOrder.verify(textView).setMaxWidth(maxWidth);
-        inOrder.verify(textView).setText(text);
-    }
-
     /**
      * Verifies that a really long domain name will have the correct ellipsis behavior. This uses
      * the real layout XML in order to ensure it is configured correctly.
@@ -160,9 +126,6 @@ public class ContinuousSearchListViewBinderTest {
         PropertyModelChangeProcessor.create(
                 model, view, ContinuousSearchListViewBinder::bindListItem);
         doReturn(chipView).when(view).findViewById(R.id.csn_chip);
-        Resources resources = mock(Resources.class);
-        doReturn(resources).when(view).getResources();
-        doReturn(10).when(resources).getDimensionPixelSize(anyInt());
 
         GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         final String longUrl =
