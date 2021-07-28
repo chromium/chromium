@@ -502,12 +502,25 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kInternalNavigationAssociatedUnfreezable:
       return DoesNotUseVirtualTimeTaskQueueTraits();
     case TaskType::kInternalPostMessageForwarding:
+      // postMessages to remote frames hop through the scheduler so that any
+      // IPCs generated in the same task arrive first. These tasks must be
+      // pausable in order to maintain this invariant, otherwise they might run
+      // in a nested event loop before the task completes, e.g. debugger
+      // breakpoints or javascript dialogs.
       if (base::FeatureList::IsEnabled(
               kDisablePrioritizedPostMessageForwarding)) {
-        return UnpausableTaskQueueTraits();
+        // This matches the pre-kInternalPostMessageForwarding behavior.
+        return PausableTaskQueueTraits();
       } else {
-        return UnpausableTaskQueueTraits().SetPrioritisationType(
-            QueueTraits::PrioritisationType::kPostMessageForwarding);
+        // Freezing this task type would prevent transmission of postMessages to
+        // remote frames that occurred in unfreezable tasks or from tasks that
+        // ran prior to being frozen (e.g. freeze event handler), which is not
+        // desirable. The messages are still queued on the receiving side, which
+        // is where frozenness should be assessed.
+        return PausableTaskQueueTraits()
+            .SetCanBeFrozen(false)
+            .SetPrioritisationType(
+                QueueTraits::PrioritisationType::kPostMessageForwarding);
       }
     case TaskType::kDeprecatedNone:
     case TaskType::kMainThreadTaskQueueV8:
