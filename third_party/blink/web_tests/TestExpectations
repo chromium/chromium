@@ -7297,3 +7297,4 @@ crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-cancel.https.html [ Failure Pass ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Failure Pass ]
 crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
+crbug.com/1233792 [ Mac10.13 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Pass ]
