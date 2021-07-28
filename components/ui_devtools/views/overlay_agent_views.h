@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_OVERLAY_AGENT_VIEWS_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_OVERLAY_AGENT_VIEWS_H_
 
-#include <vector>
 
 #include "components/ui_devtools/Overlay.h"
 #include "components/ui_devtools/overlay_agent.h"
