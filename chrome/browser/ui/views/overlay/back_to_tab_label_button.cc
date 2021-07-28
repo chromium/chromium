@@ -64,7 +64,6 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
       IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
   SetAccessibleName(back_to_tab_button_label);
-  SetTooltipText(back_to_tab_button_label);
   SetInstallFocusRingOnFocus(true);
 }
 
