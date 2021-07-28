@@ -8,7 +8,6 @@
 
 #include <limits>
 #include <memory>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/strings/string_piece.h"
