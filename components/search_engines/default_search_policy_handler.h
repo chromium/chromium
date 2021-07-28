@@ -6,7 +6,6 @@
 #define COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_POLICY_HANDLER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
