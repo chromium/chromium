@@ -703,8 +703,11 @@ absl::optional<VideoColorSpace*> VideoFrame::colorSpace() {
 uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
                                     ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
-  if (!local_frame)
+  if (!local_frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "VideoFrame is closed.");
     return 0;
+  }
 
   // TODO(crbug.com/1176464): Determine the format readback will occur in, use
   // that to compute the layout.
@@ -752,7 +755,7 @@ ScriptPromise VideoFrame::CopyToImpl(ScriptState* script_state,
   auto local_frame = handle_->frame();
   if (!local_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot read closed VideoFrame.");
+                                      "Cannot copy closed VideoFrame.");
     return ScriptPromise();
   }
 

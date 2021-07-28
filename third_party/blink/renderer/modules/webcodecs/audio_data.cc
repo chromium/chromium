@@ -232,8 +232,11 @@ uint32_t AudioData::BytesPerSample() {
 
 uint32_t AudioData::allocationSize(AudioDataCopyToOptions* copy_to_options,
                                    ExceptionState& exception_state) {
-  if (!data_)
+  if (!data_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "AudioData is closed.");
     return 0;
+  }
 
   // The channel isn't used in calculating the allocationSize, but we still
   // validate it here. This prevents a failed copyTo() call following a
@@ -292,7 +295,7 @@ void AudioData::copyTo(const V8BufferSource* destination,
                        ExceptionState& exception_state) {
   if (!data_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot read closed AudioData.");
+                                      "Cannot copy closed AudioData.");
     return;
   }
 
