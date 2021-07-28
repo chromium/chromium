@@ -119,11 +119,10 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
 
  private:
   void OpenFeedbackDialog(const base::ListValue* value) {
-    const std::string result = value->GetList()[0].GetString();
     chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceNetworkHealthPage,
                              "" /*description_template*/,
                              "" /*description_template_placeholder*/,
-                             "network-health", result);
+                             "network-health", "" /*extra_diagnostics*/);
   }
 };
 

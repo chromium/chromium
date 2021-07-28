@@ -68,9 +68,7 @@ Polymer({
    * @private
    */
   onSendFeedbackClick_() {
-    chrome.send(
-        'sendFeedbackReport',
-        [this.getNetworkDiagnosticsElement_().getResults()]);
+    chrome.send('sendFeedbackReport');
   },
 
   /** @private */

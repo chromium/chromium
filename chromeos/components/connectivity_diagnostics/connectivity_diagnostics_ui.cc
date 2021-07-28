@@ -66,11 +66,7 @@ class ConnectivityDiagnosticsMessageHandler
 
  private:
   void SendFeedbackReportRequest(const base::ListValue* value) {
-    std::string extra_diagnostics;
-    auto values = value->GetList();
-    if (values.size() >= 1 && values[0].is_string())
-      extra_diagnostics = values[0].GetString();
-    send_feedback_report_callback_.Run(extra_diagnostics);
+    send_feedback_report_callback_.Run(/*extra_diagnostics*/ "");
   }
 
   // TODO(crbug/1220965): Remove conditional feedback button when WebUI feedback

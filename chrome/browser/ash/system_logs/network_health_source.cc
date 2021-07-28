@@ -19,8 +19,9 @@ namespace system_logs {
 namespace {
 
 constexpr char kNetworkHealthSnapshotEntry[] = "network-health-snapshot";
+constexpr char kNetworkDiagnosticsEntry[] = "network-diagnostics";
 
-std::string GetFormattedString(
+std::string FormatNetworkHealth(
     const chromeos::network_health::mojom::NetworkHealthStatePtr&
         network_health,
     bool scrub) {
@@ -59,13 +60,100 @@ std::string GetFormattedString(
   return output.str();
 }
 
+template <typename T>
+std::string ProblemsToStr(T problems) {
+  if (problems.size() == 0) {
+    return "";
+  }
+
+  std::ostringstream output;
+  for (int i = 0; i < problems.size(); i++) {
+    output << problems[i];
+    if (i != problems.size() - 1)
+      output << ", ";
+  }
+  return output.str();
+}
+
+std::string GetProblemsString(
+    const chromeos::network_diagnostics::mojom::RoutineProblemsPtr& problems) {
+  using chromeos::network_diagnostics::mojom::RoutineProblems;
+  std::string problemsStr;
+  switch (problems->which()) {
+    case RoutineProblems::Tag::LAN_CONNECTIVITY_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_lan_connectivity_problems());
+      break;
+    case RoutineProblems::Tag::SIGNAL_STRENGTH_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_signal_strength_problems());
+      break;
+    case RoutineProblems::Tag::GATEWAY_CAN_BE_PINGED_PROBLEMS:
+      problemsStr =
+          ProblemsToStr(problems->get_gateway_can_be_pinged_problems());
+      break;
+    case RoutineProblems::Tag::HAS_SECURE_WIFI_CONNECTION_PROBLEMS:
+      problemsStr =
+          ProblemsToStr(problems->get_has_secure_wifi_connection_problems());
+      break;
+    case RoutineProblems::Tag::DNS_RESOLVER_PRESENT_PROBLEMS:
+      problemsStr =
+          ProblemsToStr(problems->get_dns_resolver_present_problems());
+      break;
+    case RoutineProblems::Tag::DNS_LATENCY_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_dns_latency_problems());
+      break;
+    case RoutineProblems::Tag::DNS_RESOLUTION_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_dns_resolution_problems());
+      break;
+    case RoutineProblems::Tag::CAPTIVE_PORTAL_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_captive_portal_problems());
+      break;
+    case RoutineProblems::Tag::HTTP_FIREWALL_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_http_firewall_problems());
+      break;
+    case RoutineProblems::Tag::HTTPS_FIREWALL_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_https_firewall_problems());
+      break;
+    case RoutineProblems::Tag::HTTPS_LATENCY_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_https_latency_problems());
+      break;
+    case RoutineProblems::Tag::VIDEO_CONFERENCING_PROBLEMS:
+      problemsStr = ProblemsToStr(problems->get_video_conferencing_problems());
+      break;
+  }
+  return problemsStr;
+}
+
 }  // namespace
+
+std::string FormatNetworkDiagnosticResults(
+    const base::flat_map<
+        chromeos::network_diagnostics::mojom::RoutineType,
+        chromeos::network_diagnostics::mojom::RoutineResultPtr>& results,
+    bool scrub) {
+  std::ostringstream output;
+
+  for (const auto& result : results) {
+    output << "Routine: " << result.first << "\n";
+    output << "Verdict: " << result.second->verdict << "\n";
+    output << "Timestamp: " << result.second->timestamp << "\n";
+
+    auto problems = GetProblemsString(result.second->problems);
+    if (!problems.empty())
+      output << "Problems: " << problems << "\n";
+
+    output << "\n";
+  }
+  return output.str();
+}
 
 NetworkHealthSource::NetworkHealthSource(bool scrub)
     : SystemLogsSource("NetworkHealth"), scrub_(scrub) {
   chromeos::network_health::NetworkHealthService::GetInstance()
       ->BindHealthReceiver(
           network_health_service_.BindNewPipeAndPassReceiver());
+  chromeos::network_health::NetworkHealthService::GetInstance()
+      ->BindDiagnosticsReceiver(
+          network_diagnostics_service_.BindNewPipeAndPassReceiver());
 }
 
 NetworkHealthSource::~NetworkHealthSource() {}
@@ -73,18 +161,46 @@ NetworkHealthSource::~NetworkHealthSource() {}
 void NetworkHealthSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!callback.is_null());
+  callback_ = std::move(callback);
   network_health_service_->GetHealthSnapshot(
       base::BindOnce(&NetworkHealthSource::OnNetworkHealthReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr()));
+  network_diagnostics_service_->GetAllResults(
+      base::BindOnce(&NetworkHealthSource::OnNetworkDiagnosticResultsReceived,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void NetworkHealthSource::OnNetworkHealthReceived(
-    SysLogsSourceCallback callback,
     chromeos::network_health::mojom::NetworkHealthStatePtr network_health) {
+  network_health_response_ = FormatNetworkHealth(network_health, scrub_);
+  CheckIfDone();
+}
+
+void NetworkHealthSource::OnNetworkDiagnosticResultsReceived(
+    base::flat_map<chromeos::network_diagnostics::mojom::RoutineType,
+                   chromeos::network_diagnostics::mojom::RoutineResultPtr>
+        results) {
+  network_diagnostics_response_ =
+      FormatNetworkDiagnosticResults(results, scrub_);
+  CheckIfDone();
+}
+
+void NetworkHealthSource::CheckIfDone() {
+  if (!network_health_response_.has_value() ||
+      !network_diagnostics_response_.has_value()) {
+    return;
+  }
+
   auto response = std::make_unique<SystemLogsResponse>();
   (*response)[kNetworkHealthSnapshotEntry] =
-      GetFormattedString(network_health, scrub_);
-  std::move(callback).Run(std::move(response));
+      std::move(network_health_response_.value());
+  (*response)[kNetworkDiagnosticsEntry] =
+      std::move(network_diagnostics_response_.value());
+
+  network_health_response_.reset();
+  network_diagnostics_response_.reset();
+
+  std::move(callback_).Run(std::move(response));
 }
 
 }  // namespace system_logs

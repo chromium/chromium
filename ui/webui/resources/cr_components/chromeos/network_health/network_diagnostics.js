@@ -194,32 +194,6 @@ Polymer({
   },
 
   /**
-   * Gets the network diagnostics routine results and organizes them into a
-   * stringified object that is returned.
-   * @return {!string} The network diagnostics routine results
-   * @public
-   */
-  getResults() {
-    const results = {};
-    for (const routine of this.routines_) {
-      if (routine.result) {
-        const name = routine.name.replace('NetworkDiagnostics', '');
-        const result = {};
-        result['verdict'] =
-            this.getRoutineVerdictRawString_(routine.result.verdict);
-        const problems = this.getRoutineProblemsString_(
-            routine.type, routine.result.problems, false);
-        if (problems.length) {
-          result['problems'] = problems;
-        }
-
-        results[name] = result;
-      }
-    }
-    return JSON.stringify(results, undefined, 2);
-  },
-
-  /**
    * Runs all supported network diagnostics routines.
    * @param {!PolymerDeepPropertyChange} routines
    * @param {Number} group
