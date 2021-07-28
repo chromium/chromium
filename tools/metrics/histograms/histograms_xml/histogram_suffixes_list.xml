@@ -15799,6 +15799,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="SB2ResourceTypes" separator=".">
+  <obsolete>
+    Removed in M94. Replaced with SB2RequestDestinations.
+  </obsolete>
   <suffix name="Checked"
       label="Resources that were checked. Logged before the resource starts
              loading and again for each redirect."/>

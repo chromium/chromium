@@ -15,7 +15,6 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -309,18 +308,13 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
     // Record the result of canceled unsafe prefetch. This is used as a signal
     // for testing.
     LOCAL_HISTOGRAM_ENUMERATION(
-        "SB2Test.ResourceTypes2.UnsafePrefetchCanceled",
-        safe_browsing::GetResourceTypeFromRequestDestination(
-            request_destination_));
+        "SB2Test.RequestDestination.UnsafePrefetchCanceled",
+        request_destination_);
 
     BlockAndProcessUrls(false);
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "SB2.ResourceTypes2.Unsafe",
-      safe_browsing::GetResourceTypeFromRequestDestination(
-          request_destination_));
   UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Unsafe",
                             request_destination_);
 
@@ -388,13 +382,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     // renderer side. That would save some IPCs. It requires a method on the
     // SafeBrowsing mojo interface to query all supported request destinations.
     if (!database_manager_->CanCheckRequestDestination(request_destination_)) {
-      // TODO(vakh): Consider changing this metric to
-      // SafeBrowsing.V4RequestDestination to be consistent with the other PVer4
-      // metrics.
-      UMA_HISTOGRAM_ENUMERATION(
-          "SB2.ResourceTypes2.Skipped",
-          safe_browsing::GetResourceTypeFromRequestDestination(
-              request_destination_));
       UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
                                 request_destination_);
 
@@ -404,12 +391,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       continue;
     }
 
-    // TODO(vakh): Consider changing this metric to SafeBrowsing.V4ResourceType
-    // to be consistent with the other PVer4 metrics.
-    UMA_HISTOGRAM_ENUMERATION(
-        "SB2.ResourceTypes2.Checked",
-        safe_browsing::GetResourceTypeFromRequestDestination(
-            request_destination_));
     UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Checked",
                               request_destination_);
 
@@ -440,10 +421,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     base::UmaHistogramBoolean("SafeBrowsing.RT.CanCheckDatabase",
                               can_check_db_);
     if (can_perform_full_url_lookup) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "SafeBrowsing.RT.ResourceTypes.Checked",
-          safe_browsing::GetResourceTypeFromRequestDestination(
-              request_destination_));
       UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.RequestDestinations.Checked",
                                 request_destination_);
       safe_synchronously = false;

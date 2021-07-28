@@ -92,10 +92,6 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       metrics_collector_(metrics_collector),
       trigger_manager_(trigger_manager) {
   if (unsafe_resources.size() == 1) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SafeBrowsing.BlockingPage.ResourceType",
-        safe_browsing::GetResourceTypeFromRequestDestination(
-            unsafe_resources[0].request_destination));
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
   }

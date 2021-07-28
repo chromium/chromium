@@ -1408,6 +1408,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.RT.ResourceTypes.Checked"
     enum="ContentResourceType2" expires_after="2021-10-04">
+  <obsolete>
+    Removed from code in M94. Replaced with
+    SafeBrowsing.RT.RequestDestinations.Checked.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1423,6 +1427,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SafeBrowsing.RT.ResourceTypes.Requested"
     enum="ContentResourceType2" expires_after="2021-10-04">
+  <obsolete>
+    Removed from code in M94. Replaced with
+    SafeBrowsing.RT.RequestDestinations.Requested.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

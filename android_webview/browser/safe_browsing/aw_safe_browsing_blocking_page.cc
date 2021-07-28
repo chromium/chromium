@@ -19,7 +19,6 @@
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
@@ -93,11 +92,6 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
     std::unique_ptr<AwWebResourceRequest> resource_request) {
-  // Log the resource type that triggers the safe browsing blocking page.
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.BlockingPage.ResourceType",
-      safe_browsing::GetResourceTypeFromRequestDestination(
-          unsafe_resource.request_destination));
   // Log the request destination that triggers the safe browsing blocking page.
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                             unsafe_resource.request_destination);

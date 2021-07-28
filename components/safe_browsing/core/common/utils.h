@@ -51,10 +51,6 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name);
 // (5) Its hostname is a dotless domain.
 // (6) Its hostname is less than 4 characters.
 bool CanGetReputationOfUrl(const GURL& url);
-
-// Util for UMA logging to get ResourceType from RequestDestination.
-ResourceType GetResourceTypeFromRequestDestination(
-    network::mojom::RequestDestination request_destination);
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_

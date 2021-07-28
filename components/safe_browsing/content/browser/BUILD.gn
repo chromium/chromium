@@ -93,7 +93,6 @@ source_set("browser") {
     "//components/history/core/browser",
     "//components/prefs",
     "//components/safe_browsing/content/browser/web_ui:web_ui",
-    "//components/safe_browsing/content/common",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
