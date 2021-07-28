@@ -26,11 +26,12 @@ namespace media {
 
 // This service runs and destructs on the sequence where it's constructed, but
 // the public methods can be run on any sequence.
-class VideoGeometrySetterService : public mojom::VideoGeometryChangeSubscriber,
-                                   public mojom::VideoGeometrySetter {
+class VideoGeometrySetterService final
+    : public mojom::VideoGeometryChangeSubscriber,
+      public mojom::VideoGeometrySetter {
  public:
   VideoGeometrySetterService();
-  ~VideoGeometrySetterService() final;
+  ~VideoGeometrySetterService() override;
 
   void GetVideoGeometryChangeSubscriber(
       mojo::PendingReceiver<mojom::VideoGeometryChangeSubscriber>

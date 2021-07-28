@@ -48,7 +48,7 @@ namespace chromecast {
 //   mojo::Remote<mojom::Bar> bar;
 //   provider->BindNewPipe(&bar);
 //   bar->DoBarStuff();
-class InterfaceBundle : private mojom::RemoteInterfaces {
+class InterfaceBundle final : private mojom::RemoteInterfaces {
  public:
   // Specifies the number of expected clients for a given Receiver.
   enum ReceiverType {
@@ -58,7 +58,7 @@ class InterfaceBundle : private mojom::RemoteInterfaces {
 
   InterfaceBundle();
   InterfaceBundle(const InterfaceBundle&) = delete;
-  ~InterfaceBundle() final;
+  ~InterfaceBundle() override;
   InterfaceBundle& operator=(const InterfaceBundle&) = delete;
 
   // Adds an implementation for an interface of type <Interface>. When the
