@@ -17,6 +17,17 @@
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <!-- Starting from Android 11 not all packages are visible by default and this stops us
+         from starting an EmbeddedTestServer. Request visibility by using an intent
+         filter signature
+         (https://developer.android.com/training/package-visibility/declaring#intent-filter-signature)
+    -->
+    <queries>
+      <intent>
+        <action android:name="org.chromium.net.test.EMBEDDED_TEST_SERVER_SERVICE" />
+      </intent>
+    </queries>
+
     <!-- Starting from Android 10, requestLegacyExternalStorage is required to
          fetch test data, certificates, etc.. They currently reside in external
          storage which is no longer accessible by default.
