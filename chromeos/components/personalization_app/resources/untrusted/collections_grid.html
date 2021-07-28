@@ -6,23 +6,36 @@
 <iron-list items="[[tiles_]]" grid scroll-target="document" role="listbox"
     aria-setsize$="[[tiles_.length]]">
   <template>
-    <div class="photo-container"
-        data-id$="[[item.id]]" on-click="onCollectionSelected_"
-        on-keypress="onCollectionSelected_"
-        tabindex$="[[tabIndex]]" role="option" aria-selected="false"
-        aria-posinset$="[[getAriaIndex_(index)]]">
-      <div class="photo-inner-container">
-        <div class$="[[getClassForImagesContainer_(item)]]">
-          <template is="dom-repeat" items="[[item.preview]]" as="preview">
-            <img src="[[preview.url]]">
-          </template>
+    <div class="photo-container">
+      <template is="dom-if" if="[[isLoadingTile_(item)]]">
+        <div tabindex$="[[tabIndex]]" role="option" 
+            class="photo-loading-placeholder"
+            style$="[[getLoadingPlaceholderStyle(index)]]"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            aria-label$="[[geti18n_('ariaLabelLoading')]]" aria-disabled="true">
         </div>
-        <div class="photo-text-container">
-          <p title="[[item.name]]">[[item.name]]</p>
-          <p title="[[item.count]]">[[item.count]]</p>
+      </template>
+      <template is="dom-if" if="[[isFailureTile_(item)]]">
+        <!-- TODO(b/181697575) real failure state -->
+        <p>Failure</p>
+      </template>
+      <template is="dom-if" if="[[isImageTile_(item)]]">
+        <div class="photo-inner-container" data-id$="[[item.id]]" 
+            on-click="onCollectionSelected_" on-keypress="onCollectionSelected_"
+            tabindex$="[[tabIndex]]" role="option" aria-selected="false"
+            aria-posinset$="[[getAriaIndex_(index)]]">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <template is="dom-repeat" items="[[item.preview]]" as="preview">
+              <img src="[[preview.url]]">
+            </template>
+          </div>
+          <div class="photo-text-container">
+            <p title="[[item.name]]">[[item.name]]</p>
+            <p title="[[item.count]]">[[item.count]]</p>
+          </div>
+          <div class="photo-gradient-mask"></div>
         </div>
-        <div hidden$="[[!item.preview]]" class="photo-gradient-mask"></div>
-      </div>
+      </template>
     </div>
   </template>
 </iron-list>

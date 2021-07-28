@@ -41,16 +41,48 @@ styles.innerHTML = `
     .photo-inner-container {
       align-items: center;
       display: flex;
+      cursor: pointer;
       height: 100%;
       justify-content: center;
       position: relative;
       width: 100%;
     }
-    .photo-container:focus-visible .photo-inner-container {
+    @keyframes ripple {
+      /* 0 ms */
+      from {
+        opacity: 1;
+      }
+      /* 200 ms */
+      9% {
+        opacity: 0.15;
+      }
+      /* 350 ms */
+      15.8% {
+        opacity: 0.15;
+      }
+      /* 550 ms, hold for 83ms * 20 and then restart */
+      24.9% {
+        opacity: 1;
+      }
+      /* 2210 ms */
+      to {
+        opacity: 1;
+      }
+    }
+    .photo-loading-placeholder {
+      animation: 2210ms linear var(--animation-delay) infinite ripple;
+      background-color: var(--google-grey-300);
+      box-sizing: border-box;
+      border-radius: 12px;
+      height: 100%;
+      width: 100%;
+    }
+    .photo-inner-container:focus-visible,
+    .photo-loading-placeholder:focus-visible {
       border: 2px solid var(--cros-focus-ring-color);
       border-radius: 14px;
+      outline: none;
     }
-
     .photo-images-container {
       border-radius: 12px;
       box-sizing: border-box;
@@ -78,20 +110,20 @@ styles.innerHTML = `
       position: absolute;
       top: 8px;
     }
-    .photo-container:not([aria-selected='true'])
+    .photo-inner-container:not([aria-selected='true'])
     iron-icon[icon='personalization:checkmark'] {
       display: none;
     }
-    .photo-container[aria-selected='true'] .photo-inner-container {
+    .photo-inner-container[aria-selected='true'] {
       background-color: rgba(var(--cros-icon-color-prominent-rgb),
           var(--personalization-app-second-tone-opacity));
       border-radius: 16px;
     }
-    .photo-container[aria-selected='true'] .photo-images-container {
+    .photo-inner-container[aria-selected='true'] .photo-images-container {
       height: calc(100% - 8px);
       width: calc(100% - 8px);
     }
-    .photo-container:focus-visible:not([aria-selected='true'])
+    .photo-inner-container:focus-visible:not([aria-selected='true'])
     .photo-images-container {
       height: calc(100% - 4px);
       width: calc(100% - 4px);

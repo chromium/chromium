@@ -42,6 +42,24 @@ let instance_ = null;
  */
 const PersonalizationStoreClientImpl = {
   /**
+   * Override onStateChanged so property updates are batched. Reduces churn
+   * in polymer components when multiple state values change.
+   * @override
+   * @param {!PersonalizationState} newState
+   */
+  onStateChanged(newState) {
+    const changes = this.watches_.reduce((result, watch) => {
+      const oldValue = this[watch.localProperty];
+      const newValue = watch.valueGetter(newState);
+      if (newValue !== oldValue && newValue !== undefined) {
+        result[watch.localProperty] = newValue;
+      }
+      return result;
+    }, {});
+    this.setProperties(changes);
+  },
+
+  /**
    * @param {string} localProperty
    * @param {function(!PersonalizationState):*} valueGetter
    */

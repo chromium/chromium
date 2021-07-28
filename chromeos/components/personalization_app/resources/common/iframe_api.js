@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendSelectedWallpaperAssetIdEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendSelectedWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
 import {isNonEmptyArray} from './utils.js';
 
 /**
@@ -28,12 +28,27 @@ export function sendCollections(target, collections) {
 
 /**
  * Send a mapping of collectionId to the number of images in that collection.
+ * A value of null for a given collection id represents that the collection
+ * failed to load.
  * @param {!Window} target
- * @param {!Object<string, number>} counts
+ * @param {!Object<string, ?number>} counts
  */
 export function sendImageCounts(target, counts) {
   /** @type {!SendImageCountsEvent} */
   const event = {type: EventType.SEND_IMAGE_COUNTS, counts};
+  target.postMessage(event, untrustedOrigin);
+}
+
+/**
+ * Send visibility status to a target iframe. Currently used to trigger a
+ * resize event on iron-list when an iframe becomes visible again so that
+ * iron-list will run layout with the current size.
+ * @param {!Window} target
+ * @param {boolean} visible
+ */
+export function sendVisible(target, visible) {
+  /** @type {!SendVisibleEvent} */
+  const event = {type: EventType.SEND_VISIBLE, visible};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -169,7 +184,8 @@ export function validateReceivedData(event, expectedEventType) {
    *   SendImagesEvent|
    *   SendSelectedWallpaperAssetIdEvent|
    *   SendLocalImagesEvent|
-   *   SendLocalImageDataEvent
+   *   SendLocalImageDataEvent|
+   *   SendVisibleEvent
    * }
    */
   const data = event.data;
@@ -188,6 +204,9 @@ export function validateReceivedData(event, expectedEventType) {
     case EventType.SEND_SELECTED_WALLPAPER_ASSET_ID:
       assert(data.assetId === null || typeof data.assetId === 'bigint');
       return data.assetId;
+    case EventType.SEND_VISIBLE:
+      assert(typeof data.visible === 'boolean');
+      return data.visible;
     default:
       assertNotReached('Unknown event type');
   }

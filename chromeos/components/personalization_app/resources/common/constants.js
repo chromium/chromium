@@ -24,6 +24,7 @@ export const EventType = {
   SEND_SELECTED_WALLPAPER_ASSET_ID: 'send_selected_wallpaper_asset_id',
   SELECT_IMAGE: 'select_image',
   SELECT_LOCAL_IMAGE: 'select_local_image',
+  SEND_VISIBLE: 'send_visible',
 };
 
 /**
@@ -87,3 +88,9 @@ export let SendSelectedWallpaperAssetIdEvent;
  * @typedef {{ type: EventType, assetId: bigint }}
  */
 export let SelectImageEvent;
+
+/**
+ * Notify an iframe if its visible state changes.
+ * @typedef {{ type: EventType, visible: boolean }}
+ */
+export let SendVisibleEvent;

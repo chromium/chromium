@@ -135,7 +135,7 @@ export function LocalImagesTest() {
         // iron-list pre-creates some extra DOM elements but marks them as
         // hidden. Ignore them here to only get visible images.
         const images = localImagesElement.shadowRoot.querySelectorAll(
-            '.photo-container:not([hidden])');
+            '.photo-container:not([hidden]) .photo-inner-container');
 
         assertEquals(2, images.length);
         // Every image is aria-selected false.

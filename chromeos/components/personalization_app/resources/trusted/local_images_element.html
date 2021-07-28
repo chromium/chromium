@@ -19,12 +19,12 @@
     <iron-list items="[[getImages_(hidden, images_)]]" grid role="listbox"
         aria-setsize$="[[getImageCount_(hidden, images_)]]">
       <template>
-        <div class="photo-container" role="option" tabindex$="[[tabIndex]]"
-            data-id$="[[getImageKey_(item)]]" on-click="onImageSelected_"
-            on-keypress="onImageSelected_"
-            aria-posinset$="[[getAriaIndex_(index)]]"
-            aria-selected$="[[getAriaSelected_(item, selected_)]]">
-          <div class="photo-inner-container">
+        <div class="photo-container">
+          <div class="photo-inner-container" role="option"
+              tabindex$="[[tabIndex]]" data-id$="[[getImageKey_(item)]]"
+              on-click="onImageSelected_" on-keypress="onImageSelected_"
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              aria-selected$="[[getAriaSelected_(item, selected_)]]">
             <div class="photo-images-container">
               <template is="dom-if"
                   if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">

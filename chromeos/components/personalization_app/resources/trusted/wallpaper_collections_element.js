@@ -11,7 +11,7 @@
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {kMaximumLocalImagePreviews} from '../common/constants.js';
-import {sendCollections, sendImageCounts, sendLocalImageData, sendLocalImages} from '../common/iframe_api.js';
+import {sendCollections, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload, unguessableTokenToString} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeBackdropData, initializeLocalData} from './personalization_controller.js';
@@ -61,8 +61,18 @@ export class WallpaperCollections extends WithPersonalizationStore {
   static get properties() {
     return {
       /**
-       * @private
+       * Hidden state of this element. Used to notify iframe of visibility
+       * changes.
+       */
+      hidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+        observer: 'onHiddenChanged_',
+      },
+
+      /**
        * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+       * @private
        */
       collections_: {
         type: Array,
@@ -76,18 +86,26 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       /**
        * Contains a mapping of collection id to an array of images.
+       * @type {Object<string,
+       *     Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
        * @private
-       * @type {?Object<string,
-       *     ?Array<!chromeos.personalizationApp.mojom.WallpaperImage>>}
        */
       images_: {
         type: Object,
-        observer: 'onImagesChanged_',
       },
 
       /**
+       * Contains a mapping of collection id to loading boolean.
+       * @type {Object<string, boolean>}
        * @private
+       */
+      imagesLoading_: {
+        type: Object,
+      },
+
+      /**
        * @type {Array<!chromeos.personalizationApp.mojom.LocalImage>}
+       * @private
        */
       localImages_: {
         type: Array,
@@ -96,8 +114,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       /**
        * Stores a mapping of local image id to loading status.
-       * @private
        * @type {!Object<string, boolean>}
+       * @private
        */
       localImageDataLoading_: {
         type: Object,
@@ -105,8 +123,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
       /**
        * Stores a mapping of local image id to thumbnail data.
-       * @private
        * @type {Object<string, string>}
+       * @private
        */
       localImageData_: {
         type: Object,
@@ -124,10 +142,12 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   static get observers() {
     return [
+      'onCollectionImagesChanged_(images_, imagesLoading_)',
       'onLocalImageDataChanged_(localImages_, localImageData_, localImageDataLoading_)',
     ];
   }
 
+  /** @override */
   constructor() {
     super();
     /** @private */
@@ -147,6 +167,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.watch('collections_', state => state.backdrop.collections);
     this.watch('collectionsLoading_', state => state.loading.collections);
     this.watch('images_', state => state.backdrop.images);
+    this.watch('imagesLoading_', state => state.loading.images);
     this.watch('localImages_', state => state.local.images);
     this.watch('localImageData_', state => state.local.data);
     this.watch('localImageDataLoading_', state => state.loading.local.data);
@@ -157,11 +178,21 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /**
+   * Notify iframe that this element visibility has changed.
+   * @param {boolean} hidden
    * @private
+   */
+  async onHiddenChanged_(hidden) {
+    const iframe = await this.iframePromise_;
+    sendVisible(/** @type {!Window} */ (iframe.contentWindow), !hidden);
+  }
+
+  /**
    * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
    *     collections
    * @param {boolean} loading
    * @return {boolean}
+   * @private
    */
   computeHasError_(collections, loading) {
     return !loading && !isNonEmptyArray(collections);
@@ -171,6 +202,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * Send updated wallpaper collections to the iframe.
    * @param {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
    *     collections
+   * @private
    */
   async onCollectionsChanged_(collections) {
     if (isNonEmptyArray(collections)) {
@@ -181,21 +213,31 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /**
    * Send count of images in each collection when a new collection is fetched.
-   * @param {?Object<string,
-   *     ?Array<!chromeos.personalizationApp.mojom.WallpaperImage>>} value
+   * @param {Object<string,
+   *     Array<!chromeos.personalizationApp.mojom.WallpaperImage>>} images
+   * @param {Object<string, boolean>} imagesLoading
+   * @private
    */
-  async onImagesChanged_(value) {
-    if (value == undefined) {
+  async onCollectionImagesChanged_(images, imagesLoading) {
+    if (!images || !imagesLoading) {
       return;
     }
-    const iframe = await this.iframePromise_;
     const counts =
-        Object.entries(value)
-            .filter(([_, value]) => Array.isArray(value))
-            .map(([key, value]) => [key, value.length])
-            .reduce(
-                (result, [key, value]) => Object.assign(result, {[key]: value}),
-                {});
+        Object.entries(images)
+            .filter(([collectionId]) => {
+              return imagesLoading[/** @type {string} */ (collectionId)] ===
+                  false;
+            })
+            .map(([key, value]) => {
+              // Collection has completed loading. If no images were retrieved,
+              // set count value to null to indicate failure.
+              return [key, Array.isArray(value) ? value.length : null];
+            })
+            .reduce((result, [key, value]) => {
+              result[key] = value;
+              return result;
+            }, {});
+    const iframe = await this.iframePromise_;
     sendImageCountsFunction(
         /** @type {!Window} */ (iframe.contentWindow), counts);
   }
@@ -203,6 +245,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   /**
    * Send updated local images list to the iframe.
    * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} value
+   * @private
    */
   async onLocalImagesChanged_(value) {
     if (Array.isArray(value)) {
@@ -217,6 +260,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
    * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} images
    * @param {?Object<string, string>} imageData
    * @param {?Object<string, boolean>} imageDataLoading
+   * @private
    */
   async onLocalImageDataChanged_(images, imageData, imageDataLoading) {
     if (!Array.isArray(images) || !imageData || !imageDataLoading ||
@@ -232,6 +276,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
           return success && doneLoading;
         });
 
+    /**
+     * @return {boolean}
+     */
     function shouldSendImageData() {
       // All images (up to |kMaximumLocalImagePreviews|) have loaded.
       const didLoadMaximum = successfullyLoaded.length >=

@@ -31,7 +31,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},
       {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
-      {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES}};
+      {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
+      {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING}};
   source->AddLocalizedStrings(kLocalizedStrings);
   // Add load_time_data manually because it is not available at
   // chrome-untrusted://resources/load_time_data.js. Specifically add

@@ -1597,6 +1597,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_UNKNOWN_IMAGE_ATTRIBUTION" desc="Label for image attribution when it is empty">
         Unknown
       </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING" desc="Aria label for wallpaper collection while it is still loading and unable to be selected">
+        Loading
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

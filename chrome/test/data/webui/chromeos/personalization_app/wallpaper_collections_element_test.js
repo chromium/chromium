@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import {kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
-import {unguessableTokenToString} from 'chrome://personalization/common/utils.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper_collections_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.m.js';
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
@@ -71,7 +70,7 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
     // Wait for initial load to complete.
-    await wallpaperCollectionsElement.iframePromise_;
+    await promisifyIframeFunctionsForTesting().sendImageCounts;
 
     let {sendImageCounts: sendImageCountsPromise} =
         promisifyIframeFunctionsForTesting();
@@ -79,6 +78,7 @@ export function WallpaperCollectionsTest() {
     personalizationStore.data.backdrop.images = {
       'id_0': [wallpaperProvider.images[0]]
     };
+    personalizationStore.data.loading.images = {'id_0': false};
     personalizationStore.notifyObservers();
 
     let counts = (await sendImageCountsPromise)[1];
@@ -91,13 +91,18 @@ export function WallpaperCollectionsTest() {
       'id_0': [wallpaperProvider.images[0]],
       'id_1': [wallpaperProvider.images[0], wallpaperProvider.images[1]],
       'id_2': [],
-      // Ignores id_3 because it is not Array.
-      'id_3': undefined,
+      'id_3': null,
+    };
+    personalizationStore.data.loading.images = {
+      'id_0': false,
+      'id_1': false,
+      'id_2': false,
+      'id_3': false,
     };
     personalizationStore.notifyObservers();
 
     counts = (await sendImageCountsPromise)[1];
-    assertDeepEquals({'id_0': 1, 'id_1': 2, 'id_2': 0}, counts);
+    assertDeepEquals({'id_0': 1, 'id_1': 2, 'id_2': 0, 'id_3': null}, counts);
   });
 
   test('sends local images when loaded', async () => {
