@@ -54,6 +54,8 @@ MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
 
 MessagePopupView::~MessagePopupView() {
   popup_collection_->NotifyPopupClosed(this);
+  if (focus_manager_)
+    focus_manager_->RemoveFocusChangeListener(this);
 }
 
 void MessagePopupView::UpdateContents(const Notification& notification) {
@@ -127,7 +129,6 @@ void MessagePopupView::Show() {
   views::Widget* widget = new views::Widget();
   popup_collection_->ConfigureWidgetInitParamsForContainer(widget, &params);
   widget->set_focus_on_creation(false);
-  observation_.Observe(widget);
 
 #if defined(OS_WIN)
   // We want to ensure that this toast always goes to the native desktop,
@@ -163,6 +164,11 @@ void MessagePopupView::Close() {
 
   if (!GetWidget()->IsClosed())
     GetWidget()->CloseNow();
+}
+
+void MessagePopupView::OnDidChangeFocus(views::View* before, views::View* now) {
+  is_focused_ = Contains(now);
+  popup_collection_->Update();
 }
 
 void MessagePopupView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -208,15 +214,17 @@ void MessagePopupView::OnFocus() {
   GetFocusManager()->SetFocusedView(message_view_);
 }
 
-void MessagePopupView::OnWidgetActivationChanged(views::Widget* widget,
-                                                 bool active) {
-  is_active_ = active;
-  popup_collection_->Update();
+void MessagePopupView::AddedToWidget() {
+  focus_manager_ = GetFocusManager();
+  if (focus_manager_) {
+    focus_manager_->AddFocusChangeListener(this);
+  }
 }
 
-void MessagePopupView::OnWidgetDestroyed(views::Widget* widget) {
-  DCHECK(observation_.IsObservingSource(widget));
-  observation_.Reset();
+void MessagePopupView::RemovedFromWidget() {
+  if (focus_manager_)
+    focus_manager_->RemoveFocusChangeListener(this);
+  focus_manager_ = nullptr;
 }
 
 bool MessagePopupView::IsWidgetValid() const {

@@ -370,8 +370,8 @@ void MessagePopupCollection::TransitionToAnimation() {
 
 void MessagePopupCollection::UpdatePopupTimers() {
   if (state_ == State::IDLE) {
-    if (IsAnyPopupHovered() || IsAnyPopupActive()) {
-      // If any popup is hovered or activated, pause popup timer.
+    if (IsAnyPopupHovered() || IsAnyPopupFocused()) {
+      // If any popup is hovered or focused, pause popup timer.
       PausePopupTimers();
     } else {
       // If in IDLE state, restart popup timer.
@@ -692,9 +692,9 @@ bool MessagePopupCollection::IsAnyPopupHovered() const {
   return false;
 }
 
-bool MessagePopupCollection::IsAnyPopupActive() const {
+bool MessagePopupCollection::IsAnyPopupFocused() const {
   for (const auto& item : popup_items_) {
-    if (item.popup->is_active())
+    if (item.popup->is_focused())
       return true;
   }
   return false;

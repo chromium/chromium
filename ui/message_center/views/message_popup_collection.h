@@ -260,8 +260,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
 
   // Return true if any popup is hovered by mouse.
   bool IsAnyPopupHovered() const;
-  // Return true if any popup is activated.
-  bool IsAnyPopupActive() const;
+  // Return true if any popup is focused.
+  bool IsAnyPopupFocused() const;
 
   // Returns the popup which is visually |index_from_top|-th from the top.
   // When |inverse_| is false, it's same as popup_items_[i].
