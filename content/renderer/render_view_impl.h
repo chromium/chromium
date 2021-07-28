@@ -8,11 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
-#include <memory>
-#include <set>
-#include <vector>
-
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -23,12 +18,12 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/common/frame.mojom-forward.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/page_zoom.h"
 #include "content/public/common/referrer.h"
 #include "content/public/renderer/render_view.h"
-#include "content/renderer/render_frame_impl.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -58,6 +53,7 @@ struct WebWindowFeatures;
 
 namespace content {
 class AgentSchedulingGroup;
+class RenderFrameImpl;
 class RenderViewImplTest;
 class RenderViewTest;
 

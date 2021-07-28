@@ -4,6 +4,9 @@
 
 #include "content/renderer/render_view_impl.h"
 
+#include <map>
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -21,6 +24,7 @@
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
+#include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
