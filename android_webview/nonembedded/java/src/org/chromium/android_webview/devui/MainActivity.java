@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.HashMap;
@@ -217,7 +218,7 @@ public class MainActivity extends FragmentActivity {
         // Store the Intent so we can switch Fragments in onResume (which is called next). Only need
         // to switch Fragment if the Intent specifies to do so.
         setIntent(intent);
-        mSwitchFragmentOnResume = intent.hasExtra(FRAGMENT_ID_INTENT_EXTRA);
+        mSwitchFragmentOnResume = IntentUtils.safeHasExtra(intent, FRAGMENT_ID_INTENT_EXTRA);
     }
 
     @Override
@@ -241,10 +242,7 @@ public class MainActivity extends FragmentActivity {
         // FRAGMENT_ID_INTENT_EXTRA is an optional extra to specify which fragment to open. At the
         // moment, it's specified only by DeveloperUiService (so make sure these constants stay in
         // sync).
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            fragmentId = extras.getInt(FRAGMENT_ID_INTENT_EXTRA, fragmentId);
-        }
+        fragmentId = IntentUtils.safeGetIntExtra(getIntent(), FRAGMENT_ID_INTENT_EXTRA, fragmentId);
         switchFragment(fragmentId);
         logFragmentNavigation("FromIntent", fragmentId);
     }
