@@ -242,7 +242,6 @@ void TestHistograms(const base::HistogramTester& histograms,
                     const std::vector<ExpectedFrameBytes>& ad_frames,
                     size_t non_ad_cached_kb,
                     size_t non_ad_uncached_kb) {
-  size_t total_ad_cached_kb = 0;
   size_t total_ad_uncached_kb = 0;
   size_t total_ad_kb = 0;
   size_t ad_frame_count = 0;
@@ -257,7 +256,6 @@ void TestHistograms(const base::HistogramTester& histograms,
   // Perform some initial calculations on the number of bytes, of each type,
   // in each ad frame.
   for (const ExpectedFrameBytes& bytes : ad_frames) {
-    total_ad_cached_kb += bytes.cached_kb;
     total_ad_uncached_kb += bytes.uncached_kb;
     total_ad_kb += bytes.cached_kb + bytes.uncached_kb;
 

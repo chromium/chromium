@@ -5,8 +5,10 @@
 #include "components/reporting/util/statusor.h"
 
 #include <errno.h>
+
 #include <algorithm>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -275,12 +277,10 @@ TEST(StatusOr, TestBinding) {
 
 TEST(StatusOr, TestAbort) {
   StatusOr<int> thing1(Status(error::UNKNOWN, "Unknown"));
-  int v1;
-  EXPECT_DEATH_IF_SUPPORTED(v1 = thing1.ValueOrDie(), "");
+  EXPECT_DEATH_IF_SUPPORTED(std::ignore = thing1.ValueOrDie(), "");
 
   StatusOr<std::unique_ptr<int>> thing2(Status(error::UNKNOWN, "Unknown"));
-  std::unique_ptr<int> v2;
-  EXPECT_DEATH_IF_SUPPORTED(v2 = std::move(thing2.ValueOrDie()), "");
+  EXPECT_DEATH_IF_SUPPORTED(std::ignore = std::move(thing2.ValueOrDie()), "");
 }
 }  // namespace
 }  // namespace reporting

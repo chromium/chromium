@@ -3368,26 +3368,31 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, WillFillCreditCardNumber) {
   // Empty form - whole form is Autofilled.
   EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
   EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
+  EXPECT_TRUE(WillFillCreditCardNumber(form, *month_field));
 
   // If the user has entered a value, it won't be overridden.
   number_field->value = u"gibberish";
   EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
   EXPECT_FALSE(WillFillCreditCardNumber(form, *name_field));
+  EXPECT_FALSE(WillFillCreditCardNumber(form, *month_field));
 
   // But if that value is removed, it will be Autofilled.
   number_field->value.clear();
   EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
+  EXPECT_TRUE(WillFillCreditCardNumber(form, *month_field));
 
   // When the number is already autofilled, we won't fill it.
   number_field->is_autofilled = true;
-  EXPECT_FALSE(WillFillCreditCardNumber(form, *name_field));
   EXPECT_TRUE(WillFillCreditCardNumber(form, *number_field));
+  EXPECT_FALSE(WillFillCreditCardNumber(form, *name_field));
+  EXPECT_FALSE(WillFillCreditCardNumber(form, *month_field));
 
   // If another field is filled, we would still fill other non-filled fields in
   // the section.
   number_field->is_autofilled = false;
   name_field->is_autofilled = true;
   EXPECT_TRUE(WillFillCreditCardNumber(form, *name_field));
+  EXPECT_TRUE(WillFillCreditCardNumber(form, *month_field));
 }
 
 // Test that we correctly log FIELD_WAS_AUTOFILLED event in UserHappiness.

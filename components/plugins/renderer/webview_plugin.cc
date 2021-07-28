@@ -86,10 +86,8 @@ WebViewPlugin::~WebViewPlugin() {
 void WebViewPlugin::ReplayReceivedData(WebPlugin* plugin) {
   if (!response_.IsNull()) {
     plugin->DidReceiveResponse(response_);
-    size_t total_bytes = 0;
     for (auto it = data_.begin(); it != data_.end(); ++it) {
       plugin->DidReceiveData(it->c_str(), it->length());
-      total_bytes += it->length();
     }
   }
   // We need to transfer the |focused_| to new plugin after it loaded.

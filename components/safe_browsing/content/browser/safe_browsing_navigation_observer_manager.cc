@@ -697,16 +697,12 @@ void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpIpAddresses() {
-  std::size_t remove_count = 0;
   for (auto it = host_to_ip_map_.begin(); it != host_to_ip_map_.end();) {
-    std::size_t size_before_removal = it->second.size();
     base::EraseIf(it->second, [](const ResolvedIPAddress& resolved_ip) {
       return IsEventExpired(resolved_ip.timestamp,
                             kNavigationFootprintTTLInSecond);
     });
-    std::size_t size_after_removal = it->second.size();
-    remove_count += (size_before_removal - size_after_removal);
-    if (size_after_removal == 0)
+    if (it->second.empty())
       it = host_to_ip_map_.erase(it);
     else
       ++it;

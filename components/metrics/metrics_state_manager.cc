@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -167,7 +168,9 @@ MetricsStateManager::MetricsStateManager(
   if (enabled_state_provider_->IsConsentGiven())
     ForceClientIdCreation();
 
-#if !defined(OS_WIN)
+#if defined(OS_WIN)
+  ALLOW_UNUSED_LOCAL(is_first_run);
+#else
   if (is_first_run) {
     // If this is a first run (no install date) and there's no client id, then
     // generate a provisional client id now. This id will be used for field
