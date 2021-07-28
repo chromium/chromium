@@ -40,8 +40,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
 - (instancetype)init {
   if (self = [super init]) {
     _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:base::SysUTF8ToNSString(
-                                    updater::GetUpdateServiceLaunchdName())
+        initWithMachServiceName:updater::GetUpdateServiceMachName()
                         options:0]);
 
     _xpcConnection.get().remoteObjectInterface =

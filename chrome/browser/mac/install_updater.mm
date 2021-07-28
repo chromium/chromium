@@ -6,11 +6,13 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -51,28 +53,33 @@ base::FilePath GetUpdaterExecutableName() {
 void InstallUpdaterAndRegisterBrowser() {
   base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce([] {
-        // The updater executable should be in
-        // BRANDING.app/Contents/Frameworks/BRANDING.framework/Versions/V/
-        // Helpers/Updater.app/Contents/MacOS/Updater
-        const base::FilePath updater_executable_path =
-            base::mac::FrameworkBundlePath()
-                .Append(FILE_PATH_LITERAL("Helpers"))
-                .Append(GetUpdaterExecutableName());
+      base::BindOnce(
+          [](scoped_refptr<BrowserUpdaterClient> client) {
+            // The updater executable should be in
+            // BRANDING.app/Contents/Frameworks/BRANDING.framework/Versions/V/
+            // Helpers/Updater.app/Contents/MacOS/Updater
+            const base::FilePath updater_executable_path =
+                base::mac::FrameworkBundlePath()
+                    .Append(FILE_PATH_LITERAL("Helpers"))
+                    .Append(GetUpdaterExecutableName());
 
-        if (!base::PathExists(updater_executable_path)) {
-          VLOG(1) << "The updater does not exist in the bundle.";
-          return;
-        }
+            if (!base::PathExists(updater_executable_path)) {
+              VLOG(1) << "The updater does not exist in the bundle.";
+              return;
+            }
 
-        int exit_code = RunCommand(updater_executable_path, kInstallCommand);
-        if (exit_code != 0) {
-          VLOG(1) << "Couldn't install the updater. Exit code: " << exit_code;
-          return;
-        }
+            int exit_code =
+                RunCommand(updater_executable_path, kInstallCommand);
+            if (exit_code != 0) {
+              VLOG(1) << "Couldn't install the updater. Exit code: "
+                      << exit_code;
+              return;
+            }
 
-        BrowserUpdaterClient::Create()->Register();
-      }));
+            client->Register();
+          },
+          BrowserUpdaterClient::Create()));
 }

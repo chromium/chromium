@@ -22,6 +22,7 @@ source_set("browser_updater_client") {
     "//base",
     "//chrome/browser:buildflags",
     "//chrome/common:version_header",
+    "//chrome/updater:branding_header",
     "//chrome/updater:browser_sources",
     "//components/version_info",
   ]
