@@ -67,14 +67,6 @@ class PasswordStoreConsumerHelper
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
-// PasswordForm::date_synced is a local field. Therefore it may be different
-// across clients.
-void ClearSyncDateField(std::vector<std::unique_ptr<PasswordForm>>* forms) {
-  for (auto& form : *forms) {
-    form->date_synced = base::Time();
-  }
-}
-
 sync_pb::EntitySpecifics EncryptPasswordSpecifics(
     const sync_pb::PasswordSpecificsData& password_data,
     const std::string& passphrase,
@@ -153,7 +145,6 @@ bool ProfileContainsSamePasswordFormsAsVerifier(int index) {
       GetLogins(GetVerifierProfilePasswordStoreInterface());
   std::vector<std::unique_ptr<PasswordForm>> forms =
       GetLogins(GetProfilePasswordStoreInterface(index));
-  ClearSyncDateField(&forms);
 
   std::ostringstream mismatch_details_stream;
   bool is_matching = password_manager::ContainsEqualPasswordFormsUnordered(
@@ -171,8 +162,6 @@ bool ProfilesContainSamePasswordForms(int index_a, int index_b) {
       GetLogins(GetProfilePasswordStoreInterface(index_a));
   std::vector<std::unique_ptr<PasswordForm>> forms_b =
       GetLogins(GetProfilePasswordStoreInterface(index_b));
-  ClearSyncDateField(&forms_a);
-  ClearSyncDateField(&forms_b);
 
   std::ostringstream mismatch_details_stream;
   bool is_matching = password_manager::ContainsEqualPasswordFormsUnordered(
@@ -375,7 +364,6 @@ PasswordFormsChecker::PasswordFormsChecker(
     expected_forms_.push_back(
         std::make_unique<password_manager::PasswordForm>(password_form));
   }
-  ClearSyncDateField(&expected_forms_);
 }
 
 PasswordFormsChecker::~PasswordFormsChecker() = default;
@@ -405,7 +393,6 @@ bool PasswordFormsChecker::IsExitConditionSatisfiedImpl(std::ostream* os) {
   std::vector<std::unique_ptr<PasswordForm>> forms =
       passwords_helper::GetLogins(
           passwords_helper::GetProfilePasswordStoreInterface(index_));
-  ClearSyncDateField(&forms);
 
   std::ostringstream mismatch_details_stream;
   bool is_matching = password_manager::ContainsEqualPasswordFormsUnordered(

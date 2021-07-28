@@ -92,14 +92,13 @@ PendingCredentialsState ResolvePendingCredentialsStates(
 }
 
 // Returns a PasswordForm that has all fields taken from |update| except
-// date_created, date_synced, times_used and moving_blocked_for_list that are
+// date_created, times_used and moving_blocked_for_list that are
 // taken from |original_form|.
 PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
     const PasswordForm& original_form,
     const PasswordForm& update) {
   PasswordForm result(update);
   result.date_created = original_form.date_created;
-  result.date_synced = original_form.date_synced;
   result.times_used = original_form.times_used;
   result.moving_blocked_for_list = original_form.moving_blocked_for_list;
   return result;

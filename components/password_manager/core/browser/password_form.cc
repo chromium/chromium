@@ -143,7 +143,6 @@ void PasswordFormToJSON(const PasswordForm& form,
   target->SetDouble("date_password_modified",
                     form.date_password_modified.ToDoubleT());
   target->SetDouble("date_created", form.date_created.ToDoubleT());
-  target->SetDouble("date_synced", form.date_synced.ToDoubleT());
   target->SetString("type", ToString(form.type));
   target->SetInteger("times_used", form.times_used);
   target->SetString("form_data", ToString(form.form_data));
@@ -288,7 +287,6 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
              rhs.confirmation_password_element_renderer_id &&
          lhs.new_password_value == rhs.new_password_value &&
          lhs.date_created == rhs.date_created &&
-         lhs.date_synced == rhs.date_synced &&
          lhs.date_last_used == rhs.date_last_used &&
          lhs.date_password_modified == rhs.date_password_modified &&
          lhs.blocked_by_user == rhs.blocked_by_user && lhs.type == rhs.type &&

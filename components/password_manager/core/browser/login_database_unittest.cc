@@ -94,7 +94,6 @@ PasswordForm GenerateExamplePasswordForm() {
   form.scheme = PasswordForm::Scheme::kHtml;
   form.times_used = 1;
   form.form_data.name = u"form_name";
-  form.date_synced = base::Time::Now() - base::TimeDelta::FromDays(7);
   form.date_last_used = base::Time::Now();
   form.date_password_modified =
       base::Time::Now() - base::TimeDelta::FromDays(1);
@@ -1005,8 +1004,6 @@ static bool AddTimestampedLogin(LoginDatabase* db,
 
   if (date_is_creation)
     form.date_created = time;
-  else
-    form.date_synced = time;
   return db->AddLogin(form) == AddChangeForForm(form);
 }
 
@@ -1152,7 +1149,6 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
   form.signon_realm = "http://www.google.com/";
   form.blocked_by_user = true;
   form.scheme = PasswordForm::Scheme::kHtml;
-  form.date_synced = base::Time::Now();
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
@@ -1338,7 +1334,6 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
 
   // Simulate the user changing their password.
   complete_form.password_value = u"new_password";
-  complete_form.date_synced = base::Time::Now();
   complete_form.date_last_used = base::Time::Now();
   complete_form.date_password_modified = base::Time::Now();
   EXPECT_EQ(UpdateChangeForForm(complete_form, /*password_changed=*/true),
@@ -1410,7 +1405,6 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
       ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
   form.submit_element = u"submit_element";
-  form.date_synced = base::Time::Now() - base::TimeDelta::FromDays(2);
   form.date_created = base::Time::Now() - base::TimeDelta::FromDays(3);
   form.date_last_used = base::Time::Now();
   form.date_password_modified =
@@ -1458,7 +1452,6 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
       ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
   form.submit_element = u"submit_element";
-  form.date_synced = base::Time::Now() - base::TimeDelta::FromDays(2);
   form.date_created = base::Time::Now() - base::TimeDelta::FromDays(3);
   form.date_last_used = base::Time::Now();
   form.display_name = u"Mr. Smith";

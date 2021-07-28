@@ -45,17 +45,6 @@ using testing::UnorderedElementsAre;
 
 static const char* kValidPassphrase = "passphrase!";
 
-// PasswordForm::date_synced is a local field. Therefore it may be different
-// across clients.
-std::vector<std::unique_ptr<PasswordForm>> GetAllLoginsWithoutSyncDate(
-    int index) {
-  auto forms = GetAllLogins(GetProfilePasswordStoreInterface(index));
-  for (auto& form : forms) {
-    form->date_synced = base::Time();
-  }
-  return forms;
-}
-
 class TwoClientPasswordsSyncTest : public SyncTest {
  public:
   TwoClientPasswordsSyncTest() : SyncTest(TWO_CLIENT) {}
@@ -420,9 +409,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
   ASSERT_TRUE(GetClient(1)->SetupSync()) << "GetClient(1)->SetupSync() failed.";
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
 
-  EXPECT_THAT(GetAllLoginsWithoutSyncDate(0),
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
               UnorderedElementsAre(Pointee(form0), Pointee(form1)));
-  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1),
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
               UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 }
 
@@ -445,7 +434,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1), ElementsAre(Pointee(form)));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
@@ -469,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1),
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
               UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 
   // Remove security issues on Client 1.
@@ -478,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
 
   // Wait until Client 0 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1),
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
               UnorderedElementsAre(Pointee(form0), Pointee(form1)));
 }
 
@@ -505,5 +495,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  EXPECT_THAT(GetAllLoginsWithoutSyncDate(1), ElementsAre(Pointee(form)));
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
 }

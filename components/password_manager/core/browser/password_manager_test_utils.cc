@@ -47,7 +47,6 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     const PasswordFormData& form_data,
     bool use_federated_login) {
   auto form = PasswordFormFromData(form_data);
-  form->date_synced = form->date_created + base::TimeDelta::FromDays(1);
   if (form_data.username_value)
     form->display_name = form->username_value;
   else

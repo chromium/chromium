@@ -174,7 +174,6 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
   password.icon_url = GURL(password_data.avatar_url());
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
-  password.date_synced = sync_time;
   password.password_issues = PasswordIssuesMapFromProto(password_data);
 
   return password;

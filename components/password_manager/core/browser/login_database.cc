@@ -57,10 +57,10 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 30;
+constexpr int kCurrentVersionNumber = 31;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
-constexpr int kCompatibleVersionNumber = 29;
+constexpr int kCompatibleVersionNumber = 31;
 
 base::Pickle SerializeValueElementPairs(const ValueElementVector& vec) {
   base::Pickle p;
@@ -153,7 +153,6 @@ enum LoginDatabaseTableColumns {
   COLUMN_PASSWORD_TYPE,
   COLUMN_TIMES_USED,
   COLUMN_FORM_DATA,
-  COLUMN_DATE_SYNCED,
   COLUMN_DISPLAY_NAME,
   COLUMN_ICON_URL,
   COLUMN_FEDERATION_URL,
@@ -222,7 +221,6 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   base::Pickle form_data_pickle;
   autofill::SerializeFormData(form.form_data, &form_data_pickle);
   s->BindBlob(COLUMN_FORM_DATA, PickleToSpan(form_data_pickle));
-  s->BindInt64(COLUMN_DATE_SYNCED, form.date_synced.ToInternalValue());
   s->BindString16(COLUMN_DISPLAY_NAME, form.display_name);
   s->BindString(COLUMN_ICON_URL, form.icon_url.spec());
   // An empty Origin serializes as "null" which would be strange to store here.
@@ -467,6 +465,10 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->AddColumn("date_password_modified",
                              "INTEGER NOT NULL DEFAULT 0");
   SealVersion(builders, /*expected_version=*/30u);
+
+  // Version 31. Dropped 'date_synced' column.
+  builders.logins->DropColumn("date_synced");
+  SealVersion(builders, /*expected_version=*/31u);
 
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
@@ -1271,7 +1273,6 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   base::Pickle form_data_pickle;
   autofill::SerializeFormData(form.form_data, &form_data_pickle);
   s.BindBlob(next_param++, PickleToSpan(form_data_pickle));
-  s.BindInt64(next_param++, form.date_synced.ToInternalValue());
   s.BindString16(next_param++, form.display_name);
   s.BindString(next_param++, form.icon_url.spec());
   // An empty Origin serializes as "null" which would be strange to store here.
@@ -1554,8 +1555,6 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
                 : metrics_util::LOGIN_DATABASE_FAILURE;
     metrics_util::LogFormDataDeserializationStatus(status);
   }
-  form->date_synced =
-      base::Time::FromInternalValue(s.ColumnInt64(COLUMN_DATE_SYNCED));
   form->display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
   form->icon_url = GURL(s.ColumnString(COLUMN_ICON_URL));
   form->federation_origin =
