@@ -19,7 +19,7 @@ class NavigationItem;
 
 // A utility class that is used to track redirects during tests to enable URL
 // verification for redirected page loads.
-class TestRedirectObserver
+class TestRedirectObserver final
     : public web::WebStateObserver,
       public web::WebStateUserData<TestRedirectObserver> {
  public:
@@ -34,7 +34,7 @@ class TestRedirectObserver
   friend class web::WebStateUserData<TestRedirectObserver>;
 
   TestRedirectObserver(WebState* web_state);
-  ~TestRedirectObserver() final;
+  ~TestRedirectObserver() override;
 
   // WebStateObserver:
   void DidStartNavigation(web::WebState* web_state,
