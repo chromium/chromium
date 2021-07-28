@@ -4,6 +4,8 @@
 
 source_set("core") {
   sources = [
+    "application_breadcrumbs_logger.cc",
+    "application_breadcrumbs_logger.h",
     "breadcrumb_manager.cc",
     "breadcrumb_manager.h",
     "breadcrumb_manager_keyed_service.cc",
@@ -19,6 +21,7 @@ source_set("core") {
   ]
 
   deps = [
+    ":generate_not_user_triggered_actions",
     "//base",
     "//components/crash/core/common:crash_key",
     "//components/keyed_service/core",
@@ -43,6 +46,7 @@ source_set("unit_tests") {
   ]
 
   sources = [
+    "application_breadcrumbs_logger_unittest.cc",
     "application_breadcrumbs_not_user_action_unittest.cc",
     "breadcrumb_manager_keyed_service_unittest.cc",
     "breadcrumb_manager_observer_unittest.cc",

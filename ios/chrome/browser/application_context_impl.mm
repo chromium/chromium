@@ -51,7 +51,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager_impl.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/component_updater/ios_component_updater_configurator.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger.h"
+#import "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_logger_ios.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -164,7 +164,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>();
     application_breadcrumbs_logger_ =
-        std::make_unique<ApplicationBreadcrumbsLogger>(
+        std::make_unique<ApplicationBreadcrumbsLoggerIOS>(
             breadcrumb_manager_.get());
 
     base::FilePath storage_dir;

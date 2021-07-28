@@ -23,7 +23,7 @@ class BreadcrumbManager;
 class BreadcrumbPersistentStorageManager;
 }
 
-class ApplicationBreadcrumbsLogger;
+class ApplicationBreadcrumbsLoggerIOS;
 
 namespace network {
 class NetworkChangeManager;
@@ -96,7 +96,8 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
   // Logger which observers and logs application wide events to
   // |breadcrumb_manager_|. Will be null if breadcrumbs feature is not enabled.
-  std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;
+  std::unique_ptr<ApplicationBreadcrumbsLoggerIOS>
+      application_breadcrumbs_logger_;
 
   // Must be destroyed after |local_state_|. BrowserStatePolicyConnector isn't a
   // keyed service because the pref service, which isn't a keyed service, has a

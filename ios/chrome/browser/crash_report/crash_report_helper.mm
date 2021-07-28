@@ -236,18 +236,6 @@ void ClearStateForWebStateList(WebStateList* web_state_list) {
       web_state_list);
 }
 
-void MonitorBreadcrumbManager(
-    breadcrumbs::BreadcrumbManager* breadcrumb_manager) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .ObserveBreadcrumbManager(breadcrumb_manager);
-}
-
-void StopMonitoringBreadcrumbManager(
-    breadcrumbs::BreadcrumbManager* breadcrumb_manager) {
-  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
-      .StopObservingBreadcrumbManager(breadcrumb_manager);
-}
-
 void MonitorBreadcrumbManagerService(
     breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
   breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
