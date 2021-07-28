@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -76,6 +77,25 @@ void UpdateAllShortcutsForShortcutInfo(
       base::BindOnce(&internals::UpdatePlatformShortcuts,
                      std::move(shortcut_data_dir), old_app_title),
       std::move(shortcut_info), std::move(callback));
+}
+
+using AppCallbackMap = base::flat_map<AppId, std::vector<base::OnceClosure>>;
+AppCallbackMap& GetShortcutsDeletedCallbackMap() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<AppCallbackMap> map;
+  return *map;
+}
+
+void ShortcutsDeleted(const AppId& app_id, bool /*shortcut_deleted*/) {
+  auto& map = GetShortcutsDeletedCallbackMap();
+  auto it = map.find(app_id);
+  if (it == map.end())
+    return;
+  std::vector<base::OnceClosure> callbacks = std::move(it->second);
+  map.erase(it);
+  for (base::OnceClosure& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace
@@ -277,7 +297,14 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
   internals::ScheduleDeletePlatformShortcuts(
-      shortcut_data_dir, std::move(shortcut_info), base::DoNothing());
+      shortcut_data_dir, std::move(shortcut_info),
+      base::BindOnce(ShortcutsDeleted, app->id()));
+}
+
+void WaitForExtensionShortcutsDeleted(const AppId& app_id,
+                                      base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetShortcutsDeletedCallbackMap()[app_id].push_back(std::move(callback));
 }
 
 void UpdateAllShortcuts(const std::u16string& old_app_title,

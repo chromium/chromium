@@ -284,8 +284,25 @@ void WebAppUiManagerImpl::OnShortcutLocationGathered(
     ShortcutLocations locations) {
   apps::AppServiceProxyBase* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  const bool is_extension = proxy->AppRegistryCache().GetAppType(from_app) ==
+                            apps::mojom::AppType::kExtension;
+  if (is_extension) {
+    WaitForExtensionShortcutsDeleted(
+        from_app,
+        base::BindOnce(&WebAppUiManagerImpl::InstallOsHooksForReplacementApp,
+                       weak_ptr_factory_.GetWeakPtr(), app_id, locations));
+  }
+
   proxy->UninstallSilently(from_app, apps::mojom::UninstallSource::kMigration);
 
+  if (!is_extension)
+    InstallOsHooksForReplacementApp(app_id, locations);
+}
+
+void WebAppUiManagerImpl::InstallOsHooksForReplacementApp(
+    const AppId& app_id,
+    ShortcutLocations locations) {
   InstallOsHooksOptions options;
   options.os_hooks[OsHookType::kShortcuts] =
       locations.on_desktop || locations.applications_menu_location ||

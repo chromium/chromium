@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
 class Profile;
@@ -70,6 +71,11 @@ void CreateShortcutsForWebApp(ShortcutCreationReason reason,
 // Delete all shortcuts that have been created for the given profile and
 // extension.
 void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app);
+
+// Register a callback that will be run once |app_id|'s shortcuts have been
+// deleted.
+void WaitForExtensionShortcutsDeleted(const AppId& app_id,
+                                      base::OnceClosure callback);
 
 // Updates shortcuts for |app|, but does not create new ones if shortcuts are
 // not present in user-facing locations. Some platforms may still (re)create
