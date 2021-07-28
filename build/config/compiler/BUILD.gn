@@ -1599,8 +1599,10 @@ config("default_warnings") {
         # Currently goma can not handle case sensitiveness for windows well.
         cflags += [ "-Wno-nonportable-include-path" ]
 
-        # Warns in ATL headers; see https://crbug.com/1208419.
-        cflags += [ "-Wno-null-pointer-subtraction" ]
+        if (llvm_force_head_revision) {
+          # Warns in ATL headers; see https://crbug.com/1208419.
+          cflags += [ "-Wno-null-pointer-subtraction" ]
+        }
       }
 
       if (current_toolchain == host_toolchain || !use_xcode_clang) {
