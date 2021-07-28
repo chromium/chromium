@@ -544,8 +544,6 @@ std::string PrintPreviewHandler::GetCallbackId(int request_id) {
 }
 
 void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
-  // TODO(crbug.com/1195284): Remove log once bug is confirmed fix.
-  LOG(ERROR) << "Initiated PrintPreviewHandler::HandleGetPrinters()";
   const auto& list = args->GetList();
   CHECK_GE(list.size(), 2u);
   std::string callback_id = list[0].GetString();
@@ -577,8 +575,6 @@ void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
 
 void PrintPreviewHandler::HandleGetPrinterCapabilities(
     const base::ListValue* args) {
-  // TODO(crbug.com/1195284): Remove log once bug is confirmed fix.
-  LOG(ERROR) << "Initiated PrintPreviewHandler::HandleGetPrinterCapabilities()";
   const auto& list = args->GetList();
   // Validate that we have a valid callback_id
   if (list.size() < 1 || !list[0].is_string() || list[0].GetString().empty()) {
@@ -618,8 +614,6 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
 }
 
 void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
-  // TODO(crbug.com/1195284): Remove log once bug is confirmed fix.
-  LOG(ERROR) << "Initiated PrintPreviewHandler::HandleGetPreview()";
   DCHECK_EQ(2U, args->GetSize());
   std::string callback_id;
   std::string json_str;
@@ -860,8 +854,6 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 
 void PrintPreviewHandler::HandleGetInitialSettings(
     const base::ListValue* args) {
-  // TODO(crbug.com/1195284): Remove log once bug is confirmed fix.
-  LOG(ERROR) << "Initiated PrintPreviewHandler::HandleGetInitialSettings()";
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   CHECK(!callback_id.empty());
