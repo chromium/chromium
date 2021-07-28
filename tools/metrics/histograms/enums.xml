@@ -46531,6 +46531,7 @@ from previous Chrome versions.
   <int value="-2042278511" label="SmartSuggestionForLargeDownloads:disabled"/>
   <int value="-2041281386" label="MultiPaste:disabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
+  <int value="-2040360427" label="DesktopScreenshots:disabled"/>
   <int value="-2040115518" label="load-media-router-component-extension"/>
   <int value="-2039439354"
       label="OmniboxOnDeviceHeadProviderIncognito:disabled"/>
@@ -48005,6 +48006,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:enabled"/>
   <int value="-897069393"
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
+  <int value="-895071695" label="DesktopScreenshots:enabled"/>
   <int value="-894214299" label="fill-on-account-select:enabled"/>
   <int value="-894185031" label="HighDynamicRange:disabled"/>
   <int value="-893673593" label="BentoOffline:disabled"/>

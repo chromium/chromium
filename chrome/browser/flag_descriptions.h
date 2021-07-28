@@ -1348,6 +1348,9 @@ extern const char kServiceWorkerSubresourceFilterDescription[];
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 
+extern const char kSharingDesktopScreenshotsName[];
+extern const char kSharingDesktopScreenshotsDescription[];
+
 extern const char kSharingHubDesktopAppMenuName[];
 extern const char kSharingHubDesktopAppMenuDescription[];
 

@@ -5117,6 +5117,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "sharing-desktop-screenshots",
+    "owners": ["skare", "kmilka", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "sharing-hub-desktop-app-menu",
     "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 94

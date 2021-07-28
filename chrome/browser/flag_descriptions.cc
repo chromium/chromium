@@ -2363,6 +2363,11 @@ const char kSharedClipboardUIDescription[] =
     "Enables shared clipboard feature signals to be handled by showing "
     "a list of user's available devices to share the clipboard.";
 
+const char kSharingDesktopScreenshotsName[] = "Desktop Screenshots";
+const char kSharingDesktopScreenshotsDescription[] =
+    "Enables taking"
+    " screenshots from the desktop sharing hub.";
+
 const char kSharingHubDesktopAppMenuName[] = "Desktop Sharing Hub in App Menu";
 const char kSharingHubDesktopAppMenuDescription[] =
     "Enables the Chrome Sharing Hub in the 3-dot menu for desktop.";
