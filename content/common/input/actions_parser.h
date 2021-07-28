@@ -9,11 +9,8 @@
 #include <set>
 #include <string>
 
+#include "base/values.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace content {
 

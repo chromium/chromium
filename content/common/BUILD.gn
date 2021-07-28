@@ -530,6 +530,7 @@ mojom("mojo_bindings") {
         "//content/common/input/synthetic_smooth_drag_gesture_params.h",
         "//content/common/input/synthetic_smooth_scroll_gesture_params.h",
         "//content/common/input/synthetic_tap_gesture_params.h",
+        "//content/common/navigation_gesture.h",
         "//third_party/blink/public/common/widget/visual_properties.h",
         "//third_party/blink/public/common/web_preferences/web_preferences.h",
         "//net/base/network_change_notifier.h",
@@ -545,6 +546,7 @@ mojom("mojo_bindings") {
       ]
 
       traits_private_headers = [
+        "//content/common/content_param_traits_macros.h",
         "//content/public/common/common_param_traits.h",
         "//services/network/public/cpp/p2p_param_traits.h",
       ]
