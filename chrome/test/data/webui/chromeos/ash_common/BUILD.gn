@@ -17,6 +17,7 @@ js_type_check("closure_compile") {
     ":fake_observables_test",
     ":navigation_selector_test",
     ":navigation_view_panel_test",
+    ":page_toolbar_test",
   ]
 }
 
@@ -52,5 +53,13 @@ js_library("navigation_view_panel_test") {
     "../..:chai_assert",
     "//ash/webui/common/resources:navigation_selector",
     "//ash/webui/common/resources:navigation_view_panel",
+  ]
+}
+
+js_library("page_toolbar_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//ash/webui/common/resources:page_toolbar",
   ]
 }

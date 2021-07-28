@@ -39,6 +39,7 @@ const debug_suites_list = [
   'FakeMethodResolver',
   'NavigationSelector',
   'NavigationViewPanel',
+  'PageToolbar',
 ];
 
 TEST_F('AshCommon', 'BrowserTest', function() {

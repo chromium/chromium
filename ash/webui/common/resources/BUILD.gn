@@ -16,6 +16,7 @@ polymer_element_files = [
   "navigation_icons.js",
   "navigation_selector.js",
   "navigation_view_panel.js",
+  "page_toolbar.js",
 ]
 
 generate_grd("build_grdp") {
@@ -38,6 +39,7 @@ js_type_check("closure_compile_module") {
     ":fake_observables",
     ":navigation_selector",
     ":navigation_view_panel",
+    ":page_toolbar",
   ]
 }
 
@@ -64,6 +66,12 @@ js_library("navigation_view_panel") {
 }
 
 js_library("navigation_icons") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("page_toolbar") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
