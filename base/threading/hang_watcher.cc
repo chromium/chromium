@@ -489,15 +489,24 @@ ScopedClosureRunner HangWatcher::RegisterThread(ThreadType thread_type) {
 }
 
 base::TimeTicks HangWatcher::WatchStateSnapShot::GetHighestDeadline() const {
-  DCHECK(!hung_watch_state_copies_.empty());
+  DCHECK(IsActionable());
+
   // Since entries are sorted in increasing order the last entry is the largest
   // one.
   return hung_watch_state_copies_.back().deadline;
 }
 
-HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
+HangWatcher::WatchStateSnapShot::WatchStateSnapShot() = default;
+
+void HangWatcher::WatchStateSnapShot::Init(
     const HangWatchStates& watch_states,
     base::TimeTicks deadline_ignore_threshold) {
+  DCHECK(!initialized_);
+
+  // No matter if the snapshot is actionable or not after this function
+  // it will have been initialized.
+  initialized_ = true;
+
   const base::TimeTicks now = base::TimeTicks::Now();
   bool all_threads_marked = true;
   bool found_deadline_before_ignore_threshold = false;
@@ -610,6 +619,11 @@ HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
                });
 }
 
+void HangWatcher::WatchStateSnapShot::Clear() {
+  hung_watch_state_copies_.clear();
+  initialized_ = false;
+}
+
 HangWatcher::WatchStateSnapShot::WatchStateSnapShot(
     const WatchStateSnapShot& other) = default;
 
@@ -641,12 +655,14 @@ std::string HangWatcher::WatchStateSnapShot::PrepareHungThreadListCrashKey()
 }
 
 bool HangWatcher::WatchStateSnapShot::IsActionable() const {
+  DCHECK(initialized_);
   return !hung_watch_state_copies_.empty();
 }
 
 HangWatcher::WatchStateSnapShot HangWatcher::GrabWatchStateSnapshotForTesting()
     const {
-  WatchStateSnapShot snapshot(watch_states_, deadline_ignore_threshold_);
+  WatchStateSnapShot snapshot;
+  snapshot.Init(watch_states_, deadline_ignore_threshold_);
   return snapshot;
 }
 
@@ -659,12 +675,13 @@ void HangWatcher::Monitor() {
   if (watch_states_.empty())
     return;
 
-  WatchStateSnapShot watch_state_snapshot(watch_states_,
-                                          deadline_ignore_threshold_);
+  watch_state_snapshot_.Init(watch_states_, deadline_ignore_threshold_);
 
-  if (watch_state_snapshot.IsActionable()) {
-    DoDumpWithoutCrashing(watch_state_snapshot);
+  if (watch_state_snapshot_.IsActionable()) {
+    DoDumpWithoutCrashing(watch_state_snapshot_);
   }
+
+  watch_state_snapshot_.Clear();
 }
 
 void HangWatcher::DoDumpWithoutCrashing(
