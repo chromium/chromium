@@ -1836,7 +1836,8 @@
                   '|ui/wm/core/ime'
     },
     'textinput_chromeos': {
-      'filepath': 'chrome/browser/chromeos/input_method/'\
+      'filepath': 'chrome/browser/ash/input_method/'\
+                  '|chrome/browser/chromeos/input_method'\
                   '|chrome/browser/chromeos/extensions/input_method'\
                   '|chrome/browser/chromeos/status/input_method'\
                   '|chrome/browser/extensions/api/input_ime'\
@@ -2048,7 +2049,6 @@
     },
     'x11': {
       'filepath': 'content/browser/renderer_host/backing_store_x\.' \
-                  '|chrome/browser/chromeos/input_method/xkeyboard\.' \
                   '|chrome/browser/chromeos/system_key_event_listener\.' \
                   '|chrome/browser/chromeos/'\
                   'xinput_hierarchy_changed_event_listener\.' \

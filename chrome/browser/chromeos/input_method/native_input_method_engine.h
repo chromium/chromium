@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/input_method/assistive_suggester.h"
-#include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
-#include "chrome/browser/chromeos/input_method/grammar_manager.h"
-#include "chrome/browser/chromeos/input_method/input_method_engine.h"
+#include "chrome/browser/ash/input_method/assistive_suggester.h"
+#include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/grammar_manager.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/suggestions_collector.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"

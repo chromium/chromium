@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
+#include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"

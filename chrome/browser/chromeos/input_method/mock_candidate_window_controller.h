@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/input_method/candidate_window_controller.h"
+#include "chrome/browser/ash/input_method/candidate_window_controller.h"
 
 namespace chromeos {
 namespace input_method {

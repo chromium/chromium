@@ -102,7 +102,7 @@
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/full_restore/full_restore_app_launch_handler.h"
-#include "chrome/browser/chromeos/input_method/input_method_configuration.h"
+#include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/fake_device_sync.h"

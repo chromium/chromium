@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine_base.h"
 
 namespace chromeos {
 namespace input_method {

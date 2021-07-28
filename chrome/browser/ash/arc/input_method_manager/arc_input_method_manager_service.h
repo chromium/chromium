@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_state.h"
 #include "chrome/browser/ash/arc/input_method_manager/input_connection_impl.h"
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
-#include "chrome/browser/chromeos/input_method/input_method_engine.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
