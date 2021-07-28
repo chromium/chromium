@@ -24,7 +24,6 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -123,6 +122,7 @@ void AuthenticationService::Initialize(
 
   identity_service_observation_.Observe(
       ios::GetChromeBrowserProvider().GetChromeIdentityService());
+  account_manager_service_observation_.Observe(account_manager_service_);
 
   // Reload credentials to ensure the accounts from the token service are
   // up-to-date.
@@ -137,6 +137,7 @@ void AuthenticationService::Initialize(
 void AuthenticationService::Shutdown() {
   user_approved_account_list_manager_.Shutdown();
   identity_manager_observation_.Reset();
+  account_manager_service_observation_.Reset();
   delegate_.reset();
 }
 
@@ -437,7 +438,7 @@ void AuthenticationService::OnPrimaryAccountChanged(
   }
 }
 
-void AuthenticationService::OnIdentityListChanged(bool keychain_reload) {
+void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // IdentityManager::HasPrimaryAccount() needs to be called instead of
     // AuthenticationService::HasPrimaryIdentity() or
@@ -455,7 +456,7 @@ void AuthenticationService::OnIdentityListChanged(bool keychain_reload) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&AuthenticationService::ReloadCredentialsFromIdentities,
-                     GetWeakPtr(), keychain_reload));
+                     GetWeakPtr(), need_user_approval));
 }
 
 bool AuthenticationService::HandleMDMNotification(ChromeIdentity* identity,

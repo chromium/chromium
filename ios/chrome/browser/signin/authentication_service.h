@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/user_approved_account_list_manager.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 
@@ -25,7 +26,6 @@ class SyncService;
 
 class AuthenticationServiceDelegate;
 class AuthenticationServiceFake;
-class ChromeAccountManagerService;
 @class ChromeIdentity;
 class PrefService;
 class SyncSetupService;
@@ -34,7 +34,8 @@ class SyncSetupService;
 // authentication library.
 class AuthenticationService : public KeyedService,
                               public signin::IdentityManager::Observer,
-                              public ios::ChromeIdentityService::Observer {
+                              public ios::ChromeIdentityService::Observer,
+                              public ChromeAccountManagerService::Observer {
  public:
   AuthenticationService(PrefService* pref_service,
                         SyncSetupService* sync_setup_service,
@@ -181,10 +182,12 @@ class AuthenticationService : public KeyedService,
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeIdentityServiceObserver implementation.
-  void OnIdentityListChanged(bool keychainReload) override;
   void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
                                   NSDictionary* user_info) override;
   void OnChromeIdentityServiceWillBeDestroyed() override;
+
+  // ChromeAccountManagerServiceObserver implementation.
+  void OnIdentityListChanged(bool need_user_approval) override;
 
   // The delegate for this AuthenticationService. It is invalid to call any
   // method on this object except Initialize() or Shutdown() if this pointer
@@ -218,6 +221,10 @@ class AuthenticationService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::ScopedObservation<ChromeAccountManagerService,
+                          ChromeAccountManagerService::Observer>
+      account_manager_service_observation_{this};
 
   base::WeakPtrFactory<AuthenticationService> weak_pointer_factory_;
 

@@ -32,11 +32,14 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #include "ios/chrome/browser/system_flags.h"
+#include "ios/chrome/test/testing_application_context.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -83,6 +86,9 @@ class AuthenticationServiceTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
 
     browser_state_ = builder.Build();
+
+    account_manager_ = ChromeAccountManagerServiceFactory::GetForBrowserState(
+        browser_state_.get());
 
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -164,6 +170,16 @@ class AuthenticationServiceTest : public PlatformTest {
     return [identity_service()->GetAllIdentities(nullptr) objectAtIndex:index];
   }
 
+  // Sets a restricted pattern.
+  void SetPattern(const std::string pattern) {
+    base::ListValue allowed_patterns;
+    allowed_patterns.AppendString(pattern);
+    GetApplicationContext()->GetLocalState()->Set(
+        prefs::kRestrictAccountsToPatterns, allowed_patterns);
+  }
+
+  IOSChromeScopedTestingLocalState local_state_;
+  ChromeAccountManagerService* account_manager_;
   web::WebTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -697,4 +713,31 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
 
   // Attempt to sign in, and verify there is a crash.
   EXPECT_CHECK_DEATH(authentication_service()->SignIn(identity(0)));
+}
+
+// Tests that reauth prompt is set if the primary identity is restricted.
+TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
+  // Sign in.
+  SetExpectationsForSignInAndSync();
+  authentication_service()->SignIn(identity(0));
+  authentication_service()->GrantSyncConsent(identity(0));
+
+  // Set the account restriction.
+  SetPattern("foo");
+  EXPECT_FALSE(account_manager_->IsValidIdentity(identity(0)));
+
+  // Set the authentication service as "In Background" and run the loop.
+  base::RunLoop().RunUntilIdle();
+
+  // User is signed out (no corresponding identity), and reauth prompt is set.
+  EXPECT_TRUE(identity_manager()
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+                  .gaia.empty());
+  EXPECT_FALSE(authentication_service()->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  // TODO: Change AuthenticationService to not re-authenticate if email is
+  // filtered.
+  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
