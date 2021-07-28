@@ -6,7 +6,7 @@
 <resources>
     <!-- Card styles -->
     <style name="CardTransparentForDark">
-        <item name="android:background">@drawable/hairline_border_card_dark_transparent_bg</item>
+        <item name="android:background">@drawable/incognito_card_bg</item>
     </style>
 
     <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
@@ -15,7 +15,7 @@
     </style>
 
     <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">@dimen/card_rounded_corner_radius</item>
     </style>
 
     <style name="ListActionButton" parent="@style/TextButton">
