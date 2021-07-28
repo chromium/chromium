@@ -127,6 +127,7 @@ class OutOfProcessPPAPITest : public PPAPITest {
   OutOfProcessPPAPITest();
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void RunTest(const std::string& test_case) override;
   void RunTouchEventTest(const std::string& test_case);
 };
 
