@@ -60,11 +60,16 @@ class DownloadsHandler : public SettingsPageUIHandler,
   bool IsDownloadsConnectionPolicyEnabled() const;
   void SendDownloadsConnectionPolicyToJavascript();
 
-  // Callback for the "SetDownloadsConnectionAccountLink" message. If there was
-  // no account linked, this prompts the user to sign in; otherwise, this
-  // removes the linked account info and stored authentication tokens.
-  void SetDownloadsConnectionAccountLink(const base::ListValue* args);
+  // Callback for the "setDownloadsConnectionAccountLink" message. If there is
+  // no account linked and arg is true, this prompts the user to sign in; if
+  // there is an existing linked account and arg is false, this removes the
+  // linked account info and stored authentication tokens; otherwise, this
+  // merely sends the latest stored account info.
+  void HandleSetDownloadsConnectionAccountLink(const base::ListValue* args);
+  // Callback for file system connector code, since prompting the user to sign
+  // in is async.
   void OnDownloadsConnectionAccountLinkSet(bool success);
+  // Sends the latest stored account info to the settings page.
   void SendDownloadsConnectionInfoToJavascript();
 
   Profile* profile_;

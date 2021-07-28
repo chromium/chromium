@@ -39,10 +39,10 @@ void VerifyLinkedAccountInfo(const base::Value* dict) {
   const bool has_account_linked = has_account_linked_opt.value();
   ASSERT_TRUE(has_account_linked);
 
-  const std::string* account_name = dict->FindStringKey("account.name");
-  const std::string* account_login = dict->FindStringKey("account.login");
-  const std::string* folder_link = dict->FindStringKey("folder.link");
-  const std::string* folder_name = dict->FindStringKey("folder.name");
+  const std::string* account_name = dict->FindStringPath("account.name");
+  const std::string* account_login = dict->FindStringPath("account.login");
+  const std::string* folder_link = dict->FindStringPath("folder.link");
+  const std::string* folder_name = dict->FindStringPath("folder.name");
   ASSERT_EQ(has_account_linked, account_name != nullptr);
   ASSERT_EQ(has_account_linked, account_login != nullptr);
   ASSERT_EQ(has_account_linked, folder_link != nullptr);

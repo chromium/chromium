@@ -63,8 +63,9 @@ void DownloadsHandler::RegisterMessages() {
 
   web_ui()->RegisterMessageCallback(
       "setDownloadsConnectionAccountLink",
-      base::BindRepeating(&DownloadsHandler::SetDownloadsConnectionAccountLink,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &DownloadsHandler::HandleSetDownloadsConnectionAccountLink,
+          base::Unretained(this)));
 }
 
 void DownloadsHandler::OnJavascriptAllowed() {
@@ -174,11 +175,11 @@ void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
 bool linked = true;
 // TODO(https://crbug.com/1168812): check whether an account has been linked.
 
-void DownloadsHandler::SetDownloadsConnectionAccountLink(
+void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
     const base::ListValue* args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
-  CHECK_EQ(2U, args->GetSize());
-  bool enable_link = args[1].GetBool();
+  CHECK_EQ(1U, args->GetSize());
+  bool enable_link = args->GetList()[0].GetBool();
 
   // Early erturn if linked status already match the desired state.
   if (linked == enable_link) {
@@ -212,17 +213,21 @@ void DownloadsHandler::OnDownloadsConnectionAccountLinkSet(bool success) {
 }
 
 void DownloadsHandler::SendDownloadsConnectionInfoToJavascript() {
-  base::DictionaryValue account_info;
-  account_info.SetBoolKey("linked", linked);
+  // Dict to match the fields used in downloads_page.html.
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("linked", linked);
   if (linked) {
-    account_info.SetStringKey("account.name", "Jane Doe");
-    account_info.SetStringKey("account.login", "janedoe@example.com");
-    account_info.SetStringKey("folder.link",
-                              "https://example.com/folder/12345");
-    account_info.SetStringKey("folder.name", "ChromeDownloads");
+    base::Value account(base::Value::Type::DICTIONARY);
+    account.SetStringKey("name", "Jane Doe");
+    account.SetStringKey("login", "janedoe@example.com");
+    dict.SetKey("account", std::move(account));
+    base::Value folder(base::Value::Type::DICTIONARY);
+    folder.SetStringKey("name", "ChromeDownloads");
+    folder.SetStringKey("link", "https://example.com/folder/12345");
+    dict.SetKey("folder", std::move(folder));
     // TODO(https://crbug.com/1168812): retrieve them from prefs.
   }
-  FireWebUIListener("downloads-connection-link-changed", account_info);
+  FireWebUIListener("downloads-connection-link-changed", dict);
 }
 
 }  // namespace settings

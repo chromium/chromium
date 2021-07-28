@@ -9,9 +9,16 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 /** @interface */
 export class DownloadsBrowserProxy {
   initializeDownloads() {}
+
+  /**
+   * @param {boolean} enableLink whether to link or unlink account.
+   */
   setDownloadsConnectionAccountLink(enableLink) {}
+
   selectDownloadLocation() {}
+
   resetAutoOpenFileTypes() {}
+
   // <if expr="chromeos">
   /**
    * @param {string} path path to sanitze.
@@ -32,7 +39,7 @@ export class DownloadsBrowserProxyImpl {
 
   /** @override */
   setDownloadsConnectionAccountLink(enableLink) {
-    chrome.send('setDownloadsConnectionAccountLink', enableLink);
+    chrome.send('setDownloadsConnectionAccountLink', [enableLink]);
   }
 
   /** @override */
