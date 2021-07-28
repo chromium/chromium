@@ -114,11 +114,13 @@ ActivityIconLoader::Icons ResizeIconsInternal(
   gfx::ImageSkia icon_large(gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kLargeIconSizeInDip, kLargeIconSizeInDip)));
+  icon_large.MakeThreadSafe();
   gfx::Image icon20(icon_large);
 
   gfx::ImageSkia icon_small(gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(kSmallIconSizeInDip, kSmallIconSizeInDip)));
+  icon_small.MakeThreadSafe();
   gfx::Image icon16(icon_small);
 
   return ActivityIconLoader::Icons(
