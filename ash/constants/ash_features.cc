@@ -656,7 +656,7 @@ const base::Feature kLauncherAppSort{"LauncherAppSort",
 
 // Enables new flow for license packaged devices with enterprise license.
 const base::Feature kLicensePackagedOobeFlow{"LicensePackagedOobeFlow",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Limits the windows listed in Alt-Tab to the ones in the currently active
 // desk.
