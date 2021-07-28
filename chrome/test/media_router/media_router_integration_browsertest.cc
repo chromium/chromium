@@ -86,8 +86,10 @@ std::string GetDefaultRequestSessionId(WebContents* web_contents) {
 
 }  // namespace
 
-MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() =
-    default;
+MediaRouterIntegrationBrowserTest::MediaRouterIntegrationBrowserTest() {
+  // TODO(crbug.com/1229305): Implement testing with the feature enabled.
+  feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
+}
 
 MediaRouterIntegrationBrowserTest::~MediaRouterIntegrationBrowserTest() =
     default;

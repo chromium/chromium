@@ -49,14 +49,15 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
 
   // Execute javascript and check the return value.
   static void ExecuteJavaScriptAPI(content::WebContents* web_contents,
-                            const std::string& script);
+                                   const std::string& script);
 
   static int ExecuteScriptAndExtractInt(
       const content::ToRenderFrameHost& adapter,
       const std::string& script);
 
   static std::string ExecuteScriptAndExtractString(
-      const content::ToRenderFrameHost& adapter, const std::string& script);
+      const content::ToRenderFrameHost& adapter,
+      const std::string& script);
 
   static bool ExecuteScriptAndExtractBool(
       const content::ToRenderFrameHost& adapter,
@@ -174,6 +175,7 @@ class MediaRouterIntegrationBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<content::TestNavigationObserver> test_navigation_observer_;
   policy::MockConfigurationPolicyProvider provider_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class MediaRouterIntegrationIncognitoBrowserTest
