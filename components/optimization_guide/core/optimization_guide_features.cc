@@ -256,6 +256,10 @@ base::TimeDelta StoredHostModelFeaturesFreshnessDuration() {
 }
 
 base::TimeDelta StoredModelsInactiveDuration() {
+  // TODO(crbug.com/1234054) This field should not be changed without VERY
+  // careful consideration. Any model that is on device and expires will be
+  // removed and triggered to refetch so any feature relying on the model could
+  // have a period of time without a valid model.
   return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
       kOptimizationTargetPrediction, "inactive_duration_for_models_in_days",
       30));
