@@ -64,13 +64,6 @@ typedef void (^OpenURLCallback)(NSURL* URL);
 // Cancels and dismisses any currently active operation.
 // * |animated| represents whether the UI should be dismissed with an animation.
 // * |completion| will be called once the operation has finished.
-// DEPRECATED
-- (void)cancelAddAccountWithAnimation:(BOOL)animated
-                           completion:(void (^)(void))completion;
-
-// Cancels and dismisses any currently active operation.
-// * |animated| represents whether the UI should be dismissed with an animation.
-// * |completion| will be called once the operation has finished.
 - (void)cancelAddAccountAnimated:(BOOL)animated
                       completion:(ProceduralBlock)completion;
 

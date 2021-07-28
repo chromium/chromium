@@ -168,15 +168,9 @@ ChromeIdentityService::PresentWebAndAppSettingDetailsController(
 }
 
 ChromeIdentityInteractionManager*
-ChromeIdentityService::CreateChromeIdentityInteractionManager(
-    id<ChromeIdentityInteractionManagerDelegate> delegate) const {
+ChromeIdentityService::CreateChromeIdentityInteractionManager() const {
   NOTREACHED() << "Subclasses must override this";
   return nil;
-}
-
-ChromeIdentityInteractionManager*
-ChromeIdentityService::CreateChromeIdentityInteractionManager() const {
-  return CreateChromeIdentityInteractionManager(nil);
 }
 
 void ChromeIdentityService::IterateOverIdentities(IdentityIteratorCallback) {}

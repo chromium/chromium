@@ -18,7 +18,6 @@
 @class ChromeIdentity;
 @protocol ChromeIdentityBrowserOpener;
 @class ChromeIdentityInteractionManager;
-@protocol ChromeIdentityInteractionManagerDelegate;
 @class NSArray;
 @class NSDate;
 @class NSDictionary;
@@ -181,13 +180,6 @@ class ChromeIdentityService {
   PresentWebAndAppSettingDetailsController(ChromeIdentity* identity,
                                            UIViewController* view_controller,
                                            BOOL animated);
-
-  // Returns a new ChromeIdentityInteractionManager with |delegate| as its
-  // delegate.
-  // DEPRECATED
-  virtual ChromeIdentityInteractionManager*
-  CreateChromeIdentityInteractionManager(
-      id<ChromeIdentityInteractionManagerDelegate> delegate) const;
 
   // Returns a new ChromeIdentityInteractionManager with |delegate| as its
   // delegate.
