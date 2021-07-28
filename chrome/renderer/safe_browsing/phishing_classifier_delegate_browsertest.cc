@@ -363,7 +363,9 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   std::string file_contents = "visual model file";
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
-  delegate_->SetPhishingModel("", std::move(file));
+  ClientSideModel model;
+  model.set_max_words_per_term(1);
+  delegate_->SetPhishingModel(model.SerializeAsString(), std::move(file));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.
