@@ -488,8 +488,8 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   LegacyDomStorageValuesMap data;
   data[key] = value;
   data[key2] = value;
-  EXPECT_TRUE(old_ss_database_->CommitAreaChanges(test_namespace1_id_,
-                                                  test_origin1_, false, data));
+  EXPECT_TRUE(old_ss_database_->CommitAreaChanges(
+      test_namespace1_id_, blink::StorageKey(test_origin1_), false, data));
   EXPECT_TRUE(old_ss_database_->CloneNamespace(test_namespace1_id_,
                                                test_namespace2_id_));
 

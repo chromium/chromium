@@ -186,7 +186,8 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
     LegacyDomStorageValuesMap data;
     data[key] = value;
     data[key2] = value;
-    EXPECT_TRUE(db->CommitAreaChanges(namespace_id1, origin1, false, data));
+    EXPECT_TRUE(db->CommitAreaChanges(namespace_id1, blink::StorageKey(origin1),
+                                      false, data));
     EXPECT_TRUE(db->CloneNamespace(namespace_id1, namespace_id2));
   }
   EXPECT_TRUE(base::PathExists(old_db_path));
