@@ -85,11 +85,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
 #endif
   }
 
-  if (params.container ==
-          apps::mojom::LaunchContainer::kLaunchContainerWindow &&
-      extension && extension->from_bookmark()) {
-    web_app::RecordAppWindowLaunch(profile_, params.app_id);
-  }
+  DCHECK(!extension->from_bookmark());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the restore id is available, save the launch parameters to the full

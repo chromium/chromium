@@ -76,6 +76,9 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   if (launch_container == extensions::LaunchContainer::kLaunchContainerTab)
     return false;
 
+  if (app->from_bookmark())
+    return false;
+
   RecordCmdLineAppHistogram(app->GetType());
 
   apps::AppLaunchParams params(app_id, launch_container,
@@ -83,9 +86,7 @@ bool OpenExtensionApplicationWindow(Profile* profile,
                                extensions::AppLaunchSource::kSourceCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  if (app->from_bookmark()) {
-    params.launch_files = GetLaunchFilesFromCommandLine(command_line);
-  }
+
   content::WebContents* tab_in_app_window =
       ::OpenApplication(profile, std::move(params));
 
