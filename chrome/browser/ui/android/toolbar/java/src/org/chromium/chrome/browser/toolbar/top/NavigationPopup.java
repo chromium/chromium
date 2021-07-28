@@ -30,6 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.R;
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -123,9 +125,11 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
 
         mHistory = mNavigationController.getDirectedNavigationHistory(
                 isForward, MAXIMUM_HISTORY_ITEMS);
-        mHistory.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
-                new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                GURL.emptyGURL(), resources.getString(R.string.show_full_history), null, 0, 0));
+        if (!shouldUseIncognitoResources()) {
+            mHistory.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
+                    new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
+                    GURL.emptyGURL(), resources.getString(R.string.show_full_history), null, 0, 0));
+        }
 
         mAdapter = new NavigationAdapter();
 
@@ -251,6 +255,10 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(
                     mContext.getResources(), pageUrl, true);
         }
+        if (UrlUtilities.isNTPUrl(pageUrl) && shouldUseIncognitoResources()) {
+            favicon = mDefaultFaviconHelper.getThemifiedBitmap(
+                    mContext.getResources(), R.drawable.incognito_small, true);
+        }
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             NavigationEntry entry = mHistory.getEntryAtIndex(i);
             if (pageUrl.equals(entry.getUrl())) entry.updateFavicon(favicon);
@@ -348,6 +356,12 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             }
             view.setText(entryText);
         }
+    }
+
+    private boolean shouldUseIncognitoResources() {
+        return mProfile.isOffTheRecord()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO);
     }
 
     private static class EntryViewHolder {
