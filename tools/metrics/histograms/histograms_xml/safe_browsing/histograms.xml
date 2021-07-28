@@ -1943,7 +1943,12 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4StoreWrite.Result"
-    enum="SafeBrowsingV4StoreWriteResult" expires_after="2021-07-30">
+    enum="SafeBrowsingV4StoreWriteResult" expires_after="never">
+<!-- expires-never: This reports the reason for the failure to write the Safe
+Browsing database update received from the API backend to the disk. It is crucial
+to detect if we ever start failing to write the updates to disk which puts users'
+security at risk. -->
+
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
