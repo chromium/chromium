@@ -327,6 +327,8 @@ struct VideoFrameMetadata {
 
   bool power_efficient;
 
+  bool texture_origin_is_top_left;
+
   bool has_device_scale_factor;
   double device_scale_factor;
 

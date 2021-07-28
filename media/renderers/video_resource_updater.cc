@@ -649,7 +649,7 @@ void VideoResourceUpdater::AppendQuads(
           frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED;
 
       float opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
-      bool flipped = false;
+      bool flipped = !frame->metadata().texture_origin_is_top_left;
       bool nearest_neighbor = false;
       gfx::ProtectedVideoType protected_video_type =
           gfx::ProtectedVideoType::kClear;

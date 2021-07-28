@@ -143,6 +143,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // Whether this frame was decoded in a power efficient way.
   bool power_efficient = false;
 
+  // Implemented only for single texture backed frames, true means the origin of
+  // the texture is top left and false means bottom left.
+  bool texture_origin_is_top_left = true;
+
   // CompositorFrameMetadata variables associated with this frame. Used for
   // remote debugging.
   // TODO(crbug.com/832220): Use a customized dictionary value instead of

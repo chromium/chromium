@@ -228,6 +228,9 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // This is only set if the VideoFrame was texture-backed.
     gfx::Rect visible_rect;
 
+    // True if the underlying resource was created with a top left origin.
+    bool texture_origin_is_top_left = true;
+
     // Used to allow recycling of the previous shared image. This requires that
     // no external users have access to this resource via SkImage. Returns true
     // if the existing resource can be recycled.

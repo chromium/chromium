@@ -72,6 +72,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.interactive_content;
   }
 
+  static bool texture_origin_is_top_left(
+      const media::VideoFrameMetadata& input) {
+    return input.texture_origin_is_top_left;
+  }
+
   GENERATE_OPT_SERIALIZATION(int, capture_counter, 0)
 
   GENERATE_OPT_SERIALIZATION(
