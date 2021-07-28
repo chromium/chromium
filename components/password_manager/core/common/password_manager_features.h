@@ -41,8 +41,6 @@ extern const base::Feature kSecondaryServerFieldPredictions;
 extern const base::Feature kSupportForAddPasswordsInSettings;
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
-extern const base::Feature kUseNewHeaderForLegacySavePasswordBubble;
-extern const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble;
 extern const base::Feature kUsernameFirstFlow;
 extern const base::Feature kUsernameFirstFlowFilling;
 

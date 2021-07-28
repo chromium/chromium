@@ -125,16 +125,13 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
 void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
   // Set the header image.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseNewHeaderForSaveCardBubble)) {
-    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-        *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
-        *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
-        base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                            base::Unretained(GetBubbleFrameView())));
-    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
-  }
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
+      *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
+      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
+                          base::Unretained(GetBubbleFrameView())));
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 void SaveCardOfferBubbleViews::ContentsChanged(

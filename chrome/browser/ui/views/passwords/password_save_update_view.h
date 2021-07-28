@@ -73,7 +73,6 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   void TogglePasswordVisibility();
   void UpdateUsernameAndPasswordInModel();
   void UpdateBubbleUIElements();
-  void UpdateHeaderImage();
 
   void DestinationChanged();
 

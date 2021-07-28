@@ -536,8 +536,6 @@ public abstract class ChromeFeatureList {
             "UpdateHistoryEntryPointsInIncognito";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
     public static final String USE_NOTIFICATION_COMPAT_BUILDER = "UseNotificationCompatBuilder";
-    public static final String USE_NEW_HEADER_FOR_LEGACY_SAVE_PASSWORD_BUBBLE =
-            "UseNewHeaderForLegacySavePasswordBubble";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String VOICE_BUTTON_IN_TOP_TOOLBAR = "VoiceButtonInTopToolbar";
     public static final String VR_BROWSING_FEEDBACK = "VrBrowsingFeedback";

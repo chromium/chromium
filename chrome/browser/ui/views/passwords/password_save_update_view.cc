@@ -475,8 +475,6 @@ void PasswordSaveUpdateView::DestinationChanged() {
   bool is_account_store_selected =
       destination_dropdown_->GetSelectedIndex() == 0;
   controller_.OnToggleAccountStore(is_account_store_selected);
-  // Saving in account and local stores have different header images.
-  UpdateHeaderImage();
   // Saving in account and local stores have action button text for non-opted-in
   // users (Next vs. Save).
   UpdateBubbleUIElements();
@@ -520,7 +518,7 @@ ui::ImageModel PasswordSaveUpdateView::GetWindowIcon() {
 void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  UpdateHeaderImage();
+  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
   if (ShouldShowFailedReauthIPH())
     MaybeShowIPH(IPHType::kFailedReauth);
   else
@@ -612,9 +610,6 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   if (!destination_dropdown_)
     return;
 
-  // Saving and updating are using different headers depending on the affected
-  // store.
-  UpdateHeaderImage();
   // If it's not a save bubble anymore, close the IPH because the account picker
   // will disappear. If it has become a save bubble, the IPH will get triggered
   // after the animation finishes.
@@ -622,22 +617,6 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
     CloseIPHBubbleIfOpen();
 
   destination_dropdown_->SetVisible(!controller_.IsCurrentStateUpdate());
-}
-
-void PasswordSaveUpdateView::UpdateHeaderImage() {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUseNewHeaderForSavePasswordWithAccountStoreBubble)) {
-    SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
-    return;
-  }
-  int light_image_id = controller_.IsCurrentStateAffectingTheAccountStore()
-                           ? IDR_SAVE_PASSWORD_MULTI_DEVICE
-                           : IDR_SAVE_PASSWORD_ONE_DEVICE;
-  int dark_image_id = controller_.IsCurrentStateAffectingTheAccountStore()
-                          ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
-                          : IDR_SAVE_PASSWORD_ONE_DEVICE_DARK;
-  SetBubbleHeader(light_image_id, dark_image_id);
 }
 
 bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {

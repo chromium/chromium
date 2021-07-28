@@ -41,7 +41,6 @@ extern const base::Feature kAutofillSuggestVirtualCardsOnIncompleteForm;
 extern const base::Feature kAutofillSuppressCreditCardSaveForAssistant;
 extern const base::Feature kAutofillUpstream;
 extern const base::Feature kAutofillUpstreamAllowAllEmailDomains;
-extern const base::Feature kAutofillUseNewHeaderForSaveCardBubble;
 
 // Return whether a [No thanks] button and new messaging is shown in the save
 // card bubbles. This will be called only on desktop platforms.

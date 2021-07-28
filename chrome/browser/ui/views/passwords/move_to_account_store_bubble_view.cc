@@ -315,8 +315,7 @@ void MoveToAccountStoreBubbleView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
 
-  SetBubbleHeader(IDR_SAVE_PASSWORD_MULTI_DEVICE,
-                  IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK);
+  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
 }
 
 MoveToAccountStoreBubbleController*
