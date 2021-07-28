@@ -442,10 +442,12 @@ void SyncManagerImpl::OnIncomingInvalidation(
 
 void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (types.Empty()) {
-    LOG(WARNING) << "Sync received refresh request with no types specified.";
-  } else {
-    scheduler_->ScheduleLocalRefreshRequest(types);
+
+  const ModelTypeSet types_to_refresh =
+      Intersection(types, model_type_registry_->GetEnabledTypes());
+
+  if (!types.Empty()) {
+    scheduler_->ScheduleLocalRefreshRequest(types_to_refresh);
   }
 }
 

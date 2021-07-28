@@ -300,7 +300,7 @@ void SyncServiceImpl::StartSyncingWithServer() {
   if (engine_)
     engine_->StartSyncingWithServer();
   if (IsLocalSyncEnabled()) {
-    TriggerRefresh(Intersection(GetActiveDataTypes(), ProtocolTypes()));
+    TriggerRefresh(ModelTypeSet::All());
   }
 }
 

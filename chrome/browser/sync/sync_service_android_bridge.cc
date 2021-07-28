@@ -363,9 +363,7 @@ jboolean SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
 
 void SyncServiceAndroidBridge::TriggerRefresh(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Only allowed to trigger refresh/schedule nudges for protocol types, things
-  // like PROXY_TABS are not allowed.
-  native_sync_service_->TriggerRefresh(syncer::ProtocolTypes());
+  native_sync_service_->TriggerRefresh(syncer::ModelTypeSet::All());
 }
 
 jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
