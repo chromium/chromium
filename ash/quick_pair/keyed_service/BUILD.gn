@@ -22,6 +22,7 @@ static_library("keyed_service") {
     "//ash/quick_pair/ui",
     "//base",
     "//components/keyed_service/core",
+    "//components/user_manager",
   ]
 }
 
@@ -37,6 +38,7 @@ source_set("unit_tests") {
     "//ash/quick_pair/scanning:test_support",
     "//ash/quick_pair/ui:test_support",
     "//base/test:test_support",
+    "//components/user_manager:test_support",
     "//testing/gtest",
   ]
 }

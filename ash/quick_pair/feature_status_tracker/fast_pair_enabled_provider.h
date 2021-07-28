@@ -8,6 +8,7 @@
 #include "ash/quick_pair/feature_status_tracker/base_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/google_api_key_availability_provider.h"
+#include "ash/quick_pair/feature_status_tracker/logged_in_user_enabled_provider.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {
@@ -19,6 +20,8 @@ class FastPairEnabledProvider : public BaseEnabledProvider {
  public:
   explicit FastPairEnabledProvider(
       std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider,
+      std::unique_ptr<LoggedInUserEnabledProvider>
+          logged_in_user_enabled_provider,
       std::unique_ptr<GoogleApiKeyAvailabilityProvider>
           google_api_key_availability_provider);
   ~FastPairEnabledProvider() override;
@@ -28,6 +31,7 @@ class FastPairEnabledProvider : public BaseEnabledProvider {
   void OnSubProviderEnabledChanged(bool);
 
   std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider_;
+  std::unique_ptr<LoggedInUserEnabledProvider> logged_in_user_enabled_provider_;
   std::unique_ptr<GoogleApiKeyAvailabilityProvider>
       google_api_key_availability_provider_;
   base::WeakPtrFactory<FastPairEnabledProvider> weak_factory_{this};
