@@ -55,12 +55,16 @@ bool IsSamePublicSuffixDomain(const GURL& url1, const GURL& url2) {
     return false;
   }
 
-  return url1.scheme() == url2.scheme() && domain1 == domain2;
+  return domain1 == domain2;
 }
 
 std::string GetOrganizationIdentifyingDomain(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+bool IsAllowedSchemaTransition(const GURL& from, const GURL& to) {
+  return from.scheme() == to.scheme() || to.scheme() == url::kHttpsScheme;
 }
 
 }  // namespace url_utils
