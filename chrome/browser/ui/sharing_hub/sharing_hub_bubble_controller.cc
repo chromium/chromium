@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -145,14 +146,17 @@ SharingHubBubbleController::GetThirdPartyActions() {
   return actions;
 }
 
-void SharingHubBubbleController::OnActionSelected(int command_id,
-                                                  bool is_first_party) {
+void SharingHubBubbleController::OnActionSelected(
+    int command_id,
+    bool is_first_party,
+    std::string feature_name_for_metrics) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   // Can be null in tests.
   if (!browser)
     return;
 
   if (is_first_party) {
+    base::RecordComputedAction(feature_name_for_metrics);
     chrome::ExecuteCommand(browser, command_id);
   } else {
     SharingHubModel* model = GetSharingHubModel();

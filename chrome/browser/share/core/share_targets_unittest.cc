@@ -23,7 +23,7 @@ class MockShareTargets : public ShareTargets {
   MockShareTargets() = default;
   ~MockShareTargets() override = default;
 
-  MOCK_METHOD2(RecordUpdateMetrics, void(UpdateResult, const std::string&));
+  MOCK_METHOD2(RecordUpdateMetrics, void(UpdateResult, UpdateOrigin));
 };
 
 class ShareTargetsTest : public testing::Test {
@@ -36,8 +36,9 @@ class ShareTargetsTest : public testing::Test {
 };
 
 TEST_F(ShareTargetsTest, UnpackResourceBundle) {
-  EXPECT_CALL(targets_, RecordUpdateMetrics(ShareTargets::UpdateResult::SUCCESS,
-                                            "ResourceBundle"));
+  EXPECT_CALL(targets_,
+              RecordUpdateMetrics(ShareTargets::UpdateResult::SUCCESS,
+                                  ShareTargets::UpdateOrigin::RESOURCE_BUNDLE));
   targets_.PopulateFromResourceBundle();
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_SUB_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_SUB_MENU_MODEL_H_
 
+#include <map>
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -32,6 +33,9 @@ class SharingHubSubMenuModel : public ui::SimpleMenuModel,
   Browser* browser_;
   content::WebContents* web_contents_;
   std::vector<int> third_party_action_ids_;
+
+  // A list of user action names mapped to action id.
+  std::map<int, std::string> user_actions_by_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubSubMenuModel);
 };

@@ -51,11 +51,12 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
                               base::Unretained(this)),
 
           action_info.third_party_icon.isNull()
-              ? CreateIconFromVector(action_info.icon)
+              ? CreateIconFromVector(*action_info.icon)
               : CreateIconFromImageSkia(action_info.third_party_icon),
-          action_info.title) {
-  action_command_id_ = action_info.command_id;
-  action_is_first_party_ = action_info.is_first_party;
+          action_info.title),
+      action_command_id_(action_info.command_id),
+      action_is_first_party_(action_info.is_first_party),
+      action_name_for_metrics_(action_info.feature_name_for_metrics) {
   SetEnabled(true);
 }
 

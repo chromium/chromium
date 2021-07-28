@@ -23014,6 +23014,69 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubDesktop.CastSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The cast feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.CopyURLSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The QR code feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.QRCodeSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The QR code feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.SavePageSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The Save page feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.ScreenshotSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The screenshot feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.SendTabToSelfSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    The send tab to self feature was selected in the desktop sharing hub.
+  </description>
+</action>
+
+<action name="SharingHubDesktop.ThirdPartyAppSelected">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    A third party option was selected in the desktop sharing hub.
+  </description>
+</action>
+
 <action name="SharingQRCode.DialogLaunched">
   <owner>skare@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
