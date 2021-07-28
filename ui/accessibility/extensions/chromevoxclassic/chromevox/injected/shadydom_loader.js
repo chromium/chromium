@@ -2,21 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Load the Shady DOM polyfill as soon as possible.
-(function() {
-  function loadScripts() {
-    if (!document.head) {
-      setTimeout(loadScripts, 0);
-      return;
+// Load the ShadyDOM polyfill only if needed, on first web component definition.
+(function () {
+  function loadScripts(webcomponentsBundleContent) {
+    var polyfillScript = document.createElement("script");
+    // We need to synchronously execute the polyfill if required. To facilitate
+    // this we copy the polyfill contents into the script.
+    polyfillScript.innerHTML = `
+    if (window.customElements) {
+      const ceDefine = customElements.define;
+      customElements.define = function() {
+        customElements.define = ceDefine;
+        if (!window.ShadyDOM) {
+          window.ShadyDOM = {force: true};
+          (function(){
+            ${webcomponentsBundleContent}
+          })();
+          // Ensure a late loaded polyfill can no longer be applied.
+          Object.defineProperty(window, 'ShadyDOM', {value: window.ShadyDOM,
+            configurable: false, writable: false});
+        }
+        customElements.define.apply(customElements, arguments);
+      }
     }
-    var script1 = document.createElement('script');
-    script1.innerHTML = `
-      window.ShadyDOM = {force: true, noPatch: true};
     `;
-    var script2 = document.createElement('script');
-    script2.src = chrome.extension.getURL('/shadydom.js');
-    document.head.prepend(script1);
-    document.head.prepend(script2);
+    document.documentElement.appendChild(polyfillScript);
   }
-  loadScripts();
-}());
+
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      loadScripts(xhr.responseText);
+    }
+  }
+  xhr.open('GET', chrome.extension.getURL("/webcomponents-bundle.js"));
+  xhr.send();
+})();
