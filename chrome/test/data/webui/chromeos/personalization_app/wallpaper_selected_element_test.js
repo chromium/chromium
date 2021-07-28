@@ -259,7 +259,7 @@ export function WallpaperSelectedTest() {
 
     const refreshWallpaper =
         wallpaperSelectedElement.shadowRoot.getElementById('refreshWallpaper');
-    assertFalse(!!refreshWallpaper);
+    assertTrue(refreshWallpaper.hidden);
   });
 
   test(
@@ -286,6 +286,6 @@ export function WallpaperSelectedTest() {
         const newRefreshWallpaper =
             wallpaperSelectedElement.shadowRoot.getElementById(
                 'refreshWallpaper');
-        assertTrue(!!newRefreshWallpaper);
+        assertFalse(newRefreshWallpaper.hidden);
       });
 }

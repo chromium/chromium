@@ -162,6 +162,12 @@ export class WallpaperSelected extends WithPersonalizationStore {
         type: String,
         computed: 'computeCenterIcon_(image_)',
       },
+
+      /** @private */
+      textContainerClass_: {
+        type: String,
+        computed: 'computeTextContainerClass_(image_, path)',
+      }
     };
   }
 
@@ -210,6 +216,21 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   computeShowImage_(image, loading) {
     return !loading && !!image;
+  }
+
+  /**
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {string} path
+   * @return {string}
+   * @private
+   */
+  computeTextContainerClass_(image, path) {
+    let className = 'text-container';
+    if (!!image && image.type === WallpaperType.kCustomized ||
+        path === Paths.CollectionImages) {
+      return className + ' options';
+    }
+    return className;
   }
 
   /**
