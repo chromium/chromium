@@ -186,7 +186,8 @@ src/webgpu/api/validation/query_set/create.spec.ts
 src/webgpu/api/validation/query_set/destroy.spec.ts
 src/webgpu/api/validation/queue/buffer_mapped.spec.ts
 src/webgpu/api/validation/queue/writeBuffer.spec.ts
-src/webgpu/api/validation/queue/copyToTexture/ImageBitmap.spec.ts
+src/webgpu/util/create_elements.ts
+src/webgpu/api/validation/queue/copyToTexture/CopyExternalImageToTexture.spec.ts
 src/webgpu/api/validation/queue/destroyed/buffer.spec.ts
 src/webgpu/api/validation/queue/destroyed/query_set.spec.ts
 src/webgpu/api/validation/queue/destroyed/texture.spec.ts
@@ -204,7 +205,7 @@ src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/variable_and_const.spec.ts
 src/webgpu/shader/validation/wgsl/basic.spec.ts
-src/webgpu/util/copyToTexture.ts
+src/webgpu/util/copy_to_texture.ts
 src/webgpu/util/texture/texel_data.spec.ts
 src/webgpu/web_platform/canvas/configureSwapChain.spec.ts
 src/webgpu/web_platform/canvas/context_creation.spec.ts
