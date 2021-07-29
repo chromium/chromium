@@ -10,8 +10,11 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
@@ -31,8 +34,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The tests in this file mostly focus on verifying that KeystoreService can
-// forward messages to and from PlatformKeysService and correctly re-encode
-// arguments in both directions.
+// forward messages to and from PlatformKeysService, KeyPermissionsService,
+// TpmChallengeKey and correctly re-encode arguments in both directions.
 
 namespace crosapi {
 namespace {
@@ -154,6 +157,11 @@ void AssertErrorEq(const T& result, mojom::KeystoreError expected_error) {
 // Matches a certificate of the type `scoped_refptr<net::X509Certificate>`.
 MATCHER_P(CertEq, expected_cert, "Certificates don't match.") {
   return expected_cert && arg && expected_cert->EqualsIncludingChain(arg.get());
+}
+
+// Matches strings that start with `expected_prefix`.
+MATCHER_P(StrStartsWith, expected_prefix, "Unexpected string.") {
+  return base::StartsWith(arg, expected_prefix);
 }
 
 class KeystoreServiceAshTest : public testing::Test {
@@ -648,6 +656,148 @@ TEST_F(KeystoreServiceAshTest, RemoveCertificateFail) {
 
 //------------------------------------------------------------------------------
 
+ash::attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
+  auto mock_challenge_key =
+      std::make_unique<ash::attestation::MockTpmChallengeKey>();
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      mock_challenge_key.get();
+  ash::attestation::TpmChallengeKeyFactory::SetForTesting(
+      std::move(mock_challenge_key));
+  return challenge_key_ptr;
+}
+
+TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/false,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/false,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+}
+
+TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/true,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(), /*migrate=*/true,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+}
+
+TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/false,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      mojom::KeystoreType::kDevice, /*challenge=*/GetDataBin(),
+      /*migrate=*/false, observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+}
+
+TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(
+          chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+          /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+          /*register_key=*/true,
+          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-keystore-")))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      mojom::KeystoreType::kDevice, /*challenge=*/GetDataBin(),
+      /*migrate=*/true, observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataBin());
+}
+
+TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  auto challenge_result = ash::attestation::TpmChallengeKeyResult::MakeError(
+      ash::attestation::TpmChallengeKeyResultCode::kDbusError);
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/false,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(challenge_result));
+
+  CallbackObserver<mojom::ChallengeAttestationOnlyKeystoreResultPtr> observer;
+  keystore_service_.ChallengeAttestationOnlyKeystore(
+      mojom::KeystoreType::kUser, /*challenge=*/GetDataBin(),
+      /*migrate=*/false, observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_error_message());
+  EXPECT_EQ(observer.result->get_error_message(),
+            challenge_result.GetErrorMessage());
+}
+
+//------------------------------------------------------------------------------
+
 // Tests for deprecated methods.
 
 TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeySuccess) {
@@ -848,6 +998,138 @@ TEST_F(KeystoreServiceAshTest, DeprecatedRemoveCertificateFail) {
   ASSERT_TRUE(observer.result);
   EXPECT_EQ(observer.result, chromeos::platform_keys::KeystoreErrorToString(
                                  mojom::KeystoreError::kCertificateInvalid));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyNoMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/false,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::DEPRECATED_KeystoreStringResultPtr> observer;
+  keystore_service_.DEPRECATED_ChallengeAttestationOnlyKeystore(
+      /*challenge=*/GetDataStr(), mojom::KeystoreType::kUser, /*migrate=*/false,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/true,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::DEPRECATED_KeystoreStringResultPtr> observer;
+  keystore_service_.DEPRECATED_ChallengeAttestationOnlyKeystore(
+      /*challenge=*/GetDataStr(), mojom::KeystoreType::kUser, /*migrate=*/true,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyNoMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/false,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::DEPRECATED_KeystoreStringResultPtr> observer;
+  keystore_service_.DEPRECATED_ChallengeAttestationOnlyKeystore(
+      /*challenge=*/GetDataStr(), mojom::KeystoreType::kDevice,
+      /*migrate=*/false, observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyMigrateSuccess) {
+  // Incoming challenge and outgoing challenge response are imitated with the
+  // same data blob. It is not realistic, but good enough for this test.
+
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(
+          chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+          /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+          /*register_key=*/true,
+          /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-lacros-")))
+      .WillOnce(RunOnceCallback<2>(
+          ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
+              GetDataStr())));
+
+  CallbackObserver<mojom::DEPRECATED_KeystoreStringResultPtr> observer;
+  keystore_service_.DEPRECATED_ChallengeAttestationOnlyKeystore(
+      /*challenge=*/GetDataStr(), mojom::KeystoreType::kDevice,
+      /*migrate=*/true, observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_challenge_response());
+  EXPECT_EQ(observer.result->get_challenge_response(), GetDataStr());
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedChallengeKeyFail) {
+  ash::attestation::MockTpmChallengeKey* challenge_key_ptr =
+      InjectMockChallengeKey();
+
+  auto challenge_result = ash::attestation::TpmChallengeKeyResult::MakeError(
+      ash::attestation::TpmChallengeKeyResultCode::kDbusError);
+
+  EXPECT_CALL(
+      *challenge_key_ptr,
+      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+                    /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
+                    /*register_key=*/false,
+                    /*key_name_for_spkac=*/std::string()))
+      .WillOnce(RunOnceCallback<2>(challenge_result));
+
+  CallbackObserver<mojom::DEPRECATED_KeystoreStringResultPtr> observer;
+  keystore_service_.DEPRECATED_ChallengeAttestationOnlyKeystore(
+      /*challenge=*/GetDataStr(), mojom::KeystoreType::kUser,
+      /*migrate=*/false, observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_error_message());
+  EXPECT_EQ(observer.result->get_error_message(),
+            challenge_result.GetErrorMessage());
 }
 
 }  // namespace

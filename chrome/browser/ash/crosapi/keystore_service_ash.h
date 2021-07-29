@@ -58,11 +58,11 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void BindReceiver(mojo::PendingReceiver<mojom::KeystoreService> receiver);
 
   // mojom::KeystoreService:
-  void DEPRECATED_ChallengeAttestationOnlyKeystore(
-      const std::string& challenge,
+  void ChallengeAttestationOnlyKeystore(
       mojom::KeystoreType type,
+      const std::vector<uint8_t>& challenge,
       bool migrate,
-      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback) override;
+      ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
   void SelectClientCertificates(
       const std::vector<std::vector<uint8_t>>& certificate_authorities,
@@ -135,6 +135,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       mojom::KeystoreType keystore,
       const std::vector<uint8_t>& certificate,
       DEPRECATED_RemoveCertificateCallback callback) override;
+  // DEPRECATED, use `ChallengeAttestationOnlyKeystore` instead.
+  void DEPRECATED_ChallengeAttestationOnlyKeystore(
+      const std::string& challenge,
+      mojom::KeystoreType type,
+      bool migrate,
+      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback) override;
 
  private:
   // Returns a correct instance of PlatformKeysService to use. If a specific
@@ -149,11 +155,11 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // Otherwise the class will use an instance for the primary profile.
   chromeos::platform_keys::KeyPermissionsService* GetKeyPermissions();
 
-  // |challenge| is used as a opaque identifier to match against the
+  // |challenge_key_ptr| is used as a opaque identifier to match against the
   // unique_ptr in outstanding_challenges_. It should not be dereferenced.
-  void DEPRECATED_DidChallengeAttestationOnlyKeystore(
-      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback,
-      void* challenge,
+  void DidChallengeAttestationOnlyKeystore(
+      ChallengeAttestationOnlyKeystoreCallback callback,
+      void* challenge_key_ptr,
       const ash::attestation::TpmChallengeKeyResult& result);
   static void DidGetKeyStores(
       GetKeyStoresCallback callback,
@@ -209,6 +215,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   static void DEPRECATED_DidRemoveCertificate(
       DEPRECATED_RemoveCertificateCallback callback,
       chromeos::platform_keys::Status status);
+  // |challenge_key_ptr| is used as a opaque identifier to match against the
+  // unique_ptr in outstanding_challenges_. It should not be dereferenced.
+  void DEPRECATED_DidChallengeAttestationOnlyKeystore(
+      DEPRECATED_ChallengeAttestationOnlyKeystoreCallback callback,
+      void* challenge_key_ptr,
+      const ash::attestation::TpmChallengeKeyResult& result);
 
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
@@ -221,7 +233,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   chromeos::platform_keys::KeyPermissionsService* const
       fixed_key_permissions_service_ = nullptr;
 
-  // Container to keep outstanding challenges alive.
+  // Container to keep outstanding challenges alive. The challenges should be
+  // destroyed together with this service to reduce the chance of them accessing
+  // other services that may be deleted by that point.
   std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>
       outstanding_challenges_;
   mojo::ReceiverSet<mojom::KeystoreService> receivers_;

@@ -193,6 +193,81 @@ KeyPermissionsService* KeystoreServiceAsh::GetKeyPermissions() {
 
 //------------------------------------------------------------------------------
 
+void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
+    mojom::KeystoreType type,
+    const std::vector<uint8_t>& challenge,
+    bool migrate,
+    ChallengeAttestationOnlyKeystoreCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!crosapi::mojom::IsKnownEnumValue(type)) {
+    std::move(callback).Run(
+        mojom::ChallengeAttestationOnlyKeystoreResult::NewErrorMessage(
+            kUnsupportedKeystoreType));
+    return;
+  }
+
+  chromeos::attestation::AttestationKeyType key_type;
+  switch (type) {
+    case mojom::KeystoreType::kUser:
+      key_type = chromeos::attestation::KEY_USER;
+      break;
+    case mojom::KeystoreType::kDevice:
+      key_type = chromeos::attestation::KEY_DEVICE;
+      break;
+  }
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  std::string key_name_for_spkac;
+  if (migrate && (key_type == chromeos::attestation::KEY_DEVICE)) {
+    key_name_for_spkac = base::StrCat(
+        {ash::attestation::kEnterpriseMachineKeyForSpkacPrefix, "keystore-",
+         base::UnguessableToken::Create().ToString()});
+  }
+
+  // The lifetime of this object is bound to the callback.
+  std::unique_ptr<ash::attestation::TpmChallengeKey> challenge_key =
+      ash::attestation::TpmChallengeKeyFactory::Create();
+  ash::attestation::TpmChallengeKey* challenge_key_ptr = challenge_key.get();
+  outstanding_challenges_.push_back(std::move(challenge_key));
+  challenge_key_ptr->BuildResponse(
+      key_type, profile,
+      base::BindOnce(&KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     challenge_key_ptr),
+      std::string(challenge.begin(), challenge.end()),
+      /*register_key=*/migrate, key_name_for_spkac);
+}
+
+void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
+    ChallengeAttestationOnlyKeystoreCallback callback,
+    void* challenge_key_ptr,
+    const ash::attestation::TpmChallengeKeyResult& result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result_ptr =
+      mojom::ChallengeAttestationOnlyKeystoreResult::New();
+  if (result.IsSuccess()) {
+    result_ptr->set_challenge_response(std::vector<uint8_t>(
+        result.challenge_response.begin(), result.challenge_response.end()));
+  } else {
+    result_ptr->set_error_message(result.GetErrorMessage());
+  }
+  std::move(callback).Run(std::move(result_ptr));
+
+  // Remove the outstanding challenge_key object.
+  bool found = false;
+  for (auto it = outstanding_challenges_.begin();
+       it != outstanding_challenges_.end(); ++it) {
+    if (it->get() == challenge_key_ptr) {
+      outstanding_challenges_.erase(it);
+      found = true;
+      break;
+    }
+  }
+  DCHECK(found);
+}
+
+//------------------------------------------------------------------------------
+
 void KeystoreServiceAsh::DEPRECATED_ChallengeAttestationOnlyKeystore(
     const std::string& challenge,
     mojom::KeystoreType type,
