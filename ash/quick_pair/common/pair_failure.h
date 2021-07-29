@@ -20,29 +20,31 @@ enum class PairFailure {
   kKeyBasedPairingCharacteristicDiscovery = 2,
   // Failed to find the Passkey GATT characteristic.
   kPasskeyCharacteristicDiscovery = 3,
+  // Failed to find the Account Key GATT characteristic.
+  kAccountKeyCharacteristicDiscovery = 4,
   // Failed to start a notify session on the Key-based pairing GATT
   // characteristic.
-  kKeyBasedPairingCharacteristicNotifySession = 4,
+  kKeyBasedPairingCharacteristicNotifySession = 5,
   // Failed to start a notify session on the Passkey GATT characteristic.
-  kPasskeyCharacteristicNotifySession = 5,
+  kPasskeyCharacteristicNotifySession = 6,
   // Failed to write to the Key-based pairing GATT characteristic.
-  kKeyBasedPairingCharacteristicWrite = 6,
+  kKeyBasedPairingCharacteristicWrite = 7,
   // Failed to write to the Passkey GATT characteristic.
-  kPasskeyPairingCharacteristicWrite = 7,
+  kPasskeyPairingCharacteristicWrite = 8,
   // Timed out while waiting for the Key-based Pairing response.
-  kKeyBasedPairingResponseTimeout = 8,
+  kKeyBasedPairingResponseTimeout = 9,
   // Timed out while waiting for the Passkey response.
-  kPasskeyResponseTimeout = 9,
+  kPasskeyResponseTimeout = 10,
   // Incorrect Key-based response message type.
-  kIncorrectKeyBasedPairingResponseType = 10,
+  kIncorrectKeyBasedPairingResponseType = 11,
   // Incorrect Passkey response message type.
-  kIncorrectPasskeyResponseType = 11,
+  kIncorrectPasskeyResponseType = 12,
   // Passkeys did not match.
-  kPasskeyMismatch = 12,
+  kPasskeyMismatch = 13,
   // Failed to bond to discovered device.
-  kPairingConnect = 13,
+  kPairingConnect = 14,
   // Failed to bond to device via public address.
-  kAddressConnect = 14,
+  kAddressConnect = 15,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

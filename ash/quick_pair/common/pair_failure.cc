@@ -21,6 +21,9 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kPasskeyCharacteristicDiscovery:
       stream << "[Failed to find the Passkey GATT characteristic]";
       break;
+    case PairFailure::kAccountKeyCharacteristicDiscovery:
+      stream << "[Failed to find the Account Key GATT characteristic]";
+      break;
     case PairFailure::kKeyBasedPairingCharacteristicNotifySession:
       stream << "[Failed to start a notify session on the Key-based pairing "
                 "GATT characteristic]";

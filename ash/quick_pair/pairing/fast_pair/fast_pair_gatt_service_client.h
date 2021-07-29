@@ -18,6 +18,8 @@ namespace device {
 class BluetoothDevice;
 class BluetoothGattConnection;
 class BluetoothRemoteGattService;
+class BluetoothGattNotifySession;
+class BluetoothRemoteGattService;
 
 }  // namespace device
 
@@ -55,7 +57,26 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       device::BluetoothAdapter* adapter,
       device::BluetoothRemoteGattService* service) override;
 
+  void FindGattCharacteristicsAndStartNotifySessions();
+
+  std::vector<device::BluetoothRemoteGattCharacteristic*>
+  GetCharacteristicsByUUIDs(const device::BluetoothUUID uuidV1,
+                            const device::BluetoothUUID uuidV2);
+
+  // BluetoothRemoteGattCharacteristic StartNotifySession callbacks
+  void OnNotifySession(
+      std::unique_ptr<device::BluetoothGattNotifySession> session);
+  void OnGattError(PairFailure failure,
+                   device::BluetoothGattService::GattErrorCode error);
+
   std::string device_address_;
+  device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =
+      nullptr;
+  device::BluetoothRemoteGattCharacteristic* passkey_characteristic_ = nullptr;
+  device::BluetoothRemoteGattCharacteristic* account_key_characteristic_ =
+      nullptr;
+  std::vector<std::unique_ptr<device::BluetoothGattNotifySession>>
+      bluetooth_gatt_notify_sessions_;
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
