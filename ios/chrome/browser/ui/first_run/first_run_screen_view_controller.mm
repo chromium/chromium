@@ -27,6 +27,8 @@ NSString* const kFirstRunSecondaryActionAccessibilityIdentifier =
     @"kFirstRunSecondaryActionAccessibilityIdentifier";
 NSString* const kFirstRunTertiaryActionAccessibilityIdentifier =
     @"kFirstRunTertiaryActionAccessibilityIdentifier";
+NSString* const kFirstRunScrollViewAccessibilityIdentifier =
+    @"kFirstRunScrollViewAccessibilityIdentifier";
 
 namespace {
 
@@ -325,6 +327,8 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   if (!_scrollView) {
     _scrollView = [[UIScrollView alloc] init];
     _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    _scrollView.accessibilityIdentifier =
+        kFirstRunScrollViewAccessibilityIdentifier;
   }
   return _scrollView;
 }

@@ -22,8 +22,20 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Returns a matcher for the welcome screen accept button.
+id<GREYMatcher> GetAcceptButton() {
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON)),
+                    grey_sufficientlyVisible(), nil);
+}
+
+}  // namespace
+
 // Test first run stages
 @interface FirstRunTestCase : ChromeTestCase
+
 @end
 
 @implementation FirstRunTestCase
@@ -84,58 +96,79 @@
       assertWithMatcher:grey_notNil()];
 }
 
+// Scrolls down to |elementMatcher| in the scrollable content of the first run
+// screen.
+- (void)scrollToElementAndAssertVisibility:(id<GREYMatcher>)elementMatcher {
+  id<GREYMatcher> scrollView =
+      grey_accessibilityID(@"kFirstRunScrollViewAccessibilityIdentifier");
+
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(elementMatcher,
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
+      onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
+}
+
 #pragma mark - Tests
 
 // Checks that the Welcome screen is displayed correctly.
 - (void)testWelcomeScreenUI {
   [self verifyWelcomeScreenIsDisplayed];
 
-  NSString* expectedTitle =
+  // Validate the Title text.
+  NSString* expectedTitleText =
       [ChromeEarlGrey isIPadIdiom]
           ? l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD)
           : l10n_util::GetNSString(
                 IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
-  [[EarlGrey selectElementWithMatcher:grey_text(expectedTitle)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  id<GREYMatcher> title = grey_text(expectedTitleText);
+  [self scrollToElementAndAssertVisibility:title];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Validate the Subtitle text.
+  id<GREYMatcher> subtitle = grey_text(
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE));
+  [self scrollToElementAndAssertVisibility:subtitle];
+
+  // Validate the Metrics Consent box.
+  id<GREYMatcher> metricsConsent = grey_text(
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT));
+  [self scrollToElementAndAssertVisibility:metricsConsent];
+
+  // Validate the Accept box.
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
 }
 
 // Checks that the Sign In screen is displayed correctly.
 - (void)testSignInScreenUI {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON))]
+  [self verifyWelcomeScreenIsDisplayed];
+
+  // Go to the sign-in screen.
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
       performAction:grey_tap()];
 
   [self verifySignInScreenIsDisplayed];
 
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_FIRST_RUN_SIGNIN_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Valide the Title text.
+  id<GREYMatcher> title =
+      grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE));
+  [self scrollToElementAndAssertVisibility:title];
 
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Validate the Subtitle text.
+  id<GREYMatcher> subtitle =
+      grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE));
+  [self scrollToElementAndAssertVisibility:subtitle];
 }
 
 // Navigates to the Terms of Service and back.
 - (void)testTermsAndConditions {
   // Tap on “Terms of Service” on the first screen
   [self verifyWelcomeScreenIsDisplayed];
+
+  // Scroll to and open the ToS screen.
   id<GREYMatcher> termsOfServiceLink =
       grey_accessibilityLabel(@"Terms of Service");
+  [self scrollToElementAndAssertVisibility:termsOfServiceLink];
   [[EarlGrey selectElementWithMatcher:termsOfServiceLink]
       performAction:grey_tap()];
 
@@ -151,10 +184,9 @@
   // Ensure we went back to the First Run screen.
   [self verifyWelcomeScreenIsDisplayed];
 
-  // And that the button is working.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_FIRST_RUN_WELCOME_SCREEN_ACCEPT_BUTTON))]
+  // Scroll to and tap the accept ToS button.
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
       performAction:grey_tap()];
 
   [self verifySignInScreenIsDisplayed];
@@ -176,13 +208,8 @@
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  // Assert that the FRE UI is shown while the browser is in incognito mode.
-  // Do this by looking at the presence of a UI artifact in the first screen
-  // (TOS) that is a signature for the presence of the FRE.
-  id<GREYMatcher> termsOfServiceLink = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_FIRSTRUN_TERMS_TITLE));
-  [[EarlGrey selectElementWithMatcher:termsOfServiceLink]
-      assertWithMatcher:grey_notNil()];
+  // Verify that the FRE UI is shown while the browser is in incognito mode.
+  [self verifyWelcomeScreenIsDisplayed];
 }
 
 @end
