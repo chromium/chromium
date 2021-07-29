@@ -148,7 +148,7 @@ TEST_F(PrinterCapabilitiesTest, ProvidedCapabilitiesUsed) {
   EXPECT_TRUE(caps_dict->FindKey(kDpi));
 }
 
-// Ensure that the capabilities dictionary is present but empty if the backend
+// Ensure that the capabilities dictionary is not present if the backend
 // doesn't return capabilities.
 TEST_F(PrinterCapabilitiesTest, NullCapabilitiesExcluded) {
   std::string printer_name = "test_printer";
@@ -166,11 +166,8 @@ TEST_F(PrinterCapabilitiesTest, NullCapabilitiesExcluded) {
   // Verify settings were created.
   ASSERT_FALSE(settings_dictionary.DictEmpty());
 
-  // Verify that capabilities is an empty dictionary.
-  base::Value* caps_dict = settings_dictionary.FindKeyOfType(
-      kSettingCapabilities, base::Value::Type::DICTIONARY);
-  ASSERT_TRUE(caps_dict);
-  EXPECT_TRUE(caps_dict->DictEmpty());
+  // Verify that capabilities is not present.
+  ASSERT_FALSE(settings_dictionary.FindKey(kSettingCapabilities));
 }
 
 TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {

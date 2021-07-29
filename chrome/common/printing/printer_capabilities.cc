@@ -93,8 +93,8 @@ void PopulateAdvancedCapsLocalization(
 }
 #endif  // defined(OS_CHROMEOS)
 
-// Returns a dictionary representing printer capabilities as CDD, or an empty
-// value if no capabilities are provided.
+// Returns a dictionary representing printer capabilities as CDD, or
+// a Value of type NONE if no capabilities are provided.
 base::Value AssemblePrinterCapabilities(
     const std::string& device_name,
     const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
@@ -102,7 +102,7 @@ base::Value AssemblePrinterCapabilities(
     PrinterSemanticCapsAndDefaults* caps) {
   DCHECK(!device_name.empty());
   if (!caps)
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value();
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
   bool populate_paper_display_names = true;
@@ -178,10 +178,12 @@ base::Value AssemblePrinterSettings(
 
   base::Value printer_info_capabilities(base::Value::Type::DICTIONARY);
   printer_info_capabilities.SetKey(kPrinter, std::move(printer_info));
-  printer_info_capabilities.SetKey(
-      kSettingCapabilities,
-      AssemblePrinterCapabilities(device_name, user_defined_papers,
-                                  has_secure_protocol, caps));
+  base::Value capabilities = AssemblePrinterCapabilities(
+      device_name, user_defined_papers, has_secure_protocol, caps);
+  if (capabilities.is_dict()) {
+    printer_info_capabilities.SetKey(kSettingCapabilities,
+                                     std::move(capabilities));
+  }
   return printer_info_capabilities;
 }
 

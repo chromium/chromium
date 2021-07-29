@@ -166,7 +166,6 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
   caps->default_duplex_mode = printing::mojom::DuplexModeRestriction::kSimplex;
   caps->default_pin_mode = printing::mojom::PinModeRestriction::kNoPin;
   const base::Value kExpectedValue = *base::JSONReader::Read(R"({
-   "capabilities": {},
    "printer": {
       "cupsEnterprisePrinter": false,
       "deviceName": "device_name",
@@ -198,7 +197,6 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
   caps->default_duplex_mode = printing::mojom::DuplexModeRestriction::kSimplex;
   caps->default_pin_mode = printing::mojom::PinModeRestriction::kNoPin;
   const base::Value kExpectedValue = *base::JSONReader::Read(R"({
-   "capabilities": {},
    "printer": {
       "cupsEnterprisePrinter": true,
       "deviceName": "device_name",
