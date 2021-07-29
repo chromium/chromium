@@ -692,6 +692,13 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
         continue;
       }
 
+      // TODO(crbug.com/1226193): Remove this block when support for
+      // `Sec-CH-UA-Reduced` has been added.
+      if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+          "sec-ch-ua-reduced") {
+        continue;
+      }
+
       EXPECT_EQ(
           expect_client_hints,
           base::Contains(request.headers, blink::kClientHintsHeaderMapping[i]));

@@ -34,7 +34,8 @@ const char* const kClientHintsNameMapping[] = {"device-memory",
                                                "sec-ch-ua-full-version",
                                                "sec-ch-ua-platform-version",
                                                "sec-ch-prefers-color-scheme",
-                                               "sec-ch-ua-bitness"};
+                                               "sec-ch-ua-bitness",
+                                               "sec-ch-ua-reduced"};
 
 const size_t kClientHintsMappingsCount = base::size(kClientHintsNameMapping);
 

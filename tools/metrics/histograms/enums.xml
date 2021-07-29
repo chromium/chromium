@@ -34005,6 +34005,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3965" label="TapDelayEnabled"/>
   <int value="3966" label="V8URLPattern_CompareComponent_Method"/>
   <int value="3967" label="EarlyHintsPreload"/>
+  <int value="3968" label="ClientHintsUAReduced"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -34112,6 +34113,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="85" label="ClientHintPrefersColorScheme"/>
   <int value="86" label="WindowPlacement"/>
   <int value="87" label="ClientHintUABitness"/>
+  <int value="88" label="ClientHintUAReduced"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
