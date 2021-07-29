@@ -333,6 +333,9 @@ void ContentTranslateDriver::RegisterPage(
     translate_manager_->InitiateTranslation(details.adopted_language);
 
     // Save the page language on the navigation entry so it can be synced.
+    // TODO(crbug.com/1231889): Rearchitect the renderer-browser Mojo connection
+    // to be able to explicitly determine the document/content::Page with which
+    // this language determination event is associated.
     auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
     if (entry != nullptr)
       SetPageLanguageInNavigation(details.adopted_language, entry);
