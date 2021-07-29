@@ -16,11 +16,11 @@
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_auth_attempt.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_screenlock_state_handler.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
+#include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/proximity_auth/screenlock_state.h"
 #include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
+#include "chromeos/components/proximity_auth/smartlock_state.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -118,20 +118,20 @@ class EasyUnlockService : public KeyedService {
   virtual bool IsChromeOSLoginEnabled() const;
 
   // Sets the hardlock state for the associated user.
-  void SetHardlockState(EasyUnlockScreenlockStateHandler::HardlockState state);
+  void SetHardlockState(SmartLockStateHandler::HardlockState state);
 
   // Returns the hardlock state for the associated user.
-  EasyUnlockScreenlockStateHandler::HardlockState GetHardlockState() const;
+  SmartLockStateHandler::HardlockState GetHardlockState() const;
 
   // Gets the persisted hardlock state. Return true if there is persisted
   // hardlock state and the value would be set to `state`. Otherwise,
   // returns false and `state` is unchanged.
   bool GetPersistedHardlockState(
-      EasyUnlockScreenlockStateHandler::HardlockState* state) const;
+      SmartLockStateHandler::HardlockState* state) const;
 
   // Updates the user pod on the signin/lock screen for the user associated with
-  // the service to reflect the provided screenlock state.
-  bool UpdateScreenlockState(proximity_auth::ScreenlockState state);
+  // the service to reflect the provided Smart Lock state.
+  bool UpdateSmartLockState(proximity_auth::SmartLockState state);
 
   // Starts an auth attempt for the user associated with the service. The
   // attempt type (unlock vs. signin) will depend on the service type. Returns
@@ -192,22 +192,20 @@ class EasyUnlockService : public KeyedService {
   // Checks whether Easy unlock should be running and updates app state.
   void UpdateAppState();
 
-  // Resets the screenlock state set by this service.
-  void ResetScreenlockState();
+  // Resets the Smart Lock state set by this service.
+  void ResetSmartLockState();
 
-  // Updates `screenlock_state_handler_`'s hardlocked state.
-  void SetScreenlockHardlockedState(
-      EasyUnlockScreenlockStateHandler::HardlockState state);
+  // Updates `smartlock_state_handler_`'s hardlocked state.
+  void SetSmartLockHardlockedState(SmartLockStateHandler::HardlockState state);
 
-  const EasyUnlockScreenlockStateHandler* screenlock_state_handler() const {
-    return screenlock_state_handler_.get();
+  const SmartLockStateHandler* smartlock_state_handler() const {
+    return smartlock_state_handler_.get();
   }
 
   // Saves hardlock state for the given user. Update UI if the currently
   // associated user is the same.
-  void SetHardlockStateForUser(
-      const AccountId& account_id,
-      EasyUnlockScreenlockStateHandler::HardlockState state);
+  void SetHardlockStateForUser(const AccountId& account_id,
+                               SmartLockStateHandler::HardlockState state);
 
   // Returns the authentication event for a recent password sign-in or unlock,
   // according to the current state of the service.
@@ -240,11 +238,11 @@ class EasyUnlockService : public KeyedService {
   // signins/unlocks from password-based unlocks for metrics.
   bool will_authenticate_using_easy_unlock_ = false;
 
-  // Gets `screenlock_state_handler_`. Returns NULL if Easy Unlock is not
-  // allowed. Otherwise, if `screenlock_state_handler_` is not set, an instance
+  // Gets `smartlock_state_handler_`. Returns NULL if Easy Unlock is not
+  // allowed. Otherwise, if `smartlock_state_handler_` is not set, an instance
   // is created. Do not cache the returned value, as it may go away if Easy
   // Unlock gets disabled.
-  EasyUnlockScreenlockStateHandler* GetScreenlockStateHandler();
+  SmartLockStateHandler* GetSmartLockStateHandler();
 
   // Callback for get key operation from CheckCryptohomeKeysAndMaybeHardlock.
   void OnCryptohomeKeysFetchedForChecking(
@@ -266,8 +264,8 @@ class EasyUnlockService : public KeyedService {
 
   ChromeProximityAuthClient proximity_auth_client_;
 
-  // Created lazily in `GetScreenlockStateHandler`.
-  std::unique_ptr<EasyUnlockScreenlockStateHandler> screenlock_state_handler_;
+  // Created lazily in `GetSmartLockStateHandler`.
+  std::unique_ptr<SmartLockStateHandler> smartlock_state_handler_;
 
   // The handler for the current auth attempt. Set iff an auth attempt is in
   // progress.

@@ -2105,8 +2105,7 @@ void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
     device_list = easy_unlock_service->IsChromeOSLoginEnabled()
                       ? easy_unlock_service->GetRemoteDevices()
                       : nullptr;
-    easy_unlock_service->SetHardlockState(
-        EasyUnlockScreenlockStateHandler::NO_HARDLOCK);
+    easy_unlock_service->SetHardlockState(SmartLockStateHandler::NO_HARDLOCK);
   }
 
   base::ListValue empty_list;

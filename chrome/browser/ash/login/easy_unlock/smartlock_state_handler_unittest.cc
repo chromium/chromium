@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_screenlock_state_handler.h"
+#include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 
 #include <stddef.h>
 
@@ -20,16 +20,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/screenlock_state.h"
+#include "chromeos/components/proximity_auth/smartlock_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
 
-using ::proximity_auth::ScreenlockState;
+using ::proximity_auth::SmartLockState;
 
-// Icons used by EasyUnlockScreenlockStateHandler. The icon id values are the
+// Icons used by SmartLockStateHandler. The icon id values are the
 // same as the ones set by proximity_auth::ScreenlockBridge.
 const char kLockedIconId[] = "locked";
 const char kLockedToBeActivatedIconId[] = "locked-to-be-activated";
@@ -131,7 +131,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     ASSERT_TRUE(account_id_ == account_id)
         << "account_id_=" << account_id_.Serialize()
         << " != account_id=" << account_id.Serialize();
-    // Generally, this is allowed, but EasyUnlockScreenlockStateHandler should
+    // Generally, this is allowed, but SmartLockStateHandler should
     // avoid resetting the same auth type.
     EXPECT_NE(auth_type_, auth_type);
 
@@ -250,10 +250,10 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   DISALLOW_COPY_AND_ASSIGN(TestLockHandler);
 };
 
-class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
+class SmartLockStateHandlerTest : public testing::Test {
  public:
-  EasyUnlockScreenlockStateHandlerTest() {}
-  ~EasyUnlockScreenlockStateHandlerTest() override {}
+  SmartLockStateHandlerTest() {}
+  ~SmartLockStateHandlerTest() override {}
 
   void SetUp() override {
     // Create and inject fake lock handler to the screenlock bridge.
@@ -263,10 +263,10 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
     screenlock_bridge->SetLockHandler(lock_handler_.get());
     fake_pref_manager_ = std::make_unique<FakeProximityAuthPrefManager>();
 
-    // Create the screenlock state handler object that will be tested.
-    state_handler_ = std::make_unique<EasyUnlockScreenlockStateHandler>(
-        account_id_, EasyUnlockScreenlockStateHandler::NO_HARDLOCK,
-        screenlock_bridge, fake_pref_manager_.get());
+    // Create the Smart Lock state handler object that will be tested.
+    state_handler_ = std::make_unique<SmartLockStateHandler>(
+        account_id_, SmartLockStateHandler::NO_HARDLOCK, screenlock_bridge,
+        fake_pref_manager_.get());
   }
 
   void TearDown() override {
@@ -277,7 +277,7 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
 
  protected:
   // The state handler that is being tested.
-  std::unique_ptr<EasyUnlockScreenlockStateHandler> state_handler_;
+  std::unique_ptr<SmartLockStateHandler> state_handler_;
 
   // The user associated with `state_handler_`.
   const AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
@@ -289,8 +289,8 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
   std::unique_ptr<TestLockHandler> lock_handler_;
 };
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, AuthenticatedNotInitialRun) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, AuthenticatedNotInitialRun) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
@@ -303,16 +303,16 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, AuthenticatedNotInitialRun) {
   EXPECT_TRUE(lock_handler_->CustomIconHardlocksOnClick());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, IsActive) {
+TEST_F(SmartLockStateHandlerTest, IsActive) {
   EXPECT_FALSE(state_handler_->IsActive());
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
   EXPECT_TRUE(state_handler_->IsActive());
-  state_handler_->ChangeState(ScreenlockState::INACTIVE);
+  state_handler_->ChangeState(SmartLockState::kInactive);
   EXPECT_FALSE(state_handler_->IsActive());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, BluetoothConnecting) {
-  state_handler_->ChangeState(ScreenlockState::BLUETOOTH_CONNECTING);
+TEST_F(SmartLockStateHandlerTest, BluetoothConnecting) {
+  state_handler_->ChangeState(SmartLockState::kConnectingToPhone);
   EXPECT_TRUE(state_handler_->IsActive());
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
@@ -324,20 +324,19 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, BluetoothConnecting) {
   EXPECT_FALSE(lock_handler_->CustomIconHasTooltip());
   EXPECT_TRUE(lock_handler_->CustomIconHardlocksOnClick());
 
-  state_handler_->ChangeState(ScreenlockState::BLUETOOTH_CONNECTING);
+  state_handler_->ChangeState(SmartLockState::kConnectingToPhone);
   // Duplicated state change should be ignored.
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockedState) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, HardlockedState) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
             lock_handler_->GetAuthType(account_id_));
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
+  state_handler_->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
@@ -349,20 +348,17 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockedState) {
   EXPECT_TRUE(lock_handler_->IsCustomIconTooltipAutoshown());
   EXPECT_FALSE(lock_handler_->CustomIconHardlocksOnClick());
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
+  state_handler_->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
 
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest,
-       LoginDisabled_HasNotYetShownMessage) {
+TEST_F(SmartLockStateHandlerTest, LoginDisabled_HasNotYetShownMessage) {
   fake_pref_manager_->SetHasShownLoginDisabledMessage(false);
 
-  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::LOGIN_DISABLED);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotFound);
+  state_handler_->SetHardlockState(SmartLockStateHandler::LOGIN_DISABLED);
 
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
@@ -376,13 +372,11 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
   EXPECT_TRUE(lock_handler_->IsCustomIconTooltipAutoshown());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest,
-       LoginDisabled_HasAlreadyShownMessage) {
+TEST_F(SmartLockStateHandlerTest, LoginDisabled_HasAlreadyShownMessage) {
   fake_pref_manager_->SetHasShownLoginDisabledMessage(true);
 
-  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::LOGIN_DISABLED);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotFound);
+  state_handler_->SetHardlockState(SmartLockStateHandler::LOGIN_DISABLED);
 
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
@@ -396,28 +390,27 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
   EXPECT_FALSE(lock_handler_->IsCustomIconTooltipAutoshown());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockedStateNoPairing) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, HardlockedStateNoPairing) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
             lock_handler_->GetAuthType(account_id_));
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::NO_PAIRING);
+  state_handler_->SetHardlockState(SmartLockStateHandler::NO_PAIRING);
 
   EXPECT_FALSE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
             lock_handler_->GetAuthType(account_id_));
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, StatesWithLockedIcon) {
-  std::vector<ScreenlockState> states;
-  states.push_back(ScreenlockState::NO_BLUETOOTH);
-  states.push_back(ScreenlockState::NO_PHONE);
-  states.push_back(ScreenlockState::PHONE_NOT_LOCKABLE);
-  states.push_back(ScreenlockState::PHONE_NOT_AUTHENTICATED);
-  states.push_back(ScreenlockState::PHONE_LOCKED);
+TEST_F(SmartLockStateHandlerTest, StatesWithLockedIcon) {
+  std::vector<SmartLockState> states;
+  states.push_back(SmartLockState::kBluetoothDisabled);
+  states.push_back(SmartLockState::kPhoneNotFound);
+  states.push_back(SmartLockState::kPhoneNotLockable);
+  states.push_back(SmartLockState::kPhoneNotAuthenticated);
+  states.push_back(SmartLockState::kPhoneFoundLockedAndProximate);
 
   for (size_t i = 0; i < states.size(); ++i) {
     SCOPED_TRACE(base::NumberToString(i));
@@ -439,9 +432,8 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StatesWithLockedIcon) {
   }
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest,
-       LockScreenClearedOnStateHandlerDestruction) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, LockScreenClearedOnStateHandlerDestruction) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
@@ -458,8 +450,8 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
   ASSERT_FALSE(lock_handler_->HasCustomIcon());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, StatePreservedWhenScreenUnlocks) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, StatePreservedWhenScreenUnlocks) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
@@ -477,8 +469,8 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StatePreservedWhenScreenUnlocks) {
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, StateChangeWhileScreenUnlocked) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, StateChangeWhileScreenUnlocked) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
@@ -489,7 +481,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StateChangeWhileScreenUnlocked) {
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
 
-  state_handler_->ChangeState(ScreenlockState::BLUETOOTH_CONNECTING);
+  state_handler_->ChangeState(SmartLockState::kConnectingToPhone);
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
 
@@ -500,93 +492,89 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StateChangeWhileScreenUnlocked) {
   EXPECT_EQ(kSpinnerIconId, lock_handler_->GetCustomIconId());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, NoPairingHardlockClearsIcon) {
-  state_handler_->ChangeState(ScreenlockState::PHONE_LOCKED);
+TEST_F(SmartLockStateHandlerTest, NoPairingHardlockClearsIcon) {
+  state_handler_->ChangeState(SmartLockState::kPhoneFoundLockedAndProximate);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kLockedIconId, lock_handler_->GetCustomIconId());
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::NO_PAIRING);
+  state_handler_->SetHardlockState(SmartLockStateHandler::NO_PAIRING);
 
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_FALSE(lock_handler_->HasCustomIcon());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, PairingChangedHardlock) {
-  state_handler_->ChangeState(ScreenlockState::PHONE_LOCKED);
+TEST_F(SmartLockStateHandlerTest, PairingChangedHardlock) {
+  state_handler_->ChangeState(SmartLockState::kPhoneFoundLockedAndProximate);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kLockedIconId, lock_handler_->GetCustomIconId());
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::PAIRING_CHANGED);
+  state_handler_->SetHardlockState(SmartLockStateHandler::PAIRING_CHANGED);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kLockedToBeActivatedIconId, lock_handler_->GetCustomIconId());
 
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kLockedToBeActivatedIconId, lock_handler_->GetCustomIconId());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, InactiveStateHidesIcon) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, InactiveStateHidesIcon) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
 
-  state_handler_->ChangeState(ScreenlockState::INACTIVE);
+  state_handler_->ChangeState(SmartLockState::kInactive);
 
   ASSERT_FALSE(lock_handler_->HasCustomIcon());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest,
-       AuthenticatedStateClearsPreviousAuthValue) {
-  state_handler_->ChangeState(ScreenlockState::INACTIVE);
+TEST_F(SmartLockStateHandlerTest, AuthenticatedStateClearsPreviousAuthValue) {
+  state_handler_->ChangeState(SmartLockState::kInactive);
 
   lock_handler_->SetAuthValue(u"xxx");
 
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE),
       lock_handler_->GetAuthValue());
 
-  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotFound);
 
   EXPECT_EQ(std::u16string(), lock_handler_->GetAuthValue());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest,
+TEST_F(SmartLockStateHandlerTest,
        ChangingStateDoesNotAffectAuthValueIfAuthTypeDoesNotChange) {
   lock_handler_->SetAuthValue(u"xxx");
 
-  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotFound);
   EXPECT_EQ(u"xxx", lock_handler_->GetAuthValue());
 
-  state_handler_->ChangeState(ScreenlockState::PHONE_NOT_AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotAuthenticated);
   EXPECT_EQ(u"xxx", lock_handler_->GetAuthValue());
 
-  state_handler_->ChangeState(ScreenlockState::BLUETOOTH_CONNECTING);
+  state_handler_->ChangeState(SmartLockState::kConnectingToPhone);
   EXPECT_EQ(u"xxx", lock_handler_->GetAuthValue());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kSpinnerIconId, lock_handler_->GetCustomIconId());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, StateChangesIgnoredIfHardlocked) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+TEST_F(SmartLockStateHandlerTest, StateChangesIgnoredIfHardlocked) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
             lock_handler_->GetAuthType(account_id_));
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
+  state_handler_->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
@@ -594,34 +582,32 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, StateChangesIgnoredIfHardlocked) {
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kHardlockedIconId, lock_handler_->GetCustomIconId());
 
-  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotFound);
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
 
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
             lock_handler_->GetAuthType(account_id_));
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest,
+TEST_F(SmartLockStateHandlerTest,
        LockScreenChangeableOnLockAfterHardlockReset) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
+  state_handler_->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
 
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::NO_HARDLOCK);
+  state_handler_->SetHardlockState(SmartLockStateHandler::NO_HARDLOCK);
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
   lock_handler_ = std::make_unique<TestLockHandler>(account_id_);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
 
-  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
+  state_handler_->ChangeState(SmartLockState::kPhoneNotFound);
 
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_TRUE(lock_handler_->HasCustomIcon());
@@ -637,7 +623,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
             lock_handler_->GetAuthType(account_id_));
   EXPECT_EQ(kLockedIconId, lock_handler_->GetCustomIconId());
 
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(proximity_auth::mojom::AuthType::USER_CLICK,
@@ -645,10 +631,9 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
   EXPECT_TRUE(lock_handler_->CustomIconHardlocksOnClick());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockStatePersistsOverUnlocks) {
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
-  state_handler_->SetHardlockState(
-      EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
+TEST_F(SmartLockStateHandlerTest, HardlockStatePersistsOverUnlocks) {
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
+  state_handler_->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
   EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
 
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
@@ -662,36 +647,36 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockStatePersistsOverUnlocks) {
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kHardlockedIconId, lock_handler_->GetCustomIconId());
 
-  state_handler_->ChangeState(ScreenlockState::AUTHENTICATED);
+  state_handler_->ChangeState(SmartLockState::kPhoneAuthenticated);
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   EXPECT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
             lock_handler_->GetAuthType(account_id_));
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, PrimaryUserAbsent) {
-  state_handler_->ChangeState(ScreenlockState::PRIMARY_USER_ABSENT);
+TEST_F(SmartLockStateHandlerTest, PrimaryUserAbsent) {
+  state_handler_->ChangeState(SmartLockState::kPrimaryUserAbsent);
 
   EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(kLockedIconId, lock_handler_->GetCustomIconId());
 }
 
-TEST_F(EasyUnlockScreenlockStateHandlerTest, NoOverrideOnlineSignin) {
+TEST_F(SmartLockStateHandlerTest, NoOverrideOnlineSignin) {
   lock_handler_->SetAuthType(account_id_,
                              proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                              std::u16string());
 
-  std::vector<ScreenlockState> states;
-  states.push_back(ScreenlockState::NO_BLUETOOTH);
-  states.push_back(ScreenlockState::NO_PHONE);
-  states.push_back(ScreenlockState::PHONE_NOT_LOCKABLE);
-  states.push_back(ScreenlockState::PHONE_NOT_AUTHENTICATED);
-  states.push_back(ScreenlockState::PHONE_LOCKED);
-  states.push_back(ScreenlockState::PHONE_NOT_LOCKABLE);
-  states.push_back(ScreenlockState::RSSI_TOO_LOW);
-  states.push_back(ScreenlockState::PHONE_LOCKED_AND_RSSI_TOO_LOW);
-  states.push_back(ScreenlockState::AUTHENTICATED);
+  std::vector<SmartLockState> states;
+  states.push_back(SmartLockState::kBluetoothDisabled);
+  states.push_back(SmartLockState::kPhoneNotFound);
+  states.push_back(SmartLockState::kPhoneNotLockable);
+  states.push_back(SmartLockState::kPhoneNotAuthenticated);
+  states.push_back(SmartLockState::kPhoneFoundLockedAndProximate);
+  states.push_back(SmartLockState::kPhoneNotLockable);
+  states.push_back(SmartLockState::kPhoneFoundUnlockedAndDistant);
+  states.push_back(SmartLockState::kPhoneFoundLockedAndDistant);
+  states.push_back(SmartLockState::kPhoneAuthenticated);
 
   for (size_t i = 0; i < states.size(); ++i) {
     state_handler_->ChangeState(states[i]);
@@ -700,13 +685,13 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, NoOverrideOnlineSignin) {
     EXPECT_FALSE(lock_handler_->HasCustomIcon());
   }
 
-  std::vector<EasyUnlockScreenlockStateHandler::HardlockState> hardlock_states;
-  hardlock_states.push_back(EasyUnlockScreenlockStateHandler::NO_HARDLOCK);
-  hardlock_states.push_back(EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
-  hardlock_states.push_back(EasyUnlockScreenlockStateHandler::PAIRING_CHANGED);
-  hardlock_states.push_back(EasyUnlockScreenlockStateHandler::PAIRING_ADDED);
-  hardlock_states.push_back(EasyUnlockScreenlockStateHandler::NO_PAIRING);
-  hardlock_states.push_back(EasyUnlockScreenlockStateHandler::LOGIN_FAILED);
+  std::vector<SmartLockStateHandler::HardlockState> hardlock_states;
+  hardlock_states.push_back(SmartLockStateHandler::NO_HARDLOCK);
+  hardlock_states.push_back(SmartLockStateHandler::USER_HARDLOCK);
+  hardlock_states.push_back(SmartLockStateHandler::PAIRING_CHANGED);
+  hardlock_states.push_back(SmartLockStateHandler::PAIRING_ADDED);
+  hardlock_states.push_back(SmartLockStateHandler::NO_PAIRING);
+  hardlock_states.push_back(SmartLockStateHandler::LOGIN_FAILED);
 
   for (size_t i = 0; i < hardlock_states.size(); ++i) {
     state_handler_->SetHardlockState(hardlock_states[i]);

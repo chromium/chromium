@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SCREENLOCK_STATE_HANDLER_H_
-#define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SCREENLOCK_STATE_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_STATE_HANDLER_H_
+#define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_STATE_HANDLER_H_
 
 #include <string>
 
 #include "base/macros.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/screenlock_state.h"
+#include "chromeos/components/proximity_auth/smartlock_state.h"
 #include "components/account_id/account_id.h"
 
 namespace proximity_auth {
@@ -20,7 +20,7 @@ namespace ash {
 
 // Profile specific class responsible for updating screenlock UI for the user
 // associated with the profile when their Easy Unlock state changes.
-class EasyUnlockScreenlockStateHandler
+class SmartLockStateHandler
     : public proximity_auth::ScreenlockBridge::Observer {
  public:
   // Hard lock states.
@@ -40,16 +40,15 @@ class EasyUnlockScreenlockStateHandler
   // `account_id`: The account id of the user associated with the profile to
   //     which this class is attached.
   // `initial_hardlock_state`: The initial hardlock state.
-  // `screenlock_bridge`: The screenlock bridge used to update the screen lock
+  // `screenlock_bridge`: The screenlock bridge used to update the Smart Lock
   //     state.
   // `pref_manager`: Used primarily to track if the "Signin with Smart Lock is
   //     disabled" message has been shown before.
-  EasyUnlockScreenlockStateHandler(
-      const AccountId& account_id,
-      HardlockState initial_hardlock_state,
-      proximity_auth::ScreenlockBridge* screenlock_bridge,
-      proximity_auth::ProximityAuthPrefManager* pref_manager);
-  ~EasyUnlockScreenlockStateHandler() override;
+  SmartLockStateHandler(const AccountId& account_id,
+                        HardlockState initial_hardlock_state,
+                        proximity_auth::ScreenlockBridge* screenlock_bridge,
+                        proximity_auth::ProximityAuthPrefManager* pref_manager);
+  ~SmartLockStateHandler() override;
 
   // Returns true if handler is not in INACTIVE state.
   bool IsActive() const;
@@ -59,17 +58,17 @@ class EasyUnlockScreenlockStateHandler
   // auth failure).
   bool InStateValidOnRemoteAuthFailure() const;
 
-  // Changes internal state to `new_state` and updates the user's screenlock
-  // accordingly.
-  void ChangeState(proximity_auth::ScreenlockState new_state);
+  // Changes internal state to `new_state` and updates the user's Smart Lock
+  // state accordingly.
+  void ChangeState(proximity_auth::SmartLockState new_state);
 
-  // Updates the screenlock state.
+  // Updates the hardlock state.
   void SetHardlockState(HardlockState new_state);
 
   // Shows the hardlock UI if the hardlock_state_ is not NO_HARDLOCK.
   void MaybeShowHardlockUI();
 
-  proximity_auth::ScreenlockState state() const { return state_; }
+  proximity_auth::SmartLockState state() const { return state_; }
 
  private:
   // proximity_auth::ScreenlockBridge::Observer:
@@ -80,8 +79,8 @@ class EasyUnlockScreenlockStateHandler
       override;
   void OnFocusedUserChanged(const AccountId& account_id) override;
 
-  // Forces refresh of the Easy Unlock screenlock UI.
-  void RefreshScreenlockState();
+  // Forces refresh of the Smart Lock UI.
+  void RefreshSmartLockState();
 
   void ShowHardlockUI();
 
@@ -96,7 +95,7 @@ class EasyUnlockScreenlockStateHandler
   // Updates the screenlock auth type if it has to be changed.
   void UpdateScreenlockAuthType();
 
-  proximity_auth::ScreenlockState state_;
+  proximity_auth::SmartLockState state_;
   const AccountId account_id_;
   proximity_auth::ScreenlockBridge* screenlock_bridge_ = nullptr;
   proximity_auth::ProximityAuthPrefManager* pref_manager_ = nullptr;
@@ -108,7 +107,7 @@ class EasyUnlockScreenlockStateHandler
   // Whether the user's phone was ever locked while on the current lock screen.
   bool did_see_locked_phone_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockScreenlockStateHandler);
+  DISALLOW_COPY_AND_ASSIGN(SmartLockStateHandler);
 };
 
 }  // namespace ash
@@ -116,7 +115,7 @@ class EasyUnlockScreenlockStateHandler
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace chromeos {
-using ::ash::EasyUnlockScreenlockStateHandler;
+using ::ash::SmartLockStateHandler;
 }
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_SCREENLOCK_STATE_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_STATE_HANDLER_H_

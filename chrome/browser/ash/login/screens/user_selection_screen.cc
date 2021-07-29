@@ -841,7 +841,7 @@ void UserSelectionScreen::HardLockPod(const AccountId& account_id) {
   EasyUnlockService* service = GetEasyUnlockServiceForUser(account_id);
   if (!service)
     return;
-  service->SetHardlockState(EasyUnlockScreenlockStateHandler::USER_HARDLOCK);
+  service->SetHardlockState(SmartLockStateHandler::USER_HARDLOCK);
 }
 
 void UserSelectionScreen::AttemptEasyUnlock(const AccountId& account_id) {

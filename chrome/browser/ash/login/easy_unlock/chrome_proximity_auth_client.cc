@@ -23,17 +23,17 @@
 
 namespace ash {
 
-using ::proximity_auth::ScreenlockState;
+using ::proximity_auth::SmartLockState;
 
 ChromeProximityAuthClient::ChromeProximityAuthClient(Profile* profile)
     : profile_(profile) {}
 
 ChromeProximityAuthClient::~ChromeProximityAuthClient() {}
 
-void ChromeProximityAuthClient::UpdateScreenlockState(ScreenlockState state) {
+void ChromeProximityAuthClient::UpdateSmartLockState(SmartLockState state) {
   EasyUnlockService* service = EasyUnlockService::Get(profile_);
   if (service)
-    service->UpdateScreenlockState(state);
+    service->UpdateSmartLockState(state);
 }
 
 void ChromeProximityAuthClient::FinalizeUnlock(bool success) {

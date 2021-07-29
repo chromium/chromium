@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
-#include "chromeos/components/proximity_auth/screenlock_state.h"
+#include "chromeos/components/proximity_auth/smartlock_state.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace proximity_auth {
@@ -23,8 +23,8 @@ class ProximityAuthClient {
   virtual ~ProximityAuthClient() {}
 
   // Updates the user pod on the signin or lock screen to reflect the provided
-  // screenlock state.
-  virtual void UpdateScreenlockState(ScreenlockState state) = 0;
+  // Smart Lock state.
+  virtual void UpdateSmartLockState(SmartLockState state) = 0;
 
   // Finalizes an unlock attempt initiated by the user. If |success| is true,
   // the screen is unlocked; otherwise, the auth attempt is rejected. An auth

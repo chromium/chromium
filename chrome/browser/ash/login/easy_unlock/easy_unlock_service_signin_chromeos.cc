@@ -42,7 +42,7 @@ namespace {
 
 // TODO(https://crbug.com/1164001): remove after moving to ash::
 using ::chromeos::TPMTokenLoader;
-using ::proximity_auth::ScreenlockState;
+using ::proximity_auth::SmartLockState;
 
 // The maximum allowed backoff interval when waiting for cryptohome to start.
 uint32_t kMaxCryptohomeBackoffIntervalMs = 10000u;
@@ -398,7 +398,7 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
   user_pod_last_focused_timestamp_ = base::TimeTicks::Now();
   SetProximityAuthDevices(account_id_, multidevice::RemoteDeviceRefList(),
                           absl::nullopt /* local_device */);
-  ResetScreenlockState();
+  ResetSmartLockState();
 
   // Changing the "Active User" above changes the return values of IsAllowed()
   // and IsEnabled() below.
@@ -408,9 +408,9 @@ void EasyUnlockServiceSignin::OnFocusedUserChanged(
   ShowInitialUserPodState();
 
   // If there is a hardlock, then there is no point in loading the devices.
-  EasyUnlockScreenlockStateHandler::HardlockState hardlock_state;
+  SmartLockStateHandler::HardlockState hardlock_state;
   if (GetPersistedHardlockState(&hardlock_state) &&
-      hardlock_state != EasyUnlockScreenlockStateHandler::NO_HARDLOCK) {
+      hardlock_state != SmartLockStateHandler::NO_HARDLOCK) {
     PA_LOG(VERBOSE) << "Hardlock present, skipping remaining login flow.";
     return;
   }
@@ -468,11 +468,10 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
     // previous user session shuts down before
     // CheckCryptohomeKeysAndMaybeHardlock finishes. Set NO_PAIRING state
     // and update UI to remove the confusing spinner in this case.
-    EasyUnlockScreenlockStateHandler::HardlockState hardlock_state;
+    SmartLockStateHandler::HardlockState hardlock_state;
     if (devices.empty() && GetPersistedHardlockState(&hardlock_state) &&
-        hardlock_state == EasyUnlockScreenlockStateHandler::NO_HARDLOCK) {
-      SetHardlockStateForUser(account_id,
-                              EasyUnlockScreenlockStateHandler::NO_PAIRING);
+        hardlock_state == SmartLockStateHandler::NO_HARDLOCK) {
+      SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
     }
   }
 
@@ -536,16 +535,14 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
     PA_LOG(ERROR)
         << "Expected a device list of size 1 or 2, received list of size "
         << remote_devices.size();
-    SetHardlockStateForUser(account_id,
-                            EasyUnlockScreenlockStateHandler::NO_PAIRING);
+    SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
     return;
   }
 
   if (remote_devices.size() != 2u) {
     PA_LOG(ERROR) << "Expected a device list of size 2, received list of size "
                   << remote_devices.size();
-    SetHardlockStateForUser(account_id,
-                            EasyUnlockScreenlockStateHandler::PAIRING_CHANGED);
+    SetHardlockStateForUser(account_id, SmartLockStateHandler::PAIRING_CHANGED);
     return;
   }
 
@@ -561,8 +558,7 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
             multidevice::SoftwareFeatureState::kEnabled) {
       if (!unlock_key_id.empty()) {
         PA_LOG(ERROR) << "Only one of the devices should be an unlock key.";
-        SetHardlockStateForUser(account_id,
-                                EasyUnlockScreenlockStateHandler::NO_PAIRING);
+        SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
         return;
       }
 
@@ -570,8 +566,7 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
     } else {
       if (!local_device_id.empty()) {
         PA_LOG(ERROR) << "Only one of the devices should be the local device.";
-        SetHardlockStateForUser(account_id,
-                                EasyUnlockScreenlockStateHandler::NO_PAIRING);
+        SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
         return;
       }
 
@@ -596,14 +591,12 @@ void EasyUnlockServiceSignin::OnUserDataLoaded(
   // now, simply return early here to prevent a potential crash which can occur
   // in this situation (see https://crbug.com/866711).
   if (!unlock_key_device) {
-    SetHardlockStateForUser(account_id,
-                            EasyUnlockScreenlockStateHandler::NO_PAIRING);
+    SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
     return;
   }
 
   if (!local_device) {
-    SetHardlockStateForUser(account_id,
-                            EasyUnlockScreenlockStateHandler::NO_PAIRING);
+    SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
     return;
   }
 
@@ -630,13 +623,12 @@ void EasyUnlockServiceSignin::ShowInitialUserPodState() {
   if (!pref_manager_->IsChromeOSLoginEnabled()) {
     // Show a hardlock state if the user has not enabled Smart Lock to the log
     // in to the user's Google account.
-    SetHardlockStateForUser(account_id_,
-                            EasyUnlockScreenlockStateHandler::LOGIN_DISABLED);
+    SetHardlockStateForUser(account_id_, SmartLockStateHandler::LOGIN_DISABLED);
   } else {
     // This UI is simply a placeholder until the RemoteDevices are loaded from
     // cryptohome and the ProximityAuthSystem is started. Hardlock states are
     // automatically taken into account.
-    UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING);
+    UpdateSmartLockState(SmartLockState::kConnectingToPhone);
   }
 }
 

@@ -33,11 +33,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::_;
 using testing::AtLeast;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
-using testing::_;
 
 namespace proximity_auth {
 namespace {
@@ -104,12 +104,12 @@ class TestUnlockManager : public UnlockManagerImpl {
       : UnlockManagerImpl(screenlock_type, proximity_auth_client) {}
   ~TestUnlockManager() override {}
 
-  using UnlockManager::OnAuthAttempted;
-  using MessengerObserver::OnUnlockEventSent;
-  using MessengerObserver::OnRemoteStatusUpdate;
   using MessengerObserver::OnDecryptResponse;
-  using MessengerObserver::OnUnlockResponse;
   using MessengerObserver::OnDisconnected;
+  using MessengerObserver::OnRemoteStatusUpdate;
+  using MessengerObserver::OnUnlockEventSent;
+  using MessengerObserver::OnUnlockResponse;
+  using UnlockManager::OnAuthAttempted;
 
   MockProximityMonitor* proximity_monitor() { return proximity_monitor_; }
   bool proximity_monitor_destroyed() { return proximity_monitor_destroyed_; }
@@ -370,7 +370,7 @@ TEST_F(ProximityAuthUnlockManagerImplTest, SetRemoteDeviceLifeCycle_SetToNull) {
   SimulateUserPresentState();
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::INACTIVE));
+              UpdateSmartLockState(SmartLockState::kInactive));
   unlock_manager_->SetRemoteDeviceLifeCycle(nullptr);
 }
 
@@ -380,7 +380,7 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
   SimulateUserPresentState();
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
 }
 
@@ -394,7 +394,7 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
   life_cycle_.ChangeState(RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::PHONE_NOT_AUTHENTICATED));
+              UpdateSmartLockState(SmartLockState::kPhoneNotAuthenticated));
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
 }
 
@@ -407,7 +407,7 @@ TEST_F(ProximityAuthUnlockManagerImplTest, SetRemoteDeviceLifeCycle_WakingUp) {
   life_cycle_.ChangeState(RemoteDeviceLifeCycle::State::FINDING_CONNECTION);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
 }
 
@@ -419,11 +419,11 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
   life_cycle_.ChangeState(RemoteDeviceLifeCycle::State::FINDING_CONNECTION);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_PHONE));
+              UpdateSmartLockState(SmartLockState::kPhoneNotFound));
   // Simulate timing out before a connection is established.
   RunPendingTasks();
 }
@@ -486,7 +486,7 @@ TEST_F(ProximityAuthUnlockManagerImplTest, BluetoothAdapterNotPresent) {
   CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_BLUETOOTH));
+              UpdateSmartLockState(SmartLockState::kBluetoothDisabled));
 
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   EXPECT_FALSE(life_cycle_.started());
@@ -498,13 +498,13 @@ TEST_F(ProximityAuthUnlockManagerImplTest, BluetoothAdapterPowerChanges) {
   CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_BLUETOOTH));
+              UpdateSmartLockState(SmartLockState::kBluetoothDisabled));
 
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   EXPECT_FALSE(life_cycle_.started());
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
   ON_CALL(*bluetooth_adapter_, IsPowered()).WillByDefault(Return(true));
   bluetooth_adapter_->NotifyAdapterPoweredChanged(true);
   EXPECT_TRUE(life_cycle_.started());
@@ -525,16 +525,16 @@ TEST_F(
   // |mock_bluetooth_suspension_recovery_timer_|, simulating that not enough
   // time has passed for the BluetoothAdapter to recover. It's expected under
   // these conditions that:
-  // * ProximityAuthClient::UpdateScreenlockState() never be called with
-  //   ScreenlockState::NO_BLUETOOTH.
-  // * ProximityAuthClient::UpdateScreenlockState() only be called once with
-  //   ScreenlockState::BLUETOOTH_CONNECTING, because it should only be called
-  //   on when the ScreenlockState value changes.
+  // * ProximityAuthClient::UpdateSmartLockState() never be called with
+  //   SmartLockState::kBluetoothDisabled.
+  // * ProximityAuthClient::UpdateSmartLockState() only be called once with
+  //   SmartLockState::BLUETOOTH_CONNECTING, because it should only be called
+  //   on when the SmartLockState value changes.
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_BLUETOOTH))
+              UpdateSmartLockState(SmartLockState::kBluetoothDisabled))
       .Times(0);
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
 
   ON_CALL(*bluetooth_adapter_, IsPresent()).WillByDefault(Return(false));
   ON_CALL(*bluetooth_adapter_, IsPowered()).WillByDefault(Return(false));
@@ -544,7 +544,7 @@ TEST_F(
 
   // Simulate how ProximityAuthSystem, the owner of UnlockManager, reacts to
   // resume: providing a new RemoteDeviceLifeCycle. This shouldn't trigger a new
-  // call to ProximityAuthClient::UpdateScreenlockState().
+  // call to ProximityAuthClient::UpdateSmartLockState().
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   EXPECT_TRUE(life_cycle_.started());
 
@@ -567,15 +567,15 @@ TEST_F(
   // has passed for the BluetoothAdapter to recover - this means that Bluetooth
   // is truly off after resume and the user should be visually informed as such.
   // It's expected under these conditions that:
-  // * ProximityAuthClient::UpdateScreenlockState() only be called once with
-  //   ScreenlockState::NO_BLUETOOTH, but after the timer fires (this is
+  // * ProximityAuthClient::UpdateSmartLockState() only be called once with
+  //   SmartLockState::kBluetoothDisabled, but after the timer fires (this is
   //   impossible to explicitly do in code with mocks, unfortunately).
-  // * ProximityAuthClient::UpdateScreenlockState() only be called once with
-  //   ScreenlockState::BLUETOOTH_CONNECTING, directly after SuspendDone.
+  // * ProximityAuthClient::UpdateSmartLockState() only be called once with
+  //   SmartLockState::BLUETOOTH_CONNECTING, directly after SuspendDone.
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_BLUETOOTH));
+              UpdateSmartLockState(SmartLockState::kBluetoothDisabled));
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
 
   ON_CALL(*bluetooth_adapter_, IsPresent()).WillByDefault(Return(false));
   ON_CALL(*bluetooth_adapter_, IsPowered()).WillByDefault(Return(false));
@@ -585,7 +585,7 @@ TEST_F(
 
   // Simulate how ProximityAuthSystem, the owner of UnlockManager, reacts to
   // resume: providing a new RemoteDeviceLifeCycle. This shouldn't trigger a new
-  // call to ProximityAuthClient::UpdateScreenlockState().
+  // call to ProximityAuthClient::UpdateSmartLockState().
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   EXPECT_TRUE(life_cycle_.started());
 
@@ -594,8 +594,8 @@ TEST_F(
 
   EXPECT_TRUE(mock_bluetooth_suspension_recovery_timer_->IsRunning());
 
-  // This leads to ProximityAuthClient::UpdateScreenlockState() being called
-  // with ScreenlockState::NO_BLUETOOTH.
+  // This leads to ProximityAuthClient::UpdateSmartLockState() being called
+  // with SmartLockState::NO_BLUETOOTH.
   mock_bluetooth_suspension_recovery_timer_->Fire();
 }
 
@@ -610,9 +610,9 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
       power_manager::SuspendImminent_Reason_LID_CLOSED);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_BLUETOOTH));
+              UpdateSmartLockState(SmartLockState::kBluetoothDisabled));
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING))
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone))
       .Times(0);
 
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
@@ -639,45 +639,45 @@ TEST_F(ProximityAuthUnlockManagerImplTest,
 }
 
 TEST_F(ProximityAuthUnlockManagerImplTest,
-       AuthenticationFailed_UpdatesScreenlockState) {
+       AuthenticationFailed_UpdatesSmartLockState) {
   CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);
   SimulateUserPresentState();
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::PHONE_NOT_AUTHENTICATED));
+              UpdateSmartLockState(SmartLockState::kPhoneNotAuthenticated));
   life_cycle_.ChangeState(RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED);
 }
 
 TEST_F(ProximityAuthUnlockManagerImplTest,
-       FindingConnection_UpdatesScreenlockState) {
+       FindingConnection_UpdatesSmartLockState) {
   CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);
 
   // Regression test for https://crbug.com/890047, ensuring that the NO_PHONE
   // status doesn't incorrectly appear for a brief moment before the
   // BLUETOOTH_CONNECTING spinner.
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_PHONE))
+              UpdateSmartLockState(SmartLockState::kPhoneNotFound))
       .Times(0);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   EXPECT_TRUE(life_cycle_.started());
 }
 
 TEST_F(ProximityAuthUnlockManagerImplTest,
-       Authenticating_UpdatesScreenlockState) {
+       Authenticating_UpdatesSmartLockState) {
   CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);
 
   // Regression test for https://crbug.com/890047, ensuring that the NO_PHONE
   // status doesn't incorrectly appear for a brief moment before the
   // BLUETOOTH_CONNECTING spinner.
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::NO_PHONE))
+              UpdateSmartLockState(SmartLockState::kPhoneNotFound))
       .Times(0);
 
   EXPECT_CALL(proximity_auth_client_,
-              UpdateScreenlockState(ScreenlockState::BLUETOOTH_CONNECTING));
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone));
   unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
   EXPECT_TRUE(life_cycle_.started());
   life_cycle_.ChangeState(RemoteDeviceLifeCycle::State::AUTHENTICATING);

@@ -16,8 +16,8 @@
 #include "chromeos/components/proximity_auth/remote_device_life_cycle.h"
 #include "chromeos/components/proximity_auth/remote_status_update.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/screenlock_state.h"
 #include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
+#include "chromeos/components/proximity_auth/smartlock_state.h"
 #include "chromeos/components/proximity_auth/unlock_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -140,8 +140,8 @@ class UnlockManagerImpl : public UnlockManager,
   // for decryption.
   void OnGotSignInChallenge(const std::string& challenge);
 
-  // Returns the current state for the screen lock UI.
-  ScreenlockState GetScreenlockState();
+  // Returns the current state for the Smart Lock UI.
+  SmartLockState GetSmartLockState();
 
   // Updates the lock screen based on the manager's current state.
   void UpdateLockScreen();
@@ -252,7 +252,7 @@ class UnlockManagerImpl : public UnlockManager,
   bool has_user_been_shown_first_status_ = false;
 
   // The state of the current screen lock UI.
-  ScreenlockState screenlock_state_ = ScreenlockState::INACTIVE;
+  SmartLockState smartlock_state_ = SmartLockState::kInactive;
 
   // The timestamp of when the lock or login screen is shown to the user. Begins
   // when the screen is locked, the system is rebooted, the clamshell lid is

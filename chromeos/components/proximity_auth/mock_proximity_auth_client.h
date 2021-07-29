@@ -21,8 +21,8 @@ class MockProximityAuthClient : public ProximityAuthClient {
   ~MockProximityAuthClient() override;
 
   // ProximityAuthClient:
-  MOCK_METHOD1(UpdateScreenlockState,
-               void(proximity_auth::ScreenlockState state));
+  MOCK_METHOD1(UpdateSmartLockState,
+               void(proximity_auth::SmartLockState state));
   MOCK_METHOD1(FinalizeUnlock, void(bool success));
   MOCK_METHOD1(FinalizeSignin, void(const std::string& secret));
   MOCK_METHOD4(

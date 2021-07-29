@@ -622,52 +622,52 @@ void UnlockManagerImpl::OnGotSignInChallenge(const std::string& challenge) {
     GetMessenger()->RequestDecryption(challenge);
 }
 
-ScreenlockState UnlockManagerImpl::GetScreenlockState() {
+SmartLockState UnlockManagerImpl::GetSmartLockState() {
   if (!life_cycle_)
-    return ScreenlockState::INACTIVE;
+    return SmartLockState::kInactive;
 
   if (!IsBluetoothPresentAndPowered())
-    return ScreenlockState::NO_BLUETOOTH;
+    return SmartLockState::kBluetoothDisabled;
 
   if (IsUnlockAllowed())
-    return ScreenlockState::AUTHENTICATED;
+    return SmartLockState::kPhoneAuthenticated;
 
   RemoteDeviceLifeCycle::State life_cycle_state = life_cycle_->GetState();
   if (life_cycle_state == RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED)
-    return ScreenlockState::PHONE_NOT_AUTHENTICATED;
+    return SmartLockState::kPhoneNotAuthenticated;
 
   if (is_performing_initial_scan_)
-    return ScreenlockState::BLUETOOTH_CONNECTING;
+    return SmartLockState::kConnectingToPhone;
 
   Messenger* messenger = GetMessenger();
 
   // Show a timeout state if we can not connect to the remote device in a
   // reasonable amount of time.
-  if (!is_performing_initial_scan_ && !messenger)
-    return ScreenlockState::NO_PHONE;
+  if (!messenger)
+    return SmartLockState::kPhoneNotFound;
 
   // If the RSSI is too low, then the remote device is nowhere near the local
-  // device. This message should take priority over messages about screen lock
+  // device. This message should take priority over messages about Smart Lock
   // states.
   if (proximity_monitor_ && !proximity_monitor_->IsUnlockAllowed()) {
     if (remote_screenlock_state_ &&
         *remote_screenlock_state_ == RemoteScreenlockState::UNLOCKED) {
-      return ScreenlockState::RSSI_TOO_LOW;
+      return SmartLockState::kPhoneFoundUnlockedAndDistant;
     } else {
-      return ScreenlockState::PHONE_LOCKED_AND_RSSI_TOO_LOW;
+      return SmartLockState::kPhoneFoundLockedAndDistant;
     }
   }
 
   if (remote_screenlock_state_) {
     switch (*remote_screenlock_state_) {
       case RemoteScreenlockState::DISABLED:
-        return ScreenlockState::PHONE_NOT_LOCKABLE;
+        return SmartLockState::kPhoneNotLockable;
 
       case RemoteScreenlockState::LOCKED:
-        return ScreenlockState::PHONE_LOCKED;
+        return SmartLockState::kPhoneFoundLockedAndProximate;
 
       case RemoteScreenlockState::PRIMARY_USER_ABSENT:
-        return ScreenlockState::PRIMARY_USER_ABSENT;
+        return SmartLockState::kPrimaryUserAbsent;
 
       case RemoteScreenlockState::UNKNOWN:
       case RemoteScreenlockState::UNLOCKED:
@@ -681,27 +681,28 @@ ScreenlockState UnlockManagerImpl::GetScreenlockState() {
                     << "state was either malformed or not received.";
   }
 
-  return ScreenlockState::NO_PHONE;
+  // TODO(crbug.com/1233587): Add more granular error states
+  return SmartLockState::kPhoneNotFound;
 }
 
 void UnlockManagerImpl::UpdateLockScreen() {
   AttemptToStartRemoteDeviceLifecycle();
 
-  ScreenlockState new_state = GetScreenlockState();
-  if (screenlock_state_ == new_state)
+  SmartLockState new_state = GetSmartLockState();
+  if (smartlock_state_ == new_state)
     return;
 
-  PA_LOG(INFO) << "Updating screenlock state from " << screenlock_state_
+  PA_LOG(INFO) << "Updating Smart Lock state from " << smartlock_state_
                << " to " << new_state;
 
-  if (new_state != ScreenlockState::INACTIVE &&
-      new_state != ScreenlockState::BLUETOOTH_CONNECTING) {
+  if (new_state != SmartLockState::kInactive &&
+      new_state != SmartLockState::kConnectingToPhone) {
     RecordFirstStatusShownToUser(
-        new_state == ScreenlockState::AUTHENTICATED /* unlockable */);
+        new_state == SmartLockState::kPhoneAuthenticated /* unlockable */);
   }
 
-  proximity_auth_client_->UpdateScreenlockState(new_state);
-  screenlock_state_ = new_state;
+  proximity_auth_client_->UpdateSmartLockState(new_state);
+  smartlock_state_ = new_state;
 }
 
 void UnlockManagerImpl::SetIsPerformingInitialScan(
