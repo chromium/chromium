@@ -556,6 +556,7 @@ DnsResponseResultExtractor::ExtractDnsResults(
 HostCache::Entry DnsResponseResultExtractor::CreateEmptyResult(
     DnsQueryType query_type) {
   if (query_type != DnsQueryType::INTEGRITY &&
+      query_type != DnsQueryType::HTTPS &&
       query_type != DnsQueryType::HTTPS_EXPERIMENTAL) {
     // Currently only used for INTEGRITY/HTTPS.
     NOTIMPLEMENTED();

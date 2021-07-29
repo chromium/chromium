@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/sys_byteorder.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -166,7 +167,15 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
   rdata.append(num_buffer, 2);
 
   std::string service_domain;
-  CHECK(DNSDomainFromDot(service_name, &service_domain));
+  if (service_name == ".") {
+    // HTTPS records have special behavior for `service_name == "."` (that it
+    // will be treated as if the service name is the same as the record owner
+    // name), so allow such inputs despite normally being disallowed for
+    // Chrome-encoded DNS names.
+    service_domain = '\x00';
+  } else {
+    CHECK(DNSDomainFromDot(service_name, &service_domain));
+  }
   rdata.append(service_domain);
 
   for (auto& param : params) {
@@ -305,11 +314,12 @@ DnsResponse BuildTestDnsServiceResponse(
 }
 
 MockDnsClientRule::Result::Result(ResultType type,
-                                  absl::optional<DnsResponse> response)
-    : type(type), response(std::move(response)) {}
+                                  absl::optional<DnsResponse> response,
+                                  absl::optional<int> net_error)
+    : type(type), response(std::move(response)), net_error(net_error) {}
 
 MockDnsClientRule::Result::Result(DnsResponse response)
-    : type(OK), response(std::move(response)) {}
+    : type(OK), response(std::move(response)), net_error(absl::nullopt) {}
 
 MockDnsClientRule::Result::Result(Result&& result) = default;
 
@@ -370,6 +380,7 @@ class MockDnsTransactionFactory::MockTransaction
              rules[i].context == resolve_context->url_request_context())) {
           const MockDnsClientRule::Result* result = &rules[i].result;
           result_ = MockDnsClientRule::Result(result->type);
+          result_.net_error = result->net_error;
           delayed_ = rules[i].delay;
 
           // Generate a DnsResponse when not provided with the rule.
@@ -395,6 +406,9 @@ class MockDnsTransactionFactory::MockTransaction
                       : 0);
               break;
             case MockDnsClientRule::FAIL:
+              if (result->response)
+                SetResponse(result);
+              break;
             case MockDnsClientRule::TIMEOUT:
               DCHECK(!result->response);  // Not expected to be provided.
               break;
@@ -471,29 +485,34 @@ class MockDnsTransactionFactory::MockTransaction
   void Finish() {
     switch (result_.type) {
       case MockDnsClientRule::NODOMAIN:
-      case MockDnsClientRule::FAIL:
-        std::move(callback_).Run(
-            this, ERR_NAME_NOT_RESOLVED,
-            result_.response ? &result_.response.value() : nullptr,
-            absl::nullopt);
+      case MockDnsClientRule::FAIL: {
+        int error = result_.net_error.value_or(ERR_NAME_NOT_RESOLVED);
+        DCHECK_NE(error, OK);
+        std::move(callback_).Run(this, error,
+                                 base::OptionalOrNullptr(result_.response),
+                                 absl::nullopt);
         break;
+      }
       case MockDnsClientRule::EMPTY:
       case MockDnsClientRule::OK:
       case MockDnsClientRule::MALFORMED:
+        DCHECK(!result_.net_error.has_value());
         std::move(callback_).Run(
-            this, OK, result_.response ? &result_.response.value() : nullptr,
-            absl::nullopt);
+            this, OK, base::OptionalOrNullptr(result_.response), absl::nullopt);
         break;
       case MockDnsClientRule::TIMEOUT:
+        DCHECK(!result_.net_error.has_value());
         std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
                                  absl::nullopt);
         break;
       case MockDnsClientRule::SLOW:
         if (result_.response) {
           std::move(callback_).Run(
-              this, OK, result_.response ? &result_.response.value() : nullptr,
+              this, result_.net_error.value_or(OK),
+              result_.response ? &result_.response.value() : nullptr,
               absl::nullopt);
         } else {
+          DCHECK(!result_.net_error.has_value());
           std::move(callback_).Run(this, ERR_DNS_TIMED_OUT, nullptr,
                                    absl::nullopt);
         }

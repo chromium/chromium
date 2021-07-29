@@ -270,7 +270,8 @@ struct MockDnsClientRule {
   enum ResultType {
     // Fail asynchronously with ERR_NAME_NOT_RESOLVED and NXDOMAIN.
     NODOMAIN,
-    // Fail asynchronously with ERR_NAME_NOT_RESOLVED.
+    // Fail asynchronously with `net_error` or (if nullopt)
+    // ERR_NAME_NOT_RESOLVED and  `response` if not nullopt.
     FAIL,
     // Fail asynchronously with ERR_DNS_TIMED_OUT.
     TIMEOUT,
@@ -294,7 +295,8 @@ struct MockDnsClientRule {
 
   struct Result {
     explicit Result(ResultType type,
-                    absl::optional<DnsResponse> response = absl::nullopt);
+                    absl::optional<DnsResponse> response = absl::nullopt,
+                    absl::optional<int> net_error = absl::nullopt);
     explicit Result(DnsResponse response);
     Result(Result&& result);
     ~Result();
@@ -303,6 +305,7 @@ struct MockDnsClientRule {
 
     ResultType type;
     absl::optional<DnsResponse> response;
+    absl::optional<int> net_error;
   };
 
   // If |delay| is true, matching transactions will be delayed until triggered

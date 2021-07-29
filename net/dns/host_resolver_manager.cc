@@ -1384,9 +1384,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     if (net_error != OK && !(net_error == ERR_NAME_NOT_RESOLVED && response &&
                              response->IsValid())) {
       if (dns_query_type == DnsQueryType::INTEGRITY ||
-          dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
-        // Do not allow an experimental query to fail the whole DnsTask. Instead
-        // synthesize an empty NODATA response.
+          dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL ||
+          (dns_query_type == DnsQueryType::HTTPS &&
+           !IsFatalHttpsTransactionFailure(net_error, response))) {
+        // For non-fatal failures, synthesize an empty response.
         fake_response =
             CreateFakeEmptyResponse(GetHostname(host_), dns_query_type);
         response = &fake_response.value();
@@ -1407,10 +1408,11 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
       if (dns_query_type == DnsQueryType::INTEGRITY ||
+          dns_query_type == DnsQueryType::HTTPS ||
           dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
-        // Do not allow an experimental query to fail the whole DnsTask. Instead
-        // synthesize an empty result that can be cleanly merged with address
-        // results.
+        // Ignore extraction errors of these types. In most cases treating them
+        // as fatal would only result in fallback to resolution without querying
+        // the type. Instead, synthesize empty results.
         results = DnsResponseResultExtractor::CreateEmptyResult(dns_query_type);
       } else {
         OnFailure(results.error(), extraction_error, results.GetOptionalTtl());
@@ -1440,6 +1442,18 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
 
+    // Trigger HTTP->HTTPS upgrade if an HTTPS record is received for an "http"
+    // or "ws" request.
+    if (features::kUseDnsHttpsSvcbHttpUpgrade.Get() &&
+        dns_query_type == DnsQueryType::HTTPS && results.error() == OK &&
+        (GetScheme(host_) == url::kHttpScheme ||
+         GetScheme(host_) == url::kWsScheme)) {
+      OnFailure(ERR_DNS_NAME_HTTPS_ONLY,
+                DnsResponseResultExtractor::ExtractionError::kOk,
+                results.GetOptionalTtl());
+      return;
+    }
+
     // Merge results with saved results from previous transactions.
     if (saved_results_) {
       DCHECK_LE(2, num_needed_transactions());
@@ -1458,11 +1472,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           results = HostCache::Entry::MergeEntries(
               std::move(results), std::move(saved_results_).value());
           break;
-        case DnsQueryType::HTTPS:
-          // TODO(crbug.com/1225776): Implement.
-          results = std::move(saved_results_).value();
-          break;
         case DnsQueryType::INTEGRITY:
+        case DnsQueryType::HTTPS:
         case DnsQueryType::HTTPS_EXPERIMENTAL:
           // No particular importance to order.
           results = HostCache::Entry::MergeEntries(
@@ -1493,6 +1504,30 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     experimental_query_cancellation_timer_.Stop();
 
     ProcessResultsOnCompletion();
+  }
+
+  bool IsFatalHttpsTransactionFailure(int transaction_error,
+                                      const DnsResponse* response) {
+    // Shouldn't call this method if there wasn't a transaction failure.
+    DCHECK_NE(transaction_error, OK);
+    DCHECK(transaction_error != ERR_NAME_NOT_RESOLVED || !response ||
+           !response->IsValid());
+
+    // HTTPS failures are never fatal via insecure DNS.
+    if (!secure_)
+      return false;
+
+    // Feature must be enabled for HTTPS to be fatal.
+    if (!features::kUseDnsHttpsSvcbEnforceSecureResponse.Get())
+      return false;
+
+    // For server failures, only SERVFAIL is fatal.
+    if (transaction_error == ERR_DNS_SERVER_FAILED && response &&
+        response->rcode() != dns_protocol::kRcodeSERVFAIL) {
+      return false;
+    }
+
+    return true;
   }
 
   // Postprocesses the transactions' aggregated results after all
@@ -1552,6 +1587,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     OnSuccess(std::move(results));
   }
 
+  // TODO(crbug.com/1225776): Disallow fallback after a fatal HTTPS error.  Also
+  // prevent A/AAAA errors from leading to immediate fallback if an HTTPS query
+  // is still pending that may lead to a fatal HTTPS error.
   void OnFailure(int net_error,
                  DnsResponseResultExtractor::ExtractionError extraction_error,
                  absl::optional<base::TimeDelta> ttl) {
