@@ -3333,7 +3333,7 @@ crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-all-001
 crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-digits-002-manual.html [ Skip ]
 crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-all-002-manual.html [ Skip ]
 crbug.com/626703 external/wpt/css/css-writing-modes/text-combine-upright-digits-004-manual.html [ Skip ]
-crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/preload/onload-event.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/inline-level.html [ Failure ]
@@ -3739,7 +3739,7 @@ crbug.com/626703 [ Win10 ] external/wpt/preload/delaying-onload-link-preload-aft
 crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir_auto-N-EN-ref.html [ Failure ]
 
 # Synthetic modules report the wrong location in errors
-crbug.com/994315 virtual/json-modules/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.tentative.html [ Skip ]
+crbug.com/994315 virtual/json-modules/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Skip ]
 
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Crash ]
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Crash Timeout ]
