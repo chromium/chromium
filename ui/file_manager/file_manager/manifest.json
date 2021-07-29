@@ -169,6 +169,7 @@
     "common/js/storage_adapter.js",
     "common/js/test_error_reporting.js",
     "common/js/trash.js",
+    "common/js/url_constants.js",
     "common/js/util.js",
     "common/js/volume_manager_types.js",
     "common/js/xfm.js",

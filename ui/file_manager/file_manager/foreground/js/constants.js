@@ -109,6 +109,3 @@ constants.PLUGIN_VM = 'PvmDefault';
  * @const {string}
  */
 constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
-
-/** @const {string} */
-constants.FILES_APP_EXTENSION_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';

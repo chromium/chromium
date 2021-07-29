@@ -40,6 +40,7 @@ group("js_modules") {
     ":progress_center_common",
     ":storage_adapter",
     ":trash",
+    ":url_constants",
     ":util",
     ":volume_manager_types",
     ":xfm",
@@ -65,6 +66,7 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center_common",
     ":storage_adapter",
     ":trash",
+    ":url_constants",
     ":util",
     ":volume_manager_types",
     ":xfm",
@@ -274,6 +276,9 @@ js_library("trash") {
 
 js_library("unittest_util") {
   deps = [ "//chrome/test/data/webui:chai_assert" ]
+}
+
+js_library("url_constants") {
 }
 
 js_library("util") {
