@@ -200,7 +200,9 @@ if (enable_vulkan) {
         "tests/basic_vulkan_test.h",
         "tests/vulkan_test.cc",
         "tests/vulkan_tests_main.cc",
-        "vulkan_cxx_unittest.cc",
+        # TODO(crbug.com/1234132): fix compile problem with the latest vulkan
+        # headers.
+        # "vulkan_cxx_unittest.cc",
         "vulkan_fence_helper_unittest.cc",
         "vulkan_image_unittest.cc",
       ]
