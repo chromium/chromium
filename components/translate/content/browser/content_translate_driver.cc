@@ -240,16 +240,35 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
 // content::WebContentsObserver methods
 void ContentTranslateDriver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
+
+  // Continue to process the navigation only if it is for the primary main
+  // frame. It is safe to do so because:
+  // - A non-primary page should not reset `this`'s language state since the
+  // state is set for the primary page. It will be allowed to update the state
+  // after it becomes the primary page (at that time, this function will be
+  // invoked again, and the page will update the state).
+  // - This class does not need to handle subframe navigations. Employing this
+  // class means the flag of kTranslateSubFrames is disabled, i.e., subframe
+  // translation is not supported. Besides it, subframes cannot change language
+  // state.
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
 
   InitiateTranslationIfReload(navigation_handle);
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (navigation_handle->IsInPrimaryMainFrame())
+  if (navigation_handle->IsPrerenderedPageActivation()) {
+    // Set it to NULL time, and do not report the LanguageDeterminedDuration
+    // metric in this case.
+    // The browser defers the RegisterPage() message on a prerendering page, so
+    // this kind of data is noisy and should be filtered out.
+    finish_navigation_time_ = base::TimeTicks();
+  } else if (navigation_handle->IsInPrimaryMainFrame()) {
     finish_navigation_time_ = base::TimeTicks::Now();
+  }
 
   // Let the LanguageState clear its state.
   const bool reload =

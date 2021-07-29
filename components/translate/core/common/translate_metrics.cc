@@ -80,6 +80,14 @@ void ReportSimilarLanguageMatch(bool match) {
 
 void ReportLanguageDeterminedDuration(base::TimeTicks begin,
                                       base::TimeTicks end) {
+  if (begin.is_null()) {
+    // For non-primary pages, `begin` wasn't set here as we returned without
+    // doing anything in DidFinishNavigation for them. For prerendering pages,
+    // `end` is also inaccurate as
+    // translate::mojom::ContentTranslateDriver::RegisterPage call is deferred
+    // by the capability control.
+    return;
+  }
   UMA_HISTOGRAM_LONG_TIMES(
       metrics_internal::kTranslateLanguageDeterminedDuration, end - begin);
 }

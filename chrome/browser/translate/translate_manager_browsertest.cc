@@ -29,6 +29,7 @@
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -2171,6 +2172,81 @@ IN_PROC_BROWSER_TEST_F(
   // But only the 54 characters of main frame are used for language detection.
   histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 54,
                                1);
+}
+
+class TranslateManagerPrerenderBrowserTest
+    : public TranslateManagerBrowserTest {
+ public:
+  TranslateManagerPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &TranslateManagerPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    TranslateManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
+                       SkipPrerenderPage) {
+  SetTranslateScript(kTestValidScript);
+
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  base::HistogramTester histograms;
+
+  // Load a French page.
+  prerender_helper_.NavigatePrimaryPage(
+      embedded_test_server()->GetURL("/french_page.html"));
+  ResetObserver();
+
+  // Prerender a German page.
+  prerender_helper_.AddPrerender(
+      embedded_test_server()->GetURL("/german_page.html"));
+
+  // The prerendering page should not affect the primary page.
+  chrome_translate_client = GetChromeTranslateClient();
+  if (chrome_translate_client->GetLanguageState().source_language() != "fr")
+    WaitUntilLanguageDetermined();
+  EXPECT_EQ("fr",
+            chrome_translate_client->GetLanguageState().source_language());
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+  manager->TranslatePage(
+      chrome_translate_client->GetLanguageState().source_language(), "en",
+      true);
+  WaitUntilPageTranslated();
+  EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
+  EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
+  histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
+  histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
+
+  // Activate the prerendered page.
+  prerender_helper_.NavigatePrimaryPage(
+      embedded_test_server()->GetURL("/german_page.html"));
+
+  // Check that the translation service still works well.
+  ResetObserver();
+  chrome_translate_client = GetChromeTranslateClient();
+  if (chrome_translate_client->GetLanguageState().source_language() != "de")
+    WaitUntilLanguageDetermined();
+  EXPECT_EQ("de",
+            chrome_translate_client->GetLanguageState().source_language());
+  manager->TranslatePage(
+      chrome_translate_client->GetLanguageState().source_language(), "en",
+      true);
+  WaitUntilPageTranslated();
+  EXPECT_FALSE(chrome_translate_client->GetLanguageState().translation_error());
+  EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
+  histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 2);
+
+  // Check noisy data was filtered out.
+  histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 }
 
 }  // namespace
