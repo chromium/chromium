@@ -18,6 +18,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
+#include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
@@ -32,6 +35,138 @@
 namespace history_clusters {
 
 namespace {
+
+// Gets persisted `AnnotatedVisit`s to cluster.
+class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
+ public:
+  using Callback = base::OnceCallback<void(std::vector<history::AnnotatedVisit>,
+                                           base::Time)>;
+
+  GetAnnotatedVisitsToCluster(base::Time end_time,
+                              size_t max_count,
+                              Callback callback)
+      : callback_(std::move(callback)) {
+    // As a primitive heuristic, fetch 3x the amount of visits as requested
+    // clusters. We don't know in advance how big the clusters will be.
+    max_count_ = max_count > 0 ? max_count * 3 : kMaxVisitsToCluster.Get();
+
+    // Determine initial query options.
+    options_.end_time = end_time;
+    // Super simple method of pagination: one day a time, broken up at 4AM.
+    // Get 4AM yesterday in the morning, and 4AM today in the afternoon.
+    base::Time begin = end_time.is_null() ? base::Time::Now() : end_time;
+    begin -= base::TimeDelta::FromHours(12);
+    base::Time::Exploded exploded_begin;
+    begin.LocalExplode(&exploded_begin);
+    exploded_begin.hour = 4;
+    exploded_begin.minute = 0;
+    exploded_begin.second = 0;
+    exploded_begin.millisecond = 0;
+    // If for some reason this fails, fallback to 24 hours ago.
+    if (!base::Time::FromLocalExploded(exploded_begin, &options_.begin_time))
+      options_.begin_time = end_time - base::TimeDelta::FromDays(1);
+  }
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    // Accumulate visits until reaching `max_count_`. Accumulate 1 day at a
+    // time to avoid breaking up clusters. E.g., if each day has 10 visits, and
+    // `max_visits_` is 15, we want 2 full days consisting of 20 visits, not 1.5
+    // days consisting of 15 visits.
+    do {
+      auto newly_fetched_annotated_visits =
+          backend->GetAnnotatedVisits(options_);
+      // Tack on all the newly fetched visits onto our accumulator vector.
+      base::ranges::move(newly_fetched_annotated_visits,
+                         std::back_inserter(annotated_visits_));
+      // TODO(tommycli): Connect this to History's limit defined internally in
+      //  components/history.
+      exhausted_history_ = (base::Time::Now() - options_.begin_time) >=
+                           base::TimeDelta::FromDays(90);
+
+      // If we didn't get enough visits, ask for another day's worth from
+      // History and call this method again when done.
+      options_.end_time = options_.begin_time;
+      options_.begin_time = options_.end_time - base::TimeDelta::FromDays(1);
+    } while (!exhausted_history_ && annotated_visits_.size() < max_count_);
+
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {
+    // Assuming we didn't completely exhaust history, the
+    // `continuation_end_time` is the `options.begin_time` of the latest History
+    // query we completed.
+    base::Time continuation_end_time;
+    if (!exhausted_history_)
+      continuation_end_time = options_.begin_time;
+
+    std::move(callback_).Run(annotated_visits_, continuation_end_time);
+  }
+
+ private:
+  // Set to true if all annotated visits were fetched. It's set in the DB thread
+  // and used in the main thread to determine `continuation_end_time`.
+  bool exhausted_history_{false};
+  // The options to use when fetching annotated visits. It's updated on each
+  // fetch in the DB thread and used in the main thread to determine
+  // `continuation_end_time`.
+  history::QueryOptions options_;
+  // The 'soft' (see comment in `RunOnDBThread()`) max count of visits to fetch
+  // used in the DB thread.
+  size_t max_count_;
+  // Persisted visits retrieved from the history DB thread and returned through
+  // the callback on the main thread.
+  std::vector<history::AnnotatedVisit> annotated_visits_;
+  // The callback called on the main thread on completion.
+  Callback callback_;
+};
+
+// Filter and transform the map of `IncompleteVisitContextAnnotations` to a
+// vector of `AnnotatedVisit`.
+std::vector<history::AnnotatedVisit> GetIncompleteAnnotatedVisits(
+    HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
+    base::Time begin_time,
+    base::Time end_time) {
+  // Filter incomplete visits to those that have a `url_row`, have a
+  // `visit_row`, and match `options`.
+  std::vector<history::AnnotatedVisit> annotated_visits;
+  for (const auto& item : incomplete_visit_map) {
+    auto& incomplete_visit_context_annotations = item.second;
+    // Discard incomplete visits that don't have a `url_row` and `visit_row`.
+    // It's possible that the `url_row` and `visit_row` will be available
+    // before they're needed (i.e. before
+    // `GetAnnotatedVisitsToCluster::RunOnDBThread()`). But since it'll only
+    // have a copy of the incomplete context annotations, the copy won't have
+    // the fields updated. A weak ptr won't help since it can't be accessed on
+    // different threads. A `scoped_refptr` could work. However, only very
+    // recently opened tabs won't have the rows set, so we don't bother using
+    // `scoped_refptr`s.
+    if (!incomplete_visit_context_annotations.status.history_rows)
+      continue;
+
+    // Discard incomplete visits outside the time bounds. `begin_time` is
+    // inclusive, and `end_time` is exclusive.
+    // TODO(manukh): `end_time` is intended for the WebUI pagination and should
+    //  not affect which visits are clustered. Once we have a feature param to
+    //  toggle on-the-fly clustering, we should move the `end_time` check to
+    //  `GetClusters()` when using persisted clusters.
+    const auto& visit_time =
+        incomplete_visit_context_annotations.visit_row.visit_time;
+    if ((!begin_time.is_null() && visit_time < begin_time) ||
+        (!end_time.is_null() && visit_time >= end_time)) {
+      continue;
+    }
+
+    annotated_visits.push_back(
+        {incomplete_visit_context_annotations.url_row,
+         incomplete_visit_context_annotations.visit_row,
+         incomplete_visit_context_annotations.context_annotations,
+         // TODO(tommycli): Add content annotations.
+         {}});
+  }
+  return annotated_visits;
+}
 
 // Filter `clusters` matching `query`. There are additional filters (e.g.
 // `max_time`) used when requesting `QueryClusters()`, but this function is only
@@ -227,15 +362,21 @@ void HistoryClustersService::QueryClusters(
     return;
   }
 
-  size_t max_visit_count = kMaxVisitsToCluster.Get();
-  if (max_count > 0) {
-    // As a primitive heuristic, fetch 3x the amount of visits as requested
-    // clusters. We don't know in advance how big the clusters will be.
-    max_visit_count = max_count * 3;
-  }
+  DCHECK(history_service_);
 
-  StartOnTheFlyClustering(query, end_time, max_visit_count, std::move(callback),
-                          task_tracker);
+  NotifyDebugMessage("Starting History Query:");
+  NotifyDebugMessage("  end_time = " + (end_time.is_null()
+                                            ? "null"
+                                            : base::TimeToISO8601(end_time)));
+  NotifyDebugMessage(base::StringPrintf("  max_count = %zu", max_count));
+  history_service_->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<GetAnnotatedVisitsToCluster>(
+          end_time, max_count,
+          base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
+                         weak_ptr_factory_.GetWeakPtr(), query,
+                         /*original_end_time=*/end_time, std::move(callback))),
+      task_tracker);
 }
 
 void HistoryClustersService::RemoveVisits(
@@ -295,145 +436,34 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   all_keywords_cache_timestamp_ = base::Time::Now();
 }
 
-void HistoryClustersService::StartOnTheFlyClustering(
-    const std::string& query,
-    base::Time end_time,
-    size_t max_visit_count,
-    QueryClustersCallback callback,
-    base::CancelableTaskTracker* task_tracker) const {
-  DCHECK(history_service_);
-
-  history::QueryOptions options;
-  options.end_time = end_time;
-
-  // Super simple method of pagination: one day a time, broken up at 4AM.
-  {
-    // Get 4AM yesterday in the morning, and 4AM today in the afternoon.
-    base::Time begin = end_time.is_null() ? base::Time::Now() : end_time;
-    begin -= base::TimeDelta::FromHours(12);
-
-    base::Time::Exploded exploded_begin;
-    begin.LocalExplode(&exploded_begin);
-    exploded_begin.hour = 4;
-    exploded_begin.minute = 0;
-    exploded_begin.second = 0;
-    exploded_begin.millisecond = 0;
-
-    // If for some reason this fails, fallback to 24 hours ago.
-    if (!base::Time::FromLocalExploded(exploded_begin, &options.begin_time)) {
-      options.begin_time = end_time - base::TimeDelta::FromDays(1);
-    }
-  }
-
-  NotifyDebugMessage("HistoryClustersService::StartOnTheFlyClustering()");
-  NotifyDebugMessage("  begin_time = " +
-                     (options.begin_time.is_null()
-                          ? "null"
-                          : base::TimeToISO8601(options.begin_time)));
-  NotifyDebugMessage("  end_time = " +
-                     (options.end_time.is_null()
-                          ? "null"
-                          : base::TimeToISO8601(options.end_time)));
-  history_service_->GetAnnotatedVisits(
-      options,
-      base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
-                     weak_ptr_factory_.GetWeakPtr(), query,
-                     /*original_end_time=*/end_time, max_visit_count,
-                     std::move(callback), options, task_tracker,
-                     std::vector<history::AnnotatedVisit>()),
-      task_tracker);
-}
-
 void HistoryClustersService::OnGotHistoryVisits(
     const std::string& query,
     base::Time original_end_time,
-    size_t max_visit_count,
     QueryClustersCallback callback,
-    history::QueryOptions options,
-    base::CancelableTaskTracker* task_tracker,
-    std::vector<history::AnnotatedVisit> accumulated_visits,
-    std::vector<history::AnnotatedVisit> newly_fetched_visits) const {
+    std::vector<history::AnnotatedVisit> annotated_visits,
+    base::Time continuation_end_time) const {
   NotifyDebugMessage("HistoryClustersService::OnGotHistoryVisits()");
-  NotifyDebugMessage(base::StringPrintf("  newly_fetched_visits.size() = %zu",
-                                        newly_fetched_visits.size()));
-
-  // Tack on all the newly fetched visits onto our accumulator vector.
-  base::ranges::move(newly_fetched_visits,
-                     std::back_inserter(accumulated_visits));
-
-  // TODO(tommycli): Connect this to History's limit defined internally in
-  // components/history.
-  bool exhausted_history =
-      (base::Time::Now() - options.begin_time) >= base::TimeDelta::FromDays(90);
-  NotifyDebugMessage(
-      base::StringPrintf("  exhausted_history = %d", exhausted_history));
-
-  // If we didn't get enough visits, ask for another day's worth from
-  // History and call this method again when done.
-  if (!exhausted_history && accumulated_visits.size() < max_visit_count) {
-    options.end_time = options.begin_time;
-    options.begin_time = options.end_time - base::TimeDelta::FromDays(1);
-
-    NotifyDebugMessage("Starting History Query:");
-    NotifyDebugMessage("  begin_time = " +
-                       (options.begin_time.is_null()
-                            ? "null"
-                            : base::TimeToISO8601(options.begin_time)));
-    NotifyDebugMessage("  end_time = " +
-                       (options.end_time.is_null()
-                            ? "null"
-                            : base::TimeToISO8601(options.end_time)));
-    history_service_->GetAnnotatedVisits(
-        options,
-        base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
-                       weak_ptr_factory_.GetWeakPtr(), query, original_end_time,
-                       max_visit_count, std::move(callback), options,
-                       task_tracker, std::move(accumulated_visits)),
-        task_tracker);
-    return;
-  }
-
-  // Assuming we didn't completely exhaust history, the `continuation_end_time`
-  // is the `options.begin_time` of the latest History query we completed.
-  base::Time continuation_end_time;
-  if (!exhausted_history)
-    continuation_end_time = options.begin_time;
+  NotifyDebugMessage(base::StringPrintf("  annotated_visits.size() = %zu",
+                                        annotated_visits.size()));
+  NotifyDebugMessage("  continuation_end_time = " +
+                     (continuation_end_time.is_null()
+                          ? "null (i.e. exhausted history)"
+                          : base::TimeToISO8601(continuation_end_time)));
 
   // Now we have enough visits for clustering, add all incomplete visits between
   // the current `options.begin_time` and `original_end_time`, as otherwise they
   // will be mysteriously missing from the Clusters UI. They haven't recorded
   // the page end metrics yet, but that's fine.
-  for (const auto& item : incomplete_visit_context_annotations_) {
-    auto& incomplete_visit = item.second;
-    if (incomplete_visit.url_row.id() == 0 ||
-        incomplete_visit.visit_row.visit_id == 0) {
-      // Discard incomplete visits that don't have visit_ids yet.
-      continue;
-    }
-
-    const auto& visit_time = incomplete_visit.visit_row.visit_time;
-    if (visit_time < options.begin_time ||
-        (!original_end_time.is_null() && visit_time >= original_end_time)) {
-      // Discard incomplete visits outside the `options` time bounds.
-      // `begin_time` is inclusive, and `end_time` is exclusive.
-      continue;
-    }
-
-    accumulated_visits.push_back({
-        incomplete_visit.url_row,
-        incomplete_visit.visit_row,
-        incomplete_visit.context_annotations,
-        // TODO(tommycli): Add content annotations.
-        {},
-    });
-  }
+  auto filtered_incomplete_visits =
+      GetIncompleteAnnotatedVisits(incomplete_visit_context_annotations_,
+                                   continuation_end_time, original_end_time);
 
   NotifyDebugMessage("Calling backend_->GetClusters()");
   backend_->GetClusters(
       base::BindOnce(&HistoryClustersService::OnGotClusters,
                      weak_ptr_factory_.GetWeakPtr(), query,
                      continuation_end_time, std::move(callback)),
-      accumulated_visits);
+      annotated_visits);
 }
 
 void HistoryClustersService::OnGotClusters(

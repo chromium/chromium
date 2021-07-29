@@ -247,6 +247,8 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
 
   // Verify the callback is invoked.
   run_loop_.Run();
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
@@ -366,6 +368,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     // Verify the callback is invoked.
     run_loop.Run();
   }
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
 TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
@@ -531,6 +535,8 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // But verify that it's okay to accept a short second query word.
   // We need this to prevent flicker as the user types in the omnibox.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl ap"));
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
 }  // namespace

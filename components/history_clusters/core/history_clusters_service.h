@@ -45,6 +45,10 @@ class HistoryClustersService : public KeyedService {
   };
   using QueryClustersCallback = base::OnceCallback<void(QueryClustersResult)>;
 
+  // Used to track incomplete, unpersisted visits.
+  using IncompleteVisitMap =
+      std::map<int64_t, IncompleteVisitContextAnnotations>;
+
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
   // In that case, HistoryClustersService will never instantiate a clustering
   // backend that requires it, such as the RemoteClusteringBackend.
@@ -86,7 +90,7 @@ class HistoryClustersService : public KeyedService {
 
   // Returns the freshest clusters created from the user visit history based on
   // `query`, `end_time`, and `max_count`. `end_time` is an exclusive upper
-  // bound, and should be set to `base::Time()` if the caller wants everything.
+  // bound and should be set to `base::Time()` if the caller wants everything.
   // The returned clusters are sorted in reverse-chronological order based on
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
@@ -111,36 +115,19 @@ class HistoryClustersService : public KeyedService {
  private:
   friend class HistoryClustersServiceTestApi;
 
-  using IncompleteVisitMap =
-      std::map<int64_t, IncompleteVisitContextAnnotations>;
-
   // This is a callback used for the `QueryClusters()` call from
   // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the
   // keywords in `clusters`.
   void PopulateClusterKeywordCache(QueryClustersResult result);
 
-  // Queries `HistoryService` for visits, one day at a time, until there's
-  // at least `max_visit_count`. This also appends eligible incomplete visits.
-  // Finally, this calls `callback` with the resulting vector, and the
-  // `continuation_end_time` needed for the next page of visits.
-  void StartOnTheFlyClustering(const std::string& query,
-                               base::Time end_time,
-                               size_t max_visit_count,
-                               QueryClustersCallback callback,
-                               base::CancelableTaskTracker* task_tracker) const;
+  // Internally used callback for `QueryClusters()`.
+  void OnGotHistoryVisits(const std::string& query,
+                          base::Time original_end_time,
+                          QueryClustersCallback callback,
+                          std::vector<history::AnnotatedVisit> annotated_visits,
+                          base::Time continuation_end_time) const;
 
-  // Internally used callback for `GetVisitsForOnTheFlyClustering()`.
-  void OnGotHistoryVisits(
-      const std::string& query,
-      base::Time original_end_time,
-      size_t max_visit_count,
-      QueryClustersCallback callback,
-      history::QueryOptions options,
-      base::CancelableTaskTracker* task_tracker,
-      std::vector<history::AnnotatedVisit> accumulated_visits,
-      std::vector<history::AnnotatedVisit> newly_fetched_visits) const;
-
-  // Internally used callback for `GetVisitsOnTheFlyClustering()`.
+  // Internally used callback for `OnGotHistoryVisits()`.
   void OnGotClusters(const std::string& query,
                      base::Time continuation_end_time,
                      QueryClustersCallback callback,
