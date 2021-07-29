@@ -208,6 +208,7 @@ void ShareInfoFileStreamAdapter::OnStreamingFinished(bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   DCHECK(!result_callback_.is_null());
+  producer_stream_.reset();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback_), result));
 }
