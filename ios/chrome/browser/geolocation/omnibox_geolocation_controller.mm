@@ -43,6 +43,17 @@ const char* const kGeolocationAuthorizationActionExistingUser =
 const char* const kGeolocationAuthorizationActionNewUser =
     "Geolocation.AuthorizationActionNewUser";
 
+// Returns the current authorization status for the given CLLocationManager.
+// TODO(crbug.com/1173902): Remove this helper once the min deployment target is
+// updated to iOS 14.
+CLAuthorizationStatus GetAuthorizationStatus(CLLocationManager* manager) {
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0
+  return manager.authorizationStatus;
+#else
+  return CLLocationManager.authorizationStatus;
+#endif
+}
+
 }  // anonymous namespace
 
 @interface OmniboxGeolocationController () <CLLocationManagerDelegate>
@@ -74,15 +85,16 @@ const char* const kGeolocationAuthorizationActionNewUser =
   if (self) {
     _locationManager = [[CLLocationManager alloc] init];
     [_locationManager setDelegate:self];
-    _permissionWasUndefined = CLLocationManager.authorizationStatus ==
+    _permissionWasUndefined = GetAuthorizationStatus(_locationManager) ==
                               kCLAuthorizationStatusNotDetermined;
   }
   return self;
 }
 
 - (void)triggerSystemPrompt {
-  if (self.locationServicesEnabled && CLLocationManager.authorizationStatus ==
-                                          kCLAuthorizationStatusNotDetermined) {
+  if (self.locationServicesEnabled &&
+      GetAuthorizationStatus(self.locationManager) ==
+          kCLAuthorizationStatusNotDetermined) {
     self.newUser = YES;
 
     // Turn on location updates, so that iOS will prompt the user.
@@ -121,7 +133,7 @@ const char* const kGeolocationAuthorizationActionNewUser =
 - (void)locationManagerDidChangeAuthorization:
     (CLLocationManager*)locationManager {
   if (self.permissionWasUndefined) {
-    switch (CLLocationManager.authorizationStatus) {
+    switch (GetAuthorizationStatus(locationManager)) {
       case kCLAuthorizationStatusNotDetermined:
         // We may get a spurious notification about a transition to
         // |kCLAuthorizationStatusNotDetermined| when we first start location
