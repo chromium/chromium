@@ -6,11 +6,9 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
@@ -136,11 +134,6 @@ class WebApkInstallTaskTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    // Disable the WebAPKs feature so that App Service does not start a
-    // WebApkManager which interferes with the test.
-    // TODO(crbug.com/1234279): Reuse the WebApkManager from App Service
-    // instead.
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kWebApkGenerator);
 
     app_service_test_.SetUp(&profile_);
 
@@ -220,7 +213,6 @@ class WebApkInstallTaskTest : public testing::Test {
   net::EmbeddedTestServer* test_server() { return &test_server_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
