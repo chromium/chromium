@@ -9,7 +9,6 @@
 
 #include <jni.h>
 
-#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"

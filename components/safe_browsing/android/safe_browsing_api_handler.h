@@ -9,7 +9,6 @@
 #define COMPONENTS_SAFE_BROWSING_ANDROID_SAFE_BROWSING_API_HANDLER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "components/safe_browsing/core/browser/db/util.h"
