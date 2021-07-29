@@ -115,21 +115,6 @@ crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_p
 # maxInterStageShaderComponents 64 -> 60 (crbug.com/dawn/759 [ Linux ][ Failure ] on NVIDIA will be recovered after the tests are fixed)
 crbug.com/dawn/802 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Skip ]
 
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc1-rgba-unorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc1-rgba-unorm-srgb";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc2-rgba-unorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc2-rgba-unorm-srgb";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc3-rgba-unorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc3-rgba-unorm-srgb";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc4-r-unorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc4-r-snorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc5-rg-unorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc5-rg-snorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc6h-rgb-ufloat";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc6h-rgb-float";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc7-rgba-unorm";* [ Failure ]
-crbug.com/dawn/989 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:size_alignment:valueToCoordinate=1;format="bc7-rgba-unorm-srgb";* [ Failure ]
-
 # Robust access tests cause a lot of failures in various systems. Revisit expectations after the tests are fixed.
 crbug.com/dawn/1009 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
 crbug.com/dawn/1009 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:* [ Slow Failure ]
