@@ -71,7 +71,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     virtual void ReportFindInPageSelection(int identifier, int index) = 0;
 
     // Returns the device scale factor.
-    virtual float DeviceScaleFactor() const = 0;
+    virtual float DeviceScaleFactor() = 0;
 
     // Calls underlying WebLocalFrame::SetReferrerForRequest().
     virtual void SetReferrerForRequest(blink::WebURLRequest& request,

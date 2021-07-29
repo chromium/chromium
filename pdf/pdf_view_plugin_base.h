@@ -236,7 +236,8 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual Image GetPluginImageData() const;
 
   // Updates the geometry of the plugin and its image data if the view's
-  // size or scale has changed.
+  // size or scale has changed. `new_view_rect` must be in CSS pixels (without
+  // device scale applied).
   void UpdateGeometryOnViewChanged(const gfx::Rect& new_view_rect,
                                    float new_device_scale);
 

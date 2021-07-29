@@ -67,10 +67,8 @@ SkBitmap GenerateExpectedBitmapForPaint(float device_scale,
                                         const gfx::Rect& plugin_rect,
                                         const gfx::Rect& paint_rect,
                                         SkColor paint_color) {
-  gfx::Rect expected_clipped_area = gfx::IntersectRects(
-      gfx::ScaleToEnclosingRectSafe(plugin_rect, 1.0f / device_scale),
-      paint_rect);
-
+  gfx::Rect expected_clipped_area =
+      gfx::IntersectRects(plugin_rect, paint_rect);
   SkBitmap expected_bitmap =
       CreateN32PremulSkBitmap(gfx::SizeToSkISize(kCanvasSize));
   expected_bitmap.eraseColor(kDefaultColor);
@@ -96,7 +94,7 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   MOCK_METHOD(void, ReportFindInPageSelection, (int, int), (override));
 
-  float DeviceScaleFactor() const override { return device_scale_; }
+  float DeviceScaleFactor() override { return device_scale_; }
 
   MOCK_METHOD(void,
               SetReferrerForRequest,
@@ -268,16 +266,19 @@ TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRect) {
     // The plugin container's device scale.
     float device_scale;
 
-    //  The window area.
+    //  The window rect in device pixels.
     gfx::Rect window_rect;
 
-    // The expected plugin rect.
+    // The expected plugin rect in device pixels.
     gfx::Rect expected_plugin_rect;
   };
 
+  // The expected plugin rect should be similar to or the same as the input
+  // `window_rect`, since they both have the device scale applied.
   static constexpr UpdateGeometryParams kUpdateGeometryParams[] = {
       {1.0f, gfx::Rect(3, 4, 5, 6), gfx::Rect(3, 4, 5, 6)},
-      {2.0f, gfx::Rect(5, 6, 7, 8), gfx::Rect(10, 12, 14, 16)},
+      {2.0f, gfx::Rect(4, 4, 12, 12), gfx::Rect(4, 4, 12, 12)},
+      {2.0f, gfx::Rect(5, 6, 7, 8), gfx::Rect(4, 6, 8, 8)},
   };
 
   for (const auto& params : kUpdateGeometryParams) {

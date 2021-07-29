@@ -60,10 +60,12 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_preset_options.h"
+#include "third_party/blink/public/web/web_widget.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/display/screen_info.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -145,8 +147,13 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
     container_->ReportFindInPageSelection(identifier, index);
   }
 
-  float DeviceScaleFactor() const override {
-    return container_->DeviceScaleFactor();
+  float DeviceScaleFactor() override {
+    // Do not reply on the device scale returned by
+    // `container_->DeviceScaleFactor()`, since it doesn't always reflect the
+    // real screen's device scale. Instead, get the real device scale from the
+    // top-level `blink::WebLocalFrame`'s screen info.
+    blink::WebWidget* widget = GetFrame()->LocalRoot()->FrameWidget();
+    return widget->GetOriginalScreenInfo().device_scale_factor;
   }
 
   void SetReferrerForRequest(blink::WebURLRequest& request,
@@ -305,15 +312,12 @@ void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
 void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
-  const float inverse_scale = 1.0f / device_scale();
-
   // Clip the intersection of the paint rect and the plugin rect, so that
   // painting outside the plugin or the paint rect area can be avoided.
-  // Note: `invalidate_rect` and `rect` are in CSS pixels. The plugin rect (with
-  // the device scale applied) must be converted to CSS pixels as well before
-  // calculating `invalidate_rect`.
-  SkRect invalidate_rect = gfx::RectToSkRect(gfx::IntersectRects(
-      gfx::ScaleToEnclosingRectSafe(plugin_rect(), inverse_scale), rect));
+  // Note: Same as the plugin rect, `invalidate_rect` and `rect` are not in CSS
+  // pixels, and the device scale has already been applied to them.
+  SkRect invalidate_rect =
+      gfx::RectToSkRect(gfx::IntersectRects(plugin_rect(), rect));
   cc::PaintCanvasAutoRestore auto_restore(canvas, /*save=*/true);
   canvas->clipRect(invalidate_rect);
 
@@ -326,9 +330,6 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     return;
   }
 
-  if (inverse_scale != 1.0f)
-    canvas->scale(inverse_scale, inverse_scale);
-
   canvas->drawImage(snapshot_, plugin_rect().x(), plugin_rect().y());
 }
 
@@ -336,7 +337,14 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                       const gfx::Rect& clip_rect,
                                       const gfx::Rect& unobscured_rect,
                                       bool is_visible) {
-  OnViewportChanged(window_rect, container_wrapper_->DeviceScaleFactor());
+  float device_scale = container_wrapper_->DeviceScaleFactor();
+
+  // Note that the device scale has been applied to this `window_rect`.
+  // `window_rect` needs to be converted to CSS pixels before getting passed
+  // into PdfViewPluginBase::UpdateGeometryOnViewChanged().
+  OnViewportChanged(
+      gfx::ScaleToEnclosingRectSafe(window_rect, 1.0f / device_scale),
+      device_scale);
 }
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
