@@ -132,26 +132,6 @@ TEST_F(FeatureListTest, InitializeFromCommandLineWithFeatureParams) {
   }
 }
 
-// Verifies that InitAndEnableFeature...() does not mark a feature as
-// "overridden from command line".
-TEST_F(FeatureListTest, InitAndEnableFeature) {
-  {
-    test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(kFeatureOffByDefault);
-
-    EXPECT_FALSE(FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-        kFeatureOffByDefault.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE));
-  }
-
-  {
-    test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(kFeatureOffByDefault,
-                                                           {{}});
-
-    EXPECT_FALSE(FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-        kFeatureOffByDefault.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE));
-  }
-}
 TEST_F(FeatureListTest, CheckFeatureIdentity) {
   // Tests that CheckFeatureIdentity() correctly detects when two different
   // structs with the same feature name are passed to it.

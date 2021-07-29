@@ -327,8 +327,8 @@ class PasswordSiteIsolationPolicyTest : public SiteIsolationPolicyTest {
 
  protected:
   void SetUp() override {
-    feature_list_.InitFromCommandLine(
-        features::kSiteIsolationForPasswordSites.name, std::string());
+    feature_list_.InitAndEnableFeature(
+        features::kSiteIsolationForPasswordSites);
     SetEnableStrictSiteIsolation(false);
     SiteIsolationPolicyTest::SetUp();
   }
@@ -767,10 +767,13 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, BelowThreshold) {
 
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
-  // Simulate enabling password site isolation from command line.
+  // Simulate enabling password site isolation from command line.  (Note that
+  // InitAndEnableFeature uses ScopedFeatureList::InitFromCommandLine
+  // internally, and that triggering the feature via chrome://flags follows the
+  // same override path as well.)
   base::test::ScopedFeatureList password_site_isolation_feature;
-  password_site_isolation_feature.InitFromCommandLine(
-      features::kSiteIsolationForPasswordSites.name, std::string());
+  password_site_isolation_feature.InitAndEnableFeature(
+      features::kSiteIsolationForPasswordSites);
 
   // This should override the memory threshold and enable password site
   // isolation.
@@ -801,11 +804,14 @@ TEST_F(EnabledPasswordSiteIsolationFieldTrialTest, AboveThreshold) {
 
   EXPECT_TRUE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
-  // Simulate disabling password site isolation from command line.  This should
-  // take precedence over the regular field trial behavior.
+  // Simulate disabling password site isolation from command line.  (Note that
+  // InitAndEnableFeature uses ScopedFeatureList::InitFromCommandLine
+  // internally, and that triggering the feature via chrome://flags follows the
+  // same override path as well.)  This should take precedence over the regular
+  // field trial behavior.
   base::test::ScopedFeatureList password_site_isolation_feature;
-  password_site_isolation_feature.InitFromCommandLine(
-      std::string(), features::kSiteIsolationForPasswordSites.name);
+  password_site_isolation_feature.InitAndDisableFeature(
+      features::kSiteIsolationForPasswordSites);
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 }
 
@@ -820,10 +826,13 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
   // Password site isolation should be disabled at this point.
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
-  // Simulate enabling password site isolation from command line.
+  // Simulate enabling password site isolation from command line.  (Note that
+  // InitAndEnableFeature uses ScopedFeatureList::InitFromCommandLine
+  // internally, and that triggering the feature via chrome://flags follows the
+  // same override path as well.)
   base::test::ScopedFeatureList password_site_isolation_feature;
-  password_site_isolation_feature.InitFromCommandLine(
-      features::kSiteIsolationForPasswordSites.name, std::string());
+  password_site_isolation_feature.InitAndEnableFeature(
+      features::kSiteIsolationForPasswordSites);
 
   // If no memory threshold is defined, password site isolation should be
   // enabled.
@@ -851,8 +860,8 @@ TEST_F(DisabledPasswordSiteIsolationFieldTrialTest,
   EXPECT_FALSE(SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled());
 
   base::test::ScopedFeatureList password_site_isolation_feature;
-  password_site_isolation_feature.InitFromCommandLine(
-      features::kSiteIsolationForPasswordSites.name, std::string());
+  password_site_isolation_feature.InitAndEnableFeature(
+      features::kSiteIsolationForPasswordSites);
 
   // If no memory threshold is defined, password site isolation should be
   // enabled.
@@ -963,10 +972,13 @@ TEST_F(EnabledStrictOriginIsolationFieldTrialTest,
       {{features::kSitePerProcessOnlyForHighMemoryClientsParamName, "128"}});
   EXPECT_TRUE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 
-  // Simulate disabling strict origin isolation from command line.
+  // Simulate disabling strict origin isolation from command line.  (Note that
+  // InitAndEnableFeature uses ScopedFeatureList::InitFromCommandLine
+  // internally, and that disabling the feature via chrome://flags follows the
+  // same override path as well.)
   base::test::ScopedFeatureList strict_origin_isolation_feature;
-  strict_origin_isolation_feature.InitFromCommandLine(
-      std::string(), ::features::kStrictOriginIsolation.name);
+  strict_origin_isolation_feature.InitAndDisableFeature(
+      ::features::kStrictOriginIsolation);
   EXPECT_FALSE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 }
 
@@ -981,10 +993,13 @@ TEST_F(DisabledStrictOriginIsolationFieldTrialTest,
   // Strict origin isolation should be disabled at this point.
   EXPECT_FALSE(content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled());
 
-  // Simulate enabling strict origin isolation from command line.
+  // Simulate enabling strict origin isolation from command line.  (Note that
+  // InitAndEnableFeature uses ScopedFeatureList::InitFromCommandLine
+  // internally, and that triggering the feature via chrome://flags follows the
+  // same override path as well.)
   base::test::ScopedFeatureList strict_origin_isolation_feature;
-  strict_origin_isolation_feature.InitFromCommandLine(
-      ::features::kStrictOriginIsolation.name, std::string());
+  strict_origin_isolation_feature.InitAndEnableFeature(
+      ::features::kStrictOriginIsolation);
 
   // If no memory threshold is defined, strict origin isolation should be
   // enabled.

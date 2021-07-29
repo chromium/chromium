@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "components/feature_engagement/public/configuration.h"
-#include "components/feature_engagement/public/feature_configurations.h"
 #include "components/feature_engagement/public/feature_list.h"
 
 namespace base {
@@ -37,24 +36,11 @@ class ChromeVariationsConfiguration : public Configuration {
   void ParseFeatureConfigs(const FeatureVector& features);
 
  private:
-  enum class ConfigType {
-    kServer,
-    kClient,
-    kNone,
-  };
-
   void ParseFeatureConfig(const base::Feature* feature,
                           const FeatureVector& all_features);
-
-  // Returns whether `feature` could be configured by either the server or local
-  // hardcoded configs.
-  ConfigType GetServerOrClientSideConfig(const base::Feature* feature,
-                                         base::FieldTrialParams* params);
-
   // Returns true if FeatureConfig was found with a local hard coded
   // configuration.
-  bool MaybeAddClientSideFeatureConfig(const base::Feature* feature,
-                                       FeatureConfigs configs);
+  bool MaybeAddClientSideFeatureConfig(const base::Feature* feature);
 
   // The current configurations.
   ConfigMap configs_;

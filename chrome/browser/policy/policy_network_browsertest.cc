@@ -628,8 +628,8 @@ class SSLPolicyTest : public PolicyTest {
 class CECPQ2PolicyTest : public SSLPolicyTest {
  public:
   CECPQ2PolicyTest() {
-    scoped_feature_list_.InitFromCommandLine(
-        net::features::kPostQuantumCECPQ2.name, std::string());
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kPostQuantumCECPQ2);
   }
 
  private:
@@ -639,8 +639,7 @@ class CECPQ2PolicyTest : public SSLPolicyTest {
 class SSLPolicyTest3DES : public SSLPolicyTest {
  public:
   SSLPolicyTest3DES() {
-    scoped_feature_list_.InitFromCommandLine(features::kSSLCipher3DES.name,
-                                             std::string());
+    scoped_feature_list_.InitAndEnableFeature(features::kSSLCipher3DES);
   }
 
  private:

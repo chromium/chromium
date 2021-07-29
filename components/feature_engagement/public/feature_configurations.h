@@ -14,17 +14,11 @@ struct Feature;
 namespace feature_engagement {
 struct FeatureConfig;
 
-enum class FeatureConfigs {
-  kDummy,   // The dummy feature config.
-  kClient,  // All non-dummy client-side feature configs.
-};
-
 // Returns client-side specified FeatureConfig if it exists, else an empty
 // optional. For this FeatureConfig to be usable, the feature also needs to
 // be enabled by default.
 absl::optional<FeatureConfig> GetClientSideFeatureConfig(
-    const base::Feature* feature,
-    FeatureConfigs configs);
+    const base::Feature* feature);
 
 }  // namespace feature_engagement
 

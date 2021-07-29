@@ -190,8 +190,8 @@ class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
   ProfileMenuViewExtensionsTest() {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     // The IPH is not implemented on Lacros.
-    scoped_feature_list_.InitFromCommandLine(
-        feature_engagement::kIPHProfileSwitchFeature.name, std::string());
+    scoped_feature_list_.InitAndEnableFeature(
+        feature_engagement::kIPHProfileSwitchFeature);
 #endif
     subscription_ =
         BrowserContextDependencyManager::GetInstance()

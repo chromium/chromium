@@ -4,46 +4,14 @@
 
 #include "components/feature_engagement/public/feature_configurations.h"
 
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
 namespace feature_engagement {
 
-namespace {
-
-absl::optional<FeatureConfig> GetDummyFeatureConfig(
-    const base::Feature* feature) {
-  base::StringPiece feature_name(feature->name),
-      dummy_name(kIPHDummyFeature.name);
-  if (base::StartsWith(feature_name, dummy_name) &&
-      (feature_name.length() == dummy_name.length() ||
-       feature_name[dummy_name.length() - 1] == '<')) {
-    // Only used for tests. Various magic tricks are used below to ensure this
-    // config is invalid and unusable.
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = false;
-    config->availability = Comparator(LESS_THAN, 0);
-    config->session_rate = Comparator(LESS_THAN, 0);
-    config->trigger = EventConfig("dummy_feature_iph_trigger",
-                                  Comparator(LESS_THAN, 0), 1, 1);
-    config->used =
-        EventConfig("dummy_feature_action", Comparator(LESS_THAN, 0), 1, 1);
-    return config;
-  }
-
-  return absl::nullopt;
-}
-
-}  // namespace
-
 absl::optional<FeatureConfig> GetClientSideFeatureConfig(
-    const base::Feature* feature,
-    FeatureConfigs configs) {
-  if (configs == FeatureConfigs::kDummy)
-    return GetDummyFeatureConfig(feature);
-
+    const base::Feature* feature) {
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
   if (kIPHPasswordsAccountStorageFeature.name == feature->name) {
@@ -298,6 +266,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 #endif  // defined(OS_ANDROID)
+
+  if (kIPHDummyFeature.name == feature->name) {
+    // Only used for tests. Various magic tricks are used below to ensure this
+    // config is invalid and unusable.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = false;
+    config->availability = Comparator(LESS_THAN, 0);
+    config->session_rate = Comparator(LESS_THAN, 0);
+    config->trigger = EventConfig("dummy_feature_iph_trigger",
+                                  Comparator(LESS_THAN, 0), 1, 1);
+    config->used =
+        EventConfig("dummy_feature_action", Comparator(LESS_THAN, 0), 1, 1);
+    return config;
+  }
 
   return absl::nullopt;
 }

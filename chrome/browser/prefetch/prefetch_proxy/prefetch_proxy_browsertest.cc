@@ -494,8 +494,7 @@ class PrefetchProxyBrowserTest
   virtual void SetFeatures() {
     // Important: Features with parameters can't be used here, because it will
     // cause a failed DCHECK in the SSL reporting test.
-    scoped_feature_list_.InitFromCommandLine(features::kIsolatePrerenders.name,
-                                             std::string());
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
   }
 
   void SetUpOnMainThread() override {
@@ -2291,8 +2290,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
 class PolicyTestPrefetchProxyBrowserTest : public policy::PolicyTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitFromCommandLine(features::kIsolatePrerenders.name,
-                                             std::string());
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatePrerenders);
     policy::PolicyTest::SetUp();
   }
 
@@ -4461,17 +4459,6 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
     PrefetchProxyBrowserTest::SetUpOnMainThread();
   }
 
-  void SetFeatures() override {
-    // This is necessary because only one InitFromCommandLine() invocation takes
-    // effect, and both the PrerenderTestHelper and the superclass want to use
-    // one.  So we do the union here.
-    scoped_feature_list_.InitFromCommandLine(
-        base::JoinString({features::kIsolatePrerenders.name,
-                          blink::features::kPrerender2.name},
-                         ","),
-        std::string());
-  }
-
   content::test::PrerenderTestHelper& prerender_test_helper() {
     return prerender_test_helper_;
   }
@@ -4482,7 +4469,6 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
 
  private:
   content::test::PrerenderTestHelper prerender_test_helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyPrerenderBrowserTest,

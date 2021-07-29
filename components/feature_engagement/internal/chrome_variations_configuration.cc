@@ -301,17 +301,23 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
 
   DVLOG(3) << "Parsing feature config for " << feature->name;
 
-  base::FieldTrialParams params;
-  auto config_type = GetServerOrClientSideConfig(feature, &params);
-  if (config_type == ConfigType::kClient) {
-    // This feature has a checked in client side configuration.
-    stats::RecordConfigParsingEvent(
-        stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE);
-    DVLOG(3) << "Read checked in config for " << feature->name;
-    return;
-  }
+  std::map<std::string, std::string> params;
+  bool result = base::GetFieldTrialParamsByFeature(*feature, &params);
+  // No |result| means that there was no server side configuration, or the
+  // feature was disabled. The feature could be disabled either because it
+  // is not configured to be base::FEATURE_ENABLED_BY_DEFAULT, or it has been
+  // disabled from the server.
+  if (!result) {
+    // Some features have a checked in client side configuration, and for those
+    // use that and and record success, otherwise fall back to invalid
+    // configuration below.
+    if (MaybeAddClientSideFeatureConfig(feature)) {
+      stats::RecordConfigParsingEvent(
+          stats::ConfigParsingEvent::SUCCESS_FROM_SOURCE);
+      DVLOG(3) << "Read checked in config for " << feature->name;
+      return;
+    }
 
-  if (config_type == ConfigType::kNone) {
     // No server-side, nor client side configuration available, but the feature
     // was passed in as one of all the feature available, so give it an invalid
     // config.
@@ -326,8 +332,7 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
     return;
   }
 
-  // Server-side config. Initially all new configurations are considered
-  // invalid.
+  // Initially all new configurations are considered invalid.
   FeatureConfig& config = configs_[feature->name];
   config.valid = false;
   uint32_t parse_errors = 0;
@@ -447,33 +452,13 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
   }
 }
 
-ChromeVariationsConfiguration::ConfigType
-ChromeVariationsConfiguration::GetServerOrClientSideConfig(
-    const base::Feature* feature,
-    base::FieldTrialParams* params) {
-  if (MaybeAddClientSideFeatureConfig(feature, FeatureConfigs::kDummy))
-    return ConfigType::kClient;
-
-  if (base::GetFieldTrialParamsByFeature(*feature, params))
-    return ConfigType::kServer;
-
-  // There was no server side configuration, or the feature was disabled. The
-  // feature could be disabled either because it is not configured to be
-  // base::FEATURE_ENABLED_BY_DEFAULT, or it has been disabled from the server.
-  if (MaybeAddClientSideFeatureConfig(feature, FeatureConfigs::kClient))
-    return ConfigType::kClient;
-
-  return ConfigType::kNone;
-}
-
 bool ChromeVariationsConfiguration::MaybeAddClientSideFeatureConfig(
-    const base::Feature* feature,
-    FeatureConfigs configs) {
+    const base::Feature* feature) {
   if (!base::FeatureList::IsEnabled(*feature))
     return false;
 
   DCHECK(configs_.find(feature->name) == configs_.end());
-  if (auto config = GetClientSideFeatureConfig(feature, configs)) {
+  if (auto config = GetClientSideFeatureConfig(feature)) {
     configs_[feature->name] = *config;
     return true;
   }

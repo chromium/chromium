@@ -347,8 +347,7 @@ TEST_F(ScopedFeatureListTest, EnableFeatureOverrideDisable) {
   {
     test::ScopedFeatureList feature_list2;
     feature_list2.InitWithFeatures({kTestFeature1}, {});
-    ExpectFeatures("TestFeature1<scoped_feature_list_trial_for_TestFeature1",
-                   std::string());
+    ExpectFeatures("TestFeature1", std::string());
   }
 }
 
@@ -370,8 +369,7 @@ TEST_F(ScopedFeatureListTest, FeatureOverrideFeatureWithDefault) {
   {
     test::ScopedFeatureList feature_list2;
     feature_list2.InitWithFeatures({kTestFeature1}, {});
-    ExpectFeatures("TestFeature1<scoped_feature_list_trial_for_TestFeature1",
-                   std::string());
+    ExpectFeatures("TestFeature1", std::string());
   }
 }
 
@@ -398,8 +396,7 @@ TEST_F(ScopedFeatureListTest, FeatureOverrideFeatureWithEnabledFieldTrial) {
   {
     test::ScopedFeatureList feature_list2;
     feature_list2.InitWithFeatures({kTestFeature1}, {});
-    ExpectFeatures("TestFeature1<scoped_feature_list_trial_for_TestFeature1",
-                   std::string());
+    ExpectFeatures("TestFeature1", std::string());
   }
 }
 
@@ -415,8 +412,7 @@ TEST_F(ScopedFeatureListTest, FeatureOverrideFeatureWithDisabledFieldTrial) {
   {
     test::ScopedFeatureList feature_list2;
     feature_list2.InitWithFeatures({kTestFeature1}, {});
-    ExpectFeatures("TestFeature1<scoped_feature_list_trial_for_TestFeature1",
-                   std::string());
+    ExpectFeatures("TestFeature1", std::string());
   }
 }
 
@@ -439,8 +435,7 @@ TEST_F(ScopedFeatureListTest, FeatureOverrideKeepsOtherExistingFeature2) {
   {
     test::ScopedFeatureList feature_list2;
     feature_list2.InitWithFeatures({kTestFeature2}, {});
-    ExpectFeatures("TestFeature2<scoped_feature_list_trial_for_TestFeature2",
-                   "TestFeature1");
+    ExpectFeatures("TestFeature2", "TestFeature1");
   }
 }
 

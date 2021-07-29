@@ -180,9 +180,7 @@ ${argHint}
     }
     if (this[testFixture].prototype.featureList ||
         this[testFixture].prototype.featuresWithParameters) {
-      output(`
-#include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"`);
+      output('#include "base/test/scoped_feature_list.h"');
     }
   }
   output();
@@ -425,18 +423,15 @@ class ${testFixture} : public ${typedefCppFixture} {
         output(`
   ${testFixture}() {`);
         if (featureList) {
-          const disabledFeatures =
-              (featureList.disabled || []).map(x => x + '.name').join(', ');
-          const enabledFeatures =
-              (featureList.enabled || []).map(x => x + '.name').join(', ');
+          const disabledFeatures = (featureList.disabled || []).join(', ');
+          const enabledFeatures = (featureList.enabled || []).join(', ');
           if (enabledFeatures.length + disabledFeatures.length == 0) {
             print('Invalid featureList; must set "enabled" or "disabled" key');
             quit(-1);
           }
           output(`
-    scoped_feature_list_.InitFromCommandLine(
-        base::JoinString({${enabledFeatures}}, ","),
-        base::JoinString({${disabledFeatures}}, ","));`);
+    scoped_feature_list_.InitWithFeatures({${enabledFeatures}},
+                                          {${disabledFeatures}});`);
         }
         if (featuresWithParameters) {
           for (let i = 0; i < featuresWithParameters.length; ++i) {

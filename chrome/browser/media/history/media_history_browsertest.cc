@@ -64,8 +64,7 @@ class MediaHistoryBrowserTest : public InProcessBrowserTest,
                                 public testing::WithParamInterface<TestState> {
  public:
   MediaHistoryBrowserTest() {
-    scoped_feature_list_.InitFromCommandLine(media::kUseMediaHistoryStore.name,
-                                             std::string());
+    scoped_feature_list_.InitAndEnableFeature(media::kUseMediaHistoryStore);
   }
 
   ~MediaHistoryBrowserTest() override = default;
@@ -1175,11 +1174,7 @@ class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
       : prerender_helper_(base::BindRepeating(
             &MediaHistoryForPrerenderBrowserTest::web_contents,
             base::Unretained(this))) {
-    feature_list_.InitFromCommandLine(
-        base::JoinString({blink::features::kPrerender2.name,
-                          media::kUseMediaHistoryStore.name},
-                         ","),
-        std::string());
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
   void SetUpOnMainThread() override {
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1208,7 +1203,6 @@ IN_PROC_BROWSER_TEST_F(MediaHistoryForPrerenderBrowserTest,
 
   auto* observer =
       MediaHistoryContentsObserver::FromWebContents(web_contents());
-  ASSERT_TRUE(observer);
   EXPECT_EQ(GetTestURL(), observer->GetCurrentUrlForTesting());
 }
 

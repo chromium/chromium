@@ -79,11 +79,8 @@ class PermissionPromptBubbleViewBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PermissionPromptBubbleViewBrowserTest() {
-    std::string name = permissions::features::kPermissionChip.name;
-    if (GetParam())
-      feature_list_.InitFromCommandLine(name, std::string());
-    else
-      feature_list_.InitFromCommandLine(std::string(), name);
+    feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
+                                       GetParam());
   }
 
   PermissionPromptBubbleViewBrowserTest(
