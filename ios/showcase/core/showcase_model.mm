@@ -92,20 +92,6 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kClassForInstantiationKey : @"UIKitTableViewCellViewController",
       showcase::kUseCaseKey : @"UIKit Table Cells",
     },
-#if BUILDFLAG(SHOWCASE_SEARCH_WIDGET_ENABLED)
-    @{
-      showcase::kClassForDisplayKey : @"SearchWidgetViewController",
-      showcase::kClassForInstantiationKey : @"SCSearchWidgetCoordinator",
-      showcase::kUseCaseKey : @"Search Widget",
-    },
-#endif
-#if BUILDFLAG(SHOWCASE_CONTENT_WIDGET_ENABLED)
-    @{
-      showcase::kClassForDisplayKey : @"ContentWidgetViewController",
-      showcase::kClassForInstantiationKey : @"SCContentWidgetCoordinator",
-      showcase::kUseCaseKey : @"Content Widget",
-    },
-#endif
     @{
       showcase::kClassForDisplayKey : @"TextBadgeView",
       showcase::kClassForInstantiationKey : @"SCTextBadgeViewController",
