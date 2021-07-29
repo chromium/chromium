@@ -12,10 +12,6 @@
     <color name="signin_header_animation_line_dark">@color/modern_grey_700</color>
     <color name="signin_header_animation_laptop_screen">@color/modern_grey_900</color>
 
-    <!-- Tab Strip Colors -->
-    <color name="compositor_background_tab_bg">@color/modern_grey_900</color>
-    <color name="compositor_background_tab_outline">@android:color/black</color>
-
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_arrow">@android:color/white</color>
 

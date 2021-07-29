@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.RectF;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
@@ -25,10 +29,12 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.animation.FloatProperty;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.LayoutResource;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 
@@ -37,6 +43,8 @@ import java.util.List;
  * a particular tab so it can draw itself onto the GL canvas.
  */
 public class StripLayoutTab implements VirtualView {
+    private static final String TAG = "StripLayoutTab";
+
     /** An observer interface for StripLayoutTab. */
     public interface Observer {
         /** @param visible Whether the StripLayoutTab is visible. */
@@ -272,14 +280,20 @@ public class StripLayoutTab implements VirtualView {
      * @return The tint color resource that represents the tab background.
      */
     public int getTint(boolean foreground) {
-        int tint = mIncognito ? R.color.compositor_background_tab_bg_incognito
-                              : R.color.compositor_background_tab_bg;
         if (foreground) {
-            tint = mIncognito ? R.color.default_bg_color_dark_elev_3
-                              : R.color.default_bg_color_elev_3;
+            return ChromeColors.getDefaultThemeColor(mContext, mIncognito);
         }
 
-        return mContext.getResources().getColor(tint);
+        if (mIncognito) {
+            return mContext.getResources().getColor(
+                    R.color.baseline_neutral_900_with_neutral_1000_alpha_30);
+        }
+
+        final int baseColor =
+                ChromeColors.getSurfaceColor(mContext, R.dimen.compositor_background_tab_elevation);
+        final float overlayAlpha = ResourcesCompat.getFloat(
+                mContext.getResources(), R.dimen.compositor_background_tab_overlay_alpha);
+        return ColorUtils.getColorWithOverlay(baseColor, Color.BLACK, overlayAlpha);
     }
 
     /**
@@ -287,14 +301,20 @@ public class StripLayoutTab implements VirtualView {
      * @return The tint color resource that represents the tab outline.
      */
     public int getOutlineTint(boolean foreground) {
-        int tint = mIncognito ? R.color.compositor_background_tab_outline_incognito
-                              : R.color.compositor_background_tab_outline;
         if (foreground) {
-            tint = mIncognito ? R.color.default_bg_color_dark_elev_3
-                              : R.color.default_bg_color_elev_3;
+            getTint(true);
         }
 
-        return mContext.getResources().getColor(tint);
+        if (mIncognito) {
+            return mContext.getResources().getColor(
+                    R.color.baseline_neutral_900_with_neutral_1000_alpha_30_with_neutral_variant_400_alpha_15);
+        }
+
+        final int baseColor = getTint(false);
+        final int overlayColor = MaterialColors.getColor(mContext, R.attr.colorOutline, TAG);
+        final float overlayAlpha = ResourcesCompat.getFloat(
+                mContext.getResources(), R.dimen.compositor_background_tab_outline_alpha);
+        return ColorUtils.getColorWithOverlay(baseColor, overlayColor, overlayAlpha);
     }
 
     /**

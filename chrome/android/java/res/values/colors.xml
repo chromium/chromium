@@ -29,12 +29,6 @@
     <color name="data_reduction_original_color">@color/default_control_color_active</color>
     <color name="data_reduction_chart_background_color">@color/default_bg_color_secondary</color>
 
-    <!-- Compositor Tab Colors -->
-    <color name="compositor_background_tab_bg">@color/modern_grey_300</color>
-    <color name="compositor_background_tab_bg_incognito">@color/modern_grey_900</color>
-    <color name="compositor_background_tab_outline">#ACB1B6</color>
-    <color name="compositor_background_tab_outline_incognito">@android:color/black</color>
-
     <!-- Compositor Tab Title Colors -->
     <color name="compositor_tab_title_bar_text">@color/default_text_color</color>
     <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
