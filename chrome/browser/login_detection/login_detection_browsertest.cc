@@ -25,6 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace login_detection {
 
@@ -167,6 +168,18 @@ class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(&LoginDetectionPrerenderBrowserTest::GetWebContents,
                             base::Unretained(this)));
+
+    // The prerender helper uses InitFromCommandLine(), which wipes all other
+    // feature state, including that of the superclass.  Only one
+    // InitFromCommandLine() call can take effect, so do one here that's the
+    // union of all desired features.
+    scoped_feature_list_.InitFromCommandLine(
+        base::JoinString(
+            {blink::features::kPrerender2.name, kLoginDetection.name,
+             site_isolation::features::kSiteIsolationForPasswordSites.name,
+             optimization_guide::features::kOptimizationHints.name},
+            ","),
+        std::string());
   }
 
   void SetUpOnMainThread() override {
@@ -185,6 +198,7 @@ class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
 
  private:
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionPrerenderBrowserTest,

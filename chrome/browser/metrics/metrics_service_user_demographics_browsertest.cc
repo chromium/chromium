@@ -45,18 +45,20 @@ class MetricsServiceUserDemographicsBrowserTest
   MetricsServiceUserDemographicsBrowserTest() : SyncTest(SINGLE_CLIENT) {
     if (GetParam().enable_feature) {
       // Enable UMA and reporting of the synced user's birth year and gender.
-      scoped_feature_list_.InitWithFeatures(
+      scoped_feature_list_.InitFromCommandLine(
           // enabled_features =
-          {internal::kMetricsReportingFeature,
-           DemographicMetricsProvider::kDemographicMetricsReporting},
+          base::JoinString(
+              {internal::kMetricsReportingFeature.name,
+               DemographicMetricsProvider::kDemographicMetricsReporting.name},
+              ","),
           // disabled_features =
-          {});
+          std::string());
     } else {
-      scoped_feature_list_.InitWithFeatures(
+      scoped_feature_list_.InitFromCommandLine(
           // enabled_features =
-          {internal::kMetricsReportingFeature},
+          internal::kMetricsReportingFeature.name,
           // disabled_features =
-          {DemographicMetricsProvider::kDemographicMetricsReporting});
+          DemographicMetricsProvider::kDemographicMetricsReporting.name);
     }
   }
 

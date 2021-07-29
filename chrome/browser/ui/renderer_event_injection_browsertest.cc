@@ -44,8 +44,8 @@ class RendererEventInjectionTest
 
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSyntheticPointerActions);
+    scoped_feature_list_.InitFromCommandLine(
+        features::kSyntheticPointerActions.name, std::string());
     InProcessBrowserTest::SetUp();
   }
 

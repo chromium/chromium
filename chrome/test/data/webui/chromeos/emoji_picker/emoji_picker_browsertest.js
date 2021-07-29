@@ -23,9 +23,10 @@ class EmojiPickerBrowserTest extends PolymerTest {
   /** @override */
   get featureList() {
     return {
-      enabled:
-          ['chromeos::features::kImeSystemEmojiPicker,' +
-           'chromeos::features::kImeSystemEmojiPickerClipboard']
+      enabled: [
+        'chromeos::features::kImeSystemEmojiPicker',
+        'chromeos::features::kImeSystemEmojiPickerClipboard'
+      ]
     };
   }
 }

@@ -391,8 +391,8 @@ class MetricsServiceBrowserDoUploadTest
 
   void SetUp() override {
     set_metrics_consent(true);
-    feature_list_.InitAndEnableFeature(
-        metrics::internal::kMetricsReportingFeature);
+    feature_list_.InitFromCommandLine(
+        metrics::internal::kMetricsReportingFeature.name, std::string());
     MetricsServiceBrowserFilesTest::SetUp();
   }
 
@@ -415,8 +415,8 @@ class MetricsServiceBrowserNoUploadTest
 
   void SetUp() override {
     set_metrics_consent(false);
-    feature_list_.InitAndEnableFeature(
-        metrics::internal::kMetricsReportingFeature);
+    feature_list_.InitFromCommandLine(
+        metrics::internal::kMetricsReportingFeature.name, std::string());
     MetricsServiceBrowserFilesTest::SetUp();
   }
 

@@ -317,7 +317,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 #if defined(OS_MAC)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalToGL) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMetal);
+  feature_list.InitFromCommandLine(features::kMetal.name, std::string());
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_METAL, manager->GetGpuMode());
 
@@ -327,7 +327,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalToGL) {
 
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMetal);
+  feature_list.InitFromCommandLine(features::kMetal.name, std::string());
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_METAL, manager->GetGpuMode());
 
@@ -353,7 +353,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithUseVulkanFlag) {
 
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kVulkan);
+  feature_list.InitFromCommandLine(features::kVulkan.name, std::string());
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 }
@@ -363,7 +363,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
 #if !defined(OS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kVulkan);
+  feature_list.InitFromCommandLine(features::kVulkan.name, std::string());
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 
@@ -373,7 +373,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
 
 TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kVulkan);
+  feature_list.InitFromCommandLine(features::kVulkan.name, std::string());
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 
@@ -396,7 +396,7 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kVulkan);
+  feature_list.InitFromCommandLine(features::kVulkan.name, std::string());
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 

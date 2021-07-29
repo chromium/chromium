@@ -35,12 +35,12 @@ class HybridRequestSkipUITest
   HybridRequestSkipUITest()
       : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     if (GetTestMode() == ALWAYS_SKIP_TO_GPAY) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPaymentRequestSkipToGPay);
+      scoped_feature_list_.InitFromCommandLine(
+          features::kPaymentRequestSkipToGPay.name, std::string());
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kPaymentRequestSkipToGPayIfNoCard},
-          /*disabled_features=*/{features::kPaymentRequestSkipToGPay});
+      scoped_feature_list_.InitFromCommandLine(
+          /*enabled_features=*/features::kPaymentRequestSkipToGPayIfNoCard.name,
+          /*disabled_features=*/features::kPaymentRequestSkipToGPay.name);
     }
   }
 

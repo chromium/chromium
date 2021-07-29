@@ -6976,8 +6976,9 @@ IN_PROC_BROWSER_TEST_F(
 class MixedFormsPolicyTest : public policy::PolicyTest {
  public:
   MixedFormsPolicyTest() {
-    feature_list_.InitAndEnableFeature(
-        security_interstitials::kInsecureFormSubmissionInterstitial);
+    feature_list_.InitFromCommandLine(
+        security_interstitials::kInsecureFormSubmissionInterstitial.name,
+        std::string());
   }
 
  private:

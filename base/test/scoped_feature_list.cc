@@ -124,10 +124,9 @@ std::string HexDecodeString(const std::string& input) {
 
 }  // namespace
 
-ScopedFeatureList::FeatureAndParams::FeatureAndParams(
-    const Feature& feature,
-    const FieldTrialParams& params)
-    : feature(feature), params(params) {}
+ScopedFeatureList::FeatureAndParams::FeatureAndParams(const Feature& feature,
+                                                      FieldTrialParams params)
+    : feature(feature), params(std::move(params)) {}
 
 ScopedFeatureList::FeatureAndParams::~FeatureAndParams() = default;
 
@@ -168,7 +167,7 @@ void ScopedFeatureList::Reset() {
 }
 
 void ScopedFeatureList::Init() {
-  InitWithFeaturesImpl({}, {}, {});
+  InitWithFeaturesImpl({}, {});
 }
 
 void ScopedFeatureList::InitWithFeatureList(
@@ -190,15 +189,18 @@ void ScopedFeatureList::InitFromCommandLine(
 void ScopedFeatureList::InitWithFeatures(
     const std::vector<Feature>& enabled_features,
     const std::vector<Feature>& disabled_features) {
-  InitWithFeaturesImpl(enabled_features, {}, disabled_features);
+  std::vector<FeatureAndParams> enabled_features_and_params;
+  base::ranges::copy(enabled_features,
+                     std::back_inserter(enabled_features_and_params));
+  InitWithFeaturesImpl(enabled_features_and_params, disabled_features);
 }
 
 void ScopedFeatureList::InitAndEnableFeature(const Feature& feature) {
-  InitWithFeaturesImpl({feature}, {}, {});
+  InitWithFeaturesImpl({{feature}}, {});
 }
 
 void ScopedFeatureList::InitAndDisableFeature(const Feature& feature) {
-  InitWithFeaturesImpl({}, {}, {feature});
+  InitWithFeaturesImpl({}, {feature});
 }
 
 void ScopedFeatureList::InitWithFeatureState(const Feature& feature,
@@ -211,19 +213,13 @@ void ScopedFeatureList::InitWithFeatureState(const Feature& feature,
 }
 
 void ScopedFeatureList::InitWithFeaturesImpl(
-    const std::vector<Feature>& enabled_features,
-    const std::vector<FeatureAndParams>& enabled_features_and_params,
+    const std::vector<FeatureAndParams>& enabled_features,
     const std::vector<Feature>& disabled_features) {
   DCHECK(!init_called_);
-  DCHECK(enabled_features.empty() || enabled_features_and_params.empty());
 
   Features merged_features;
-  if (!enabled_features_and_params.empty()) {
-    merged_features.enabled_feature_list =
-        GetFeatureVectorFromFeaturesAndParams(enabled_features_and_params);
-  } else {
-    merged_features.enabled_feature_list = GetFeatureVector(enabled_features);
-  }
+  merged_features.enabled_feature_list =
+      GetFeatureVectorFromFeaturesAndParams(enabled_features);
   merged_features.disabled_feature_list = GetFeatureVector(disabled_features);
 
   std::string current_enabled_features;
@@ -253,7 +249,7 @@ void ScopedFeatureList::InitWithFeaturesImpl(
   auto* field_trial_param_associator = FieldTrialParamAssociator::GetInstance();
   std::vector<std::string> features_with_trial;
   auto feature_it = merged_features.enabled_feature_list.begin();
-  for (const auto& enabled_feature : enabled_features_and_params) {
+  for (const auto& enabled_feature : enabled_features) {
     const std::string feature_name = enabled_feature.feature.name;
     const std::string trial_name =
         "scoped_feature_list_trial_for_" + feature_name;
@@ -298,7 +294,7 @@ void ScopedFeatureList::InitAndEnableFeatureWithParameters(
 void ScopedFeatureList::InitWithFeaturesAndParameters(
     const std::vector<FeatureAndParams>& enabled_features,
     const std::vector<Feature>& disabled_features) {
-  InitWithFeaturesImpl({}, enabled_features, disabled_features);
+  InitWithFeaturesImpl(enabled_features, disabled_features);
 }
 
 }  // namespace test

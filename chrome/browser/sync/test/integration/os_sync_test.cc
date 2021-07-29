@@ -7,8 +7,8 @@
 #include "ash/constants/ash_features.h"
 
 OsSyncTest::OsSyncTest(TestType type) : SyncTest(type) {
-  settings_feature_list_.InitAndEnableFeature(
-      chromeos::features::kSplitSettingsSync);
+  settings_feature_list_.InitFromCommandLine(
+      chromeos::features::kSplitSettingsSync.name, std::string());
 }
 
 OsSyncTest::~OsSyncTest() = default;

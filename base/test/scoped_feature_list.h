@@ -50,7 +50,10 @@ class ScopedFeatureList final {
   ~ScopedFeatureList();
 
   struct FeatureAndParams {
-    FeatureAndParams(const Feature& feature, const FieldTrialParams& params);
+    // Intentionally allow implicit construction from Feature, since a Feature
+    // is the same thing as a FeatureWithParams-with-empty-params.
+    FeatureAndParams(const Feature& feature,
+                     FieldTrialParams params = FieldTrialParams());
     ~FeatureAndParams();
 
     FeatureAndParams(const FeatureAndParams& other);
@@ -129,11 +132,7 @@ class ScopedFeatureList final {
   // Any feature overrides already present in the global FeatureList will
   // continue to apply, unless they conflict with the overrides passed into this
   // method.
-  // Features to enable may be specified through either |enabled_features| or
-  // |enabled_feature_and_params|, but not both (i.e. one of these must be
-  // empty).
   void InitWithFeaturesImpl(
-      const std::vector<Feature>& enabled_features,
       const std::vector<FeatureAndParams>& enabled_features_and_params,
       const std::vector<Feature>& disabled_features);
 

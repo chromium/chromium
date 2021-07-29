@@ -45,8 +45,13 @@ class FtpBrowserTest : public InProcessBrowserTest {
   explicit FtpBrowserTest(FtpState ftp_state = FtpState::ENABLED)
       : ftp_server_(net::SpawnedTestServer::TYPE_FTP,
                     base::FilePath(FILE_PATH_LITERAL("chrome/test/data/ftp"))) {
-    scoped_feature_list_.InitWithFeatureState(network::features::kFtpProtocol,
-                                              ftp_state == FtpState::ENABLED);
+    if (ftp_state == FtpState::ENABLED) {
+      scoped_feature_list_.InitFromCommandLine(
+          network::features::kFtpProtocol.name, std::string());
+    } else {
+      scoped_feature_list_.InitFromCommandLine(
+          std::string(), network::features::kFtpProtocol.name);
+    }
   }
 
  protected:

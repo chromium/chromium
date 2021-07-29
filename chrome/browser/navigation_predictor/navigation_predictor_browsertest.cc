@@ -7,6 +7,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -611,7 +612,17 @@ class NavigationPredictorPrerenderBrowserTest
   NavigationPredictorPrerenderBrowserTest()
       : prerender_test_helper_(base::BindRepeating(
             &NavigationPredictorPrerenderBrowserTest::GetWebContents,
-            base::Unretained(this))) {}
+            base::Unretained(this))) {
+    // The prerender helper uses InitFromCommandLine(), which wipes all other
+    // feature state, including that of the superclass.  Only one
+    // InitFromCommandLine() call can take effect, so do one here that's the
+    // union of all desired features.
+    feature_list_.InitFromCommandLine(
+        base::StrCat({blink::features::kPrerender2.name, ",",
+                      blink::features::kNavigationPredictor.name,
+                      ":random_anchor_sampling_period/1"}),
+        std::string());
+  }
   ~NavigationPredictorPrerenderBrowserTest() override = default;
   NavigationPredictorPrerenderBrowserTest(
       const NavigationPredictorPrerenderBrowserTest&) = delete;
@@ -642,6 +653,7 @@ class NavigationPredictorPrerenderBrowserTest
  private:
   net::EmbeddedTestServer test_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   content::test::PrerenderTestHelper prerender_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that prerendering doesn't create a predictor object and doesn't affect

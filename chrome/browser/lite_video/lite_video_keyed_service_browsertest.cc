@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +42,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -122,7 +124,7 @@ class LiteVideoKeyedServiceBrowserTest
   ~LiteVideoKeyedServiceBrowserTest() override = default;
 
   void SetUp() override {
-    if (use_opt_guide_) {
+    if (IsUsingOptGuide()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{::features::kLiteVideo,
             {{"use_optimization_guide", "true"},
@@ -146,7 +148,7 @@ class LiteVideoKeyedServiceBrowserTest
         network::mojom::ConnectionType::CONNECTION_4G);
     SetEffectiveConnectionType(
         net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
-    if (use_opt_guide_)
+    if (IsUsingOptGuide())
       SeedOptGuideLiteVideoHints(GURL("https://litevideo.com"));
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -168,7 +170,7 @@ class LiteVideoKeyedServiceBrowserTest
 
   // Sets up public image URL hint data.
   void SeedOptGuideLiteVideoHints(const GURL& url) {
-    ASSERT_TRUE(use_opt_guide_);
+    ASSERT_TRUE(IsUsingOptGuide());
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->profile());
@@ -199,11 +201,13 @@ class LiteVideoKeyedServiceBrowserTest
         0);
   }
 
-  const base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  const base::HistogramTester* histogram_tester() const {
+    return &histogram_tester_;
+  }
 
-  GURL https_url() { return https_url_; }
+  GURL https_url() const { return https_url_; }
 
-  bool IsUsingOptGuide() { return use_opt_guide_; }
+  bool IsUsingOptGuide() const { return use_opt_guide_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -654,17 +658,13 @@ IN_PROC_BROWSER_TEST_P(
 class LiteVideoNetworkConnectionBrowserTest
     : public LiteVideoKeyedServiceBrowserTest {
  public:
-  LiteVideoNetworkConnectionBrowserTest() : use_opt_guide_(GetParam()) {}
+  LiteVideoNetworkConnectionBrowserTest() = default;
   ~LiteVideoNetworkConnectionBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
     // This removes the network override switch.
     cmd->AppendSwitch("enable-spdy-proxy-auth");
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  const bool use_opt_guide_ = false;
 };
 
 INSTANTIATE_TEST_SUITE_P(UsingOptGuide,
@@ -773,11 +773,11 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
 class LiteVideoKeyedServiceCoinflipBrowserTest
     : public LiteVideoKeyedServiceBrowserTest {
  public:
-  LiteVideoKeyedServiceCoinflipBrowserTest() : use_opt_guide_(GetParam()) {}
+  LiteVideoKeyedServiceCoinflipBrowserTest() = default;
   ~LiteVideoKeyedServiceCoinflipBrowserTest() override = default;
 
   void SetUp() override {
-    if (use_opt_guide_) {
+    if (IsUsingOptGuide()) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{::features::kLiteVideo,
             {{"use_optimization_guide", "true"}, {"is_coinflip_exp", "true"}}},
@@ -793,7 +793,6 @@ class LiteVideoKeyedServiceCoinflipBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  const bool use_opt_guide_ = false;
 };
 
 INSTANTIATE_TEST_SUITE_P(UsingOptGuide,
@@ -883,6 +882,23 @@ class LiteVideoKeyedServicePrerenderBrowserTest
             &LiteVideoKeyedServicePrerenderBrowserTest::GetWebContents,
             base::Unretained(this)));
     LiteVideoKeyedServiceBrowserTest::SetUpCommandLine(command_line);
+
+    // This is necessary because only one InitFromCommandLine() invocation takes
+    // effect, and both the PrerenderTestHelper and the superclass want to use
+    // one.  So we do a union of the important parts here.
+    if (IsUsingOptGuide()) {
+      scoped_feature_list_.InitFromCommandLine(
+          base::StrCat({blink::features::kPrerender2.name, ",",
+                        optimization_guide::features::kOptimizationHints.name,
+                        ",", ::features::kLiteVideo.name,
+                        ":use_optimization_guide/true"}),
+          std::string());
+    } else {
+      scoped_feature_list_.InitFromCommandLine(
+          base::StrCat({blink::features::kPrerender2.name, ",",
+                        ::features::kLiteVideo.name}),
+          std::string());
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -901,6 +917,7 @@ class LiteVideoKeyedServicePrerenderBrowserTest
 
  private:
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(UsingOptGuide,

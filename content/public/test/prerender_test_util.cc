@@ -217,7 +217,8 @@ bool PrerenderHostObserver::was_activated() const {
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : get_web_contents_fn_(fn) {
-  feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  feature_list_.InitFromCommandLine(blink::features::kPrerender2.name,
+                                    std::string());
 }
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;

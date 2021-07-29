@@ -593,8 +593,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, FolderAddRemove) {
 class TwoClientAppListOsSyncTest : public TwoClientAppListSyncTest {
  public:
   TwoClientAppListOsSyncTest() {
-    settings_feature_list_.InitAndEnableFeature(
-        chromeos::features::kSplitSettingsSync);
+    settings_feature_list_.InitFromCommandLine(
+        chromeos::features::kSplitSettingsSync.name, std::string());
   }
   ~TwoClientAppListOsSyncTest() override = default;
 

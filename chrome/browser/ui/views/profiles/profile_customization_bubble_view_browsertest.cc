@@ -36,8 +36,8 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 class ProfileCustomizationBubbleBrowserTest : public DialogBrowserTest {
  public:
   ProfileCustomizationBubbleBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        feature_engagement::kIPHProfileSwitchFeature);
+    scoped_feature_list_.InitFromCommandLine(
+        feature_engagement::kIPHProfileSwitchFeature.name, std::string());
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
