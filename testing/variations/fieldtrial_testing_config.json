@@ -762,6 +762,21 @@
             ]
         }
     ],
+    "AssistMultiWord": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210623",
+                    "enable_features": [
+                        "AssistMultiWord"
+                    ]
+                }
+            ]
+        }
+    ],
     "AssistPersonalInfo": [
         {
             "platforms": [
