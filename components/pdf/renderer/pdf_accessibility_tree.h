@@ -11,9 +11,7 @@
 
 #include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppp_pdf.h"
-#include "ppapi/shared_impl/pdf_accessibility_shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -22,12 +20,14 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
+struct AccessibilityActionData;
 struct AccessibilityCharInfo;
 struct AccessibilityDocInfo;
 struct AccessibilityPageInfo;
 struct AccessibilityPageObjects;
 struct AccessibilityTextRunInfo;
 struct AccessibilityViewportInfo;
+struct PageCharacterIndex;
 }  // namespace chrome_pdf
 
 namespace content {
@@ -74,7 +74,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
       const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
       const chrome_pdf::AccessibilityPageObjects& page_objects);
-  void HandleAction(const PP_PdfAccessibilityActionData& action_data);
+  void HandleAction(const chrome_pdf::AccessibilityActionData& action_data);
   absl::optional<AnnotationInfo> GetPdfAnnotationInfoFromAXNode(
       int32_t ax_node_id) const;
 
@@ -82,9 +82,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // respective page index and character index within the page. Returns
   // false if the `node` is not a valid static text or inline text box
   // AXNode. Used to find the character offsets of selection.
-  bool FindCharacterOffset(const ui::AXNode& node,
-                           uint32_t char_offset_in_node,
-                           PP_PdfPageCharacterIndex* page_char_index) const;
+  bool FindCharacterOffset(
+      const ui::AXNode& node,
+      uint32_t char_offset_in_node,
+      chrome_pdf::PageCharacterIndex& page_char_index) const;
 
   // content::PluginAXTreeSource:
   bool GetTreeData(ui::AXTreeData* tree_data) const override;

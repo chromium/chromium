@@ -498,12 +498,48 @@ void PepperPDFHost::SetSelectionBounds(const gfx::PointF& base,
     instance->SetSelectionBounds(base, extent);
 }
 
+namespace {
+
+PP_PdfPageCharacterIndex ToPdfPageCharacterIndex(
+    const chrome_pdf::PageCharacterIndex& page_char_index) {
+  return {
+      .page_index = page_char_index.page_index,
+      .char_index = page_char_index.char_index,
+  };
+}
+
+PP_PdfAccessibilityActionData ToPdfAccessibilityActionData(
+    const chrome_pdf::AccessibilityActionData& action_data) {
+  return {
+      .action = static_cast<PP_PdfAccessibilityAction>(action_data.action),
+      .annotation_type = static_cast<PP_PdfAccessibilityAnnotationType>(
+          action_data.annotation_type),
+      .target_point = content::PP_FromGfxPoint(action_data.target_point),
+      .target_rect = content::PP_FromGfxRect(action_data.target_rect),
+      .annotation_index = action_data.annotation_index,
+      .page_index = action_data.page_index,
+      .horizontal_scroll_alignment =
+          static_cast<PP_PdfAccessibilityScrollAlignment>(
+              action_data.horizontal_scroll_alignment),
+      .vertical_scroll_alignment =
+          static_cast<PP_PdfAccessibilityScrollAlignment>(
+              action_data.vertical_scroll_alignment),
+      .selection_start_index =
+          ToPdfPageCharacterIndex(action_data.selection_start_index),
+      .selection_end_index =
+          ToPdfPageCharacterIndex(action_data.selection_end_index),
+  };
+}
+
+}  // namespace
+
 void PepperPDFHost::HandleAccessibilityAction(
-    const PP_PdfAccessibilityActionData& action_data) {
+    const chrome_pdf::AccessibilityActionData& action_data) {
   content::PepperPluginInstance* instance =
       host_->GetPluginInstance(pp_instance());
   if (instance)
-    instance->HandleAccessibilityAction(action_data);
+    instance->HandleAccessibilityAction(
+        ToPdfAccessibilityActionData(action_data));
 }
 
 }  // namespace pdf

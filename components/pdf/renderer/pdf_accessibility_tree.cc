@@ -1477,12 +1477,12 @@ void PdfAccessibilityTree::FindNodeOffset(uint32_t page_index,
 bool PdfAccessibilityTree::FindCharacterOffset(
     const ui::AXNode& node,
     uint32_t char_offset_in_node,
-    PP_PdfPageCharacterIndex* page_char_index) const {
+    chrome_pdf::PageCharacterIndex& page_char_index) const {
   auto iter = node_id_to_page_char_index_.find(GetId(&node));
   if (iter == node_id_to_page_char_index_.end())
     return false;
-  page_char_index->char_index = iter->second.char_index + char_offset_in_node;
-  page_char_index->page_index = iter->second.page_index;
+  page_char_index.char_index = iter->second.char_index + char_offset_in_node;
+  page_char_index.page_index = iter->second.page_index;
   return true;
 }
 
@@ -1612,7 +1612,7 @@ bool PdfAccessibilityTree::ShowContextMenu() {
 }
 
 void PdfAccessibilityTree::HandleAction(
-    const PP_PdfAccessibilityActionData& action_data) {
+    const chrome_pdf::AccessibilityActionData& action_data) {
   action_handler_->HandleAccessibilityAction(action_data);
 }
 

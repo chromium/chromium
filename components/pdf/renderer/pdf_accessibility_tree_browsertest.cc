@@ -65,13 +65,6 @@ const chrome_pdf::AccessibilityTextRunInfo kFourthRunMultiLine = {
 
 const char kChromiumTestUrl[] = "www.cs.chromium.org";
 
-void CompareRect(const PP_Rect& expected_rect, const PP_Rect& actual_rect) {
-  EXPECT_EQ(expected_rect.point.x, actual_rect.point.x);
-  EXPECT_EQ(expected_rect.point.y, actual_rect.point.y);
-  EXPECT_EQ(expected_rect.size.height, actual_rect.size.height);
-  EXPECT_EQ(expected_rect.size.width, actual_rect.size.width);
-}
-
 void CompareRect(const gfx::RectF& expected_rect,
                  const gfx::RectF& actual_rect) {
   EXPECT_FLOAT_EQ(expected_rect.x(), actual_rect.x());
@@ -96,16 +89,16 @@ class TestPdfAccessibilityActionHandler : public PdfAccessibilityActionHandler {
 
   // PdfAccessibilityActionHandler:
   void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) override {
+      const chrome_pdf::AccessibilityActionData& action_data) override {
     received_action_data_ = action_data;
   }
 
-  PP_PdfAccessibilityActionData received_action_data() {
+  chrome_pdf::AccessibilityActionData received_action_data() {
     return received_action_data_;
   }
 
  private:
-  PP_PdfAccessibilityActionData received_action_data_;
+  chrome_pdf::AccessibilityActionData received_action_data_;
 };
 
 }  // namespace
@@ -1702,7 +1695,7 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
 
 TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
   // This test verifies the AXActionData conversion to
-  // PP_AccessibilityActionData.
+  // `chrome_pdf::AccessibilityActionData`.
   content::RenderFrame* render_frame = GetMainRenderFrame();
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
@@ -1724,13 +1717,13 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
       gfx::Rect(0, 0, 50, 50), ax::mojom::ScrollAlignment::kScrollAlignmentLeft,
       ax::mojom::ScrollAlignment::kScrollAlignmentTop,
       ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
-  PP_PdfAccessibilityActionData action_data =
+  chrome_pdf::AccessibilityActionData action_data =
       action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_MAKE_VISIBLE,
+  EXPECT_EQ(chrome_pdf::AccessibilityAction::kScrollToMakeVisible,
             action_data.action);
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_LEFT,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kLeft,
             action_data.horizontal_scroll_alignment);
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_TOP,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kTop,
             action_data.vertical_scroll_alignment);
 
   EXPECT_TRUE(pdf_action_target->ScrollToMakeVisibleWithSubFocus(
@@ -1739,7 +1732,7 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
       ax::mojom::ScrollAlignment::kScrollAlignmentTop,
       ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
   action_data = action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kRight,
             action_data.horizontal_scroll_alignment);
 
   EXPECT_TRUE(pdf_action_target->ScrollToMakeVisibleWithSubFocus(
@@ -1748,7 +1741,7 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
       ax::mojom::ScrollAlignment::kScrollAlignmentBottom,
       ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
   action_data = action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_BOTTOM,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kBottom,
             action_data.horizontal_scroll_alignment);
 
   EXPECT_TRUE(pdf_action_target->ScrollToMakeVisibleWithSubFocus(
@@ -1757,12 +1750,11 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
       ax::mojom::ScrollAlignment::kScrollAlignmentClosestEdge,
       ax::mojom::ScrollBehavior::kDoNotScrollIfVisible));
   action_data = action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CENTER,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kCenter,
             action_data.horizontal_scroll_alignment);
-  EXPECT_EQ(
-      PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE,
-      action_data.vertical_scroll_alignment);
-  CompareRect({{0, 0}, {1, 1}}, action_data.target_rect);
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kClosestToEdge,
+            action_data.vertical_scroll_alignment);
+  EXPECT_EQ(gfx::Rect({0, 0}, {1, 1}), action_data.target_rect);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
@@ -1790,13 +1782,12 @@ TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
     EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
   }
 
-  PP_PdfAccessibilityActionData action_data =
+  chrome_pdf::AccessibilityActionData action_data =
       action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_GLOBAL_POINT,
+  EXPECT_EQ(chrome_pdf::AccessibilityAction::kScrollToGlobalPoint,
             action_data.action);
-  EXPECT_EQ(50, action_data.target_point.x);
-  EXPECT_EQ(50, action_data.target_point.y);
-  CompareRect({{0, 0}, {1, 1}}, action_data.target_rect);
+  EXPECT_EQ(gfx::Point(50, 50), action_data.target_point);
+  EXPECT_EQ(gfx::Rect({0, 0}, {1, 1}), action_data.target_rect);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
@@ -1856,20 +1847,20 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
     action_data.action = ax::mojom::Action::kDoDefault;
     pdf_action_target->PerformAction(action_data);
   }
-  PP_PdfAccessibilityActionData pdf_action_data =
+  chrome_pdf::AccessibilityActionData pdf_action_data =
       action_handler.received_action_data();
 
-  EXPECT_EQ(PP_PdfAccessibilityAction::PP_PDF_DO_DEFAULT_ACTION,
+  EXPECT_EQ(chrome_pdf::AccessibilityAction::kDoDefaultAction,
             pdf_action_data.action);
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kNone,
             pdf_action_data.horizontal_scroll_alignment);
-  EXPECT_EQ(PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE,
+  EXPECT_EQ(chrome_pdf::AccessibilityScrollAlignment::kNone,
             pdf_action_data.vertical_scroll_alignment);
   EXPECT_EQ(0u, pdf_action_data.page_index);
-  EXPECT_EQ(PP_PdfAccessibilityAnnotationType::PP_PDF_LINK,
+  EXPECT_EQ(chrome_pdf::AccessibilityAnnotationType::kLink,
             pdf_action_data.annotation_type);
   EXPECT_EQ(1u, pdf_action_data.annotation_index);
-  CompareRect({{0, 0}, {0, 0}}, pdf_action_data.target_rect);
+  EXPECT_EQ(gfx::Rect({0, 0}, {0, 0}), pdf_action_data.target_rect);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
@@ -2022,9 +2013,9 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   EXPECT_TRUE(pdf_anchor_action_target->SetSelection(
       pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 5));
 
-  PP_PdfAccessibilityActionData pdf_action_data =
+  chrome_pdf::AccessibilityActionData pdf_action_data =
       action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION,
+  EXPECT_EQ(chrome_pdf::AccessibilityAction::kSetSelection,
             pdf_action_data.action);
   EXPECT_EQ(0u, pdf_action_data.selection_start_index.page_index);
   EXPECT_EQ(1u, pdf_action_data.selection_start_index.char_index);
@@ -2042,7 +2033,7 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
       pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 4));
 
   pdf_action_data = action_handler.received_action_data();
-  EXPECT_EQ(PP_PdfAccessibilityAction::PP_PDF_SET_SELECTION,
+  EXPECT_EQ(chrome_pdf::AccessibilityAction::kSetSelection,
             pdf_action_data.action);
   EXPECT_EQ(0u, pdf_action_data.selection_start_index.page_index);
   EXPECT_EQ(1u, pdf_action_data.selection_start_index.char_index);

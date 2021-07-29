@@ -93,7 +93,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
 
   // PdfAccessibilityActionHandler:
   void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) override;
+      const chrome_pdf::AccessibilityActionData& action_data) override;
 
  private:
   int32_t OnHostMsgDidStartLoading(ppapi::host::HostMessageContext* context);

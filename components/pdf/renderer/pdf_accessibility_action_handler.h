@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_ACTION_HANDLER_H_
 #define COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_ACTION_HANDLER_H_
 
-struct PP_PdfAccessibilityActionData;
+namespace chrome_pdf {
+struct AccessibilityActionData;
+}  // namespace chrome_pdf
 
 namespace pdf {
 
@@ -14,7 +16,7 @@ class PdfAccessibilityActionHandler {
   virtual ~PdfAccessibilityActionHandler() = default;
 
   virtual void HandleAccessibilityAction(
-      const PP_PdfAccessibilityActionData& action_data) = 0;
+      const chrome_pdf::AccessibilityActionData& action_data) = 0;
 };
 
 }  // namespace pdf
