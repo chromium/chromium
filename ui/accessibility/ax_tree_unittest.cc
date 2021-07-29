@@ -78,13 +78,13 @@ bool IsNodeOffscreen(const AXTree& tree, int32_t id) {
   return result;
 }
 
-class TestAXTreeObserver : public AXTreeObserver {
+class TestAXTreeObserver final : public AXTreeObserver {
  public:
   explicit TestAXTreeObserver(AXTree* tree)
       : tree_(tree), tree_data_changed_(false), root_changed_(false) {
     tree_->AddObserver(this);
   }
-  ~TestAXTreeObserver() final { tree_->RemoveObserver(this); }
+  ~TestAXTreeObserver() override { tree_->RemoveObserver(this); }
 
   void OnNodeDataWillChange(AXTree* tree,
                             const AXNodeData& old_node_data,
