@@ -28,9 +28,9 @@
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
-#include "url/gurl.h"
 
 namespace storage {
 
@@ -157,14 +157,14 @@ void SessionStorageImpl::BindNamespace(
 }
 
 void SessionStorageImpl::BindStorageArea(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     BindStorageAreaCallback callback) {
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(
         &SessionStorageImpl::BindStorageArea, weak_ptr_factory_.GetWeakPtr(),
-        origin, namespace_id, std::move(receiver), std::move(callback)));
+        storage_key, namespace_id, std::move(receiver), std::move(callback)));
     return;
   }
 
@@ -181,7 +181,7 @@ void SessionStorageImpl::BindStorageArea(
   }
 
   PurgeUnusedAreasIfNeeded();
-  found->second->OpenArea(blink::StorageKey(origin), std::move(receiver));
+  found->second->OpenArea(storage_key, std::move(receiver));
   std::move(callback).Run(/*success=*/true);
 }
 
@@ -329,18 +329,18 @@ void SessionStorageImpl::GetUsage(GetUsageCallback callback) {
   for (const auto& pair : all_namespaces) {
     for (const auto& storage_key_map_pair : pair.second) {
       result.push_back(mojom::SessionStorageUsageInfo::New(
-          storage_key_map_pair.first.origin(), pair.first));
+          storage_key_map_pair.first, pair.first));
     }
   }
   std::move(callback).Run(std::move(result));
 }
 
-void SessionStorageImpl::DeleteStorage(const url::Origin& origin,
+void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
                                        const std::string& namespace_id,
                                        DeleteStorageCallback callback) {
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&SessionStorageImpl::DeleteStorage,
-                                    weak_ptr_factory_.GetWeakPtr(), origin,
+                                    weak_ptr_factory_.GetWeakPtr(), storage_key,
                                     namespace_id, std::move(callback)));
     return;
   }
@@ -348,13 +348,12 @@ void SessionStorageImpl::DeleteStorage(const url::Origin& origin,
   if (found != namespaces_.end() &&
       found->second->state() !=
           SessionStorageNamespaceImpl::State::kNotPopulated) {
-    found->second->RemoveStorageKeyData(blink::StorageKey(origin),
-                                        std::move(callback));
+    found->second->RemoveStorageKeyData(storage_key, std::move(callback));
   } else {
     // If we don't have the namespace loaded, then we can delete it all
     // using the metadata.
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-    metadata_.DeleteArea(namespace_id, blink::StorageKey(origin), &tasks);
+    metadata_.DeleteArea(namespace_id, storage_key, &tasks);
     if (database_) {
       database_->RunBatchDatabaseTasks(
           std::move(tasks),

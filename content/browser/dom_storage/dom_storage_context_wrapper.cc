@@ -35,6 +35,7 @@
 #include "content/public/common/content_switches.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -47,7 +48,8 @@ void AdaptSessionStorageUsageInfo(
   result.reserve(usage.size());
   for (const auto& entry : usage) {
     SessionStorageUsageInfo info;
-    info.origin = entry->origin.GetURL();
+    // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
+    info.origin = entry->storage_key.origin().GetURL();
     info.namespace_id = entry->namespace_id;
     result.push_back(std::move(info));
   }
@@ -173,8 +175,9 @@ void DOMStorageContextWrapper::DeleteSessionStorage(
     return;
   }
   session_storage_control_->DeleteStorage(
-      url::Origin::Create(usage_info.origin), usage_info.namespace_id,
-      std::move(callback));
+      // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
+      blink::StorageKey(url::Origin::Create(usage_info.origin)),
+      usage_info.namespace_id, std::move(callback));
 }
 
 void DOMStorageContextWrapper::PerformSessionStorageCleanup(
@@ -266,7 +269,9 @@ void DOMStorageContextWrapper::BindStorageArea(
 
   DCHECK(session_storage_control_);
   session_storage_control_->BindStorageArea(
-      origin, namespace_id, std::move(receiver), base::DoNothing());
+      // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
+      blink::StorageKey(origin), namespace_id, std::move(receiver),
+      base::DoNothing());
 }
 
 void DOMStorageContextWrapper::RecoverFromStorageServiceCrash() {

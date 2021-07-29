@@ -29,18 +29,21 @@
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
+
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 
 // The Session Storage implementation. An instance of this class exists for each
-// storage partition using Session Storage, managing storage for all origins
+// storage partition using Session Storage, managing storage for all StorageKeys
 // and namespaces within the partition.
 class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
                            public mojom::SessionStorageControl,
@@ -72,18 +75,17 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   ~SessionStorageImpl() override;
 
   // mojom::SessionStorageControl implementation:
-  // TODO(crbug.com/1212808): Update mojo interface to use StorageKey.
   void BindNamespace(
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
       BindNamespaceCallback callback) override;
   void BindStorageArea(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
       BindStorageAreaCallback callback) override;
   void GetUsage(GetUsageCallback callback) override;
-  void DeleteStorage(const url::Origin& origin,
+  void DeleteStorage(const blink::StorageKey& storage_key,
                      const std::string& namespace_id,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
@@ -117,7 +119,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   AsyncDomStorageDatabase* DatabaseForTesting() { return database_.get(); }
 
   void FlushAreaForTesting(const std::string& namespace_id,
-                           const blink::StorageKey& origin);
+                           const blink::StorageKey& storage_key);
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
