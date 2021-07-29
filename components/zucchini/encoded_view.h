@@ -53,6 +53,10 @@ class EncodedView {
     Iterator(const EncodedView* encoded_view, difference_type pos)
         : encoded_view_(encoded_view), pos_(pos) {}
 
+    Iterator(const Iterator&) = default;
+
+    Iterator& operator=(const Iterator&) = default;
+
     value_type operator*() const {
       return encoded_view_->Projection(static_cast<offset_t>(pos_));
     }
@@ -90,12 +94,6 @@ class EncodedView {
 
     Iterator& operator-=(difference_type n) {
       pos_ -= n;
-      return *this;
-    }
-
-    Iterator& operator=(const Iterator& it) {
-      encoded_view_ = it.encoded_view_;
-      pos_ = it.pos_;
       return *this;
     }
 

@@ -93,6 +93,7 @@ struct ManageAccountsParams {
 
   ManageAccountsParams();
   ManageAccountsParams(const ManageAccountsParams& other);
+  ManageAccountsParams& operator=(const ManageAccountsParams& other);
 };
 
 // Struct describing the parameters received in the Dice response header.

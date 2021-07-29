@@ -107,7 +107,8 @@ class TextStyle {
                      ARGBColor highlight_color,
                      HighlightStyle highlight_style);
 
-  explicit TextStyle(const TextStyle& text_style);
+  TextStyle(const TextStyle& text_style);
+  TextStyle& operator=(const TextStyle& text_style);
 
   const std::string& font_name() const { return font_name_; }
   ARGBColor font_color() const { return font_color_; }

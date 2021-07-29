@@ -141,7 +141,9 @@ std::string PrefetchEnumToString(PrefetchItemErrorCode value) {
 
 RenderPageInfo::RenderPageInfo() = default;
 
-RenderPageInfo::RenderPageInfo(const RenderPageInfo& other) = default;
+RenderPageInfo::RenderPageInfo(const RenderPageInfo&) = default;
+
+RenderPageInfo& RenderPageInfo::operator=(const RenderPageInfo&) = default;
 
 PrefetchURL::PrefetchURL(const std::string& id,
                          const GURL& url,

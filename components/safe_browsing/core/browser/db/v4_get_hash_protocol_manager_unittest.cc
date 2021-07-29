@@ -39,7 +39,8 @@ struct KeyValue {
 
   explicit KeyValue(const std::string key, const std::string value)
       : key(key), value(value) {}
-  explicit KeyValue(const KeyValue& other) = default;
+  KeyValue(const KeyValue& other) = default;
+  KeyValue& operator=(const KeyValue& other) = default;
 
  private:
   KeyValue();
@@ -52,10 +53,8 @@ struct ResponseInfo {
 
   explicit ResponseInfo(FullHash full_hash, ListIdentifier list_id)
       : full_hash(full_hash), list_id(list_id) {}
-  explicit ResponseInfo(const ResponseInfo& other)
-      : full_hash(other.full_hash),
-        list_id(other.list_id),
-        key_values(other.key_values) {}
+  ResponseInfo(const ResponseInfo& other) = default;
+  ResponseInfo& operator=(const ResponseInfo& other) = default;
 
  private:
   ResponseInfo();
