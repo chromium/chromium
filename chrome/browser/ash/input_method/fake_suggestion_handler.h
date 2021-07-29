@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_FAKE_SUGGESTION_HANDLER_H_
 
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
-#include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 
 namespace chromeos {

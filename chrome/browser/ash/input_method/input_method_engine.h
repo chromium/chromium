@@ -14,7 +14,7 @@
 
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/input_method_engine_base.h"
-#include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "ui/base/ime/candidate_window.h"
 #include "ui/base/ime/chromeos/ime_engine_handler_interface.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"

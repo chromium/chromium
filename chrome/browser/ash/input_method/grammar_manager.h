@@ -11,8 +11,8 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
-#include "chrome/browser/chromeos/input_method/suggestion_handler_interface.h"
-#include "chrome/browser/chromeos/input_method/text_utils.h"
+#include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
+#include "chrome/browser/ash/input_method/text_utils.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/events/event.h"

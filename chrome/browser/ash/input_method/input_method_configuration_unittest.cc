@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 
-#include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
+#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
