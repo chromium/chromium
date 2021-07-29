@@ -18,8 +18,8 @@
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class SupervisedUserService;
@@ -46,6 +46,11 @@ class SupervisedUserNavigationObserver
   blocked_navigations() const {
     return blocked_navigations_;
   }
+
+  static void BindSupervisedUserCommands(
+      mojo::PendingAssociatedReceiver<
+          supervised_user::mojom::SupervisedUserCommands> receiver,
+      content::RenderFrameHost* rfh);
 
   // Called when a network request to |url| is blocked.
   static void OnRequestBlocked(
@@ -163,9 +168,9 @@ class SupervisedUserNavigationObserver
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;
 
-  content::WebContentsFrameReceiverSet<
+  content::RenderFrameHostReceiverSet<
       supervised_user::mojom::SupervisedUserCommands>
-      receiver_;
+      receivers_;
 
   base::WeakPtrFactory<SupervisedUserNavigationObserver> weak_ptr_factory_{
       this};

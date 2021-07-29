@@ -47,15 +47,28 @@ SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
 SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      receiver_(web_contents,
-                this,
-                content::WebContentsFrameReceiverSetPassKey()) {
+      receivers_(web_contents, this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   supervised_user_service_ =
       SupervisedUserServiceFactory::GetForProfile(profile);
   url_filter_ = supervised_user_service_->GetURLFilter();
   supervised_user_service_->AddObserver(this);
+}
+
+// static
+void SupervisedUserNavigationObserver::BindSupervisedUserCommands(
+    mojo::PendingAssociatedReceiver<
+        supervised_user::mojom::SupervisedUserCommands> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* navigation_observer =
+      SupervisedUserNavigationObserver::FromWebContents(web_contents);
+  if (!navigation_observer)
+    return;
+  navigation_observer->receivers_.Bind(rfh, std::move(receiver));
 }
 
 // static
@@ -298,7 +311,7 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
 }
 
 void SupervisedUserNavigationObserver::GoBack() {
-  auto* render_frame_host = receiver_.GetCurrentTargetFrame();
+  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   auto id = render_frame_host->GetFrameTreeNodeId();
 
   // Request can come only from the main frame.
@@ -311,7 +324,7 @@ void SupervisedUserNavigationObserver::GoBack() {
 
 void SupervisedUserNavigationObserver::RequestPermission(
     RequestPermissionCallback callback) {
-  auto* render_frame_host = receiver_.GetCurrentTargetFrame();
+  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   int id = render_frame_host->GetFrameTreeNodeId();
 
   if (base::Contains(supervised_user_interstitials_, id)) {
@@ -326,7 +339,7 @@ void SupervisedUserNavigationObserver::RequestPermission(
 }
 
 void SupervisedUserNavigationObserver::Feedback() {
-  auto* render_frame_host = receiver_.GetCurrentTargetFrame();
+  auto* render_frame_host = receivers_.GetCurrentTargetFrame();
   int id = render_frame_host->GetFrameTreeNodeId();
 
   if (base::Contains(supervised_user_interstitials_, id))

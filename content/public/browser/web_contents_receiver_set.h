@@ -20,7 +20,6 @@
 
 class EmbeddedSearchClientFactoryImpl;
 class OfflinePageTabHelper;
-class SupervisedUserNavigationObserver;
 class SyncEncryptionKeysTabHelper;
 
 namespace chrome_browser_net {
@@ -112,7 +111,6 @@ class WebContentsFrameReceiverSetPassKey {
   WebContentsFrameReceiverSetPassKey() = default;
 
   friend class ::EmbeddedSearchClientFactoryImpl;
-  friend class ::SupervisedUserNavigationObserver;
   friend class ::SyncEncryptionKeysTabHelper;
   friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::extensions::ChromeWebViewPermissionHelperDelegate;

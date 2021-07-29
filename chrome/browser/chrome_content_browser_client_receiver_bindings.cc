@@ -24,6 +24,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
+#include "chrome/common/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
@@ -88,6 +89,10 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_observer.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #endif
 
 namespace {
@@ -391,6 +396,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (interface_name == supervised_user::mojom::SupervisedUserCommands::Name_) {
+    SupervisedUserNavigationObserver::BindSupervisedUserCommands(
+        mojo::PendingAssociatedReceiver<
+            supervised_user::mojom::SupervisedUserCommands>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
 
   return false;
 }
