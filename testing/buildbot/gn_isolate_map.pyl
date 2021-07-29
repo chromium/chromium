@@ -1211,26 +1211,11 @@
   },
   "media_router_e2e_tests": {
     "args": [
-      "--extension",
-      "mr_extension/",
       "--test_binary",
       "./browser_tests",
     ],
     "label": "//chrome/test/media_router:media_router_e2e_tests",
     "script": "//chrome/test/media_router/internal/media_router_tests.py",
-    "type": "script",
-  },
-  "media_router_perf_tests": {
-    "args": [
-      "--browser=release",
-      "--also-run-disabled-tests",
-      "-v",
-      "--use-live-sites",
-      "--output-format=histograms",
-      "--output-dir=${ISOLATED_OUTDIR}",
-    ],
-    "label": "//chrome/test/media_router:media_router_perf_tests",
-    "script": "//tools/perf/contrib/media_router_benchmarks/run_benchmark.py",
     "type": "script",
   },
   "media_unittests": {
