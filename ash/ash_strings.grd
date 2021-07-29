@@ -1071,7 +1071,7 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_SCREEN_CAPTURES_TITLE" desc="Title of the screen captures area in the holding space bubble.">
         Screen captures
       </message>
-      <message name="IDS_ASH_HOLDING_SPACE_CHIP_TOOLTIP" desc="Tooltip for a chip representing a holding space item. The first placeholder, the PRIMARY_TEXT, is the filename of the holding space item's backing file. The second placeholder, the SECONDARY_TEXT, is the backing file's in-progress state. The in-progress state indicates if progress is paused as well as the number of received bytes and total bytes expected for the backing file.">
+      <message name="IDS_ASH_HOLDING_SPACE_CHIP_A11Y_NAME_AND_TOOLTIP" desc="The accessible name and tooltip for a chip representing a holding space item. The first placeholder, the PRIMARY_TEXT, is the filename of the holding space item's backing file. The second placeholder, the SECONDARY_TEXT, is the backing file's in-progress state. The in-progress state indicates if progress is paused as well as the number of received bytes and total bytes expected for the backing file.">
         <ph name="PRIMARY_TEXT">$1<ex>filename.txt</ex></ph>, <ph name="SECONDARY_TEXT">$2<ex>Paused, 10/100 MB</ex></ph>
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_CANCEL" desc="Title of the cancel option in the holding space item context menu.">
