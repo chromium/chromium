@@ -424,8 +424,7 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   // TODO(michaelcheco): Support disabled state.
   EXPECT_EQ(observer.GetLatestState()->state,
             mojom::NetworkState::kNotConnected);
-  // TODO(michaelcheco): In this state, type_properties should be optional.
-  EXPECT_TRUE(observer.GetLatestState()->type_properties->is_ethernet());
+  EXPECT_EQ(observer.GetLatestState()->type_properties.get(), nullptr);
 
   // Put the ethernet device into the connecting/associating state and verify
   // the new state and there is still no active guid.
@@ -505,8 +504,7 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   // TODO(michaelcheco): Support disabled state.
   EXPECT_EQ(observer.GetLatestState()->state,
             mojom::NetworkState::kNotConnected);
-  // TODO(michaelcheco): In this state, type_properties should be optional.
-  EXPECT_TRUE(observer.GetLatestState()->type_properties->is_wifi());
+  EXPECT_EQ(observer.GetLatestState()->type_properties.get(), nullptr);
 
   // Put the wifi device into the connecting/associating state and verify
   // the new state and there is still no active guid.

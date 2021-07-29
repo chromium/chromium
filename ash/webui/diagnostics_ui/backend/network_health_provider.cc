@@ -142,31 +142,11 @@ bool IsMatchingNetwork(
   return types_match && (network_guid == backend_network->guid);
 }
 
-// TODO(michaelcheco): The type properties need to be optional.
-void SetEmptyTypeProperties(mojom::Network* network) {
-  auto type_properties = mojom::NetworkTypeProperties::New();
-  switch (network->type) {
-    case mojom::NetworkType::kWiFi:
-      type_properties->set_wifi(mojom::WiFiStateProperties::New());
-      break;
-    case mojom::NetworkType::kEthernet:
-      type_properties->set_ethernet(mojom::EthernetStateProperties::New());
-      break;
-    case mojom::NetworkType::kCellular:
-      type_properties->set_cellular(mojom::CellularStateProperties::New());
-      break;
-    case mojom::NetworkType::kUnsupported:
-      NOTREACHED();
-      break;
-  }
-  network->type_properties = std::move(type_properties);
-}
-
 bool ClearDisconnectedNetwork(NetworkObserverInfo* network_info) {
   mojom::Network* network = network_info->network.get();
   network_info->network_guid.clear();
   network->ip_config = nullptr;
-  SetEmptyTypeProperties(network);
+  network->type_properties = nullptr;
   return true;
 }
 
@@ -412,7 +392,6 @@ std::string NetworkHealthProvider::AddNewNetwork(
   NetworkObserverInfo info;
   info.network = std::move(network);
   UpdateNetwork(device, &info);
-  SetEmptyTypeProperties(info.network.get());
 
   networks_.emplace(observer_guid, std::move(info));
   return observer_guid;

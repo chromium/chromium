@@ -368,14 +368,7 @@ export let fakeWifiNetworkMultipleNameServers = {
 export let fakeDisconnectedWifiNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kWiFi,
-  typeProperties: {
-    wifi: {
-      signalStrength: 0,
-      frequency: 0,
-      bssid: '',
-      ssid: '',
-    },
-  },
+  typeProperties: null,
   guid: 'wifiDisconnectedGuid',
   name: '',
   macAddress: '84:C5:A6:30:3F:31',

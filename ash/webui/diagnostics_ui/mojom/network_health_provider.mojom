@@ -63,7 +63,7 @@ union NetworkTypeProperties {
 struct Network {
   NetworkState state;
   NetworkType type;
-  NetworkTypeProperties type_properties;
+  NetworkTypeProperties? type_properties;
   string guid;
   string name;
   // May be null if no MAC address is available for the network's

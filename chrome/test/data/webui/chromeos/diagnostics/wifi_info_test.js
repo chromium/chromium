@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/wifi_info.js';
 import {Network, WiFiStateProperties} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
+import {fakeDisconnectedWifiNetwork, fakeWifiNetwork, fakeWiFiStateProperties} from 'chrome://diagnostics/fake_data.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -109,6 +109,12 @@ export function wifiInfoTestSuite() {
     const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
         /** @type {!WiFiStateProperties} */ ({frequency: 0}));
     return initializeWifiInfo(testNetwork).then(() => {
+      assertEquals(getDataPointValue(wifiInfoElement, '#channel'), '');
+    });
+  });
+
+  test('FrequencyUndefinedDisplaysEmptyString', () => {
+    return initializeWifiInfo(fakeDisconnectedWifiNetwork).then(() => {
       assertEquals(getDataPointValue(wifiInfoElement, '#channel'), '');
     });
   });
