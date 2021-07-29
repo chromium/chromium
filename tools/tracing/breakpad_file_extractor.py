@@ -78,7 +78,7 @@ def _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
   Returns:
     True if the command succeeded and false otherwise.
   """
-  cmd = [dump_syms_binary, '-c', '-r', input_file_path]
+  cmd = [dump_syms_binary, input_file_path]
   with open(output_file_path, 'w') as f:
     proc = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
   stderr = proc.communicate()[1]
