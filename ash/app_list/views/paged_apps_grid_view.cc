@@ -248,7 +248,7 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
     // opacity (the layers will be deleted when drag operation completes).
     if (items_need_layer_for_drag_) {
       for (const auto& entry : view_model()->entries()) {
-        if (!IsViewHiddenForDrag(entry.view) && entry.view->layer())
+        if (drag_view() != entry.view && entry.view->layer())
           entry.view->layer()->SetOpacity(1.0f);
       }
       return;
@@ -302,7 +302,7 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity) {
 
     const size_t end_index = std::min(current_page.size() - 1, i + cols() - 1);
     for (size_t j = i; j <= end_index; ++j) {
-      if (!IsViewHiddenForDrag(current_page[j]))
+      if (current_page[j] != drag_view())
         current_page[j]->layer()->SetOpacity(opacity);
     }
   }

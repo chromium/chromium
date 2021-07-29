@@ -5,9 +5,6 @@
 #ifndef ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_FOLDER_DELEGATE_H_
 #define ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_FOLDER_DELEGATE_H_
 
-#include <memory>
-
-#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/ash_export.h"
 
@@ -41,12 +38,9 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped
   // to the drag_drop_host, eg. dropped on shelf.
   // |cancel_drag|: True if the drag is ending because it has been canceled.
-  // |drag_icon_proxy|: The drag icon proxy that was created for the dragged app
-  // item view, if any.
   virtual void DispatchEndDragEventForReparent(
       bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag,
-      std::unique_ptr<AppDragIconProxy> drag_icon_proxy) = 0;
+      bool cancel_drag) = 0;
 
   // Returns whether the |view| is within the folder view's bounds.
   // The |view| is expected to be in the folder's apps grid view hierarchy.
@@ -54,6 +48,10 @@ class ASH_EXPORT AppsGridViewFolderDelegate {
 
   // Returns true if the associated folder item is an OEM folder.
   virtual bool IsOEMFolder() const = 0;
+
+  // Hides or show the root level's grid view. This is needed so that the
+  // synchronous drag has an icon for reparenting while it loads.
+  virtual void SetRootLevelDragViewVisible(bool visible) = 0;
 
   // Moves |reparented_item| to the root level's grid view, left/right/up/down
   // of the folder's grid position.

@@ -62,7 +62,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -164,6 +163,68 @@ class ItemRemoveAnimationDelegate : public views::AnimationDelegateViews {
   DISALLOW_COPY_AND_ASSIGN(ItemRemoveAnimationDelegate);
 };
 
+// ItemMoveAnimationDelegate observes when an item finishes animating when it is
+// not moving between rows. This is to ensure an item is repainted for the
+// "zoom out" case when releasing an item being dragged.
+class ItemMoveAnimationDelegate : public views::AnimationDelegateViews {
+ public:
+  explicit ItemMoveAnimationDelegate(AppListItemView* view,
+                                     bool is_released_drag_view)
+      : views::AnimationDelegateViews(view),
+        view_(view),
+        is_released_drag_view_(is_released_drag_view) {
+    if (is_released_drag_view_)
+      view_->title()->SetVisible(false);
+  }
+
+  // views::AnimationDelegateViews:
+  void AnimationEnded(const gfx::Animation* animation) override {
+    if (is_released_drag_view_)
+      view_->title()->SetVisible(true);
+    view_->SchedulePaint();
+  }
+  void AnimationCanceled(const gfx::Animation* animation) override {
+    if (is_released_drag_view_)
+      view_->title()->SetVisible(true);
+    view_->SchedulePaint();
+  }
+
+ private:
+  AppListItemView* view_;
+  bool is_released_drag_view_;
+
+  DISALLOW_COPY_AND_ASSIGN(ItemMoveAnimationDelegate);
+};
+
+// This class observes the end of folder dropping animation.
+class FolderDroppingAnimationObserver : public TopIconAnimationObserver {
+ public:
+  FolderDroppingAnimationObserver(AppListModel* model,
+                                  const std::string& folder_item_id)
+      : model_(model), folder_item_id_(folder_item_id) {}
+
+  // TopIconAnimationObserver:
+  void OnTopIconAnimationsComplete(TopIconAnimationView* view) override {
+    AppListFolderItem* item =
+        static_cast<AppListFolderItem*>(model_->FindItem(folder_item_id_));
+
+    // The folder item may be deleted during the animation.
+    if (!item)
+      return;
+
+    // Update the folder icon.
+    item->NotifyOfDraggedItem(nullptr);
+
+    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
+  }
+
+ private:
+  AppListModel* model_;  // Not owned.
+  const std::string folder_item_id_;
+
+  DISALLOW_COPY_AND_ASSIGN(FolderDroppingAnimationObserver);
+};
+
 bool IsOEMFolderItem(AppListItem* item) {
   return IsFolderItem(item) &&
          (static_cast<AppListFolderItem*>(item))->folder_type() ==
@@ -194,77 +255,6 @@ constexpr float AppsGridView::kCardifiedScale;
 
 // static
 constexpr int AppsGridView::kDefaultAnimationDuration;
-
-// Class used to hide an icon depicting an app list item from an folder item
-// icon image (which contains images of top app items in the folder).
-// Used during drag icon drop animation to hide the dragged item from the folder
-// icon (if the item is being dropped into a folder) while the drag icon is
-// still visible.
-// It gracefully handles the folder item getting deleted before the
-// `FolderIconItemHider` instance gets reset, so it should be safe to use in
-// asynchronous manner without extra folder item existence checks.
-class AppsGridView::FolderIconItemHider : public AppListItemObserver {
- public:
-  FolderIconItemHider(AppListFolderItem* folder_item,
-                      AppListItem* item_icon_to_hide)
-      : folder_item_(folder_item) {
-    // Notify the folder item that `item_icon_to_hide` is being dragged, so the
-    // dragged item is ignored while generating the folder icon image. This
-    // effectively hides the drag item image from the overall folder icon.
-    folder_item_->NotifyOfDraggedItem(item_icon_to_hide);
-    folder_item_observer_.Observe(folder_item_);
-  }
-
-  ~FolderIconItemHider() override {
-    if (folder_item_)
-      folder_item_->NotifyOfDraggedItem(nullptr);
-  }
-
-  // AppListItemObserver:
-  void ItemBeingDestroyed() override {
-    folder_item_ = nullptr;
-    folder_item_observer_.Reset();
-  }
-
- private:
-  AppListFolderItem* folder_item_;
-
-  base::ScopedObservation<AppListItem, AppListItemObserver>
-      folder_item_observer_{this};
-};
-
-// Class that while in scope hides a drag view in such way that the drag view
-// keeps receiving mouse/gesture events. Used to hide the dragged view while a
-// drag icon proxy for the drag item is shown. It gracefully handles the case
-// where it outlives the hidden dragged view, so it should be safe to be used
-// asynchronously without extra view existence checks.
-class AppsGridView::DragViewHider : public views::ViewObserver {
- public:
-  explicit DragViewHider(AppListItemView* drag_view) : drag_view_(drag_view) {
-    DCHECK(drag_view_->layer());
-    drag_view_->layer()->SetOpacity(0.0f);
-    view_observer_.Observe(drag_view_);
-  }
-
-  ~DragViewHider() override {
-    if (drag_view_ && drag_view_->layer())
-      drag_view_->layer()->SetOpacity(1.0f);
-  }
-
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* view) override {
-    drag_view_ = nullptr;
-    view_observer_.Reset();
-  }
-
-  const views::View* drag_view() const { return drag_view_; }
-
- private:
-  AppListItemView* drag_view_;
-
-  base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
-      this};
-};
 
 AppsGridView::AppsGridView(ContentsView* contents_view,
                            AppListA11yAnnouncer* a11y_announcer,
@@ -377,10 +367,6 @@ gfx::Size AppsGridView::GetMaximumTileGridSize(int cols,
 
 void AppsGridView::ResetForShowApps() {
   ClearDragState();
-  drag_view_hider_.reset();
-  folder_icon_item_hider_.reset();
-  drag_icon_proxy_.reset();
-
   layer()->SetOpacity(1.0f);
   SetVisible(true);
 
@@ -451,11 +437,6 @@ void AppsGridView::InitiateDrag(AppListItemView* view,
   DCHECK(view);
   if (drag_view_ || pulsing_blocks_model_.view_size())
     return;
-
-  // Finalize previous drag icon animation if it's still in progress.
-  drag_view_hider_.reset();
-  folder_icon_item_hider_.reset();
-  drag_icon_proxy_.reset();
 
   items_need_layer_for_drag_ = true;
   for (const auto& entry : view_model_.entries())
@@ -596,6 +577,7 @@ void AppsGridView::EndDrag(bool cancel) {
   // and its bounds for later use in folder dropping animation.
   AppListItemView* folder_item_view = nullptr;
   AppListItem* drag_item = drag_view_->item();
+  gfx::Rect drag_source_bounds(drag_view_->bounds());
 
   if (forward_events_to_drag_and_drop_host_) {
     DCHECK(!IsDraggingForReparentInRootLevelGridView());
@@ -607,7 +589,7 @@ void AppsGridView::EndDrag(bool cancel) {
     if (IsDraggingForReparentInHiddenGridView()) {
       folder_delegate_->DispatchEndDragEventForReparent(
           true /* events_forwarded_to_drag_drop_host */,
-          cancel /* cancel_drag */, std::move(drag_icon_proxy_));
+          cancel /* cancel_drag */);
     } else {
       // |drag_view_| is reordered when initiating the drag. In addition, the
       // icon's location in AppsGridView does not alter after being dragged to
@@ -619,7 +601,7 @@ void AppsGridView::EndDrag(bool cancel) {
       // Forward the EndDrag event to the root level grid view.
       folder_delegate_->DispatchEndDragEventForReparent(
           false /* events_forwarded_to_drag_drop_host */,
-          cancel /* cancel_drag */, std::move(drag_icon_proxy_));
+          cancel /* cancel_drag */);
       EndDragForReparentInHiddenFolderGridView();
       return;
     }
@@ -654,19 +636,24 @@ void AppsGridView::EndDrag(bool cancel) {
     }
   }
 
-  // Issue 439055: MoveItemToFolder() can sometimes delete |drag_view_|
-  if (drag_view_ && landed_in_drag_and_drop_host) {
-    // Move the item directly to the target location, avoiding the
-    // "zip back" animation if the user was pinning it to the shelf.
-    int i = drop_target_.slot;
-    gfx::Rect bounds = view_model_.ideal_bounds(i);
-    drag_view_->SetBoundsRect(bounds);
-    drag_view_hider_.reset();
-  }
+  if (drag_and_drop_host_) {
+    // If we had a drag and drop proxy icon, we delete it and make the real
+    // item visible again.
+    drag_icon_proxy_.reset();
 
-  if (folder_item_view) {
-    folder_icon_item_hider_ = std::make_unique<FolderIconItemHider>(
-        static_cast<AppListFolderItem*>(folder_item_view->item()), drag_item);
+    // Issue 439055: MoveItemToFolder() can sometimes delete |drag_view_|
+    if (drag_view_) {
+      if (landed_in_drag_and_drop_host) {
+        // Move the item directly to the target location, avoiding the
+        // "zip back" animation if the user was pinning it to the shelf.
+        int i = drop_target_.slot;
+        gfx::Rect bounds = view_model_.ideal_bounds(i);
+        drag_view_->SetBoundsRect(bounds);
+      }
+      // Fade in slowly if it landed in the shelf.
+      SetViewHidden(drag_view_, false /* show */,
+                    !landed_in_drag_and_drop_host /* animate */);
+    }
   }
 
   SetAsFolderDroppingTarget(drop_target_, false);
@@ -686,11 +673,11 @@ void AppsGridView::EndDrag(bool cancel) {
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
   }
-  if (cardified_state_)
-    MaybeEndCardifiedView();
-  else
-    AnimateToIdealBounds();
-
+  // AnimateToIdealBounds uses a BoundsAnimator to reposition the dragged view
+  // to its ideal bounds. For cardified state, we need to animate the drag view
+  // to ideal bounds using Transforms in AnimateToCardifiedState.
+  if (!cardified_state_)
+    AnimateToIdealBounds(released_drag_view);
   if (!cancel && !folder_delegate_)
     view_structure_.SaveToMetadata();
 
@@ -708,9 +695,24 @@ void AppsGridView::EndDrag(bool cancel) {
   // within |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
-
-  AnimateDragIconToTargetPosition(reparented_into_folder, released_drag_view,
-                                  released_drag_view->item(), folder_item_view);
+  if (cardified_state_) {
+    if (!reparented_into_folder) {
+      // Temporarily set to cardified UI State so it animates back to its
+      // position smoothly with all other icons.
+      released_drag_view->EnterCardifyState();
+    }
+    // Compensate drag_source_bounds for the translation of the items_container
+    // during AnimateCardifiedState().
+    gfx::Point start_position = items_container_->origin();
+    MaybeEndCardifiedView();
+    drag_source_bounds.Offset(
+        0, start_position.y() - items_container_->origin().y());
+  }
+  if (folder_item_view) {
+    // Run an animation to move dragged item to the folder.
+    StartFolderDroppingAnimation(folder_item_view, drag_item,
+                                 drag_source_bounds);
+  }
 }
 
 AppListItemView* AppsGridView::GetItemViewAt(int index) const {
@@ -752,7 +754,7 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   // Hide the drag_view_ for drag icon proxy when a native drag is responsible
   // for showing the icon.
   if (has_native_drag)
-    drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
+    SetViewHidden(drag_view_, true /* hide */, true /* no animate */);
 
   // Add drag_view_ to the end of the view_model_.
   view_model_.Add(drag_view_, view_model_.view_size());
@@ -817,6 +819,11 @@ void AppsGridView::ClearDragState() {
   drag_view_ = nullptr;
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
+}
+
+void AppsGridView::SetDragViewVisible(bool visible) {
+  DCHECK(drag_view_);
+  SetViewHidden(drag_view_, !visible, true);
 }
 
 void AppsGridView::SetDragAndDropHostOfCurrentAppList(
@@ -1090,10 +1097,6 @@ const gfx::Vector2d AppsGridView::CalculateTransitionOffset(
   return gfx::Vector2d(page_width * multiplier, 0);
 }
 
-bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
-  return drag_view_hider_ && drag_view_hider_->drag_view() == view;
-}
-
 void AppsGridView::CalculateIdealBoundsForFolder() {
   if (!folder_delegate_) {
     CalculateIdealBounds();
@@ -1128,7 +1131,7 @@ void AppsGridView::CalculateIdealBoundsForFolder() {
   }
 }
 
-void AppsGridView::AnimateToIdealBounds() {
+void AppsGridView::AnimateToIdealBounds(AppListItemView* released_drag_view) {
   gfx::Rect visible_bounds(GetVisibleBounds());
   gfx::Point visible_origin = visible_bounds.origin();
   ConvertPointToTarget(this, items_container_, &visible_origin);
@@ -1155,7 +1158,10 @@ void AppsGridView::AnimateToIdealBounds() {
                            target);
     } else if (visible || bounds_animator_->IsAnimating(view)) {
       bounds_animator_->AnimateViewTo(view, target);
-      bounds_animator_->SetAnimationDelegate(view, nullptr);
+      bounds_animator_->SetAnimationDelegate(
+          view,
+          std::make_unique<ItemMoveAnimationDelegate>(
+              view, view == released_drag_view /* is_released_drag_view */));
     } else {
       view->SetBoundsRect(target);
     }
@@ -1302,62 +1308,6 @@ bool AppsGridView::DragPointIsOverItem(const gfx::Point& point) {
   return true;
 }
 
-void AppsGridView::AnimateDragIconToTargetPosition(
-    bool dropping_into_folder,
-    AppListItemView* drag_view,
-    AppListItem* drag_item,
-    AppListItemView* target_folder_view) {
-  // If drag icon proxy had not been created, just reshow the drag view.
-  if (!drag_icon_proxy_) {
-    OnDragIconDropDone();
-    return;
-  }
-
-  // Calculate target item bounds.
-  gfx::Rect drag_icon_drop_bounds;
-  if (!dropping_into_folder) {
-    DCHECK(drag_view);
-
-    // Get icon bounds in the drag view coordinates.
-    drag_icon_drop_bounds = drag_view->GetIconBounds();
-
-    // Get the expected drag item view location.
-    const int drag_view_model_index = view_model_.GetIndexOfView(drag_view);
-    const gfx::Rect drag_view_ideal_bounds =
-        view_model_.ideal_bounds(drag_view_model_index);
-
-    // Position target icon bounds relative to the ideal drag view bounds.
-    drag_icon_drop_bounds.Offset(drag_view_ideal_bounds.x(),
-                                 drag_view_ideal_bounds.y());
-  } else if (target_folder_view) {
-    // Calculate target bounds of dragged item.
-    drag_icon_drop_bounds =
-        GetTargetIconRectInFolder(drag_item, target_folder_view);
-  }
-
-  // Unable to calculate target bounds - bail out and reshow the drag view.
-  if (drag_icon_drop_bounds.IsEmpty()) {
-    OnDragIconDropDone();
-    return;
-  }
-
-  drag_icon_drop_bounds =
-      items_container_->GetMirroredRect(drag_icon_drop_bounds);
-  // Convert target bounds to in screen coordinates expected by drag icon proxy.
-  views::View::ConvertRectToScreen(items_container_, &drag_icon_drop_bounds);
-
-  drag_icon_proxy_->AnimateToBoundsAndCloseWidget(
-      drag_icon_drop_bounds, base::BindOnce(&AppsGridView::OnDragIconDropDone,
-                                            base::Unretained(this)));
-}
-
-void AppsGridView::OnDragIconDropDone() {
-  drag_view_hider_.reset();
-  folder_icon_item_hider_.reset();
-  drag_icon_proxy_.reset();
-  OnBoundsAnimatorDone(nullptr);
-}
-
 bool AppsGridView::DraggedItemCanEnterFolder() {
   if (!IsFolderItem(drag_view_->item()) && !folder_delegate_)
     return true;
@@ -1447,7 +1397,7 @@ bool AppsGridView::DragIsCloseToItem(const gfx::Point& point) {
 void AppsGridView::OnReorderTimer() {
   reorder_placeholder_ = drop_target_;
   MaybeCreateDragReorderAccessibilityEvent();
-  AnimateToIdealBounds();
+  AnimateToIdealBounds(nullptr /* released_drag_view */);
   CreateGhostImageView();
 }
 
@@ -1683,13 +1633,10 @@ void AppsGridView::DispatchDragEventForReparent(Pointer pointer,
 
 void AppsGridView::EndDragFromReparentItemInRootLevel(
     bool events_forwarded_to_drag_drop_host,
-    bool cancel_drag,
-    std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
+    bool cancel_drag) {
   // EndDrag was called before if |drag_view_| is nullptr.
   if (!drag_view_)
     return;
-
-  drag_icon_proxy_ = std::move(drag_icon_proxy);
 
   DCHECK(activated_folder_item_view_);
   static_cast<AppListFolderItem*>(activated_folder_item_view_->item())
@@ -1701,6 +1648,8 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
   // This is the folder view to drop an item into. Cache the |drag_view_|'s item
   // and its bounds for later use in folder dropping animation.
   AppListItemView* folder_item_view = nullptr;
+  AppListItem* drag_item = drag_view_->item();
+  const gfx::Rect drag_source_bounds(drag_view_->bounds());
 
   if (!events_forwarded_to_drag_drop_host && !cancel_reparent) {
     UpdateDropTargetRegion();
@@ -1712,8 +1661,6 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
       if (!cancel_reparent) {
         folder_item_view =
             GetViewDisplayedAtSlotOnCurrentPage(drop_target_.slot);
-      } else {
-        folder_item_view = activated_folder_item_view_;
       }
     } else if (drop_target_region_ != NO_TARGET &&
                IsValidReorderTargetIndex(drop_target_)) {
@@ -1725,20 +1672,11 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     } else {
       NOTREACHED();
     }
+    SetViewHidden(drag_view_, false /* show */, true /* no animate */);
   }
 
+  MaybeEndCardifiedView();
   SetAsFolderDroppingTarget(drop_target_, false);
-
-  // ClearDragState will delete the drag view if reparent is canceled - cache
-  // the target app list item, as it is needed to calculate target icon drop
-  // bounds.
-  AppListItem* drag_item = drag_view_->item();
-
-  // Hide the drag item icon from the target folder icon.
-  if (folder_item_view) {
-    folder_icon_item_hider_ = std::make_unique<FolderIconItemHider>(
-        static_cast<AppListFolderItem*>(folder_item_view->item()), drag_item);
-  }
 
   AppListItemView* released_drag_view = nullptr;
   if (!cancel_reparent) {
@@ -1746,34 +1684,46 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
     // cleaning up the newly created AppListItemView, effectively claiming
     // ownership of the newly created drag view.
     drag_view_->OnDragEnded();
-    released_drag_view = drag_view_;
+    // Hide the title if the item is being dropped into another folder, so it
+    // doesn't flash during transition. Otherwise, the item is being dropped
+    // into the root apps grid - pass the released view to
+    // AnimateToIdealBounds(), which will ensure the title remains hidden
+    // during the item view bounds animation to the target apps grid location.
+    if (folder_item_view) {
+      drag_view_->title()->SetVisible(false);
+    } else {
+      released_drag_view = drag_view_;
+    }
     drag_view_ = nullptr;
   }
   UpdatePaging();
   ClearDragState();
-
-  if (cardified_state_)
-    MaybeEndCardifiedView();
-  else
-    AnimateToIdealBounds();
-
+  AnimateToIdealBounds(released_drag_view);
   if (!folder_delegate_)
     view_structure_.SaveToMetadata();
+
+  if (cancel_reparent) {
+    // Run an animation to move dragged item back to its original folder.
+    StartFolderDroppingAnimation(activated_folder_item_view_, drag_item,
+                                 drag_source_bounds);
+  } else if (folder_item_view) {
+    // Run an animation to move dragged item to the new folder.
+    StartFolderDroppingAnimation(folder_item_view, drag_item,
+                                 drag_source_bounds);
+  }
 
   // Hide the |current_ghost_view_| after completed drag from within
   // folder to |apps_grid_view_|.
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
-
-  AnimateDragIconToTargetPosition(
-      /*dropping_into_folder=*/cancel_reparent || folder_item_view,
-      released_drag_view, drag_item, folder_item_view);
 }
 
 void AppsGridView::EndDragForReparentInHiddenFolderGridView() {
-  // If drag icon proxy had been created, it should have been passed on to the
-  // root grid view by this time.
-  DCHECK(!drag_icon_proxy_);
+  if (drag_and_drop_host_) {
+    // If we had a drag and drop proxy icon, we delete it and make the real
+    // item visible again.
+    drag_icon_proxy_.reset();
+  }
 
   SetAsFolderDroppingTarget(drop_target_, false);
   ClearDragState();
@@ -1921,7 +1871,7 @@ void AppsGridView::StartDragAndDropHostDrag() {
       drag_view_->item()->is_folder() && IsTabletMode()
           ? GetAppListConfig().blur_radius()
           : 0);
-  drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
+  SetViewHidden(drag_view_, true /* hide */, true /* no animation */);
 }
 
 void AppsGridView::DispatchDragEventToDragAndDropHost(
@@ -2364,7 +2314,7 @@ void AppsGridView::OnListItemMoved(size_t from_index,
   UpdateColsAndRowsForFolder();
   UpdatePaging();
   if (GetWidget() && GetWidget()->IsVisible())
-    AnimateToIdealBounds();
+    AnimateToIdealBounds(nullptr /* released_drag_view */);
   else
     Layout();
 }
@@ -2375,11 +2325,25 @@ void AppsGridView::OnAppListModelStatusChanged() {
   SchedulePaint();
 }
 
+void AppsGridView::SetViewHidden(AppListItemView* view,
+                                 bool hide,
+                                 bool immediate) {
+  if (!view->layer())
+    return;
+  ui::ScopedLayerAnimationSettings animator(view->layer()->GetAnimator());
+  animator.SetPreemptionStrategy(
+      immediate ? ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET
+                : ui::LayerAnimator::REPLACE_QUEUED_ANIMATIONS);
+  if (immediate)
+    animator.SetTransitionDuration(base::TimeDelta::FromMilliseconds(0));
+  view->layer()->SetOpacity(hide ? 0 : 1);
+}
+
 void AppsGridView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 
 void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
-  if (drag_view_ || drag_icon_proxy_)
+  if (drag_view_)
     return;
 
   if (bounds_animation_for_cardified_state_in_progress_ ||
@@ -2781,6 +2745,31 @@ int AppsGridView::GetItemsNumOfPage(int page) const {
 
   return item_list_->item_count() -
          (pagination_model_.total_pages() - 1) * TilesPerPage();
+}
+
+void AppsGridView::StartFolderDroppingAnimation(
+    AppListItemView* folder_item_view,
+    AppListItem* drag_item,
+    const gfx::Rect& source_bounds) {
+  // Calculate target bounds of dragged item.
+  gfx::Rect target_bounds =
+      GetMirroredRect(GetTargetIconRectInFolder(drag_item, folder_item_view));
+
+  // Update folder icon.
+  AppListFolderItem* folder_item =
+      static_cast<AppListFolderItem*>(folder_item_view->item());
+  folder_item->NotifyOfDraggedItem(drag_item);
+
+  // Start animation.
+  auto animation_view = std::make_unique<TopIconAnimationView>(
+      this, drag_item->GetIcon(GetAppListConfig().type()), std::u16string(),
+      target_bounds, false, true);
+  auto* animation_view_ptr =
+      items_container_->AddChildView(std::move(animation_view));
+  animation_view_ptr->SetBoundsRect(source_bounds);
+  animation_view_ptr->AddObserver(
+      new FolderDroppingAnimationObserver(model_, folder_item->id()));
+  animation_view_ptr->TransformView();
 }
 
 void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {

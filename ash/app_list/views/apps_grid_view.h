@@ -157,6 +157,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool IsDragViewMoved(const AppListItemView& view) const override;
 
   void ClearDragState();
+  void SetDragViewVisible(bool visible);
 
   // Set the drag and drop host for application links.
   void SetDragAndDropHostOfCurrentAppList(
@@ -222,13 +223,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped
   // to the drag_drop_host, eg. dropped on shelf.
   // |cancel_drag|: True if the drag is ending because it has been canceled.
-  // |drag_icon_proxy|: The app item drag icon proxy that was created by the
-  // folder grid view for the drag. It's passed on the the root apps grid so the
-  // root apps grid can set up the icon drop animation.
   void EndDragFromReparentItemInRootLevel(
       bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag,
-      std::unique_ptr<AppDragIconProxy> drag_icon_proxy);
+      bool cancel_drag);
 
   // Handles EndDrag event in the hidden folder grid view to end reparenting
   // a folder item.
@@ -365,10 +362,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Calculates the item views' bounds for folder.
   void CalculateIdealBoundsForFolder();
 
-  // Whether the provided view is hidden to facilitate drag operation (for
-  // example, the drag view for which a drag icon proxy has been created).
-  bool IsViewHiddenForDrag(const views::View* view) const;
-
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.
   gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
@@ -465,9 +458,6 @@ class ASH_EXPORT AppsGridView : public views::View,
     BETWEEN_ITEMS,
   };
 
-  class DragViewHider;
-  class FolderIconItemHider;
-
   // Updates from model.
   void Update();
 
@@ -492,9 +482,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // transition target page.
   const gfx::Vector2d CalculateTransitionOffset(int page_of_view) const;
 
-  // Calculates ideal bounds for app list item views within the apps grid, and
-  // animates their bounds (using `bounds_animator_`) to their ideal position.
-  void AnimateToIdealBounds();
+  void AnimateToIdealBounds(AppListItemView* released_drag_view);
 
   // Invoked when the given |view|'s current bounds and target bounds are on
   // different rows. To avoid moving diagonally, |view| would be put into a
@@ -600,26 +588,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Overridden from AppListModelObserver:
   void OnAppListModelStatusChanged() override;
 
-  // Animates `drag_icon_proxy_` to drop it into appropriate target bounds in
-  // the apps grid when the item drag ends. Expects `drag_icon_proxy_` to be
-  // set.
-  // `dropping_into_folder` - Whether the drag item icon should be dropped
-  // into a folder view.
-  // `drag_view` - The view showing the drag item. Used to calculate target
-  // bounds when the item is dropped into the root apps grid. Can be nullptr
-  // otherwise.
-  // `drag_item` - The dragged item.
-  // `target_folder_view` - If the item needs to be dropped into a folder, the
-  // target folder view.
-  void AnimateDragIconToTargetPosition(bool dropping_into_folder,
-                                       AppListItemView* drag_view,
-                                       AppListItem* drag_item,
-                                       AppListItemView* target_folder_view);
-
-  // Called when the `drag_icon_proxy_` animation started by
-  // `AnimateDragIconToTargetPosition()` finishes. It resets `drag_icon_proxy_`
-  // and shows the view that was hidden for drag.
-  void OnDragIconDropDone();
+  // Hide a given view temporarily without losing (mouse) events and / or
+  // changing the size of it. If |immediate| is set the change will be
+  // immediately applied - otherwise it will change gradually.
+  // If |hide| is set the view will get hidden, otherwise it gets shown.
+  void SetViewHidden(AppListItemView* view, bool hide, bool immediate);
 
   // Returns true if the dragged item isn't a folder, the drag is not
   // occurring inside a folder, and |drop_target_| is a valid index.
@@ -747,6 +720,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   // for UMA histograms.
   void RecordPageMetrics();
 
+  // Starts the animation to transition the |drag_item| from |source_bounds| to
+  // the target bounds in the |folder_item_view|. Note that this animation
+  // should run only after |drag_item| is added to the folder.
+  void StartFolderDroppingAnimation(AppListItemView* folder_item_view,
+                                    AppListItem* drag_item,
+                                    const gfx::Rect& source_bounds);
+
   // During an app drag, creates an a11y event to verbalize dropping onto a
   // folder or creating a folder with two apps.
   void MaybeCreateFolderDroppingAccessibilityEvent();
@@ -799,16 +779,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   gfx::Point drag_start_grid_view_;
 
   Pointer drag_pointer_ = NONE;
-
-  // Object that while in scope hides the drag view from the UI during the drag
-  // operation. Note that this may remain set even after ClearDragState(), while
-  // the drag icon proxy animation is in progress.
-  std::unique_ptr<DragViewHider> drag_view_hider_;
-
-  // Object that while scope keeps an app list item icon hidden from a folder
-  // view icon. Used to hide a drag item icon from a folder icon while the item
-  // is being dropped into the folder.
-  std::unique_ptr<FolderIconItemHider> folder_icon_item_hider_;
 
   // The most recent reorder drop target.
   GridIndex drop_target_;
