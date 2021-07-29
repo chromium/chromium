@@ -1634,7 +1634,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Enable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-08-09">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-12-12">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Breaks down which features failed when attempted to enable.</summary>
