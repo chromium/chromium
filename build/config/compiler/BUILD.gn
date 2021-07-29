@@ -2429,14 +2429,22 @@ config("symbols") {
     }
   }
 
-  # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
-  if (is_clang && !is_nacl && !use_xcode_clang && !is_apple) {
-    # Use constructor homing for debug info. This option reduces debug info
-    # by emitting class type info only when constructors are emitted.
-    cflags += [
-      "-Xclang",
-      "-fuse-ctor-homing",
-    ]
+  if (is_clang && !is_nacl && !use_xcode_clang) {
+    if (is_apple) {
+      # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
+      # Make sure we don't use constructor homing on mac.
+      cflags += [
+        "-Xclang",
+        "-debug-info-kind=limited",
+      ]
+    } else {
+      # Use constructor homing for debug info. This option reduces debug info
+      # by emitting class type info only when constructors are emitted.
+      cflags += [
+        "-Xclang",
+        "-fuse-ctor-homing",
+      ]
+    }
   }
 }
 
