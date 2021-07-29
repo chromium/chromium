@@ -481,6 +481,7 @@ void OnIntentPickerClosed(
   // blocking fashion.
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+  auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
 
   if (web_contents)
     IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
@@ -491,9 +492,11 @@ void OnIntentPickerClosed(
     HandleDeviceSelection(web_contents, devices, selected_app_package, url);
     apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
         Scheme::TEL, entry_type, /*accepted=*/true, should_persist);
-    apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-        web_contents->GetBrowserContext(), selected_app_package, entry_type,
-        reason, apps::Source::kExternalProtocol, should_persist);
+    if (context) {
+      apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
+          context, selected_app_package, entry_type, reason,
+          apps::Source::kExternalProtocol, should_persist);
+    }
     return;
   }
 
@@ -537,6 +540,7 @@ void OnIntentPickerClosed(
       }
 
       // Launch the selected app.
+      // As the current web page is closed, |web_contents| will be invalidated.
       HandleUrl(render_process_host_id, routing_id, url, handlers,
                 selected_app_index, /*out_result=*/nullptr, safe_to_bypass_ui);
       break;
@@ -586,9 +590,11 @@ void OnIntentPickerClosed(
   apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
       url_scheme, entry_type, protocol_accepted, should_persist);
 
-  apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-      web_contents->GetBrowserContext(), selected_app_package, entry_type,
-      reason, apps::Source::kExternalProtocol, should_persist);
+  if (context) {
+    apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
+        context, selected_app_package, entry_type, reason,
+        apps::Source::kExternalProtocol, should_persist);
+  }
 }
 
 // Called when ARC returned activity icons for the |handlers|.
@@ -697,7 +703,7 @@ void OnUrlHandlerList(int render_process_host_id,
   GetActionResult result;
   if (HandleUrl(render_process_host_id, routing_id, url, handlers,
                 handlers.size(), &result, safe_to_bypass_ui)) {
-    if (result == GetActionResult::HANDLE_URL_IN_ARC) {
+    if (context && result == GetActionResult::HANDLE_URL_IN_ARC) {
       apps::IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
           context, std::string(), apps::PickerEntryType::kArc,
           apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
