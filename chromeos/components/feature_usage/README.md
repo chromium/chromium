@@ -44,7 +44,7 @@ detail below.
 You need to add a new variant into `<variants
 name="FeaturesLoggingUsageEvents">`
 
-*   `//tools/metrics/histograms/histograms_xml/chromeos/histograms.xml`:
+*   `//tools/metrics/histograms/metadata/chromeos/histograms.xml`:
 
 ```
   <variant name="YourFeature" summary="your feature">

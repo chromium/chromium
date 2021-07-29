@@ -63,7 +63,7 @@ enum class MessageScopeType { WINDOW = 0, WEB_CONTENTS = 1, NAVIGATION = 2 };
 // When adding a new message identifier, make corresponding changes in the
 // following locations:
 // - tools/metrics/histograms/enums.xml: <enum name="MessageIdentifier">
-// - tools/metrics/histograms/histograms_xml/android/histograms.xml:
+// - tools/metrics/histograms/metadata/android/histograms.xml:
 //       <variants name="MessageIdentifiers">
 // - MessagesMetrics.java: #messageIdentifierToHistogramSuffix()
 //

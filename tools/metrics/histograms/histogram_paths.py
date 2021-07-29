@@ -12,32 +12,32 @@ import path_util
 
 
 def _FindHistogramsXmlFiles():
-  """Gets a list relative path to all histograms xmls under histograms_xml/."""
+  """Gets a list relative path to all histograms xmls under metadata/."""
   files = []
-  for dir_name, _, file_list in os.walk(PATH_TO_HISTOGRAMS_XML_DIR):
+  for dir_name, _, file_list in os.walk(PATH_TO_METADATA_DIR):
     for filename in file_list:
       if (filename == 'histograms.xml'
           or filename == 'histogram_suffixes_list.xml'):
         # Compute the relative path of the histograms xml file.
         file_path = os.path.relpath(os.path.join(dir_name, filename),
-                                    PATH_TO_HISTOGRAMS_XML_DIR)
+                                    PATH_TO_METADATA_DIR)
         files.append(
-            os.path.join('tools/metrics/histograms/histograms_xml',
+            os.path.join('tools/metrics/histograms/metadata',
                          file_path).replace(os.sep, '/').lower())
   return sorted(files)
 
 
 ENUMS_XML_RELATIVE = 'tools/metrics/histograms/enums.xml'
-# The absolute path to the histograms_xml folder.
-PATH_TO_HISTOGRAMS_XML_DIR = path_util.GetInputFile(
-    'tools/metrics/histograms/histograms_xml')
+# The absolute path to the metadata folder.
+PATH_TO_METADATA_DIR = path_util.GetInputFile(
+    'tools/metrics/histograms/metadata')
 # In the middle state, histogram paths include both the large histograms.xml
 # file as well as the split up files.
 # TODO: Improve on the current design to avoid calling `os.walk()` at the time
 # of module import.
 HISTOGRAMS_XMLS_RELATIVE = (['tools/metrics/histograms/histograms.xml'] +
                             _FindHistogramsXmlFiles())
-OBSOLETE_XML_RELATIVE = ('tools/metrics/histograms/histograms_xml/'
+OBSOLETE_XML_RELATIVE = ('tools/metrics/histograms/metadata/'
                          'obsolete_histograms.xml')
 ALL_XMLS_RELATIVE = [ENUMS_XML_RELATIVE, OBSOLETE_XML_RELATIVE
                      ] + HISTOGRAMS_XMLS_RELATIVE

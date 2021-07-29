@@ -1098,7 +1098,7 @@
                   'chrome/browser/lacros/.*holding_space.*|'\
                   'chrome/browser/ui/ash/holding_space|'\
                   'chromeos/crosapi/mojom/.*holding_space.*|'\
-                  'tools/metrics/histograms/histograms_xml/holding_space'
+                  'tools/metrics/histograms/metadata/holding_space'
     },
     'i18n': {
       'filepath': 'base/i18n/|base/string|l10n|icu|'\

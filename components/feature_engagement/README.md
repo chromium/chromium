@@ -182,7 +182,7 @@ To enable UMA tracking, you need to make the following changes to the metrics
 configuration:
 
 1.  Add feature to the histogram suffix `IPHFeatures` in:
-    `//tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml`.
+    `//tools/metrics/histograms/metadata/histogram_suffixes_list.xml`.
     *   The suffix must match the `base::Feature` `name` member of your feature.
 1.  Add feature to the actions file at: `//tools/metrics/actions/actions.xml`.
     *   The suffix must match the `base::Feature` `name` member with `IPH_`

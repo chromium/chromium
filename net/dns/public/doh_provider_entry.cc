@@ -34,7 +34,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   //
   // The provider names in these entries should be kept in sync with the
   // DohProviderId histogram suffix list in
-  // tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml.
+  // tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
   static const base::NoDestructor<DohProviderEntry::List> providers{{
       new DohProviderEntry("AlekBergNl", DohProviderIdForHistogram::kAlekBergNl,
                            {} /* ip_strs */, {} /* dns_over_tls_hostnames */,

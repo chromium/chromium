@@ -299,8 +299,8 @@ vs-chromium-project.txt
 /tools/json_schema_compiler/test/json_schema_compiler_tests.xml
 /tools/metrics/actions/actions.old.xml
 /tools/metrics/histograms/histograms.before.pretty-print.xml
-/tools/metrics/histograms/histograms_xml/*.before.pretty-print.xml
-/tools/metrics/histograms/histograms_xml/*/*.before.pretty-print.xml
+/tools/metrics/histograms/metadata/*.before.pretty-print.xml
+/tools/metrics/histograms/metadata/*/*.before.pretty-print.xml
 /tools/metrics/histograms/enums.before.pretty-print.xml
 /tools/page_cycler/acid3
 /tools/reclient

@@ -23,7 +23,7 @@ namespace {
 
 // Suffix for a mute notification action. Should match suffixes of the
 // Notifications.Blocker.ScreenCapture.* metrics in
-// histograms_xml/notifications/histograms.xml
+// metadata/notifications/histograms.xml
 std::string MutedActionSuffix(MutedNotificationHandler::Action action) {
   switch (action) {
     case MutedNotificationHandler::Action::kUserClose:

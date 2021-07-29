@@ -120,7 +120,7 @@ enum class PermissionEmbargoStatus {
 // Enum used in UKMs and UMAs, do not re-order or change values. Deprecated
 // items should only be commented out. New items should be added at the end,
 // and the "PermissionPromptDisposition" histogram suffix needs to be updated to
-// match (tools/metrics/histograms/histograms_xml/histogram_suffixes_list.xml).
+// match (tools/metrics/histograms/metadata/histogram_suffixes_list.xml).
 enum class PermissionPromptDisposition {
   // Not all permission actions will have an associated permission prompt (e.g.
   // changing permission via the settings page).

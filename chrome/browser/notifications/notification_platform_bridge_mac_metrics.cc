@@ -11,7 +11,7 @@ namespace {
 
 // Returns a suffix to be used in UMA histogram names. Needs to be kept in sync
 // with token entries of Notifications.macOS.{ActionReceived,Delivered} metrics
-// in //tools/metrics/histograms/histograms_xml/notifications/histograms.xml.
+// in //tools/metrics/histograms/metadata/notifications/histograms.xml.
 std::string NotificationStyleSuffix(bool is_alert) {
   return is_alert ? "Alert" : "Banner";
 }

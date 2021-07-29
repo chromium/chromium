@@ -186,7 +186,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
          "tools/metrics/histograms/enums.xml.";
 
   // Build reverse map {switch_name => id} from login_custom_flags.
-  SwitchToIdMap histograms_xml_switches_ids;
+  SwitchToIdMap metadata_switches_ids;
 
   EXPECT_TRUE(
       login_custom_flags->count(flags_ui::testing::kBadSwitchFormatHistogramId))
@@ -199,7 +199,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
     if (entry.first == flags_ui::testing::kBadSwitchFormatHistogramId) {
       // Add error value with empty name.
       SetSwitchToHistogramIdMapping(std::string(), entry.first,
-                                    &histograms_xml_switches_ids);
+                                    &metadata_switches_ids);
       continue;
     }
     const Sample uma_id = flags_ui::GetSwitchUMAId(entry.second);
@@ -210,7 +210,7 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
         << uma_id << " is expected. Consider changing entry to:\n"
         << "  " << GetHistogramEnumEntryText(entry.second, uma_id);
     SetSwitchToHistogramIdMapping(entry.second, entry.first,
-                                  &histograms_xml_switches_ids);
+                                  &metadata_switches_ids);
   }
 
   // Check that all flags in about_flags.cc have entries in login_custom_flags.
@@ -226,11 +226,11 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
            "kBadSwitchFormatHistogramId="
         << flags_ui::testing::kBadSwitchFormatHistogramId
         << ". Please modify switch name.";
-    auto enum_entry = histograms_xml_switches_ids.lower_bound(flag);
+    auto enum_entry = metadata_switches_ids.lower_bound(flag);
 
     // Ignore case here when switch ID is incorrect - it has already been
     // reported in the previous loop.
-    EXPECT_TRUE(enum_entry != histograms_xml_switches_ids.end() &&
+    EXPECT_TRUE(enum_entry != metadata_switches_ids.end() &&
                 enum_entry->first == flag)
         << "tools/metrics/histograms/enums.xml enum LoginCustomFlags doesn't "
            "contain switch '"

@@ -133,7 +133,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   ~BackForwardCacheBrowserTest() override {
     if (fail_for_unexpected_messages_while_cached_) {
       // If this is triggered, see
-      // tools/metrics/histograms/histograms_xml/navigation/histograms.xml for
+      // tools/metrics/histograms/metadata/navigation/histograms.xml for
       // which values correspond which messages.
       EXPECT_THAT(histogram_tester_.GetAllSamples(
                       "BackForwardCache.UnexpectedRendererToBrowserMessage."
