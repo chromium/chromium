@@ -765,9 +765,8 @@ IN_PROC_BROWSER_TEST_F(
 // Tests tracking of content scripts injected/declared via
 // `chrome.declarativeContent` API.  See also:
 // https://developer.chrome.com/docs/extensions/reference/declarativeContent/#type-RequestContentScript
-// TODO(crbug.com/1233939): Test flaking frequently.
 IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
-                       DISABLED_ContentScriptViaDeclarativeContentApi) {
+                       ContentScriptViaDeclarativeContentApi) {
   // Install a test extension.
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(
@@ -796,10 +795,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   dir.WriteManifest(kManifestTemplate);
   dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), kBackgroundScript);
   const char kContentScript[] = R"(
-      window.onload = function() {
+      function sendResponse() {
           document.body.innerText = 'content script has run';
           chrome.test.sendMessage('Hello from content script!');
       }
+      if (document.readyState === 'complete')
+          sendResponse();
+      else
+          window.onload = sendResponse;
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
