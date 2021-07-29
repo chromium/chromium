@@ -32,6 +32,7 @@ const CSSValue* InlineStylePropertyMap::GetCustomProperty(
 
 void InlineStylePropertyMap::SetProperty(CSSPropertyID property_id,
                                          const CSSValue& value) {
+  DCHECK_NE(property_id, CSSPropertyID::kVariable);
   owner_element_->SetInlineStyleProperty(property_id, value);
   owner_element_->NotifyInlineStyleMutation();
 }
@@ -53,7 +54,7 @@ void InlineStylePropertyMap::SetCustomProperty(
   auto* variable_data =
       To<CSSVariableReferenceValue>(value).VariableDataValue();
   owner_element_->SetInlineStyleProperty(
-      CSSPropertyID::kVariable,
+      CSSPropertyName(property_name),
       *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
                                                           variable_data));
   owner_element_->NotifyInlineStyleMutation();

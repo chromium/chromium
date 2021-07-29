@@ -1045,7 +1045,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     STACK_UNINITIALIZED StyleCascade cascade(state);
     auto* set =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
-    set->SetProperty(property.GetCSSProperty().PropertyID(), *value);
+    set->SetProperty(property.GetCSSPropertyName(), *value);
     cascade.MutableMatchResult().FinishAddingUARules();
     cascade.MutableMatchResult().FinishAddingUserRules();
     cascade.MutableMatchResult().AddMatchedProperties(set);
@@ -1515,11 +1515,7 @@ const CSSValue* StyleResolver::ComputeValue(
   state.SetStyle(ComputedStyle::Clone(*base_style));
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
-  if (property_name.IsCustomProperty()) {
-    set->SetProperty(CSSPropertyValue(property_name, value));
-  } else {
-    set->SetProperty(property_name.Id(), value);
-  }
+  set->SetProperty(property_name, value);
   cascade.MutableMatchResult().FinishAddingUARules();
   cascade.MutableMatchResult().FinishAddingUserRules();
   cascade.MutableMatchResult().AddMatchedProperties(set);

@@ -39,6 +39,7 @@ const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
 
 void DeclaredStylePropertyMap::SetProperty(CSSPropertyID property_id,
                                            const CSSValue& value) {
+  DCHECK_NE(property_id, CSSPropertyID::kVariable);
   if (!GetStyleRule())
     return;
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
@@ -66,7 +67,7 @@ void DeclaredStylePropertyMap::SetCustomProperty(
   auto* variable_data =
       To<CSSVariableReferenceValue>(value).VariableDataValue();
   GetStyleRule()->MutableProperties().SetProperty(
-      CSSPropertyID::kVariable,
+      CSSPropertyName(property_name),
       *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
                                                           variable_data));
 }

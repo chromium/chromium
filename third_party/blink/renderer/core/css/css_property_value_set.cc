@@ -404,16 +404,11 @@ MutableCSSPropertyValueSet::SetResult MutableCSSPropertyValueSet::SetProperty(
       context_style_sheet, is_animation_tainted);
 }
 
-void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
+void MutableCSSPropertyValueSet::SetProperty(const CSSPropertyName& name,
                                              const CSSValue& value,
                                              bool important) {
-  StylePropertyShorthand shorthand = shorthandForProperty(property_id);
+  StylePropertyShorthand shorthand = shorthandForProperty(name.Id());
   if (!shorthand.length()) {
-    // TODO(crbug.com/1112291): Don't use this function for custom properties.
-    CSSPropertyName name =
-        (property_id == CSSPropertyID::kVariable)
-            ? CSSPropertyName(To<CSSCustomPropertyDeclaration>(value).GetName())
-            : CSSPropertyName(property_id);
     SetProperty(CSSPropertyValue(name, value, important));
     return;
   }
@@ -421,9 +416,17 @@ void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
   RemovePropertiesInSet(shorthand.properties(), shorthand.length());
 
   for (unsigned i = 0; i < shorthand.length(); ++i) {
-    CSSPropertyName name(shorthand.properties()[i]->PropertyID());
-    property_vector_.push_back(CSSPropertyValue(name, value, important));
+    CSSPropertyName longhand_name(shorthand.properties()[i]->PropertyID());
+    property_vector_.push_back(
+        CSSPropertyValue(longhand_name, value, important));
   }
+}
+
+void MutableCSSPropertyValueSet::SetProperty(CSSPropertyID property_id,
+                                             const CSSValue& value,
+                                             bool important) {
+  DCHECK_NE(property_id, CSSPropertyID::kVariable);
+  SetProperty(CSSPropertyName(property_id), value, important);
 }
 
 bool MutableCSSPropertyValueSet::SetProperty(const CSSPropertyValue& property,

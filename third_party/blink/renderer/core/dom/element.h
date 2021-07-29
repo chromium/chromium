@@ -55,6 +55,7 @@ class AccessibleNode;
 class Attr;
 class Attribute;
 class ContainerQueryEvaluator;
+class CSSPropertyName;
 class CSSPropertyValueSet;
 class CSSStyleDeclaration;
 class CustomElementDefinition;
@@ -432,6 +433,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                               bool important = false);
   bool SetInlineStyleProperty(CSSPropertyID,
                               const String& value,
+                              bool important = false);
+  void SetInlineStyleProperty(const CSSPropertyName&,
+                              const CSSValue&,
                               bool important = false);
 
   bool RemoveInlineStyleProperty(CSSPropertyID);

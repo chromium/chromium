@@ -256,6 +256,9 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
                         SecureContextMode,
                         StyleSheetContents* context_style_sheet,
                         bool is_animation_tainted);
+  void SetProperty(const CSSPropertyName&,
+                   const CSSValue&,
+                   bool important = false);
   void SetProperty(CSSPropertyID, const CSSValue&, bool important = false);
 
   // These do not. FIXME: This is too messy, we can do better.
