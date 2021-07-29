@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -93,6 +94,12 @@ bool Document::execCommand(const String& command_name,
   EventQueueScope event_queue_scope;
   TidyUpHTMLStructure(*this);
   const EditorCommand editor_command = GetCommand(this, command_name);
+
+  // Count how often the error condition of crbug.com/1230567 occurs.
+  if (CodeUnitCompareIgnoringASCIICase(command_name, "insertHTML") == 0 &&
+      RequireTrustedTypesCheck(GetExecutionContext())) {
+    UseCounter::Count(*this, WebFeature::kExecCommandWithTrustedTypes);
+  }
 
   base::UmaHistogramSparse("WebCore.Document.execCommand",
                            editor_command.IdForHistogram());

@@ -34007,6 +34007,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3967" label="EarlyHintsPreload"/>
   <int value="3968" label="ClientHintsUAReduced"/>
   <int value="3969" label="SpeculationRulesPrerender"/>
+  <int value="3970" label="ExecCommandWithTrustedTypes"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
