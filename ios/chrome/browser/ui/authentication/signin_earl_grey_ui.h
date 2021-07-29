@@ -104,6 +104,9 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Checks that the web sign-in consistency sheet visibility matches |isVisible|.
 + (void)verifyWebSigninIsVisible:(BOOL)isVisible;
 
+// Submits encryption passphrase, if the user is on the Encryption page.
++ (void)submitSyncPassphrase:(NSString*)passphrase;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_UI_H_
