@@ -529,6 +529,7 @@
 <translation id="156793199942386351">‘<ph name="ACTION" />’ কাৰ্যটোৰ বাবে ‘<ph name="CURRENTKEY" />’ ইতিমধ্যে আবণ্টন কৰা হৈছে। <ph name="RESPONSE" />লৈ যিকোনো এটা কী টিপক।</translation>
 <translation id="1567993339577891801">JavaScriptৰ কনছ’ল</translation>
 <translation id="1568323446248056064">ডিভাইচৰ ডিছপ্লে’ ছেটিংসমূহ খোলক</translation>
+<translation id="1571738973904005196">টেবটো চাওক: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1572266655485775982">ৱাই-ফাই সক্ষম/অক্ষম ট‘গল</translation>
 <translation id="1572876035008611720">আপোনাৰ ইমেইলটো দিয়ক</translation>
@@ -681,7 +682,6 @@
 <translation id="1706625117072057435">জুমৰ স্তৰ</translation>
 <translation id="1708338024780164500">(নিষ্ক্ৰিয়)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (আইডি: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">পৰীক্ষামূলক ব্ৰাউজাৰ! ডেটা হেৰুৱাব পাৰে অথবা গোপনীয়তা অথবা সুৰক্ষাৰ ক্ষেত্ৰত আপোচ কৰা হ’ব পাৰে। অনুগ্ৰহ কৰি ইয়াৰ জৰিয়তে সমস্যাৰ অভিযোগ দিয়ক: সহায় &gt; "সমস্যাৰ অভিযোগ দিয়ক…"।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
 <translation id="1709217939274742847">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ বাবে ব্যৱহাৰ কৰিবলৈ এটা টিকেট বাছনি কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">নেটৱৰ্কৰ ছেটিংসমূহ</translation>
@@ -2149,7 +2149,6 @@
 <translation id="3274763671541996799">আপুনি সম্পূর্ণ স্ক্ৰীণ ম'ড ব্যৱহাৰ কৰিবলৈ লৈছে।</translation>
 <translation id="3275778809241512831">আপোনাৰ আভ্যন্তৰীণ সুৰক্ষা চাবিটো বৰ্তমান অসুৰক্ষিত। আপুনি এইটোৰ জৰিয়তে ব্যৱহাৰ কৰা সেৱাসমূহৰ পৰা অনুগ্ৰহ কৰি এইটো আঁতৰাওক। সমস্যাটো সমাধান কৰিবলৈ, অনুগ্ৰহ কৰি সুৰক্ষাৰ চাবিটো ৰিছেট কৰক।</translation>
 <translation id="3275778913554317645">ৱিণ্ড’ হিচাপে খোলক</translation>
-<translation id="3276572954285630448">নামবিহীন টেবৰ গোট</translation>
 <translation id="3277691515294482687">Linux আপগ্ৰে’ড কৰাৰ আগতে মোৰ এপ্‌ আৰু ফাইলসমূহ মোৰ ফাইলসমূহ ফ’ল্ডাৰটোত বেক আপ কৰক।</translation>
 <translation id="3278001907972365362">আপোনাৰ Google একাউণ্ট(সমূহ)ত মনোযোগ দিয়াৰ দৰকাৰ</translation>
 <translation id="3279092821516760512">ওচৰত থাকিলে সম্পৰ্কসূচীত থকা বাছনি কৰা লোকসকলে আপোনাৰ সৈতে শ্বেয়াৰ কৰিব পাৰে। আপুনি গ্ৰহণ নকৰালৈকে স্থানান্তৰণ আৰম্ভ নহ’ব।</translation>
@@ -5626,6 +5625,7 @@
 <translation id="7117247127439884114">আকৌ ছাইন ইন কৰক...</translation>
 <translation id="711840821796638741">পৰিচালিত বুকমাৰ্কবোৰ দেখুৱাওক</translation>
 <translation id="711902386174337313">আপুনি ছাইন হৈ থকা ডিভাইচসমূহৰ সূচীখন পঢ়ক</translation>
+<translation id="711985611146095797">এই পৃষ্ঠাখনে আপোনাক ছাইন ইন কৰি থোৱা Google একাউণ্টসমূহ পৰিচালনা কৰিবলৈ দিয়ে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">ভিপিএন সংযোগ নকৰা পৰ্যন্ত Chrome ব্ৰাউজাৰ আৰু Android ট্ৰেফিক অৱৰোধ কৰা হ’ব</translation>
 <translation id="7120865473764644444">ছার্ভাৰত সংযোগ কৰিব পৰা নগ’ল। আকৌ চেষ্টা কৰি থকা হৈছে…</translation>
 <translation id="7121438501124788993">বিকাশকর্তাৰ ম’ড</translation>
@@ -6096,6 +6096,7 @@
 <translation id="7639914187072011620">ছাৰ্ভাৰটোৰ পৰা SAML ৰিডাইৰেক্টৰ URL আহৰণ কৰিব পৰা নগ'ল</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> আপুনি ছেভ কৰা পাছৱৰ্ডৰ সৈতে আপোনাক যোগ্য ছাইটসমূহত স্বয়ংক্ৰিয়ভাৱে ছাইন ইন কৰোৱা হয়৷</translation>
 <translation id="7641513591566880111">প্ৰ'ফাইলৰ নতুন নাম</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> যোগ দিয়া হ’ল</translation>
 <translation id="7642778300616172920">স্পর্শকাতৰ সমল লুকুৱাওক</translation>
 <translation id="7643842463591647490">{0,plural, =1{#খন খোলা ৱিণ্ড’}one{#খন খোলা ৱিণ্ড’}other{#খন খোলা ৱিণ্ড’}}</translation>
 <translation id="7643932971554933646">ছাইটক ফাইলবোৰ চাবলৈ দিবনে?</translation>
@@ -7155,6 +7156,7 @@
 <translation id="8756969031206844760">পাছৱৰ্ড আপডে’ট কৰিবনে?</translation>
 <translation id="8757090071857742562">ডেস্কটপ কাষ্ট কৰিব পৰা নগ’ল।  আপোনাৰ স্ক্ৰীণ শ্বেয়াৰ কৰা আৰম্ভ কৰিবলৈ আপুনি প্ৰম্প্‌টটো নিশ্চিত কৰিছেনে নাই সেয়া চাবলৈ পৰীক্ষা কৰক।</translation>
 <translation id="8757203080302669031">এই টেবটোৱে সক্ৰিয়ভাৱে ব্লুটুথ ডিভাইচসমূহৰ বাবে স্কেন কৰি আছে।</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> আঁতৰোৱা হ’ল</translation>
 <translation id="8758418656925882523">কণ্ঠধ্বনি ব্যৱহাৰ কৰি টাইপ কৰা সেৱাটো সক্ষম কৰক (টাইপ কৰিবলৈ কওক)</translation>
 <translation id="8759408218731716181">একাধিক প্ৰ’ফাইল ব্যৱহাৰ কৰিব পৰা সুবিধাটো ছেট আপ কৰিব নোৱাৰি</translation>
 <translation id="8759753423332885148">অধিক জানক।</translation>

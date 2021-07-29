@@ -1041,6 +1041,7 @@
 <translation id="756809126120519699">‏נתוני Chrome נוקו</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}many{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
+<translation id="7581273696622423628">השתתף בסקר</translation>
 <translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
 <translation id="7593557518625677601">‏פתיחת הגדרות Android והפעלה מחדש של הסנכרון של מערכת Android כדי להתחיל בסנכרון של Chrome</translation>

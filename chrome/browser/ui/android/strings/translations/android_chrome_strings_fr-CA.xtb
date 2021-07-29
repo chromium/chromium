@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Raccourcis relatifs aux fonctionnalités Google Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers l'élément en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
+<translation id="1352771733366526411">Gérer toutes fenêtres (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Se déconnecter et désactiver la synchro?</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
 <translation id="1376578503827013741">Calcul en cours…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome télécharge maintenant les fichiers plus rapidement</translation>
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
+<translation id="1888378517829496315">Gérer toutes les fenêtres</translation>
 <translation id="189358972401248634">Autres langues</translation>
 <translation id="1918175104945982129">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant, ouverte à mi-hauteur</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
@@ -639,6 +641,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="5139940364318403933">Apprenez à utiliser Google Disque</translation>
+<translation id="5142281402488957685">Pour obtenir de nouvelles histoires, tirez la page vers le bas pour l'actualiser</translation>
 <translation id="5152843274749979095">Aucune application compatible n'est installée</translation>
 <translation id="5161254044473106830">Titre requis</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Échec de 1 téléchargement.}one{Échec de # téléchargement.}other{Échec de # téléchargements.}}</translation>
@@ -679,6 +682,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5403644198645076998">Autoriser uniquement certains sites</translation>
 <translation id="5409881200985013443">Envoyez <ph name="ONE_TIME_CODE" /> à <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vérification...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> Go disponible(s)</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
@@ -946,6 +950,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6979737339423435258">Toutes les périodes</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="6989267951144302301">Échec du téléchargement</translation>
+<translation id="6992232929048168262">Ouvrir en plein écran</translation>
 <translation id="6995899638241819463">Vous envoyer un avertissement si des mots de passe sont exposés dans une violation de données</translation>
 <translation id="7001056293070445572">Fichier volumineux (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Ouvrir dans le navigateur</translation>
@@ -1036,6 +1041,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
+<translation id="7581273696622423628">Répondre au sondage</translation>
 <translation id="7583262514280211622">Vous trouverez votre liste de lecture ici</translation>
 <translation id="7588219262685291874">Activer le thème sombre lorsque la fonction Économiseur de pile de votre appareil est activée</translation>
 <translation id="7593557518625677601">Ouvr. param. Android et réact. sync. syst. Android pour commencer sync. Chrome</translation>
@@ -1230,6 +1236,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8683081248374354009">Réinitialiser le groupe</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
+<translation id="8701921397542715895">Exécution en cours dans une fenêtre adjacente</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">Terminé</translation>

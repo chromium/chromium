@@ -2902,11 +2902,6 @@
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
 <translation id="4704958130749494760">自動授權網站連線至 USB 序列裝置。</translation>
 <translation id="4722122254122249791">為指定來源啟用網站隔離</translation>
-<translation id="4723122879352880315">你可以透過這項設定，允許使用者利用 <ph name="PRODUCT_OS_NAME" />登入憑證，向採用 NTLM 驗證防護機制的受管理 Proxy 進行驗證。
-
-      如果將這項政策設為 False 或不設定，使用者就無法利用 <ph name="PRODUCT_OS_NAME" />登入憑證進行網路驗證。
-
-      如果將這項政策設為 True，使用者將可利用 <ph name="PRODUCT_OS_NAME" />登入憑證向受管理 Proxy 進行網路驗證。假如利用 <ph name="PRODUCT_OS_NAME" />登入憑證進行驗證的作業失敗，系統會提示使用者提供其他憑證。</translation>
 <translation id="4723829699367336876">允許遠端存取用戶端穿越防火牆</translation>
 <translation id="4725528134735324213">啟用 Android 備份服務</translation>
 <translation id="4725801978265372736">要求比對本機使用者和遠端存取主機擁有者的名稱</translation>

@@ -1040,6 +1040,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="756809126120519699">Chromeovi su podaci izbrisani</translation>
 <translation id="7577900504646297215">Upravljaj interesima</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Preuzeta je <ph name="FILES_DOWNLOADED_ONE" /> datoteka}one{Preuzeta je <ph name="FILES_DOWNLOADED_MANY" /> datoteka}few{Preuzete su <ph name="FILES_DOWNLOADED_MANY" /> datoteke}other{Preuzeto je <ph name="FILES_DOWNLOADED_MANY" /> datoteka}}</translation>
+<translation id="7581273696622423628">Ispunite anketu</translation>
 <translation id="7583262514280211622">Ovdje ćete pronaći svoj popis za čitanje</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je uključena Štednja baterije na uređaju</translation>
 <translation id="7593557518625677601">U postavkama omogućite sink. sustava Android da se pokrene Chrome sinkronizacija</translation>

@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1600964289716072707">स्क्यानरमा अर्को पेज राख्नुहोस् र पेज थप्न "स्क्यान गर्नुहोस्" विकल्प चयन गर्नुहोस्।</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
+<translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1641857168437328880">डकुमेन्ट फिडर (एकतर्फी)</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
@@ -318,6 +319,7 @@
 <translation id="7059230779847288458">चार्ज भइरहेको छ, पूर्ण रूपमा चार्ज हुन अझै <ph name="TIME_VALUE" /> लाग्छ</translation>
 <translation id="708426984172631313">रोकिएको छ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{नेम सर्भर}other{नेम सेभरहरू}}</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>

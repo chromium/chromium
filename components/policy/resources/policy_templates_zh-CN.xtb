@@ -1689,6 +1689,7 @@
 
       此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />。</translation>
 <translation id="3030000825273123558">启用指标报告</translation>
+<translation id="3031796805169553856">允许跨源发送 WebAssembly 模块</translation>
 <translation id="3032322294267258117">此政策旨在控制与通过 GAIA（不使用 SAML）验证身份的用户相关的设置。</translation>
 <translation id="3038323923255997294">在<ph name="PRODUCT_NAME" />关闭后继续运行后台应用</translation>
 <translation id="3041707370546071653">是否保存 Kerberos 密码。如果未设置或设为 false，系统将不保存密码。如果未指定密码，此属性将被忽略。</translation>
@@ -2050,6 +2051,12 @@
 
       如果未设置此政策或将其设为 true，<ph name="PRODUCT_OS_NAME" /> 将自动联系 Quirks Server 并下载配置文件（如果有），然后将这些文件存储在设备上。此类文件可能会用于多种目的，例如改善所接显示器的显示画质。</translation>
 <translation id="3524204464536655762">不允许任何网站通过 WebUSB API 请求访问 USB 设备</translation>
+<translation id="3526111349971346870">
+      指定能否跨源将 WebAssembly 模块发送到另一窗口或工作器。为了弃用 document.domain，我们采取了诸多举措，其中一项举措便是即将弃用跨源 WebAssembly 模块共享功能。请参见 https://github.com/mikewest/deprecating-document-domain。此政策允许重新启用跨源 WebAssembly 模块共享功能，以延长弃用过程中的过渡期。
+
+      如果此政策设为 True，网站不仅能发送 WebAssembly 模块，而且能不受限制地跨源发送。
+
+      如果此政策设为 False，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
 <translation id="3526752951628474302">仅限单色打印</translation>
 <translation id="3528000905991875314">启用备用的错误页面</translation>
 <translation id="3531084733660068324">家长监督设置</translation>
@@ -2102,6 +2109,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“随选朗读”最初会处于停用状态，但用户可以随时启用该功能。</translation>
+<translation id="3589193811812796052">禁止跨源发送 WebAssembly 模块</translation>
 <translation id="3591527072193107424">启用“旧版浏览器支持”功能。</translation>
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
@@ -2169,6 +2177,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="3733014427925403568">间隔时段的开始日期和结束日期分别是周几。</translation>
 <translation id="3736879847913515635">允许通过用户管理器添加用户</translation>
+<translation id="3749259744154402564">不支持</translation>
 <translation id="3750220015372671395">禁止在这些网站上使用密钥生成功能</translation>
 <translation id="3755237588083934849">通过设置此政策，您可决定设备状态上传内容的发送频率（以毫秒为单位）。所允许的最低频率为 60 秒。
 
@@ -2895,11 +2904,6 @@
 <translation id="4703402283970867140">启用智能调暗模式，以最大限度地推迟屏幕变暗时间</translation>
 <translation id="4704958130749494760">自动授权网站连接到 USB 串行设备。</translation>
 <translation id="4722122254122249791">为指定的来源启用网站隔离功能</translation>
-<translation id="4723122879352880315">此设置允许用户使用 <ph name="PRODUCT_OS_NAME" />登录凭据向通过 NTLM 身份验证机制提供安全保护的受管理代理验证身份。
-
-      如果此政策设为 False 或未设置，<ph name="PRODUCT_OS_NAME" />登录凭据将不会被用于网络身份验证。
-
-      如果此政策设为 True，<ph name="PRODUCT_OS_NAME" />登录凭据将会被用于向受管理的代理进行网络身份验证。如果采用 <ph name="PRODUCT_OS_NAME" />登录凭据的身份验证失败，系统会提示用户提供凭据。</translation>
 <translation id="4723829699367336876">支持通过远程访问客户端穿越防火墙</translation>
 <translation id="4725528134735324213">启用 Android Backup Service</translation>
 <translation id="4725801978265372736">要求本地用户的名称和远程访问主机所有者的名称必须一致</translation>
@@ -4038,6 +4042,7 @@
       如果此政策设为 0，客户端将无法更改机器帐号密码。
 
       注意：如果客户端在较长时间内一直处于离线状态，那么即使指定的天数已过，密码可能也不会更改。</translation>
+<translation id="628084107912717806">指定能否跨源发送 WebAssembly 模块</translation>
 <translation id="6280973140313576289">在浏览器启动时强制显示个人资料选择器</translation>
 <translation id="6282524907402492171">显示 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="6282799760374509080">是否允许音频捕获</translation>
@@ -4311,6 +4316,13 @@
 
       注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于当前所示页面的下载，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
+<translation id="6642682198621199507">通过设置此政策，您可以罗列自动授权哪些网站访问所有可用的串行端口。
+
+      这些网址必须有效，否则系统会忽略此政策。系统将仅考虑相应网址的源（架构、主机和端口）。
+
+      在 Chrome 操作系统上，此政策仅适用于已关联的用户。
+
+      此政策会覆盖 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和用户的偏好设置。</translation>
 <translation id="6646912445796087001">通过设置此政策，您可以启用或停用各种屏幕键盘功能。仅当“VirtualKeyboardEnabled”政策启用后，此政策才会生效。
 
       如果此政策中的某一项功能设为 True，系统将会启用这项屏幕键盘功能。
@@ -4504,6 +4516,15 @@
       如果您未设置此政策，受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />”，不受企业管理的用户将使用默认值“<ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />”。
 
       将来可以使用“<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />”值将 <ph name="LACROS_NAME" /> 设为 <ph name="PRODUCT_OS_NAME" />中唯一可用的浏览器。</translation>
+<translation id="6865392932254477045">通过设置此政策，您可以罗列自动授权哪些网站访问符合以下条件的 USB 串行设备：供应商 ID 和产品 ID 分别与 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 字段相符。如果您省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 字段，系统会授权指定网站访问符合以下条件的设备：供应商 ID 与 <ph name="VENDOR_ID_FIELD_NAME" /> 字段相符，产品 ID 不限。
+
+      这些网址必须有效，否则系统会忽略此政策。系统将仅考虑相应网址的源（架构、主机和端口）。
+
+      在 Chrome 操作系统上，此政策仅适用于已关联的用户。
+
+      此政策会覆盖 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和用户的偏好设置。
+
+      此政策仅会对通过 Web Serial API 访问 USB 设备产生影响。若要通过 WebUSB API 授权访问 USB 设备，请参见 <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
       如果首选的应用已添加到锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
@@ -5746,6 +5767,7 @@
 <translation id="8455529558077979314">隐私保护屏设置</translation>
 <translation id="8455551509936646199">应在每周的哪一天（以设备的本地时区表示）重新启动设备。仅在“频率”设为“WEEKLY”时使用。</translation>
 <translation id="8461914792118322307">代理</translation>
+<translation id="8463569949213141467">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能、网上应用店、画布和探索功能</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
 <translation id="847472800012384958">不允许任何网站显示弹出式窗口</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>

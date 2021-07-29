@@ -675,7 +675,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1706625117072057435">Zoom-mailak</translation>
 <translation id="1708338024780164500">(Inaktibo)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (IDa: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Probako arakatzailea. Baliteke datuak galtzea, edo pribatutasuna edo segurtasuna arriskuan jartzea. Arazoren bat aurkituz gero, jakinaraz ezazu hemen: Laguntza &gt; "Eman arazo baten berri…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (natiboa)</translation>
 <translation id="1709217939274742847">Aukeratu autentifikazioan erabiltzeko zerbitzu-eskaera bat. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Sarearen ezarpenak</translation>
@@ -2140,7 +2139,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3274763671541996799">Pantaila osora igaro zara.</translation>
 <translation id="3275778809241512831">Barneko segurtasun-giltza ez da segurua. Ken ezazu hura erabili duten zerbitzuetatik. Arazoa konpontzeko, berrezarri segurtasun-giltza.</translation>
 <translation id="3275778913554317645">Ireki leiho gisa</translation>
-<translation id="3276572954285630448">Fitxa talde izengabea</translation>
 <translation id="3277691515294482687">Linux-en bertsioa berritu aurretik, gorde nire aplikazioak eta fitxategiak Nire fitxategiak karpetan.</translation>
 <translation id="3278001907972365362">Google-ko kontuak zure arreta behar du</translation>
 <translation id="3279092821516760512">Zure inguruan daudenean, hautatu dituzun kontaktuek edukia parteka dezakete zurekin. Transferentziak ez dira abiaraziko onartzen dituzun arte.</translation>
@@ -6103,7 +6101,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7639914187072011620">Ezin izan da eskuratu SAMLko birbideratze URLa zerbitzaritik</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> arakatzaileak automatikoki hasten du saioa webguneetan, gorde dituzun pasahitzak erabilita.</translation>
 <translation id="7641513591566880111">Profilaren izen berria</translation>
-<translation id="764178579712141045"><ph name="USER_EMAIL" /> gehitu da</translation>
+<translation id="764178579712141045">Gehitu da <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ezkutatu kontuzko edukia</translation>
 <translation id="7643842463591647490">{0,plural, =1{# leiho dago irekita}other{# leiho daude irekita}}</translation>
 <translation id="7643932971554933646">Fitxategiak ikusteko baimena eman nahi diozu webguneari?</translation>
@@ -7165,7 +7163,7 @@ Esleipena kentzeko, berriz, sakatu esleitutako erabilerraztasun-etengailu bat.</
 <translation id="8756969031206844760">Pasahitza eguneratu nahi duzu?</translation>
 <translation id="8757090071857742562">Ezin da igorri mahaigaina. Egiaztatu berretsi duzula pantaila partekatzen hasteko abisua.</translation>
 <translation id="8757203080302669031">Une honetan, fitxa hau Bluetooth bidezko gailuak bilatzen ari da.</translation>
-<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> kendu da</translation>
+<translation id="8757368836647541092">Kendu da <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Gaitu diktaketa (esan ozen idatzi nahi duzuna)</translation>
 <translation id="8759408218731716181">Ezin da saio-hasiera anitza konfiguratu</translation>
 <translation id="8759753423332885148">Lortu informazio gehiago.</translation>

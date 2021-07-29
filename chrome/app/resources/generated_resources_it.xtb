@@ -675,7 +675,6 @@
 <translation id="1706625117072057435">Livelli di zoom</translation>
 <translation id="1708338024780164500">(Non attiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Browser sperimentale. Potresti perdere dati oppure compromettere la sicurezza o la privacy. Segnala eventuali problemi selezionando Guida &gt; "Segnala un problema".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (formato nativo)</translation>
 <translation id="1709217939274742847">Scegli una richiesta da usare per l'autenticazione. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Impostazioni di rete</translation>
@@ -2141,7 +2140,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3274763671541996799">Sei passato a schermo intero.</translation>
 <translation id="3275778809241512831">Il tuo token di sicurezza interno al momento non è sicuro. Rimuovilo dai servizi con cui l'hai utilizzato. Per risolvere il problema, reimposta il token di sicurezza.</translation>
 <translation id="3275778913554317645">Apri come finestra</translation>
-<translation id="3276572954285630448">Gruppo di schede senza nome</translation>
 <translation id="3277691515294482687">Effettua il backup di app e file nella cartella I miei file prima di eseguire l'upgrade di Linux.</translation>
 <translation id="3278001907972365362">I tuoi Account Google richiedono la tua attenzione</translation>
 <translation id="3279092821516760512">I contatti selezionati possono condividere contenuti con te quando sono nelle vicinanze. I trasferimenti non inizieranno finché non accetti.</translation>
@@ -6104,7 +6102,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7639914187072011620">Impossibile recuperare l'URL di reindirizzamento SAML dal server</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ti consente di accedere automaticamente ai siti idonei con le password salvate.</translation>
 <translation id="7641513591566880111">Nuovo nome del profilo</translation>
-<translation id="764178579712141045"><ph name="USER_EMAIL" /> aggiunto</translation>
+<translation id="764178579712141045">Utente <ph name="USER_EMAIL" /> aggiunto</translation>
 <translation id="7642778300616172920">Nascondi contenuti sensibili</translation>
 <translation id="7643842463591647490">{0,plural, =1{# finestra aperta}other{# finestre aperte}}</translation>
 <translation id="7643932971554933646">Vuoi consentire al sito di visualizzare i file?</translation>
@@ -7168,7 +7166,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8757090071857742562">Impossibile trasmettere il desktop. Verifica di avere confermato la richiesta di avvio della condivisione dello schermo.</translation>
 <translation id="8757203080302669031">Questa scheda sta eseguendo attivamente la ricerca dei dispositivi Bluetooth.</translation>
-<translation id="8757368836647541092">Dispositivo <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
+<translation id="8757368836647541092">Utente <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
 <translation id="8758418656925882523">Attiva dettatura (parla per digitare)</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>
 <translation id="8759753423332885148">Ulteriori informazioni.</translation>

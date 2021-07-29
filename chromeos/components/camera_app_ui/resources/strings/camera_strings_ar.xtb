@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">لم يتم حفظ الفيديو لأنّه قصير جدًا.</translation>
 <translation id="3517926952904427380">تعذّر التقاط صور أشخاص</translation>
 <translation id="3569311554794739032">هل تريد فعلاً إزالة <ph name="FILE" />؟</translation>
-<translation id="3733597664308256288">تتوفّر عناصر تحكُّم إضافية في الكاميرا. للوصول إلى هذه العناصر، اضغط على مفتاح البحث + السهم المتّجه لليمين.</translation>
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3838931309141338733">مسح الرمز الشريطي ضوئيًا</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
@@ -111,6 +110,7 @@
 <translation id="8425673304802773841">إمالة إلى أسفل</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8687491812650032292">دقة عالية <ph name="HEIGHT" />بكسل (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">تم</translation>
 <translation id="8732462232047530626">معاينة البيانات الوصفية</translation>
 <translation id="8815966864175525708">التبديل لالتقاط صورة أشخاص</translation>
 <translation id="8828441885228359828">استئناف التسجيل</translation>

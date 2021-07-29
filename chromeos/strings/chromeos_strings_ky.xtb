@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1600964289716072707">Кийинки баракты сканерге коюп, аны кошуу үчүн "Скандоо" баскычын басыңыз.</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
+<translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1641857168437328880">Документтерди берүүчү түзмөк (бир тараптуу)</translation>
 <translation id="1644574205037202324">Таржымал</translation>
 <translation id="1662989795263954667">Токтоду – Сыя түгөнүп калды</translation>
@@ -319,6 +320,7 @@
 <translation id="7059230779847288458">Кубатталууда, толгонго чейин <ph name="TIME_VALUE" /> калды</translation>
 <translation id="708426984172631313">ТОКТОТУЛДУ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
 <translation id="714876143603641390">LAN байланышы</translation>

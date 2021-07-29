@@ -3,6 +3,8 @@
 <translationbundle lang="th">
 <translation id="1175958423215084756">ตรวจพบลิงก์ <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">รูปภาพในแกลเลอรี</translation>
+<translation id="1300209025925956156">สแกนเอกสาร</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" /> กดค้นหา + ลูกศรซ้ายเพื่อเข้าถึง</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1467231725790366244">ถอดปลั๊ก <ph name="CAMERA" /> แล้ว</translation>
 <translation id="1473110567575736769">ตัวจับเวลา 3 วินาที</translation>
@@ -45,7 +47,6 @@
 <translation id="3448774564454087943">ไม่ได้บันทึกวิดีโอเนื่องจากสั้นเกินไป</translation>
 <translation id="3517926952904427380">ถ่ายภาพบุคคลไม่ได้</translation>
 <translation id="3569311554794739032">คุณต้องการนำ <ph name="FILE" /> ออกจริงๆ ใช่ไหม</translation>
-<translation id="3733597664308256288">มีตัวควบคุมกล้องให้ใช้งานเพิ่มเติม กดค้นหา + ลูกศรขวาเพื่อเข้าถึง</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>
 <translation id="3838931309141338733">สแกนบาร์โค้ด</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
@@ -65,8 +66,10 @@
 <translation id="5057360777601936059">ขณะนี้กล้องไม่พร้อมใช้งาน
         โปรดตรวจสอบว่ากล้องเชื่อมต่ออย่างถูกต้อง</translation>
 <translation id="5152121255775685072">ไปที่แกลเลอรี</translation>
+<translation id="520537883758714667">การสแกนเอกสารพร้อมใช้งานแล้ว</translation>
 <translation id="5268823927180092501">เปิดใช้โหมดเอกสารในทุกกล้อง</translation>
 <translation id="5422455049771430511">โฟลเดอร์ใหม่สำหรับรูปภาพและวิดีโอ</translation>
+<translation id="5444515100983837161">จัดขอบเอกสารทุกด้านให้อยู่ภายในกรอบ การสแกนจะทำงานได้ดีที่สุดหากเอกสารและพื้นหลังมีสีต่างกัน</translation>
 <translation id="5671277269877808209">สี่เหลี่ยมจัตุรัส</translation>
 <translation id="5753488212459587150">เปิดใช้โหมดผู้เชี่ยวชาญ</translation>
 <translation id="5759254179196327752">สแกนเอกสาร</translation>
@@ -110,6 +113,7 @@
 <translation id="8425673304802773841">เอียงลง</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="8732462232047530626">แสดงตัวอย่างข้อมูลเมตา</translation>
 <translation id="8815966864175525708">เปลี่ยนเป็นถ่ายภาพบุคคล</translation>
 <translation id="8828441885228359828">บันทึกต่อ</translation>

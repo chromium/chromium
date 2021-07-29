@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">ویدیو ذخیره نمی‌شود چون خیلی کوتاه است</translation>
 <translation id="3517926952904427380">عکس عمودی ممکن نیست</translation>
 <translation id="3569311554794739032">واقعاً می‌خواهید <ph name="FILE" /> را بردارید؟</translation>
-<translation id="3733597664308256288">کنترل‌های بیشتر دوربین دردسترس است. برای دسترسی، «جستجو + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3838931309141338733">اسکن بارکد</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">پایین کشیدن</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8732462232047530626">پیش‌نمایش فراداده</translation>
 <translation id="8815966864175525708">تغییر به گرفتن عکس عمودی</translation>
 <translation id="8828441885228359828">ازسرگیری ضبط</translation>

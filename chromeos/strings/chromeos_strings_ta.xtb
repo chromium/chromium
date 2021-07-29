@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">துவக்கி</translation>
 <translation id="1600964289716072707">பக்கத்தைச் சேர்க்க, ஸ்கேனரில் வேறொரு பக்கத்தை வைத்துவிட்டு 'ஸ்கேன் செய்' என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
+<translation id="1639239467298939599">ஏற்றுகிறது</translation>
 <translation id="1641857168437328880">டாக்குமெண்ட் ஃபீடர் (ஒரு பக்கம்)</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
@@ -319,6 +320,7 @@
 <translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற <ph name="TIME_VALUE" /> ஆகும்</translation>
 <translation id="708426984172631313">நிறுத்தப்பட்டது</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>

@@ -677,7 +677,6 @@
 <translation id="1706625117072057435">Úrovně přiblížení</translation>
 <translation id="1708338024780164500">(Neaktivní)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Experimentální prohlížeč! Může dojít ke ztrátě dat nebo porušení ochrany soukromí či zabezpečení. Problémy hlaste v sekci Nápověda &gt; Nahlásit problém…</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativní)</translation>
 <translation id="1709217939274742847">Vyberte lístek, který chcete použít k ověření. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Nastavení sítě</translation>
@@ -2141,7 +2140,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3274763671541996799">Přepnuli jste do režimu celé obrazovky.</translation>
 <translation id="3275778809241512831">Váš interní bezpečnostní klíč momentálně není bezpečný. Odeberte jej ze všech služeb, se kterými jste jej použili. Tento problém vyřešíte tím, že bezpečnostní klíč resetujete.</translation>
 <translation id="3275778913554317645">Otevřít jako okno</translation>
-<translation id="3276572954285630448">Skupina karet bez názvu</translation>
 <translation id="3277691515294482687">Před upgradováním Linuxu zálohovat mé aplikace a soubory do složky Moje soubory.</translation>
 <translation id="3278001907972365362">Váš účet Google vyžaduje pozornost</translation>
 <translation id="3279092821516760512">Vybrané kontakty s vámi mohou sdílet obsah, když jsou v okolí. Přenosy nezačnou, dokud je nepotvrdíte.</translation>

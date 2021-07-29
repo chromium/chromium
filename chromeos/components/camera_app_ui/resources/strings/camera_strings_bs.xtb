@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Videozapis nije sačuvan jer je prekratak</translation>
 <translation id="3517926952904427380">Snimanje uspravne fotografije nije uspjelo</translation>
 <translation id="3569311554794739032">Želite li zaista ukloniti fajl <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Dostupne su dodatne kontrole kamere. Da im pristupite, pritisnite Pretraživanje + strelicu udesno.</translation>
 <translation id="3810838688059735925">Videozapis</translation>
 <translation id="3838931309141338733">Skeniraj bar kôd</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
@@ -110,6 +109,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8425673304802773841">Nagni dolje</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Razumijem</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>
 <translation id="8815966864175525708">Prijeđi na snimanje portretne fotografije</translation>
 <translation id="8828441885228359828">Nastavi snimanje</translation>

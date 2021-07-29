@@ -674,7 +674,6 @@
 <translation id="1706625117072057435">Nivoi zumiranja</translation>
 <translation id="1708338024780164500">(Neaktivno)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Ekspermentalni pregledač! Možete da izgubite podatke ili ugrozite privatnost ili bezbednost. Prijavite probleme preko opcije: Pomoć &gt; „Prijavite problem…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Osnovna)</translation>
 <translation id="1709217939274742847">Odaberite tiket koji ćete koristiti za potvrdu identiteta. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Podešavanja mreže</translation>
@@ -2140,7 +2139,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3274763671541996799">Prešli ste na režim celog ekrana.</translation>
 <translation id="3275778809241512831">Interni bezbednosni ključ trenutno nije bezbedan. Uklonite ga iz svih usluga u kojima ste ga koristili. Resetujte bezbednosni ključ da biste rešili problem.</translation>
 <translation id="3275778913554317645">Otvori kao prozor</translation>
-<translation id="3276572954285630448">Grupa kartica bez naziva</translation>
 <translation id="3277691515294482687">Napravi rezervne kopije mojih aplikacija i datoteka u direktorijumu Moje datoteke pre nadogradnje Linux-a.</translation>
 <translation id="3278001907972365362">Treba da proverite Google naloge</translation>
 <translation id="3279092821516760512">Izabrani kontakti mogu da dele sa vama kada ste u blizini. Prenosi neće započeti dok ne prihvatite.</translation>

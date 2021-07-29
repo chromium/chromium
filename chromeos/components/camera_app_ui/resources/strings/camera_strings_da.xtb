@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Videoen blev ikke gemt, fordi den er for kort</translation>
 <translation id="3517926952904427380">Det var ikke muligt at tage et billede i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på, at du vil fjerne <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Yderligere styringselementer til kameraet er tilgængelige. Tryk på søgetasten+højrepil for at få adgang til dem.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan stregkode</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
@@ -111,6 +110,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Forstået</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>
 <translation id="8815966864175525708">Skift for at tage et billede i stående format</translation>
 <translation id="8828441885228359828">Genoptag optagelse</translation>

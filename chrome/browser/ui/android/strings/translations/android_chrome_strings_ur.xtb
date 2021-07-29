@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">‏Google Chrome خصوصیت کے شارٹ کٹس</translation>
 <translation id="1344653310988386453">نمایاں کرنے کا لنک شامل کریں</translation>
 <translation id="1347468774581902829">سرگرمی کا نظم کریں</translation>
+<translation id="1352771733366526411">سبھی ونڈوز (<ph name="INSTANCE_COUNTS" />) کا نظم کریں</translation>
 <translation id="1360432990279830238">سائن آؤٹ کریں اور مطابقت پذیری آف کریں؟</translation>
 <translation id="1373696734384179344">منتخب مواد ڈاؤن لوڈ کرنے کیلئے ناکافی میموری۔</translation>
 <translation id="1376578503827013741">شمار کیا جا رہا ہے…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">‏Chrome اب فائلز کو مزید تیزی سے ڈاؤن لوڈ کرتا ہے</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
+<translation id="1888378517829496315">سبھی ونڈوز کا نظم کریں</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
 <translation id="1918175104945982129">‏اسسٹنٹ صوتی تلاش کی رضامندی ui نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="1919130412786645364">‏Chrome میں سائن ان کی اجازت دیں</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">پوشیدگی ٹیب</translation>
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
 <translation id="5139940364318403933">‏Google Drive استعمال کرنے کا طریقہ جانیں</translation>
+<translation id="5142281402488957685">نئی کہانیوں کی خاطر، ریفریش کرنے کے لیے نیـچے کی طرف کھینچیں</translation>
 <translation id="5152843274749979095">کوئی تعاون یافتہ ایپ انسٹال نہیں کی گئی</translation>
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہو گیا۔}other{# ڈاؤن لوڈز ناکام ہو گئے۔}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">صرف کچھ سائٹس کو اجازت دیں</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> پر <ph name="ONE_TIME_CODE" /> جمع کروائیں؟</translation>
 <translation id="5414836363063783498">توثیق ہو رہی ہے…</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="5423934151118863508">آپ کے سب سے زیادہ ملاحظہ کردہ صفحات یہاں دکھائے جائیں گے</translation>
 <translation id="5424588387303617268">‏<ph name="GIGABYTES" /> GB دستیاب ہے</translation>
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
@@ -946,6 +950,7 @@
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6989267951144302301">ڈاؤن لوڈ نہیں کیا جا سکا</translation>
+<translation id="6992232929048168262">پوری اسکرین میں کھولیں</translation>
 <translation id="6995899638241819463">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="7001056293070445572">یہ فائل بڑی ہے (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">براؤزر میں کھولیں</translation>
@@ -1036,6 +1041,7 @@
 <translation id="756809126120519699">‏Chrome ڈیٹا صاف کر دیا گیا</translation>
 <translation id="7577900504646297215">دلچسپیوں کا نظم کریں</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فائل ڈاؤن لوڈ ہو گئی}other{<ph name="FILES_DOWNLOADED_MANY" /> فائلز ڈاؤن لوڈ ہو گئیں}}</translation>
+<translation id="7581273696622423628">سروے مکمل کریں</translation>
 <translation id="7583262514280211622">آپ کو اپنی پڑھنے کی فہرست یہاں ملے گی</translation>
 <translation id="7588219262685291874">اپنے آلہ کے بیٹری سیور کے آن ہونے کے وقت گہری تھیم آن کریں</translation>
 <translation id="7593557518625677601">‏Chrome sync شروع کرنے کیلئے Android کی ترتیبات کھولیں اور Android سسٹم کی مطابقت پذیری کو دوبارہ فعال کریں</translation>
@@ -1230,6 +1236,7 @@
 <translation id="8683081248374354009">گروپ ری سیٹ کریں</translation>
 <translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
+<translation id="8701921397542715895">متصل ونڈو میں چل رہا ہے</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>

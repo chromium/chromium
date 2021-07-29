@@ -2931,11 +2931,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4703402283970867140">Activer le modèle de réduction intelligente de la luminosité pour augmenter le délai d'assombrissement de l'écran</translation>
 <translation id="4704958130749494760">Autoriser automatiquement les sites à se connecter aux appareils série USB.</translation>
 <translation id="4722122254122249791">Activer l'isolation des sites pour des origines définies</translation>
-<translation id="4723122879352880315">Ce paramètre permet d'utiliser les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> pour s'authentifier auprès d'un proxy géré dont l'accès est protégé par l'authentification NTLM.
-
-      Si cette règle n'est pas configurée ou qu'elle est définie sur "False", les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> ne sont pas utilisés pour l'authentification réseau.
-
-      Si cette règle est définie sur "True", les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> sont utilisés pour l'authentification réseau sur un proxy géré. En cas d'échec de l'authentification à l'aide des identifiants de connexion <ph name="PRODUCT_OS_NAME" />, l'utilisateur est invité à saisir ses identifiants.</translation>
 <translation id="4723829699367336876">Activer la traversée de pare-feu depuis le client d'accès à distance</translation>
 <translation id="4725528134735324213">Activer Android Backup Service</translation>
 <translation id="4725801978265372736">Exiger que le nom de l'utilisateur local corresponde à celui du propriétaire de l'hôte d'accès à distance</translation>

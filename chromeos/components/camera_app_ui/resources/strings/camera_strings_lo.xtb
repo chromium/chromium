@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">ບໍ່ໄດ້ບັນທຶກວິດີໂອເນື່ອງຈາກມັນສັ້ນເກີນໄປ</translation>
 <translation id="3517926952904427380">ບໍ່ສາມາດຖ່າຍຮູບບຸກຄົນໄດ້</translation>
 <translation id="3569311554794739032">ທ່ານຕ້ອງການລຶບ <ph name="FILE" /> ອອກແທ້ບໍ?</translation>
-<translation id="3733597664308256288">ສາມາດໃຊ້ການຄວບຄຸມກ້ອງຖ່າຍຮູບເພີ່ມເຕີມໄດ້. ຊອກຫາ + ລູກຂວາ ເພື່ອເຂົ້າເຖິງ.</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
 <translation id="3838931309141338733">ສະແກນບາໂຄດ</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">ອຽງລົງ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8732462232047530626">ສະແດງຕົວຢ່າງເມຕາເດຕາ</translation>
 <translation id="8815966864175525708">ປ່ຽນເປັນຖ່າຍຮູບບຸກຄົນ</translation>
 <translation id="8828441885228359828">ສືບຕໍ່ການບັນທຶກ</translation>

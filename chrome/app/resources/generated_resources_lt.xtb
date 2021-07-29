@@ -689,7 +689,6 @@
 <translation id="1706625117072057435">Mastelio keitimo lygiai</translation>
 <translation id="1708338024780164500">(Neaktyvus)</translation>
 <translation id="1708713382908678956">„<ph name="NAME_PH" />“ (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Eksperimentinė naršyklė! Gali būti prarasti duomenys arba pažeistas privatumas ar sauga. Praneškite, jei kils problemų, skiltyje „Pagalba“ &gt; „Pranešti apie problemą...“</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (savoji)</translation>
 <translation id="1709217939274742847">Pasirinkite bilietą, kurį naudosite tapatybei nustatyti. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Tinklo nustatymai</translation>
@@ -2159,7 +2158,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3274763671541996799">Naudojate viso ekrano režimą.</translation>
 <translation id="3275778809241512831">Vidinis saugos raktas šiuo metu yra nesaugus. Pašalinkite jį iš visų paslaugų, kuriose jį naudojote. Norėdami išspręsti problemą, iš naujo nustatykite saugos raktą.</translation>
 <translation id="3275778913554317645">Atidaryti kaip langą</translation>
-<translation id="3276572954285630448">Skirtukų grupė be pavadinimo</translation>
 <translation id="3277691515294482687">Prieš naujovinant „Linux“ sukurti programų ir failų atsarginę kopiją aplanke „Mano failai“.</translation>
 <translation id="3278001907972365362">Reikia atkreipti dėmesį į „Google“ paskyrą (-as)</translation>
 <translation id="3279092821516760512">Pasirinkti kontaktai gali bendrinti su jumis, kai būna netoliese. Perdavimai nebus pradėti, kol nesutiksite.</translation>

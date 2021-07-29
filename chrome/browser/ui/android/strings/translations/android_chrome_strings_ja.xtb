@@ -1041,6 +1041,7 @@
 <translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> 件のファイルをダウンロードしました}other{<ph name="FILES_DOWNLOADED_MANY" /> 件のファイルをダウンロードしました}}</translation>
+<translation id="7581273696622423628">アンケートに答える</translation>
 <translation id="7583262514280211622">リーディング リストはここに表示されます</translation>
 <translation id="7588219262685291874">デバイスがバッテリー セーバー モードの場合にダークモードを有効にする</translation>
 <translation id="7593557518625677601">Chrome の同期を開始するには、Android の設定で Android システムの同期を再度有効にします</translation>

@@ -687,7 +687,6 @@
 <translation id="1706625117072057435">Zoomniveauer</translation>
 <translation id="1708338024780164500">(inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (id: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Eksperimentel browser! Data kan gå tabt, og beskyttelsen af personlige oplysninger og sikkerheden kan blive kompromitteret. Du kan rapportere problemer ved at gå til Hjælp &gt; "Rapportér et problem...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Oprindelig)</translation>
 <translation id="1709217939274742847">Vælg en billet, som du vil bruge til godkendelse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netværksindstillinger</translation>
@@ -2157,7 +2156,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3274763671541996799">Du er nu i fuld skærm.</translation>
 <translation id="3275778809241512831">Din interne sikkerhedsnøgle er i øjeblikket ikke sikker. Fjern den fra alle de enheder, som du har brugt den med. Nulstil sikkerhedsnøglen for at løse problemet.</translation>
 <translation id="3275778913554317645">Åbn som vindue</translation>
-<translation id="3276572954285630448">Unavngivet fanegruppe</translation>
 <translation id="3277691515294482687">Sikkerhedskopiér mine apps og filer i mappen My files [Mine filer], før Linux opgraderes.</translation>
 <translation id="3278001907972365362">Din Google-konto kræver handling</translation>
 <translation id="3279092821516760512">Dine valgte kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>

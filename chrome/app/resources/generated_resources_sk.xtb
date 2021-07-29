@@ -677,7 +677,6 @@
 <translation id="1706625117072057435">Úrovne priblíženia</translation>
 <translation id="1708338024780164500">(Neaktívne)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Experimentálny prehliadač. Môže dôjsť k strate údajov alebo porušeniu ochrany súkromia či zabezpečenia. Prípadné problémy nahláste v sekcii Pomocník &gt; Nahlásiť problém…</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (natívne)</translation>
 <translation id="1709217939274742847">Vyberte tiket, ktorý sa má použiť na overenie. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Nastavenia siete</translation>
@@ -2143,7 +2142,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3274763671541996799">Prepli ste na režim celej obrazovky.</translation>
 <translation id="3275778809241512831">Váš interný bezpečnostný kľúč je momentálne nezabezpečený. Odstráňte ho zo všetkých služieb, v ktorých ste ho používali. Problém vyriešite jeho resetovaním.</translation>
 <translation id="3275778913554317645">Otvárať ako okno</translation>
-<translation id="3276572954285630448">Skupina kariet bez názvu</translation>
 <translation id="3277691515294482687">Pred inovovaním systému Linux zálohovať moje aplikácie a súbory do priečinka Moje súbory</translation>
 <translation id="3278001907972365362">Vaše účty Google vyžadujú pozornosť</translation>
 <translation id="3279092821516760512">Vybrané kontakty môžu s vami zdieľať obsah, keď sú nablízku. Prenosy sa začnú až vtedy, keď ich prijmete.</translation>

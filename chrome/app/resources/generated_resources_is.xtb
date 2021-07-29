@@ -687,7 +687,6 @@
 <translation id="1706625117072057435">Aðdráttarstig</translation>
 <translation id="1708338024780164500">(Óvirk)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (auðkenni: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Vafri á tilraunastigi! Gæti glatað gögnum og stefnt persónuvernd eða öryggi í hættu. Tilkynntu vandamál með: Hjálp &gt; „Tilkynna vandamál…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (rétt)</translation>
 <translation id="1709217939274742847">Veldu miða til að nota fyrir auðkenningu. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netkerfisstillingar</translation>
@@ -2156,7 +2155,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3274763671541996799">Þú notar nú allan skjáinn.</translation>
 <translation id="3275778809241512831">Innbyggður öryggislykill er ótraustur eins og er. Fjarlægðu hann úr allri þjónustu sem þú notar hann í. Til að leysa vandamálið skaltu núllstilla öryggislykilinn.</translation>
 <translation id="3275778913554317645">Opna sem glugga</translation>
-<translation id="3276572954285630448">Ónefndur flipahópur</translation>
 <translation id="3277691515294482687">Afrita forrit og skrár í möppuna „Skrárnar mínar“ áður en Linux er uppfært.</translation>
 <translation id="3278001907972365362">Huga þarf að Google reikningnum/reikningunum þínum</translation>
 <translation id="3279092821516760512">Valdir tengiliðir geta deilt með þér þegar þeir eru nálægt. Flutningur hefst ekki fyrr en þú samþykkir.</translation>

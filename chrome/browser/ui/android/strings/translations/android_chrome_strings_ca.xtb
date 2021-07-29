@@ -1041,6 +1041,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fitxer baixat}other{<ph name="FILES_DOWNLOADED_MANY" /> fitxers baixats}}</translation>
+<translation id="7581273696622423628">Ves a l'enquesta</translation>
 <translation id="7583262514280211622">Trobaràs la llista de lectura aquí</translation>
 <translation id="7588219262685291874">Activa el tema fosc quan l'estalvi de bateria del dispositiu estigui activat</translation>
 <translation id="7593557518625677601">Obre la configuració d'Android i torna a activar la sincronització del sistema Android per començar la sincronització de Chrome</translation>

@@ -521,7 +521,7 @@
 <translation id="4405224443901389797">इसमें ले जाएं…</translation>
 <translation id="4409271659088619928">आपका सर्च इंजन <ph name="DSE" /> है. अगर लागू होता है, तो अपना खोज इतिहास मिटाने के लिए निर्देश देखें.</translation>
 <translation id="4411535500181276704">लाइट मोड</translation>
-<translation id="4415276339145661267">अपना Google खाता प्रबंधित करें</translation>
+<translation id="4415276339145661267">अपना Google खाता मैनेज करें</translation>
 <translation id="4427306783828095590">बेहतर सुरक्षा की मदद से फ़िशिंग और मैलवेयर को बेहतर तरीके से ब्लॉक किया जाता है</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
@@ -1041,6 +1041,7 @@
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फ़ाइल डाउनलोड की गई}one{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}other{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}}</translation>
+<translation id="7581273696622423628">सर्वेक्षण में भाग लें</translation>
 <translation id="7583262514280211622">आपको अपनी 'पढ़ने की सूची' यहां मिलेगी</translation>
 <translation id="7588219262685291874">आपके डिवाइस की 'बैटरी सेवर' सुविधा चालू होने पर 'गहरे रंग वाली थीम' चालू करें</translation>
 <translation id="7593557518625677601">Android सेटिंग खोलें और Chrome सिंक शुरू करने के लिए Android सिस्टम सिंक फिर से चालू करें</translation>

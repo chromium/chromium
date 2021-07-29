@@ -532,6 +532,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ਨੂੰ ਪਹਿਲਾਂ ਹੀ '<ph name="ACTION" />' ਕਾਰਵਾਈ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। <ph name="RESPONSE" /> ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">ਡਿਸਪਲੇ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="1571738973904005196">ਇਹ ਟੈਬ ਦੇਖੋ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ਮਹਿਮਾਨ)</translation>
 <translation id="1572266655485775982">ਵਾਈ-ਫਾਈ ਚਾਲੂ</translation>
 <translation id="1572876035008611720">ਆਪਣੀ ਈਮੇਲ ਦਾਖਲ ਕਰੋ</translation>
@@ -684,7 +685,6 @@
 <translation id="1706625117072057435">ਜ਼ੂਮ ਪੱਧਰ</translation>
 <translation id="1708338024780164500">(ਨਿਸ਼ਕਿਰਿਆ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ਆਈ.ਡੀ.: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">ਪ੍ਰਯੋਗਮਈ ਬ੍ਰਾਊਜ਼ਰ! ਡਾਟਾ ਗੁੰਮ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਪਰਦੇਦਾਰੀ ਜਾਂ ਸੁਰੱਖਿਆ ਨਾਲ ਛੇੜਛਾੜ ਹੋ ਸਕਦੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਮੱਸਿਆਵਾਂ ਦੀ ਰਿਪੋਰਟ ਕਰਨ ਲਈ ਇੱਥੇ ਜਾਓ: ਮਦਦ &gt; "ਕਿਸੇ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ..."।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ਜੱਦੀ)</translation>
 <translation id="1709217939274742847">ਪ੍ਰਮਾਣੀਕਰਨ ਵਰਤਣ ਲਈ ਟਿਕਟ ਚੁਣੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
@@ -2152,7 +2152,6 @@
 <translation id="3274763671541996799">ਤੁਸੀਂ ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੇ ਗਏ ਹੋ।</translation>
 <translation id="3275778809241512831">ਤੁਹਾਡੀ ਅੰਦਰੂਨੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਇਸ ਵੇਲੇ ਅਸੁਰੱਖਿਅਤ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਉਹਨਾਂ ਸਾਰੀਆਂ ਸੇਵਾਵਾਂ ਤੋਂ ਹਟਾ ਦਿਓ ਜਿਨ੍ਹਾਂ ਨੂੰ ਤੁਸੀਂ ਇਸ ਨਾਲ ਵਰਤਿਆ ਸੀ। ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ।</translation>
 <translation id="3275778913554317645">window ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
-<translation id="3276572954285630448">ਬੇਨਾਮ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="3277691515294482687">Linux ਨੂੰ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਮੇਰੀਆਂ ਐਪਾਂ ਅਤੇ ਫ਼ਾਈਲਾਂ ਦਾ Files ਫੋਲਡਰ ਵਿੱਚ ਬੈਕਅੱਪ ਲਓ।</translation>
 <translation id="3278001907972365362">ਆਪਣੇ Google ਖਾਤੇ(ਖਾਤਿਆਂ) ਵੱਲ ਧਿਆਨ ਦਿਓ</translation>
 <translation id="3279092821516760512">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਹੋਣ 'ਤੇ ਚੁਣੇ ਗਏ ਸੰਪਰਕ ਤੁਹਾਡੇ ਨਾਲ ਸਾਂਝਾ ਕਰ ਸਕਦੇ ਹਨ। ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰਦੇ, ਟ੍ਰਾਂਸਫ਼ਰ ਸ਼ੁਰੂ ਨਹੀਂ ਹੁੰਦਾ।</translation>
@@ -5640,6 +5639,7 @@
 <translation id="7117247127439884114">ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ…</translation>
 <translation id="711840821796638741">ਵਿਵਸਥਿਤ ਬੁੱਕਮਾਰਕ ਦਿਖਾਓ</translation>
 <translation id="711902386174337313">ਆਪਣੀਆਂ ਸਾਈਨ-ਇਨ ਕੀਤੀਆਂ ਡਿਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਪੜ੍ਹੋ</translation>
+<translation id="711985611146095797">ਇਹ ਪੰਨਾ ਤੁਹਾਨੂੰ ਆਪਣੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ Google ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੰਦਾ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome ਬ੍ਰਾਊਜ਼ਰ ਅਤੇ Android ਟਰੈਫ਼ਿਕ ਉਦੋਂ ਤੱਕ ਬਲਾਕ ਰਹੇਗਾ ਜਦੋਂ ਤੱਕ VPN ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="7120865473764644444">ਸਮਕਾਲੀਕਰਨ ਸਰਵਰ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="7121438501124788993">ਵਿਕਾਸਕਾਰ ਮੋਡ</translation>
@@ -6112,6 +6112,7 @@
 <translation id="7639914187072011620">ਸਰਵਰ ਤੋਂ SAML ਰੀਡਾਇਰੈਕਟ URL ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ਤੁਹਾਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਪਾਸਵਰਡਾਂ ਨਾਲ ਯੋਗ ਸਾਈਟਾਂ ਵਿੱਚ ਸਵੈਚਾਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ ਇਨ ਕਰਦਾ ਹੈ।</translation>
 <translation id="7641513591566880111">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਨਾਮ</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7642778300616172920">ਸੰਵੇਦਨਸ਼ੀਲ ਸਮੱਗਰੀ ਲੁਕਾਓ</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ}one{# ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ}other{# ਵਿੰਡੋਆਂ ਖੁੱਲ੍ਹੀਆਂ ਹਨ}}</translation>
 <translation id="7643932971554933646">ਕੀ ਸਾਈਟ ਨੂੰ ਫ਼ਾਈਲਾਂ ਦੇਖਣ ਦੇਈਏ?</translation>
@@ -7172,6 +7173,7 @@
 <translation id="8756969031206844760">ਕੀ ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8757090071857742562">ਡੈਸਕਟਾਪ ਕਾਸਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਇਹ ਦੇਖਣ ਲਈ ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਉਤਪ੍ਰੇਰਕ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="8757203080302669031">ਇਹ ਟੈਬ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰ ਰਹੀ ਹੈ।</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="8758418656925882523">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ ਚਾਲੂ ਕਰੋ (ਟਾਈਪ ਕਰਨ ਲਈ ਬੋਲੋ)</translation>
 <translation id="8759408218731716181">ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈੱਟ ਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8759753423332885148">ਹੋਰ ਜਾਣੋ।</translation>

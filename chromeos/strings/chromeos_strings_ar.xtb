@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1600964289716072707">يُرجى وضع صفحة أخرى على الماسح الضوئي واختيار "المسح ضوئيًا" لإضافة الصفحة.</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
+<translation id="1639239467298939599">جارٍ التحميل.</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
@@ -134,6 +135,7 @@
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="3942420633017001071">بيانات التشخيص</translation>
+<translation id="3966286471246132217">للحصول على نتائج أكثر دقة، عليك إغلاق كل التطبيقات إلى أن يكتمل الاختبار.</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
@@ -146,6 +148,7 @@
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
+<translation id="4244962993387259361">يجب توفّر مساحة قدرها 500 ميغابايت على الأقل لتشغيل اختبار الذاكرة. لإخلاء بعض المساحة، انتقِل إلى الإعدادات &gt; إدارة مساحة التخزين.</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>

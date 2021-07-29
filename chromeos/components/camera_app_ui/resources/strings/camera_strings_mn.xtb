@@ -3,6 +3,8 @@
 <translationbundle lang="mn">
 <translation id="1175958423215084756">Холбоос илэрсэн. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Галлерейны зураг</translation>
+<translation id="1300209025925956156">Документоо скан хийх</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Хандахын тулд Хайлт + Зүүн сумыг дарна уу.</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />-г салгасан байна.</translation>
 <translation id="1473110567575736769">3 секундийн цаг тоологч</translation>
@@ -45,7 +47,6 @@
 <translation id="3448774564454087943">Видеог хэт богино байсны улмаас хадгалаагүй</translation>
 <translation id="3517926952904427380">Хөрөг зураг авах боломжгүй байна</translation>
 <translation id="3569311554794739032">Та <ph name="FILE" />-г устгахдаа итгэлтэй байна уу?</translation>
-<translation id="3733597664308256288">Камерын нэмэлт хяналт боломжтой. Хандахын тулд Хайлт + Баруун сумыг дарна уу.</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Баркодыг скан хийх</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
@@ -65,8 +66,10 @@
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
 <translation id="5152121255775685072">Галлерей руу очих</translation>
+<translation id="520537883758714667">Одоо документ скан хийх боломжтой боллоо</translation>
 <translation id="5268823927180092501">Бүх камерт документын горимыг идэвхжүүлэх</translation>
 <translation id="5422455049771430511">Таны зураг болон видеонууд шинэ гэртэй боллоо</translation>
+<translation id="5444515100983837161">Документын бүх ирмэгийг хүрээнд байрлуулна уу. Документ болон дэвсгэр өөр өөр өнгөтэй тохиолдолд илүү сайн скан хийнэ.</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>
 <translation id="5753488212459587150">Мэргэжилтний горимыг идэвхжүүлэх</translation>
 <translation id="5759254179196327752">Документыг скан хийх</translation>
@@ -110,6 +113,7 @@
 <translation id="8425673304802773841">Доош хазайлгах</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />пиксел (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8732462232047530626">Мета өгөгдлийг урьдчилан үзэх</translation>
 <translation id="8815966864175525708">Хөрөг зураг авахын тулд сэлгэх</translation>
 <translation id="8828441885228359828">Бичлэгийг үргэлжлүүлэх</translation>

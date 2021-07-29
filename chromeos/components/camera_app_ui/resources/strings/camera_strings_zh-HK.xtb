@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">影片太短，因此系統並未儲存影片</translation>
 <translation id="3517926952904427380">無法拍攝肖像相片</translation>
 <translation id="3569311554794739032">您確定要移除「<ph name="FILE" />」嗎？</translation>
-<translation id="3733597664308256288">推出咗新嘅相機控制項。㩒搜尋鍵 + 向右箭咀就可以用。</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3838931309141338733">掃描條碼</translation>
 <translation id="3892148308691398805">複製文字</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8687491812650032292">高清畫質 <ph name="HEIGHT" />p (<ph name="WIDTH" />：<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">我知道了</translation>
 <translation id="8732462232047530626">預覽元數據</translation>
 <translation id="8815966864175525708">切換至肖像相片拍攝模式</translation>
 <translation id="8828441885228359828">恢復錄影</translation>

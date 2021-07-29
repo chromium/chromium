@@ -532,6 +532,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-কে আগে থেকেই '<ph name="ACTION" />' অ্যাকশনের জন্য অ্যাসাইন করা হয়েছে। <ph name="RESPONSE" />-এর জন্য যেকোনও কী প্রেস করুন।</translation>
 <translation id="1567993339577891801">JavaScript কনসোল</translation>
 <translation id="1568323446248056064">প্রদর্শন ডিভাইস সেটিংস খুলুন</translation>
+<translation id="1571738973904005196">ট্যাব দেখুন: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (অতিথি)</translation>
 <translation id="1572266655485775982">ওয়াই ফাই সক্ষম করুন</translation>
 <translation id="1572876035008611720">আপনার ইমেল আইডি লিখুন</translation>
@@ -684,7 +685,6 @@
 <translation id="1706625117072057435">জুম লেভেল</translation>
 <translation id="1708338024780164500">(নিষ্ক্রিয়)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (আইডি: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">পরীক্ষামূলক ব্রাউজার! আপনার ডেটা মুছে যেতে পারে অথবা গোপনীয়তা বা নিরাপত্তা লঙ্ঘন হতে পারে। ব্রাউজার সম্পর্কিত যেকোনও অভিযোগ জানাতে এখানে যান: সহায়তা &gt; "কোনও সমস্যার ব্যাপারে অভিযোগ জানান..."।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (নির্ধারিত)</translation>
 <translation id="1709217939274742847">যাচাইকরণের জন্য ব্যবহার করতে একটি টিকিট বেছে নিন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">নেটওয়ার্ক সেটিংস</translation>
@@ -2152,7 +2152,6 @@
 <translation id="3274763671541996799">আপনি পূর্ণ পর্দায় দেথতে শুরু করেছেন৷</translation>
 <translation id="3275778809241512831">ইন্টার্নাল নিরাপত্তা কী বর্তমানে নিরাপদ নয়। যে পরিষেবাগুলিতে এটি ব্যবহার করেছেন, সেগুলি থেকে সরিয়ে দিন। সমস্যার সমাধান করতে নিরাপত্তা কী রিসেট করুন।</translation>
 <translation id="3275778913554317645">উইন্ডো হিসাবে খুলুন</translation>
-<translation id="3276572954285630448">নাম বিহীন ট্যাবের গ্রুপ</translation>
 <translation id="3277691515294482687">Linux আপগ্রেড করার আগে, 'আমার ফাইল' ফোল্ডারে আমার অ্যাপ ও ফাইলের ব্যাকআপ নিন।</translation>
 <translation id="3278001907972365362">আপনার Google অ্যাকাউন্টের(গুলির) প্রতি নজর দেওয়া দরকার</translation>
 <translation id="3279092821516760512">পরিচিতি তালিকার অন্তর্গত বাছাই করা পরিচিতিগুলি আশেপাশে থাকলে তবেই তারা আপনার সাথে শেয়ার করতে পারবে। আপনি সম্মতি না দেওয়া পর্যন্ত ট্রান্সফার চালু করা যাবে না।</translation>
@@ -5639,6 +5638,7 @@
 <translation id="7117247127439884114">আবার প্রবেশ করুন...</translation>
 <translation id="711840821796638741">পরিচালিত বুকমার্কগুলি দেখান</translation>
 <translation id="711902386174337313">আপনার সাইন-ইন করা ডিভাইসগুলির তালিকা পড়ুন</translation>
+<translation id="711985611146095797">এই পৃষ্ঠা থেকে আপনি সাইন-ইন করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">ভিপিএন কানেক্ট করা না থাকলে, Chrome ব্রাউজার বা Android ট্রাফিক ব্লক করা হবে</translation>
 <translation id="7120865473764644444">সিঙ্ক সার্ভারের সাথে সংযোগ স্থাপন করা যায়নি। আবার চেষ্টা করছে...</translation>
 <translation id="7121438501124788993">ডেভেলপার মোড</translation>
@@ -6111,6 +6111,7 @@
 <translation id="7639914187072011620">সার্ভার থেকে SAML রিডাইরেক্ট ইউআরএল পাওয়া যায়নি</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> স্বয়ংক্রিয়ভাবে আপনার সংরক্ষণ করা পাসওয়ার্ড দিয়ে উপযুক্ত সাইটগুলিতে আপনাকে প্রবেশ করায়।</translation>
 <translation id="7641513591566880111">নতুন প্রোফাইলের নাম</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> যোগ করা হয়েছে</translation>
 <translation id="7642778300616172920">ব্যক্তিগত কোনও কিছু দেখতে চাই না</translation>
 <translation id="7643842463591647490">{0,plural, =1{#টি খোলা উইন্ডো}one{#টি খোলা উইন্ডো}other{#টি খোলা উইন্ডো}}</translation>
 <translation id="7643932971554933646">সাইটকে এই ফাইল পড়ার অনুমতি দেবেন?</translation>
@@ -7172,6 +7173,7 @@
 <translation id="8756969031206844760">পাসওয়ার্ড আপডেট করবেন?</translation>
 <translation id="8757090071857742562">ডেস্কটপ কাস্ট করতে করা যায়নি। আপনি আপনার স্ক্রিন শেয়ার করা শুরু করার জন্য প্রম্পটটি নিশ্চিত করেছেন কিনা তা দেখুন।</translation>
 <translation id="8757203080302669031">এই ট্যাবটি কোথায় ব্লুটুথ ডিভাইস আছে তা খুঁজে বার করতে অনবরত স্ক্যান করে যাচ্ছে।</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> সরানো হয়েছে</translation>
 <translation id="8758418656925882523">ডিক্টেশন চালু করুন (টাইপ করার জন্য বলুন)</translation>
 <translation id="8759408218731716181">একাধিক সাইন-ইন সেট-আপ করা যাবে না</translation>
 <translation id="8759753423332885148">আরও জানুন৷</translation>

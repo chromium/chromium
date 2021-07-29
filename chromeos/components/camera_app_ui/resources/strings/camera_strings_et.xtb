@@ -45,7 +45,6 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="3448774564454087943">Videot ei salvestatud, sest see on liiga lühike</translation>
 <translation id="3517926952904427380">Vertikaalpaigutuses fotot ei saa jäädvustada</translation>
 <translation id="3569311554794739032">Kas soovite faili <ph name="FILE" /> kindlasti eemaldada?</translation>
-<translation id="3733597664308256288">Saadaval on kaamera täiendavad juhtnupud. Juurdepääsemiseks vajutage klahvikombinatsiooni Otsing + paremnool.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skannige ribakood</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
@@ -110,6 +109,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Selge</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>
 <translation id="8815966864175525708">Vaheta vertikaalpaigutuses foto jäädvustamiseks</translation>
 <translation id="8828441885228359828">Jätka salvestamist</translation>

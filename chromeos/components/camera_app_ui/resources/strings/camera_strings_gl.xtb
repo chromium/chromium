@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Non se gardou o vídeo porque é demasiado curto</translation>
 <translation id="3517926952904427380">Non se puido facer a foto de retrato</translation>
 <translation id="3569311554794739032">Seguro que queres eliminar <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Hai dispoñibles novos controis da cámara. Para acceder a eles, preme Buscar + Frecha dereita.</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -110,6 +109,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="8425673304802773841">Inclinar cara abaixo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">De acordo</translation>
 <translation id="8732462232047530626">Mostrar vista previa dos metadatos</translation>
 <translation id="8815966864175525708">Cambiar para facer unha foto de retrato</translation>
 <translation id="8828441885228359828">Retomar gravación</translation>

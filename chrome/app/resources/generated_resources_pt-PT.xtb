@@ -675,7 +675,6 @@
 <translation id="1706625117072057435">Níveis de zoom</translation>
 <translation id="1708338024780164500">(Inativa)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Navegador experimental! Pode perder dados ou comprometer a privacidade ou a segurança. Comunique problemas em Ajuda &gt; "Comunicar um problema…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Escolha uma permissão para utilizar para a autenticação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Definições de rede</translation>
@@ -2142,7 +2141,6 @@ Pretende pará-lo?</translation>
 <translation id="3274763671541996799">Mudou para o ecrã inteiro.</translation>
 <translation id="3275778809241512831">A sua chave de segurança interna é atualmente insegura. Remova-a de todos os serviços nos quais a utilizou. Para resolver o problema, reponha a chave de segurança.</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
-<translation id="3276572954285630448">Grupo de separadores sem nome</translation>
 <translation id="3277691515294482687">Fazer uma cópia de segurança das minhas apps e ficheiros para a pasta Os meus ficheiros antes de atualizar o Linux.</translation>
 <translation id="3278001907972365362">A(s) sua(s) Conta(s) Google necessita(m) de atenção</translation>
 <translation id="3279092821516760512">Os contactos selecionados podem partilhar consigo quando estiverem nas proximidades. As transferências só irão começar quando aceitar.</translation>

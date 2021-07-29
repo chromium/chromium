@@ -527,6 +527,7 @@
 <translation id="156793199942386351">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir a configuración de visualización do dispositivo</translation>
+<translation id="1571738973904005196">Ver pestana: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (modo de convidado)</translation>
 <translation id="1572266655485775982">Wifi activada</translation>
 <translation id="1572876035008611720">Introduce o teu correo electrónico</translation>
@@ -671,7 +672,6 @@
 <translation id="1706625117072057435">Niveis de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Estás usando un navegador experimental. É posible que che faga perder datos e que poña en risco a túa privacidade ou a túa seguranza. Se tes algún problema, indícanolo en Axuda &gt; Informar dun problema...</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Escolle o tícket que queres utilizar para a autenticación. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configuración de rede</translation>
@@ -2135,7 +2135,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3274763671541996799">Accediches ao modo de pantalla completa.</translation>
 <translation id="3275778809241512831">Actualmente a túa chave de seguranza non é segura. Quítaa dos servizos cos que a utilizaches. Para resolver o problema, restablece a chave de seguranza.</translation>
 <translation id="3275778913554317645">Abrir como ventá</translation>
-<translation id="3276572954285630448">Grupo de pestanas sen nome</translation>
 <translation id="3277691515294482687">Antes de actualizar Linux, facer unha copia de seguranza das miñas aplicacións e ficheiros no cartafol Os meus ficheiros.</translation>
 <translation id="3278001907972365362">A/s túa/s Conta/s de Google precisan atención</translation>
 <translation id="3279092821516760512">Os contactos seleccionados poden compartir ficheiros contigo cando estean preto. As transferencias non comezarán ata que as aceptes.</translation>
@@ -5621,6 +5620,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="7117247127439884114">Iniciar sesión de novo...</translation>
 <translation id="711840821796638741">Mostrar os marcadores xestionados</translation>
 <translation id="711902386174337313">Ler a lista de dispositivos en que iniciaches sesión</translation>
+<translation id="711985611146095797">Desde esta páxina podes xestionar as Contas de Google nas que teñas a sesión iniciada. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Bloquearanse o navegador Chrome e o tráfico de Android a menos que se conecte unha VPN</translation>
 <translation id="7120865473764644444">Non se puido conectar co servidor de sincronización. Tentándoo de novo...</translation>
 <translation id="7121438501124788993">Modo de programador</translation>
@@ -6093,6 +6093,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="7639914187072011620">Non se puido obter do servidor o URL de redirección da SAML</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automaticamente nos sitios aptos cos contrasinais que gardaches.</translation>
 <translation id="7641513591566880111">Novo nome de perfil</translation>
+<translation id="764178579712141045">Engadiuse a <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ocultar contido confidencial</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventá aberta}other{# ventás abertas}}</translation>
 <translation id="7643932971554933646">Queres permitir que o sitio vexa os ficheiros?</translation>
@@ -7153,6 +7154,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8757090071857742562">Non se puido emitir o escritorio. Comproba se confirmaches a solicitude para empezar a compartir a pantalla.</translation>
 <translation id="8757203080302669031">Esta pestana está buscando dispositivos Bluetooth de maneira activa.</translation>
+<translation id="8757368836647541092">Quitouse a <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">Activar ditado (falar para escribir)</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>
 <translation id="8759753423332885148">Máis información</translation>

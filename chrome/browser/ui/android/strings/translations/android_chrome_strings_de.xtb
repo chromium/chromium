@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Tastenkombinationen für Google Chrome-Funktionen</translation>
 <translation id="1344653310988386453">Link zum markierten Text hinzufügen</translation>
 <translation id="1347468774581902829">Aktivitäten verwalten</translation>
+<translation id="1352771733366526411">Alle Fenster verwalten (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
 <translation id="1373696734384179344">Der Speicher reicht nicht aus, um den ausgewählten Inhalt herunterzuladen.</translation>
 <translation id="1376578503827013741">Berechnung läuft...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">In Chrome sind Downloads jetzt noch schneller</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
+<translation id="1888378517829496315">Alle Fenster verwalten</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
 <translation id="1918175104945982129">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant halb geöffnet</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
@@ -639,6 +641,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5123685120097942451">Inkognitotab</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5139940364318403933">So nutzen Sie Google Drive</translation>
+<translation id="5142281402488957685">Nach unten ziehen, um neue Artikel zu sehen</translation>
 <translation id="5152843274749979095">Keine unterstützten Apps installiert</translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 Download fehlgeschlagen.}other{# Downloads fehlgeschlagen.}}</translation>
@@ -679,6 +682,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5403644198645076998">Nur bestimmte Websites zulassen</translation>
 <translation id="5409881200985013443"><ph name="ONE_TIME_CODE" /> an <ph name="CLIENT_NAME" /> senden?</translation>
 <translation id="5414836363063783498">Überprüfung...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_COUNT_MANY" /> Tabs}}</translation>
 <translation id="5423934151118863508">Hier werden Ihre am meisten aufgerufenen Seiten angezeigt.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB verfügbar</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
@@ -946,6 +950,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6979737339423435258">Gesamte Zeit</translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="6989267951144302301">Fehler beim Download</translation>
+<translation id="6992232929048168262">Im Vollbildmodus öffnen</translation>
 <translation id="6995899638241819463">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben werden</translation>
 <translation id="7001056293070445572">Diese Datei ist groß (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">Im Browser öffnen</translation>
@@ -1036,6 +1041,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7577900504646297215">Interessen verwalten</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> Datei heruntergeladen}other{<ph name="FILES_DOWNLOADED_MANY" /> Dateien heruntergeladen}}</translation>
+<translation id="7581273696622423628">An Umfrage teilnehmen</translation>
 <translation id="7583262514280211622">Hier wird Ihre Leseliste angezeigt</translation>
 <translation id="7588219262685291874">Dunkles Design verwenden, wenn Energiesparmodus des Geräts aktiviert ist</translation>
 <translation id="7593557518625677601">Einstellungen öffnen und Systemsynchr. aktivieren, um Chrome-Synchr. zu starten</translation>
@@ -1230,6 +1236,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8683081248374354009">Gruppe zurücksetzen</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8699120352855309748">Übersetzen dieser Sprachen nicht anbieten</translation>
+<translation id="8701921397542715895">In benachbartem Fenster ausgeführt</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8730621377337864115">Fertig</translation>

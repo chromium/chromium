@@ -2957,11 +2957,6 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 <translation id="4703402283970867140">Aktifkan model redup smart untuk memperpanjang waktu hingga layar diredupkan</translation>
 <translation id="4704958130749494760">Otomatis memberikan izin ke situs untuk terhubung ke perangkat serial USB.</translation>
 <translation id="4722122254122249791">Aktifkan Isolasi Situs untuk asal yang ditetapkan</translation>
-<translation id="4723122879352880315">Setelan ini memungkinkan pengguna melakukan autentikasi ke proxy terkelola yang diamankan dengan autentikasi NTLM menggunakan kredensial login <ph name="PRODUCT_OS_NAME" />.
-
-      Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, kredensial login <ph name="PRODUCT_OS_NAME" /> tidak akan digunakan untuk autentikasi jaringan.
-
-      Jika kebijakan ini disetel ke Benar (True), kredensial login <ph name="PRODUCT_OS_NAME" /> akan digunakan untuk autentikasi jaringan ke proxy terkelola. Jika autentikasi dengan kredensial login <ph name="PRODUCT_OS_NAME" /> gagal, pengguna akan dimintai kredensial.</translation>
 <translation id="4723829699367336876">Mengaktifkan firewall traversal dari klien akses jarak jauh</translation>
 <translation id="4725528134735324213">Aktifkan Android Backup Service</translation>
 <translation id="4725801978265372736">Wajibkan pencocokan nama pengguna lokal dengan pemilik host akses jarak jauh</translation>

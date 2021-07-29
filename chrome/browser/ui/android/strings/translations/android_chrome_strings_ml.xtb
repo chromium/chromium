@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome ഫീച്ചർ കുറുക്കുവഴികൾ</translation>
 <translation id="1344653310988386453">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് ഉൾപ്പെടുത്തുക</translation>
 <translation id="1347468774581902829">ആക്റ്റിവിറ്റി മാനേജ് ചെയ്യുക</translation>
+<translation id="1352771733366526411">എല്ലാ വിൻഡോകളും (<ph name="INSTANCE_COUNTS" />) മാനേജുചെയ്യൂ</translation>
 <translation id="1360432990279830238">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1373696734384179344">തിരഞ്ഞെടുത്ത ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിന് ആവശ്യമായ മെമ്മറിയില്ല.</translation>
 <translation id="1376578503827013741">കണക്കാക്കുന്നു…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome ഇപ്പോൾ വേഗത്തിൽ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
 <translation id="1883903952484604915">എന്റെ ഫയലുകൾ</translation>
+<translation id="1888378517829496315">എല്ലാ വിൻഡോകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="189358972401248634">മറ്റ് ഭാഷകൾ</translation>
 <translation id="1918175104945982129">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI പകുതി ഉയരത്തിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="1919130412786645364">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
@@ -639,6 +641,7 @@
 <translation id="5123685120097942451">അദൃശ്യ ടാബ്</translation>
 <translation id="5132942445612118989">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="5139940364318403933">Google ഡ്രൈവ് എങ്ങനെ ഉപയോഗിക്കണമെന്ന് അറിയുക</translation>
+<translation id="5142281402488957685">പുതിയ സ്റ്റോറികൾക്ക്, റീഫ്രഷ് ചെയ്യാൻ താഴേക്ക് വലിക്കുക</translation>
 <translation id="5152843274749979095">ഉപയോഗിക്കാനാവുന്ന ആപ്‌സൊന്നും ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല</translation>
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ഒരു ഡൗൺലോഡ് പരാജയപ്പെട്ടു.}other{# ഡൗൺലോഡുകൾ പരാജയപ്പെട്ടു.}}</translation>
@@ -679,6 +682,7 @@
 <translation id="5403644198645076998">ചില സൈറ്റുകളെ മാത്രം അനുവദിക്കുക</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> എന്നതിൽ <ph name="ONE_TIME_CODE" /> നൽകണോ?</translation>
 <translation id="5414836363063783498">പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="5423934151118863508">നിങ്ങളുടെ ഏറ്റവുമധികം സന്ദർശിച്ച പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ലഭ്യമാണ്</translation>
 <translation id="543338862236136125">പാസ്‌വേഡ് എഡിറ്റ് ചെയ്യുക</translation>
@@ -946,6 +950,7 @@
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="6989267951144302301">ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
+<translation id="6992232929048168262">പൂർണ്ണ സ്‌ക്രീനിൽ തുറക്കുക</translation>
 <translation id="6995899638241819463">പാസ്‌വേഡുകൾ, ഡാറ്റാ ലംഘനത്തിന്റെ ഭാഗമായി വെളിപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
 <translation id="7001056293070445572">ഈ ഫയൽ വലുതാണ് (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">ബ്രൗസറിൽ തുറക്കുക</translation>
@@ -1036,6 +1041,7 @@
 <translation id="756809126120519699">Chrome ഡാറ്റ മായ്‌ച്ചു</translation>
 <translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{<ph name="FILES_DOWNLOADED_MANY" /> ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു}}</translation>
+<translation id="7581273696622423628">സർവേയിൽ പങ്കെടുക്കുക</translation>
 <translation id="7583262514280211622">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് ഇവിടെ കാണാം</translation>
 <translation id="7588219262685291874">ഉപകരണത്തിന്റെ ബാറ്ററി ലാഭിക്കൽ ഓണായിരിക്കുമ്പോൾ ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="7593557518625677601">Chrome സമന്വയം ആരംഭിക്കാൻ Android ക്രമീകരണം തുറന്ന് Android സിസ്‌റ്റം സമന്വയിപ്പിക്കൽ വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -1230,6 +1236,7 @@
 <translation id="8683081248374354009">ഗ്രൂപ്പ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
 <translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
+<translation id="8701921397542715895">തൊട്ടടുത്ത വിൻഡോയിൽ പ്രവർത്തിക്കുന്നു</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>

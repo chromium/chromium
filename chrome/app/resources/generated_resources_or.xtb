@@ -322,10 +322,12 @@
 <translation id="1347512539447549782">Linux ଷ୍ଟୋରେଜ୍</translation>
 <translation id="1347975661240122359">ବ୍ୟାଟେରୀ ସ୍ତର <ph name="BATTERY_LEVEL" />%ରେ ପହଞ୍ଚିଲେ ଅପ୍‌ଡେଟ୍‌ ଆରମ୍ଭ ହେବ।</translation>
 <translation id="1353275871123211385">ଆପର ଅନୁମୋଦନ ଏବଂ ସ୍କ୍ରିନ୍ ସମୟ ସୀମା ପରି ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, ଗୋଟିଏ ପିଲାର ଜଣେ ବାପା କିମ୍ବା ମା'ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ଏକ Google ଆକାଉଣ୍ଟ ଥିବା ଆବଶ୍ୟକ। Google Classroom ପରି ଟୁଲଗୁଡ଼ିକ ପାଇଁ ପରେ ଏକ ସ୍କୁଲ୍ ଆକାଉଣ୍ଟ ଯୋଗ କରାଯାଇପାରିବ।</translation>
+<translation id="135389172849514421">ଅଫଲାଇନରେ କାମ କରେ</translation>
 <translation id="1353980523955420967">PPD ମିଳୁନାହିଁ। ଆପଣଙ୍କ Chromebook ଅନ୍‌ଲାଇନ୍ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଏବଂ ପୁଣି ଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1354045473509304750">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଏବଂ ମୁଭ୍ କରିବା ପାଇଁ <ph name="HOST" />କୁ ଅନୁମତି ଦେବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="1355088139103479645">ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ କରିବେ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="1356178530321889280">ଆପଣ ୱେବରେ ବ୍ରାଉଜ୍ କରିବା ଏବଂ ସପିଂ କରିବା ସମୟରେ ଆପଣ ଦେଖୁଥିବା ଭିଜୁଆଲ୍ ବିଷୟବସ୍ତୁ ବିଷୟରେ ଅଧିକ ଜାଣିବା ପାଇଁ ସାଇଟର ଯେ କୌଣସି ଅଞ୍ଚଳରେ ସନ୍ଧାନ କରିବାକୁ “Google Lens ମାଧ୍ୟମରେ ପୃଷ୍ଠାର କିଛି ଅଂଶ ସନ୍ଧାନ କରନ୍ତୁ”କୁ ଚୟନ କରି ଡାହାଣ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="1358741672408003399">ବନାନ ଓ ବ୍ୟାକରଣ</translation>
 <translation id="1359923111303110318">ଆପଣଙ୍କର ଡିଭାଇସ୍ Smart Lock ସାହାଯ୍ୟରେ ଅନ୍‍ଲକ୍ କରାଯାଇପାରିବ। ଅନ୍‍ଲକ୍ କରିବାକୁ ଏଣ୍ଟର୍ କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="1361164813881551742">ମାନୁଆଲ୍‌ ଭାବେ ଯୋଗକରନ୍ତୁ</translation>
@@ -672,7 +674,6 @@
 <translation id="1706625117072057435">ଜୁମ୍-ସ୍ତର</translation>
 <translation id="1708338024780164500">(ନିଷ୍କ୍ରିୟ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">ପରୀକ୍ଷାମୂଳକ ବ୍ରାଉଜର୍! ଡାଟା ହରାଇ ପାରନ୍ତି କିମ୍ବା ଗୋପନୀୟତା ବା ସୁରକ୍ଷା ଭଙ୍ଗ ହୋଇପାରେ। ଦୟାକରି ସମସ୍ୟାଗୁଡ଼ିକ ବିଷୟରେ ଏଠାରେ ରିପୋର୍ଟ କରନ୍ତୁ: ସହାୟତା &gt; "ଏକ ସମସ୍ୟା ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ..."।</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ମୂଳ)</translation>
 <translation id="1709217939274742847">ପ୍ରାମାଣିକତା ପାଇଁ ବ୍ୟବହାର କରିବାକୁ ଏକ ଟିକେଟ୍ ବାଛନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">ନେଟୱାର୍କ ସେଟିଂସ୍</translation>
@@ -1444,6 +1445,7 @@
 <translation id="2509495747794740764">ମାପିବାର ରାଶି 10 ଓ 200 ମଧ୍ୟରେ ହେବା ଦରକାର।</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍ ଅନପେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (ଚୟନ କରାଯାଇଛି)</translation>
 <translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
 <translation id="2514326558286966059">ଆପଣଙ୍କ ଟିପଚିହ୍ନ ସହ ଶୀଘ୍ର ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2136,7 +2138,6 @@
 <translation id="3274763671541996799">ଆପଣ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରେ ଦେଖୁଛନ୍ତି।</translation>
 <translation id="3275778809241512831">ଆପଣଙ୍କର ଆଭ୍ୟନ୍ତରୀଣ ସୁରକ୍ଷା କୀ ବର୍ତ୍ତମାନ ଅସୁରକ୍ଷିତ ଅଟେ। ଆପଣ ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସେବାଗୁଡ଼ିକରୁ ଦୟାକରି ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ। ସମସ୍ୟାର ସମାଧାନ କରିବା ପାଇଁ, ସୁରକ୍ଷା କୀକୁ ଦୟାକରି ରିସେଟ୍ କରନ୍ତୁ।</translation>
 <translation id="3275778913554317645">ୱିଣ୍ଡୋ ଭଳି ଖୋଲନ୍ତୁ</translation>
-<translation id="3276572954285630448">ବେନାମୀ ଟାବ୍ ଗୋଷ୍ଠୀ</translation>
 <translation id="3277691515294482687">Linux ଅପଗ୍ରେଡ୍ କରିବା ପୂର୍ବରୁ ମୋ Files ଫୋଲ୍ଡରରେ ମୋ ଆପ୍ ଏବଂ ଫାଇଲଗୁଡ଼ିକର ବ୍ୟାକଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="3278001907972365362">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ (ଗୁଡ଼ିକ) ଉପରେ ଧ୍ୟାନ ରଖିବା ଆବଶ୍ୟକ</translation>
 <translation id="3279092821516760512">ଆଖପାଖରେ ଥିବା ସମୟରେ ଚୟନିତ ଯୋଗାଯୋଗଗୁଡ଼ିକ ଆପଣଙ୍କ ସହିତ ସେୟାର୍ କରାଯାଇପାରିବ। ଆପଣ ଗ୍ରହଣ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ସ୍ଥାନାନ୍ତର ଆରମ୍ଭ ହେବ ନାହିଁ।</translation>
@@ -2351,6 +2352,7 @@
 <translation id="3495496470825196617">ଚାର୍ଜିଂ ସମୟରେ ଡିଭାଇସକୁ ନିଷ୍କ୍ରିୟ ମୋଡରେ ରଖନ୍ତୁ</translation>
 <translation id="3495660573538963482">Google ଆସିଷ୍ଟାଣ୍ଟ ସେଟିଂସ୍</translation>
 <translation id="3496213124478423963">ଜୁମ୍ ଆଉଟ୍</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (ଚୟନ କରାଯାଇନାହିଁ)</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />ର USB ଡିଭାଇସ୍ (ଉତ୍ପାଦ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ଡୁଡଲ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="3498215018399854026">ଆମେ ଏହି ସମୟରେ ଆପଣଙ୍କ ଅଭିଭାବକଙ୍କ ନିକଟରେ ପହଞ୍ଚି ପାରିଲୁ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -4113,6 +4115,7 @@
 <translation id="5449551289610225147">ଅବୈଧ ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="5449588825071916739">ସମସ୍ତ ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="5449716055534515760">Win&amp;dow ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ଅଫଲାଇନରେ କାମ କରେ)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />ଙ୍କ ସହିତ</translation>
 <translation id="5457113250005438886">ଅବୈଧ</translation>
 <translation id="5457459357461771897">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍ରୁ ଫଟୋ, ସଙ୍ଗୀତ ଓ ଅନ୍ୟ ମିଡିଆ ପଢ଼ନ୍ତୁ ଏବଂ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
@@ -4573,6 +4576,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ବ୍ୟସ୍ତ ସମୟ)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ସମସ୍ତ URLକୁ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ ({COUNT})ଟି &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="5965661248935608907">ଆପଣ ହୋମ୍ ବଟନ୍‍କୁ କ୍ଲିକ୍ କରନ୍ତି କିମ୍ବା ଓମ୍ନିବକ୍ସରୁ ସନ୍ଧାନ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖାଯିବ, ତାହା ମଧ୍ୟ ଏହାଦ୍ୱାରା ନିୟନ୍ତ୍ରିତ ହୋଇଥାଏ।</translation>
+<translation id="5968022600320704045">କୌଣସି ସନ୍ଧାନ ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="5969419185858894314"><ph name="FOLDERNAME" />ରେ <ph name="ORIGIN" /> ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଦେଖିପାରିବ</translation>
 <translation id="5969728632630673489">କୀବୋର୍ଡ ସର୍ଟକଟ୍ ନୋଟିସକୁ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="5971037678316050792">ବ୍ଲୁଟୁଥ୍ ଆଡାପ୍ଟର୍ ସ୍ଥିତି ଓ ପେୟାରିଂ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
@@ -5384,6 +5388,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6855892664589459354">Crostini ବ୍ୟାକଅପ୍ ଏବଂ ରିଷ୍ଟୋର୍</translation>
 <translation id="6856348640027512653">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6856623341093082836">ଆପଣଙ୍କ ଟଚ୍‍ସ୍କ୍ରିନ୍‍ର ସଠିକତା ସେଟ୍ ଅପ୍ କରନ୍ତୁ ଏବଂ ଆଡ୍‍ଜଷ୍ଟ କରନ୍ତୁ</translation>
+<translation id="6856850379840757744">ଚାଲୁ କରାଗଲେ, ସମସ୍ତ ବିଜ୍ଞପ୍ତିକୁ ନୀରବ କରାଯିବ</translation>
 <translation id="6857145580237920905">ପାୱାରୱାସ୍ ପୂର୍ବରୁ eSIM ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6857699260879628349">କନଫ୍ୟୁଗରେସନ୍ ସୂଚନା ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ସେ</translation>
@@ -6361,6 +6366,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">ନକଲ</translation>
 <translation id="7887864092952184874">ବ୍ଲୁଟୁଥ୍ ମାଉସ୍‌ ପେୟାର୍‌ ହୋ‍ଇଛି</translation>
+<translation id="7889371445710865055">ଡିକ୍ଟେସନର ଭାଷା ବଦଳାନ୍ତୁ</translation>
 <translation id="7890147169288018054">ଆପଣଙ୍କ IP କିମ୍ବା MAC ଠିକଣା ପରି, ନେଟୱାର୍କ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="7893008570150657497">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର୍‍ରୁ ଫଟୋ, ସଙ୍ଗୀତ ଓ ଅନ୍ୟ ମିଡିଆ ଆକ୍ସେସ୍‌ କରନ୍ତୁ</translation>
 <translation id="7893153962594818789">ଏହି <ph name="DEVICE_TYPE" />ରେ ବ୍ଲୁଟୁଥ୍‌ ବନ୍ଦ ଅଛି। ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ଲେଖନ୍ତୁ ଏବଂ ବ୍ଲୁଟୁଥ୍‌ ଚାଲୁ କରନ୍ତୁ।</translation>

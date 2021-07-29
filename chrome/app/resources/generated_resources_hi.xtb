@@ -687,7 +687,6 @@
 <translation id="1706625117072057435">ज़ूम स्तर</translation>
 <translation id="1708338024780164500">(प्रयोग में नहीं)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (आईडी: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">एक्सपेरिमेंटल ब्राउज़र! डेटा खो सकता है. इसके अलावा, निजता या सुरक्षा को खतरा हो सकता है. इससे जुड़ी किसी भी समस्या की शिकायत करने के लिए, कृपया यहां जाएं: सहायता &gt; "समस्या की शिकायत करें...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (स्थानीय)</translation>
 <translation id="1709217939274742847">पुष्टि करने के लिए टिकट चुनें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">नेटवर्क सेटिंग</translation>
@@ -2156,7 +2155,6 @@
 <translation id="3274763671541996799">आप फ़ुल स्‍क्रीन में देख रहे हैं.</translation>
 <translation id="3275778809241512831">आपकी अंदरूनी सुरक्षा कुंजी फ़िलहाल सुरक्षित नहीं है. आपने जिन सेवाओं पर इसका इस्तेमाल किया है उन सभी सेवाओं से इसे हटाएं. इस समस्या को ठीक करने के लिए, कृपया सुरक्षा कुंजी को रीसेट करें.</translation>
 <translation id="3275778913554317645">विंडो के रूप में खोलें</translation>
-<translation id="3276572954285630448">ऐसा टैब ग्रुप जिसका नाम नहीं है</translation>
 <translation id="3277691515294482687">Linux को बेहतर बनाने से पहले, 'मेरी फ़ाइलें' फ़ोल्डर में मेरे ऐप्लिकेशन और फ़ाइलों का बैक अप लें.</translation>
 <translation id="3278001907972365362">आपके Google खाता (खातों) पर ध्यान देना होगा</translation>
 <translation id="3279092821516760512">चुने गए संपर्क, आस-पास होने पर आपके साथ शेयर कर सकते हैं. आपके स्वीकार करने तक ट्रांसफ़र शुरू नहीं होगा.</translation>
@@ -3208,7 +3206,7 @@
 <translation id="4414515549596849729">कुकी और साइट का डेटा</translation>
 <translation id="4415213869328311284">अब आप अपने <ph name="DEVICE_TYPE" /> का इस्तेमाल शुरू कर सकते हैं.</translation>
 <translation id="4415245286584082850">कोई डिवाइस नहीं मिला. नए टैब में सहायता केंद्र लेख खोलें.</translation>
-<translation id="4415276339145661267">अपना Google खाता प्रबंधित करें</translation>
+<translation id="4415276339145661267">अपना Google खाता मैनेज करें</translation>
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
 <translation id="4416450511678320850">इस कॉन्टेंट के लिए कोई भी ऐप्लिकेशन उपलब्ध नहीं है</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
@@ -4016,7 +4014,7 @@
 <translation id="5301954838959518834">ठीक है, समझ लिया</translation>
 <translation id="5302048478445481009">भाषा</translation>
 <translation id="5302932258331363306">Show Substitutions</translation>
-<translation id="5305145881844743843">इस खाते को <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> प्रबंधित करता है</translation>
+<translation id="5305145881844743843">इस खाते को <ph name="BEGIN_LINK" /><ph name="DOMAIN" /><ph name="END_LINK" /> मैनेज करता है</translation>
 <translation id="5307030433605830021">स्रोत काम नहीं करता है</translation>
 <translation id="5307386115243749078">ब्लूटूथ स्विच को दूसरे डिवाइस से जोड़ें</translation>
 <translation id="5308380583665731573">कनेक्ट करें</translation>

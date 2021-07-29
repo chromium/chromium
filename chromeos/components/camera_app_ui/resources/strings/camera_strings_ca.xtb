@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">El vídeo no s'ha desat perquè és massa curt</translation>
 <translation id="3517926952904427380">No es pot fer una foto vertical</translation>
 <translation id="3569311554794739032">Confirmes que vols suprimir <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Controls de càmera addicionals disponibles. Cerca+fletxa a la dreta per accedir-hi.</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escaneja el codi de barres</translation>
 <translation id="3892148308691398805">Copia el text</translation>
@@ -110,6 +109,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8425673304802773841">Inclina cap avall</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8687491812650032292">HD de <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8732462232047530626">Previsualitza les metadades</translation>
 <translation id="8815966864175525708">Botó per fer una foto vertical</translation>
 <translation id="8828441885228359828">Reprèn la gravació</translation>

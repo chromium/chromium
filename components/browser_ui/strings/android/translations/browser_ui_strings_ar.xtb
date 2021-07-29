@@ -137,6 +137,7 @@
 <translation id="4887024562049524730">طلب الإذن قبل السماح للمواقع الإلكترونية باستخدام جهاز الواقع الافتراضي وبياناته (إعداد مقترَح)</translation>
 <translation id="4962975101802056554">إبطال جميع الأذونات للجهاز</translation>
 <translation id="497421865427891073">انتقال للأمام</translation>
+<translation id="4976702386844183910">تاريخ آخر زيارة للموقع الإلكتروني: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">لم يتم العثور على أي جهات اتصال</translation>
 <translation id="4996978546172906250">المشاركة عن طريق</translation>
 <translation id="5039804452771397117">سماح</translation>
@@ -147,6 +148,7 @@
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
 <translation id="5186036860380548585">يمكنك العثور على خيار حفظ كلمة المرور بالقرب من أعلى الشاشة.</translation>
 <translation id="5197729504361054390">ستتم مشاركة جهات الاتصال التي تختارها مع الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم.</translation>
 <translation id="528192093759286357">اسحب من الجزء العلوي والمس زر الرجوع للخروج من وضع ملء الشاشة.</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5301954838959518834">حسنًا</translation>
@@ -176,6 +178,7 @@
 <translation id="5804241973901381774">الأذونات</translation>
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5876056640971328065">إيقاف الفيديو مؤقتًا</translation>
+<translation id="5887687176710214216">تمّت زيارة الموقع الإلكتروني آخر مرة أمس.</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5922853908706496913">جارٍ مشاركة شاشتك</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
@@ -205,6 +208,7 @@
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر.}zero{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}two{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنَين (<ph name="NUM_MORE" />) آخرَين.}few{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى.}many{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر.}other{تم حظر <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر.}}</translation>
+<translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="6561560012278703671">استخدام طريقة أقل بروزًا لإرسال الإشعارات (منع رسائل الإشعارات من إزعاجك)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> غيغابايت</translation>
 <translation id="6612358246767739896">المحتوى المحمي</translation>

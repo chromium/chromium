@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Ekki er hægt að vista myndskeiðið því það er of stutt</translation>
 <translation id="3517926952904427380">Ekki tókst að taka andlitsmynd</translation>
 <translation id="3569311554794739032">Viltu örugglega fjarlægja <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Viðbótarstýringar tiltækar fyrir myndavél. Leit + ör til hægri til að fá aðgang.</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
@@ -110,6 +109,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8425673304802773841">Halla niður</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Ég skil</translation>
 <translation id="8732462232047530626">Forskoða lýsigögn</translation>
 <translation id="8815966864175525708">Skipta yfir í töku andlitsmynda</translation>
 <translation id="8828441885228359828">Halda upptöku áfram</translation>

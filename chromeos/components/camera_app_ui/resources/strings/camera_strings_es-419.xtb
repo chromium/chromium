@@ -45,7 +45,6 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="3448774564454087943">No se guardó el video porque es demasiado breve.</translation>
 <translation id="3517926952904427380">No es posible cambiar al modo vertical para tomar fotos.</translation>
 <translation id="3569311554794739032">¿Confirmas que quieres quitar <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Hay controles adicionales de cámara disponibles. Para acceder, presiona Búsqueda + flecha hacia la derecha.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Escanear el código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -110,6 +109,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Entendido</translation>
 <translation id="8732462232047530626">Obtener vista previa de metadatos</translation>
 <translation id="8815966864175525708">Cambiar al modo vertical para tomar fotos</translation>
 <translation id="8828441885228359828">Reanudar la grabación</translation>

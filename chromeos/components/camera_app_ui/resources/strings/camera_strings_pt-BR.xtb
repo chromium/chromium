@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">O vídeo não foi salvo porque é curto demais</translation>
 <translation id="3517926952904427380">Não foi possível capturar o retrato</translation>
 <translation id="3569311554794739032">Tem certeza de que quer remover <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Novos controles de câmera disponíveis. Para acessá-los, pressione Pesquisa + seta para a direita.</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Ler código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -110,6 +109,7 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8425673304802773841">Inclinar para baixo</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Entendi</translation>
 <translation id="8732462232047530626">Visualizar metadados</translation>
 <translation id="8815966864175525708">Alternar para capturar um retrato</translation>
 <translation id="8828441885228359828">Retomar gravação</translation>

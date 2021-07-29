@@ -675,7 +675,6 @@
 <translation id="1706625117072057435">Nivells de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (identificador: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Aquest és un navegador experimental. És possible que es perdin dades o que es posin en perill la privadesa i seguretat. Informa de qualsevol problema des d'Ajuda &gt; Informa d'un problema...</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1709217939274742847">Tria un tiquet per autenticar-te. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configuració de la xarxa</translation>
@@ -2140,7 +2139,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3274763671541996799">Heu activat el mode de pantalla completa.</translation>
 <translation id="3275778809241512831">En aquests moments la clau de seguretat interna no és segura. Suprimeix-la dels serveis en què l'hagis fet servir. Per resoldre aquest problema, restableix la clau de seguretat.</translation>
 <translation id="3275778913554317645">Obre com a finestra</translation>
-<translation id="3276572954285630448">Grup de pestanyes sense nom</translation>
 <translation id="3277691515294482687">Abans d'actualitzar Linux, crea una còpia de seguretat de les meves aplicacions i dels meus fitxers a la carpeta Els meus fitxers.</translation>
 <translation id="3278001907972365362">Els teus Comptes de Google requereixen atenció</translation>
 <translation id="3279092821516760512">Els contactes seleccionats poden compartir contingut amb tu quan siguis a prop. Les transferències no començaran fins que no les acceptis.</translation>
@@ -5002,7 +5000,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6429384232893414837">Error d'actualització</translation>
 <translation id="6430814529589430811">ASCII codificat en Base64, certificat únic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurarà les actualitzacions automàtiques per a tots els usuaris d'aquest equip.</translation>
-<translation id="6434104957329207050">Velocitat d'escaneig del punter</translation>
+<translation id="6434104957329207050">Velocitat de la cerca per punt</translation>
 <translation id="6434309073475700221">Descarta els canvis</translation>
 <translation id="6434325376267409267">El dispositiu s'ha d'actualitzar perquè puguis utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Mostra-ho a Web Store</translation>

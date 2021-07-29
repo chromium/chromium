@@ -1042,6 +1042,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="7577900504646297215">Gerenciar interesses</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> arquivo transferido por download}one{<ph name="FILES_DOWNLOADED_MANY" /> arquivo transferido por download}other{<ph name="FILES_DOWNLOADED_MANY" /> arquivos transferidos por download}}</translation>
+<translation id="7581273696622423628">Responder à pesquisa</translation>
 <translation id="7583262514280211622">Você encontrará sua lista de leituras aqui</translation>
 <translation id="7588219262685291874">Ativar o tema escuro quando a Economia de bateria do seu dispositivo estiver ativada</translation>
 <translation id="7593557518625677601">Abrir configs. Android e reativar sincronização do Android p/ sincronizar Chrome</translation>

@@ -686,7 +686,6 @@
 <translation id="1706625117072057435">Zoom levels</translation>
 <translation id="1708338024780164500">(Inactive)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Experimental browser! May lose data or compromise privacy or security. Please report issues with: Help &gt; 'Report an issue…'</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1709217939274742847">Choose a ticket to use for authentication. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Network settings</translation>
@@ -2156,7 +2155,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3274763671541996799">You have gone full screen.</translation>
 <translation id="3275778809241512831">Your internal security key is currently insecure. Please remove it from any services that you used it with. In order to resolve the issue, please reset the security key.</translation>
 <translation id="3275778913554317645">Open as window</translation>
-<translation id="3276572954285630448">Unnamed tab group</translation>
 <translation id="3277691515294482687">Back up my apps and files to the My Files folder before upgrading Linux.</translation>
 <translation id="3278001907972365362">Your Google Account(s) need attention</translation>
 <translation id="3279092821516760512">Selected contacts can share with you when nearby. Transfers won't start until you accept.</translation>

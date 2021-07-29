@@ -2952,11 +2952,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="4703402283970867140">Bật mô hình giảm độ sáng thông minh để kéo dài thời gian cho đến khi màn hình tối đi</translation>
 <translation id="4704958130749494760">Tự động cấp quyền cho các trang web để kết nối với thiết bị nối tiếp USB.</translation>
 <translation id="4722122254122249791">Bật chính sách Cô lập trang web cho các nguồn gốc đã xác định</translation>
-<translation id="4723122879352880315">Tùy chọn cài đặt này cho phép người dùng xác thực với một proxy được quản lý và bảo mật bằng phương thức xác thực NTLM khi sử dụng thông tin đăng nhập <ph name="PRODUCT_OS_NAME" />.
-
-      Nếu bạn tắt hoặc không đặt chính sách này, thì thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> sẽ không được dùng để xác thực mạng.
-
-      Nếu bạn bật chính sách này, thông tin đăng nhập <ph name="PRODUCT_OS_NAME" /> sẽ được dùng để xác thực mạng với một proxy được quản lý. Trong trường hợp không xác thực được bằng thông tin đăng nhập <ph name="PRODUCT_OS_NAME" />, người dùng sẽ được nhắc cung cấp thông tin đăng nhập.</translation>
 <translation id="4723829699367336876">Bật tính năng chặn tường lửa từ máy khách truy cập từ xa</translation>
 <translation id="4725528134735324213">Bật Android Backup Service</translation>
 <translation id="4725801978265372736">Yêu cầu tên của người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa phải khớp với nhau</translation>

@@ -856,6 +856,7 @@
         นโยบายนี้เลิกใช้งานแล้วใน M72 โปรดใช้ CloudManagementEnrollmentToken แทน
         </translation>
 <translation id="2113068765175018713">จำกัดเวลาใช้งานของอุปกรณ์โดยการรีบูตอัตโนมัติ</translation>
+<translation id="2116169546538119304"> นโยบายนี้เลิกใช้งานไปแล้ว โปรดกำหนดค่านโยบาย Kerberos เพื่อนำรหัสผ่านการเข้าสู่ระบบมาใช้ซ้ำแทน</translation>
 <translation id="2117990069872855599">URL ที่ระบบไปดาวน์โหลดรูปโปรไฟล์ได้</translation>
 <translation id="2124881675920287921">นโยบายนี้เลิกใช้งานแล้วใน M82 และได้นำออกจาก M85 โปรดใช้ <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> แทน การปิดใช้ <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> เทียบเท่ากับการปิดใช้ <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> การเปิดใช้ <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> หรือไม่ได้ตั้งค่าจะเทียบเท่ากับการไม่ได้ตั้งค่า <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />
 
@@ -2903,11 +2904,6 @@
 <translation id="4703402283970867140">เปิดใช้รูปแบบการหรี่แสงอัจฉริยะเพื่อขยายเวลาจนกว่าหน้าจอจะหรี่แสง</translation>
 <translation id="4704958130749494760">ให้สิทธิ์เว็บไซต์ต่างๆ โดยอัตโนมัติในการเชื่อมต่อกับอุปกรณ์ซีเรียล USB</translation>
 <translation id="4722122254122249791">เปิดใช้การแยกเว็บไซต์สำหรับต้นทางที่เจาะจง</translation>
-<translation id="4723122879352880315">การตั้งค่านี้อนุญาตให้ผู้ใช้ตรวจสอบสิทธิ์ไปยังพร็อกซีที่มีการจัดการซึ่งมีการรักษาความปลอดภัยด้วยการตรวจสอบสิทธิ์ NTLM โดยใช้ข้อมูลเข้าสู่ระบบ <ph name="PRODUCT_OS_NAME" />
-
-      หากตั้งค่านโยบายนี้เป็น "เท็จ" หรือไม่ได้ตั้งค่า ระบบจะไม่ใช้ข้อมูลเข้าสู่ระบบ <ph name="PRODUCT_OS_NAME" /> สำหรับการตรวจสอบสิทธิ์เครือข่าย
-
-      หากตั้งค่านโยบายนี้เป็น "จริง" ระบบจะใช้ข้อมูลเข้าสู่ระบบ <ph name="PRODUCT_OS_NAME" /> สำหรับการตรวจสอบสิทธิ์เครือข่ายไปยังพร็อกซีที่มีการจัดการ ในกรณีที่ตรวจสอบสิทธิ์ด้วยข้อมูลเข้าสู่ระบบ <ph name="PRODUCT_OS_NAME" /> ไม่สำเร็จ จะมีการแสดงข้อความเตือนขอข้อมูลเข้าสู่ระบบจากผู้ใช้</translation>
 <translation id="4723829699367336876">เปิดใช้งานไฟร์วอลล์ Traversal จากไคลเอ็นต์ที่เข้าถึงจากระยะไกล</translation>
 <translation id="4725528134735324213">เปิดใช้ Android Backup Service</translation>
 <translation id="4725801978265372736">กำหนดให้ชื่อผู้ใช้ในเครื่องและเจ้าของโฮสต์การเข้าถึงระยะไกลต้องตรงกัน</translation>

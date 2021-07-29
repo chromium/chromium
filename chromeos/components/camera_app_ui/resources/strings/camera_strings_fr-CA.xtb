@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Impossible d'enregistrer la vidéo parce qu'elle est trop courte</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">De nouvelles commandes sont offertes pour l'appareil photo. Utilisez les touches Rechercher+flèche vers la droite pour y accéder.</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Numériser le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -110,6 +109,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="8425673304802773841">Incliner vers le bas</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8732462232047530626">Afficher un aperçu des métadonnées</translation>
 <translation id="8815966864175525708">Bouton permettant de prendre une photo en mode Portrait</translation>
 <translation id="8828441885228359828">Reprendre l'enregistrement</translation>

@@ -855,6 +855,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
         Dit beleid is beëindigd in M72. Gebruik in plaats daarvan CloudManagementEnrollmentToken.
         </translation>
 <translation id="2113068765175018713">Uptime van apparaat beperken door automatisch opnieuw op te starten</translation>
+<translation id="2116169546538119304"> Dit beleid is beëindigd. Stel Kerberos-beleidsregels in om het wachtwoord voor inloggen te hergebruiken.</translation>
 <translation id="2117990069872855599">De URL waar de avatarafbeelding kan worden gedownload.</translation>
 <translation id="2124881675920287921">Dit beleid is beëindigd in M82 en verwijderd in M85. Gebruik in plaats hiervan <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Het uitzetten van <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> komt overeen met het uitzetten van <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Als je <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> aanzet of niet instelt, komt dit overeen met <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" /> niet instellen.
 
@@ -2907,11 +2908,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4703402283970867140">Slim dimmodel aanzetten, zodat het langer duurt tot het scherm wordt gedimd</translation>
 <translation id="4704958130749494760">Automatisch toestemming aan sites geven om verbinding te maken met seriële USB-apparaten.</translation>
 <translation id="4722122254122249791">Site-isolatie voor opgegeven oorsprongen aanzetten</translation>
-<translation id="4723122879352880315">Met deze instelling kunnen gebruikers de inloggegevens van <ph name="PRODUCT_OS_NAME" /> gebruiken om een beheerde proxy die is beveiligd met NTLM-verificatie te verifiëren.
-
-      Als je dit beleid instelt op False of niet instelt, worden de inloggegevens van <ph name="PRODUCT_OS_NAME" /> niet gebruikt voor netwerkverificatie.
-
-      Als je dit beleid instelt op True, worden de inloggegevens van <ph name="PRODUCT_OS_NAME" /> gebruikt voor netwerkverificatie van een beheerde proxy. Als verificatie met de inloggegevens van <ph name="PRODUCT_OS_NAME" /> mislukt, wordt de gebruiker gevraagd om de eigen inloggegevens op te geven.</translation>
 <translation id="4723829699367336876">Firewallpassage vanaf client voor externe toegang aanzetten</translation>
 <translation id="4725528134735324213">Android Backup Service aanzetten</translation>
 <translation id="4725801978265372736">Vereisen dat de naam van de lokale gebruiker en de eigenaar van de host voor externe toegang met elkaar overeenkomen</translation>

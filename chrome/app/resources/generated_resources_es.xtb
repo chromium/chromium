@@ -675,7 +675,6 @@
 <translation id="1706625117072057435">Niveles de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Navegador experimental. Es posible que se pierdan datos o que se vulnere la privacidad o la seguridad. Para informar de cualquier problema, ve a Ayuda &gt; Notificar un problema.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Selecciona el ticket que vas a usar para autenticarte. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configuración de red</translation>
@@ -2141,7 +2140,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3274763671541996799">Has activado el modo de pantalla completa.</translation>
 <translation id="3275778809241512831">Tu llave de seguridad interna es insegura actualmente. Elimínala de todos los servicios en los que la utilizabas. Para solucionar el problema, restablece la llave de seguridad.</translation>
 <translation id="3275778913554317645">Abrir como ventana</translation>
-<translation id="3276572954285630448">Grupo de pestañas sin nombre</translation>
 <translation id="3277691515294482687">Crear una copia de seguridad de mis aplicaciones y archivos en la carpeta Mis archivos antes de actualizar Linux</translation>
 <translation id="3278001907972365362">Parece que hay algún problema con tus cuentas de Google</translation>
 <translation id="3279092821516760512">Determinados contactos pueden compartir archivos contigo cuando estéis cerca. Las transferencias no se iniciarán hasta que las aceptes.</translation>
@@ -5981,7 +5979,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7514236770834963598">Revisa tu configuración actual de los controles más importantes de privacidad y seguridad</translation>
 <translation id="7514239104543605883">Copiar en tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
-<translation id="7514417110442087199">Añadir asignación</translation>
+<translation id="7514417110442087199">Añadir mapeo</translation>
 <translation id="751523031290522286">El administrador ha bloqueado <ph name="APP_NAME" />. Pide permiso al administrador para usar esta aplicación.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> está en pausa</translation>
 <translation id="7517063221058203587">{0,plural, =1{Actualizar dispositivo dentro de 1 minuto}other{Actualizar dispositivo dentro de # minutos}}</translation>

@@ -677,7 +677,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1706625117072057435">Tālummaiņas līmeņi</translation>
 <translation id="1708338024780164500">(Neaktīva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Eksperimentāls pārlūks! Var tikt zaudēti dati vai apdraudēta konfidencialitāte vai drošība. Lūdzu, ziņojiet par problēmām šeit: Palīdzība &gt; Ziņot par problēmu…</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (sākotnējā)</translation>
 <translation id="1709217939274742847">Izvēlieties biļeti, ko izmantot autentificēšanai. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Tīkla iestatījumi</translation>
@@ -2143,7 +2142,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3274763671541996799">Ir atvērts pilnekrāna režīms.</translation>
 <translation id="3275778809241512831">Jūsu iekšējā drošības atslēga šobrīd nav droša. Lūdzu, noņemiet drošības atslēgu no jebkādiem pakalpojumiem, kuros to izmantojāt. Lai atrisinātu šo problēmu, atiestatiet drošības atslēgu.</translation>
 <translation id="3275778913554317645">Atvērt kā logu</translation>
-<translation id="3276572954285630448">Ciļņu grupa bez nosaukuma</translation>
 <translation id="3277691515294482687">Pirms Linux jaunināšanas dublēt manas lietotnes un failus mapē Mani faili.</translation>
 <translation id="3278001907972365362">Pievērsiet uzmanību savam(-iem) Google kontam(-iem).</translation>
 <translation id="3279092821516760512">Atlasītās kontaktpersonas var kopīgot ar jums saturu, kad tās atrodas tuvumā. Satura pārsūtīšana tiks sāka tikai pēc jūsu apstiprinājuma.</translation>

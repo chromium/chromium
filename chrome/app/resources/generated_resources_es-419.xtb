@@ -672,7 +672,6 @@
 <translation id="1706625117072057435">Niveles de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">¡Navegador experimental! Es posible que se pierdan datos o se ponga en riesgo la seguridad o la privacidad. Para informar problemas, usa la opción Ayuda &gt; "Informar un problema…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Elige un ticket para usar en la autenticación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configuración de red</translation>
@@ -2138,7 +2137,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3274763671541996799">Has activado el modo de pantalla completa.</translation>
 <translation id="3275778809241512831">Por el momento, tu llave de seguridad interna no es segura. Quítala de los servicios donde la hayas usado. Para resolver este problema, restablécela.</translation>
 <translation id="3275778913554317645">Abrir como ventana</translation>
-<translation id="3276572954285630448">Grupo de pestañas sin nombre</translation>
 <translation id="3277691515294482687">Crear una copia de seguridad de mis apps y archivos en la carpeta Mis archivos antes de actualizar a Linux.</translation>
 <translation id="3278001907972365362">Tus Cuentas de Google necesitan atención</translation>
 <translation id="3279092821516760512">Ciertos contactos pueden compartir contenido contigo cuando están cerca. Las transferencias no comenzarán hasta que las aceptes.</translation>

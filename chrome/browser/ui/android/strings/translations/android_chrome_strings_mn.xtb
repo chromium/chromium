@@ -13,6 +13,7 @@
 <translation id="107147699690128016">Хэрэв та файлын өргөтгөлийг өөрчилбөл файлыг өөр хэрэглээний программ дээр нээж болох бөгөөд таны төхөөрөмжид аюултай байж болзошгүй.</translation>
 <translation id="1095761715416917775">Та синк хийх өгөгдөлдөө үргэлж хандах боломжтой эсэхээ шалгана уу</translation>
 <translation id="1100066534610197918">Бүлэгт шинэ табад нээнэ үү</translation>
+<translation id="1103142993930332957">Chrome-г сайжруулахад туслах уу?</translation>
 <translation id="1105960400813249514">Дэлгэцийн зураг авах</translation>
 <translation id="1110914759170138831">Тодруулгыг богиносгосон</translation>
 <translation id="1111673857033749125">Таны бусад төхөөрөмжид хадгалсан хавчуурга энд харагдах болно</translation>
@@ -523,6 +524,7 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="4411535500181276704">Lite горим</translation>
 <translation id="4415276339145661267">Google Бүртгэлээ удирдах</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
+<translation id="4450672886426705087">Google-н хайлтын илэрц.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> чихтэй хуудсыг хаах</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />-д хавчуулсан</translation>
 <translation id="4472118726404937099">Төхөөрөмжүүдийг синк хийж хувийн болгохын тулд нэвтрээд синкийг асаана уу</translation>
@@ -1040,6 +1042,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="756809126120519699">Chrome-н өгөгдлийг устгасан</translation>
 <translation id="7577900504646297215">Сонирхлыг удирдах</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл татсан}other{<ph name="FILES_DOWNLOADED_MANY" /> файл татсан}}</translation>
+<translation id="7581273696622423628">Судалгаа бөглөх</translation>
 <translation id="7583262514280211622">Та унших жагсаалтаа эндээс олох болно</translation>
 <translation id="7588219262685291874">Таны төхөөрөмжийн Батарей хэмнэгч асаалттай үед бараан загварыг асаана</translation>
 <translation id="7593557518625677601">Chrome синкийг эхлүүлхийн тулд Андройдын тохиргоог нээж, Андройд системийн синкийг дахин идэвхжүүлнэ үү</translation>

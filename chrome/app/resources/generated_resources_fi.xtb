@@ -685,7 +685,6 @@
 <translation id="1706625117072057435">Zoomaustasot</translation>
 <translation id="1708338024780164500">(Ei-aktiivinen)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (tunnus: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Kokeellinen selain. Dataa saatetaan menettää tai yksityisyys tai turvallisuus voivat vaarantua. Ilmoita ongelmista kohdassa Ohje &gt; "Ilmoita ongelmasta…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivitarkkuus)</translation>
 <translation id="1709217939274742847">Valitse todennukseen käytettävä tukipyyntö. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Verkkoasetukset</translation>
@@ -2155,7 +2154,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3274763671541996799">Koko näytön tila on käytössä.</translation>
 <translation id="3275778809241512831">Sisäinen suojausavaimesi ei ole tällä hetkellä turvallinen. Poista se palveluista, joissa käytit sitä. Nollaa suojausavain ongelman ratkaisemiseksi.</translation>
 <translation id="3275778913554317645">Avaa ikkunana</translation>
-<translation id="3276572954285630448">Nimetön välilehtiryhmä</translation>
 <translation id="3277691515294482687">Varmuuskopioi sovellukseni ja tiedostoni Omiin tiedostoihin ennen Linuxin päivittämistä.</translation>
 <translation id="3278001907972365362">Google-tilisi vaativat toimenpiteitä</translation>
 <translation id="3279092821516760512">Valitut kontaktit voivat jakaa sinulle sisältöä ollessaan lähistöllä. Siirtoa ei aloiteta ilman hyväksyntääsi.</translation>

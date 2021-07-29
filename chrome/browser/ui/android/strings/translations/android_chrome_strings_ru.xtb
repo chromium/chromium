@@ -1041,6 +1041,7 @@
 <translation id="756809126120519699">Данные Chrome удалены</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
+<translation id="7581273696622423628">Пройти опрос</translation>
 <translation id="7583262514280211622">Здесь вы найдете свой список для чтения</translation>
 <translation id="7588219262685291874">Использовать тёмную тему, когда включен режим энергосбережения</translation>
 <translation id="7593557518625677601">Откройте настройки Android и снова включите синхронизацию системы</translation>

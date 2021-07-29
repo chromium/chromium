@@ -525,6 +525,7 @@
 <translation id="156793199942386351">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1568323446248056064">打开显示设备设置</translation>
+<translation id="1571738973904005196">查看标签页：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
@@ -669,7 +670,6 @@
 <translation id="1706625117072057435">缩放级别</translation>
 <translation id="1708338024780164500">（无效）</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />（ID：<ph name="ID_PH" />）</translation>
-<translation id="1708860176443612387">实验性浏览器！可能会丢失数据或有损私密性/安全性。若要报告问题，请使用“帮助”&gt;“报告问题…”。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1709217939274742847">选择用于进行身份验证的票据。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">网络设置</translation>
@@ -2133,7 +2133,6 @@
 <translation id="3274763671541996799">您已进入全屏模式。</translation>
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
-<translation id="3276572954285630448">未命名的标签页组</translation>
 <translation id="3277691515294482687">在升级 Linux 之前，将我的应用和文件备份到“我的文件”文件夹。</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帐号</translation>
 <translation id="3279092821516760512">附近的所选联系人可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
@@ -5618,6 +5617,7 @@
 <translation id="7117247127439884114">重新登录...</translation>
 <translation id="711840821796638741">显示托管书签</translation>
 <translation id="711902386174337313">读取您登录过的设备的列表</translation>
+<translation id="711985611146095797">您可在此页面中管理您已登录的 Google 帐号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非已连接 VPN，否则 Chrome 浏览器和 Android 流量将被屏蔽</translation>
 <translation id="7120865473764644444">无法连接到同步服务器。正在重试…</translation>
 <translation id="7121438501124788993">开发者模式</translation>
@@ -6090,6 +6090,7 @@
 <translation id="7639914187072011620">未能从服务器中提取 SAML 重定向网址</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 会使用您保存的密码让您自动登录到符合条件的网站。</translation>
 <translation id="7641513591566880111">新配置文件名称</translation>
+<translation id="764178579712141045">已添加 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
@@ -7151,6 +7152,7 @@
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8757090071857742562">无法投射桌面，请查看您是否已确认开始共享屏幕的提示。</translation>
 <translation id="8757203080302669031">此标签页正在主动搜寻蓝牙设备。</translation>
+<translation id="8757368836647541092">已移除<ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8758418656925882523">启用语音输入（说话即可输入）</translation>
 <translation id="8759408218731716181">无法设置多帐号登录</translation>
 <translation id="8759753423332885148">了解详情。</translation>

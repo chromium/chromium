@@ -675,7 +675,6 @@
 <translation id="1706625117072057435">Yakınlaştırma seviyeleri</translation>
 <translation id="1708338024780164500">(Etkin değil)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (Kimlik: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Deneysel tarayıcı. Veri kaybına veya gizlilik ya da güvenlik ihlaline neden olabilir. Lütfen sorunları Yardım &gt; "Sorun bildir..." bölümünden bildirin.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Yerel)</translation>
 <translation id="1709217939274742847">Kimlik doğrulama için kullanılacak bir bilet seçin <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Ağ Ayarları</translation>
@@ -2139,7 +2138,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3274763671541996799">Tam ekrana geçtiniz.</translation>
 <translation id="3275778809241512831">Dahili güvenlik anahtarınız şu anda güvenli değil. Lütfen güvenlik anahtarını kullandığınız tüm hizmetlerden kaldırın. Sorunu çözmek için güvenlik anahtarını lütfen sıfırlayın.</translation>
 <translation id="3275778913554317645">Pencere olarak aç</translation>
-<translation id="3276572954285630448">Adsız Sekme Grubu</translation>
 <translation id="3277691515294482687">Linux'ı yeni sürüme geçirmeden önce hem uygulamalarımı hem de dosyalarımı Dosyalarım klasörüne yedekle.</translation>
 <translation id="3278001907972365362">Google Hesabınız/Hesaplarınız işlem gerektiriyor</translation>
 <translation id="3279092821516760512">Seçili kişiler yakındayken sizinle içerik paylaşabilirler. Siz kabul edene kadar aktarım başlamaz.</translation>

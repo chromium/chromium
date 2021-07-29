@@ -45,7 +45,6 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="3448774564454087943">Videoen blir ikke lagret, siden den er for kort</translation>
 <translation id="3517926952904427380">Kunne ikke ta bilde i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på at du vil fjerne <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Flere kamerakontroller er tilgjengelige. Trykk på søketasten + høyrepil for å se dem.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skann strekkoden</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
@@ -110,6 +109,7 @@ Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge v
 <translation id="8425673304802773841">Vipp ned</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8732462232047530626">Forhåndsvis metadata</translation>
 <translation id="8815966864175525708">Bytt til bilde i stående format</translation>
 <translation id="8828441885228359828">Gjenoppta opptaket</translation>

@@ -686,7 +686,6 @@
 <translation id="1706625117072057435">Zoomnivåer</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (id: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Detta är en experimentell webbläsare. Data kan gå förlorad, och det kan innebära en integritets- och säkerhetsrisk. Rapportera problem via Hjälp &gt; Rapportera ett problem …</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (standard)</translation>
 <translation id="1709217939274742847">Välj vilken biljett som ska användas till autentisering. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Nätverksinställningar</translation>
@@ -2156,7 +2155,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3274763671541996799">Du har aktiverat helskärmsläget.</translation>
 <translation id="3275778809241512831">Den interna säkerhetsnyckeln är i nuläget osäker. Ta bort den från alla tjänster där du har använt den. Återställ säkerhetsnyckeln för att lösa problemet.</translation>
 <translation id="3275778913554317645">Öppna som fönster</translation>
-<translation id="3276572954285630448">Namnlös flikgrupp</translation>
 <translation id="3277691515294482687">Säkerhetskopiera mina appar och filer till mappen Mina filer innan Linux uppgraderas.</translation>
 <translation id="3278001907972365362">Ditt Google-konto/dina Google-konton kräver åtgärd</translation>
 <translation id="3279092821516760512">Utvalda kontakter kan dela med dig när de är i närheten. Inga överföringar startas förrän du har godkänt dem.</translation>

@@ -526,6 +526,7 @@
 <translation id="156793199942386351">'<ph name="ACTION" />' ક્રિયાને '<ph name="CURRENTKEY" />' કી પહેલેથી સોંપવામાં આવી છે. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
 <translation id="1567993339577891801">JavaScript કન્સોલ</translation>
 <translation id="1568323446248056064">ડિસ્પ્લે ડિવાઇસ સેટિંગ ખોલો</translation>
+<translation id="1571738973904005196">આ ટૅબ જુઓ: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (અતિથિ)</translation>
 <translation id="1572266655485775982">વાઇ-ફાઇ ચાલુ</translation>
 <translation id="1572876035008611720">તમારું ઇમેઇલ દાખલ કરો</translation>
@@ -669,7 +670,6 @@
 <translation id="1706625117072057435">ઝૂમના સ્તર</translation>
 <translation id="1708338024780164500">(નિષ્ક્રિય)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">પ્રયોગાત્મક બ્રાઉઝર! ડેટા ગુમાવી શકાય છે અથવા પ્રાઇવસી કે સુરક્ષા સાથે ચેડાં થઈ શકે છે. આ સંબંધિત સમસ્યાની જાણ કરવા માટે, કૃપા કરીને અહીં જાઓ: સહાય &gt; "સમસ્યાની જાણ કરો…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (મૂળ)</translation>
 <translation id="1709217939274742847">પ્રમાણીકરણના ઉપયોગ માટે કોઈ ટિકિટ પસંદ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">નેટવર્ક સેટિંગ</translation>
@@ -2135,7 +2135,6 @@
 <translation id="3274763671541996799">તમે પૂર્ણ સ્ક્રીન પર ગયા છો.</translation>
 <translation id="3275778809241512831">તમારી આંતરિક સિક્યુરિટી કી હાલમાં અસુરક્ષિત છે. કૃપા કરીને તે કીને તે બધી સેવાઓમાંથી કાઢી નાખો કે જેની સાથે તમે તેનો ઉપયોગ કરતા હોય. આ સમસ્યાને હલ કરવા માટે, કૃપા કરીને સિક્યુરિટી કી રીસેટ કરો.</translation>
 <translation id="3275778913554317645">વિંડો તરીકે ખોલો</translation>
-<translation id="3276572954285630448">અનામાંકિત ટૅબ ગ્રૂપ</translation>
 <translation id="3277691515294482687">Linuxને અપગ્રેડ કરતાં પહેલાં મારી ઍપ અને ફાઇલોનું મારી ફાઇલો ફોલ્ડરમાં બૅકઅપ લો.</translation>
 <translation id="3278001907972365362">તમારા Google એકાઉન્ટ પર ધ્યાન આપવાની જરૂર છે</translation>
 <translation id="3279092821516760512">નજીકમાં હોય ત્યારે પસંદ કરેલા સંપર્કો તમારી સાથે શેર કરી શકે છે. તમે સ્વીકારશો નહીં ત્યાં સુધી ટ્રાન્સફર શરૂ થઈ શકશે નહીં.</translation>
@@ -5623,6 +5622,7 @@ USB ડિવાઇસ</translation>
 <translation id="7117247127439884114">ફરીથી સાઇન ઇન કરો...</translation>
 <translation id="711840821796638741">મેનેજ કરેલા બુકમાર્ક બતાવો</translation>
 <translation id="711902386174337313">તમારા સાઇન ઇન કરેલા ઉપકરણોની સૂચિને વાંચો</translation>
+<translation id="711985611146095797">આ પેજ તમને તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરવાની મંજૂરી આપે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">જ્યાં સુધી VPNથી કનેક્ટ થવામાં ન આવે, ત્યાં સુધી Chrome બ્રાઉઝર અને Android ટ્રાફિક બ્લૉક કરવામાં આવશે</translation>
 <translation id="7120865473764644444">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી. ફરી પ્રયાસ કરી રહ્યાં છે...</translation>
 <translation id="7121438501124788993">ડેવલપર મોડ</translation>
@@ -6095,6 +6095,7 @@ USB ડિવાઇસ</translation>
 <translation id="7639914187072011620">સર્વરમાંથી SAML રીડાયરેક્ટ URL લાવવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />, તમને તમે સાચવેલા પાસવર્ડ વડે યોગ્ય હોય તેવી સાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરે છે.</translation>
 <translation id="7641513591566880111">નવું પ્રોફાઇલ નામ</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" />ને ઉમેર્યા</translation>
 <translation id="7642778300616172920">સંવેદનશીલ કન્ટેન્ટ છુપાવો</translation>
 <translation id="7643842463591647490">{0,plural, =1{# વિંડો ખોલો}one{# વિંડો ખોલો}other{# વિંડો ખોલો}}</translation>
 <translation id="7643932971554933646">સાઇટને ફાઇલો જોવાની મંજૂરી આપીએ?</translation>
@@ -7151,6 +7152,7 @@ USB ડિવાઇસ</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="8757090071857742562">ડેસ્કટોપ કાસ્ટ કરવામાં અસમર્થ.  તમે તમારી સ્ક્રીનને શેર કરવાનું શરૂ કરવા માટેના સંકેતની પુષ્ટિ કરી છે કે કેમ તે ચકાસો.</translation>
 <translation id="8757203080302669031">આ ટૅબ સક્રિય રીતે બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરી રહ્યું છે.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" />ને કાઢી નાખ્યા</translation>
 <translation id="8758418656925882523">સાંભળીને લખવાનું ચાલુ કરો (લખવા માટે બોલો)</translation>
 <translation id="8759408218731716181">બહુવિધ સાઇન-ઇન સેટ કરી શકતાં નથી</translation>
 <translation id="8759753423332885148">વધુ જાણો.</translation>

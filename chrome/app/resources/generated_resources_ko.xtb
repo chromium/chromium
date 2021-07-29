@@ -686,7 +686,6 @@
 <translation id="1706625117072057435">확대/축소 수준</translation>
 <translation id="1708338024780164500">(비활성)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />(ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">실험용 브라우저입니다. 데이터가 손실되거나 개인 정보 보호 또는 보안 문제가 발생할 수 있습니다. 문제가 발생하면 도움말 &gt; '문제 신고...'에서 신고해 주세요.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)</translation>
 <translation id="1709217939274742847">인증에 사용할 티켓을 선택하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">네트워크 설정</translation>
@@ -2156,7 +2155,6 @@
 <translation id="3274763671541996799">전체화면으로 전환되었습니다.</translation>
 <translation id="3275778809241512831">현재 내부 보안 키가 안전하지 않습니다. 키를 사용한 모든 서비스에서 키를 삭제하세요. 문제를 해결하려면 보안 키를 재설정하시기 바랍니다.</translation>
 <translation id="3275778913554317645">창으로 열기</translation>
-<translation id="3276572954285630448">이름이 지정되지 않은 탭 그룹</translation>
 <translation id="3277691515294482687">Linux를 업그레이드하기 전에 앱과 파일을 내 파일 폴더에 백업합니다.</translation>
 <translation id="3278001907972365362">Google 계정에 주의가 필요합니다.</translation>
 <translation id="3279092821516760512">선택한 연락처의 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>

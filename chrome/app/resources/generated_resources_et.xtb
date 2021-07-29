@@ -678,7 +678,6 @@
 <translation id="1706625117072057435">Suumitasemed</translation>
 <translation id="1708338024780164500">(Passiivne)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Katseline brauser! Andmed võivad kaduma minna, privaatsus või turvalisus võib olla ohustatud. Teavitage probleemidest valikutega Abi &gt; „Probleemist teavitamine …”.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (omaeraldusvõime)</translation>
 <translation id="1709217939274742847">Valige pilet, mida autentimiseks kasutada. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Võrguseaded</translation>
@@ -2147,7 +2146,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3274763671541996799">Lülitasite täisekraanile.</translation>
 <translation id="3275778809241512831">Teie sisemine turvavõti on praegu ebaturvaline. Eemaldage see kõigist teenustest, kus seda kasutanud olete. Probleemi lahendamiseks lähtestage turvavõti.</translation>
 <translation id="3275778913554317645">Ava aknana</translation>
-<translation id="3276572954285630448">Nimeta vahelehegrupp</translation>
 <translation id="3277691515294482687">Varunda minu rakendused ja failid enne Linuxi versiooni uuendamist kausta Minu failid.</translation>
 <translation id="3278001907972365362">Teie Google'i kontod vajavad tähelepanu</translation>
 <translation id="3279092821516760512">Valitud kontaktid saavad läheduses olles teiega jagada. Ülekandeid ei alustata enne, kui nõusoleku annate.</translation>

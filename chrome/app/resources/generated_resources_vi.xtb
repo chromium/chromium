@@ -686,7 +686,6 @@
 <translation id="1706625117072057435">Mức thu phóng</translation>
 <translation id="1708338024780164500">(Không hoạt động)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Trình duyệt thử nghiệm! Bạn có thể bị mất dữ liệu hay bị xâm phạm quyền riêng tư hoặc sự bảo mật. Vui lòng báo cáo sự cố tại phần: Trợ giúp &gt; "Báo cáo sự cố...".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Gốc)</translation>
 <translation id="1709217939274742847">Chọn một phiếu để dùng cho việc xác thực. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Cài đặt mạng</translation>
@@ -2156,7 +2155,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3274763671541996799">Bạn đang ở chế độ toàn màn hình.</translation>
 <translation id="3275778809241512831">Khóa bảo mật nội bộ của bạn hiện không an toàn. Vui lòng xóa khóa khỏi mọi dịch vụ mà bạn đã dùng khóa đó. Để khắc phục sự cố này, vui lòng đặt lại khóa bảo mật.</translation>
 <translation id="3275778913554317645">Mở dưới dạng cửa sổ</translation>
-<translation id="3276572954285630448">Nhóm thẻ chưa đặt tên</translation>
 <translation id="3277691515294482687">Sao lưu ứng dụng và tệp vào thư mục Tệp của tôi trước khi nâng cấp Linux.</translation>
 <translation id="3278001907972365362">Bạn cần chú ý đến Tài khoản Google của mình</translation>
 <translation id="3279092821516760512">Những người liên hệ mà bạn đã chọn có thể chia sẻ với bạn khi họ ở gần. Quá trình truyền tệp sẽ bắt đầu khi bạn chấp nhận.</translation>

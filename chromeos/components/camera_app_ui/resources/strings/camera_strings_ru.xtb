@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Видео не сохранено, так как оно слишком короткое.</translation>
 <translation id="3517926952904427380">Не удалось сделать вертикальное фото.</translation>
 <translation id="3569311554794739032">Удалить файл <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Доступны дополнительные настройки камеры. Чтобы перейти к ним, нажмите Поиск + Стрелка вправо.</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканировать штрихкод</translation>
 <translation id="3892148308691398805">Копировать текст</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">Наклонить вниз</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Готово</translation>
 <translation id="8732462232047530626">Просмотр метаданных</translation>
 <translation id="8815966864175525708">Перейти к созданию вертикального фото</translation>
 <translation id="8828441885228359828">Продолжить запись</translation>

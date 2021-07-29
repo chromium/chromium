@@ -1041,6 +1041,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil har laddats ned}other{<ph name="FILES_DOWNLOADED_MANY" /> filer har laddats ned}}</translation>
+<translation id="7581273696622423628">Svara på enkäten</translation>
 <translation id="7583262514280211622">Du hittar läslistan här</translation>
 <translation id="7588219262685291874">Aktivera mörkt tema när enhetens batterisparläge är på</translation>
 <translation id="7593557518625677601">Återaktivera synkronisering i Android-inställningarna så börjar Chrome synkas</translation>

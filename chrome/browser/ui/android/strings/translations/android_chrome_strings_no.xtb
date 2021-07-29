@@ -1036,6 +1036,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="756809126120519699">Chrome-dataene er slettet</translation>
 <translation id="7577900504646297215">Administrer interesser</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fil er lastet ned}other{<ph name="FILES_DOWNLOADED_MANY" /> filer er lastet ned}}</translation>
+<translation id="7581273696622423628">Besvar undersøkelsen</translation>
 <translation id="7583262514280211622">Her finner du leselisten din</translation>
 <translation id="7588219262685291874">Slå på mørkt tema når batterisparing er på</translation>
 <translation id="7593557518625677601">Start Chrome-synkronisering ved å slå på synkronisering i Android-innstillingene</translation>

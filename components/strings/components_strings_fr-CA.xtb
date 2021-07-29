@@ -990,9 +990,11 @@
 <translation id="443121186588148776">Port série</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> n'a pas accepté votre certificat de connexion, ou il se peut qu'aucun certificat de connexion n'ait été fourni.</translation>
 <translation id="4432792777822557199">Les pages en <ph name="SOURCE_LANGUAGE" /> seront désormais traduites en <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="4433642172056592619">Ignoré parce que l'utilisateur n'est pas affilié à la gestion de l'appareil ou l'appareil n'est pas géré.</translation>
 <translation id="4434045419905280838">Fenêt. context. et redirections</translation>
 <translation id="4435702339979719576">Carte postale</translation>
 <translation id="443673843213245140">L'utilisation d'un mandataire est désactivée, mais une configuration de mandataire explicite est spécifiée.</translation>
+<translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4451135742916150903">Les sites peuvent demander à se connecter à des appareils HID</translation>
 <translation id="4460315069258617173">Autorisée jusqu'à ce que vous fermiez tous les onglets pour ce site</translation>
 <translation id="4464826014807964867">Sites Web avec des données fournies par votre organisation</translation>

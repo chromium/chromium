@@ -1041,6 +1041,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="756809126120519699">Chrome podaci su obrisani</translation>
 <translation id="7577900504646297215">Upravljajte interesovanjima</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Preuzeli ste <ph name="FILES_DOWNLOADED_ONE" /> datoteku}one{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteku}few{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteke}other{Preuzeli ste <ph name="FILES_DOWNLOADED_MANY" /> datoteka}}</translation>
+<translation id="7581273696622423628">Prikaži anketu</translation>
 <translation id="7583262514280211622">Ovde ćete pronaći listu za čitanje</translation>
 <translation id="7588219262685291874">Uključi tamnu temu kada je Ušteda baterije na uređaju uključena</translation>
 <translation id="7593557518625677601">Otvorite Android podešavanja i ponovo omogućite sinhronizaciju Android sistema da biste započeli Chrome sinhronizaciju</translation>

@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1600964289716072707">Сканерге басқа бетті қойып, "Сканерлеу" түймесін бассаңыз, бет қосылады.</translation>
 <translation id="1621067168122174824">Заряд тексерісін іске қосу</translation>
+<translation id="1639239467298939599">Жүктелуде</translation>
 <translation id="1641857168437328880">Құжат беруші (бір жақты)</translation>
 <translation id="1644574205037202324">Тарих</translation>
 <translation id="1662989795263954667">Тоқтатылды: сия бітіп қалды</translation>
@@ -318,6 +319,7 @@
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
 <translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>

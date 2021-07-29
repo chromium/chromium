@@ -676,7 +676,6 @@
 <translation id="1706625117072057435">Niveluri de zoom</translation>
 <translation id="1708338024780164500">(Inactivă)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Browser experimental! Poate să piardă date ori să compromită confidențialitatea sau securitatea. Raportează problemele accesând Ajutor &gt; Raportează o problemă…</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativă)</translation>
 <translation id="1709217939274742847">Alege un tichet pe care să îl folosești pentru autentificare. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Setări de rețea</translation>
@@ -2142,7 +2141,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3274763671541996799">Ați intrat în modul ecran complet.</translation>
 <translation id="3275778809241512831">Cheia de securitate internă nu este sigură. Elimină cheia din toate serviciile cu care ai folosit-o. Pentru a rezolva problema, resetează cheia de securitate.</translation>
 <translation id="3275778913554317645">Deschide ca fereastră</translation>
-<translation id="3276572954285630448">Grup de file nedenumit</translation>
 <translation id="3277691515294482687">Fă backup aplicațiilor și fișierelor în dosarul Fișierele mele înainte să faci upgrade la Linux.</translation>
 <translation id="3278001907972365362">Trebuie să te ocupi de Conturile Google.</translation>
 <translation id="3279092821516760512">Persoanele de contact selectate îți pot trimite fișiere când sunt în apropiere. Transferurile nu vor începe până când nu accepți.</translation>

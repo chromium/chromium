@@ -2922,11 +2922,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="4703402283970867140">Ekranın karartma süresini uzatmak için akıllı karartma modelini etkinleştir</translation>
 <translation id="4704958130749494760">Sitelere, USB seri cihazlara bağlanmak için otomatik olarak izin ver.</translation>
 <translation id="4722122254122249791">Site İzolasyonu'nu belirtilen kaynaklar için etkinleştirme</translation>
-<translation id="4723122879352880315">Bu ayar, kullanıcıların <ph name="PRODUCT_OS_NAME" /> oturum açma kimlik bilgilerini kullanarak NTLM kimlik doğrulaması güvenliğine sahip yönetilen proxy'de kimlik doğrulaması yapmalarına olanak tanır.
-
-      Bu politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgileri ağ kimlik doğrulaması için kullanılmaz.
-
-      Bu politika, Doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgileri yönetilen proxy'de ağ kimlik doğrulaması için kullanılır. <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgileriyle kimlik doğrulama başarısız olursa kullanıcıya kimlik bilgileri sorulur.</translation>
 <translation id="4723829699367336876">Uzaktan erişim istemcisinden güvenlik duvarı geçişini etkinleştir</translation>
 <translation id="4725528134735324213">Android Backup Service'ı etkinleştir</translation>
 <translation id="4725801978265372736">Yerel kullanıcının adı ile uzak erişim ana makinesi sahibinin adının aynı olmasını gerektir</translation>

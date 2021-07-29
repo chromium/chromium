@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
 <translation id="1600964289716072707">ପୃଷ୍ଠା ଯୋଗ କରିବା ପାଇଁ ଅନ୍ୟ ଏକ ପୃଷ୍ଠାକୁ ସ୍କାନରରେ ରଖି 'ସ୍କାନ୍ କରନ୍ତୁ'କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
+<translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641857168437328880">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଗୋଟିଏ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="1644574205037202324">ଇତିବୃତ୍ତି</translation>
 <translation id="1662989795263954667">ବନ୍ଦ ହୋଇଯାଇଛି - ସ୍ୟାହି ସରିଯାଇଛି</translation>
@@ -319,6 +320,7 @@
 <translation id="7059230779847288458">ଚାର୍ଜ କରାଯାଉଛି, ପୂର୍ଣ୍ଣ ହେବାକୁ <ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
 <translation id="708426984172631313">ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>

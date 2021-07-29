@@ -45,7 +45,6 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="3448774564454087943">Videoja nuk është ruajtur duke qenë se është shumë e shkurtër</translation>
 <translation id="3517926952904427380">Nuk mund të nxjerrësh një fotografi portret</translation>
 <translation id="3569311554794739032">Vërtet dëshiron të heqësh <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Ofrohen kontrolle shtesë të kamerës. Kërko + Shigjeta djathtas për të pasur qasje.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skano bardkodin</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
@@ -110,6 +109,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8425673304802773841">Ano për poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8732462232047530626">Shiko paraprakisht të dhënat meta</translation>
 <translation id="8815966864175525708">Kalo te nxjerrja e fotografisë portret</translation>
 <translation id="8828441885228359828">Rifillo regjistrimin</translation>

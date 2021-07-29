@@ -2941,11 +2941,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4703402283970867140">Ativar modelo de escurecimento inteligente para aumentar o tempo que a tela permanece ativa</translation>
 <translation id="4704958130749494760">Permitir automaticamente que os sites se conectem a dispositivos seriais USB.</translation>
 <translation id="4722122254122249791">Ativar o isolamento de sites para origens específicas</translation>
-<translation id="4723122879352880315">Esta configuração permite que os usuários autentiquem para um proxy gerenciado com autenticação NTLM usando as credenciais de login do <ph name="PRODUCT_OS_NAME" />.
-
-      Se a política for definida como "Falsa" ou não for definida, as credenciais de login do <ph name="PRODUCT_OS_NAME" /> não serão usadas para a autenticação de rede.
-
-      Se a política for definida como "Verdadeira", as credenciais de login do <ph name="PRODUCT_OS_NAME" /> serão usadas para a autenticação de rede para um proxy gerenciado. Em caso de falha da autenticação com as credenciais de login do <ph name="PRODUCT_OS_NAME" />, o usuário precisará fornecer as credenciais.</translation>
 <translation id="4723829699367336876">Habilitar passagem de firewall a partir do cliente de acesso remoto</translation>
 <translation id="4725528134735324213">Ativar o Android Backup Service</translation>
 <translation id="4725801978265372736">Exigir correspondência entre o nome do usuário local e o proprietário do host de acesso remoto</translation>

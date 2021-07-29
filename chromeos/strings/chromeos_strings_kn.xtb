@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
 <translation id="1600964289716072707">ಸ್ಕ್ಯಾನರ್‌ನಲ್ಲಿ ಇನ್ನೊಂದು ಪುಟವನ್ನು ಇರಿಸಿ ಮತ್ತು ಪುಟವನ್ನು ಸೇರಿಸಲು ಸ್ಕ್ಯಾನ್ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
+<translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1641857168437328880">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಒಂದು-ಬದಿಯದ್ದು)</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
 <translation id="1662989795263954667">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
@@ -318,6 +319,7 @@
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
 <translation id="708426984172631313">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{ಸರ್ವರ್ ಹೆಸರು}one{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}other{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}}</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="714876143603641390">LAN ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಿಕೆ</translation>

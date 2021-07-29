@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Video sa neuložilo, pretože je príliš krátke</translation>
 <translation id="3517926952904427380">Nepodarilo sa nasnímať portrétovú fotku</translation>
 <translation id="3569311554794739032">Naozaj chcete odstrániť <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">K dispozícii je ďalšie ovládanie kamery. Otvoríte ho klávesmi Hľadať + šípka doprava.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovať čiarový kód</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
@@ -110,6 +109,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="8425673304802773841">Naklonenie nadol</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="8732462232047530626">Zobraziť ukážku metadát</translation>
 <translation id="8815966864175525708">Prepnúť na nasnímanie portrétovej fotky</translation>
 <translation id="8828441885228359828">Pokračovať v nahrávaní</translation>

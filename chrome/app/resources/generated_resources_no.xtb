@@ -679,7 +679,6 @@
 <translation id="1706625117072057435">Zoomnivåer</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Eksperimentell nettleser! Det kan forekomme tap av data eller brudd på personvernet eller sikkerheten. Rapportér problemer via Hjelp &gt; «Rapportér et problem».</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1709217939274742847">Velg en sak som skal brukes til autentisering. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Nettverksinnstillinger</translation>
@@ -2147,7 +2146,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3274763671541996799">Du bruker full skjerm.</translation>
 <translation id="3275778809241512831">Den interne sikkerhetsnøkkelen din er ikke sikker. Fjern den fra eventuelle tjenester du har brukt den på. For å løse problemet må du tilbakestille sikkerhetsnøkkelen.</translation>
 <translation id="3275778913554317645">Åpne som vindu</translation>
-<translation id="3276572954285630448">Fanegruppe uten navn</translation>
 <translation id="3277691515294482687">Sikkerhetskopiér appene og filene mine til Mine filer-mappen før Linux oppgraderes.</translation>
 <translation id="3278001907972365362">Sjekk Google-kontoen(e) din(e)</translation>
 <translation id="3279092821516760512">Kontakter du velger, kan dele med deg når de er i nærheten. Overføringer starter ikke før du godtar.</translation>

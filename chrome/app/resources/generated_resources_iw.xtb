@@ -685,7 +685,6 @@
 <translation id="1706625117072057435">רמות מרחק מתצוגה</translation>
 <translation id="1708338024780164500">(לא פעיל)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (מזהה: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">דפדפן ניסיוני! השימוש בו עלול לגרום לאובדן נתונים ולסכן את ההגנה על הפרטיות והאבטחה. אפשר לדווח על בעיות דרך 'עזרה' &gt; "דיווח על בעיה…".</translation>
 <translation id="1709106626015023981">‏<ph name="WIDTH" />‏ x ‏<ph name="HEIGHT" />‏ (מקורי)</translation>
 <translation id="1709217939274742847">בחירת כרטיס שישמש לאימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">הגדרות רשת</translation>
@@ -2156,7 +2155,6 @@
 <translation id="3274763671541996799">עברת למסך מלא.</translation>
 <translation id="3275778809241512831">מפתח האבטחה הפנימי לא מאובטח כרגע. יש להסיר אותו מכל השירותים שבהם השתמשת בו. כדי לפתור את הבעיה, יש לאפס את מפתח האבטחה.</translation>
 <translation id="3275778913554317645">פתיחה כחלון</translation>
-<translation id="3276572954285630448">קבוצת כרטיסיות ללא שם</translation>
 <translation id="3277691515294482687">‏אני רוצה לגבות את האפליקציות והקבצים שלי לתיקיית 'הקבצים שלי' לפני שאשדרג את Linux.</translation>
 <translation id="3278001907972365362">‏כדאי לבדוק אם צריך לבצע פעולה כלשהי בחשבונות Google שלך</translation>
 <translation id="3279092821516760512">אנשי הקשר שנבחרו יוכלו לשתף איתך כשהם יימצאו בקרבת מקום. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>

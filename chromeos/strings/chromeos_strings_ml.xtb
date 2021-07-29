@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
 <translation id="1600964289716072707">സ്കാനറിൽ മറ്റൊരു പേജ് വയ്‌ക്കുക, പേജ് ചേർക്കാൻ സ്‌കാൻ ചെയ്യുക തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
+<translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
@@ -318,6 +319,7 @@
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="708426984172631313">നിർത്തി</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{നെയിം സെർവർ}other{നെയിം സെർവറുകൾ}}</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="714876143603641390">LAN കണക്റ്റിവിറ്റി</translation>

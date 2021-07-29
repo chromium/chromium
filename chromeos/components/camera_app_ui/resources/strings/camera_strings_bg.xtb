@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Видеоклипът не е запазен, тъй като е прекалено кратък</translation>
 <translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
-<translation id="3733597664308256288">Налице са допълнителни контроли за камерата. За достъп натиснете клавиша „търсене“ + стрелката за надясно.</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Сканиране на баркод</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">Накланяне надолу</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8687491812650032292">HD при <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8732462232047530626">Преглед на метаданните</translation>
 <translation id="8815966864175525708">Превключвател за правене на вертикална снимка</translation>
 <translation id="8828441885228359828">Възобновяване на записа</translation>

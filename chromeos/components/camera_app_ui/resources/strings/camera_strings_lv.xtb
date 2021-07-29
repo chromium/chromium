@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Videoklips netika saglabāts, jo tas ir pārāk īss.</translation>
 <translation id="3517926952904427380">Nevar uzņemt portretu</translation>
 <translation id="3569311554794739032">Vai tiešām vēlaties noņemt failu <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Ir pieejamas papildu kameras vadīklas. Lai piekļūtu tām, vienlaikus nospiediet meklēšanas taustiņu un labo bulttaustiņu.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenēt svītrkodu</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
@@ -110,6 +109,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8425673304802773841">Pavirzīt lejup</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8732462232047530626">Priekšskatīt metadatus</translation>
 <translation id="8815966864175525708">Pārslēgt uz portretu uzņemšanu</translation>
 <translation id="8828441885228359828">Atsākt ierakstīšanu</translation>

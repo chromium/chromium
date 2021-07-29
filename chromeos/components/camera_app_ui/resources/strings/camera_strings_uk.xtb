@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Відео не збережено, оскільки воно закоротке</translation>
 <translation id="3517926952904427380">Не вдалося зробити портретне фото</translation>
 <translation id="3569311554794739032">Видалити файл "<ph name="FILE" />"?</translation>
-<translation id="3733597664308256288">Доступні додаткові елементи керування камерою. Щоб перейти до них, натисніть клавішу пошуку + стрілку вправо.</translation>
 <translation id="3810838688059735925">Відео</translation>
 <translation id="3838931309141338733">Сканувати штрих-код</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">Нахилити донизу</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Виконано</translation>
 <translation id="8732462232047530626">Переглянути метадані</translation>
 <translation id="8815966864175525708">Перейти в режим портретного фото</translation>
 <translation id="8828441885228359828">Відновити запис</translation>

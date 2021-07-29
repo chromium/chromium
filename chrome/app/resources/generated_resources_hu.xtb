@@ -686,7 +686,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1706625117072057435">Nagyítási/kicsinyítési szintek</translation>
 <translation id="1708338024780164500">(Inaktív)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (azonosító: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Kísérleti böngésző! Adatvesztés, illetve adatvédelmi vagy biztonsági probléma léphet fel. A hibákat a Súgó „Probléma bejelentése...” pontjában jelentheti be.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> képpont (natív)</translation>
 <translation id="1709217939274742847">Válassza ki a hitelesítéshez használni kívánt jegyet. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="1709762881904163296">Hálózati beállítások</translation>
@@ -2154,7 +2153,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3274763671541996799">Teljes képernyős módra váltott.</translation>
 <translation id="3275778809241512831">A belső biztonsági hardverkulcs jelenleg nem biztonságos. Távolítsa el az összes olyan szolgáltatásból, amelyben használja. A probléma megoldásához állítsa vissza alaphelyzetbe.</translation>
 <translation id="3275778913554317645">Megnyitás ablakként</translation>
-<translation id="3276572954285630448">Névtelen lapcsoport</translation>
 <translation id="3277691515294482687">Alkalmazásaim és fájljaim biztonsági mentése a Saját fájlok mappába a Linux frissítése előtt.</translation>
 <translation id="3278001907972365362">Google-fiókjaival kapcsolatban teendői akadtak</translation>
 <translation id="3279092821516760512">A kiválasztott ismerősök tartalmakat oszthatnak meg Önnel, amikor a közelben vannak. Az elfogadásig nem kezdődik meg az átküldés.</translation>

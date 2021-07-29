@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">Videon sparas inte eftersom den är för kort</translation>
 <translation id="3517926952904427380">Det gick inte att ta porträttfoto</translation>
 <translation id="3569311554794739032">Vill du ta bort <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Ytterligare kamerakontroller tillgängliga. Tryck på Sök + högerpil för att få åtkomst.</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Läs av streckkod</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
@@ -110,6 +109,7 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8425673304802773841">Vrid nedåt</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8732462232047530626">Förhandsgranska metadata</translation>
 <translation id="8815966864175525708">Byt till att ta porträttfoto</translation>
 <translation id="8828441885228359828">Återuppta inspelning</translation>

@@ -328,7 +328,7 @@
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用和移動相機</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> 已遭封鎖</translation>
-<translation id="1356178530321889280">在網站上瀏覽及購物時，先按一下滑鼠右鍵再選取 [使用 Google 智慧鏡頭搜尋頁面上的部分內容] 即可搜尋網站的任意區域，進一步瞭解你看到的圖像內容。</translation>
+<translation id="1356178530321889280">在網站上瀏覽及購物時，先按一下右鍵再選取 [使用「Google 智能鏡頭」搜尋頁面上的部分內容] 即可搜尋網站的任何區域，進一步瞭解您看到的影像內容。</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
 <translation id="1359923111303110318">你可以用 Smart Lock 解鎖裝置。㩒 Enter 掣就可以解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
@@ -685,7 +685,6 @@
 <translation id="1706625117072057435">縮放等級</translation>
 <translation id="1708338024780164500">(無法使用)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (識別碼：<ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">實驗版瀏覽器！此功能可能會令您失去資料，或導致您的私隱或安全受到威脅。請按一下 [說明] &gt; [報告問題…] 以報告問題。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1709217939274742847">選擇用作驗證的票證。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">網絡設定</translation>
@@ -2155,7 +2154,6 @@
 <translation id="3274763671541996799">您已進入全螢幕模式。</translation>
 <translation id="3275778809241512831">您目前的內部安全密鑰並不安全。請將其從所有您使用此密鑰的服務中移除。如要解決此問題，請重設安全密鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
-<translation id="3276572954285630448">未命名的分頁群組</translation>
 <translation id="3277691515294482687">在升級 Linux 前備份應用程式和檔案至「我的檔案」資料夾。</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帳戶</translation>
 <translation id="3279092821516760512">所選聯絡人在附近時可與您分享內容。您必須選擇接受，系統才能傳送檔案。</translation>
@@ -4595,7 +4593,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有書籤(&amp;N)}=1{在新視窗中開啟書籤(&amp;N)}other{在新視窗中開啟全部 {COUNT} 個書籤(&amp;N)}}</translation>
 <translation id="5965661248935608907">這個擴充功能也會管制您在使用 [主頁] 按鈕或網址列搜尋時所顯示的網頁。</translation>
-<translation id="5968022600320704045">找不到相符的搜尋結果</translation>
+<translation id="5968022600320704045">沒有相符的搜尋結果</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> 可查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="5969728632630673489">閂咗鍵盤快速鍵通知</translation>
 <translation id="5971037678316050792">控制藍牙介面卡狀態與連線配對功能</translation>
@@ -5405,7 +5403,7 @@
 <translation id="6855892664589459354">Crostini 備份與還原</translation>
 <translation id="6856348640027512653">不允許使用虛擬實境﻿裝置或資料</translation>
 <translation id="6856623341093082836">設定和調整觸控螢幕的準確度</translation>
-<translation id="6856850379840757744">這項功能開啟後，系統會將所有通知設為靜音</translation>
+<translation id="6856850379840757744">此功能開啟後，系統會將所有通知設定為靜音</translation>
 <translation id="6857145580237920905">在執行 Powerwash 前移除 eSIM 卡設定檔</translation>
 <translation id="6857699260879628349">取得設定資料</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
@@ -6384,7 +6382,7 @@
 <translation id="7886605625338676841">eSIM 卡</translation>
 <translation id="7887334752153342268">複製</translation>
 <translation id="7887864092952184874">已配對藍牙滑鼠</translation>
-<translation id="7889371445710865055">變更語音輸入語言</translation>
+<translation id="7889371445710865055">變更語音聽寫語言</translation>
 <translation id="7890147169288018054">查看網絡資料，例如您的 IP 或 MAC 位址</translation>
 <translation id="7893008570150657497">存取您電腦中的相片、音樂及其他媒體</translation>
 <translation id="7893153962594818789">這部 <ph name="DEVICE_TYPE" /> 已關閉藍牙功能。請輸入您的密碼並開啟藍牙功能。</translation>

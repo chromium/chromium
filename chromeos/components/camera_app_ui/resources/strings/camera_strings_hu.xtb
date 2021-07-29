@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">A videót nem mentette a rendszer, mert túl rövid</translation>
 <translation id="3517926952904427380">Nem sikerült álló fényképet készíteni</translation>
 <translation id="3569311554794739032">Biztosan eltávolítja a következő fájlt: <ph name="FILE" />?</translation>
-<translation id="3733597664308256288">Újabb kameravezérlők állnak rendelkezésre. Megtekintésükhöz nyomja le a Keresés + Jobbra nyíl billentyűparancsot.</translation>
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3838931309141338733">Vonalkód beolvasása</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
@@ -110,6 +109,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8425673304802773841">Billentés lefelé</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> × <ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Sikerült</translation>
 <translation id="8732462232047530626">Metaadatok előnézete</translation>
 <translation id="8815966864175525708">Váltás álló fotó készítésére</translation>
 <translation id="8828441885228359828">Felvétel folytatása</translation>

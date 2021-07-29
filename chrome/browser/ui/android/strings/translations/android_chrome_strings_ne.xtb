@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome को विशेषताका सर्टकटहरू</translation>
 <translation id="1344653310988386453">हाइलाइट गरिएको पाठको लिंक समावेश गर्नुहोस्</translation>
 <translation id="1347468774581902829">क्रियाकलाप व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1352771733366526411">सबै विन्डोहरू व्यवस्थापन गर्नुहोस् (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="1360432990279830238">साइन आउट गरी सिंक निष्क्रिय पार्ने हो?</translation>
 <translation id="1373696734384179344">चयन गरिएको सामग्री डाउनलोड गर्नको लागि मेमोरी अपर्याप्त।</translation>
 <translation id="1376578503827013741">हिसाब गर्दै…</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome ले अब फाइलहरू अझ छिटो डाउनलोड गर्छ</translation>
 <translation id="1877026089748256423">Chrome को मिति समाप्त भएको छ</translation>
 <translation id="1883903952484604915">मेरा फाइलहरू</translation>
+<translation id="1888378517829496315">सबै विन्डोहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="189358972401248634">अन्य भाषाहरू</translation>
 <translation id="1918175104945982129">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI आधा उचाइमा खोलिएको छ</translation>
 <translation id="1919130412786645364">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
@@ -638,6 +640,7 @@
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5139940364318403933">Google Drive प्रयोग गर्ने तरिका सिक्नुहोस्</translation>
+<translation id="5142281402488957685">नयाँ समाचार रिफ्रेस गर्न तलतिर तान्नुहोस्</translation>
 <translation id="5152843274749979095">समर्थन गरिने कुनै एप स्थापना गरिएको छैन</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक छ</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{१ डाउनलोड असफल भयो।}other{# डाउनलोडहरू असफल भए।}}</translation>
@@ -678,6 +681,7 @@
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> मा <ph name="ONE_TIME_CODE" /> पेस गर्ने हो?</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="5423934151118863508">तपाईँले धेरै भ्रमण गर्नुभएका पृष्ठहरू यहाँ देखिने छन्।</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जि.बि. उपलब्ध छ</translation>
 <translation id="543338862236136125">पासवर्ड सम्पादन गर्नुहोस्</translation>
@@ -945,6 +949,7 @@
 <translation id="6979737339423435258">सुरूबाट नै</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="6989267951144302301">डाउनलोड गर्न सकिएन</translation>
+<translation id="6992232929048168262">फुल स्क्रिन मोडमा खोल्नुहोस्</translation>
 <translation id="6995899638241819463">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिइन्छ</translation>
 <translation id="7001056293070445572">यो फाइल ठुलो (<ph name="FILE_SIZE" />) छ</translation>
 <translation id="7022756207310403729">ब्राउजरमा खाेल्नुहाेस्</translation>
@@ -1035,6 +1040,7 @@
 <translation id="756809126120519699">Chrome को डेटालाई खाली गरियो</translation>
 <translation id="7577900504646297215">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड गरियो}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइलहरू डाउनलोड गरिए}}</translation>
+<translation id="7581273696622423628">सर्वेक्षणमा भाग लिनुहोस्</translation>
 <translation id="7583262514280211622">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
 <translation id="7588219262685291874">तपाईंको डिभाइसमा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
 <translation id="7593557518625677601">Chrome सिंकलाई सुरु गर्न Android का सेटिङहरू खोल्नुहोस् र Android को प्रणालीसम्बन्धी सिंकलाई पुन:सक्षम पार्नुहोस्</translation>
@@ -1229,6 +1235,7 @@
 <translation id="8683081248374354009">समूह रिसेट गर्नुहोस्</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
+<translation id="8701921397542715895">छेउको विन्डोमा चलिरहेको छ</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>

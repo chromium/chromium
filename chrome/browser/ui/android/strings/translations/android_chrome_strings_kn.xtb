@@ -63,6 +63,7 @@
 <translation id="1332501820983677155">Google Chrome ವೈಶಿಷ್ಟ್ಯ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="1344653310988386453">ಹೈಲೈಟ್ ಮಾಡಲು ಲಿಂಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1347468774581902829">ಚಟುವಟಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="1352771733366526411">ವಿಂಡೋಗಳನ್ನು (<ph name="INSTANCE_COUNTS" />) ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1360432990279830238">ಸೈನ್ ಔಟ್ ಮಾಡಿ, ಸಿಂಕ್ ಆಫ್ ಮಾಡುವುದೇ?</translation>
 <translation id="1373696734384179344">ಆಯ್ಕೆಮಾಡಲಾದ ವಿಷಯವನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಮೆಮೊರಿಯು ಸಾಕಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1376578503827013741">ಲೆಕ್ಕ ಮಾಡುತ್ತಿದೆ...</translation>
@@ -127,6 +128,7 @@
 <translation id="1868024384445905608">Chrome ಈಗ ಫೈಲ್‌ಗಳನ್ನು ವೇಗವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="1877026089748256423">Chrome ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="1883903952484604915">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
+<translation id="1888378517829496315">ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="189358972401248634">ಇತರೆ ಭಾಷೆಗಳು</translation>
 <translation id="1918175104945982129">Assistant ಧ್ವನಿ ಹುಡುಕಾಟ ಸಮ್ಮತಿಯ UI ಅನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1919130412786645364">Chrome ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
@@ -638,6 +640,7 @@
 <translation id="5123685120097942451">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
 <translation id="5132942445612118989">ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="5139940364318403933">Google ಡ್ರೈವ್‌‌ ಅನ್ನು ಹೇಗೆ ಬಳಸುವುದು ಎಂದು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
+<translation id="5142281402488957685">ಹೊಸ ಸ್ಟೋರಿಗಳಿಗಾಗಿ, ರಿಫ್ರೆಶ್ ಮಾಡಲು ಕೆಳಗೆ ಎಳೆಯಿರಿ</translation>
 <translation id="5152843274749979095">ಯಾವುದೇ ಬೆಂಬಲಿತ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ಥಾಪಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5161254044473106830">ಶೀರ್ಷಿಕೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ಡೌನ್‌ಲೋಡ್‌ ವಿಫಲವಾಗಿದೆ.}one{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ವಿಫಲವಾಗಿವೆ.}other{# ಡೌನ್‌ಲೋಡ್‌ಗಳು ವಿಫಲವಾಗಿವೆ.}}</translation>
@@ -678,6 +681,7 @@
 <translation id="5403644198645076998">ಕೆಲವು ಸೈಟ್‌ಗಳಿಗೆ ಮಾತ್ರ ಅನುಮತಿಸಿ</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> ನಲ್ಲಿ <ph name="ONE_TIME_CODE" /> ಕೋಡ್ ಅನ್ನು ಸಲ್ಲಿಸಬೇಕೆ?</translation>
 <translation id="5414836363063783498">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="5422131281116357878">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="5423934151118863508">ನಿವು ಹೆಚ್ಚು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ಲಭ್ಯವಿದೆ</translation>
 <translation id="543338862236136125">ಪಾಸ್‌ವರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -945,6 +949,7 @@
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
 <translation id="6989267951144302301">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಲಿಲ್ಲ</translation>
+<translation id="6992232929048168262">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6995899638241819463">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಿಂದಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡಲಾಗುತ್ತದೆ</translation>
 <translation id="7001056293070445572">ಈ ಫೈಲ್ ದೊಡ್ಡದಾಗಿದೆ (<ph name="FILE_SIZE" />)</translation>
 <translation id="7022756207310403729">ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -1035,6 +1040,7 @@
 <translation id="756809126120519699">Chrome ಡೇಟಾ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7577900504646297215">ಆಸಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}one{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}other{<ph name="FILES_DOWNLOADED_MANY" /> ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7581273696622423628">ಸಮೀಕ್ಷೆಯನ್ನು ಕೈಗೊಳ್ಳಿ</translation>
 <translation id="7583262514280211622">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="7588219262685291874">ನಿಮ್ಮ ಸಾಧನದ ಬ್ಯಾಟರಿ ಸೇವರ್ ಆನ್ ಆಗಿರುವಾಗ, ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="7593557518625677601">Android ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು Chrome ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು Android ಸಿಸ್ಟಂ ಸಿಂಕ್ ಮರು-ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -1229,6 +1235,7 @@
 <translation id="8683081248374354009">ಗುಂಪನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8699120352855309748">ಈ ಭಾಷೆಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
+<translation id="8701921397542715895">ಪಕ್ಕದ ವಿಂಡೋದಲ್ಲಿ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>

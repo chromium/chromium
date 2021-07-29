@@ -45,7 +45,6 @@
 <translation id="3448774564454087943">동영상이 너무 짧아 저장할 수 없습니다.</translation>
 <translation id="3517926952904427380">세로 모드 사진을 찍을 수 없습니다.</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> 파일을 삭제하시겠습니까?</translation>
-<translation id="3733597664308256288">추가 카메라 제어 기능을 사용할 수 있습니다. 검색 키와 오른쪽 화살표 키를 사용하여 액세스하세요.</translation>
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3838931309141338733">바코드 스캔</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
@@ -110,6 +109,7 @@
 <translation id="8425673304802773841">아래로 기울이기</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">확인</translation>
 <translation id="8732462232047530626">메타데이터 미리보기</translation>
 <translation id="8815966864175525708">세로 모드 사진 촬영으로 전환</translation>
 <translation id="8828441885228359828">녹화 재개</translation>

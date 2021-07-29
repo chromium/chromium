@@ -689,7 +689,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1706625117072057435">Ravni povečave/pomanjšave</translation>
 <translation id="1708338024780164500">(Neaktivno)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Preizkusni brskalnik. Morda se bodo izgubili podatki ali bo ogrožena zasebnost ali varnost. Težave prijavite v Pomoč &gt; »Prijava težave …«.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
 <translation id="1709217939274742847">Izberite kartonček za preverjanje pristnosti. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Omrežne nastavitve</translation>
@@ -2159,7 +2158,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3274763671541996799">Odprli ste način celotnega zaslona.</translation>
 <translation id="3275778809241512831">Vaš notranji varnostni ključ trenutno ni varen. Odstranite ga iz storitev, s katerimi ga uporabljate. Ponastavite varnostni ključ, da težavo odpravite.</translation>
 <translation id="3275778913554317645">Odpri kot okno</translation>
-<translation id="3276572954285630448">Neimenovana skupina zavihkov</translation>
 <translation id="3277691515294482687">Pred nadgradnjo Linuxa varnostno kopiraj moje aplikacije in datoteke v mapo Moje datoteke.</translation>
 <translation id="3278001907972365362">V računih Google je potrebno ukrepanje</translation>
 <translation id="3279092821516760512">Izbrani stiki lahko delijo z vami, ko so v bližini. Prenosi se ne začnejo, dokler ne sprejmete.</translation>

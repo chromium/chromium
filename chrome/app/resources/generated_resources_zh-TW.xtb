@@ -675,7 +675,6 @@
 <translation id="1706625117072057435">縮放等級</translation>
 <translation id="1708338024780164500">(無法使用)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID：<ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">歡迎使用實驗性瀏覽器！請注意，使用這個瀏覽器有遺失資料的風險，也可能對安全性或隱私權產生不良影響。如有問題，請依序按一下 [說明] &gt; [回報問題…] 進行回報。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1709217939274742847">選擇要用於驗證的票證。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">網路設定</translation>
@@ -2141,7 +2140,6 @@
 <translation id="3274763671541996799">你已進入全螢幕模式。</translation>
 <translation id="3275778809241512831">你的內部安全金鑰目前有安全疑慮，請將該金鑰從所有搭配使用的服務中移除。如要解決此問題，請重設安全金鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
-<translation id="3276572954285630448">未命名的分頁群組</translation>
 <translation id="3277691515294482687">先將我的應用程式和檔案備份至「我的檔案」資料夾，再升級 Linux。</translation>
 <translation id="3278001907972365362">你的 Google 帳戶有狀況需處理</translation>
 <translation id="3279092821516760512">指定聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>

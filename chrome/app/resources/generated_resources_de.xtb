@@ -321,10 +321,12 @@
 <translation id="1347512539447549782">Linux-Speicher</translation>
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1353275871123211385">Wenn Sie Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Gerätenutzungsdauer verwenden möchten, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Sie können später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
+<translation id="135389172849514421">Funktioniert im Offlinemodus</translation>
 <translation id="1353980523955420967">PPD kann nicht gefunden werden. Vergewissern Sie sich, dass Ihr Chromebook online ist und versuchen Sie es noch einmal.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
 <translation id="1355088139103479645">Alle Daten löschen?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ist blockiert</translation>
+<translation id="1356178530321889280">Klicken Sie mit der rechten Maustaste und wählen Sie „Mit Google Lens auf einem Teil der Seite suchen“, um in einem beliebigen Bereich der Website zu suchen und mehr über die visuellen Inhalte zu erfahren, die Sie beim Surfen und Einkaufen im Internet sehen.</translation>
 <translation id="1358741672408003399">Rechtschreibung und Grammatik</translation>
 <translation id="1359923111303110318">Ihr Gerät kann mit Smart Lock entsperrt werden. Drücken Sie zum Entsperren die Eingabetaste.</translation>
 <translation id="1361164813881551742">Manuell hinzufügen</translation>
@@ -525,6 +527,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="156793199942386351">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücken Sie zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="1567993339577891801">JavaScript-Konsole</translation>
 <translation id="1568323446248056064">Displayeinstellungen öffnen</translation>
+<translation id="1571738973904005196">Tab <ph name="TAB_ORIGIN" /> ansehen</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Gast)</translation>
 <translation id="1572266655485775982">WLAN-Aktivierung</translation>
 <translation id="1572876035008611720">E-Mail-Adresse eingeben</translation>
@@ -669,7 +672,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1706625117072057435">Zoomstufen</translation>
 <translation id="1708338024780164500">(Inaktiv)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Dies ist ein experimenteller Browser. Es besteht die Gefahr, dass Sie Daten verlieren oder Ihre Privatsphäre oder Sicherheit kompromittiert wird. Melden Sie Probleme über „Hilfe“ &gt; „Problem melden…“.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
 <translation id="1709217939274742847">Wählen Sie ein Ticket für die Authentifizierung aus. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netzwerkeinstellungen</translation>
@@ -1442,6 +1444,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2509495747794740764">Der Wert für die Skalierung muss zwischen 10 und 200 liegen.</translation>
 <translation id="2509566264613697683">8-fach</translation>
 <translation id="2510988373360790637">Bluetooth-Gerät entfernen</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (ausgewählt)</translation>
 <translation id="2513396635448525189">Anmeldebild</translation>
 <translation id="2514326558286966059">Mit dem Fingerabdruck schneller entsperren</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2134,7 +2137,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3274763671541996799">Sie befinden sich im Vollbildmodus.</translation>
 <translation id="3275778809241512831">Ihr interner Sicherheitsschlüssel ist momentan nicht sicher. Bitte entfernen Sie den Schlüssel aus allen Diensten, für die Sie ihn verwendet haben, und setzen Sie ihn zurück, um das Problem zu beheben.</translation>
 <translation id="3275778913554317645">In neuem Fenster öffnen</translation>
-<translation id="3276572954285630448">Unbenannte Tabgruppe</translation>
 <translation id="3277691515294482687">Meine Apps und Dateien vor dem Upgrade von Linux im Ordner "Meine Dateien" sichern.</translation>
 <translation id="3278001907972365362">Ihre Google-Konten erfordern Aufmerksamkeit</translation>
 <translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
@@ -2349,6 +2351,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3495496470825196617">Inaktivität beim Aufladen</translation>
 <translation id="3495660573538963482">Google Assistant-Einstellungen</translation>
 <translation id="3496213124478423963">Verkleinern</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (nicht ausgewählt)</translation>
 <translation id="3497501929010263034">USB-Gerät von <ph name="VENDOR_NAME" /> (Produkt <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle teilen</translation>
 <translation id="3498215018399854026">Wir können deinen Vater bzw. deine Mutter momentan nicht erreichen. Bitte versuche es später noch einmal.</translation>
@@ -4109,6 +4112,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5449551289610225147">Ungültiges Passwort</translation>
 <translation id="5449588825071916739">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5449716055534515760">Fen&amp;ster schließen</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (funktioniert im Offlinemodus)</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5457459357461771897">Fotos, Musik und andere Medien auf Ihrem Computer lesen und löschen</translation>
@@ -4569,6 +4573,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (Spitzenwert <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Alle in &amp;neuem Fenster öffnen}=1{In &amp;neuem Fenster öffnen}other{Alle ({COUNT}) in &amp;neuem Fenster öffnen}}</translation>
 <translation id="5965661248935608907">Die Erweiterung legt auch fest, welche Seite bei der Suche über die Omnibox angezeigt wird oder wenn Sie auf die Schaltfläche "Startseite" klicken.</translation>
+<translation id="5968022600320704045">Keine Suchergebnisse</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" /> kann Dateien in "<ph name="FOLDERNAME" />" lesen</translation>
 <translation id="5969728632630673489">Benachrichtigung zu Tastenkombinationen wurde geschlossen</translation>
 <translation id="5971037678316050792">Bluetooth-Adapterstatus und -Kopplung steuern</translation>
@@ -5378,6 +5383,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6855892664589459354">Crostini-Sicherung und ‑Wiederherstellung</translation>
 <translation id="6856348640027512653">Dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
 <translation id="6856623341093082836">Touchscreen einrichten und Genauigkeit anpassen</translation>
+<translation id="6856850379840757744">Bei Aktivierung der Funktion werden alle Benachrichtigungen stummgeschaltet</translation>
 <translation id="6857145580237920905">eSIM-Profile vor dem Powerwash entfernen</translation>
 <translation id="6857699260879628349">Konfigurationsinformationen abrufen</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
@@ -5618,6 +5624,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7117247127439884114">Erneut anmelden...</translation>
 <translation id="711840821796638741">Verwaltete Lesezeichen anzeigen</translation>
 <translation id="711902386174337313">Liste der angemeldeten Geräte lesen</translation>
+<translation id="711985611146095797">Auf dieser Seite können Sie Ihre angemeldeten Google-Konten verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome- und Android-Traffic wird blockiert, wenn keine Verbindung mit einem VPN besteht</translation>
 <translation id="7120865473764644444">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden. Neuer Versuch...</translation>
 <translation id="7121438501124788993">Entwicklermodus</translation>
@@ -6090,6 +6097,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7639914187072011620">Die SAML-Weiterleitungs-URL konnte nicht vom Server abgerufen werden</translation>
 <translation id="764017888128728">Mit <ph name="PASSWORD_MANAGER_BRAND" /> werden Sie mit Ihren gespeicherten Passwörtern automatisch auf allen entsprechenden Websites angemeldet.</translation>
 <translation id="7641513591566880111">Neuer Profilname</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> hinzugefügt</translation>
 <translation id="7642778300616172920">Vertrauliche Inhalte ausblenden</translation>
 <translation id="7643842463591647490">{0,plural, =1{# offenes Fenster}other{# offene Fenster}}</translation>
 <translation id="7643932971554933646">Website erlauben, diese Dateien zu lesen?</translation>
@@ -6353,6 +6361,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Duplizieren</translation>
 <translation id="7887864092952184874">Bluetooth-Maus ist gekoppelt</translation>
+<translation id="7889371445710865055">Eingabesprache ändern</translation>
 <translation id="7890147169288018054">Netzwerkinformationen wie Ihre IP- oder MAC-Adresse anzeigen</translation>
 <translation id="7893008570150657497">Auf Fotos, Musik und andere Medien auf Ihrem Computer zugreifen</translation>
 <translation id="7893153962594818789">Bluetooth ist auf diesem <ph name="DEVICE_TYPE" /> deaktiviert. Geben Sie Ihr Passwort ein und aktivieren Sie Bluetooth.</translation>
@@ -7151,6 +7160,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
 <translation id="8756969031206844760">Passwort aktualisieren?</translation>
 <translation id="8757090071857742562">Der Desktop kann nicht gestreamt werden. Überprüfen Sie, ob Sie die Aufforderung zum Teilen Ihres Bildschirms bestätigt haben.</translation>
 <translation id="8757203080302669031">Auf diesem Tab wird aktiv nach Bluetooth-Geräten gesucht.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> entfernt</translation>
 <translation id="8758418656925882523">Diktierfunktion aktivieren (zum Tippen sprechen)</translation>
 <translation id="8759408218731716181">Mehrfachanmeldung kann nicht eingerichtet werden</translation>
 <translation id="8759753423332885148">Weitere Informationen</translation>

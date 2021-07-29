@@ -34,6 +34,7 @@
 <translation id="1510238584712386396">Isiqalisi</translation>
 <translation id="1600964289716072707">Beka elinye ikhasi kuskena bese ukhetha okuthi Skena ukwengeza ikhasi.</translation>
 <translation id="1621067168122174824">Qalisa ukuhlola kokushaja</translation>
+<translation id="1639239467298939599">Iyalayisha</translation>
 <translation id="1641857168437328880">Isiphakeli Sedokhumenti (Uhlangothi olulodwa)</translation>
 <translation id="1644574205037202324">Umlando</translation>
 <translation id="1662989795263954667">Imile - Uyinki uphelile</translation>
@@ -319,6 +320,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7059230779847288458">Iyashaja, <ph name="TIME_VALUE" /> ize igcwale</translation>
 <translation id="708426984172631313">KUMISIWE</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{Igama leseva}one{Igama lamaseva}other{Igama lamaseva}}</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
 <translation id="714876143603641390">Ukuxhumana kwe-LAN</translation>

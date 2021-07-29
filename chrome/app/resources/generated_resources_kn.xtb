@@ -324,10 +324,12 @@
 <translation id="1347512539447549782">Linux ಸಂಗ್ರಹಣೆ</translation>
 <translation id="1347975661240122359">ಬ್ಯಾಟರಿ <ph name="BATTERY_LEVEL" />% ಪ್ರಮಾಣ ತಲುಪಿದಾಗ ಅಪ್‌ಡೇಟ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ.</translation>
 <translation id="1353275871123211385">ಆ್ಯಪ್ ಅನುಮೋದನೆ ಮತ್ತು ವೀಕ್ಷಣಾ ಅವಧಿ ಮಿತಿಗಳಂತಹ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಬಳಸಲು, ಮಗುವು ಪೋಷಕರು ನಿರ್ವಹಿಸುವ Google ಖಾತೆಯೊಂದನ್ನು ಹೊಂದಿರಬೇಕು. Google Classroom ನಂತಹ ಪರಿಕರಗಳಿಗಾಗಿ ಶಾಲಾ ಖಾತೆಯನ್ನು ನಂತರ ಸೇರಿಸಬಹುದು.</translation>
+<translation id="135389172849514421">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="1353980523955420967">PPD ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ Chromebook ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಂಡು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1354045473509304750">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸರಿಸಲು <ph name="HOST" /> ಗೆ ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="1355088139103479645">ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="1356178530321889280">ನೀವು ವೆಬ್‌ನಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಮತ್ತು ಶಾಪ್ ಮಾಡುವಾಗ ನೀವು ನೋಡುವ ದೃಶ್ಯ ವಿಷಯದ ಬಗ್ಗೆ ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು ಸೈಟ್‌ನ ಯಾವುದೇ ಪ್ರದೇಶವನ್ನು ಹುಡುಕಲು ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು “Google Lens ಬಳಸಿ ಪುಟದ ಭಾಗವನ್ನು ಹುಡುಕಿ” ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="1358741672408003399">ಕಾಗುಣಿತ ಮತ್ತು ವ್ಯಾಕರಣ</translation>
 <translation id="1359923111303110318">Smart Lock ಬಳಸಿಕೊಂಡು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಬಹುದು. ಅನ್‌ಲಾಕ್ ಮಾಡಲು Enter ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="1361164813881551742">ಹಸ್ತಚಾಲಿತವಾಗಿ ಸೇರಿಸು</translation>
@@ -533,6 +535,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ಅನ್ನು ಈಗಾಗಲೇ '<ph name="ACTION" />' ಕ್ರಿಯೆಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="1567993339577891801">JavaScript ಕನ್ಸೋಲ್</translation>
 <translation id="1568323446248056064">ಡಿಸ್‌ಪ್ಲೇ ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="1571738973904005196"><ph name="TAB_ORIGIN" /> ಟ್ಯಾಬ್ ನೋಡಿ</translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (ಅತಿಥಿ)</translation>
 <translation id="1572266655485775982">ವೈ-ಫೈ ಸಕ್ರಿಯ</translation>
 <translation id="1572876035008611720">ನಿಮ್ಮ ಇಮೇಲ್ ನಮೂದಿಸಿ</translation>
@@ -677,7 +680,6 @@
 <translation id="1706625117072057435">ಝೂಮ್ ಹಂತಗಳು</translation>
 <translation id="1708338024780164500">(ಸಕ್ರಿಯವಲ್ಲದ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">ಪ್ರಾಯೋಗಿಕ ಬ್ರೌಸರ್! ಡೇಟಾವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಗೌಪ್ಯತೆ ಅಥವಾ ಸುರಕ್ಷತೆಗೆ ಧಕ್ಕೆ ಉಂಟು ಮಾಡಬಹುದು. ಯಾವುದೇ ಸಮಸ್ಯೆಗಳಿದ್ದರೆ, ಸಹಾಯ &gt; "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ..." ನಲ್ಲಿ ವರದಿ ಮಾಡಿ.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಸ್ಥಳೀಯ)</translation>
 <translation id="1709217939274742847">ದೃಢೀಕರಣಕ್ಕಾಗಿ ಬಳಸಲು ಟಿಕೆಟ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -1453,6 +1455,7 @@
 <translation id="2509495747794740764">ಸ್ಕೇಲ್ ಪ್ರಮಾಣವು 10 ಮತ್ತು 200 ನಡುವಿನ ಸಂಖ್ಯೆಯಾಗಿರಬೇಕು.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">ಬ್ಲೂಟೂತ್ ಸಾಧನವನ್ನು ಅಳಿಸಿ</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="2513396635448525189">ಲಾಗಿನ್ ಚಿತ್ರ</translation>
 <translation id="2514326558286966059">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಮೂಲಕ ವೇಗವಾಗಿ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2144,7 +2147,6 @@
 <translation id="3274763671541996799">ನೀವು ಪೂರ್ಣ ಪರದೆಗೆ ಬಂದಿದ್ದೀರಿ.</translation>
 <translation id="3275778809241512831">ಪ್ರಸ್ತುತ, ನಿಮ್ಮ ಆಂತರಿಕ ಭದ್ರತೆ ಕೀ ಅಸುರಕ್ಷಿತವಾಗಿದೆ. ಅದನ್ನು ಯಾವ ಸೇವೆಗಳಲ್ಲಿ ಬಳಸಿರುವಿರೋ, ಅವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ. ಸಮಸ್ಯೆಯನ್ನು ಬಗೆಹರಿಸಲು, ಭದ್ರತೆ ಕೀಯನ್ನು ಮರುಹೊಂದಿಸಿ.</translation>
 <translation id="3275778913554317645">ವಿಂಡೊ ಅಂತೆ ತೆರೆಯಿರಿ</translation>
-<translation id="3276572954285630448">ಹೆಸರಿಸದ ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="3277691515294482687">Linux ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡುವ ಮೊದಲು, ನನ್ನ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ನನ್ನ ಫೈಲ್‌ಗಳು ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
 <translation id="3278001907972365362">ನಿಮ್ಮ Google ಖಾತೆಗಳ ಮೇಲೆ ಗಮನಹರಿಸಬೇಕಿದೆ</translation>
 <translation id="3279092821516760512">ಆಯ್ಕೆಮಾಡಲಾದ ಸಂಪರ್ಕಗಳು ಸಮೀಪದಲ್ಲಿರುವಾಗ ನಿಮ್ಮ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ನೀವು ಸಮ್ಮತಿಸುವವರೆಗೆ ವರ್ಗಾವಣೆಗಳು ಪ್ರಾರಂಭವಾಗುವುದಿಲ್ಲ.</translation>
@@ -2359,6 +2361,7 @@
 <translation id="3495496470825196617">ಚಾರ್ಜ್ ಆಗುವಾಗ ನಿಷ್ಕ್ರಿಯ ಶಕ್ತಿ</translation>
 <translation id="3495660573538963482">Google ಸಹಾಯಕ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3496213124478423963">ಝೂಮ್ ಔಟ್</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (ಆಯ್ಕೆಮಾಡಲಾಗಿಲ್ಲ)</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> ನ USB ಸಾಧನ (ಉತ್ಪನ್ನ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ಡೂಡಲ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3498215018399854026">ಈ ಕ್ಷಣದಲ್ಲಿ ನಿಮ್ಮ ಪೋಷಕರನ್ನು ತಲುಪಲು ನಮಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -4123,6 +4126,7 @@
 <translation id="5449551289610225147">ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="5449588825071916739">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ</translation>
 <translation id="5449716055534515760">&amp;ವಿಂಡೋ ಮುಚ್ಚಿರಿ</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ಜೊತೆಗೆ</translation>
 <translation id="5457113250005438886">ಅಮಾನ್ಯ</translation>
 <translation id="5457459357461771897">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಫೋಟೋಗಳು, ಸಂಗೀತ, ಮತ್ತು ಇತರ ಮಾಧ್ಯಮವನ್ನು ಓದಿರಿ ಮತ್ತು ಅಳಿಸಿ</translation>
@@ -4584,6 +4588,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ಪೀಕ್)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="5965661248935608907">ನೀವು ಹೋಮ್ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ ಅಥವಾ ಆಮ್ನಿಬಾಕ್ಸ್ ‌ನಿಂದ ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
+<translation id="5968022600320704045">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="5969419185858894314"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="5969728632630673489">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಸೂಚನೆಯನ್ನು ವಜಾಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="5971037678316050792">ಬ್ಲೂಟೂತ್‌ ಅಡಾಪ್ಟರ್ ಸ್ಥಿತಿ ಮತ್ತು ಜೋಡಿಸುವಿಕೆಯನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
@@ -5393,6 +5398,7 @@
 <translation id="6855892664589459354">Crostini ಬ್ಯಾಕಪ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ</translation>
 <translation id="6856348640027512653">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಅಥವಾ ಡೇಟಾವನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6856623341093082836">ನಿಮ್ಮ ಟಚ್‌ಸ್ಕ್ರೀನ್‌ ನಿಖರತೆಯನ್ನು ಸೆಟಪ್ ಮಾಡಿ ಮತ್ತು ಹೊಂದಿಸಿ</translation>
+<translation id="6856850379840757744">ಆನ್ ಮಾಡಿದಾಗ, ಎಲ್ಲಾ ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿಶ್ಯಬ್ಧಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6857145580237920905">ಪವರ್‌ವಾಷ್‌‌‌ನ ಮೊದಲೇ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6857699260879628349">ಕಾನ್ಫಿಗರೇಶನ್ ಮಾಹಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ಸೆ</translation>
@@ -5634,6 +5640,7 @@
 <translation id="7117247127439884114">ಪುನಃ ಸೈನ್ ಇನ್  ಮಾಡಿ...</translation>
 <translation id="711840821796638741">ನಿರ್ವಹಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="711902386174337313">ನಿಮ್ಮ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಓದಿರಿ</translation>
+<translation id="711985611146095797">ಸೈನ್ ಇನ್ ಮಾಡಿದ ನಿಮ್ಮ Google ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಈ ಪುಟವು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡದ ಹೊರತು Chrome ಬ್ರೌಸರ್ ಮತ್ತು Android ಟ್ರಾಫಿಕ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="7120865473764644444">ಸಿಂಕ್ ಸರ್ವರ್‌ಗೆ ಸಂಪರ್ಕಿಸಲಾಗಲಿಲ್ಲ. ಮರುಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7121438501124788993">ಡೆವೆಲಪರ್ ಮೋಡ್</translation>
@@ -6106,6 +6113,7 @@
 <translation id="7639914187072011620">ಸರ್ವರ್‌ನಿಂದ SAML ಮರುನಿರ್ದೇಶನದ URL ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="764017888128728">ನೀವು ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಮೂಲಕ ಅರ್ಹರಾಗಿರುವ ಸೈಟ್‌ಗಳಿಗೆ <ph name="PASSWORD_MANAGER_BRAND" /> ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="7641513591566880111">ಹೊಸ ಪ್ರೊಫೈಲ್ ಹೆಸರು</translation>
+<translation id="764178579712141045"><ph name="USER_EMAIL" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7642778300616172920">ಸೂಕ್ಷ್ಮ ವಿಷಯವನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ತೆರೆದ ವಿಂಡೋ}one{# ತೆರೆದ ವಿಂಡೋಗಳು}other{# ತೆರೆದ ವಿಂಡೋಗಳು}}</translation>
 <translation id="7643932971554933646">ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸೈಟ್‌ಗೆ ಅನುಮತಿ ನೀಡಬೇಕೇ?</translation>
@@ -6369,6 +6377,7 @@
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">ನಕಲು</translation>
 <translation id="7887864092952184874">ಬ್ಲೂಟೂತ್‌ ಮೌಸ್ ಜೋಡಿಯಾಗಿದೆ</translation>
+<translation id="7889371445710865055">ಉಕ್ತಲೇಖನ ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="7890147169288018054">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿಯನ್ನು ನೋಡಿ, ಉದಾಹರಣೆಗೆ ನಿಮ್ಮ IP ಅಥವಾ MAC ವಿಳಾಸ</translation>
 <translation id="7893008570150657497">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಫೋಟೋಗಳು, ಸಂಗೀತ ಮತ್ತು ಇತರೆ ಮಾಧ್ಯಮ ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="7893153962594818789">ಈ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಬ್ಲೂಟೂತ್‌ ಆಫ್‌ ಆಗಿದೆ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ನಮೂದಿಸಿ ಮತ್ತು ಬ್ಲೂಟೂತ್‌ ಆನ್‌ ಮಾಡಿ.</translation>
@@ -7164,6 +7173,7 @@
 <translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>
 <translation id="8757090071857742562">ಡೆಸ್ಕ್‌ಟಾಪ್ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.  ನಿಮ್ಮ ಪರದೆ ಹಂಚಿಕೊಳ್ಳುವದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನೀವು ಖಚಿತಪಡಿಸಿರುವಿರಾ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="8757203080302669031">ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗಾಗಿ ಈ ಟ್ಯಾಬ್ ಸಕ್ರಿಯವಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡುತ್ತಿದೆ.</translation>
+<translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ಅವರನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="8758418656925882523">ಉಕ್ತಲೇಖನ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ (ಟೈಪ್ ಮಾಡಲು ಮಾತನಾಡಿ)</translation>
 <translation id="8759408218731716181">ಬಹು ಸೈನ್‍-ಇನ್ ಹೊಂದಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8759753423332885148">ಮತ್ತಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
