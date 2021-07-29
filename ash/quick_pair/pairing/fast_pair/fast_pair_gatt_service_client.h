@@ -61,8 +61,8 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
   void FindGattCharacteristicsAndStartNotifySessions();
 
   std::vector<device::BluetoothRemoteGattCharacteristic*>
-  GetCharacteristicsByUUIDs(const device::BluetoothUUID uuidV1,
-                            const device::BluetoothUUID uuidV2);
+  GetCharacteristicsByUUIDs(const device::BluetoothUUID& uuidV1,
+                            const device::BluetoothUUID& uuidV2);
 
   // BluetoothRemoteGattCharacteristic StartNotifySession callbacks
   void OnNotifySession(

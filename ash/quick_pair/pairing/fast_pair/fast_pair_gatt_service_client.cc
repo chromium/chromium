@@ -107,8 +107,8 @@ void FastPairGattServiceClient::GattDiscoveryCompleteForService(
 
 std::vector<device::BluetoothRemoteGattCharacteristic*>
 FastPairGattServiceClient::GetCharacteristicsByUUIDs(
-    const device::BluetoothUUID uuidV1,
-    const device::BluetoothUUID uuidV2) {
+    const device::BluetoothUUID& uuidV1,
+    const device::BluetoothUUID& uuidV2) {
   if (!gatt_service_)
     return {};
 
