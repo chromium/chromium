@@ -4232,10 +4232,6 @@ crbug.com/595993 external/wpt/service-workers/service-worker/fetch-header-visibi
 
 crbug.com/619427 [ Mac ] fast/overflow/overflow-height-float-not-removed-crash3.html [ Failure Pass ]
 
-# [css-ui] Imported tests from W3C suite.
-crbug.com/669473 external/wpt/css/css-ui/outline-005.html [ Failure ]
-crbug.com/669473 external/wpt/css/css-ui/outline-006.html [ Failure ]
-
 crbug.com/670024 external/wpt/webmessaging/broadcastchannel/sandbox.html [ Failure ]
 crbug.com/660384 external/wpt/webmessaging/with-ports/001.html [ Failure ]
 crbug.com/660384 external/wpt/webmessaging/without-ports/001.html [ Failure ]
