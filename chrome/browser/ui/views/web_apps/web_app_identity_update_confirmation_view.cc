@@ -42,11 +42,15 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
     const SkBitmap& old_icon,
     const SkBitmap& new_icon,
     content::WebContents* web_contents,
-    web_app::AppIdentityDialogCallback callback) {
-  app_id_ = app_id;
-  web_contents_ = web_contents;
-  DCHECK(!callback.is_null());
-  callback_ = std::move(callback);
+    web_app::AppIdentityDialogCallback callback)
+    : app_id_(app_id),
+      callback_(std::move(callback)),
+      web_contents_(web_contents) {
+  DCHECK(!callback_.is_null());
+
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON));
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -62,7 +66,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
 
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   set_margins(layout_provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl, views::DialogContentType::kText));
+      views::DialogContentType::kText, views::DialogContentType::kControl));
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
 
@@ -122,6 +126,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       views::style::CONTEXT_LABEL);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label->SetMultiLine(true);
+  message_label->SizeToFit(fixed_width());
   layout->AddView(std::move(message_label));
 
   layout->AddPaddingRow(
