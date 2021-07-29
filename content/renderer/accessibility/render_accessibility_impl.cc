@@ -670,6 +670,17 @@ void RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents(
   if (!render_frame_ || !render_frame_->in_frame_tree())
     return;
 
+  // Don't send accessibility events for frames that don't yet have an tree id
+  // as doing so will cause the browser to discard that message and all
+  // subsequent ones.
+  // TODO(1231184): There are some cases where no content is currently rendered,
+  // due to an iframe returning 204 or window.stop() being called. In these
+  // cases there will never be an AXTreeID as there is no commit, which will
+  // prevent accessibility updates from ever being sent even if the rendering is
+  // fixed.
+  if (!render_frame_->GetWebFrame()->GetAXTreeID().token())
+    return;
+
   switch (event_schedule_status_) {
     case EventScheduleStatus::kScheduledDeferred:
       if (event_schedule_mode_ ==

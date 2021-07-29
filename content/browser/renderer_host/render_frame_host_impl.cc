@@ -8823,6 +8823,12 @@ void RenderFrameHostImpl::GetFeatureObserver(
 
 void RenderFrameHostImpl::BindRenderAccessibilityHost(
     mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver) {
+  // There must be an accessibility token as
+  // RenderAccessibilityImpl::ScheduleSendPendingAccessibilityEvents will only
+  // attempt to send updates once it has created one, which happens as part of
+  // the commit which in turns updates the browser's token before this method
+  // could be called.
+  DCHECK(GetAXTreeID().token());
   render_accessibility_host_ = base::SequenceBound<RenderAccessibilityHost>(
       base::FeatureList::IsEnabled(
           features::kRenderAccessibilityHostDeserializationOffMainThread)
