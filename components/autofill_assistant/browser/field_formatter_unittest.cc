@@ -32,14 +32,20 @@ namespace {
 const char kFakeUrl[] = "https://www.example.com";
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::IsSupersetOf;
+using ::testing::Not;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 void AddReplacement(ValueExpression::Chunk* chunk,
                     const std::string& match,
                     const std::string& replacement) {
   (*chunk->mutable_replacements())[match] = replacement;
 }
+}  // namespace
 
 class FieldFormatterStateMapTest : public ::testing::Test {
  public:
@@ -118,33 +124,22 @@ TEST_F(FieldFormatterStateMapTest, AlternativeStateNameForNonUS) {
   autofill::AutofillProfile state_abbr_profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(&state_abbr_profile, "John", "", "Doe", "", "",
                                  "", "", "", "BY", "", "DE", "");
-  EXPECT_EQ(*FormatString("${34}",
-                          CreateAutofillMappings(state_abbr_profile, "en-US")),
-            "BY");
-  EXPECT_EQ(*FormatString("${-6}",
-                          CreateAutofillMappings(state_abbr_profile, "en-US")),
-            "Bavaria");
+  EXPECT_THAT(CreateAutofillMappings(state_abbr_profile, "en-US"),
+              IsSupersetOf({Pair(Key(34), "BY"), Pair(Key(-6), "Bavaria")}));
 
   // State handling from state name.
   autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
                                  "", "", "", "Bavaria", "", "DE", "");
-  EXPECT_EQ(*FormatString("${34}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "BY");
-  EXPECT_EQ(*FormatString("${-6}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "Bavaria");
+  EXPECT_THAT(CreateAutofillMappings(state_name_profile, "en-US"),
+              IsSupersetOf({Pair(Key(34), "BY"), Pair(Key(-6), "Bavaria")}));
 
   // State handling for invalid cases.
   autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
                                  "", "", "", "Invalid", "", "DE", "");
-  EXPECT_EQ(FormatString("${34}",
-                         CreateAutofillMappings(state_name_profile, "en-US")),
-            absl::nullopt);
-  EXPECT_EQ(*FormatString("${-6}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "Invalid");
+  EXPECT_THAT(CreateAutofillMappings(state_name_profile, "en-US"),
+              AllOf(Not(Contains(Pair(Key(34), _))),
+                    Contains(Pair(Key(-6), "Invalid"))));
 }
 
 TEST_F(FieldFormatterStateMapTest,
@@ -182,26 +177,50 @@ TEST_F(FieldFormatterStateMapTest,
   autofill::AutofillProfile state_abbr_profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(&state_abbr_profile, "John", "", "Doe", "", "",
                                  "", "", "", "MD", "", "US", "");
-  EXPECT_EQ(*FormatString("${34}",
-                          CreateAutofillMappings(state_abbr_profile, "en-US")),
-            "MD");
-  EXPECT_EQ(*FormatString("${-6}",
-                          CreateAutofillMappings(state_abbr_profile, "en-US")),
-            "Maryland");
+  EXPECT_THAT(CreateAutofillMappings(state_abbr_profile, "en-US"),
+              IsSupersetOf({Pair(Key(34), "MD"), Pair(Key(-6), "Maryland")}));
 
   // State handling from state name.
   autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
                                  "", "", "", "Maryland", "", "US", "");
-  EXPECT_EQ(*FormatString("${34}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "MD");
-  EXPECT_EQ(*FormatString("${-6}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "Maryland");
+  EXPECT_THAT(CreateAutofillMappings(state_name_profile, "en-US"),
+              IsSupersetOf({Pair(Key(34), "MD"), Pair(Key(-6), "Maryland")}));
 }
 
-TEST(FieldFormatterTest, FormatString) {
+class FieldFormatterStringTest : public ::testing::Test {
+ public:
+  FieldFormatterStringTest() = default;
+  void SetUp() override {}
+
+ protected:
+  std::string GetKeyAsString(const Key& key) {
+    if (key.string_key.has_value()) {
+      return *key.string_key;
+    }
+    if (key.int_key.has_value()) {
+      return base::NumberToString(*key.int_key);
+    }
+    NOTREACHED();
+    return std::string();
+  }
+
+  // |FormatString| requires a std::map<std::string, std::string>, while
+  // |GetAutofillMappings| returns a std::map<Key, std::string>. This
+  // transforms the mappings from Key to std::string.
+  template <typename T>
+  std::map<std::string, std::string> CreateAutofillTestMappings(
+      const T& form_group) {
+    auto autofill_mappings = CreateAutofillMappings(form_group, "en-US");
+    std::map<std::string, std::string> test_mappings;
+    for (const auto& it : autofill_mappings) {
+      test_mappings[GetKeyAsString(it.first)] = it.second;
+    }
+    return test_mappings;
+  }
+};
+
+TEST_F(FieldFormatterStringTest, FormatString) {
   std::map<std::string, std::string> mappings = {{"keyA", "valueA"},
                                                  {"keyB", "valueB"},
                                                  {"keyC", "valueC"},
@@ -228,9 +247,117 @@ TEST(FieldFormatterTest, FormatString) {
             "${keyF}valueA");
 }
 
+TEST_F(FieldFormatterStringTest, AutofillProfile) {
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "John", "", "Doe", "editor@gmail.com", "", "203 Barfield Lane",
+      "", "Mountain View", "CA", "94043", "US", "+12345678901");
+
+  // NAME_FIRST NAME_LAST
+  EXPECT_EQ(*FormatString("${3} ${5}", CreateAutofillTestMappings(profile)),
+            "John Doe");
+
+  // PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE, PHONE_HOME_NUMBER
+  EXPECT_EQ(*FormatString("(+${12}) (${11}) ${10}",
+                          CreateAutofillTestMappings(profile)),
+            "(+1) (234) 5678901");
+
+  // Country and country code.
+  EXPECT_EQ(*FormatString("${36}", CreateAutofillTestMappings(profile)),
+            "United States");
+  EXPECT_EQ(*FormatString("${-8}", CreateAutofillTestMappings(profile)), "US");
+
+  // State handling from abbreviation.
+  EXPECT_EQ(*FormatString("${34}", CreateAutofillTestMappings(profile)), "CA");
+  EXPECT_EQ(*FormatString("${-6}", CreateAutofillTestMappings(profile)),
+            "California");
+
+  // State handling from state name.
+  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
+                                 "", "", "", "California", "", "US", "");
+  EXPECT_EQ(
+      *FormatString("${34}", CreateAutofillTestMappings(state_name_profile)),
+      "CA");
+  EXPECT_EQ(
+      *FormatString("${-6}", CreateAutofillTestMappings(state_name_profile)),
+      "California");
+
+  // Unknown state.
+  autofill::AutofillProfile unknown_state_profile(base::GenerateGUID(),
+                                                  kFakeUrl);
+  autofill::test::SetProfileInfo(&unknown_state_profile, "John", "", "Doe", "",
+                                 "", "", "", "", "XY", "", "US", "");
+  EXPECT_EQ(
+      FormatString("${34}", CreateAutofillTestMappings(unknown_state_profile)),
+      absl::nullopt);
+  EXPECT_EQ(
+      FormatString("${-6}", CreateAutofillTestMappings(unknown_state_profile)),
+      "XY");
+
+  // UNKNOWN_TYPE
+  EXPECT_EQ(FormatString("${1}", CreateAutofillTestMappings(profile)),
+            absl::nullopt);
+}
+
+TEST_F(FieldFormatterStringTest, CreditCard) {
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "John Doe",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+
+  // CREDIT_CARD_NAME_FULL
+  EXPECT_EQ(*FormatString("${51}", CreateAutofillTestMappings(credit_card)),
+            "John Doe");
+
+  // CREDIT_CARD_NUMBER
+  EXPECT_EQ(*FormatString("${52}", CreateAutofillTestMappings(credit_card)),
+            "4111111111111111");
+
+  // CREDIT_CARD_NUMBER_LAST_FOUR_DIGITS
+  EXPECT_EQ(
+      *FormatString("**** ${-4}", CreateAutofillTestMappings(credit_card)),
+      "**** 1111");
+
+  // CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR
+  EXPECT_EQ(
+      *FormatString("${53}/${54}", CreateAutofillTestMappings(credit_card)),
+      "01/50");
+
+  // CREDIT_CARD_NETWORK, CREDIT_CARD_NETWORK_FOR_DISPLAY
+  EXPECT_EQ(
+      *FormatString("${-2} ${-5}", CreateAutofillTestMappings(credit_card)),
+      "visa Visa");
+
+  // CREDIT_CARD_NON_PADDED_EXP_MONTH
+  EXPECT_EQ(*FormatString("${-7}", CreateAutofillTestMappings(credit_card)),
+            "1");
+}
+
+TEST_F(FieldFormatterStringTest, SpecialCases) {
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "John", "", "Doe", "editor@gmail.com", "", "203 Barfield Lane",
+      "", "Mountain View", "CA", "94043", "US", "+12345678901");
+
+  EXPECT_EQ(*FormatString("", CreateAutofillTestMappings(profile)),
+            std::string());
+  EXPECT_EQ(*FormatString("${3}", CreateAutofillTestMappings(profile)), "John");
+  EXPECT_EQ(FormatString("${-1}", CreateAutofillTestMappings(profile)),
+            absl::nullopt);
+  EXPECT_EQ(
+      FormatString(
+          "${" + base::NumberToString(autofill::MAX_VALID_FIELD_TYPE) + "}",
+          CreateAutofillTestMappings(profile)),
+      absl::nullopt);
+
+  // Second {} is not prefixed with $.
+  EXPECT_EQ(*FormatString("${3} {10}", CreateAutofillTestMappings(profile)),
+            "John {10}");
+}
+
 TEST(FieldFormatterTest, FormatExpression) {
-  std::map<std::string, std::string> mappings = {{"1", "valueA"},
-                                                 {"2", "val.ueB"}};
+  std::map<Key, std::string> mappings = {{Key(1), "valueA"},
+                                         {Key(2), "val.ueB"}};
   std::string result;
 
   ValueExpression value_expression_1;
@@ -238,7 +365,7 @@ TEST(FieldFormatterTest, FormatExpression) {
   value_expression_1.add_chunk()->set_text(" ");
   value_expression_1.add_chunk()->set_key(1);
   EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_1, mappings,
-                                             /* quote_meta=*/false, &result)
+                                             /* quote_meta= */ false, &result)
                                 .proto_status());
   EXPECT_EQ("text valueA", result);
 
@@ -270,8 +397,8 @@ TEST(FieldFormatterTest, FormatExpression) {
 }
 
 TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
-  std::map<std::string, std::string> mappings = {
-      {"1", "A"}, {"2", "B"}, {"3", "+41"}};
+  std::map<Key, std::string> mappings = {
+      {Key(1), "A"}, {Key(2), "B"}, {Key(3), "+41"}};
   std::string result;
 
   ValueExpression value_expression;
@@ -309,127 +436,57 @@ TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
   EXPECT_EQ("\\+0041", result);
 }
 
+TEST(FieldFormatterTest, FormatExpressionWithMemoryKey) {
+  std::map<Key, std::string> mappings = {{Key("_var0"), "valueA"},
+                                         {Key("_var1"), "val.ueB"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  value_expression.add_chunk()->set_memory_key("_var0");
+  value_expression.add_chunk()->set_text(" ");
+  value_expression.add_chunk()->set_memory_key("_var1");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("valueA val.ueB", result);
+
+  ValueExpression value_expression_regexp;
+  value_expression_regexp.add_chunk()->set_memory_key("_var0");
+  value_expression_regexp.add_chunk()->set_text(" ");
+  value_expression_regexp.add_chunk()->set_memory_key("_var1");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression_regexp, mappings,
+                                             /* quote_meta= */ true, &result)
+                                .proto_status());
+  EXPECT_EQ("valueA val\\.ueB", result);
+
+  ValueExpression value_expression_not_found;
+  value_expression_regexp.add_chunk()->set_memory_key("_var2");
+  EXPECT_EQ(CLIENT_MEMORY_KEY_NOT_AVAILABLE,
+            FormatExpression(value_expression_regexp, mappings,
+                             /* quote_meta= */ true, &result)
+                .proto_status());
+}
+
+TEST(FieldFormatterTest, NoKeyConflicts) {
+  std::map<Key, std::string> mappings = {{Key(1), "a"}, {Key("1"), "b"}};
+  std::string result;
+
+  ValueExpression value_expression;
+  value_expression.add_chunk()->set_key(1);
+  value_expression.add_chunk()->set_text(" ");
+  value_expression.add_chunk()->set_memory_key("1");
+  EXPECT_EQ(ACTION_APPLIED, FormatExpression(value_expression, mappings,
+                                             /* quote_meta= */ false, &result)
+                                .proto_status());
+  EXPECT_EQ("a b", result);
+}
+
 TEST(FieldFormatterTest, GetHumanReadableValueExpression) {
   ValueExpression value_expression;
   value_expression.add_chunk()->set_text("+");
   value_expression.add_chunk()->set_key(1);
-  EXPECT_EQ(GetHumanReadableValueExpression(value_expression), "+${1}");
-}
-
-TEST(FieldFormatterTest, AutofillProfile) {
-  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
-  autofill::test::SetProfileInfo(
-      &profile, "John", "", "Doe", "editor@gmail.com", "", "203 Barfield Lane",
-      "", "Mountain View", "CA", "94043", "US", "+12345678901");
-
-  // NAME_FIRST NAME_LAST
-  EXPECT_EQ(
-      *FormatString("${3} ${5}", CreateAutofillMappings(profile, "en-US")),
-      "John Doe");
-
-  // PHONE_HOME_COUNTRY_CODE, PHONE_HOME_CITY_CODE, PHONE_HOME_NUMBER
-  EXPECT_EQ(*FormatString("(+${12}) (${11}) ${10}",
-                          CreateAutofillMappings(profile, "en-US")),
-            "(+1) (234) 5678901");
-
-  // Country and country code.
-  EXPECT_EQ(*FormatString("${36}", CreateAutofillMappings(profile, "en-US")),
-            "United States");
-  EXPECT_EQ(*FormatString("${-8}", CreateAutofillMappings(profile, "en-US")),
-            "US");
-
-  // State handling from abbreviation.
-  EXPECT_EQ(*FormatString("${34}", CreateAutofillMappings(profile, "en-US")),
-            "CA");
-  EXPECT_EQ(*FormatString("${-6}", CreateAutofillMappings(profile, "en-US")),
-            "California");
-
-  // State handling from state name.
-  autofill::AutofillProfile state_name_profile(base::GenerateGUID(), kFakeUrl);
-  autofill::test::SetProfileInfo(&state_name_profile, "John", "", "Doe", "", "",
-                                 "", "", "", "California", "", "US", "");
-  EXPECT_EQ(*FormatString("${34}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "CA");
-  EXPECT_EQ(*FormatString("${-6}",
-                          CreateAutofillMappings(state_name_profile, "en-US")),
-            "California");
-
-  // Unknown state.
-  autofill::AutofillProfile unknown_state_profile(base::GenerateGUID(),
-                                                  kFakeUrl);
-  autofill::test::SetProfileInfo(&unknown_state_profile, "John", "", "Doe", "",
-                                 "", "", "", "", "XY", "", "US", "");
-  EXPECT_EQ(FormatString("${34}", CreateAutofillMappings(unknown_state_profile,
-                                                         "en-US")),
-            absl::nullopt);
-  EXPECT_EQ(FormatString("${-6}", CreateAutofillMappings(unknown_state_profile,
-                                                         "en-US")),
-            "XY");
-
-  // UNKNOWN_TYPE
-  EXPECT_EQ(FormatString("${1}", CreateAutofillMappings(profile, "en-US")),
-            absl::nullopt);
-}
-
-TEST(FieldFormatterTest, CreditCard) {
-  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
-  autofill::test::SetCreditCardInfo(&credit_card, "John Doe",
-                                    "4111 1111 1111 1111", "01", "2050", "");
-
-  // CREDIT_CARD_NAME_FULL
-  EXPECT_EQ(
-      *FormatString("${51}", CreateAutofillMappings(credit_card, "en-US")),
-      "John Doe");
-
-  // CREDIT_CARD_NUMBER
-  EXPECT_EQ(
-      *FormatString("${52}", CreateAutofillMappings(credit_card, "en-US")),
-      "4111111111111111");
-
-  // CREDIT_CARD_NUMBER_LAST_FOUR_DIGITS
-  EXPECT_EQ(
-      *FormatString("**** ${-4}", CreateAutofillMappings(credit_card, "en-US")),
-      "**** 1111");
-
-  // CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR
-  EXPECT_EQ(*FormatString("${53}/${54}",
-                          CreateAutofillMappings(credit_card, "en-US")),
-            "01/50");
-
-  // CREDIT_CARD_NETWORK, CREDIT_CARD_NETWORK_FOR_DISPLAY
-  EXPECT_EQ(*FormatString("${-2} ${-5}",
-                          CreateAutofillMappings(credit_card, "en-US")),
-            "visa Visa");
-
-  // CREDIT_CARD_NON_PADDED_EXP_MONTH
-  EXPECT_EQ(
-      *FormatString("${-7}", CreateAutofillMappings(credit_card, "en-US")),
-      "1");
-}
-
-TEST(FieldFormatterTest, SpecialCases) {
-  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
-  autofill::test::SetProfileInfo(
-      &profile, "John", "", "Doe", "editor@gmail.com", "", "203 Barfield Lane",
-      "", "Mountain View", "CA", "94043", "US", "+12345678901");
-
-  EXPECT_EQ(*FormatString("", CreateAutofillMappings(profile, "en-US")),
-            std::string());
-  EXPECT_EQ(*FormatString("${3}", CreateAutofillMappings(profile, "en-US")),
-            "John");
-  EXPECT_EQ(FormatString("${-1}", CreateAutofillMappings(profile, "en-US")),
-            absl::nullopt);
-  EXPECT_EQ(
-      FormatString(
-          "${" + base::NumberToString(autofill::MAX_VALID_FIELD_TYPE) + "}",
-          CreateAutofillMappings(profile, "en-US")),
-      absl::nullopt);
-
-  // Second {} is not prefixed with $.
-  EXPECT_EQ(
-      *FormatString("${3} {10}", CreateAutofillMappings(profile, "en-US")),
-      "John {10}");
+  value_expression.add_chunk()->set_memory_key("_var0");
+  EXPECT_EQ(GetHumanReadableValueExpression(value_expression), "+${1}${_var0}");
 }
 
 TEST(FieldFormatterTest, DifferentLocales) {
@@ -437,43 +494,42 @@ TEST(FieldFormatterTest, DifferentLocales) {
   autofill::test::SetProfileInfo(
       &profile, "John", "", "Doe", "editor@gmail.com", "", "203 Barfield Lane",
       "", "Mountain View", "CA", "94043", "US", "+12345678901");
-  auto mappings = CreateAutofillMappings(profile, "de-DE");
 
   // 36 == ADDRESS_HOME_COUNTRY
-  EXPECT_EQ(*FormatString("${36}", CreateAutofillMappings(profile, "en-US")),
-            "United States");
-  EXPECT_EQ(*FormatString("${36}", CreateAutofillMappings(profile, "de-DE")),
-            "Vereinigte Staaten");
+  EXPECT_THAT(CreateAutofillMappings(profile, "en-US"),
+              Contains(Pair(Key(36), "United States")));
+  EXPECT_THAT(CreateAutofillMappings(profile, "de-DE"),
+              Contains(Pair(Key(36), "Vereinigte Staaten")));
 
   // Invalid locales default to "en-US".
-  EXPECT_EQ(*FormatString("${36}", CreateAutofillMappings(profile, "")),
-            "United States");
-  EXPECT_EQ(*FormatString("${36}", CreateAutofillMappings(profile, "invalid")),
-            "United States");
+  EXPECT_THAT(CreateAutofillMappings(profile, ""),
+              Contains(Pair(Key(36), "United States")));
+  EXPECT_THAT(CreateAutofillMappings(profile, "invalid"),
+              Contains(Pair(Key(36), "United States")));
 }
 
 TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
-  std::map<std::string, std::string> expected_values = {
-      {"-8", "US"},
-      {"-6", "California"},
-      {"3", "Alpha"},
-      {"4", "Beta"},
-      {"5", "Gamma"},
-      {"6", "B"},
-      {"7", "Alpha Beta Gamma"},
-      {"9", "alpha@google.com"},
-      {"10", "1234567890"},
-      {"12", "1"},
-      {"13", "1234567890"},
-      {"14", "+11234567890"},
-      {"30", "Amphitheatre Parkway 1600"},
-      {"31", "Google Building 1"},
-      {"33", "Mountain View"},
-      {"34", "CA"},
-      {"35", "94043"},
-      {"36", "United States"},
-      {"60", "Google"},
-      {"77", "Amphitheatre Parkway 1600\nGoogle Building 1"}};
+  std::map<Key, std::string> expected_values = {
+      {Key(-8), "US"},
+      {Key(-6), "California"},
+      {Key(3), "Alpha"},
+      {Key(4), "Beta"},
+      {Key(5), "Gamma"},
+      {Key(6), "B"},
+      {Key(7), "Alpha Beta Gamma"},
+      {Key(9), "alpha@google.com"},
+      {Key(10), "1234567890"},
+      {Key(12), "1"},
+      {Key(13), "1234567890"},
+      {Key(14), "+11234567890"},
+      {Key(30), "Amphitheatre Parkway 1600"},
+      {Key(31), "Google Building 1"},
+      {Key(33), "Mountain View"},
+      {Key(34), "CA"},
+      {Key(35), "94043"},
+      {Key(36), "United States"},
+      {Key(60), "Google"},
+      {Key(77), "Amphitheatre Parkway 1600\nGoogle Building 1"}};
 
   autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(
@@ -486,27 +542,27 @@ TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
 }
 
 TEST(FieldFormatterTest, AddsAllProfileFieldsForNonUsAddress) {
-  std::map<std::string, std::string> expected_values = {
-      {"-8", "CH"},
-      {"-6", "Canton Zurich"},
-      {"3", "Alpha"},
-      {"4", "Beta"},
-      {"5", "Gamma"},
-      {"6", "B"},
-      {"7", "Alpha Beta Gamma"},
-      {"9", "alpha@google.com"},
-      {"10", "1234567"},
-      {"11", "79"},
-      {"12", "41"},
-      {"13", "0791234567"},
-      {"14", "+41791234567"},
-      {"30", "Brandschenkestrasse 110"},
-      {"31", "Google Building 110"},
-      {"33", "Zurich"},
-      {"35", "8002"},
-      {"36", "Switzerland"},
-      {"60", "Google"},
-      {"77", "Brandschenkestrasse 110\nGoogle Building 110"}};
+  std::map<Key, std::string> expected_values = {
+      {Key(-8), "CH"},
+      {Key(-6), "Canton Zurich"},
+      {Key(3), "Alpha"},
+      {Key(4), "Beta"},
+      {Key(5), "Gamma"},
+      {Key(6), "B"},
+      {Key(7), "Alpha Beta Gamma"},
+      {Key(9), "alpha@google.com"},
+      {Key(10), "1234567"},
+      {Key(11), "79"},
+      {Key(12), "41"},
+      {Key(13), "0791234567"},
+      {Key(14), "+41791234567"},
+      {Key(30), "Brandschenkestrasse 110"},
+      {Key(31), "Google Building 110"},
+      {Key(33), "Zurich"},
+      {Key(35), "8002"},
+      {Key(36), "Switzerland"},
+      {Key(60), "Google"},
+      {Key(77), "Brandschenkestrasse 110\nGoogle Building 110"}};
 
   autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetProfileInfo(
@@ -519,21 +575,20 @@ TEST(FieldFormatterTest, AddsAllProfileFieldsForNonUsAddress) {
 }
 
 TEST(FieldFormatterTest, AddsAllCreditCardFields) {
-  std::map<std::string, std::string> expected_values = {
-      {"-7", "8"},
-      {"-5", "Visa"},
-      {"-4", "1111"},
-      {"-2", "visa"},
-      {"51", "Alpha Beta Gamma"},
-      {"52", "4111111111111111"},
-      {"53", "08"},
-      {"54", "50"},
-      {"55", "2050"},
-      {"56", "08/50"},
-      {"57", "08/2050"},
-      {"58", "Visa"},
-      {"91", "Alpha"},
-      {"92", "Gamma"}};
+  std::map<Key, std::string> expected_values = {{Key(-7), "8"},
+                                                {Key(-5), "Visa"},
+                                                {Key(-4), "1111"},
+                                                {Key(-2), "visa"},
+                                                {Key(51), "Alpha Beta Gamma"},
+                                                {Key(52), "4111111111111111"},
+                                                {Key(53), "08"},
+                                                {Key(54), "50"},
+                                                {Key(55), "2050"},
+                                                {Key(56), "08/50"},
+                                                {Key(57), "08/2050"},
+                                                {Key(58), "Visa"},
+                                                {Key(91), "Alpha"},
+                                                {Key(92), "Gamma"}};
 
   autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card, "Alpha Beta Gamma",
@@ -543,6 +598,38 @@ TEST(FieldFormatterTest, AddsAllCreditCardFields) {
               IsSupersetOf(expected_values));
 }
 
-}  // namespace
+TEST(FieldFormatterTest, KeyComparison) {
+  Key int_key_1(1);
+  Key int_key_2(2);
+
+  EXPECT_TRUE(int_key_1 < int_key_2);
+  EXPECT_FALSE(int_key_2 < int_key_1);
+
+  Key string_key_a("a");
+  Key string_key_b("b");
+
+  EXPECT_TRUE(string_key_a < string_key_b);
+  EXPECT_FALSE(string_key_b < string_key_a);
+}
+
+TEST(FieldFormatterTest, KeyEquality) {
+  Key int_key_1(1);
+  Key int_key_2(2);
+  Key string_key_a("a");
+  Key string_key_b("b");
+
+  EXPECT_FALSE(int_key_1 == string_key_a);
+  EXPECT_FALSE(string_key_a == int_key_1);
+
+  EXPECT_FALSE(int_key_1 == int_key_2);
+  EXPECT_FALSE(int_key_2 == int_key_1);
+
+  EXPECT_FALSE(string_key_a == string_key_b);
+  EXPECT_FALSE(string_key_b == string_key_a);
+
+  EXPECT_TRUE(int_key_1 == int_key_1);
+  EXPECT_TRUE(string_key_a == string_key_a);
+}
+
 }  // namespace field_formatter
 }  // namespace autofill_assistant

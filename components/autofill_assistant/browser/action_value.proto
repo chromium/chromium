@@ -30,6 +30,9 @@ message ValueExpression {
       int32 key = 1;
       // A plain text.
       string text = 2;
+      // A client memory key. This looks up an entry in the previously stored
+      // values on the client.
+      string memory_key = 4;
     }
 
     // If the chunk fully matches the key, it will be replaced. When used

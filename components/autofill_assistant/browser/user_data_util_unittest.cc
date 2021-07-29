@@ -23,6 +23,7 @@
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "components/autofill_assistant/browser/value_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -981,11 +982,22 @@ class UserDataUtilTextValueTest : public testing::Test {
 
 TEST_F(UserDataUtilTextValueTest, RequestEmptyAutofillValue) {
   AutofillValue autofill_value;
-  std::string result;
 
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+  std::string result;
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             INVALID_ACTION);
+  EXPECT_EQ(result, "");
+}
+
+TEST_F(UserDataUtilTextValueTest, ValueExpressionResultIsEmpty) {
+  AutofillValue client_value;
+  client_value.mutable_value_expression()->add_chunk()->set_text("");
+
+  std::string result;
+  EXPECT_EQ(GetFormattedClientValue(client_value, &user_data_, &result)
+                .proto_status(),
+            EMPTY_VALUE_EXPRESSION_RESULT);
   EXPECT_EQ(result, "");
 }
 
@@ -995,8 +1007,7 @@ TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownProfile) {
   autofill_value.mutable_value_expression()->add_chunk()->set_text("text");
 
   std::string result;
-
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             PRECONDITION_FAILED);
   EXPECT_EQ(result, "");
@@ -1018,8 +1029,7 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownProfile) {
       static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
 
   std::string result;
-
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
@@ -1040,9 +1050,8 @@ TEST_F(UserDataUtilTextValueTest, RequestKnownDataFromKnownProfile) {
       static_cast<int>(autofill::ServerFieldType::NAME_FIRST));
 
   std::string result;
-
   EXPECT_TRUE(
-      GetFormattedAutofillValue(autofill_value, &user_data_, &result).ok());
+      GetFormattedClientValue(autofill_value, &user_data_, &result).ok());
   EXPECT_EQ(result, "John");
 }
 
@@ -1065,9 +1074,8 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
           .toProto();
 
   std::string result;
-
   EXPECT_TRUE(
-      GetFormattedAutofillValue(autofill_value, &user_data_, &result).ok());
+      GetFormattedClientValue(autofill_value, &user_data_, &result).ok());
   EXPECT_EQ(result, "^Jo\\.h\\*n$");
 }
 
@@ -1077,8 +1085,7 @@ TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownCreditCard) {
       static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
 
   std::string result;
-
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
@@ -1097,8 +1104,7 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownCreditCard) {
       static_cast<int>(AutofillFormatProto::CREDIT_CARD_VERIFICATION_CODE));
 
   std::string result;
-
-  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
@@ -1117,10 +1123,79 @@ TEST_F(UserDataUtilTextValueTest, RequestDataFromKnownCreditCard) {
       static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
 
   std::string result;
-
   EXPECT_TRUE(
-      GetFormattedAutofillValue(autofill_value, &user_data_, &result).ok());
+      GetFormattedClientValue(autofill_value, &user_data_, &result).ok());
   EXPECT_EQ(result, "John Doe");
+}
+
+TEST_F(UserDataUtilTextValueTest, RequestUnknownMemoryKey) {
+  AutofillValue client_value;
+  client_value.mutable_value_expression()->add_chunk()->set_memory_key("_val0");
+
+  std::string result;
+  EXPECT_EQ(GetFormattedClientValue(client_value, &user_data_, &result)
+                .proto_status(),
+            CLIENT_MEMORY_KEY_NOT_AVAILABLE);
+  EXPECT_EQ(result, "");
+}
+
+TEST_F(UserDataUtilTextValueTest, RequestKnownMemoryKey) {
+  user_data_.SetAdditionalValue("key", SimpleValue(std::string("Hello...")));
+
+  std::string result;
+
+  AutofillValue client_value;
+  client_value.mutable_value_expression()->add_chunk()->set_memory_key("key");
+  EXPECT_TRUE(GetFormattedClientValue(client_value, &user_data_, &result).ok());
+  EXPECT_EQ(result, "Hello...");
+
+  AutofillValueRegexp client_value_regexp;
+  client_value_regexp.mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_memory_key("key");
+  EXPECT_TRUE(
+      GetFormattedClientValue(client_value_regexp, &user_data_, &result).ok());
+  EXPECT_EQ(result, "Hello\\.\\.\\.");
+}
+
+TEST_F(UserDataUtilTextValueTest, RequestEmptyKnownMemoryKey) {
+  user_data_.SetAdditionalValue("key", SimpleValue(std::string()));
+
+  AutofillValue client_value;
+  client_value.mutable_value_expression()->add_chunk()->set_memory_key("key");
+
+  std::string result;
+  EXPECT_EQ(GetFormattedClientValue(client_value, &user_data_, &result)
+                .proto_status(),
+            EMPTY_VALUE_EXPRESSION_RESULT);
+  EXPECT_EQ(result, "");
+}
+
+TEST_F(UserDataUtilTextValueTest,
+       NoKeyCollisionBetweenAutofillAndClientMemory) {
+  int expMonthKey =
+      static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_EXP_MONTH);
+
+  autofill::CreditCard credit_card(base::GenerateGUID(),
+                                   autofill::test::kEmptyOrigin);
+  autofill::test::SetCreditCardInfo(&credit_card, "John Doe",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data_);
+
+  user_data_.SetAdditionalValue(base::NumberToString(expMonthKey),
+                                SimpleValue(std::string("January")));
+
+  AutofillValue client_value;
+  client_value.mutable_value_expression()->add_chunk()->set_key(expMonthKey);
+  client_value.mutable_value_expression()->add_chunk()->set_text(" ");
+  client_value.mutable_value_expression()->add_chunk()->set_memory_key(
+      base::NumberToString(expMonthKey));
+
+  std::string result;
+  EXPECT_TRUE(GetFormattedClientValue(client_value, &user_data_, &result).ok());
+  EXPECT_EQ(result, "01 January");
 }
 
 TEST_F(UserDataUtilTextValueTest, GetCredentialsFromDifferentDomainFails) {
@@ -1221,19 +1296,15 @@ TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFails) {
 }
 
 TEST_F(UserDataUtilTextValueTest, ClientMemoryKey) {
-  ValueProto value_proto;
-  value_proto.mutable_strings()->add_values("Hello World");
-  user_data_.SetAdditionalValue("key", value_proto);
+  user_data_.SetAdditionalValue("key", SimpleValue(std::string("Hello World")));
 
   std::string result;
-
   EXPECT_TRUE(GetClientMemoryStringValue("key", &user_data_, &result).ok());
   EXPECT_EQ(result, "Hello World");
 }
 
 TEST_F(UserDataUtilTextValueTest, EmptyClientMemoryKey) {
   std::string result;
-
   EXPECT_EQ(INVALID_ACTION,
             GetClientMemoryStringValue(std::string(), &user_data_, &result)
                 .proto_status());
@@ -1241,7 +1312,6 @@ TEST_F(UserDataUtilTextValueTest, EmptyClientMemoryKey) {
 
 TEST_F(UserDataUtilTextValueTest, NonExistingClientMemoryKey) {
   std::string result;
-
   EXPECT_EQ(
       PRECONDITION_FAILED,
       GetClientMemoryStringValue("key", &user_data_, &result).proto_status());
@@ -1305,9 +1375,7 @@ TEST_F(UserDataUtilTextValueTest, TextValuePasswordManagerValue) {
 }
 
 TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
-  ValueProto value_proto;
-  value_proto.mutable_strings()->add_values("Hello World");
-  user_data_.SetAdditionalValue("key", value_proto);
+  user_data_.SetAdditionalValue("key", SimpleValue(std::string("Hello World")));
 
   TextValue text_value;
   text_value.set_client_memory_key("key");

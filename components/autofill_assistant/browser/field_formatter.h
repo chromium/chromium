@@ -9,12 +9,43 @@
 #include <string>
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/generic_ui.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 namespace field_formatter {
+
+// A key to retrieve data for value expressions.
+struct Key {
+  // An explicit integer key, this can retrieve a data point usually
+  // originating from an Autofill source.
+  explicit Key(int key);
+
+  // A key from Autofill Assistant specific additions for data originating from
+  // an Autofill source.
+  explicit Key(AutofillFormatProto::AutofillAssistantCustomField custom_field);
+
+  // A key from an Autofill source.
+  explicit Key(autofill::ServerFieldType autofill_field);
+
+  // A key from client memory.
+  explicit Key(std::string memory_key);
+
+  ~Key();
+  Key(const Key&);
+
+  bool operator<(const Key& other) const;
+  bool operator==(const Key& other) const;
+
+ private:
+  friend class FieldFormatterStringTest;
+
+  absl::optional<int> int_key;
+  absl::optional<std::string> string_key;
+};
 
 // Replaces all placeholder occurrences of the form ${key} in |input| with the
 // corresponding value in |mappings|, where |key| is an arbitrary string that
@@ -29,11 +60,10 @@ absl::optional<std::string> FormatString(
 // Turns a |value_expression| into a string, replacing |key| chunks with
 // corresponding values in |mappings|. This will fail if any of the keys are
 // not in |mappings|. If |quote_meta| the replacement pieces will be quoted.
-ClientStatus FormatExpression(
-    const ValueExpression& value_expression,
-    const std::map<std::string, std::string>& mappings,
-    bool quote_meta,
-    std::string* out_value);
+ClientStatus FormatExpression(const ValueExpression& value_expression,
+                              const std::map<Key, std::string>& mappings,
+                              bool quote_meta,
+                              std::string* out_value);
 
 // Returns a human-readable string representation of |value_expression| for
 // use in logging and error reporting.
@@ -45,9 +75,8 @@ std::string GetHumanReadableValueExpression(
 // |autofill_data_model|.
 // |locale| should be a locale string such as "en-US".
 template <typename T>
-std::map<std::string, std::string> CreateAutofillMappings(
-    const T& autofill_data_model,
-    const std::string& locale);
+std::map<Key, std::string> CreateAutofillMappings(const T& autofill_data_model,
+                                                  const std::string& locale);
 
 }  // namespace field_formatter
 

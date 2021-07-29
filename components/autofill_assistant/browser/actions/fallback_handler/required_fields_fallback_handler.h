@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/fallback_handler/required_field.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
@@ -28,7 +29,7 @@ class RequiredFieldsFallbackHandler {
  public:
   explicit RequiredFieldsFallbackHandler(
       const std::vector<RequiredField>& required_fields,
-      const std::map<std::string, std::string>& fallback_values,
+      const std::map<field_formatter::Key, std::string>& fallback_values,
       ActionDelegate* delegate);
 
   ~RequiredFieldsFallbackHandler();
@@ -110,7 +111,7 @@ class RequiredFieldsFallbackHandler {
   ClientStatus client_status_;
 
   std::vector<RequiredField> required_fields_;
-  std::map<std::string, std::string> fallback_values_;
+  std::map<field_formatter::Key, std::string> fallback_values_;
   base::OnceCallback<void(const ClientStatus&)> status_update_callback_;
   ActionDelegate* action_delegate_;
   std::unique_ptr<BatchElementChecker> batch_element_checker_;

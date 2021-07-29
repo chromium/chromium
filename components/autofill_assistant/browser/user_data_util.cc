@@ -9,13 +9,13 @@
 
 #include "base/callback.h"
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/model.pb.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -25,13 +25,14 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill_assistant {
+namespace user_data {
 namespace {
 
 constexpr char kDefaultLocale[] = "en-US";
 
 template <typename T>
-ClientStatus ExtractDataAndFormatAutofillValue(
-    const T& autofill_value,
+ClientStatus ExtractDataAndFormatClientValue(
+    const T& client_value,
     const ValueExpression& value_expression,
     const UserData* user_data,
     bool quote_meta,
@@ -41,10 +42,10 @@ ClientStatus ExtractDataAndFormatAutofillValue(
     return ClientStatus(INVALID_ACTION);
   }
 
-  std::map<std::string, std::string> data;
+  std::map<field_formatter::Key, std::string> data;
 
-  if (autofill_value.has_profile()) {
-    const auto& profile = autofill_value.profile();
+  if (client_value.has_profile()) {
+    const auto& profile = client_value.profile();
     if (profile.identifier().empty()) {
       VLOG(1) << "empty |profile.identifier|";
       return ClientStatus(INVALID_ACTION);
@@ -68,8 +69,28 @@ ClientStatus ExtractDataAndFormatAutofillValue(
     data.insert(card_map.begin(), card_map.end());
   }
 
-  return field_formatter::FormatExpression(value_expression, data, quote_meta,
-                                           out_value);
+  for (const auto& chunk : value_expression.chunk()) {
+    if (!chunk.has_memory_key() ||
+        !user_data->HasAdditionalValue(chunk.memory_key())) {
+      continue;
+    }
+    const ValueProto* value = user_data->GetAdditionalValue(chunk.memory_key());
+    if (value->strings().values().size() == 1) {
+      data.emplace(field_formatter::Key(chunk.memory_key()),
+                   value->strings().values(0));
+    }
+  }
+
+  const ClientStatus& format_status = field_formatter::FormatExpression(
+      value_expression, data, quote_meta, out_value);
+  if (!format_status.ok()) {
+    return format_status;
+  }
+  if (out_value->empty()) {
+    VLOG(1) << "|value_expression| result is empty";
+    return ClientStatus(EMPTY_VALUE_EXPRESSION_RESULT);
+  }
+  return OkClientStatus();
 }
 
 void OnGetStoredPassword(
@@ -84,9 +105,9 @@ void OnGetStoredPassword(
   std::move(callback).Run(OkClientStatus(), password);
 }
 
-bool EvaluateCondition(const std::map<std::string, std::string>& data,
+bool EvaluateCondition(const std::map<field_formatter::Key, std::string>& data,
                        const RequiredDataPiece::Condition& condition) {
-  auto it = data.find(base::NumberToString(condition.key()));
+  auto it = data.find(field_formatter::Key(condition.key()));
   if (it == data.end()) {
     return false;
   }
@@ -107,8 +128,8 @@ bool EvaluateCondition(const std::map<std::string, std::string>& data,
 }
 
 std::vector<std::string> GetValidationErrors(
-    const std::map<std::string, std::string> data,
-    const std::vector<RequiredDataPiece> required_data_pieces) {
+    const std::map<field_formatter::Key, std::string>& data,
+    const std::vector<RequiredDataPiece>& required_data_pieces) {
   std::vector<std::string> errors;
 
   for (const auto& required_data_piece : required_data_pieces) {
@@ -256,7 +277,6 @@ bool CompletenessComparePaymentInstruments(
 }
 
 }  // namespace
-namespace user_data {
 
 std::vector<std::string> GetContactValidationErrors(
     const autofill::AutofillProfile* profile,
@@ -268,7 +288,7 @@ std::vector<std::string> GetContactValidationErrors(
   return GetValidationErrors(
       profile
           ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-          : std::map<std::string, std::string>(),
+          : std::map<field_formatter::Key, std::string>(),
       collect_user_data_options.required_contact_data_pieces);
 }
 
@@ -318,7 +338,7 @@ std::vector<std::string> GetShippingAddressValidationErrors(
     errors = GetValidationErrors(
         profile
             ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-            : std::map<std::string, std::string>(),
+            : std::map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_shipping_address_data_pieces);
   }
 
@@ -371,7 +391,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const auto& card_errors = GetValidationErrors(
         credit_card ? field_formatter::CreateAutofillMappings(*credit_card,
                                                               kDefaultLocale)
-                    : std::map<std::string, std::string>(),
+                    : std::map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_credit_card_data_pieces);
     errors.insert(errors.end(), card_errors.begin(), card_errors.end());
   }
@@ -383,7 +403,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const auto& address_errors = GetValidationErrors(
         billing_address ? field_formatter::CreateAutofillMappings(
                               *billing_address, kDefaultLocale)
-                        : std::map<std::string, std::string>(),
+                        : std::map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_billing_address_data_pieces);
     errors.insert(errors.end(), address_errors.begin(), address_errors.end());
   }
@@ -481,19 +501,19 @@ bool CompareContactDetails(
   return true;
 }
 
-ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
-                                       const UserData* user_data,
-                                       std::string* out_value) {
-  return ExtractDataAndFormatAutofillValue(
+ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
+                                     const UserData* user_data,
+                                     std::string* out_value) {
+  return ExtractDataAndFormatClientValue(
       autofill_value, autofill_value.value_expression(), user_data,
       /* quote_meta= */ false, out_value);
 }
 
-ClientStatus GetFormattedAutofillValue(
+ClientStatus GetFormattedClientValue(
     const AutofillValueRegexp& autofill_value_regexp,
     const UserData* user_data,
     std::string* out_value) {
-  return ExtractDataAndFormatAutofillValue(
+  return ExtractDataAndFormatClientValue(
       autofill_value_regexp,
       autofill_value_regexp.value_expression_re2().value_expression(),
       user_data,
@@ -568,8 +588,8 @@ void ResolveTextValue(const TextValue& text_value,
       value = text_value.text();
       break;
     case TextValue::kAutofillValue: {
-      status = GetFormattedAutofillValue(
-          text_value.autofill_value(), action_delegate->GetUserData(), &value);
+      status = GetFormattedClientValue(text_value.autofill_value(),
+                                       action_delegate->GetUserData(), &value);
       break;
     }
     case TextValue::kPasswordManagerValue: {

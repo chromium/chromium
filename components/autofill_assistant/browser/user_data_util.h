@@ -87,15 +87,22 @@ bool CompareContactDetails(
     const autofill::AutofillProfile* a,
     const autofill::AutofillProfile* b);
 
-// Get a formatted autofill value. The replacement is treated as strict,
-// meaning a missing value will lead to a failed ClientStatus. If the value
-// or the profile is empty, fails with |INVALID_ACTION|. If the requested
-// profile does not exist, fails with |PRECONDITION FAILED|. If the value
-// cannot be fully resolved, fails with |AUTOFILL_INFO_NOT_AVAILABLE|.
-ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
-                                       const UserData* user_data,
-                                       std::string* out_value);
-ClientStatus GetFormattedAutofillValue(
+// Get a formatted client value. The replacement is treated as strict,
+// meaning a missing value will lead to a failed ClientStatus.
+// This method returns:
+// - INVALID_ACTION, if the value is empty.
+// - INVALID_ACTION, if a profile is provided and it is empty.
+// - PRECONDITION_FAILED, if the requested profile is not found.
+// - AUTOFILL_INFO_NOT_AVAILABLE, if a key from  an AUtofill source cannot be
+//   resolved.
+// - CLIENT_MEMORY_KEY_NOT_AVAILABLE, if a key from the client memory cannot be
+//   resolved.
+// - EMPTY_VALUE_EXPRESSION_RESULT, if the result is an empty string.
+// - ACTION_APPLIED otherwise.
+ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
+                                     const UserData* user_data,
+                                     std::string* out_value);
+ClientStatus GetFormattedClientValue(
     const AutofillValueRegexp& autofill_value_regexp,
     const UserData* user_data,
     std::string* out_value);

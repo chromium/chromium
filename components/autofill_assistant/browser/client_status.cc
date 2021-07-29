@@ -151,6 +151,12 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::ELEMENT_POSITION_NOT_FOUND:
       out << "ELEMENT_POSITION_NOT_FOUND";
       break;
+    case ProcessedActionStatusProto::CLIENT_MEMORY_KEY_NOT_AVAILABLE:
+      out << "CLIENT_MEMORY_KEY_NOT_AVAILABLE";
+      break;
+    case ProcessedActionStatusProto::EMPTY_VALUE_EXPRESSION_RESULT:
+      out << "EMPTY_VALUE_EXPRESSION_RESULT";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.

@@ -71,11 +71,12 @@ ClientStatus& ErrorStatusWithDefault(ClientStatus& status) {
   return status;
 }
 
-ClientStatus GetRe2Value(const RequiredField& required_field,
-                         const std::map<std::string, std::string>& mappings,
-                         bool use_contains,
-                         std::string* re2_value,
-                         bool* case_sensitive) {
+ClientStatus GetRe2Value(
+    const RequiredField& required_field,
+    const std::map<field_formatter::Key, std::string>& mappings,
+    bool use_contains,
+    std::string* re2_value,
+    bool* case_sensitive) {
   if (required_field.proto.has_option_comparison_value_expression_re2()) {
     ClientStatus status = field_formatter::FormatExpression(
         required_field.proto.option_comparison_value_expression_re2()
@@ -124,7 +125,7 @@ RequiredFieldsFallbackHandler::~RequiredFieldsFallbackHandler() = default;
 
 RequiredFieldsFallbackHandler::RequiredFieldsFallbackHandler(
     const std::vector<RequiredField>& required_fields,
-    const std::map<std::string, std::string>& fallback_values,
+    const std::map<field_formatter::Key, std::string>& fallback_values,
     ActionDelegate* delegate)
     : required_fields_(required_fields),
       fallback_values_(fallback_values),
