@@ -1342,6 +1342,10 @@ extern const char kSidePanelFlagId[];
 extern const char kSidePanelName[];
 extern const char kSidePanelDescription[];
 
+extern const char kSidePanelDragAndDropFlagId[];
+extern const char kSidePanelDragAndDropName[];
+extern const char kSidePanelDragAndDropDescription[];
+
 extern const char kServiceWorkerSubresourceFilterName[];
 extern const char kServiceWorkerSubresourceFilterDescription[];
 

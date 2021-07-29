@@ -2351,6 +2351,11 @@ const char kSidePanelDescription[] =
     "Enables a browser-level side panel for a useful and persistent way to "
     "access your Reading List and Bookmarks.";
 
+const char kSidePanelDragAndDropFlagId[] = "side-panel-drag-and-drop";
+const char kSidePanelDragAndDropName[] = "Side panel drag and drop";
+const char kSidePanelDragAndDropDescription[] =
+    "Enables drag and drop of bookmarks within the side panel.";
+
 const char kServiceWorkerSubresourceFilterName[] =
     "ServiceWorker subresource filter";
 const char kServiceWorkerSubresourceFilterDescription[] =
