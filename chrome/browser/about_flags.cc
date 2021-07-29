@@ -2510,16 +2510,28 @@ const FeatureEntry::Choice kFrameThrottleFpsChoices[] = {
      "30"}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-const FeatureEntry::Choice kDrawPredictedPointsChoices[] = {
-    {flag_descriptions::kDrawPredictedPointsDefault, "", ""},
+const FeatureEntry::FeatureParam kDrawPredictedPointExperiment1Point12Ms[] = {
+    {"predicted_points", features::kDraw1Point12Ms}};
+const FeatureEntry::FeatureParam kDrawPredictedPointExperiment2Points6Ms[] = {
+    {"predicted_points", features::kDraw2Points6Ms}};
+const FeatureEntry::FeatureParam kDrawPredictedPointExperiment1Point6Ms[] = {
+    {"predicted_points", features::kDraw1Point6Ms}};
+const FeatureEntry::FeatureParam kDrawPredictedPointExperiment2Points3Ms[] = {
+    {"predicted_points", features::kDraw2Points3Ms}};
+
+const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
     {flag_descriptions::kDraw1PredictedPoint12Ms,
-     switches::kDrawPredictedInkPoint, switches::kDraw1Point12Ms},
+     kDrawPredictedPointExperiment1Point12Ms,
+     base::size(kDrawPredictedPointExperiment1Point12Ms), nullptr},
     {flag_descriptions::kDraw2PredictedPoints6Ms,
-     switches::kDrawPredictedInkPoint, switches::kDraw2Points6Ms},
+     kDrawPredictedPointExperiment2Points6Ms,
+     base::size(kDrawPredictedPointExperiment2Points6Ms), nullptr},
     {flag_descriptions::kDraw1PredictedPoint6Ms,
-     switches::kDrawPredictedInkPoint, switches::kDraw1Point6Ms},
+     kDrawPredictedPointExperiment1Point6Ms,
+     base::size(kDrawPredictedPointExperiment1Point6Ms), nullptr},
     {flag_descriptions::kDraw2PredictedPoints3Ms,
-     switches::kDrawPredictedInkPoint, switches::kDraw2Points3Ms}};
+     kDrawPredictedPointExperiment2Points3Ms,
+     base::size(kDrawPredictedPointExperiment2Points3Ms), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
@@ -7330,7 +7342,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"draw-predicted-ink-point", flag_descriptions::kDrawPredictedPointsName,
      flag_descriptions::kDrawPredictedPointsDescription, kOsAll,
-     MULTI_VALUE_TYPE(kDrawPredictedPointsChoices)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDrawPredictedInkPoint,
+                                    kDrawPredictedPointVariations,
+                                    "DrawPredictedInkPoint")},
 
     {"enable-tflite-language-detection",
      flag_descriptions::kTFLiteLanguageDetectionName,

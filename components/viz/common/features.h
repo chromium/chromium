@@ -46,6 +46,12 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseSurfaceLayerForVideoDefault;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kSurfaceSyncThrottling;
 
+VIZ_COMMON_EXPORT extern const base::Feature kDrawPredictedInkPoint;
+VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
+VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
+VIZ_COMMON_EXPORT extern const char kDraw1Point6Ms[];
+VIZ_COMMON_EXPORT extern const char kDraw2Points3Ms[];
+
 VIZ_COMMON_EXPORT bool IsAdpfEnabled();
 VIZ_COMMON_EXPORT bool IsSimpleFrameRateThrottlingEnabled();
 #if defined(OS_ANDROID)

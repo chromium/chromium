@@ -46683,6 +46683,7 @@ from previous Chrome versions.
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1948540128" label="disable-webrtc-hw-encoding (deprecated)"/>
+  <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
   <int value="-1946595906" label="enable-push-api-background-mode"/>
   <int value="-1946522787" label="VrCustomTabBrowsing:disabled"/>
   <int value="-1946367770" label="SyncWifiConfigurations:enabled"/>
@@ -48824,6 +48825,7 @@ from previous Chrome versions.
   <int value="-239176328" label="BluetoothAggressiveAppearanceFilter:enabled"/>
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
+  <int value="-235949168" label="DrawPredictedInkPoint:enabled"/>
   <int value="-234966279" label="PointerEvent:disabled"/>
   <int value="-234687894"
       label="NonValidatingReloadOnRefreshContentV2:disabled"/>
@@ -50221,7 +50223,6 @@ from previous Chrome versions.
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
-  <int value="912486595" label="draw-predicted-ink-point"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
   <int value="916316159" label="disable-new-app-list-mixer"/>

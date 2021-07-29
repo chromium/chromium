@@ -5345,6 +5345,9 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     return this->RunPixelTest(&pass_list, base::FilePath(file),
                               cc::FuzzyPixelOffByOneComparator(true));
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -5387,8 +5390,13 @@ class DelegatedInkWithPredictionTest : public DelegatedInkTest {
   }
 
   virtual void EnablePrediction() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDrawPredictedInkPoint, switches::kDraw1Point12Ms);
+    base::FieldTrialParams params;
+    params["predicted_points"] = ::features::kDraw1Point12Ms;
+    base::test::ScopedFeatureList::FeatureAndParams prediction_params = {
+        features::kDrawPredictedInkPoint, params};
+
+    feature_list_.Reset();
+    feature_list_.InitWithFeaturesAndParameters({prediction_params}, {});
   }
 };
 

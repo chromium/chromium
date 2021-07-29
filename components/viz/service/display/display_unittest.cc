@@ -4499,9 +4499,9 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
 
 class SkiaDelegatedInkRendererTest : public DisplayTest {
  public:
+  void SetUp() override { EnablePrediction(); }
+
   void SetUpRenderers() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDrawPredictedInkPoint, switches::kDraw1Point12Ms);
     // First set up the display to use the Skia renderer.
     RendererSettings settings;
     settings.use_skia_renderer = true;
@@ -4514,6 +4514,16 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     ink_renderer_ = renderer.get();
     display_->renderer_for_testing()->SetDelegatedInkPointRendererSkiaForTest(
         std::move(renderer));
+  }
+
+  void EnablePrediction() {
+    base::FieldTrialParams params;
+    params["predicted_points"] = ::features::kDraw1Point12Ms;
+    base::test::ScopedFeatureList::FeatureAndParams prediction_params = {
+        features::kDrawPredictedInkPoint, params};
+
+    feature_list_.Reset();
+    feature_list_.InitWithFeaturesAndParameters({prediction_params}, {});
   }
 
   DelegatedInkPointRendererBase* ink_renderer() {
@@ -4678,6 +4688,8 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
 
   // Stub client kept in scope to prevent access violations during DrawAndSwap.
   StubDisplayClient client_;
+
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;

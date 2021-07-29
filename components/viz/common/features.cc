@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/delegated_ink_prediction_configuration.h"
@@ -139,6 +140,13 @@ const base::Feature kUseSurfaceLayerForVideoDefault{
 const base::Feature kSurfaceSyncThrottling{"SurfaceSyncThrottling",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDrawPredictedInkPoint{"DrawPredictedInkPoint",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const char kDraw1Point12Ms[] = "1-pt-12ms";
+const char kDraw2Points6Ms[] = "2-pt-6ms";
+const char kDraw1Point6Ms[] = "1-pt-6ms";
+const char kDraw2Points3Ms[] = "2-pt-3ms";
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);
@@ -230,19 +238,18 @@ bool ShouldUseSetPresentDuration() {
 #endif  // OS_WIN
 
 absl::optional<int> ShouldDrawPredictedInkPoints() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kDrawPredictedInkPoint))
+  if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
     return absl::nullopt;
 
-  std::string predicted_points =
-      command_line->GetSwitchValueASCII(switches::kDrawPredictedInkPoint);
-  if (predicted_points == switches::kDraw1Point12Ms)
+  std::string predicted_points = GetFieldTrialParamValueByFeature(
+      kDrawPredictedInkPoint, "predicted_points");
+  if (predicted_points == kDraw1Point12Ms)
     return viz::PredictionConfig::k1Point12Ms;
-  else if (predicted_points == switches::kDraw2Points6Ms)
+  else if (predicted_points == kDraw2Points6Ms)
     return viz::PredictionConfig::k2Points6Ms;
-  else if (predicted_points == switches::kDraw1Point6Ms)
+  else if (predicted_points == kDraw1Point6Ms)
     return viz::PredictionConfig::k1Point6Ms;
-  else if (predicted_points == switches::kDraw2Points3Ms)
+  else if (predicted_points == kDraw2Points3Ms)
     return viz::PredictionConfig::k2Points3Ms;
 
   NOTREACHED();
