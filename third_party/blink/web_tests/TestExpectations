@@ -7289,3 +7289,4 @@ crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
 crbug.com/1233792 [ Mac ] virtual/synchronous_html_parser/http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Pass ]
 crbug.com/1234057 [ Mac ] external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
+crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-image.https.html [ Failure Pass ]
