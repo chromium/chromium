@@ -270,4 +270,27 @@ TEST_F(ShareInfoFileStreamAdapterTest, ReadPartialStreamAndWritePipe) {
             std::string(consumer_data_.begin(), consumer_data_.end()));
 }
 
+TEST_F(ShareInfoFileStreamAdapterTest, ReadStreamAndWritePipeSmallCapacity) {
+  constexpr int kOffset = 0;
+  constexpr int kSize = 72 * 1024;
+  // Pipe capacity is smaller than |kDefaultBufSize}, so the producer side needs
+  // to wait for the consumer side to catch up.
+  constexpr int kDataPipeCapacity = 16 * 1024;
+  base::RunLoop run_loop;
+  SetupDataPipe(kDataPipeCapacity);
+  stream_adapter_ = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
+      file_system_context_, url_, kOffset, kSize, kDefaultBufSize,
+      std::move(producer_stream_),
+      base::BindLambdaForTesting([&run_loop](bool result) {
+        EXPECT_TRUE(result);
+        run_loop.Quit();
+      }));
+  stream_adapter_->StartRunnerForTesting();
+  run_loop.Run();
+
+  EXPECT_EQ(kSize, consumer_data_.size());
+  EXPECT_EQ(std::string(test_data_.begin(), test_data_.begin() + kSize),
+            std::string(consumer_data_.begin(), consumer_data_.end()));
+}
+
 }  // namespace arc

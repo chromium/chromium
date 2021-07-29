@@ -15,6 +15,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "mojo/public/c/system/data_pipe.h"
+#include "mojo/public/cpp/system/handle_signals_state.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 
 namespace arc {
@@ -102,6 +106,19 @@ void ShareInfoFileStreamAdapter::StartFileStreaming() {
     return;
   }
 
+  if (producer_stream_.is_valid()) {
+    handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+        FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+    handle_watcher_->Watch(
+        producer_stream_.get(),
+        MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+        MOJO_WATCH_CONDITION_SATISFIED,
+        // base::Unretained is safe because the callback can never be run after
+        // SimpleWatcher destruction.
+        base::BindRepeating(&ShareInfoFileStreamAdapter::OnProducerStreamUpdate,
+                            base::Unretained(this)));
+  }
+
   PerformReadFileStream();
 }
 
@@ -143,24 +160,56 @@ void ShareInfoFileStreamAdapter::WriteToFile(int bytes_read) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ShareInfoFileStreamAdapter::WriteToPipe(int bytes_read) {
+void ShareInfoFileStreamAdapter::OnProducerStreamUpdate(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  if (result != MOJO_RESULT_OK) {
+    LOG(ERROR) << "Failed to wait for data pipe with error: " << result;
+    OnStreamingFinished(false);
+    return;
+  }
+
+  if (state.peer_closed()) {
+    LOG(ERROR) << "Unexpected close of data pipe.";
+    OnStreamingFinished(false);
+    return;
+  }
+
+  // Does not trigger the DCHECK in WriteToPipe since the |handle_watcher_| is
+  // only armed after writing starts.
+  WriteToPipe();
+}
+
+void ShareInfoFileStreamAdapter::WriteToPipe() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(producer_stream_.is_valid());
-  DCHECK_GT(bytes_read, 0);
+  DCHECK_NE(pipe_write_size_, 0);
 
-  uint32_t num_bytes = base::checked_cast<uint32_t>(bytes_read);
-  const MojoResult mojo_result = producer_stream_->WriteData(
-      net_iobuf_->data(), &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  while (true) {
+    uint32_t bytes_to_write = pipe_write_size_ - pipe_write_offset_;
+    // As we are not using |MOJO_WRITE_DATA_FLAG_ALL_OR_NONE|, the
+    // |producer_stream_| might make a partial write, and so we need to keep
+    // track of how much has been written and retry.
+    const MojoResult mojo_result =
+        producer_stream_->WriteData(net_iobuf_->data() + pipe_write_offset_,
+                                    &bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE);
 
-  mojo::HandleSignalsState state = producer_stream_->QuerySignalsState();
-  const bool peer_closed = state.peer_closed();
-  LOG_IF(ERROR, peer_closed) << "Unexpected close of data pipe.";
+    if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
+      handle_watcher_->ArmOrNotify();
+      return;
+    } else if (mojo_result != MOJO_RESULT_OK) {
+      LOG(ERROR) << "Failed to write to data pipe with result: " << mojo_result;
+      OnWriteFinished(false);
+      return;
+    }
 
-  const bool result = ((mojo_result == MOJO_RESULT_OK) && !peer_closed);
-  LOG_IF(ERROR, !result) << "Failed to write to data pipe.";
+    pipe_write_offset_ += bytes_to_write;
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ShareInfoFileStreamAdapter::OnWriteFinished,
-                                weak_ptr_factory_.GetWeakPtr(), result));
+    if (pipe_write_offset_ == pipe_write_size_) {
+      OnWriteFinished(true);
+      return;
+    }
+  }
 }
 
 void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
@@ -183,9 +232,9 @@ void ShareInfoFileStreamAdapter::OnReadFile(int bytes_read) {
   if (dest_fd_.is_valid()) {
     WriteToFile(bytes_read);
   } else if (producer_stream_.is_valid()) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ShareInfoFileStreamAdapter::WriteToPipe,
-                                  this, bytes_read));
+    pipe_write_size_ = bytes_read;
+    pipe_write_offset_ = 0;
+    WriteToPipe();
   } else {
     LOG(ERROR) << "Unexpected could not find valid endpoint for streamed data.";
     OnStreamingFinished(false);
@@ -200,15 +249,20 @@ void ShareInfoFileStreamAdapter::OnWriteFinished(bool result) {
     return;
   }
 
+  // When writing to a pipe, we have completed writing a full buffer of data.
+  pipe_write_size_ = 0;
+  pipe_write_offset_ = 0;
+
   // Finish reading rest of the file.
   PerformReadFileStream();
 }
 
 void ShareInfoFileStreamAdapter::OnStreamingFinished(bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(result_callback_);
 
-  DCHECK(!result_callback_.is_null());
   producer_stream_.reset();
+  handle_watcher_.reset();
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback_), result));
 }
