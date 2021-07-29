@@ -13,6 +13,9 @@ export class PrefsManager {
     /** @private {?string} */
     this.voiceNameFromLocale_ = null;
 
+    /** @private {?string} */
+    this.enhancedVoiceName_ = PrefsManager.DEFAULT_NETWORK_VOICE;
+
     /** @private {Set<string>} */
     this.validVoiceNames_ = new Set();
 
@@ -235,11 +238,17 @@ export class PrefsManager {
           [
             'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
             'backgroundShading', 'navigationControls', 'enhancedNetworkVoices',
-            'enhancedVoicesDialogShown'
+            'enhancedVoicesDialogShown', 'enhancedVoiceName'
           ],
           (prefs) => {
             if (prefs['voice']) {
               this.voiceNameFromPrefs_ = prefs['voice'];
+            }
+            if (prefs['enhancedVoiceName'] !== undefined) {
+              this.enhancedVoiceName_ = prefs['enhancedVoiceName'];
+            } else {
+              chrome.storage.sync.set(
+                  {'enhancedVoiceName': this.enhancedVoiceName_});
             }
             if (prefs['wordHighlight'] !== undefined) {
               this.wordHighlight_ = prefs['wordHighlight'];
@@ -299,10 +308,19 @@ export class PrefsManager {
   /**
    * Generates the basic speech options for Select-to-Speak based on user
    * preferences. Call for each chrome.tts.speak.
+   * @param {boolean} enhancedVoicesFlag whether enhanced voices are enabled.
    * @return {!chrome.tts.TtsOptions} options The TTS options.
    */
-  speechOptions() {
+  speechOptions(enhancedVoicesFlag) {
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
+    const useEnhancedVoices = enhancedVoicesFlag &&
+        this.enhancedNetworkVoicesEnabled_ && navigator.onLine;
+
+    // If network voices are enabled, use them.
+    if (useEnhancedVoices) {
+      options['voiceName'] = this.enhancedVoiceName_;
+      return options;
+    }
 
     // To use the default (system) voice: don't specify options['voiceName'].
     if (this.voiceNameFromPrefs_ === PrefsManager.SYSTEM_VOICE) {
@@ -329,6 +347,7 @@ export class PrefsManager {
         this.validVoiceNames_.has(this.voiceNameFromLocale_)) {
       options['voiceName'] = this.voiceNameFromLocale_;
     }
+
     return options;
   }
 

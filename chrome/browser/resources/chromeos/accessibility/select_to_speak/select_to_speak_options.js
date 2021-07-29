@@ -48,6 +48,8 @@ class SelectToSpeakOptionsPage {
             };
 
             this.syncSelectControlToPref_('localVoices', 'voice', 'voiceName');
+            this.syncSelectControlToPref_(
+                'naturalVoice', 'enhancedVoiceName', 'voiceName');
             this.syncCheckboxControlToPref_(
                 'naturalVoices', 'enhancedNetworkVoices', (checked) => {
                   const voice =
@@ -59,10 +61,6 @@ class SelectToSpeakOptionsPage {
                   this.setElementVisible(preview, checked);
                   select.disabled = !checked;
                 });
-
-            // TODO(crbug.com/1227589): add enhanced voice and language
-            // selection to prefs and sync the controls for those settings to
-            // preferences.
           }
         });
 

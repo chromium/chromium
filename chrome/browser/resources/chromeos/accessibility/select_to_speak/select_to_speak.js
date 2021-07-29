@@ -936,7 +936,8 @@ export class SelectToSpeak {
   startSpeech_(text) {
     this.prepareForSpeech_(true /* clearFocusRing */);
     this.maybeShowEnhancedVoicesDialog_(() => {
-      const options = this.prefsManager_.speechOptions();
+      const options =
+          this.prefsManager_.speechOptions(this.enhancedVoicesFlag_);
       // Without nodes to anchor on, navigate is not supported.
       this.supportsNavigationPanel_ = false;
       options.onEvent = (event) => {
@@ -1108,7 +1109,8 @@ export class SelectToSpeak {
     }
     const options = /** @type {!chrome.tts.TtsOptions} */ ({});
     // Copy options so we can add lang below
-    Object.assign(options, this.prefsManager_.speechOptions());
+    Object.assign(
+        options, this.prefsManager_.speechOptions(this.enhancedVoicesFlag_));
     if (this.enableLanguageDetectionIntegration_ &&
         nodeGroup.detectedLanguage) {
       options.lang = nodeGroup.detectedLanguage;
