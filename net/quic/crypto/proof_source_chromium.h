@@ -54,6 +54,9 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       absl::string_view in,
       std::unique_ptr<SignatureCallback> callback) override;
 
+  absl::InlinedVector<uint16_t, 8> SupportedTlsSignatureAlgorithms()
+      const override;
+
   TicketCrypter* GetTicketCrypter() override;
   void SetTicketCrypter(std::unique_ptr<TicketCrypter> ticket_crypter);
 

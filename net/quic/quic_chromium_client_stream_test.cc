@@ -62,14 +62,13 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
                quic::QuicSpdyStream*(quic::PendingStream* pending));
   MOCK_METHOD0(CreateOutgoingBidirectionalStream, QuicChromiumClientStream*());
   MOCK_METHOD0(CreateOutgoingUnidirectionalStream, QuicChromiumClientStream*());
-  MOCK_METHOD6(
-      WritevData,
-      quic::QuicConsumedData(quic::QuicStreamId id,
-                             size_t write_length,
-                             quic::QuicStreamOffset offset,
-                             quic::StreamSendingState state,
-                             quic::TransmissionType type,
-                             absl::optional<quic::EncryptionLevel> level));
+  MOCK_METHOD6(WritevData,
+               quic::QuicConsumedData(quic::QuicStreamId id,
+                                      size_t write_length,
+                                      quic::QuicStreamOffset offset,
+                                      quic::StreamSendingState state,
+                                      quic::TransmissionType type,
+                                      quic::EncryptionLevel level));
   MOCK_METHOD2(WriteControlFrame,
                bool(const quic::QuicFrame&, quic::TransmissionType));
   MOCK_METHOD4(SendRstStream,

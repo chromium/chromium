@@ -192,6 +192,12 @@ void ProofSourceChromium::ComputeTlsSignature(
   callback->Run(true, sig, nullptr);
 }
 
+absl::InlinedVector<uint16_t, 8>
+ProofSourceChromium::SupportedTlsSignatureAlgorithms() const {
+  // Allow all signature algorithms that BoringSSL allows.
+  return {};
+}
+
 quic::ProofSource::TicketCrypter* ProofSourceChromium::GetTicketCrypter() {
   return ticket_crypter_.get();
 }
