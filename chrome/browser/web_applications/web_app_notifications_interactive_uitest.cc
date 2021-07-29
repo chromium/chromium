@@ -100,14 +100,26 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
   Browser* app_browser_ = nullptr;
 };
 
-class WebAppNotificationsBrowserTest_IconAndTitle
+class WebAppNotificationsBrowserTest_IconAndTitleEnabled
     : public WebAppNotificationsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsNotificationIconAndTitle};
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest,
+class WebAppNotificationsBrowserTest_IconAndTitleDisabled
+    : public WebAppNotificationsBrowserTest {
+ public:
+  WebAppNotificationsBrowserTest_IconAndTitleDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kDesktopPWAsNotificationIconAndTitle);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
                        PersistentNotificationIconAndTitle) {
   const GURL app_url =
       https_server()->GetURL("/web_app_notifications/index.html");
@@ -135,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest,
   EXPECT_TRUE(AwaitScript("closeAllPersistentNotifications()").ExtractBool());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitle,
+IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
                        PersistentNotificationIconAndTitle) {
   const GURL app_url =
       https_server()->GetURL("/web_app_notifications/index.html");
