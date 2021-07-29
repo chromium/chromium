@@ -144,6 +144,16 @@ void CleanCertificatePolicyCache(
 
   _sessionRestorationBrowserAgent = nullptr;
   _browserState = nullptr;
+
+  // Close all tabs. Do this in an @autoreleasepool as WebStateList observers
+  // will be notified (they are unregistered later). As some of them may be
+  // implemented in Objective-C and unregister themselves in their -dealloc
+  // method, ensure they -autorelease introduced by ARC are processed before
+  // the WebStateList destructor is called.
+  @autoreleasepool {
+    _webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
+  }
+
   _webStateList = nullptr;
   _clearPoliciesTaskTracker.TryCancelAll();
 }

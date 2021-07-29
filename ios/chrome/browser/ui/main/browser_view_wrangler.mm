@@ -240,19 +240,6 @@
     WebStateList* webStateList = self.mainBrowser->GetWebStateList();
     breakpad::StopMonitoringTabStateForWebStateList(webStateList);
     breakpad::StopMonitoringURLsForWebStateList(webStateList);
-
-    // Close all tabs. Do this in an @autoreleasepool as WebStateList observers
-    // will be notified (they are unregistered later). As some of them may be
-    // implemented in Objective-C and unregister themselves in their -dealloc
-    // method, ensure they -autorelease introduced by ARC are processed before
-    // the WebStateList destructor is called.
-    @autoreleasepool {
-      webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
-    }
-
-    // TabModel is still responsible for a few pieces of clean-up, so signal
-    // it as well.
-    // TODO(crbug.com/783777): Remove TabModel.
     [self.mainBrowser->GetTabModel() disconnect];
   }
 
@@ -263,19 +250,6 @@
   if (_otrBrowser.get()) {
     WebStateList* webStateList = self.otrBrowser->GetWebStateList();
     breakpad::StopMonitoringTabStateForWebStateList(webStateList);
-
-    // Close all tabs. Do this in an @autoreleasepool as WebStateList observers
-    // will be notified (they are unregistered later). As some of them may be
-    // implemented in Objective-C and unregister themselves in their -dealloc
-    // method, ensure they -autorelease introduced by ARC are processed before
-    // the WebStateList destructor is called.
-    @autoreleasepool {
-      webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
-    }
-
-    // TabModel is still responsible for a few pieces of clean-up, so signal
-    // it as well.
-    // TODO(crbug.com/783777): Remove TabModel.
     [self.otrBrowser->GetTabModel() disconnect];
   }
 
