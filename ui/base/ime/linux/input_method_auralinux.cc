@@ -70,20 +70,20 @@ LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting(
 ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     ui::KeyEvent* event) {
   DCHECK(event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED);
-  // If there's pending key event, i.e. a key event which is expected to
+  // If there's pending deadkey event, i.e. a key event which is expected to
   // trigger input method actions (like OnCommit, OnPreedit* invocation)
   // and to be dispatched from there, but not yet, dispatch the pending event
   // first.
-  // Practically, this happens with dead-keys. Dead keys are considered
-  // to be consumed by IME. Actually, it updates input method's internal
-  // state. However, it makes no input method actions, so the event won't be
-  // dispatched without this handling.
-  // Note that this is the earliest timing to find the pending event needs
-  // to be dispatched. It is because InputMethodAuraLinux cannot find whether
-  // input method actions will be followed or not on holding the event.
+  // Dead keys are considered to be consumed by IME. Actually, it updates
+  // input method's internal state. However, it makes no input method actions,
+  // so the event won't be dispatched without this handling.
+  // Note that this is the earliest timing to find the pending deadkey event
+  // needs to be dispatched. It is because InputMethodAuraLinux cannot find
+  // whether input method actions will be followed or not on holding the event.
   //
-  // There's exception in the case. Some input framework sends key events
-  // twice to fill the gap of synchronous API v.s. asynchronous operations.
+  // Note that we do not apply this for non-deadkey events intentionally.
+  // It is because some input framework sends key events twice to fill the gap
+  // of synchronous API v.s. asynchronous operations.
   // Specifically:
   // - The first key event is passed to input method via |context_| below.
   // - Inside the function, it triggers asynchronous input method operation.
@@ -100,8 +100,11 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   // To avoid dispatching twice, do not dispatch it here. Following code
   // will handle the second (i.e. fallback) key event, including event
   // dispatching.
+  // Importantly, the second key press event may be arrived after the first
+  // key release event, because everything is working in asynchronous ways.
   if (ime_filtered_key_event_.has_value() &&
-      !IsSameKeyEvent(*ime_filtered_key_event_, *event)) {
+      !IsSameKeyEvent(*ime_filtered_key_event_, *event) &&
+      ime_filtered_key_event_->GetDomKey().IsDeadKey()) {
     std::ignore = DispatchKeyEventPostIME(&*ime_filtered_key_event_);
   }
   ime_filtered_key_event_.reset();
