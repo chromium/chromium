@@ -1979,9 +1979,12 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
                                           scriptForInjectingHTML:errorHTML
                                               addAutomaticReload:YES]
                     completionHandler:^(id result, NSError* error) {
-                      DCHECK(!error)
-                          << "Error injecting error page HTML: "
-                          << base::SysNSStringToUTF8(error.description);
+                      if (error) {
+                        DCHECK(error.code == WKErrorWebViewInvalidated ||
+                               error.code == WKErrorWebContentProcessTerminated)
+                            << "Error injecting error page HTML: "
+                            << base::SysNSStringToUTF8(error.description);
+                      }
                     }];
         }
 
