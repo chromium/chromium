@@ -5241,6 +5241,7 @@ static_library("browser") {
       "obsolete_system/obsolete_system_mac.cc",
       "password_manager/password_manager_util_mac.h",
       "password_manager/password_manager_util_mac.mm",
+      "performance_monitor/resource_coalition_internal_types_mac.h",
       "performance_monitor/resource_coalition_mac.h",
       "performance_monitor/resource_coalition_mac.mm",
       "platform_util_mac.mm",
