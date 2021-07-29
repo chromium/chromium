@@ -13,6 +13,4 @@ DEFAULT_CONFIG = _outages_config()
 
 # See README.md for documentation on allowable configuration values
 config = _outages_config(
-    # TODO(https://crbug.com/1234121): Remove this
-    disable_cq_experiments = True,
 )
