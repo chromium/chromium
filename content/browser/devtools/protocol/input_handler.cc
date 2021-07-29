@@ -702,6 +702,55 @@ void InputHandler::InsertText(const std::string& text,
       std::move(closure));
 }
 
+void InputHandler::ImeSetComposition(
+    const std::string& text,
+    int selection_start,
+    int selection_end,
+    Maybe<int> replacement_start,
+    Maybe<int> replacement_end,
+    std::unique_ptr<ImeSetCompositionCallback> callback) {
+  std::u16string text16 = base::UTF8ToUTF16(text);
+  if (!host_ || !host_->GetRenderWidgetHost()) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
+  if (!host_->GetParent() && widget_host->delegate()) {
+    RenderWidgetHostImpl* target_host =
+        widget_host->delegate()->GetFocusedRenderWidgetHost(widget_host);
+    if (target_host)
+      widget_host = target_host;
+  }
+
+  // If replacement start and end are not specified, then they are -1,
+  // so no replacing will be done.
+  int replacement_start_out = -1;
+  int replacement_end_out = -1;
+
+  // Check if replacement_start and end parameters were passed in
+  if (replacement_start.isJust()) {
+    replacement_start_out = replacement_start.fromJust();
+    if (replacement_end.isJust()) {
+      replacement_end_out = replacement_end.fromJust();
+    } else {
+      callback->sendFailure(Response::InvalidParams(
+          "Either both replacement start/end are specified or neither."));
+      return;
+    }
+  }
+
+  base::OnceClosure closure = base::BindOnce(
+      &ImeSetCompositionCallback::sendSuccess, std::move(callback));
+
+  widget_host->Focus();
+
+  widget_host->GetWidgetInputHandler()->ImeSetComposition(
+      text16, std::vector<ui::ImeTextSpan>(),
+      gfx::Range(replacement_start_out, replacement_end_out), selection_start,
+      selection_end, std::move(closure));
+}
+
 void InputHandler::DispatchMouseEvent(
     const std::string& event_type,
     double x,

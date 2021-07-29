@@ -61,9 +61,12 @@ void MockWidgetInputHandler::ImeSetComposition(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end) {
+    int32_t end,
+    ImeSetCompositionCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
       "SetComposition", text, ime_text_spans, range, start, end));
+  if (callback)
+    std::move(callback).Run();
 }
 
 void MockWidgetInputHandler::ImeCommitText(

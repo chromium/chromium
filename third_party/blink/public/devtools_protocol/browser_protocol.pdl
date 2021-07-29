@@ -4020,6 +4020,22 @@ domain Input
       # The text to insert.
       string text
 
+  # This method sets the current candidate text for ime.
+  # Use imeCommitComposition to commit the final text.
+  # Use imeSetComposition with empty string as text to cancel composition.
+  experimental command imeSetComposition
+    parameters
+      # The text to insert
+      string text
+      # selection start
+      integer selectionStart
+      # selection end
+      integer selectionEnd
+      # replacement start
+      optional integer replacementStart
+      # replacement end
+      optional integer replacementEnd
+
   # Dispatches a mouse event to the page.
   command dispatchMouseEvent
     parameters

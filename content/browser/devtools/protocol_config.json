@@ -32,7 +32,7 @@
             },
             {
                 "domain": "Input",
-                "async": ["dispatchKeyEvent", "insertText", "dispatchMouseEvent", "dispatchDragEvent", "dispatchTouchEvent", "synthesizePinchGesture", "synthesizeScrollGesture", "synthesizeTapGesture"]
+                "async": ["dispatchKeyEvent", "insertText", "imeSetComposition", "dispatchMouseEvent", "dispatchDragEvent", "dispatchTouchEvent", "synthesizePinchGesture", "synthesizeScrollGesture", "synthesizeTapGesture"]
             },
             {
                 "domain": "Inspector"

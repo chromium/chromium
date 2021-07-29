@@ -362,12 +362,14 @@ interface WidgetInputHandler {
   CursorVisibilityChanged(bool visible);
 
   // This message sends a string being composed with an input method.
+  // Note, the response is specifically for Devtools to learn about completion
   ImeSetComposition(mojo_base.mojom.String16 text,
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
-                    gfx.mojom.Range range, int32 start, int32 end);
+                    gfx.mojom.Range range, int32 start, int32 end) => ();
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
+   // Note, the response is specifically for Devtools to learn about completion
   ImeCommitText(mojo_base.mojom.String16 text,
                 array<ui.mojom.ImeTextSpan> ime_text_spans,
                 gfx.mojom.Range range, int32 relative_cursor_position) => ();
@@ -424,4 +426,3 @@ interface WidgetInputHandler {
   GetFrameWidgetInputHandler(
       pending_associated_receiver<FrameWidgetInputHandler> interface_request);
 };
-

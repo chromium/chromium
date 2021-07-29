@@ -2003,7 +2003,8 @@ TEST_F(RenderViewImplTest, ImeComposition) {
         GetWidgetInputHandler()->ImeSetComposition(
             base::WideToUTF16(ime_message->ime_string),
             std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(),
-            ime_message->selection_start, ime_message->selection_end);
+            ime_message->selection_start, ime_message->selection_end,
+            base::DoNothing());
         break;
 
       case IME_COMMITTEXT:
@@ -2020,7 +2021,7 @@ TEST_F(RenderViewImplTest, ImeComposition) {
       case IME_CANCELCOMPOSITION:
         GetWidgetInputHandler()->ImeSetComposition(
             std::u16string(), std::vector<ui::ImeTextSpan>(),
-            gfx::Range::InvalidRange(), 0, 0);
+            gfx::Range::InvalidRange(), 0, 0, base::DoNothing());
         break;
     }
 
@@ -2282,7 +2283,8 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
   // ASCII composition
   const std::u16string ascii_composition = u"aiueo";
   widget_input_handler->ImeSetComposition(
-      ascii_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0, 0);
+      ascii_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0, 0,
+      base::DoNothing());
   bounds = LastCompositionBounds();
   ASSERT_EQ(ascii_composition.size(), bounds.size());
 
@@ -2294,9 +2296,9 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
 
   // Non surrogate pair unicode character.
   const std::u16string unicode_composition = u"あいうえお";
-  widget_input_handler->ImeSetComposition(unicode_composition,
-                                          empty_ime_text_span,
-                                          gfx::Range::InvalidRange(), 0, 0);
+  widget_input_handler->ImeSetComposition(
+      unicode_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0,
+      0, base::DoNothing());
   bounds = LastCompositionBounds();
   ASSERT_EQ(unicode_composition.size(), bounds.size());
   for (const gfx::Rect& r : bounds)
@@ -2307,9 +2309,9 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
 
   // Surrogate pair character.
   const std::u16string surrogate_pair_char = u"𠮟";
-  widget_input_handler->ImeSetComposition(surrogate_pair_char,
-                                          empty_ime_text_span,
-                                          gfx::Range::InvalidRange(), 0, 0);
+  widget_input_handler->ImeSetComposition(
+      surrogate_pair_char, empty_ime_text_span, gfx::Range::InvalidRange(), 0,
+      0, base::DoNothing());
   bounds = LastCompositionBounds();
   ASSERT_EQ(surrogate_pair_char.size(), bounds.size());
   EXPECT_LT(0, bounds[0].width());
@@ -2325,9 +2327,9 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
   const size_t utf16_length = 8UL;
   const bool is_surrogate_pair_empty_rect[8] = {false, true,  false, false,
                                                 true,  false, false, true};
-  widget_input_handler->ImeSetComposition(surrogate_pair_mixed_composition,
-                                          empty_ime_text_span,
-                                          gfx::Range::InvalidRange(), 0, 0);
+  widget_input_handler->ImeSetComposition(
+      surrogate_pair_mixed_composition, empty_ime_text_span,
+      gfx::Range::InvalidRange(), 0, 0, base::DoNothing());
   bounds = LastCompositionBounds();
   ASSERT_EQ(utf16_length, bounds.size());
   for (size_t i = 0; i < utf16_length; ++i) {
@@ -3224,7 +3226,8 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   // ASCII composition
   const std::u16string ascii_composition = u"aiueo";
   widget_input_handler->ImeSetComposition(
-      ascii_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0, 0);
+      ascii_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0, 0,
+      base::DoNothing());
   bounds_at_1x = LastCompositionBounds();
   ASSERT_EQ(ascii_composition.size(), bounds_at_1x.size());
 

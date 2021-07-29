@@ -72,6 +72,14 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   void InsertText(const std::string& text,
                   std::unique_ptr<InsertTextCallback> callback) override;
 
+  void ImeSetComposition(
+      const std::string& text,
+      int selection_start,
+      int selection_end,
+      Maybe<int> replacement_start,
+      Maybe<int> replacement_end,
+      std::unique_ptr<ImeSetCompositionCallback> callback) override;
+
   void DispatchMouseEvent(
       const std::string& event_type,
       double x,

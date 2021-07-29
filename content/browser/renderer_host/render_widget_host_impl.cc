@@ -287,7 +287,8 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
-                         int32_t end) override {
+                         int32_t end,
+                         ImeSetCompositionCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
   void ImeCommitText(const std::u16string& text,
@@ -2299,8 +2300,10 @@ void RenderWidgetHostImpl::ImeSetComposition(
     const gfx::Range& replacement_range,
     int selection_start,
     int selection_end) {
+  // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeSetComposition(
-      text, ime_text_spans, replacement_range, selection_start, selection_end);
+      text, ime_text_spans, replacement_range, selection_start, selection_end,
+      base::OnceClosure());
 #if defined(OS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeSetComposingTextEvent(text);
@@ -2313,6 +2316,7 @@ void RenderWidgetHostImpl::ImeCommitText(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int relative_cursor_pos) {
+  // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeCommitText(text, ime_text_spans,
                                          replacement_range, relative_cursor_pos,
                                          base::OnceClosure());
@@ -2333,9 +2337,10 @@ void RenderWidgetHostImpl::ImeFinishComposingText(bool keep_selection) {
 }
 
 void RenderWidgetHostImpl::ImeCancelComposition() {
-  GetWidgetInputHandler()->ImeSetComposition(std::u16string(),
-                                             std::vector<ui::ImeTextSpan>(),
-                                             gfx::Range::InvalidRange(), 0, 0);
+  // Passing null callback since it is only needed for Devtools
+  GetWidgetInputHandler()->ImeSetComposition(
+      std::u16string(), std::vector<ui::ImeTextSpan>(),
+      gfx::Range::InvalidRange(), 0, 0, base::OnceClosure());
 }
 
 void RenderWidgetHostImpl::RejectMouseLockOrUnlockIfNecessary(

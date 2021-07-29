@@ -74,15 +74,30 @@ void WidgetInputHandlerImpl::CursorVisibilityChanged(bool visible) {
       base::BindOnce(&WidgetBase::CursorVisibilityChange, widget_, visible));
 }
 
+static void ImeSetCompositionOnMainThread(
+    base::WeakPtr<WidgetBase> widget,
+    scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+    const String& text,
+    const Vector<ui::ImeTextSpan>& ime_text_spans,
+    const gfx::Range& range,
+    int32_t start,
+    int32_t end,
+    WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
+  widget->ImeSetComposition(text, ime_text_spans, range, start, end);
+  callback_task_runner->PostTask(FROM_HERE, std::move(callback));
+}
+
 void WidgetInputHandlerImpl::ImeSetComposition(
     const String& text,
     const Vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end) {
-  RunOnMainThread(base::BindOnce(&WidgetBase::ImeSetComposition, widget_,
+    int32_t end,
+    WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
+  RunOnMainThread(base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
+                                 base::ThreadTaskRunnerHandle::Get(),
                                  text.IsolatedCopy(), ime_text_spans, range,
-                                 start, end));
+                                 start, end, std::move(callback)));
 }
 
 static void ImeCommitTextOnMainThread(
