@@ -351,13 +351,16 @@ bool GetGestureCommand(ui::GestureEvent* event, int* command) {
   return false;
 }
 
-bool IsShowingWebContentsModalDialog(content::WebContents* web_contents) {
-  if (!web_contents)
-    return false;
-
-  const web_modal::WebContentsModalDialogManager* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  return manager && manager->IsDialogActive();
+bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
+  views::Widget::Widgets widgets;
+  views::Widget::GetAllChildWidgets(parent_widget->GetNativeView(), &widgets);
+  for (auto* widget : widgets) {
+    if (widget == parent_widget)
+      continue;
+    if (widget->IsModal())
+      return true;
+  }
+  return false;
 }
 
 // Overlay view that owns TopContainerView in some cases (such as during
@@ -2712,8 +2715,8 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
         restore_focus_on_activation_ = false;
 
         // Set initial focus change on the first activation if there is no
-        // tab modal dialog.
-        if (!IsShowingWebContentsModalDialog(GetActiveWebContents()))
+        // modal dialog.
+        if (!WidgetHasChildModalDialog(GetWidget()))
           RestoreFocus();
       }
 
