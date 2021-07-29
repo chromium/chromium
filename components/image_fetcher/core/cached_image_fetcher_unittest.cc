@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
