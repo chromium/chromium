@@ -151,7 +151,9 @@ void DOMStorageContextWrapper::DeleteLocalStorage(const url::Origin& origin,
     return;
   }
 
-  local_storage_control_->DeleteStorage(origin, std::move(callback));
+  local_storage_control_->DeleteStorage(
+      // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
+      blink::StorageKey(origin), std::move(callback));
 }
 
 void DOMStorageContextWrapper::PerformLocalStorageCleanup(
@@ -241,7 +243,9 @@ void DOMStorageContextWrapper::OpenLocalStorage(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(local_storage_control_);
-  local_storage_control_->BindStorageArea(origin, std::move(receiver));
+  local_storage_control_->BindStorageArea(
+      // TODO(https://crbug.com/1212808): Use storage_key instead of origin.
+      blink::StorageKey(origin), std::move(receiver));
   if (storage_policy_observer_)
     storage_policy_observer_->StartTrackingOrigin(origin);
 }

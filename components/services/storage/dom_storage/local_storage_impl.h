@@ -27,9 +27,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -69,12 +71,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void PurgeUnusedAreasIfNeeded();
 
   // mojom::LocalStorageControl implementation:
-  // TODO(crbug.com/1212808): Update mojo interface to use StorageKey.
   void BindStorageArea(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
   void GetUsage(GetUsageCallback callback) override;
-  void DeleteStorage(const url::Origin& origin,
+  void DeleteStorage(const blink::StorageKey& storage_key,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
   void Flush(FlushCallback callback) override;
@@ -131,7 +132,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   void OnGotStorageUsageForShutdown(
       std::vector<mojom::StorageUsageInfoPtr> usage);
-  void OnOriginsDeleted(leveldb::Status status);
+  void OnStorageKeysDeleted(leveldb::Status status);
   void OnShutdownComplete();
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_area_count);
@@ -181,8 +182,8 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   int commit_error_count_ = 0;
   bool tried_to_recover_from_commit_errors_ = false;
 
-  // The set of (origin) URLs whose storage should be cleared on shutdown.
-  std::set<GURL> origins_to_purge_on_shutdown_;
+  // The set of StorageKeys whose storage should be cleared on shutdown.
+  std::set<blink::StorageKey> storage_keys_to_purge_on_shutdown_;
 
   // Name of an extra histogram to log open results to, if not null.
   const char* open_result_histogram_ = nullptr;

@@ -31,6 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
 
@@ -76,10 +77,11 @@ class LocalStorageHelperTest : public content::ContentBrowserTest {
   void CreateLocalStorageDataForTest() {
     for (const char* origin_str : {kOrigin1, kOrigin2, kOrigin3}) {
       mojo::Remote<blink::mojom::StorageArea> area;
-      url::Origin origin = url::Origin::Create(GURL(origin_str));
-      ASSERT_FALSE(origin.opaque());
+      blink::StorageKey storage_key =
+          blink::StorageKey::CreateFromStringForTesting(origin_str);
+      ASSERT_FALSE(storage_key.origin().opaque());
       GetLocalStorageControl()->BindStorageArea(
-          origin, area.BindNewPipeAndPassReceiver());
+          storage_key, area.BindNewPipeAndPassReceiver());
       ASSERT_TRUE(PutTestData(area.get()));
     }
   }

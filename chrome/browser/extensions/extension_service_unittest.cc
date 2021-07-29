@@ -5118,8 +5118,9 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   auto* local_storage_control =
       profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
   mojo::Remote<blink::mojom::StorageArea> area;
-  local_storage_control->BindStorageArea(url::Origin::Create(ext_url),
-                                         area.BindNewPipeAndPassReceiver());
+  local_storage_control->BindStorageArea(
+      blink::StorageKey(url::Origin::Create(ext_url)),
+      area.BindNewPipeAndPassReceiver());
   {
     bool success = false;
     base::RunLoop run_loop;
@@ -5143,8 +5144,6 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   base::FilePath idb_path;
   {
     base::RunLoop run_loop;
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-    // function directly.
     idb_control_test->GetFilePathForTesting(
         blink::StorageKey(url::Origin::Create(ext_url)),
         base::BindLambdaForTesting([&](const base::FilePath& path) {
@@ -5295,8 +5294,9 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   auto* local_storage_control =
       profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
   mojo::Remote<blink::mojom::StorageArea> area;
-  local_storage_control->BindStorageArea(url::Origin::Create(origin1),
-                                         area.BindNewPipeAndPassReceiver());
+  local_storage_control->BindStorageArea(
+      blink::StorageKey(url::Origin::Create(origin1)),
+      area.BindNewPipeAndPassReceiver());
   {
     bool success = false;
     base::RunLoop run_loop;
@@ -5320,8 +5320,6 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   base::FilePath idb_path;
   {
     base::RunLoop run_loop;
-    // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-    // function directly.
     idb_control_test->GetFilePathForTesting(
         blink::StorageKey(url::Origin::Create(origin1)),
         base::BindLambdaForTesting([&](const base::FilePath& path) {

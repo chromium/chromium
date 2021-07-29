@@ -211,12 +211,13 @@ class LocalStorageImplTest : public testing::Test {
 
   absl::optional<std::vector<uint8_t>> DoTestGet(
       const std::vector<uint8_t>& key) {
-    const url::Origin kOrigin = url::Origin::Create(GURL("http://foobar.com"));
+    const blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
     mojo::Remote<blink::mojom::StorageArea> area;
     mojo::Remote<blink::mojom::StorageArea>
         dummy_area;  // To make sure values are cached.
-    context()->BindStorageArea(kOrigin, area.BindNewPipeAndPassReceiver());
-    context()->BindStorageArea(kOrigin,
+    context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
+    context()->BindStorageArea(storage_key,
                                dummy_area.BindNewPipeAndPassReceiver());
     std::vector<uint8_t> result;
     bool success = test::GetSync(area.get(), key, &result);
@@ -233,8 +234,9 @@ class LocalStorageImplTest : public testing::Test {
     mojo::Remote<blink::mojom::StorageArea> area;
     bool success = false;
     base::RunLoop run_loop;
-    context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                               area.BindNewPipeAndPassReceiver());
+    context()->BindStorageArea(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+        area.BindNewPipeAndPassReceiver());
     area->Put(key, value, absl::nullopt, "source",
               test::MakeSuccessCallback(run_loop.QuitClosure(), &success));
     run_loop.Run();
@@ -246,8 +248,9 @@ class LocalStorageImplTest : public testing::Test {
   bool DoTestGet(const std::vector<uint8_t>& key,
                  std::vector<uint8_t>* result) {
     mojo::Remote<blink::mojom::StorageArea> area;
-    context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                               area.BindNewPipeAndPassReceiver());
+    context()->BindStorageArea(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+        area.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
     std::vector<blink::mojom::KeyValuePtr> data;
@@ -299,8 +302,9 @@ TEST_F(LocalStorageImplTest, Basic) {
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area.BindNewPipeAndPassReceiver());
 
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
@@ -312,20 +316,22 @@ TEST_F(LocalStorageImplTest, Basic) {
   EXPECT_EQ(3u, GetDatabaseContents().size());
 }
 
-TEST_F(LocalStorageImplTest, OriginsAreIndependent) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com:123"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://foobar.com:1234"));
+TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com:123");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com:1234");
   auto key1 = StdStringToUint8Vector("4key");
   auto key2 = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
@@ -341,9 +347,11 @@ TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
   mojo::Remote<blink::mojom::StorageArea> area;
   mojo::Remote<blink::mojom::StorageArea>
       dummy_area;  // To make sure values are cached.
-  const url::Origin kOrigin(url::Origin::Create(GURL("http://foobar.com")));
-  context()->BindStorageArea(kOrigin, area.BindNewPipeAndPassReceiver());
-  context()->BindStorageArea(kOrigin, dummy_area.BindNewPipeAndPassReceiver());
+  const blink::StorageKey storage_key(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
+  context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key,
+                             dummy_area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
 
   area.reset();
@@ -371,8 +379,9 @@ TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
 
   // Write some data to the DB.
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
 
   area.reset();
@@ -382,11 +391,12 @@ TEST_F(LocalStorageImplTest, OpeningWrappersPurgesInactiveWrappers) {
   EXPECT_FALSE(GetDatabaseContents().empty());
   ClearDatabase();
 
-  // Now open many new areas (for different origins) to trigger clean up.
+  // Now open many new areas (for different StorageKeys) to trigger clean up.
   for (int i = 1; i <= 100; ++i) {
-    context()->BindStorageArea(url::Origin::Create(GURL(base::StringPrintf(
-                                   "http://example.com:%d", i))),
-                               area.BindNewPipeAndPassReceiver());
+    context()->BindStorageArea(
+        blink::StorageKey::CreateFromStringForTesting(
+            base::StringPrintf("http://example.com:%d", i)),
+        area.BindNewPipeAndPassReceiver());
     area.reset();
   }
 
@@ -428,8 +438,10 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_NoData) {
 }
 
 TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key1 = StdStringToUint8Vector("key1");
   auto key2 = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
@@ -437,13 +449,13 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
   base::Time before_write = base::Time::Now();
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
   area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
@@ -454,10 +466,10 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 
   std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
-  if (info[0]->origin == origin2)
+  if (info[0]->origin == storage_key2.origin())
     std::swap(info[0], info[1]);
-  EXPECT_EQ(origin1, info[0]->origin);
-  EXPECT_EQ(origin2, info[1]->origin);
+  EXPECT_EQ(storage_key1.origin(), info[0]->origin);
+  EXPECT_EQ(storage_key2.origin(), info[1]->origin);
   EXPECT_LE(before_write, info[0]->last_modified);
   EXPECT_LE(before_write, info[1]->last_modified);
   EXPECT_GE(after_write, info[0]->last_modified);
@@ -466,69 +478,77 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 }
 
 TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->Delete(key, value, "source", base::DoNothing());
   area.reset();
 
   // Make sure all data gets committed to disk.
   RunUntilIdle();
 
-  // Data from origin2 should exist, including meta-data, but nothing should
-  // exist for origin1.
+  // Data from storage_key2 should exist, including meta-data, but nothing
+  // should exist for storage_key1.
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
-    EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
-    EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_NE(std::string::npos,
+              entry.first.find(storage_key2.origin().Serialize()));
   }
 }
 
 TEST_F(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->DeleteAll("source", mojo::NullRemote(), base::DoNothing());
   area.reset();
 
   // Make sure all data gets committed to disk.
   RunUntilIdle();
 
-  // Data from origin2 should exist, including meta-data, but nothing should
-  // exist for origin1.
+  // Data from storage_key2 should exist, including meta-data, but nothing
+  // should exist for storage_key1.
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
-    EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
-    EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_NE(std::string::npos,
+              entry.first.find(storage_key2.origin().Serialize()));
   }
 }
 
@@ -538,25 +558,28 @@ TEST_F(LocalStorageImplTest, DeleteStorage) {
 
   ResetStorage(storage_path());
   base::RunLoop run_loop;
-  context()->DeleteStorage(url::Origin::Create(GURL("http://foobar.com")),
-                           run_loop.QuitClosure());
+  context()->DeleteStorage(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(1u, GetDatabaseContents().size());
 }
 
 TEST_F(LocalStorageImplTest, DeleteStorageWithoutConnection) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
@@ -564,34 +587,38 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithoutConnection) {
   RunUntilIdle();
   EXPECT_FALSE(GetDatabaseContents().empty());
 
-  context()->DeleteStorage(origin1, base::DoNothing());
+  context()->DeleteStorage(storage_key1, base::DoNothing());
   RunUntilIdle();
 
-  // Data from origin2 should exist, including meta-data, but nothing should
-  // exist for origin1.
+  // Data from storage_key2 should exist, including meta-data, but nothing
+  // should exist for storage_key1.
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
-    EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
-    EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_NE(std::string::npos,
+              entry.first.find(storage_key2.origin().Serialize()));
   }
 }
 
 TEST_F(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
@@ -600,42 +627,46 @@ TEST_F(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   EXPECT_FALSE(GetDatabaseContents().empty());
 
   TestLevelDBObserver observer;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
   RunUntilIdle();
 
-  context()->DeleteStorage(origin1, base::DoNothing());
+  context()->DeleteStorage(storage_key1, base::DoNothing());
   RunUntilIdle();
 
   ASSERT_EQ(1u, observer.observations().size());
   EXPECT_EQ(TestLevelDBObserver::Observation::kDeleteAll,
             observer.observations()[0].type);
 
-  // Data from origin2 should exist, including meta-data, but nothing should
-  // exist for origin1.
+  // Data from storage_key2 should exist, including meta-data, but nothing
+  // should exist for storage_key1.
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
-    EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
-    EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_NE(std::string::npos,
+              entry.first.find(storage_key2.origin().Serialize()));
   }
 }
 
 TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
@@ -644,13 +675,13 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   EXPECT_FALSE(GetDatabaseContents().empty());
 
   TestLevelDBObserver observer;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
   area->AddObserver(observer.Bind());
   area->Put(StdStringToUint8Vector("key2"), value, absl::nullopt, "source",
             base::DoNothing());
   RunUntilIdle();
 
-  context()->DeleteStorage(origin1, base::DoNothing());
+  context()->DeleteStorage(storage_key1, base::DoNothing());
   RunUntilIdle();
 
   ASSERT_EQ(2u, observer.observations().size());
@@ -659,33 +690,37 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   EXPECT_EQ(TestLevelDBObserver::Observation::kDeleteAll,
             observer.observations()[1].type);
 
-  // Data from origin2 should exist, including meta-data, but nothing should
-  // exist for origin1.
+  // Data from storage_key2 should exist, including meta-data, but nothing
+  // should exist for storage_key1.
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
-    EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
-    EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_NE(std::string::npos,
+              entry.first.find(storage_key2.origin().Serialize()));
   }
 }
 
 TEST_F(LocalStorageImplTest, ShutdownClearsData) {
-  url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
-  url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
   auto key1 = StdStringToUint8Vector("key1");
   auto key2 = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(origin1, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
 
   area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
   area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
-  context()->BindStorageArea(origin2, area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
   area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
@@ -693,20 +728,22 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   RunUntilIdle();
 
   std::vector<mojom::StoragePolicyUpdatePtr> updates;
-  updates.emplace_back(
-      mojom::StoragePolicyUpdate::New(origin1, /*purge_on_shutdown=*/true));
+  updates.emplace_back(mojom::StoragePolicyUpdate::New(
+      storage_key1.origin(), /*purge_on_shutdown=*/true));
   context()->ApplyPolicyUpdates(std::move(updates));
 
-  // Data from origin2 should exist, including meta-data, but nothing should
-  // exist for origin1.
+  // Data from storage_key2 should exist, including meta-data, but nothing
+  // should exist for storage_key1.
   ResetStorage(storage_path());
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
-    EXPECT_EQ(std::string::npos, entry.first.find(origin1.Serialize()));
-    EXPECT_NE(std::string::npos, entry.first.find(origin2.Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_NE(std::string::npos,
+              entry.first.find(storage_key2.origin().Serialize()));
   }
 }
 
@@ -716,8 +753,9 @@ TEST_F(LocalStorageImplTest, InMemory) {
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area.BindNewPipeAndPassReceiver());
   DoTestPut(key, value);
   std::vector<uint8_t> result;
   EXPECT_TRUE(DoTestGet(key, &result));
@@ -738,8 +776,9 @@ TEST_F(LocalStorageImplTest, InMemoryInvalidPath) {
   auto value = StdStringToUint8Vector("value");
 
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area.BindNewPipeAndPassReceiver());
 
   DoTestPut(key, value);
   std::vector<uint8_t> result;
@@ -858,18 +897,21 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
 
   open_loop.emplace();
 
-  // Open three connections to the database. Two to the same origin, and a third
-  // to a different origin.
+  // Open three connections to the database. Two to the same StorageKey, and a
+  // third to a different StorageKey.
   mojo::Remote<blink::mojom::StorageArea> area1;
   mojo::Remote<blink::mojom::StorageArea> area2;
   mojo::Remote<blink::mojom::StorageArea> area3;
 
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area1.BindNewPipeAndPassReceiver());
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area2.BindNewPipeAndPassReceiver());
-  context()->BindStorageArea(url::Origin::Create(GURL("http://example.com")),
-                             area3.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area1.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area2.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      area3.BindNewPipeAndPassReceiver());
   open_loop->Run();
 
   // Add observers to the first two connections.
@@ -905,8 +947,8 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   }));
 
   // Start a put operation on the third connection before starting to commit
-  // a lot of data on the first origin. This put operation should result in a
-  // pending commit that will get cancelled when the database is destroyed.
+  // a lot of data on the first StorageKey. This put operation should result in
+  // a pending commit that will get cancelled when the database is destroyed.
   area3->Put(key, value, absl::nullopt, "source",
              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
 
@@ -923,8 +965,8 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    context()->FlushStorageKeyForTesting(
-        blink::StorageKey(url::Origin::Create(GURL("http://foobar.com"))));
+    context()->FlushStorageKeyForTesting(blink::StorageKey(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com")));
   }
   area1.reset();
 
@@ -939,8 +981,9 @@ TEST_F(LocalStorageImplTest, RecreateOnCommitFailure) {
   EXPECT_FALSE(area2.is_connected());
 
   // Reconnect |area1| to the database, and try to read a value.
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area1.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area1.BindNewPipeAndPassReceiver());
   base::RunLoop delete_loop;
   bool success = true;
   TestLevelDBObserver observer3;
@@ -992,8 +1035,9 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
   // Open a connection to the database.
   mojo::Remote<blink::mojom::StorageArea> area;
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area.BindNewPipeAndPassReceiver());
   open_loop->Run();
 
   // Ensure that all commits fail on the database, and that we observe its
@@ -1026,8 +1070,8 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    context()->FlushStorageKeyForTesting(
-        blink::StorageKey(url::Origin::Create(GURL("http://foobar.com"))));
+    context()->FlushStorageKeyForTesting(blink::StorageKey(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com")));
   }
   area.reset();
 
@@ -1049,8 +1093,9 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   // Reconnect a area to the database, and repeatedly write data to it again.
   // This time all should just keep getting written, and commit errors are
   // getting ignored.
-  context()->BindStorageArea(url::Origin::Create(GURL("http://foobar.com")),
-                             area.BindNewPipeAndPassReceiver());
+  context()->BindStorageArea(
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
+      area.BindNewPipeAndPassReceiver());
   old_value = absl::nullopt;
   for (int i = 0; i < 64; ++i) {
     // Every write needs to be different to make sure there actually is a
@@ -1063,8 +1108,8 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     old_value = value;
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
-    context()->FlushStorageKeyForTesting(
-        blink::StorageKey(url::Origin::Create(GURL("http://foobar.com"))));
+    context()->FlushStorageKeyForTesting(blink::StorageKey(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com")));
   }
 
   // Should still be connected after all that.

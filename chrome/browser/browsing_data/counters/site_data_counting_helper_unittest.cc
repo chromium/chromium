@@ -24,6 +24,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 class SiteDataCountingHelperTest : public testing::Test {
@@ -83,10 +84,11 @@ class SiteDataCountingHelperTest : public testing::Test {
         profile()->GetDefaultStoragePartition()->GetLocalStorageControl();
 
     for (const std::string& origin_str : storage_origins) {
-      url::Origin origin = url::Origin::Create(GURL(origin_str));
-      ASSERT_FALSE(origin.opaque());
+      blink::StorageKey storage_key =
+          blink::StorageKey::CreateFromStringForTesting(origin_str);
+      ASSERT_FALSE(storage_key.origin().opaque());
       mojo::Remote<blink::mojom::StorageArea> area;
-      local_storage_control->BindStorageArea(origin,
+      local_storage_control->BindStorageArea(storage_key,
                                              area.BindNewPipeAndPassReceiver());
 
       bool success = false;

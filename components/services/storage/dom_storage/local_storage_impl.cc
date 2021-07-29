@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
@@ -131,22 +132,22 @@ DomStorageDatabase::Key MakeStorageKeyPrefix(
   return prefix;
 }
 
-void DeleteOrigins(AsyncDomStorageDatabase* database,
-                   std::vector<url::Origin> origins,
-                   base::OnceCallback<void(leveldb::Status)> callback) {
+void DeleteStorageKeys(AsyncDomStorageDatabase* database,
+                       std::vector<blink::StorageKey> storage_keys,
+                       base::OnceCallback<void(leveldb::Status)> callback) {
   database->RunDatabaseTask(
       base::BindOnce(
-          [](std::vector<url::Origin> origins, const DomStorageDatabase& db) {
+          [](std::vector<blink::StorageKey> storage_keys,
+             const DomStorageDatabase& db) {
             leveldb::WriteBatch batch;
-            for (const auto& origin : origins) {
-              blink::StorageKey storage_key(origin);
+            for (const auto& storage_key : storage_keys) {
               db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), &batch);
               batch.Delete(
                   leveldb_env::MakeSlice(CreateMetaDataKey(storage_key)));
             }
             return db.Commit(&batch);
           },
-          std::move(origins)),
+          storage_keys),
       std::move(callback));
 }
 
@@ -320,16 +321,16 @@ LocalStorageImpl::LocalStorageImpl(
 }
 
 void LocalStorageImpl::BindStorageArea(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&LocalStorageImpl::BindStorageArea,
-                                    weak_ptr_factory_.GetWeakPtr(), origin,
+                                    weak_ptr_factory_.GetWeakPtr(), storage_key,
                                     std::move(receiver)));
     return;
   }
 
-  GetOrCreateStorageArea(blink::StorageKey(origin))->Bind(std::move(receiver));
+  GetOrCreateStorageArea(storage_key)->Bind(std::move(receiver));
 }
 
 void LocalStorageImpl::GetUsage(GetUsageCallback callback) {
@@ -338,16 +339,16 @@ void LocalStorageImpl::GetUsage(GetUsageCallback callback) {
                                   std::move(callback)));
 }
 
-void LocalStorageImpl::DeleteStorage(const url::Origin& origin,
+void LocalStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
                                      DeleteStorageCallback callback) {
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(base::BindOnce(&LocalStorageImpl::DeleteStorage,
-                                    weak_ptr_factory_.GetWeakPtr(), origin,
+                                    weak_ptr_factory_.GetWeakPtr(), storage_key,
                                     std::move(callback)));
     return;
   }
 
-  auto found = areas_.find(blink::StorageKey(origin));
+  auto found = areas_.find(storage_key);
   if (found != areas_.end()) {
     // Renderer process expects |source| to always be two newline separated
     // strings. We don't bother passing an observer because this is a one-shot
@@ -358,8 +359,8 @@ void LocalStorageImpl::DeleteStorage(const url::Origin& origin,
         base::BindOnce(&SuccessResponse, std::move(callback)));
     found->second->storage_area()->ScheduleImmediateCommit();
   } else if (database_) {
-    DeleteOrigins(
-        database_.get(), {origin},
+    DeleteStorageKeys(
+        database_.get(), {storage_key},
         base::BindOnce([](base::OnceClosure callback,
                           leveldb::Status) { std::move(callback).Run(); },
                        std::move(callback)));
@@ -445,7 +446,7 @@ void LocalStorageImpl::ShutDown(base::OnceClosure callback) {
     return;  // Keep everything.
   }
 
-  if (!origins_to_purge_on_shutdown_.empty()) {
+  if (!storage_keys_to_purge_on_shutdown_.empty()) {
     RetrieveStorageUsage(
         base::BindOnce(&LocalStorageImpl::OnGotStorageUsageForShutdown,
                        base::Unretained(this)));
@@ -478,11 +479,13 @@ void LocalStorageImpl::PurgeMemory() {
 void LocalStorageImpl::ApplyPolicyUpdates(
     std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) {
   for (const auto& update : policy_updates) {
-    GURL url = update->origin.GetURL();
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+    // StoragePolicyUpdate is converted.
+    blink::StorageKey storage_key(update->origin);
     if (!update->purge_on_shutdown)
-      origins_to_purge_on_shutdown_.erase(url);
+      storage_keys_to_purge_on_shutdown_.erase(storage_key);
     else
-      origins_to_purge_on_shutdown_.insert(std::move(url));
+      storage_keys_to_purge_on_shutdown_.insert(std::move(storage_key));
   }
 }
 
@@ -803,8 +806,10 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     std::vector<mojom::StorageUsageInfoPtr> result;
     base::Time now = base::Time::Now();
     for (const auto& it : areas_) {
-      result.emplace_back(
-          mojom::StorageUsageInfo::New(it.first.origin(), 0, now));
+      result.emplace_back(mojom::StorageUsageInfo::New(
+          // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+          // StorageUsageInfo is converted.
+          it.first.origin(), 0, now));
     }
     std::move(callback).Run(std::move(result));
   } else {
@@ -840,6 +845,8 @@ void LocalStorageImpl::OnGotMetaData(
     }
 
     result.emplace_back(mojom::StorageUsageInfo::New(
+        // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+        // StorageUsageInfo is converted.
         storage_key->origin(), row_data.size_bytes(),
         base::Time::FromInternalValue(row_data.last_modified())));
   }
@@ -854,30 +861,35 @@ void LocalStorageImpl::OnGotMetaData(
         it.second->storage_area()->empty()) {
       continue;
     }
-    result.emplace_back(
-        mojom::StorageUsageInfo::New(it.first.origin(), 0, now));
+    result.emplace_back(mojom::StorageUsageInfo::New(
+        // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+        // StorageUsageInfo is converted.
+        it.first.origin(), 0, now));
   }
   std::move(callback).Run(std::move(result));
 }
 
 void LocalStorageImpl::OnGotStorageUsageForShutdown(
     std::vector<mojom::StorageUsageInfoPtr> usage) {
-  std::vector<url::Origin> origins_to_delete;
+  std::vector<blink::StorageKey> storage_keys_to_delete;
   for (const auto& info : usage) {
-    if (base::Contains(origins_to_purge_on_shutdown_, info->origin.GetURL()))
-      origins_to_delete.push_back(info->origin);
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey when
+    // StorageUsageInfo is converted.
+    blink::StorageKey storage_key(info->origin);
+    if (base::Contains(storage_keys_to_purge_on_shutdown_, storage_key))
+      storage_keys_to_delete.push_back(storage_key);
   }
 
-  if (!origins_to_delete.empty()) {
-    DeleteOrigins(database_.get(), std::move(origins_to_delete),
-                  base::BindOnce(&LocalStorageImpl::OnOriginsDeleted,
-                                 base::Unretained(this)));
+  if (!storage_keys_to_delete.empty()) {
+    DeleteStorageKeys(database_.get(), std::move(storage_keys_to_delete),
+                      base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
+                                     base::Unretained(this)));
   } else {
     OnShutdownComplete();
   }
 }
 
-void LocalStorageImpl::OnOriginsDeleted(leveldb::Status status) {
+void LocalStorageImpl::OnStorageKeysDeleted(leveldb::Status status) {
   OnShutdownComplete();
 }
 
