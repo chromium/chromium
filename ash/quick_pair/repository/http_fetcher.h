@@ -32,7 +32,8 @@ class HttpFetcher {
 
   // Performs a GET request to the desired URL and returns the response, if
   // available, as a string to the provided |callback|.
-  void ExecuteGetRequest(const GURL& url, FetchCompleteCallback callback);
+  virtual void ExecuteGetRequest(const GURL& url,
+                                 FetchCompleteCallback callback);
 
  private:
   void OnComplete(std::unique_ptr<network::SimpleURLLoader> simple_loader,

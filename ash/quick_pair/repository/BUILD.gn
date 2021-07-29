@@ -26,3 +26,21 @@ source_set("repository") {
     "//third_party/protobuf:protobuf_lite",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_http_fetcher.cc",
+    "mock_http_fetcher.h",
+  ]
+
+  deps = [
+    ":repository",
+    "//base",
+    "//base/test:test_support",
+    "//net/traffic_annotation:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
