@@ -160,7 +160,7 @@ void CastWebService::CreateSessionWithSubstitutions(
     std::vector<mojom::SubstitutableParameterPtr> params) {
   DCHECK(settings_managers_.find(session_id) == settings_managers_.end());
   auto settings_manager_it = settings_managers_.insert_or_assign(
-      session_id, std::make_unique<IdentificationSettingsManager>());
+      session_id, base::MakeRefCounted<IdentificationSettingsManager>());
   settings_manager_it.first->second->SetSubstitutableParameters(
       std::move(params));
   LOG(INFO) << "Added session: " << session_id;
@@ -207,14 +207,14 @@ void CastWebService::OnSessionDestroyed(const std::string& session_id) {
   LOG(ERROR) << "Failed to erase session: " << session_id;
 }
 
-CastURLLoaderThrottle::Delegate*
+scoped_refptr<CastURLLoaderThrottle::Delegate>
 CastWebService::GetURLLoaderThrottleDelegateForSession(
     const std::string& session_id) {
   auto delegate_it = settings_managers_.find(session_id);
   if (delegate_it == settings_managers_.end()) {
     return nullptr;
   }
-  return delegate_it->second.get();
+  return delegate_it->second;
 }
 
 IdentificationSettingsManager* CastWebService::GetSessionManager(

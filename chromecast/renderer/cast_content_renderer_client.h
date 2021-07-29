@@ -109,8 +109,8 @@ class CastContentRendererClient
                                          bool check_spatial_rendering);
 
   // IdentificationSettingsManagerStore implementation:
-  IdentificationSettingsManager* GetSettingsManagerFromRenderFrameID(
-      int render_frame_id) override;
+  scoped_refptr<IdentificationSettingsManager>
+  GetSettingsManagerFromRenderFrameID(int render_frame_id) override;
 
   // Called when a render frame is removed.
   void OnRenderFrameRemoved(int render_frame_id);
@@ -137,7 +137,7 @@ class CastContentRendererClient
 
   BitstreamAudioCodecsInfo supported_bitstream_audio_codecs_info_;
 
-  base::flat_map<int, std::unique_ptr<IdentificationSettingsManager>>
+  base::flat_map<int, scoped_refptr<IdentificationSettingsManager>>
       settings_managers_;
   std::unique_ptr<CastActivityUrlFilterManager> activity_url_filter_manager_;
 

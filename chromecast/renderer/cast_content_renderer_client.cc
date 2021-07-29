@@ -217,7 +217,7 @@ void CastContentRendererClient::RenderFrameCreated(
   // CastContentRendererClient should be alive.
   settings_managers_.emplace(
       render_frame->GetRoutingID(),
-      std::make_unique<IdentificationSettingsManagerRenderer>(
+      base::MakeRefCounted<IdentificationSettingsManagerRenderer>(
           render_frame,
           base::BindOnce(&CastContentRendererClient::OnRenderFrameRemoved,
                          base::Unretained(this),
@@ -415,14 +415,14 @@ CastContentRendererClient::GetAudioRendererAlgorithmParameters(
 #endif
 }
 
-IdentificationSettingsManager*
+scoped_refptr<IdentificationSettingsManager>
 CastContentRendererClient::GetSettingsManagerFromRenderFrameID(
     int render_frame_id) {
   const auto& it = settings_managers_.find(render_frame_id);
   if (it == settings_managers_.end()) {
     return nullptr;
   }
-  return it->second.get();
+  return it->second;
 }
 
 void CastContentRendererClient::OnRenderFrameRemoved(int render_frame_id) {

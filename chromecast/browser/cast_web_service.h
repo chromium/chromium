@@ -98,8 +98,8 @@ class CastWebService : public mojom::CastWebService {
                                       bool background_mode) override;
   void OnSessionDestroyed(const std::string& session_id) override;
 
-  CastURLLoaderThrottle::Delegate* GetURLLoaderThrottleDelegateForSession(
-      const std::string& session_id);
+  scoped_refptr<CastURLLoaderThrottle::Delegate>
+  GetURLLoaderThrottleDelegateForSession(const std::string& session_id);
 
   // Immediately deletes all owned CastWebViews. This should happen before
   // CastWebService is deleted, to prevent UAF of shared browser objects.
@@ -125,7 +125,7 @@ class CastWebService : public mojom::CastWebService {
   bool immediately_delete_webviews_ = false;
 
   base::flat_map<std::string /* session_id */,
-                 std::unique_ptr<IdentificationSettingsManager>>
+                 scoped_refptr<IdentificationSettingsManager>>
       settings_managers_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
