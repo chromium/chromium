@@ -333,9 +333,13 @@ void ContentTranslateDriver::RegisterPage(
     translate_manager_->InitiateTranslation(details.adopted_language);
 
     // Save the page language on the navigation entry so it can be synced.
-    // TODO(crbug.com/1231889): Rearchitect the renderer-browser Mojo connection
-    // to be able to explicitly determine the document/content::Page with which
-    // this language determination event is associated.
+    // TODO(crbug.com/1231889): The mojo IPC coming from the renderer might race
+    // with a navigation, so the page that sent this message might already be in
+    // the pending delete state after being navigated away from. Rearchitect the
+    // renderer-browser Mojo connection to be able to explicitly determine the
+    // document/content::Page with which this language determination event is
+    // associated, thus avoiding the potential for corner cases where the
+    // detected language is attributed to the wrong page.
     auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
     if (entry != nullptr)
       SetPageLanguageInNavigation(details.adopted_language, entry);
