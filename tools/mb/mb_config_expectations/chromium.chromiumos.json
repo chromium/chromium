@@ -13,6 +13,7 @@
   "chromeos-amd64-generic-asan-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_asan": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
@@ -22,6 +23,7 @@
   "chromeos-amd64-generic-cfi-thin-lto-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_cfi": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
@@ -33,6 +35,7 @@
   "chromeos-amd64-generic-dbg": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
@@ -45,6 +48,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
@@ -55,6 +59,7 @@
   "chromeos-amd64-generic-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true,
@@ -64,6 +69,7 @@
   "chromeos-arm-generic-dbg": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
@@ -73,6 +79,7 @@
   "chromeos-arm-generic-rel": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true
@@ -81,6 +88,7 @@
   "chromeos-kevin-rel": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true
