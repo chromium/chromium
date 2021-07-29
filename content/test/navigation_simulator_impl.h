@@ -202,6 +202,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     href_translate_ = href_translate;
   }
 
+  void set_request_context_type(
+      blink::mojom::RequestContextType request_context_type) {
+    request_context_type_ = request_context_type;
+  }
+
  private:
   NavigationSimulatorImpl(const GURL& original_url,
                           bool browser_initiated,

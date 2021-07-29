@@ -500,10 +500,18 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
-  // TODO(https://crbug.com/1181763): Determine if we should compare
-  // `request_context_type`. Just checking for equality is bad because
-  // the prerender has type LOCATION and a link click would have type
-  // HYPERLINK.
+  // Don't require equality for request_context_type because link clicks
+  // (HYPERLINK) should be allowed for activation, whereas prerender always has
+  // type LOCATION.
+  DCHECK_EQ(begin_params_->request_context_type,
+            blink::mojom::RequestContextType::LOCATION);
+  switch (potential_activation.request_context_type) {
+    case blink::mojom::RequestContextType::HYPERLINK:
+    case blink::mojom::RequestContextType::LOCATION:
+      break;
+    default:
+      return false;
+  }
 
   if (potential_activation.request_destination !=
       begin_params_->request_destination) {
@@ -525,8 +533,27 @@ bool PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 
 bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     const blink::mojom::CommonNavigationParams& potential_activation) {
+  // The CommonNavigationParams::url field is expected to be the same for both
+  // initial and activation prerender navigations, as the PrerenderHost
+  // selection would have already checked for matching values. Adding a DCHECK
+  // here to be safe.
+  DCHECK_EQ(potential_activation.url, common_params_->url);
+
   if (potential_activation.initiator_origin !=
       common_params_->initiator_origin) {
+    return false;
+  }
+
+  // The initial navigation value is set to 0 as this is the default for
+  // LoadURLParams.
+  // TODO(crbug.com/1234291): update this check when omnibox prerendering is
+  // implemented
+  DCHECK(ui::PageTransitionCoreTypeIs(
+      ui::PageTransitionFromInt(common_params_->transition),
+      ui::PAGE_TRANSITION_FIRST));
+  if (!ui::PageTransitionCoreTypeIs(
+          ui::PageTransitionFromInt(potential_activation.transition),
+          ui::PageTransitionFromInt(common_params_->transition))) {
     return false;
   }
 
@@ -548,6 +575,10 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  // The previews_state is always set to NO_PREVIEWS in BeginNavigation and the
+  // previews code was removed, so no need to compare it here as it's not used.
+  // TODO(crbug.com/1232909): remove this previews_state.
+
   if (potential_activation.method != common_params_->method) {
     return false;
   }
@@ -557,6 +588,26 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   if (potential_activation.post_data != common_params_->post_data) {
     return false;
   }
+
+  // No need to compare source_location, as it's only passed to the DevTools for
+  // debugging purposes and does not impact the properties of the document
+  // created by this navigation.
+
+  DCHECK(!common_params_->started_from_context_menu);
+  if (potential_activation.started_from_context_menu !=
+      common_params_->started_from_context_menu) {
+    return false;
+  }
+
+  // has_user_gesture doesn't affect any of the security properties of the
+  // document created by navigation, so equality of the values is not required.
+  // TODO(crbug.com/1232915): ensure that the user activation status is
+  // propagated to the activated document.
+
+  // text_fragment_token doesn't affect any of the security properties of the
+  // document created by navigation, so equality of the values is not required.
+  // TODO(crbug.com/1232919): ensure the activated document consumes
+  // text_fragment_token and scrolls to the corresponding viewport.
 
   if (potential_activation.should_check_main_world_csp !=
       common_params_->should_check_main_world_csp) {
@@ -576,17 +627,6 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   DCHECK(!common_params_->is_history_navigation_in_new_child_frame);
   if (potential_activation.is_history_navigation_in_new_child_frame !=
       common_params_->is_history_navigation_in_new_child_frame) {
-    return false;
-  }
-
-  // The CommonNavigationParams::url field is expected to be the same for both
-  // initial and activation prerender navigations, as the PrerenderHost
-  // selection would have already checked for matching values. Adding a DCHECK
-  // here to be safe.
-  DCHECK_EQ(potential_activation.url, common_params_->url);
-
-  if (potential_activation.started_from_context_menu !=
-      common_params_->started_from_context_menu) {
     return false;
   }
 

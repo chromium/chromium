@@ -765,6 +765,25 @@ TEST_F(PrerenderHostRegistryTest,
       std::move(GetBrowserContext()));
 }
 
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_Transition) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->SetTransition(ui::PAGE_TRANSITION_FORM_SUBMIT);
+      }),
+      std::move(GetBrowserContext()));
+}
+
+TEST_F(PrerenderHostRegistryTest,
+       CompareInitialAndActivationCommonParams_RequestContextType) {
+  CheckNotActivatedForParams(
+      base::BindLambdaForTesting([](NavigationSimulatorImpl* navigation) {
+        navigation->set_request_context_type(
+            blink::mojom::RequestContextType::AUDIO);
+      }),
+      std::move(GetBrowserContext()));
+}
+
 // End navigation parameter matching tests ---------
 
 }  // namespace
