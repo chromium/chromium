@@ -3,15 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+
 // clang-format on
-
-/* #ignore */ /* @const */ var EventTarget;
-
-function setUp() {
-  /* #ignore */ EventTarget = cr.EventTarget;
-}
 
 function testFunctionListener() {
   var fi = 0;
@@ -102,7 +98,6 @@ function testPreventDefault() {
 }
 
 Object.assign(window, {
-  setUp,
   testFunctionListener,
   testHandleEvent,
   testPreventDefault,

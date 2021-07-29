@@ -98,7 +98,6 @@ if (include_js_tests) {
       "js/i18n_process_test.js",
       "js/webui_resource_module_async_browsertest.js",
       "js2gtest_browsertest.js",
-      "load_time_data_browsertest.js",
       "management/a11y/management_a11y_test.js",
       "media_internals/media_internals_ui_browsertest.js",
       "net_internals/net_internals_browsertest.js",
@@ -210,7 +209,6 @@ if (include_js_tests) {
 
     data = [
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
-      "$root_gen_dir/chrome/test/data/webui/js/load_time_data_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
@@ -524,7 +522,7 @@ group("modulize") {
   deps = [
     ":modulize_local",
     "./cr_components/chromeos:modulize",
-    "./js:modulize",
+    "./js/cr/ui:modulize",
   ]
 
   if (is_chromeos_ash) {

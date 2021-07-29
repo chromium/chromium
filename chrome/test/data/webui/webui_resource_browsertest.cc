@@ -66,14 +66,10 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
   LoadTestUrl("cr_reload_test.html");
 }
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetTest) {
-  LoadTestUrl("js/cr/event_target_test.html");
-}
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetModuleTest) {
-  LoadTestUrl("?module=js/cr/event_target_test.m.js");
+  LoadTestUrl("?module=js/cr/event_target_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
