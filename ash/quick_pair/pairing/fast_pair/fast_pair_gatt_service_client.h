@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -68,6 +69,10 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       std::unique_ptr<device::BluetoothGattNotifySession> session);
   void OnGattError(PairFailure failure,
                    device::BluetoothGattService::GattErrorCode error);
+
+  base::OneShotTimer gatt_service_discovery_timer_;
+  base::OneShotTimer passkey_notify_session_timer_;
+  base::OneShotTimer keybased_notify_session_timer_;
 
   std::string device_address_;
   device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =

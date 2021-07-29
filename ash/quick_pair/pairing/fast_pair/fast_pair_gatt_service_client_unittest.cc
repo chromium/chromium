@@ -12,6 +12,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -28,6 +32,9 @@ using NotifySessionCallback = base::OnceCallback<void(
     std::unique_ptr<device::BluetoothGattNotifySession>)>;
 using ErrorCallback =
     base::OnceCallback<void(device::BluetoothGattService::GattErrorCode)>;
+
+constexpr base::TimeDelta kConnectingTestTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 // Below constants are used to construct MockBluetoothDevice for testing.
 constexpr char kTestBleDeviceAddress[] = "11:12:13:14:15:16";
@@ -159,6 +166,10 @@ class FakeBluetoothGattCharacteristic
     auto fake_notify_session = std::make_unique<
         testing::NiceMock<device::MockBluetoothGattNotifySession>>(
         GetWeakPtr());
+
+    if (timeout_)
+      task_environment_->FastForwardBy(kConnectingTestTimeout);
+
     std::move(callback).Run(std::move(fake_notify_session));
   }
 
@@ -166,8 +177,16 @@ class FakeBluetoothGattCharacteristic
     notify_session_error_ = notify_session_error;
   }
 
+  void SetNotifySessionTimeout(bool timeout,
+                               base::test::TaskEnvironment* task_environment) {
+    timeout_ = timeout;
+    task_environment_ = task_environment;
+  }
+
  private:
   bool notify_session_error_ = false;
+  bool timeout_ = false;
+  base::test::TaskEnvironment* task_environment_ = nullptr;
 };
 
 std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
@@ -240,8 +259,14 @@ class FastPairGattServiceClientTest : public testing::Test {
           std::make_unique<FakeBluetoothGattCharacteristic>(
               gatt_service_.get(), kUUIDString1, kKeyBasedCharacteristicUuid1,
               kProperties, kPermissions);
+
       if (keybased_notify_session_error_)
         fake_key_based_characteristic_->SetNotifySessionError(true);
+
+      if (keybased_notify_session_timeout_)
+        fake_key_based_characteristic_->SetNotifySessionTimeout(
+            true, &task_environment_);
+
       gatt_service_->AddMockCharacteristic(
           std::move(fake_key_based_characteristic_));
     }
@@ -251,8 +276,14 @@ class FastPairGattServiceClientTest : public testing::Test {
           std::make_unique<FakeBluetoothGattCharacteristic>(
               gatt_service_.get(), kUUIDString2, kPasskeyCharacteristicUuid1,
               kProperties, kPermissions);
+
       if (passkey_notify_session_error_)
         fake_passkey_characteristic_->SetNotifySessionError(true);
+
+      if (passkey_notify_session_timeout_)
+        fake_passkey_characteristic_->SetNotifySessionTimeout(
+            true, &task_environment_);
+
       gatt_service_->AddMockCharacteristic(
           std::move(fake_passkey_characteristic_));
     }
@@ -292,11 +323,29 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   absl::optional<PairFailure> GetCallbackResult() { return failure_; }
 
+  void SetPasskeyNotifySessionTimeout(bool timeout) {
+    passkey_notify_session_timeout_ = timeout;
+  }
+
+  void SetKeybasedNotifySessionTimeout(bool timeout) {
+    keybased_notify_session_timeout_ = timeout;
+  }
+
+  void FastForwardTimeByConnetingTimeout() {
+    task_environment_.FastForwardBy(kConnectingTestTimeout);
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
   bool passkey_char_error_ = false;
   bool keybased_char_error_ = false;
   bool passkey_notify_session_error_ = false;
   bool keybased_notify_session_error_ = false;
+  bool passkey_notify_session_timeout_ = false;
+  bool keybased_notify_session_timeout_ = false;
   absl::optional<PairFailure> failure_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   std::unique_ptr<FakeBluetoothDevice> device_;
@@ -308,6 +357,14 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
   base::WeakPtrFactory<FastPairGattServiceClientTest> weak_ptr_factory_{this};
 };
+
+TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
+  SuccessfulGattConnectionSetUp();
+  FastForwardTimeByConnetingTimeout();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetCallbackResult(), PairFailure::kGattServiceDiscoveryTimeout);
+  EXPECT_FALSE(ServiceIsSet());
+}
 
 TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
   FailedGattConnectionSetUp();
@@ -362,6 +419,24 @@ TEST_F(FastPairGattServiceClientTest, StartNotifyKeybasedFailure) {
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetCallbackResult(),
             PairFailure::kKeyBasedPairingCharacteristicNotifySession);
+  EXPECT_FALSE(ServiceIsSet());
+}
+
+TEST_F(FastPairGattServiceClientTest, PasskeyStartNotifyTimeout) {
+  SetPasskeyNotifySessionTimeout(true);
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetCallbackResult(),
+            PairFailure::kPasskeyCharacteristicNotifySessionTimeout);
+  EXPECT_FALSE(ServiceIsSet());
+}
+
+TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
+  SetKeybasedNotifySessionTimeout(true);
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetCallbackResult(),
+            PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout);
   EXPECT_FALSE(ServiceIsSet());
 }
 

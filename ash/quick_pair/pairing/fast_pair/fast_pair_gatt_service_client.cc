@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
@@ -25,6 +26,8 @@ const device::BluetoothUUID kPasskeyCharacteristicUuidV2(
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV1("1236");
 const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
     "FE2C1236-8366-4814-8EB0-01DE32100BEA");
+
+constexpr base::TimeDelta kConnectingTimeout = base::TimeDelta::FromSeconds(5);
 
 }  // namespace
 
@@ -46,6 +49,11 @@ FastPairGattServiceClient::FastPairGattServiceClient(
       base::BindOnce(&FastPairGattServiceClient::OnGattConnection,
                      weak_ptr_factory_.GetWeakPtr()),
       kFastPairBluetoothUuid);
+  gatt_service_discovery_timer_.Start(
+      FROM_HERE, kConnectingTimeout,
+      base::BindOnce(&FastPairGattServiceClient::NotifyError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     PairFailure::kGattServiceDiscoveryTimeout));
 }
 
 FastPairGattServiceClient::~FastPairGattServiceClient() = default;
@@ -70,8 +78,12 @@ void FastPairGattServiceClient::NotifyError(PairFailure failure) {
   adapter_observation_.Reset();
   gatt_connection_.reset();
   gatt_service_ = nullptr;
+  account_key_characteristic_ = nullptr;
   key_based_characteristic_ = nullptr;
   passkey_characteristic_ = nullptr;
+  gatt_service_discovery_timer_.Stop();
+  passkey_notify_session_timer_.Stop();
+  keybased_notify_session_timer_.Stop();
   bluetooth_gatt_notify_sessions_.clear();
   DCHECK(on_initialized_callback_);
   std::move(on_initialized_callback_).Run(failure);
@@ -80,6 +92,8 @@ void FastPairGattServiceClient::NotifyError(PairFailure failure) {
 void FastPairGattServiceClient::GattDiscoveryCompleteForService(
     device::BluetoothAdapter* adapter,
     device::BluetoothRemoteGattService* service) {
+  gatt_service_discovery_timer_.Stop();
+
   // Verify that the discovered service and device are the ones we care about.
   if (service->GetUUID() == kFastPairBluetoothUuid &&
       service->GetDevice()->GetAddress() == device_address_) {
@@ -133,6 +147,18 @@ void FastPairGattServiceClient::
   }
   account_key_characteristic_ = account_key_characteristics[0];
 
+  keybased_notify_session_timer_.Start(
+      FROM_HERE, kConnectingTimeout,
+      base::BindOnce(
+          &FastPairGattServiceClient::NotifyError,
+          weak_ptr_factory_.GetWeakPtr(),
+          PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout));
+  passkey_notify_session_timer_.Start(
+      FROM_HERE, kConnectingTimeout,
+      base::BindOnce(&FastPairGattServiceClient::NotifyError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     PairFailure::kPasskeyCharacteristicNotifySessionTimeout));
+
   key_based_characteristic_ = key_based_characteristics[0];
   key_based_characteristic_->StartNotifySession(
       base::BindOnce(&FastPairGattServiceClient::OnNotifySession,
@@ -140,6 +166,7 @@ void FastPairGattServiceClient::
       base::BindOnce(&FastPairGattServiceClient::OnGattError,
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kKeyBasedPairingCharacteristicNotifySession));
+
   passkey_characteristic_ = passkey_characteristics[0];
   passkey_characteristic_->StartNotifySession(
       base::BindOnce(&FastPairGattServiceClient::OnNotifySession,
@@ -151,6 +178,16 @@ void FastPairGattServiceClient::
 
 void FastPairGattServiceClient::OnNotifySession(
     std::unique_ptr<device::BluetoothGattNotifySession> session) {
+  // Check which characteristic the session corresponds to and stop the relevant
+  // timer.
+  if (key_based_characteristic_ &&
+      session->GetCharacteristic() == key_based_characteristic_) {
+    keybased_notify_session_timer_.Stop();
+  } else if (passkey_characteristic_ &&
+             session->GetCharacteristic() == passkey_characteristic_) {
+    passkey_notify_session_timer_.Stop();
+  }
+
   bluetooth_gatt_notify_sessions_.push_back(std::move(session));
 
   // Once expected characteristics are notifying, Run the callback with no
@@ -159,8 +196,12 @@ void FastPairGattServiceClient::OnNotifySession(
   if (bluetooth_gatt_notify_sessions_.size() == 2) {
     QP_LOG(VERBOSE) << "GATT service is ready for device at address:["
                     << device_address_ << "].";
-    DCHECK(on_initialized_callback_);
-    std::move(on_initialized_callback_).Run(/*failure=*/absl::nullopt);
+    // This check handles the case where a timer for the characteristic's notify
+    // session fires and the |on_initialized_callback_| callback has been used
+    // to send a PairFailure, but the notify session is received here
+    // afterwards.
+    if (on_initialized_callback_)
+      std::move(on_initialized_callback_).Run(absl::nullopt);
   }
 }
 

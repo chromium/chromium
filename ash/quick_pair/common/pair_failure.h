@@ -16,35 +16,43 @@ enum class PairFailure {
   kCreateGattConnection = 0,
   // Failed to find the expected GATT service.
   kGattServiceDiscovery = 1,
+  // Timed out while starting discovery of GATT service.
+  kGattServiceDiscoveryTimeout = 2,
   // Failed to find the Key-based pairing GATT characteristic.
-  kKeyBasedPairingCharacteristicDiscovery = 2,
+  kKeyBasedPairingCharacteristicDiscovery = 3,
   // Failed to find the Passkey GATT characteristic.
-  kPasskeyCharacteristicDiscovery = 3,
+  kPasskeyCharacteristicDiscovery = 4,
   // Failed to find the Account Key GATT characteristic.
-  kAccountKeyCharacteristicDiscovery = 4,
+  kAccountKeyCharacteristicDiscovery = 5,
   // Failed to start a notify session on the Key-based pairing GATT
   // characteristic.
-  kKeyBasedPairingCharacteristicNotifySession = 5,
+  kKeyBasedPairingCharacteristicNotifySession = 6,
   // Failed to start a notify session on the Passkey GATT characteristic.
-  kPasskeyCharacteristicNotifySession = 6,
+  kPasskeyCharacteristicNotifySession = 7,
+  // Timed out while waiting to start a notify session on the Key-based pairing
+  // GATT characteristic.
+  kKeyBasedPairingCharacteristicNotifySessionTimeout = 8,
+  // / Timed out while waiting to start a notify session on the Passkey GATT
+  // characteristic.
+  kPasskeyCharacteristicNotifySessionTimeout = 9,
   // Failed to write to the Key-based pairing GATT characteristic.
-  kKeyBasedPairingCharacteristicWrite = 7,
+  kKeyBasedPairingCharacteristicWrite = 10,
   // Failed to write to the Passkey GATT characteristic.
-  kPasskeyPairingCharacteristicWrite = 8,
+  kPasskeyPairingCharacteristicWrite = 11,
   // Timed out while waiting for the Key-based Pairing response.
-  kKeyBasedPairingResponseTimeout = 9,
+  kKeyBasedPairingResponseTimeout = 12,
   // Timed out while waiting for the Passkey response.
-  kPasskeyResponseTimeout = 10,
+  kPasskeyResponseTimeout = 13,
   // Incorrect Key-based response message type.
-  kIncorrectKeyBasedPairingResponseType = 11,
+  kIncorrectKeyBasedPairingResponseType = 14,
   // Incorrect Passkey response message type.
-  kIncorrectPasskeyResponseType = 12,
+  kIncorrectPasskeyResponseType = 15,
   // Passkeys did not match.
-  kPasskeyMismatch = 13,
+  kPasskeyMismatch = 16,
   // Failed to bond to discovered device.
-  kPairingConnect = 14,
+  kPairingConnect = 17,
   // Failed to bond to device via public address.
-  kAddressConnect = 15,
+  kAddressConnect = 18,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

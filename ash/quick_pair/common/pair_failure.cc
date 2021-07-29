@@ -15,6 +15,9 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kGattServiceDiscovery:
       stream << "[Failed to find the expected GATT service]";
       break;
+    case PairFailure::kGattServiceDiscoveryTimeout:
+      stream << "[Timed out while starting discovery of GATT service]";
+      break;
     case PairFailure::kKeyBasedPairingCharacteristicDiscovery:
       stream << "[Failed to find the Key-based pairing GATT characteristic]";
       break;
@@ -31,6 +34,14 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kPasskeyCharacteristicNotifySession:
       stream << "[Failed to start a notify session on the Passkey GATT "
                 "characteristic]";
+      break;
+    case PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout:
+      stream << "[Timed out while starting a notify session on the Key-based "
+                "pairing GATT characteristic]";
+      break;
+    case PairFailure::kPasskeyCharacteristicNotifySessionTimeout:
+      stream << "[Timed out while starting a notify session on the Passkey "
+                "GATT characteristic]";
       break;
     case PairFailure::kKeyBasedPairingCharacteristicWrite:
       stream
