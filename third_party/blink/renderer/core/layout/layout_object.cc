@@ -1117,6 +1117,13 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     if (layout_box->IsFlexItemIncludingNG())
       return false;
 
+    // Similarly to flex items, we can't relayout a grid item independently of
+    // its container. This also applies to out of flow items of the grid, as we
+    // need the cached information of the grid to recompute the out of flow
+    // item's containing block rect.
+    if (layout_box->ContainingBlock()->IsLayoutGridIncludingNG())
+      return false;
+
     // In LayoutNG, if box has any OOF descendants, they are propagated to
     // parent. Therefore, we must mark parent chain for layout.
     if (const NGLayoutResult* layout_result =

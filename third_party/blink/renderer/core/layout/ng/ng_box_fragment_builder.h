@@ -551,7 +551,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     grid_data_ = std::move(grid_data);
   }
 
-  const NGGridData& GetNGGridData() const { return *grid_data_.get(); }
+  const NGGridData& GetNGGridData() const {
+    DCHECK(grid_data_);
+    return *grid_data_.get();
+  }
 
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
   NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
