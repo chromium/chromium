@@ -12,10 +12,17 @@
 namespace chromeos {
 namespace bluetooth_config {
 
+class Initializer;
+
 // Binds to an instance of CrosBluetoothConfig from within the browser process.
 COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver);
+
+// Overrides the in-process instance for testing purposes. To reverse this
+// override, call this function, passing null for |initializer|.
+COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
+void OverrideInProcessInstanceForTesting(Initializer* initializer);
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

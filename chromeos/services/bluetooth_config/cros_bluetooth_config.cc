@@ -4,16 +4,18 @@
 
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 
-#include "chromeos/services/bluetooth_config/adapter_state_controller_impl.h"
+#include "chromeos/services/bluetooth_config/initializer.h"
 #include "chromeos/services/bluetooth_config/system_properties_provider_impl.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 
 namespace chromeos {
 namespace bluetooth_config {
 
 CrosBluetoothConfig::CrosBluetoothConfig(
+    Initializer& initializer,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
     : adapter_state_controller_(
-          std::make_unique<AdapterStateControllerImpl>(bluetooth_adapter)),
+          initializer.CreateAdapterStateController(bluetooth_adapter)),
       system_properties_provider_(
           std::make_unique<SystemPropertiesProviderImpl>(
               adapter_state_controller_.get())) {}

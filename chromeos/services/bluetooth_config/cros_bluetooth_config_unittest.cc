@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
+#include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,8 +32,9 @@ class CrosBluetoothConfigTest : public testing::Test {
   void SetUp() override {
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    InitializerImpl initializer;
     cros_bluetooth_config_ =
-        std::make_unique<CrosBluetoothConfig>(mock_adapter_);
+        std::make_unique<CrosBluetoothConfig>(initializer, mock_adapter_);
   }
 
   mojo::Remote<mojom::CrosBluetoothConfig> BindToInterface() {

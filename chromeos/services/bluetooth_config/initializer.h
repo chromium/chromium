@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_INITIALIZER_H_
+#define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_INITIALIZER_H_
+
+#include <memory>
+
+#include "base/memory/ref_counted.h"
+
+namespace device {
+class BluetoothAdapter;
+}  // namespace device
+
+namespace chromeos {
+namespace bluetooth_config {
+
+class AdapterStateController;
+
+// Responsible for initializing the classes needed by the CrosBluetoothConfig
+// API.
+class Initializer {
+ public:
+  Initializer(const Initializer&) = delete;
+  Initializer& operator=(const Initializer&) = delete;
+  virtual ~Initializer() = default;
+
+  virtual std::unique_ptr<AdapterStateController> CreateAdapterStateController(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+
+ protected:
+  Initializer() = default;
+};
+
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
+#endif  // CHROMEOS_SERVICES_BLUETOOTH_CONFIG_INITIALIZER_H_

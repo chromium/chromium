@@ -9,18 +9,24 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
+#include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace chromeos {
 namespace bluetooth_config {
 namespace {
 
+CrosBluetoothConfig* g_instance = nullptr;
+
 void OnBluetoothAdapter(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
-  static base::NoDestructor<CrosBluetoothConfig> cros_bluetooth_config(
-      std::move(bluetooth_adapter));
-  cros_bluetooth_config->BindPendingReceiver(std::move(pending_receiver));
+  if (!g_instance) {
+    InitializerImpl initializer;
+    g_instance =
+        new CrosBluetoothConfig(initializer, std::move(bluetooth_adapter));
+  }
+  g_instance->BindPendingReceiver(std::move(pending_receiver));
 }
 
 }  // namespace
@@ -30,6 +36,19 @@ void BindToInProcessInstance(
   CHECK(ash::features::IsBluetoothRevampEnabled());
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&OnBluetoothAdapter, std::move(pending_receiver)));
+}
+
+void OverrideInProcessInstanceForTesting(Initializer* initializer) {
+  if (g_instance)
+    delete g_instance;
+
+  if (!initializer)
+    return;
+
+  // Null BluetoothAdapter is used since |initializer| is expected to fake
+  // Bluetooth functionality in tests.
+  g_instance = new CrosBluetoothConfig(*initializer,
+                                       /*bluetooth_adapter=*/nullptr);
 }
 
 }  // namespace bluetooth_config
