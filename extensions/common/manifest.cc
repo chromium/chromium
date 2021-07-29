@@ -363,20 +363,19 @@ bool Manifest::GetDictionary(
 
 bool Manifest::GetDictionary(const std::string& path,
                              const base::Value** out_value) const {
-  return GetPathOfType(path, base::Value::Type::DICTIONARY, out_value);
+  const std::vector<base::StringPiece> components =
+      manifest_handler_helpers::TokenizeDictionaryPath(path);
+  *out_value = available_values_->FindPathOfType(components,
+                                                 base::Value::Type::DICTIONARY);
+  return *out_value != nullptr;
 }
 
 bool Manifest::GetList(const std::string& path,
                        const base::Value** out_value) const {
-  return GetPathOfType(path, base::Value::Type::LIST, out_value);
-}
-
-bool Manifest::GetPathOfType(const std::string& path,
-                             base::Value::Type type,
-                             const base::Value** out_value) const {
   const std::vector<base::StringPiece> components =
       manifest_handler_helpers::TokenizeDictionaryPath(path);
-  *out_value = available_values_->FindPathOfType(components, type);
+  *out_value =
+      available_values_->FindPathOfType(components, base::Value::Type::LIST);
   return *out_value != nullptr;
 }
 
