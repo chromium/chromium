@@ -258,7 +258,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private static final String TAB_COUNT_ON_RETURN = "Tabs.TabCountOnStartScreenShown";
 
     private final MainIntentBehaviorMetrics mMainIntentMetrics;
-    private final @Nullable MultiInstanceManager mMultiInstanceManager;
+    private @Nullable MultiInstanceManager mMultiInstanceManager;
 
     private UndoBarController mUndoBarPopupController;
 
@@ -440,8 +440,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     public ChromeTabbedActivity() {
         mMainIntentMetrics = new MainIntentBehaviorMetrics();
-        mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),
-                getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
 
         // AppLaunchDrawBlocker may block drawing the Activity content until the initial tab is
         // available.
@@ -451,6 +449,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 this::getIntent, this::shouldIgnoreIntent, this::isTablet,
                 this::shouldShowTabSwitcherOnStart);
         // clang-format on
+    }
+
+    @Override
+    protected void onPreCreate() {
+        super.onPreCreate();
+        mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),
+                getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
     }
 
     @Override
