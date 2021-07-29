@@ -1337,8 +1337,7 @@ bool InputMethodController::DeleteSelectionWithoutAdjustment() {
     TypingCommand::UpdateSelectionIfDifferentFromCurrentSelection(
         last_typing_command, &GetFrame());
 
-    last_typing_command->DeleteSelection(TypingCommand::kSmartDelete,
-                                         ASSERT_NO_EDITING_ABORT);
+    last_typing_command->DeleteSelection(true, ASSERT_NO_EDITING_ABORT);
     return true;
   }
 

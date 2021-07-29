@@ -57,7 +57,6 @@ class ElementInnerTextCollector final {
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
 
-    void EmitChar16(UChar code_point);
     void EmitNewline();
     void EmitRequiredLineBreak(int count);
     void EmitTab();
@@ -405,12 +404,6 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
 }
 
 // ----
-
-void ElementInnerTextCollector::Result::EmitChar16(UChar code_point) {
-  FlushRequiredLineBreak();
-  DCHECK_EQ(required_line_break_count_, 0);
-  builder_.Append(code_point);
-}
 
 void ElementInnerTextCollector::Result::EmitNewline() {
   FlushRequiredLineBreak();
