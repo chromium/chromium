@@ -298,7 +298,6 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug/1171794")
     public void testTypeBeforeNativeIsLoaded() throws Exception {
         // Wait for the activity to load, but don't let it load the native library.
         mTestDelegate.shouldDelayLoadingNative = true;
@@ -530,7 +529,6 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug/1166647")
     public void testNewIntentDiscardsQuery() {
         final SearchActivity searchActivity = startSearchActivity();
         setUrlBarText(searchActivity, "first query");
