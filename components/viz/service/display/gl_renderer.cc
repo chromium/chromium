@@ -3625,9 +3625,11 @@ void GLRenderer::BindFramebufferToTexture(
                                  offscreen_stencil_renderbuffer_id_);
   }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
   DCHECK(gl_->CheckFramebufferStatus(GL_FRAMEBUFFER) ==
              GL_FRAMEBUFFER_COMPLETE ||
          IsContextLost());
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   if (overdraw_feedback_) {
     SetupOverdrawFeedback();
