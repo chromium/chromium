@@ -5,6 +5,8 @@
 #ifndef CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 
+#include <map>
+
 #include "base/containers/id_map.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
@@ -151,6 +153,23 @@ class CONTENT_EXPORT AgentSchedulingGroup
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;
+
+  struct ReceiverData {
+    ReceiverData(
+        const std::string& name,
+        mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+            receiver);
+    ReceiverData(ReceiverData&& other);
+    ~ReceiverData();
+
+    std::string name;
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface> receiver;
+  };
+
+  // See warning in `GetAssociatedInterface`.
+  // Map from routing id to pending receivers that have not had their route
+  // added. Note this is unsafe and can lead to message drops.
+  std::multimap<int32_t, ReceiverData> pending_receivers_;
 };
 
 }  // namespace content

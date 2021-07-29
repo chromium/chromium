@@ -4,6 +4,9 @@
 
 #include "content/renderer/agent_scheduling_group.h"
 
+#include <map>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/types/pass_key.h"
 #include "content/common/agent_scheduling_group.mojom.h"
@@ -46,6 +49,16 @@ static features::MBIMode GetMBIMode() {
 }
 
 }  // namespace
+
+AgentSchedulingGroup::ReceiverData::ReceiverData(
+    const std::string& name,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface> receiver)
+    : name(std::move(name)), receiver(std::move(receiver)) {}
+
+AgentSchedulingGroup::ReceiverData::ReceiverData(ReceiverData&& other)
+    : name(std::move(other.name)), receiver(std::move(other.receiver)) {}
+
+AgentSchedulingGroup::ReceiverData::~ReceiverData() = default;
 
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
@@ -151,6 +164,16 @@ void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
   DCHECK(!listener_map_.Lookup(routing_id));
   listener_map_.AddWithID(listener, routing_id);
   render_thread_.AddRoute(routing_id, listener);
+
+  // See warning in `GetAssociatedInterface`.
+  // Replay any `GetAssociatedInterface` calls for this route.
+  auto range = pending_receivers_.equal_range(routing_id);
+  for (auto iter = range.first; iter != range.second; ++iter) {
+    ReceiverData& data = iter->second;
+    listener->OnAssociatedInterfaceRequest(data.name,
+                                           data.receiver.PassHandle());
+  }
+  pending_receivers_.erase(range.first, range.second);
 }
 
 void AgentSchedulingGroup::AddFrameRoute(
@@ -261,8 +284,18 @@ void AgentSchedulingGroup::GetAssociatedInterface(
   int32_t routing_id =
       associated_interface_provider_receivers_.current_context();
 
-  if (auto* listener = GetListener(routing_id))
+  if (auto* listener = GetListener(routing_id)) {
     listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
+  } else {
+    // THIS IS UNSAFE!
+    // Associated receivers must be bound immediately or they could drop
+    // messages. This is needed short term so the browser side Remote isn't
+    // broken even after the corresponding `AddRoute` happens. Browser should
+    // avoid calling this before the corresponding `AddRoute`, but this is a
+    // short term workaround until that happens.
+    pending_receivers_.emplace(routing_id,
+                               ReceiverData(name, std::move(receiver)));
+  }
 }
 
 Listener* AgentSchedulingGroup::GetListener(int32_t routing_id) {
