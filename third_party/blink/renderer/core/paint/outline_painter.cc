@@ -209,7 +209,7 @@ void PaintComplexOutline(GraphicsContext& graphics_context,
     BoxBorderPainter::DrawLineForBoxSide(
         graphics_context, edge.x1, edge.y1, edge.x2, edge.y2, edge.side,
         outline_color, style.OutlineStyle(), adjacent_width1, adjacent_width2,
-        false);
+        /*antialias*/ false);
     adjacent_width_start = adjacent_width_end;
   }
 

@@ -68,7 +68,7 @@ class BoxBorderPainter {
                                  EBorderStyle,
                                  int adjacent_edge_width1,
                                  int adjacent_edge_width2,
-                                 bool antialias = false);
+                                 bool antialias);
 
  private:
   // For PaintBorder().
@@ -107,7 +107,6 @@ class BoxBorderPainter {
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
                           const Path*,
-                          bool antialias,
                           Color,
                           BorderEdgeFlags) const;
   bool PaintBorderFastPath() const;
@@ -139,14 +138,10 @@ class BoxBorderPainter {
   FloatRect CalculateSideRectIncludingInner(BoxSide) const;
   void ClipBorderSideForComplexInnerPath(BoxSide) const;
 
-  MiterType ComputeMiter(BoxSide,
-                         BoxSide adjacent_side,
-                         BorderEdgeFlags,
-                         bool antialias) const;
+  MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;
   static bool MitersRequireClipping(MiterType miter1,
                                     MiterType miter2,
-                                    EBorderStyle,
-                                    bool antialias);
+                                    EBorderStyle);
 
   LayoutRectOutsets DoubleStripeOutsets(
       BorderEdge::DoubleBorderStripe stripe) const;

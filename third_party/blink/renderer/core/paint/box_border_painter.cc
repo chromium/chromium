@@ -655,8 +655,7 @@ void DrawSolidBoxSide(GraphicsContext& context,
 
 // Holds edges grouped by opacity and sorted in paint order.
 struct BoxBorderPainter::ComplexBorderInfo {
-  ComplexBorderInfo(const BoxBorderPainter& border_painter, bool anti_alias)
-      : anti_alias(anti_alias) {
+  explicit ComplexBorderInfo(const BoxBorderPainter& border_painter) {
     Vector<BoxSide, 4> sorted_sides;
 
     // First, collect all visible sides.
@@ -702,8 +701,6 @@ struct BoxBorderPainter::ComplexBorderInfo {
 
   // Potentially used when drawing rounded borders.
   Path rounded_border_path;
-
-  bool anti_alias;
 
  private:
   void BuildOpacityGroups(const BoxBorderPainter& border_painter,
@@ -949,7 +946,7 @@ void BoxBorderPainter::Paint() const {
       context_.ClipOutRoundedRect(inner_);
   }
 
-  const ComplexBorderInfo border_info(*this, true);
+  const ComplexBorderInfo border_info(*this);
   PaintOpacityGroup(border_info, 0, 1);
 }
 
@@ -963,11 +960,11 @@ void BoxBorderPainter::Paint() const {
 //      transparency layers with adjusted/relative opacity [paintOpacityGroup]
 //   4) iterate over groups (increasing opacity order), painting actual group
 //      contents and then ending their corresponding transparency layer
-//      [paintOpacityGroup]
+//      [PaintOpacityGroup]
 //
 // Layers are created in decreasing opacity order (top -> bottom), while actual
 // border sides are drawn in increasing opacity order (bottom -> top). At each
-// level, opacity is adjusted to acount for accumulated/ancestor layer alpha.
+// level, opacity is adjusted to account for accumulated/ancestor layer alpha.
 // Because opacity is applied via layers, the actual draw paint is opaque.
 //
 // As an example, let's consider a border with the following sides/opacities:
@@ -1084,8 +1081,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
         side_rect.SetHeight(floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kTop, BoxSide::kLeft,
-                         BoxSide::kRight, path, border_info.anti_alias, color,
-                         completed_edges);
+                         BoxSide::kRight, path, color, completed_edges);
       break;
     }
     case BoxSide::kBottom: {
@@ -1099,8 +1095,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
         side_rect.ShiftYEdgeTo(side_rect.MaxY() - floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kBottom, BoxSide::kLeft,
-                         BoxSide::kRight, path, border_info.anti_alias, color,
-                         completed_edges);
+                         BoxSide::kRight, path, color, completed_edges);
       break;
     }
     case BoxSide::kLeft: {
@@ -1114,8 +1109,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
         side_rect.SetWidth(floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kLeft, BoxSide::kTop,
-                         BoxSide::kBottom, path, border_info.anti_alias, color,
-                         completed_edges);
+                         BoxSide::kBottom, path, color, completed_edges);
       break;
     }
     case BoxSide::kRight: {
@@ -1129,8 +1123,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
         side_rect.ShiftXEdgeTo(side_rect.MaxX() - floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kRight, BoxSide::kTop,
-                         BoxSide::kBottom, path, border_info.anti_alias, color,
-                         completed_edges);
+                         BoxSide::kBottom, path, color, completed_edges);
       break;
     }
     default:
@@ -1141,8 +1134,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
 BoxBorderPainter::MiterType BoxBorderPainter::ComputeMiter(
     BoxSide side,
     BoxSide adjacent_side,
-    BorderEdgeFlags completed_edges,
-    bool antialias) const {
+    BorderEdgeFlags completed_edges) const {
   const BorderEdge& adjacent_edge = Edge(adjacent_side);
 
   // No miters for missing edges.
@@ -1156,7 +1148,7 @@ BoxBorderPainter::MiterType BoxBorderPainter::ComputeMiter(
   // Color transitions require miters. Use miters compatible with the AA drawing
   // mode to avoid introducing extra clips.
   if (!ColorsMatchAtCorner(side, adjacent_side))
-    return antialias ? kSoftMiter : kHardMiter;
+    return kSoftMiter;
 
   // Non-anti-aliased miters ensure correct same-color seaming when required by
   // style.
@@ -1171,12 +1163,10 @@ BoxBorderPainter::MiterType BoxBorderPainter::ComputeMiter(
 
 bool BoxBorderPainter::MitersRequireClipping(MiterType miter1,
                                              MiterType miter2,
-                                             EBorderStyle style,
-                                             bool antialias) {
+                                             EBorderStyle style) {
   // Clipping is required if any of the present miters doesn't match the current
   // AA mode.
-  bool should_clip = antialias ? miter1 == kHardMiter || miter2 == kHardMiter
-                               : miter1 == kSoftMiter || miter2 == kSoftMiter;
+  bool should_clip = miter1 == kHardMiter || miter2 == kHardMiter;
 
   // Some styles require clipping for any type of miter.
   should_clip = should_clip || ((miter1 != kNoMiter || miter2 != kNoMiter) &&
@@ -1191,7 +1181,6 @@ void BoxBorderPainter::PaintOneBorderSide(
     BoxSide adjacent_side1,
     BoxSide adjacent_side2,
     const Path* path,
-    bool antialias,
     Color color,
     BorderEdgeFlags completed_edges) const {
   const BorderEdge& edge_to_render = Edge(side);
@@ -1216,26 +1205,24 @@ void BoxBorderPainter::PaintOneBorderSide(
     DrawBoxSideFromPath(*path, edge_to_render.Width(), stroke_thickness, side,
                         color, edge_to_render.BorderStyle());
   } else {
-    MiterType miter1 =
-        ComputeMiter(side, adjacent_side1, completed_edges, antialias);
-    MiterType miter2 =
-        ComputeMiter(side, adjacent_side2, completed_edges, antialias);
-    bool should_clip = MitersRequireClipping(
-        miter1, miter2, edge_to_render.BorderStyle(), antialias);
+    MiterType miter1 = ComputeMiter(side, adjacent_side1, completed_edges);
+    MiterType miter2 = ComputeMiter(side, adjacent_side2, completed_edges);
+    bool should_clip =
+        MitersRequireClipping(miter1, miter2, edge_to_render.BorderStyle());
 
     GraphicsContextStateSaver clip_state_saver(context_, should_clip);
     if (should_clip) {
       ClipBorderSidePolygon(side, miter1, miter2);
-
       // Miters are applied via clipping, no need to draw them.
       miter1 = miter2 = kNoMiter;
     }
 
-    DrawLineForBoxSide(
-        context_, side_rect.X(), side_rect.Y(), side_rect.MaxX(),
-        side_rect.MaxY(), side, color, edge_to_render.BorderStyle(),
-        miter1 != kNoMiter ? floorf(adjacent_edge1.Width()) : 0,
-        miter2 != kNoMiter ? floorf(adjacent_edge2.Width()) : 0, antialias);
+    DrawLineForBoxSide(context_, side_rect.X(), side_rect.Y(), side_rect.MaxX(),
+                       side_rect.MaxY(), side, color,
+                       edge_to_render.BorderStyle(),
+                       miter1 != kNoMiter ? floorf(adjacent_edge1.Width()) : 0,
+                       miter2 != kNoMiter ? floorf(adjacent_edge2.Width()) : 0,
+                       /*antialias*/ true);
   }
 }
 
