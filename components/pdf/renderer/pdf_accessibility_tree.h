@@ -11,7 +11,6 @@
 
 #include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "ppapi/c/private/ppp_pdf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -175,7 +174,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // AXNode to the page index and index of the character within its
   // page. Used to find the node associated with the start or end of
   // a selection and vice-versa.
-  std::map<int32_t, PP_PdfPageCharacterIndex> node_id_to_page_char_index_;
+  std::map<int32_t, chrome_pdf::PageCharacterIndex> node_id_to_page_char_index_;
 
   // Map between AXNode id to annotation object. Used to find the annotation
   // object to which an action can be passed.
