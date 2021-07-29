@@ -58,6 +58,8 @@
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 #if BUILDFLAG(PLATFORM_CFM)
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
@@ -147,7 +149,11 @@ void InitializeFeatureListDependentDBus() {
   using chromeos::InitializeDBusClient;
 
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
-  InitializeDBusClient<bluez::BluezDBusManager>(bus);
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    InitializeDBusClient<floss::FlossDBusManager>(bus);
+  } else {
+    InitializeDBusClient<bluez::BluezDBusManager>(bus);
+  }
 #if BUILDFLAG(PLATFORM_CFM)
   if (base::FeatureList::IsEnabled(chromeos::cfm::features::kMojoServices)) {
     InitializeDBusClient<chromeos::CfmHotlineClient>(bus);
@@ -168,8 +174,11 @@ void ShutdownDBus() {
     chromeos::CfmHotlineClient::Shutdown();
   }
 #endif
-  bluez::BluezDBusManager::Shutdown();
-
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    floss::FlossDBusManager::Shutdown();
+  } else {
+    bluez::BluezDBusManager::Shutdown();
+  }
   // Other D-Bus clients are shut down, also in reverse order of initialization.
   chromeos::UpstartClient::Shutdown();
   chromeos::UserDataAuthClient::Shutdown();

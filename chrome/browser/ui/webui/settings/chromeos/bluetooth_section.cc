@@ -22,6 +22,8 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -123,8 +125,15 @@ const std::vector<SearchConcept>& GetBluetoothPairedSearchConcepts() {
 BluetoothSection::BluetoothSection(Profile* profile,
                                    SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
+  bool is_initialized = false;
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
+    is_initialized = floss::FlossDBusManager::IsInitialized();
+  } else {
+    is_initialized = bluez::BluezDBusManager::IsInitialized();
+  }
+
   // Note: May be uninitialized in tests.
-  if (bluez::BluezDBusManager::IsInitialized()) {
+  if (is_initialized) {
     device::BluetoothAdapterFactory::Get()->GetAdapter(
         base::BindOnce(&BluetoothSection::OnFetchBluetoothAdapter,
                        weak_ptr_factory_.GetWeakPtr()));
