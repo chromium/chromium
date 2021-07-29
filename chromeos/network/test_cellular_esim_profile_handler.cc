@@ -10,9 +10,7 @@
 
 namespace chromeos {
 
-TestCellularESimProfileHandler::TestCellularESimProfileHandler()
-    : enable_notify_profile_list_update_(true),
-      has_pending_notify_list_update_(false) {}
+TestCellularESimProfileHandler::TestCellularESimProfileHandler() = default;
 
 TestCellularESimProfileHandler::~TestCellularESimProfileHandler() = default;
 
@@ -25,15 +23,6 @@ void TestCellularESimProfileHandler::SetHasRefreshedProfilesForEuicc(
   }
 
   refreshed_eids_.erase(eid);
-}
-
-void TestCellularESimProfileHandler::SetEnableNotifyProfileListUpdate(
-    bool enable_notify_profile_list_update) {
-  enable_notify_profile_list_update_ = enable_notify_profile_list_update;
-  if (enable_notify_profile_list_update_ && has_pending_notify_list_update_) {
-    NotifyESimProfileListUpdated();
-    has_pending_notify_list_update_ = false;
-  }
 }
 
 std::vector<CellularESimProfile>
@@ -57,10 +46,6 @@ void TestCellularESimProfileHandler::OnHermesPropertiesUpdated() {
   esim_profile_states_ = new_profile_states;
 
   network_state_handler()->SyncStubCellularNetworks();
-  if (!enable_notify_profile_list_update_) {
-    has_pending_notify_list_update_ = true;
-    return;
-  }
   NotifyESimProfileListUpdated();
 }
 
