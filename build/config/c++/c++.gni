@@ -11,10 +11,8 @@ declare_args() {
   # standard library support.
   # Don't check in changes that set this to false for more platforms; doing so
   # is not supported.
-  # We always use system installed libc++ on building chrome (incl. both Ash
-  # and Lacros Chrome) running on Chrome OS devices with cros-toolchain.
   use_custom_libcxx =
-      is_fuchsia || is_android || is_mac || is_linux ||
+      is_fuchsia || is_android || is_mac || is_linux || is_chromeos_lacros ||
       (is_ios && !use_xcode_clang) || (is_win && is_clang) ||
       (is_chromeos && default_toolchain != "//build/toolchain/cros:target")
 
