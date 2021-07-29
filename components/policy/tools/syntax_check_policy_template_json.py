@@ -22,21 +22,6 @@ NO_WHITESPACE = re.compile('[^\s]+$')
 SOURCE_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-# Convert a 'type' to the schema types it may be converted to.
-# The 'dict' type represents structured JSON data, and can be converted
-# to an 'object' or an 'array'.
-TYPE_TO_SCHEMA = {
-    'int': ['integer'],
-    'list': ['array'],
-    'dict': ['object', 'array'],
-    'main': ['boolean'],
-    'string': ['string'],
-    'int-enum': ['integer'],
-    'string-enum': ['string'],
-    'string-enum-list': ['array'],
-    'external': ['object'],
-}
-
 # List of boolean policies that have been introduced with negative polarity in
 # the past and should not trigger the negative polarity check.
 LEGACY_INVERTED_POLARITY_ALLOWLIST = [
@@ -72,6 +57,17 @@ LEGACY_EMBEDDED_JSON_ALLOWLIST = [
     'RemoteAccessHostDebugOverridePolicies',
     # NOTE: Do not add any new policies to this list! Do not store policies with
     # complex schemas using stringified JSON - instead, store them as dicts.
+]
+
+# List of existing policies which have a mismatch between their defined type and
+# their schema-deduced type (see crbug.com/1230724).
+LEGACY_SCHEMA_TYPE_MISMATCH_ALLOWLIST = [
+    'ExtensionAllowedTypes',
+    'UsbDetachableWhitelist',
+    'UsbDetachableAllowlist',
+    'QuickUnlockModeAllowlist',
+    'QuickUnlockModeWhitelist',
+    'PluginVmImage',
 ]
 
 # List of policies where not all properties are required to be presented in the
@@ -211,6 +207,48 @@ def _GetPolicyItemType(policy_type):
   else:
     raise NotImplementedError('Unknown item type for policy type: %s' %
                               policy_type)
+
+
+def _GetPolicyTypeFromSchema(policy):
+  schema = policy.get('schema')
+
+  if not schema:
+    if policy.get('type') == 'group':
+      return 'group'
+    # Group-type policies don't have 'schema' but must have |'type': 'group'|
+    # defined.
+    raise NotImplementedError(
+        'A schema must be implemented for all non-group type policies.')
+
+  schema_type = schema.get('type')
+
+  if schema_type == 'boolean':
+    return 'main'
+  elif schema_type == 'integer':
+    items = policy.get('items')
+    if items and all(
+        [item.get('name') and item.get('value') is not None for item in items]):
+      return 'int-enum'
+    return 'int'
+  elif schema_type == 'string':
+    items = policy.get('items')
+    if items and all(
+        [item.get('name') and item.get('value') is not None for item in items]):
+      return 'string-enum'
+    return 'string'
+  elif schema_type == 'array':
+    schema_items = schema['items']
+    if schema_items['type'] == 'string' and schema_items.get('enum'):
+      return 'string-enum-list'
+    elif schema_items['type'] == 'object' and schema_items.get('properties'):
+      return 'dict'
+    return 'list'
+  elif schema_type == 'object':
+    schema_properties = schema.get('properties')
+    if schema_properties and schema_properties.get(
+        'url') and schema_properties.get('hash'):
+      return 'external'
+    return 'dict'
 
 
 def MergeDict(*dicts):
@@ -367,15 +405,31 @@ class PolicyTemplateChecker(object):
   def _CheckPolicySchema(self, policy, policy_type):
     '''Checks that the 'schema' field matches the 'type' field.'''
     self.has_schema_error = False
+
+    if policy_type == 'group':
+      self._Error('Schema should not be defined for group type policy %s.' %
+                  policy.get('name'))
+      self.has_schema_error = True
+      return
+
     schema = self._CheckContains(policy, 'schema', dict)
-    if schema:
-      schema_type = self._CheckContains(schema, 'type', str)
-      if schema_type not in TYPE_TO_SCHEMA[policy_type]:
-        self._Error('Schema type must match the existing type for policy %s' %
-                    policy.get('name'))
-      if not self.schema_validator.ValidateSchema(schema):
-        self._Error('Schema is invalid for policy %s' % policy.get('name'))
-        self.has_schema_error = True
+    if not schema:
+      # Schema must be defined for all non-group type policies. An appropriate
+      # |_Error| message is populated in the |_CheckContains| call above, so it
+      # is not repeated here.
+      self.has_schema_error = True
+      return
+
+    schema_type = _GetPolicyTypeFromSchema(policy)
+    if schema_type != policy_type and policy.get(
+        'name') not in LEGACY_SCHEMA_TYPE_MISMATCH_ALLOWLIST:
+      self._Error(
+          ('Type \"%s\" was expected instead of \"%s\" based on the schema ' +
+           'for policy %s.') % (schema_type, policy_type, policy.get('name')))
+
+    if not self.schema_validator.ValidateSchema(schema):
+      self._Error('Schema is invalid for policy %s' % policy.get('name'))
+      self.has_schema_error = True
 
     if 'validation_schema' in policy:
       validation_schema = policy.get('validation_schema')
@@ -811,8 +865,8 @@ class PolicyTemplateChecker(object):
       self._CheckContains(policy, 'tags', list)
 
       # 'schema' is the new 'type'.
-      # TODO(joaodasilva): remove the 'type' checks once 'schema' is used
-      # everywhere.
+      # TODO(crbug.com/1230724): remove 'type' from policy_templates.json and
+      # all supporting files (including this one), and exclusively use 'schema'.
       self._CheckPolicySchema(policy, policy_type)
 
       # Each policy must have a supported_on list.
