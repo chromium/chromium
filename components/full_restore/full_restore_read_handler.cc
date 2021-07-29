@@ -138,48 +138,48 @@ void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
 void FullRestoreReadHandler::SetNextRestoreWindowIdForChromeApp(
     const base::FilePath& profile_path,
     const std::string& app_id) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return;
 
-  it->second->SetNextRestoreWindowIdForChromeApp(app_id);
+  restore_data->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
 void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
                                        const std::string& app_id) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return;
 
-  it->second->RemoveApp(app_id);
+  restore_data->RemoveApp(app_id);
 }
 
 void FullRestoreReadHandler::RemoveAppRestoreData(
     const base::FilePath& profile_path,
     const std::string& app_id,
     int32_t restore_window_id) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return;
 
-  it->second->RemoveAppRestoreData(app_id, restore_window_id);
+  restore_data->RemoveAppRestoreData(app_id, restore_window_id);
 }
 
 bool FullRestoreReadHandler::HasAppTypeBrowser(
     const base::FilePath& profile_path) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return false;
 
-  return it->second->HasAppTypeBrowser();
+  return restore_data->HasAppTypeBrowser();
 }
 
 bool FullRestoreReadHandler::HasBrowser(const base::FilePath& profile_path) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return false;
 
-  return it->second->HasBrowser();
+  return restore_data->HasBrowser();
 }
 
 bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
@@ -223,11 +223,11 @@ std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetArcAppLaunchInfo(
 
 int32_t FullRestoreReadHandler::FetchRestoreWindowId(
     const std::string& app_id) {
-  auto it = profile_path_to_restore_data_.find(active_profile_path_);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(active_profile_path_);
+  if (!restore_data)
     return 0;
 
-  return it->second->FetchRestoreWindowId(app_id);
+  return restore_data->FetchRestoreWindowId(app_id);
 }
 
 int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForTaskId(
@@ -362,22 +362,22 @@ std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetAppLaunchInfo(
     const base::FilePath& profile_path,
     const std::string& app_id,
     int32_t restore_window_id) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return nullptr;
 
-  return it->second->GetAppLaunchInfo(app_id, restore_window_id);
+  return restore_data->GetAppLaunchInfo(app_id, restore_window_id);
 }
 
 std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
     const base::FilePath& profile_path,
     const std::string& app_id,
     int32_t restore_window_id) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
+  auto* restore_data = GetRestoreData(profile_path);
+  if (!restore_data)
     return nullptr;
 
-  return it->second->GetWindowInfo(app_id, restore_window_id);
+  return restore_data->GetWindowInfo(app_id, restore_window_id);
 }
 
 std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
@@ -447,6 +447,15 @@ void FullRestoreReadHandler::RemoveAppRestoreData(int32_t window_id) {
 void FullRestoreReadHandler::OnWidgetInitialized(
     views::WidgetDelegate* delegate) {
   FullRestoreInfo::GetInstance()->OnWidgetInitialized(delegate->GetWidget());
+}
+
+RestoreData* FullRestoreReadHandler::GetRestoreData(
+    const base::FilePath& profile_path) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end() || !it->second) {
+    return nullptr;
+  }
+  return it->second.get();
 }
 
 }  // namespace full_restore
