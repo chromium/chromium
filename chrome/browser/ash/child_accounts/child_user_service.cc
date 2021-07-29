@@ -85,11 +85,13 @@ const char* ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest() {
 }
 
 ChildUserService::ChildUserService(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)) {
+    : profile_(Profile::FromBrowserContext(context)),
+      app_time_controller_(std::make_unique<app_time::AppTimeController>(
+          profile_,
+          base::BindRepeating(&ChildUserService::ReportTimeLimitPolicy,
+                              base::Unretained(this)))) {
   DCHECK(profile_);
-  app_time_controller_ = std::make_unique<app_time::AppTimeController>(
-      profile_, base::BindRepeating(&ChildUserService::ReportTimeLimitPolicy,
-                                    base::Unretained(this)));
+  app_time_controller_->Init();
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
@@ -208,7 +210,7 @@ void ChildUserService ::ReportTimeLimitPolicy() const {
   }
 
   bool has_policy_enabled = !enabled_policies.empty();
-
+  DCHECK(app_time_controller_);
   if (app_time_controller_->HasAppTimeLimitRestriction()) {
     base::UmaHistogramEnumeration(
         /*name=*/kTimeLimitPolicyTypesHistogramName,

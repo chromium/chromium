@@ -282,6 +282,7 @@ void AppTimeControllerTest::DeleteController() {
 void AppTimeControllerTest::InstantiateController() {
   controller_ = std::make_unique<AppTimeController>(
       &profile_, base::DoNothing::Repeatedly());
+  controller_->Init();
   test_api_ = std::make_unique<AppTimeController::TestApi>(controller_.get());
 }
 

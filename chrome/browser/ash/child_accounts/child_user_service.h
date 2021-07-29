@@ -125,12 +125,12 @@ class ChildUserService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  Profile* const profile_;
+
   std::unique_ptr<app_time::AppTimeController> app_time_controller_;
 
   // Preference changes observer.
   PrefChangeRegistrar pref_change_registrar_;
-
-  Profile* const profile_;
 };
 
 }  // namespace ash
