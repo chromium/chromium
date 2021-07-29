@@ -150,6 +150,9 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 menu.setHeaderView(altTextView);
             }
             v.setOnCreateContextMenuListener(null);
+
+            // Clear the menu if we didn't add any actions. This will prevent it from showing up.
+            if (menu.size() == 1) menu.clear();
         }
 
         @Override
