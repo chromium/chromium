@@ -17,6 +17,7 @@
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ui {
 namespace {
@@ -478,23 +479,30 @@ void DeadKeyTest(TextInputType text_input_type,
   input_method_auralinux->SetFocusedTextInputClient(client.get());
   input_method_auralinux->OnTextInputTypeChanged(client.get());
 
+  constexpr int32_t kCombiningGraveAccent = 0x0300;
   {
-    KeyEvent dead_key(ET_KEY_PRESSED, VKEY_OEM_7, 0);
-    dead_key.set_character(L'\'');
+    KeyEvent dead_key(
+        ET_KEY_PRESSED, VKEY_OEM_4, ui::DomCode::BRACKET_LEFT,
+        /* flags= */ 0,
+        DomKey::DeadKeyFromCombiningCharacter(kCombiningGraveAccent),
+        base::TimeTicks());
     input_method_auralinux->DispatchKeyEvent(&dead_key);
   }
 
   // Do not filter release key event.
   context->SetEatKey(false);
   {
-    KeyEvent dead_key(ET_KEY_RELEASED, VKEY_OEM_7, 0);
-    dead_key.set_character(L'\'');
+    KeyEvent dead_key(
+        ET_KEY_RELEASED, VKEY_OEM_4, ui::DomCode::BRACKET_LEFT,
+        /* flags= */ 0,
+        DomKey::DeadKeyFromCombiningCharacter(kCombiningGraveAccent),
+        base::TimeTicks());
     input_method_auralinux->DispatchKeyEvent(&dead_key);
   }
 
   // The single quote key is muted.
-  test_result->ExpectAction("keydown:222");
-  test_result->ExpectAction("keyup:222");
+  test_result->ExpectAction("keydown:219");
+  test_result->ExpectAction("keyup:219");
   test_result->Verify();
 
   // Reset to filter press key again.
