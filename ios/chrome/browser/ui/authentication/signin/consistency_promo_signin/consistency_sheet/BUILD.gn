@@ -8,6 +8,8 @@ source_set("consistency_sheet") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "child_consistency_sheet_view_controller.h",
+    "consistency_sheet_constants.h",
+    "consistency_sheet_constants.mm",
     "consistency_sheet_navigation_controller.h",
     "consistency_sheet_navigation_controller.mm",
     "consistency_sheet_presentation_controller.h",

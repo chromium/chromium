@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/child_consistency_sheet_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/common/ui/util/background_util.h"
 
@@ -18,9 +19,6 @@
 
 namespace {
 
-// Maximum height for ConsistencySheetNavigationController. This is a ratio
-// related the window height.
-constexpr CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 // Corner radius for centered style dialog.
 constexpr CGFloat kCornerRadius = 12.;
 
