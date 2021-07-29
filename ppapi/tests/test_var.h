@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_TEST_TEST_VAR_H_
-#define PPAPI_TEST_TEST_VAR_H_
+#ifndef PPAPI_TESTS_TEST_VAR_H_
+#define PPAPI_TESTS_TEST_VAR_H_
 
 #include <string>
 
@@ -33,4 +33,4 @@ class TestVar : public TestCase {
   const PPB_Var* var_interface_;
 };
 
-#endif  // PPAPI_TEST_TEST_VAR_H_
+#endif  // PPAPI_TESTS_TEST_VAR_H_
