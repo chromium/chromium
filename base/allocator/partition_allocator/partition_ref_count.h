@@ -108,7 +108,7 @@ class BASE_EXPORT PartitionRefCount {
   }
 
   // "IsAlive" means is allocated and not freed. "KnownRefs" refers to
-  // raw_ptr<T> references. There may be other references from raw pointers or
+  // CheckedPtr references. There may be other references from raw pointers or
   // unique_ptr, but we have no way of tracking them, so we hope for the best.
   // To summarize, the function returns whether we believe the allocation can be
   // safely freed.

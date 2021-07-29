@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MEMORY_RAW_PTR_H_
-#define BASE_MEMORY_RAW_PTR_H_
+#ifndef BASE_MEMORY_CHECKED_PTR_H_
+#define BASE_MEMORY_CHECKED_PTR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -31,14 +31,14 @@
 
 namespace base {
 
-// NOTE: All methods should be ALWAYS_INLINE. raw_ptr is meant to be a
+// NOTE: All methods should be ALWAYS_INLINE. CheckedPtr is meant to be a
 // lightweight replacement of a raw pointer, hence performance is critical.
 
 namespace internal {
-// These classes/structures are part of the raw_ptr implementation.
+// These classes/structures are part of the CheckedPtr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
-struct RawPtrNoOpImpl {
+struct CheckedPtrNoOpImpl {
   // Wraps a pointer.
   static ALWAYS_INLINE void* WrapRawPtr(void* ptr) { return ptr; }
 
@@ -128,7 +128,7 @@ struct BackupRefPtrImpl {
     // There may be pointers immediately after the allocation, e.g.
     //   {
     //     // Assume this allocation happens outside of PartitionAlloc.
-    //     raw_ptr<T> ptr = new T[20];
+    //     CheckedPtr<T> ptr = new T[20];
     //     for (size_t i = 0; i < 20; i ++) { ptr++; }
     //   }
     //
@@ -258,14 +258,12 @@ struct BackupRefPtrImpl {
 
 // DO NOT USE! EXPERIMENTAL ONLY! This is helpful for local testing!
 //
-// raw_ptr<T> (formerly known as CheckedPtr<T>) is meant to be a raw pointer
-// wrapper, that makes Use-After-Free (UaF) unexploitable, to prevent security
-// issues. This is very much in the experimental phase. More context in:
+// CheckedPtr is meant to be a pointer wrapper, that will crash on
+// Use-After-Free (UaF) to prevent security issues. This is very much in the
+// experimental phase. More context in:
 // https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg
 //
-// By default, raw_ptr is a no-op wrapper (RawPtrNoOpImpl) to aid local testing.
-// USE_BACKUP_REF_PTR switches to BackupRefPtrImpl and enables necessary support
-// in PartitionAlloc, to enabled the UaF protection.
+// For now, CheckedPtr is a no-op wrapper to aid local testing.
 //
 // Goals for this API:
 // 1. Minimize amount of caller-side changes as much as physically possible.
@@ -276,24 +274,24 @@ template <typename T,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
           typename Impl = internal::BackupRefPtrImpl>
 #else
-          typename Impl = internal::RawPtrNoOpImpl>
+          typename Impl = internal::CheckedPtrNoOpImpl>
 #endif
-class raw_ptr {
+class CheckedPtr {
  public:
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
-  constexpr ALWAYS_INLINE raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
+  constexpr ALWAYS_INLINE CheckedPtr() noexcept : wrapped_ptr_(nullptr) {}
 
-  raw_ptr(const raw_ptr& p) noexcept
+  CheckedPtr(const CheckedPtr& p) noexcept
       : wrapped_ptr_(CastFromVoidPtr(Impl::Duplicate(p.AsVoidPtr()))) {}
 
-  raw_ptr(raw_ptr&& p) noexcept {
+  CheckedPtr(CheckedPtr&& p) noexcept {
     wrapped_ptr_ = p.wrapped_ptr_;
     p.wrapped_ptr_ = nullptr;
   }
 
-  raw_ptr& operator=(const raw_ptr& p) {
+  CheckedPtr& operator=(const CheckedPtr& p) {
     // Duplicate before releasing, in case the pointer is assigned to itself.
     T* new_ptr = CastFromVoidPtr(Impl::Duplicate(p.AsVoidPtr()));
     Impl::ReleaseWrappedPtr(AsVoidPtr());
@@ -301,7 +299,7 @@ class raw_ptr {
     return *this;
   }
 
-  raw_ptr& operator=(raw_ptr&& p) {
+  CheckedPtr& operator=(CheckedPtr&& p) {
     if (LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(AsVoidPtr());
       wrapped_ptr_ = p.wrapped_ptr_;
@@ -310,43 +308,43 @@ class raw_ptr {
     return *this;
   }
 
-  ALWAYS_INLINE ~raw_ptr() noexcept {
+  ALWAYS_INLINE ~CheckedPtr() noexcept {
     Impl::ReleaseWrappedPtr(AsVoidPtr());
-    // Work around external issues where raw_ptr is used after destruction.
+    // Work around external issues where CheckedPtr is used after destruction.
     wrapped_ptr_ = nullptr;
   }
 
 #else  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-  // raw_ptr can be trivially default constructed (leaving |wrapped_ptr_|
+  // CheckedPtr can be trivially default constructed (leaving |wrapped_ptr_|
   // uninitialized).  This is needed for compatibility with raw pointers.
   //
   // TODO(lukasza): Always initialize |wrapped_ptr_|.  Fix resulting build
   // errors.  Analyze performance impact.
-  constexpr raw_ptr() noexcept = default;
+  constexpr CheckedPtr() noexcept = default;
 
-  // In addition to nullptr_t ctor above, raw_ptr needs to have these
+  // In addition to nullptr_t ctor above, CheckedPtr needs to have these
   // as |=default| or |constexpr| to avoid hitting -Wglobal-constructors in
   // cases like this:
-  //     struct SomeStruct { int int_field; raw_ptr<int> ptr_field; };
+  //     struct SomeStruct { int int_field; CheckedPtr<int> ptr_field; };
   //     SomeStruct g_global_var = { 123, nullptr };
-  raw_ptr(const raw_ptr&) noexcept = default;
-  raw_ptr(raw_ptr&&) noexcept = default;
-  raw_ptr& operator=(const raw_ptr&) noexcept = default;
-  raw_ptr& operator=(raw_ptr&&) noexcept = default;
+  CheckedPtr(const CheckedPtr&) noexcept = default;
+  CheckedPtr(CheckedPtr&&) noexcept = default;
+  CheckedPtr& operator=(const CheckedPtr&) noexcept = default;
+  CheckedPtr& operator=(CheckedPtr&&) noexcept = default;
 
-  ~raw_ptr() = default;
+  ~CheckedPtr() = default;
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-  // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
+  // Deliberately implicit, because CheckedPtr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr ALWAYS_INLINE raw_ptr(std::nullptr_t) noexcept
+  constexpr ALWAYS_INLINE CheckedPtr(std::nullptr_t) noexcept
       : wrapped_ptr_(nullptr) {}
 
-  // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
+  // Deliberately implicit, because CheckedPtr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(T* p) noexcept
+  ALWAYS_INLINE CheckedPtr(T* p) noexcept
       : wrapped_ptr_(CastFromVoidPtr(Impl::WrapRawPtr(CastToVoidPtr(p)))) {}
 
   // Deliberately implicit in order to support implicit upcast.
@@ -355,7 +353,7 @@ class raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(const raw_ptr<U, Impl>& ptr) noexcept
+  ALWAYS_INLINE CheckedPtr(const CheckedPtr<U, Impl>& ptr) noexcept
       : wrapped_ptr_(CastFromVoidPtr(
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.AsVoidPtr())))) {}
   // Deliberately implicit in order to support implicit upcast.
@@ -364,7 +362,7 @@ class raw_ptr {
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  ALWAYS_INLINE raw_ptr(raw_ptr<U, Impl>&& ptr) noexcept
+  ALWAYS_INLINE CheckedPtr(CheckedPtr<U, Impl>&& ptr) noexcept
       : wrapped_ptr_(
             CastFromVoidPtr(Impl::template Upcast<T, U>(ptr.AsVoidPtr()))) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -372,12 +370,12 @@ class raw_ptr {
 #endif
   }
 
-  ALWAYS_INLINE raw_ptr& operator=(std::nullptr_t) noexcept {
+  ALWAYS_INLINE CheckedPtr& operator=(std::nullptr_t) noexcept {
     Impl::ReleaseWrappedPtr(AsVoidPtr());
     wrapped_ptr_ = nullptr;
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator=(T* p) noexcept {
+  ALWAYS_INLINE CheckedPtr& operator=(T* p) noexcept {
     Impl::ReleaseWrappedPtr(AsVoidPtr());
     SetFromVoidPtr(Impl::WrapRawPtr(CastToVoidPtr(p)));
     return *this;
@@ -388,7 +386,7 @@ class raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  ALWAYS_INLINE raw_ptr& operator=(const raw_ptr<U, Impl>& ptr) noexcept {
+  ALWAYS_INLINE CheckedPtr& operator=(const CheckedPtr<U, Impl>& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -404,7 +402,7 @@ class raw_ptr {
             typename Unused = std::enable_if_t<
                 std::is_convertible<U*, T*>::value &&
                 !std::is_void<typename std::remove_cv<T>::type>::value>>
-  ALWAYS_INLINE raw_ptr& operator=(raw_ptr<U, Impl>&& ptr) noexcept {
+  ALWAYS_INLINE CheckedPtr& operator=(CheckedPtr<U, Impl>&& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -419,7 +417,7 @@ class raw_ptr {
     return *this;
   }
 
-  // Avoid using. The goal of raw_ptr is to be as close to raw pointer as
+  // Avoid using. The goal of CheckedPtr is to be as close to raw pointer as
   // possible, so use it only if absolutely necessary (e.g. for const_cast).
   ALWAYS_INLINE T* get() const { return GetForExtraction(); }
 
@@ -432,7 +430,7 @@ class raw_ptr {
     return *GetForDereference();
   }
   ALWAYS_INLINE T* operator->() const { return GetForDereference(); }
-  // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
+  // Deliberately implicit, because CheckedPtr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(runtime/explicit)
   ALWAYS_INLINE operator T*() const { return GetForExtraction(); }
   template <typename U>
@@ -440,103 +438,105 @@ class raw_ptr {
     return static_cast<U*>(GetForExtraction());
   }
 
-  ALWAYS_INLINE raw_ptr& operator++() {
+  ALWAYS_INLINE CheckedPtr& operator++() {
     SetFromVoidPtr(Impl::Advance(AsVoidPtr(), sizeof(T)));
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator--() {
+  ALWAYS_INLINE CheckedPtr& operator--() {
     SetFromVoidPtr(Impl::Advance(AsVoidPtr(), -sizeof(T)));
     return *this;
   }
-  ALWAYS_INLINE raw_ptr operator++(int /* post_increment */) {
-    raw_ptr result = *this;
+  ALWAYS_INLINE CheckedPtr operator++(int /* post_increment */) {
+    CheckedPtr result = *this;
     ++(*this);
     return result;
   }
-  ALWAYS_INLINE raw_ptr operator--(int /* post_decrement */) {
-    raw_ptr result = *this;
+  ALWAYS_INLINE CheckedPtr operator--(int /* post_decrement */) {
+    CheckedPtr result = *this;
     --(*this);
     return result;
   }
-  ALWAYS_INLINE raw_ptr& operator+=(ptrdiff_t delta_elems) {
+  ALWAYS_INLINE CheckedPtr& operator+=(ptrdiff_t delta_elems) {
     SetFromVoidPtr(Impl::Advance(AsVoidPtr(), delta_elems * sizeof(T)));
     return *this;
   }
-  ALWAYS_INLINE raw_ptr& operator-=(ptrdiff_t delta_elems) {
+  ALWAYS_INLINE CheckedPtr& operator-=(ptrdiff_t delta_elems) {
     return *this += -delta_elems;
   }
 
-  // Be careful to cover all cases with raw_ptr being on both sides, left
+  // Be careful to cover all cases with CheckedPtr being on both sides, left
   // side only and right side only. If any case is missed, a more costly
   // |operator T*()| will get called, instead of |operator==|.
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator==(const CheckedPtr& lhs,
+                                       const CheckedPtr& rhs) {
     return lhs.GetForComparison() == rhs.GetForComparison();
   }
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator!=(const CheckedPtr& lhs,
+                                       const CheckedPtr& rhs) {
     return !(lhs == rhs);
   }
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, T* rhs) {
+  friend ALWAYS_INLINE bool operator==(const CheckedPtr& lhs, T* rhs) {
     return lhs.GetForComparison() == rhs;
   }
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, T* rhs) {
+  friend ALWAYS_INLINE bool operator!=(const CheckedPtr& lhs, T* rhs) {
     return !(lhs == rhs);
   }
-  friend ALWAYS_INLINE bool operator==(T* lhs, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator==(T* lhs, const CheckedPtr& rhs) {
     return rhs == lhs;  // Reverse order to call the operator above.
   }
-  friend ALWAYS_INLINE bool operator!=(T* lhs, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator!=(T* lhs, const CheckedPtr& rhs) {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
   // Needed for cases like |derived_ptr == base_ptr|. Without these, a more
   // costly |operator T*()| will get called, instead of |operator==|.
   template <typename U>
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs,
-                                       const raw_ptr<U, Impl>& rhs) {
+  friend ALWAYS_INLINE bool operator==(const CheckedPtr& lhs,
+                                       const CheckedPtr<U, Impl>& rhs) {
     // Add |const volatile| when casting, in case |U| has any. Even if |T|
     // doesn't, comparison between |T*| and |const volatile T*| is fine.
     return lhs.GetForComparison() ==
            static_cast<std::add_cv_t<T>*>(rhs.GetForComparison());
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs,
-                                       const raw_ptr<U, Impl>& rhs) {
+  friend ALWAYS_INLINE bool operator!=(const CheckedPtr& lhs,
+                                       const CheckedPtr<U, Impl>& rhs) {
     return !(lhs == rhs);
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, U* rhs) {
+  friend ALWAYS_INLINE bool operator==(const CheckedPtr& lhs, U* rhs) {
     // Add |const volatile| when casting, in case |U| has any. Even if |T|
     // doesn't, comparison between |T*| and |const volatile T*| is fine.
     return lhs.GetForComparison() == static_cast<std::add_cv_t<T>*>(rhs);
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, U* rhs) {
+  friend ALWAYS_INLINE bool operator!=(const CheckedPtr& lhs, U* rhs) {
     return !(lhs == rhs);
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator==(U* lhs, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator==(U* lhs, const CheckedPtr& rhs) {
     return rhs == lhs;  // Reverse order to call the operator above.
   }
   template <typename U>
-  friend ALWAYS_INLINE bool operator!=(U* lhs, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator!=(U* lhs, const CheckedPtr& rhs) {
     return rhs != lhs;  // Reverse order to call the operator above.
   }
   // Needed for comparisons against nullptr. Without these, a slightly more
   // costly version would be called that extracts wrapped pointer, as opposed
   // to plain comparison against 0.
-  friend ALWAYS_INLINE bool operator==(const raw_ptr& lhs, std::nullptr_t) {
+  friend ALWAYS_INLINE bool operator==(const CheckedPtr& lhs, std::nullptr_t) {
     return !lhs;
   }
-  friend ALWAYS_INLINE bool operator!=(const raw_ptr& lhs, std::nullptr_t) {
+  friend ALWAYS_INLINE bool operator!=(const CheckedPtr& lhs, std::nullptr_t) {
     return !!lhs;  // Use !! otherwise the costly implicit cast will be used.
   }
-  friend ALWAYS_INLINE bool operator==(std::nullptr_t, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator==(std::nullptr_t, const CheckedPtr& rhs) {
     return !rhs;
   }
-  friend ALWAYS_INLINE bool operator!=(std::nullptr_t, const raw_ptr& rhs) {
+  friend ALWAYS_INLINE bool operator!=(std::nullptr_t, const CheckedPtr& rhs) {
     return !!rhs;  // Use !! otherwise the costly implicit cast will be used.
   }
 
-  friend ALWAYS_INLINE void swap(raw_ptr& lhs, raw_ptr& rhs) noexcept {
+  friend ALWAYS_INLINE void swap(CheckedPtr& lhs, CheckedPtr& rhs) noexcept {
     Impl::IncrementSwapCountForTest();
     std::swap(lhs.wrapped_ptr_, rhs.wrapped_ptr_);
   }
@@ -576,11 +576,11 @@ class raw_ptr {
   T* wrapped_ptr_;
 
   template <typename U, typename V>
-  friend class raw_ptr;
+  friend class CheckedPtr;
 };
 
 }  // namespace base
 
-using base::raw_ptr;
+using base::CheckedPtr;
 
-#endif  // BASE_MEMORY_RAW_PTR_H_
+#endif  // BASE_MEMORY_CHECKED_PTR_H_

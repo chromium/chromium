@@ -1,4 +1,4 @@
-# MiraclePtr aka raw_ptr aka BackupRefPtr
+# MiraclePtr aka CheckedPtr`<T>` aka BackupRefPtr
 
 Chrome's biggest security problem is a constant stream of exploitable (and
 exploited) Use-after-Free (UaF) bugs. `MiraclePtr` is an unmbrella term for
@@ -8,22 +8,22 @@ memory leaks. See
 [go/miracleptr](https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg/edit?usp=sharing)
 for details.
 
-`raw_ptr<T>` (formerly `CheckedPtr<T>`) is a smart-pointer-like templated class
-that wraps a raw pointer, protecting it with one of the `MiraclePtr` algorithms
-from being exploited via UaF. The class name came from the first algorithm that
-we evaluated, and is sujbect to change. `BackupRefPtr` is one of the
-`MiraclePtr` algorithms, based on reference counting, that disarms UaFs by
-quarantining allocations that have known pointers. It was deemed the most
-promising one and is the only one under consideration at the moment.
-In the current world, `MiraclePtr`, `BackupRefPtr` and `raw_ptr<T>` became
+`CheckedPtr<T>` is a smart-pointer-like templated class that wraps a raw
+pointer, protecting it with one of the `MiraclePtr` algorithms from being
+exploited via UaF. The class name came from the first algorithm that we
+evaluated, and is sujbect to change. `BackupRefPtr` is one of the `MiraclePtr`
+algorithms, based on reference counting, that disarms UaFs by quarantining
+allocations that have known pointers. It was deemed the most promising one and
+is the only one under consideration at the moment.
+In the current world, `MiraclePtr`, `BackupRefPtr` and `CheckedPtr<T>` became
 effectively synonyms.
 
-`raw_ptr<T>` is currently considered **experimental** - please don't
+`CheckedPtr<T>` is currently considered **experimental** - please don't
 use it in production code just yet.
 
-## Examples of using raw_ptr instead of raw pointers
+## Examples of using CheckedPtr instead of raw pointers
 
-For performance reasons, currently we only consider `raw_ptr<T>`
+For performance reasons, currently we only consider `CheckedPtr<T>`
 to replace raw pointer fields (aka member
 variables).  For example, the following struct that uses raw pointers:
 
@@ -37,35 +37,35 @@ struct Example {
 };
 ```
 
-Would look as follows when using `raw_ptr<T>`:
+Would look as follows when using `CheckedPtr<T>`:
 
 ```cpp
-#include "base/memory/raw_ptr.h"
+#include "base/memory/checked_ptr.h"
 
 struct Example {
-  raw_ptr<int> int_ptr;
-  raw_ptr<void> void_ptr;
-  raw_ptr<SomeClass> object_ptr;
-  raw_ptr<const SomeClass> ptr_to_const;
-  const raw_ptr<SomeClass> const_ptr;
+  CheckedPtr<int> int_ptr;
+  CheckedPtr<void> void_ptr;
+  CheckedPtr<SomeClass> object_ptr;
+  CheckedPtr<const SomeClass> ptr_to_const;
+  const CheckedPtr<SomeClass> const_ptr;
 };
 ```
 
 In most cases, only the type in the field declaration needs to change.
-In particular, `raw_ptr<T>` implements
+In particular, `CheckedPtr<T>` implements
 `operator->`, `operator*` and other operators
 that one expects from a raw pointer.
 A handful of incompatible cases are described in the
 "Incompatibilities with raw pointers" section below.
 
 
-## Benefits and costs of raw_ptr
+## Benefits and costs of CheckedPtr
 
 TODO: Expand the raw notes below:
 - Benefit = making UaF bugs non-exploitable
   - Need to explain how BackupRefPtr implementation
     poisons/zaps/quarantines the freed memory
-    as long as a dangling `raw_ptr<T>` exists
+    as long as a dangling CheckedPtr exists
   - Need to explain the scope of the protection
     - non-renderer process only (e.g. browser process, NetworkService process,
       GPU process, etc., but *not* renderer processes, utility processes, etc.)
@@ -79,11 +79,11 @@ TODO: Expand the raw notes below:
     and destruction (e.g. dereferencing or comparison are not affected).
 
 
-## Fields should use raw_ptr rather than raw pointers
+## Fields should use CheckedPtr rather than raw pointers
 
-Eventually, once `raw_ptr<T>` is no longer **experimental**,
+Eventually, once CheckedPtr is no longer **experimental**,
 fields (aka member variables) in Chromium code
-should use `raw_ptr<SomeClass>` rather than raw pointers.
+should use `CheckedPtr<SomeClass>` rather than raw pointers.
 
 TODO: Expand the raw notes below:
 - Chromium-only (V8, Skia, etc. excluded)
@@ -94,24 +94,24 @@ TODO: Expand the raw notes below:
 - TODO: Explain how this will be eventually enforced (presubmit? clang plugin?).
   Explain how to opt-out (e.g. see "Incompatibilities with raw pointers"
   section below where some scenarios are inherently incompatible
-  with `raw_ptr<T>`).
+  with CheckedPtr).
 
 
 ## Incompatibilities with raw pointers
 
 In most cases, changing the type of a field
 (or a variable, or a parameter, etc.)
-from `SomeClass*` to `raw_ptr<SomeClass>`
+from `SomeClass*` to `CheckedPtr<SomeClass>`
 shouldn't require any additional changes - all
 other usage of the pointer should continue to
 compile and work as expected at runtime.
 
 There are some corner-case scenarios however,
-where `raw_ptr<SomeClass>` is not compatible with a raw pointer.
+where `CheckedPtr<SomeClass>` is not compatible with a raw pointer.
 Subsections below enumerate such scenarios
 and offer guidance on how to work with them.
-For a more in-depth explanation, please see the
-["BackupRefPtr Support Coverage"](https://docs.google.com/document/d/1-H8zS4p2jKNo4Zsv2rbXcYvGKn2CsCTtd1W1HPl3z_M/edit?usp=sharing)
+For a more in-depth treatment, please see the
+["Limitations of CheckedPtr/BackupRefPtr"](https://docs.google.com/document/d/1HbtenxB_LyxNOFj52Ph9A6Wzb17PhXX2NGlsCZDCfL4/edit?usp=sharing)
 document.
 
 ### Compile errors
@@ -119,26 +119,26 @@ document.
 #### Explicit `.get()` might be required
 
 If a raw pointer is needed, but an implicit cast from
-`raw_ptr<SomeClass>` to `SomeClass*` doesn't work,
+`CheckedPtr<SomeClass>` to `SomeClass*` doesn't work,
 then the raw pointer needs to be obtained by explicitly
 calling `.get()`.  Examples:
 
-- `auto* raw_ptr_var = wrapped_ptr.get()`
+- `auto* raw_ptr_var = checked_ptr.get()`
   (`auto*` requires the initializer to be a raw pointer)
-- `return condition ? raw_ptr : wrapped_ptr.get();`
+- `return condition ? raw_ptr : checked_ptr.get();`
   (ternary operator needs identical types in both branches)
-- `base::WrapUniquePtr(wrapped_ptr.get());`
+- `base::WrapUniquePtr(checked_ptr.get());`
   (implicit cast doesn't kick in for arguments in templates)
-- `printf("%p", wrapped_ptr.get());`
+- `printf("%p", checked_ptr.get());`
   (can't pass class type arguments to variadic functions)
-- `reinterpret_cast<SomeClass*>(wrapped_ptr.get())`
+- `reinterpret_cast<SomeClass*>(checked_ptr.get())`
   (`const_cast` and `reinterpret_cast` sometimes require their
   argument to be a raw pointer;  `static_cast` should "Just Work")
 
 #### In-out arguments need to be refactored
 
 Due to implementation difficulties,
-`raw_ptr<T>` doesn't support an address-of operator.
+`CheckedPtr` doesn't support an address-of operator.
 This means that the following code will not compile:
 
 ```cpp
@@ -148,30 +148,30 @@ void GetSomeClassPtr(SomeClass** out_arg) {
 
 struct MyStruct {
   void Example() {
-    GetSomeClassPtr(&wrapped_ptr_);  // <- won't compile
+    GetSomeClassPtr(&checked_ptr_);  // <- won't compile
   }
 
-  raw_ptr<SomeClass> wrapped_ptr_;
+  CheckedPtr<SomeClass> checked_ptr_;
 };
 ```
 
 The typical fix is to change the type of the out argument:
 
 ```cpp
-void GetSomeClassPtr(raw_ptr<SomeClass>* out_arg) {
+void GetSomeClassPtr(CheckedPtr<SomeClass>* out_arg) {
   *out_arg = ...;
 }
 ```
 
 If `GetSomeClassPtr` can be invoked _both_ with raw pointers
-and with `raw_ptr<T>`, then both overloads might be needed:
+and with `CheckedPtr`, then both overloads might be needed:
 
 ```cpp
 void GetSomeClassPtr(SomeClass** out_arg) {
   *out_arg = ...;
 }
 
-void GetSomeClassPtr(raw_ptr<SomeClass>* out_arg) {
+void GetSomeClassPtr(CheckedPtr<SomeClass>* out_arg) {
   SomeClass* tmp = **out_arg;
   GetSomeClassPtr(&tmp);
   *out_arg = tmp;
@@ -182,11 +182,11 @@ void GetSomeClassPtr(raw_ptr<SomeClass>* out_arg) {
 
 `-Wexit-time-destructors` disallows triggering custom destructors
 when global variables are destroyed.
-Since `raw_ptr<T>` has a custom destructor,
+Since `CheckedPtr` has a custom destructor,
 it cannot be used as a field of structs that are used as global variables.
 If a pointer needs to be used in a global variable
 (directly or indirectly - e.g. embedded in an array or struct),
-then the only solution is avoiding `raw_ptr<T>`.
+then the only solution is avoiding `CheckedPtr`.
 
 Build error:
 
@@ -200,17 +200,17 @@ error: declaration requires an exit-time destructor
 
 `constexpr` raw pointers can be initialized with pointers to string literals
 or pointers to global variables.  Such initialization doesn't work for
-`raw_ptr<T>` which doesn't have a `constexpr` constructor for non-null
-pointer values.
+CheckedPtr which doesn't have a `constexpr` constructor for non-null pointer
+values.
 
 If `constexpr`, non-null initialization is required, then the only solution is
-avoiding `raw_ptr<T>`.
+avoiding `CheckedPtr`.
 
 #### Unions
 
 If any member of a union has a non-trivial destructor, then the union
-will not have a destructor.  Because of this `raw_ptr<T>` usually cannot be
-used to replace the type of union members, because `raw_ptr<T>` has
+will not have a destructor.  Because of this `CheckedPtr<T>` usually cannot be
+used to replace the type of union members, because `CheckedPtr<T>` has
 a non-trivial destructor.
 
 Build error:
@@ -218,7 +218,7 @@ Build error:
 ```build
 error: attempt to use a deleted function
 note: destructor of 'SomeUnion' is implicitly deleted because variant
-field 'wrapped_ptr' has a non-trivial destructor
+field 'checked_ptr' has a non-trivial destructor
 ```
 
 
@@ -226,65 +226,65 @@ field 'wrapped_ptr' has a non-trivial destructor
 
 #### Invalid pointer assignment
 
-It is unsafe to assign `raw_ptr<T>` a raw pointer to freed memory even if the
-`raw_ptr<T>` instance is never dereferenced, i.e. the following snippet will
+It is unsafe to assign `CheckedPtr` a raw pointer to freed memory even if the
+`CheckedPtr` instance is never dereferenced, i.e. the following snippet will
 likely cause a crash:
 
 ```cpp
 void* ptr = malloc();
 free(ptr);
 [...]
-raw_ptr<void> wrapped_ptr = ptr;
+CheckedPtr<void> checked_ptr = ptr;
 ```
 
 At the very least, nothing prevents the memory slot, which is additionally used
-to store the `raw_ptr<T>` metadata, from being decommitted. Furthermore, the
+to store the `CheckedPtr` metadata, from being decommitted. Furthermore, the
 code pattern might lead to free list corruptions and concurrency issues.
 
-On the other hand, assigning a dangling `raw_ptr<T>` to another `raw_ptr<T>` is
+On the other hand, assigning a dangling `CheckedPtr` to another `CheckedPtr` is
 supported because the slot is guaranteed to be kept alive. Therefore, a
-`raw_ptr<T>` instance should be only assigned a valid raw pointer, `nullptr` or
-another `raw_ptr<T>`. Note that pointers right past the end of an allocation
+`CheckedPtr` instance should be only assigned a valid raw pointer, `nullptr` or
+another `CheckedPtr`. Note that pointers right past the end of an allocation
 considered valid in C++.
 
 
 #### Assignment via reinterpret_cast
 
-`raw_ptr<T>` maintains an internal ref-count associated with the piece of memory
+`CheckedPtr` maintains an internal ref-count associated with the piece of memory
 that it points to (see the `PartitionRefCount` class).  The assignment operator
-of `raw_ptr<T>` takes care to update the ref-count as needed, but the ref-count
-may become unbalanced if the `raw_ptr<T>` value is assigned to without going
+of `CheckedPtr` takes care to update the ref-count as needed, but the ref-count
+may become unbalanced if the `CheckedPtr` value is assigned to without going
 through the assignment operator.  An unbalanced ref-count may lead to crashes or
 memory leaks.
 
 One way to execute such an incorrect assignment is `reinterpret_cast` of
-a pointer to a `raw_ptr<T>`.  For example, see https://crbug.com/1154799
+a pointer to a `CheckedPtr`.  For example, see https://crbug.com/1154799
 where the `reintepret_cast` is/was used in the `Extract` method
 [here](https://source.chromium.org/chromium/chromium/src/+/main:device/fido/cbor_extract.h;l=318;drc=16f9768803e17c90901adce97b3153cfd39fdde2)).
 Simplified example:
 
 ```cpp
-raw_ptr<int> wrapped_ptr;
-int** ptr_to_raw_int_ptr = reinterpret_cast<int**>(&wrapped_ptr);
+CheckedPtr<int> checked_int_ptr;
+int** ptr_to_raw_int_ptr = reinterpret_cast<int**>(&checked_int_ptr);
 
 // Incorrect code: the assignment below won't update the ref-count internally
-// maintained by `wrapped_ptr`.
+// maintained by CheckedPtr.
 *ptr_to_raw_int_ptr = new int(123);
 ```
 
-Another way is to `reinterpret_cast` a struct containing `raw_ptr<T>` fields.
+Another way is to `reinterpret_cast` a struct containing `CheckedPtr` fields.
 For example, see https://crbug.com/1165613#c5 where `reinterpret_cast` was
 used to treat a `buffer` of data as `FunctionInfo` struct (where
-`interceptor_address` field might be a `raw_ptr<T>`). Simplified example:
+`interceptor_address` field might be a `CheckedPtr`). Simplified example:
 
 ```cpp
 struct MyStruct {
-  raw_ptr<int> checked_int_ptr_;
+  CheckedPtr<int> checked_int_ptr_;
 };
 
 void foo(void* buffer) {
   // During the assignment, parts of `buffer` will be interpreted as an
-  // already initialized/constructed `raw_ptr<int>` field.
+  // already initialized/constructed `CheckedPtr<int>` field.
   MyStruct* my_struct_ptr = reinterpret_cast<MyStruct*>(buffer);
 
   // The assignment below will try to decrement the ref-count of the old
@@ -294,19 +294,19 @@ void foo(void* buffer) {
 }
 ```
 
-#### Fields order leading to dereferencing a destructed raw_ptr
+#### Fields order leading to dereferencing a destructed CheckedPtr
 
 Fields are destructed in the reverse order of their declarations:
 
 ```cpp
     struct S {
       Bar bar_;  // Bar is destructed last.
-      raw_ptr<Foo> foo_ptr_;  // raw_ptr<Foo> (not Foo) is destructed first.
+      CheckedPtr<Foo> foo_ptr_;  // CheckedPtr (not Foo) is destructed first.
     };
 ```
 
 If destructor of `Bar` has a pointer to `S`, then it may try to dereference
-`s->foo_ptr_` after `raw_ptr<T>` has been already destructed.
+`s->foo_ptr_` after `CheckedPtr` has been already destructed.
 In practice this will lead to a null dereference and a crash
 (e.g. see https://crbug.com/1157988).
 
@@ -328,14 +328,16 @@ Pointers past the end of an allocation are supported only if they point exactly 
 
 #### Pointers to address in another process
 
-If `raw_ptr<T>` is used to store an address in another process. The same address could be used in PA for the current process. Resulting in `raw_ptr<T>` trying to increment the ref count that doesn't exist.
+If `CheckedPtr` is used to store an address in another process. The same address could be used in PA for the current process. Resulting in CheckedPtr trying to increment the ref count that doesn't exist.
 
 `sandbox::GetProcessBaseAddress()` was an example of a function that returns an address in another process as `void*`, resulting in this issue.
 
 #### Other
 
-TODO(bartekn): Document runtime errors encountered by BackupRefPtr.
+TODO(bartekn): Document runtime errors encountered by BackupRefPtr
+(they are more rare than for CheckedPtr2,
+but runtime errors still exist for BackupRefPtr).
 
 TODO(glazunov): One example is
-accessing a class' `raw_ptr<T>` fields in its base class' constructor:
+accessing a class' CheckedPtr fields in its base class' constructor:
 https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/wtf/doubly_linked_list.h;drc=cce44dc1cb55c77f63f2ebec5e7015b8dc851c82;l=52

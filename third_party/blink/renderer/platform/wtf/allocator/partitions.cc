@@ -119,7 +119,7 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::RefCount::kDisallowed
 #endif
   });
-  // RefCount disallowed because layout code will be excluded from raw_ptr<T>
+  // RefCount disallowed because layout code will be excluded from CheckedPtr
   // rewrite due to performance.
   layout_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,

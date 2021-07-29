@@ -23,7 +23,7 @@ include_rules = [
     "+base/location.h",
     "+base/logging.h",
     "+base/macros.h",
-    "+base/memory/raw_ptr.h",
+    "+base/memory/checked_ptr.h",
     "+base/memory/ptr_util.h",
     "+base/memory/weak_ptr.h",
     "+base/metrics/field_trial_params.h",

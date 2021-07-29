@@ -1,9 +1,9 @@
 per-file *chromeos*=oshima@chromium.org
 per-file *shared_memory*=set noparent
 per-file *shared_memory*=file://ipc/SECURITY_OWNERS
-per-file raw_ptr*=bartekn@chromium.org
-per-file raw_ptr*=glazunov@google.com
-per-file raw_ptr*=keishi@chromium.org
+per-file checked_ptr*=bartekn@chromium.org
+per-file checked_ptr*=glazunov@google.com
+per-file checked_ptr*=keishi@chromium.org
 per-file madv_free*=lizeb@chromium.org
 per-file madv_free*=pasko@chromium.org
 per-file madv_free*=mthiesse@chromium.org

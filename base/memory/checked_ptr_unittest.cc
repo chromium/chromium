@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/checked_ptr.h"
 
 #include <climits>
 #include <string>
@@ -19,25 +19,25 @@
 
 using testing::Test;
 
-static_assert(sizeof(raw_ptr<void>) == sizeof(void*),
-              "raw_ptr shouldn't add memory overhead");
-static_assert(sizeof(raw_ptr<int>) == sizeof(int*),
-              "raw_ptr shouldn't add memory overhead");
-static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
-              "raw_ptr shouldn't add memory overhead");
+static_assert(sizeof(CheckedPtr<void>) == sizeof(void*),
+              "CheckedPtr shouldn't add memory overhead");
+static_assert(sizeof(CheckedPtr<int>) == sizeof(int*),
+              "CheckedPtr shouldn't add memory overhead");
+static_assert(sizeof(CheckedPtr<std::string>) == sizeof(std::string*),
+              "CheckedPtr shouldn't add memory overhead");
 
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
-// |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
+// |is_trivially_copyable| assertion means that arrays/vectors of CheckedPtr can
 // be copied by memcpy.
-static_assert(std::is_trivially_copyable<raw_ptr<void>>::value,
-              "raw_ptr should be trivially copyable");
-static_assert(std::is_trivially_copyable<raw_ptr<int>>::value,
-              "raw_ptr should be trivially copyable");
-static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
-              "raw_ptr should be trivially copyable");
+static_assert(std::is_trivially_copyable<CheckedPtr<void>>::value,
+              "CheckedPtr should be trivially copyable");
+static_assert(std::is_trivially_copyable<CheckedPtr<int>>::value,
+              "CheckedPtr should be trivially copyable");
+static_assert(std::is_trivially_copyable<CheckedPtr<std::string>>::value,
+              "CheckedPtr should be trivially copyable");
 
 // |is_trivially_default_constructible| assertion helps retain implicit default
-// constructors when raw_ptr is used as a union field.  Example of an error
+// constructors when CheckedPtr is used as a union field.  Example of an error
 // if this assertion didn't hold:
 //
 //     ../../base/trace_event/trace_arguments.h:249:16: error: call to
@@ -47,17 +47,17 @@ static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
 //     ../../base/trace_event/trace_arguments.h:211:26: note: default
 //     constructor of 'TraceValue' is implicitly deleted because variant field
 //     'as_pointer' has a non-trivial default constructor
-//       raw_ptr<const void> as_pointer;
-static_assert(std::is_trivially_default_constructible<raw_ptr<void>>::value,
-              "raw_ptr should be trivially default constructible");
-static_assert(std::is_trivially_default_constructible<raw_ptr<int>>::value,
-              "raw_ptr should be trivially default constructible");
+//       CheckedPtr<const void> as_pointer;
+static_assert(std::is_trivially_default_constructible<CheckedPtr<void>>::value,
+              "CheckedPtr should be trivially default constructible");
+static_assert(std::is_trivially_default_constructible<CheckedPtr<int>>::value,
+              "CheckedPtr should be trivially default constructible");
 static_assert(
-    std::is_trivially_default_constructible<raw_ptr<std::string>>::value,
-    "raw_ptr should be trivially default constructible");
+    std::is_trivially_default_constructible<CheckedPtr<std::string>>::value,
+    "CheckedPtr should be trivially default constructible");
 #endif  // !BUILDFLAG(USE_BACKUP_REF_PTR)
 
-// Don't use base::internal for testing raw_ptr API, to test if code outside
+// Don't use base::internal for testing CheckedPtr API, to test if code outside
 // this namespace calls the correct functions from this namespace.
 namespace {
 
@@ -65,18 +65,18 @@ static int g_wrap_raw_ptr_cnt = INT_MIN;
 static int g_get_for_dereference_cnt = INT_MIN;
 static int g_get_for_extraction_cnt = INT_MIN;
 static int g_get_for_comparison_cnt = INT_MIN;
-static int g_wrapped_ptr_swap_cnt = INT_MIN;
+static int g_checked_ptr_swap_cnt = INT_MIN;
 
 static void ClearCounters() {
   g_wrap_raw_ptr_cnt = 0;
   g_get_for_dereference_cnt = 0;
   g_get_for_extraction_cnt = 0;
   g_get_for_comparison_cnt = 0;
-  g_wrapped_ptr_swap_cnt = 0;
+  g_checked_ptr_swap_cnt = 0;
 }
 
-struct RawPtrCountingNoOpImpl : base::internal::RawPtrNoOpImpl {
-  using Super = base::internal::RawPtrNoOpImpl;
+struct CheckedPtrCountingNoOpImpl : base::internal::CheckedPtrNoOpImpl {
+  using Super = base::internal::CheckedPtrNoOpImpl;
 
   static ALWAYS_INLINE void* WrapRawPtr(void* ptr) {
     ++g_wrap_raw_ptr_cnt;
@@ -99,12 +99,12 @@ struct RawPtrCountingNoOpImpl : base::internal::RawPtrNoOpImpl {
   }
 
   static ALWAYS_INLINE void IncrementSwapCountForTest() {
-    ++g_wrapped_ptr_swap_cnt;
+    ++g_checked_ptr_swap_cnt;
   }
 };
 
 template <typename T>
-using CountingRawPtr = raw_ptr<T, RawPtrCountingNoOpImpl>;
+using CountingCheckedPtr = CheckedPtr<T, CheckedPtrCountingNoOpImpl>;
 
 struct MyStruct {
   int x;
@@ -125,23 +125,23 @@ struct Derived : Base1, Base2 {
   int d;
 };
 
-class RawPtrTest : public Test {
+class CheckedPtrTest : public Test {
  protected:
   void SetUp() override { ClearCounters(); }
 };
 
-TEST_F(RawPtrTest, NullStarDereference) {
-  raw_ptr<int> ptr = nullptr;
+TEST_F(CheckedPtrTest, NullStarDereference) {
+  CheckedPtr<int> ptr = nullptr;
   EXPECT_DEATH_IF_SUPPORTED(if (*ptr == 42) return, "");
 }
 
-TEST_F(RawPtrTest, NullArrowDereference) {
-  raw_ptr<MyStruct> ptr = nullptr;
+TEST_F(CheckedPtrTest, NullArrowDereference) {
+  CheckedPtr<MyStruct> ptr = nullptr;
   EXPECT_DEATH_IF_SUPPORTED(if (ptr->x == 42) return, "");
 }
 
-TEST_F(RawPtrTest, NullExtractNoDereference) {
-  CountingRawPtr<int> ptr = nullptr;
+TEST_F(CheckedPtrTest, NullExtractNoDereference) {
+  CountingCheckedPtr<int> ptr = nullptr;
   // No dereference hence shouldn't crash.
   int* raw = ptr;
   std::ignore = raw;
@@ -150,8 +150,8 @@ TEST_F(RawPtrTest, NullExtractNoDereference) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, NullCmpExplicit) {
-  CountingRawPtr<int> ptr = nullptr;
+TEST_F(CheckedPtrTest, NullCmpExplicit) {
+  CountingCheckedPtr<int> ptr = nullptr;
   EXPECT_TRUE(ptr == nullptr);
   EXPECT_TRUE(nullptr == ptr);
   EXPECT_FALSE(ptr != nullptr);
@@ -162,8 +162,8 @@ TEST_F(RawPtrTest, NullCmpExplicit) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, NullCmpBool) {
-  CountingRawPtr<int> ptr = nullptr;
+TEST_F(CheckedPtrTest, NullCmpBool) {
+  CountingCheckedPtr<int> ptr = nullptr;
   EXPECT_FALSE(ptr);
   EXPECT_TRUE(!ptr);
   // No need to unwrap pointer, just compare against 0.
@@ -174,15 +174,15 @@ TEST_F(RawPtrTest, NullCmpBool) {
 
 void FuncThatAcceptsBool(bool b) {}
 
-bool IsValidNoCast(CountingRawPtr<int> ptr) {
+bool IsValidNoCast(CountingCheckedPtr<int> ptr) {
   return !!ptr;  // !! to avoid implicit cast
 }
-bool IsValidNoCast2(CountingRawPtr<int> ptr) {
+bool IsValidNoCast2(CountingCheckedPtr<int> ptr) {
   return ptr && true;
 }
 
-TEST_F(RawPtrTest, BoolOpNotCast) {
-  CountingRawPtr<int> ptr = nullptr;
+TEST_F(CheckedPtrTest, BoolOpNotCast) {
+  CountingCheckedPtr<int> ptr = nullptr;
   volatile bool is_valid = !!ptr;  // !! to avoid implicit cast
   is_valid = ptr || is_valid;      // volatile, so won't be optimized
   if (ptr)
@@ -199,7 +199,7 @@ TEST_F(RawPtrTest, BoolOpNotCast) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-bool IsValidWithCast(CountingRawPtr<int> ptr) {
+bool IsValidWithCast(CountingCheckedPtr<int> ptr) {
   return ptr;
 }
 
@@ -207,8 +207,8 @@ bool IsValidWithCast(CountingRawPtr<int> ptr) {
 // |operator T*| is called first and then the pointer is converted to bool,
 // as opposed to calling |operator bool| directly. The former may be more
 // costly, so the caller has to be careful not to trigger this path.
-TEST_F(RawPtrTest, CastNotBoolOp) {
-  CountingRawPtr<int> ptr = nullptr;
+TEST_F(CheckedPtrTest, CastNotBoolOp) {
+  CountingCheckedPtr<int> ptr = nullptr;
   bool is_valid = ptr;
   is_valid = IsValidWithCast(ptr);
   FuncThatAcceptsBool(ptr);
@@ -217,26 +217,26 @@ TEST_F(RawPtrTest, CastNotBoolOp) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, StarDereference) {
+TEST_F(CheckedPtrTest, StarDereference) {
   int foo = 42;
-  CountingRawPtr<int> ptr = &foo;
+  CountingCheckedPtr<int> ptr = &foo;
   EXPECT_EQ(*ptr, 42);
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
   EXPECT_EQ(g_get_for_dereference_cnt, 1);
 }
 
-TEST_F(RawPtrTest, ArrowDereference) {
+TEST_F(CheckedPtrTest, ArrowDereference) {
   MyStruct foo = {42};
-  CountingRawPtr<MyStruct> ptr = &foo;
+  CountingCheckedPtr<MyStruct> ptr = &foo;
   EXPECT_EQ(ptr->x, 42);
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
   EXPECT_EQ(g_get_for_dereference_cnt, 1);
 }
 
-TEST_F(RawPtrTest, Delete) {
-  CountingRawPtr<int> ptr = new int(42);
+TEST_F(CheckedPtrTest, Delete) {
+  CountingCheckedPtr<int> ptr = new int(42);
   delete ptr;
   // The pointer was extracted using implicit cast before passing to |delete|.
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
@@ -244,9 +244,9 @@ TEST_F(RawPtrTest, Delete) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, ConstVolatileVoidPtr) {
+TEST_F(CheckedPtrTest, ConstVolatileVoidPtr) {
   int32_t foo[] = {1234567890};
-  CountingRawPtr<const volatile void> ptr = foo;
+  CountingCheckedPtr<const volatile void> ptr = foo;
   EXPECT_EQ(*static_cast<const volatile int32_t*>(ptr), 1234567890);
   // Because we're using a cast, the extraction API kicks in, which doesn't
   // know if the extracted pointer will be dereferenced or not.
@@ -255,9 +255,9 @@ TEST_F(RawPtrTest, ConstVolatileVoidPtr) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, VoidPtr) {
+TEST_F(CheckedPtrTest, VoidPtr) {
   int32_t foo[] = {1234567890};
-  CountingRawPtr<void> ptr = foo;
+  CountingCheckedPtr<void> ptr = foo;
   EXPECT_EQ(*static_cast<int32_t*>(ptr), 1234567890);
   // Because we're using a cast, the extraction API kicks in, which doesn't
   // know if the extracted pointer will be dereferenced or not.
@@ -266,15 +266,15 @@ TEST_F(RawPtrTest, VoidPtr) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, OperatorEQ) {
+TEST_F(CheckedPtrTest, OperatorEQ) {
   int foo;
-  CountingRawPtr<int> ptr1 = nullptr;
+  CountingCheckedPtr<int> ptr1 = nullptr;
   EXPECT_TRUE(ptr1 == ptr1);
 
-  CountingRawPtr<int> ptr2 = nullptr;
+  CountingCheckedPtr<int> ptr2 = nullptr;
   EXPECT_TRUE(ptr1 == ptr2);
 
-  CountingRawPtr<int> ptr3 = &foo;
+  CountingCheckedPtr<int> ptr3 = &foo;
   EXPECT_TRUE(&foo == ptr3);
   EXPECT_TRUE(ptr3 == &foo);
   EXPECT_FALSE(ptr1 == ptr3);
@@ -288,15 +288,15 @@ TEST_F(RawPtrTest, OperatorEQ) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, OperatorNE) {
+TEST_F(CheckedPtrTest, OperatorNE) {
   int foo;
-  CountingRawPtr<int> ptr1 = nullptr;
+  CountingCheckedPtr<int> ptr1 = nullptr;
   EXPECT_FALSE(ptr1 != ptr1);
 
-  CountingRawPtr<int> ptr2 = nullptr;
+  CountingCheckedPtr<int> ptr2 = nullptr;
   EXPECT_FALSE(ptr1 != ptr2);
 
-  CountingRawPtr<int> ptr3 = &foo;
+  CountingCheckedPtr<int> ptr3 = &foo;
   EXPECT_FALSE(&foo != ptr3);
   EXPECT_FALSE(ptr3 != &foo);
   EXPECT_TRUE(ptr1 != ptr3);
@@ -310,12 +310,12 @@ TEST_F(RawPtrTest, OperatorNE) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, OperatorEQCast) {
+TEST_F(CheckedPtrTest, OperatorEQCast) {
   int foo = 42;
   const int* raw_int_ptr = &foo;
   volatile void* raw_void_ptr = &foo;
-  CountingRawPtr<volatile int> checked_int_ptr = &foo;
-  CountingRawPtr<const void> checked_void_ptr = &foo;
+  CountingCheckedPtr<volatile int> checked_int_ptr = &foo;
+  CountingCheckedPtr<const void> checked_void_ptr = &foo;
   EXPECT_TRUE(checked_int_ptr == checked_int_ptr);
   EXPECT_TRUE(checked_int_ptr == raw_int_ptr);
   EXPECT_TRUE(raw_int_ptr == checked_int_ptr);
@@ -335,14 +335,14 @@ TEST_F(RawPtrTest, OperatorEQCast) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, OperatorEQCastHierarchy) {
+TEST_F(CheckedPtrTest, OperatorEQCastHierarchy) {
   Derived derived_val(42, 84, 1024);
   Derived* raw_derived_ptr = &derived_val;
   const Base1* raw_base1_ptr = &derived_val;
   volatile Base2* raw_base2_ptr = &derived_val;
-  CountingRawPtr<const volatile Derived> checked_derived_ptr = &derived_val;
-  CountingRawPtr<volatile Base1> checked_base1_ptr = &derived_val;
-  CountingRawPtr<const Base2> checked_base2_ptr = &derived_val;
+  CountingCheckedPtr<const volatile Derived> checked_derived_ptr = &derived_val;
+  CountingCheckedPtr<volatile Base1> checked_base1_ptr = &derived_val;
+  CountingCheckedPtr<const Base2> checked_base2_ptr = &derived_val;
   EXPECT_TRUE(checked_derived_ptr == checked_derived_ptr);
   EXPECT_TRUE(checked_derived_ptr == raw_derived_ptr);
   EXPECT_TRUE(raw_derived_ptr == checked_derived_ptr);
@@ -376,12 +376,12 @@ TEST_F(RawPtrTest, OperatorEQCastHierarchy) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, OperatorNECast) {
+TEST_F(CheckedPtrTest, OperatorNECast) {
   int foo = 42;
   volatile int* raw_int_ptr = &foo;
   const void* raw_void_ptr = &foo;
-  CountingRawPtr<const int> checked_int_ptr = &foo;
-  CountingRawPtr<volatile void> checked_void_ptr = &foo;
+  CountingCheckedPtr<const int> checked_int_ptr = &foo;
+  CountingCheckedPtr<volatile void> checked_void_ptr = &foo;
   EXPECT_FALSE(checked_int_ptr != checked_int_ptr);
   EXPECT_FALSE(checked_int_ptr != raw_int_ptr);
   EXPECT_FALSE(raw_int_ptr != checked_int_ptr);
@@ -401,14 +401,14 @@ TEST_F(RawPtrTest, OperatorNECast) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, OperatorNECastHierarchy) {
+TEST_F(CheckedPtrTest, OperatorNECastHierarchy) {
   Derived derived_val(42, 84, 1024);
   const Derived* raw_derived_ptr = &derived_val;
   volatile Base1* raw_base1_ptr = &derived_val;
   const Base2* raw_base2_ptr = &derived_val;
-  CountingRawPtr<volatile Derived> checked_derived_ptr = &derived_val;
-  CountingRawPtr<const Base1> checked_base1_ptr = &derived_val;
-  CountingRawPtr<const volatile Base2> checked_base2_ptr = &derived_val;
+  CountingCheckedPtr<volatile Derived> checked_derived_ptr = &derived_val;
+  CountingCheckedPtr<const Base1> checked_base1_ptr = &derived_val;
+  CountingCheckedPtr<const volatile Base2> checked_base2_ptr = &derived_val;
   EXPECT_FALSE(checked_derived_ptr != checked_derived_ptr);
   EXPECT_FALSE(checked_derived_ptr != raw_derived_ptr);
   EXPECT_FALSE(raw_derived_ptr != checked_derived_ptr);
@@ -442,9 +442,9 @@ TEST_F(RawPtrTest, OperatorNECastHierarchy) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, Cast) {
+TEST_F(CheckedPtrTest, Cast) {
   Derived derived_val(42, 84, 1024);
-  raw_ptr<Derived> checked_derived_ptr = &derived_val;
+  CheckedPtr<Derived> checked_derived_ptr = &derived_val;
   Base1* raw_base1_ptr = checked_derived_ptr;
   EXPECT_EQ(raw_base1_ptr->b1, 42);
   Base2* raw_base2_ptr = checked_derived_ptr;
@@ -459,12 +459,12 @@ TEST_F(RawPtrTest, Cast) {
   EXPECT_EQ(raw_derived_ptr->b2, 84);
   EXPECT_EQ(raw_derived_ptr->d, 1024);
 
-  raw_ptr<Base1> checked_base1_ptr = raw_derived_ptr;
+  CheckedPtr<Base1> checked_base1_ptr = raw_derived_ptr;
   EXPECT_EQ(checked_base1_ptr->b1, 42);
-  raw_ptr<Base2> checked_base2_ptr = raw_derived_ptr;
+  CheckedPtr<Base2> checked_base2_ptr = raw_derived_ptr;
   EXPECT_EQ(checked_base2_ptr->b2, 84);
 
-  raw_ptr<Derived> checked_derived_ptr2 =
+  CheckedPtr<Derived> checked_derived_ptr2 =
       static_cast<Derived*>(checked_base1_ptr);
   EXPECT_EQ(checked_derived_ptr2->b1, 42);
   EXPECT_EQ(checked_derived_ptr2->b2, 84);
@@ -479,7 +479,7 @@ TEST_F(RawPtrTest, Cast) {
   EXPECT_EQ(raw_const_derived_ptr->b2, 84);
   EXPECT_EQ(raw_const_derived_ptr->d, 1024);
 
-  raw_ptr<const Derived> checked_const_derived_ptr = raw_const_derived_ptr;
+  CheckedPtr<const Derived> checked_const_derived_ptr = raw_const_derived_ptr;
   EXPECT_EQ(checked_const_derived_ptr->b1, 42);
   EXPECT_EQ(checked_const_derived_ptr->b2, 84);
   EXPECT_EQ(checked_const_derived_ptr->d, 1024);
@@ -489,12 +489,12 @@ TEST_F(RawPtrTest, Cast) {
   EXPECT_EQ(raw_const_derived_ptr2->b2, 84);
   EXPECT_EQ(raw_const_derived_ptr2->d, 1024);
 
-  raw_ptr<const Derived> checked_const_derived_ptr2 = raw_derived_ptr;
+  CheckedPtr<const Derived> checked_const_derived_ptr2 = raw_derived_ptr;
   EXPECT_EQ(checked_const_derived_ptr2->b1, 42);
   EXPECT_EQ(checked_const_derived_ptr2->b2, 84);
   EXPECT_EQ(checked_const_derived_ptr2->d, 1024);
 
-  raw_ptr<const Derived> checked_const_derived_ptr3 = checked_derived_ptr2;
+  CheckedPtr<const Derived> checked_const_derived_ptr3 = checked_derived_ptr2;
   EXPECT_EQ(checked_const_derived_ptr3->b1, 42);
   EXPECT_EQ(checked_const_derived_ptr3->b2, 84);
   EXPECT_EQ(checked_const_derived_ptr3->d, 1024);
@@ -504,16 +504,17 @@ TEST_F(RawPtrTest, Cast) {
   EXPECT_EQ(raw_volatile_derived_ptr->b2, 84);
   EXPECT_EQ(raw_volatile_derived_ptr->d, 1024);
 
-  raw_ptr<volatile Derived> checked_volatile_derived_ptr =
+  CheckedPtr<volatile Derived> checked_volatile_derived_ptr =
       raw_volatile_derived_ptr;
   EXPECT_EQ(checked_volatile_derived_ptr->b1, 42);
   EXPECT_EQ(checked_volatile_derived_ptr->b2, 84);
   EXPECT_EQ(checked_volatile_derived_ptr->d, 1024);
 
   void* raw_void_ptr = checked_derived_ptr;
-  raw_ptr<void> checked_void_ptr = raw_derived_ptr;
-  raw_ptr<Derived> checked_derived_ptr3 = static_cast<Derived*>(raw_void_ptr);
-  raw_ptr<Derived> checked_derived_ptr4 =
+  CheckedPtr<void> checked_void_ptr = raw_derived_ptr;
+  CheckedPtr<Derived> checked_derived_ptr3 =
+      static_cast<Derived*>(raw_void_ptr);
+  CheckedPtr<Derived> checked_derived_ptr4 =
       static_cast<Derived*>(checked_void_ptr);
   EXPECT_EQ(checked_derived_ptr3->b1, 42);
   EXPECT_EQ(checked_derived_ptr3->b2, 84);
@@ -523,14 +524,14 @@ TEST_F(RawPtrTest, Cast) {
   EXPECT_EQ(checked_derived_ptr4->d, 1024);
 }
 
-TEST_F(RawPtrTest, UpcastConvertible) {
+TEST_F(CheckedPtrTest, UpcastConvertible) {
   {
     Derived derived_val(42, 84, 1024);
-    raw_ptr<Derived> checked_derived_ptr = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr = &derived_val;
 
-    raw_ptr<Base1> checked_base1_ptr(checked_derived_ptr);
+    CheckedPtr<Base1> checked_base1_ptr(checked_derived_ptr);
     EXPECT_EQ(checked_base1_ptr->b1, 42);
-    raw_ptr<Base2> checked_base2_ptr(checked_derived_ptr);
+    CheckedPtr<Base2> checked_base2_ptr(checked_derived_ptr);
     EXPECT_EQ(checked_base2_ptr->b2, 84);
 
     checked_base1_ptr = checked_derived_ptr;
@@ -544,14 +545,14 @@ TEST_F(RawPtrTest, UpcastConvertible) {
 
   {
     Derived derived_val(42, 84, 1024);
-    raw_ptr<Derived> checked_derived_ptr1 = &derived_val;
-    raw_ptr<Derived> checked_derived_ptr2 = &derived_val;
-    raw_ptr<Derived> checked_derived_ptr3 = &derived_val;
-    raw_ptr<Derived> checked_derived_ptr4 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr1 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr2 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr3 = &derived_val;
+    CheckedPtr<Derived> checked_derived_ptr4 = &derived_val;
 
-    raw_ptr<Base1> checked_base1_ptr(std::move(checked_derived_ptr1));
+    CheckedPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr1));
     EXPECT_EQ(checked_base1_ptr->b1, 42);
-    raw_ptr<Base2> checked_base2_ptr(std::move(checked_derived_ptr2));
+    CheckedPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr2));
     EXPECT_EQ(checked_base2_ptr->b2, 84);
 
     checked_base1_ptr = std::move(checked_derived_ptr3);
@@ -561,35 +562,39 @@ TEST_F(RawPtrTest, UpcastConvertible) {
   }
 }
 
-TEST_F(RawPtrTest, UpcastNotConvertible) {
+TEST_F(CheckedPtrTest, UpcastNotConvertible) {
   class Base {};
   class Derived : private Base {};
   class Unrelated {};
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Derived>, raw_ptr<Base>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Unrelated>, raw_ptr<Base>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Unrelated>, raw_ptr<void>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<void>, raw_ptr<Unrelated>>::value));
   EXPECT_FALSE(
-      (std::is_convertible<raw_ptr<int64_t>, raw_ptr<int32_t>>::value));
+      (std::is_convertible<CheckedPtr<Derived>, CheckedPtr<Base>>::value));
   EXPECT_FALSE(
-      (std::is_convertible<raw_ptr<int16_t>, raw_ptr<int32_t>>::value));
+      (std::is_convertible<CheckedPtr<Unrelated>, CheckedPtr<Base>>::value));
+  EXPECT_FALSE(
+      (std::is_convertible<CheckedPtr<Unrelated>, CheckedPtr<void>>::value));
+  EXPECT_FALSE(
+      (std::is_convertible<CheckedPtr<void>, CheckedPtr<Unrelated>>::value));
+  EXPECT_FALSE(
+      (std::is_convertible<CheckedPtr<int64_t>, CheckedPtr<int32_t>>::value));
+  EXPECT_FALSE(
+      (std::is_convertible<CheckedPtr<int16_t>, CheckedPtr<int32_t>>::value));
 }
 
-TEST_F(RawPtrTest, UpcastPerformance) {
+TEST_F(CheckedPtrTest, UpcastPerformance) {
   {
     Derived derived_val(42, 84, 1024);
-    CountingRawPtr<Derived> checked_derived_ptr = &derived_val;
-    CountingRawPtr<Base1> checked_base1_ptr(checked_derived_ptr);
-    CountingRawPtr<Base2> checked_base2_ptr(checked_derived_ptr);
+    CountingCheckedPtr<Derived> checked_derived_ptr = &derived_val;
+    CountingCheckedPtr<Base1> checked_base1_ptr(checked_derived_ptr);
+    CountingCheckedPtr<Base2> checked_base2_ptr(checked_derived_ptr);
     checked_base1_ptr = checked_derived_ptr;
     checked_base2_ptr = checked_derived_ptr;
   }
 
   {
     Derived derived_val(42, 84, 1024);
-    CountingRawPtr<Derived> checked_derived_ptr = &derived_val;
-    CountingRawPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr));
-    CountingRawPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr));
+    CountingCheckedPtr<Derived> checked_derived_ptr = &derived_val;
+    CountingCheckedPtr<Base1> checked_base1_ptr(std::move(checked_derived_ptr));
+    CountingCheckedPtr<Base2> checked_base2_ptr(std::move(checked_derived_ptr));
     checked_base1_ptr = std::move(checked_derived_ptr);
     checked_base2_ptr = std::move(checked_derived_ptr);
   }
@@ -599,31 +604,31 @@ TEST_F(RawPtrTest, UpcastPerformance) {
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
 }
 
-TEST_F(RawPtrTest, CustomSwap) {
+TEST_F(CheckedPtrTest, CustomSwap) {
   int foo1, foo2;
-  CountingRawPtr<int> ptr1(&foo1);
-  CountingRawPtr<int> ptr2(&foo2);
+  CountingCheckedPtr<int> ptr1(&foo1);
+  CountingCheckedPtr<int> ptr2(&foo2);
   // Recommended use pattern.
   using std::swap;
   swap(ptr1, ptr2);
   EXPECT_EQ(ptr1.get(), &foo2);
   EXPECT_EQ(ptr2.get(), &foo1);
-  EXPECT_EQ(g_wrapped_ptr_swap_cnt, 1);
+  EXPECT_EQ(g_checked_ptr_swap_cnt, 1);
 }
 
-TEST_F(RawPtrTest, StdSwap) {
+TEST_F(CheckedPtrTest, StdSwap) {
   int foo1, foo2;
-  CountingRawPtr<int> ptr1(&foo1);
-  CountingRawPtr<int> ptr2(&foo2);
+  CountingCheckedPtr<int> ptr1(&foo1);
+  CountingCheckedPtr<int> ptr2(&foo2);
   std::swap(ptr1, ptr2);
   EXPECT_EQ(ptr1.get(), &foo2);
   EXPECT_EQ(ptr2.get(), &foo1);
-  EXPECT_EQ(g_wrapped_ptr_swap_cnt, 0);
+  EXPECT_EQ(g_checked_ptr_swap_cnt, 0);
 }
 
-TEST_F(RawPtrTest, PostIncrementOperator) {
+TEST_F(CheckedPtrTest, PostIncrementOperator) {
   int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  CountingCheckedPtr<int> ptr = foo;
   for (int i = 0; i < 4; ++i) {
     ASSERT_EQ(*ptr++, 42 + i);
   }
@@ -632,9 +637,9 @@ TEST_F(RawPtrTest, PostIncrementOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 4);
 }
 
-TEST_F(RawPtrTest, PostDecrementOperator) {
+TEST_F(CheckedPtrTest, PostDecrementOperator) {
   int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = &foo[3];
+  CountingCheckedPtr<int> ptr = &foo[3];
   for (int i = 3; i >= 0; --i) {
     ASSERT_EQ(*ptr--, 42 + i);
   }
@@ -643,9 +648,9 @@ TEST_F(RawPtrTest, PostDecrementOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 4);
 }
 
-TEST_F(RawPtrTest, PreIncrementOperator) {
+TEST_F(CheckedPtrTest, PreIncrementOperator) {
   int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  CountingCheckedPtr<int> ptr = foo;
   for (int i = 0; i < 4; ++i, ++ptr) {
     ASSERT_EQ(*ptr, 42 + i);
   }
@@ -654,9 +659,9 @@ TEST_F(RawPtrTest, PreIncrementOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 4);
 }
 
-TEST_F(RawPtrTest, PreDecrementOperator) {
+TEST_F(CheckedPtrTest, PreDecrementOperator) {
   int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = &foo[3];
+  CountingCheckedPtr<int> ptr = &foo[3];
   for (int i = 3; i >= 0; --i, --ptr) {
     ASSERT_EQ(*ptr, 42 + i);
   }
@@ -665,9 +670,9 @@ TEST_F(RawPtrTest, PreDecrementOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 4);
 }
 
-TEST_F(RawPtrTest, PlusEqualOperator) {
+TEST_F(CheckedPtrTest, PlusEqualOperator) {
   int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = foo;
+  CountingCheckedPtr<int> ptr = foo;
   for (int i = 0; i < 4; i += 2, ptr += 2) {
     ASSERT_EQ(*ptr, 42 + i);
   }
@@ -676,9 +681,9 @@ TEST_F(RawPtrTest, PlusEqualOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 2);
 }
 
-TEST_F(RawPtrTest, MinusEqualOperator) {
+TEST_F(CheckedPtrTest, MinusEqualOperator) {
   int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = &foo[3];
+  CountingCheckedPtr<int> ptr = &foo[3];
   for (int i = 3; i >= 0; i -= 2, ptr -= 2) {
     ASSERT_EQ(*ptr, 42 + i);
   }
@@ -687,10 +692,10 @@ TEST_F(RawPtrTest, MinusEqualOperator) {
   EXPECT_EQ(g_get_for_dereference_cnt, 2);
 }
 
-TEST_F(RawPtrTest, AdvanceString) {
+TEST_F(CheckedPtrTest, AdvanceString) {
   const char kChars[] = "Hello";
   std::string str = kChars;
-  CountingRawPtr<const char> ptr = str.c_str();
+  CountingCheckedPtr<const char> ptr = str.c_str();
   for (size_t i = 0; i < str.size(); ++i, ++ptr) {
     ASSERT_EQ(*ptr, kChars[i]);
   }
@@ -699,9 +704,9 @@ TEST_F(RawPtrTest, AdvanceString) {
   EXPECT_EQ(g_get_for_dereference_cnt, 5);
 }
 
-TEST_F(RawPtrTest, AssignmentFromNullptr) {
-  CountingRawPtr<int> wrapped_ptr;
-  wrapped_ptr = nullptr;
+TEST_F(CheckedPtrTest, AssignmentFromNullptr) {
+  CountingCheckedPtr<int> checked_ptr;
+  checked_ptr = nullptr;
   EXPECT_EQ(g_wrap_raw_ptr_cnt, 0);
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
@@ -733,20 +738,20 @@ TEST(BackupRefPtrImpl, Basic) {
   allocator.init(kOpts);
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(sizeof(uint64_t), ""));
-  // Use the actual raw_ptr implementation, not a test substitute, to
+  // Use the actual CheckedPtr implementation, not a test substitute, to
   // exercise real PartitionAlloc paths.
-  raw_ptr<uint64_t> wrapped_ptr1 = raw_ptr1;
+  CheckedPtr<uint64_t> checked_ptr1 = raw_ptr1;
 
   *raw_ptr1 = 42;
-  EXPECT_EQ(*raw_ptr1, *wrapped_ptr1);
+  EXPECT_EQ(*raw_ptr1, *checked_ptr1);
 
   allocator.root()->Free(raw_ptr1);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // In debug builds, the use-after-free should be caught immediately.
-  EXPECT_DEATH_IF_SUPPORTED(if (*wrapped_ptr1 == 42) return, "");
+  EXPECT_DEATH_IF_SUPPORTED(if (*checked_ptr1 == 42) return, "");
 #else   // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-  // The allocation should be poisoned since there's a raw_ptr alive.
-  EXPECT_NE(*wrapped_ptr1, 42ul);
+  // The allocation should be poisoned since there's a CheckedPtr alive.
+  EXPECT_NE(*checked_ptr1, 42ul);
 
   // The allocator should not be able to reuse the slot at this point.
   void* raw_ptr2 = allocator.root()->Alloc(sizeof(uint64_t), "");
@@ -754,7 +759,7 @@ TEST(BackupRefPtrImpl, Basic) {
   allocator.root()->Free(raw_ptr2);
 
   // When the last reference is released, the slot should become reusable.
-  wrapped_ptr1 = nullptr;
+  checked_ptr1 = nullptr;
   void* raw_ptr3 = allocator.root()->Alloc(sizeof(uint64_t), "");
   EXPECT_EQ(raw_ptr1, raw_ptr3);
   allocator.root()->Free(raw_ptr3);
@@ -768,10 +773,10 @@ TEST(BackupRefPtrImpl, ZeroSized) {
   PartitionAllocator<ThreadSafe> allocator;
   allocator.init(kOpts);
 
-  std::vector<raw_ptr<void>> ptrs;
+  std::vector<CheckedPtr<void>> ptrs;
   // Use a reasonable number of elements to fill up the slot span.
   for (int i = 0; i < 128 * 1024; ++i) {
-    // Constructing a raw_ptr instance from a zero-sized allocation should
+    // Constructing a CheckedPtr instance from a zero-sized allocation should
     // not result in a crash.
     ptrs.emplace_back(allocator.root()->Alloc(0, ""));
   }
@@ -785,11 +790,11 @@ TEST(BackupRefPtrImpl, EndPointer) {
 
   // Check multiple size buckets and levels of slot filling.
   for (int size = 0; size < 1024; size += sizeof(void*)) {
-    // Creating a raw_ptr from an address right past the end of an allocation
+    // Creating a CheckedPtr from an address right past the end of an allocation
     // should not result in a crash or corrupt the free list.
     char* raw_ptr1 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
-    raw_ptr<char> wrapped_ptr = raw_ptr1 + size;
-    wrapped_ptr = nullptr;
+    CheckedPtr<char> checked_ptr = raw_ptr1 + size;
+    checked_ptr = nullptr;
     // We need to make two more allocations to turn the possible free list
     // corruption into an observable crash.
     char* raw_ptr2 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
@@ -797,9 +802,9 @@ TEST(BackupRefPtrImpl, EndPointer) {
 
     // Similarly for operator+=.
     char* raw_ptr4 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
-    wrapped_ptr = raw_ptr4;
-    wrapped_ptr += size;
-    wrapped_ptr = nullptr;
+    checked_ptr = raw_ptr4;
+    checked_ptr += size;
+    checked_ptr = nullptr;
     char* raw_ptr5 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
     char* raw_ptr6 = reinterpret_cast<char*>(allocator.root()->Alloc(size, ""));
 
@@ -823,10 +828,10 @@ TEST(BackupRefPtrImpl, ReinterpretCast) {
   void* raw_ptr = allocator.root()->Alloc(16, "");
   allocator.root()->Free(raw_ptr);
 
-  raw_ptr<void>* wrapped_ptr = reinterpret_cast<raw_ptr<void>*>(&raw_ptr);
+  CheckedPtr<void>* checked_ptr = reinterpret_cast<CheckedPtr<void>*>(&raw_ptr);
   // The reference count cookie check should detect that the allocation has
   // been already freed.
-  EXPECT_DEATH_IF_SUPPORTED(*wrapped_ptr = nullptr, "");
+  EXPECT_DEATH_IF_SUPPORTED(*checked_ptr = nullptr, "");
 }
 #endif
 

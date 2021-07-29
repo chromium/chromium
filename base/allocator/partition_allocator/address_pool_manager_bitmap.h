@@ -118,7 +118,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static void DecrementOutsideOfBRPPoolPtrRefCount(const void* address) {
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
     // No-op. In this mode, we only use one bit per super-page and, therefore,
-    // can't tell if there's more than one associated raw_ptr<T> at a given
+    // can't tell if there's more than one associated CheckedPtr at a given
     // time. There's a small risk is that we may exhaust the entire address
     // space. On the other hand, a single relaxed store (in the above function)
     // is much less expensive than two CAS operations.
@@ -134,13 +134,13 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
 
     // The only potentially dangerous scenario, in which this check is used, is
-    // when the assignment of the first raw_ptr<T> object for a non-GigaCage
+    // when the assignment of the first |CheckedPtr| object for a non-GigaCage
     // address is racing with the allocation of a new GigCage super-page at the
-    // same address. We assume that if raw_ptr<T> is being initialized with a
+    // same address. We assume that if |CheckedPtr| is being initialized with a
     // raw pointer, the associated allocation is "alive"; otherwise, the issue
-    // should be fixed by rewriting the raw pointer variable as raw_ptr<T>.
+    // should be fixed by rewriting the raw pointer variable as |CheckedPtr|.
     // In the worst case, when such a fix is impossible, we should just undo the
-    // raw pointer -> raw_ptr<T> rewrite of the problematic field. If the
+    // |raw pointer -> CheckedPtr| rewrite of the problematic field. If the
     // above assumption holds, the existing allocation will prevent us from
     // reserving the super-page region and, thus, having the race condition.
     // Since we rely on that external synchronization, the relaxed memory

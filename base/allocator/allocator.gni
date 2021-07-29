@@ -61,14 +61,13 @@ declare_args() {
   # |use_partition_alloc = true| rather than prioritizing use_partition_alloc.
   use_partition_alloc = !is_ios  # Never use PartitionAlloc on iOS.
 
-  # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
-  # of raw_ptr<T>, and enable PartitionAlloc support for it. The _fake option
-  # doesn't enable BRP, but pretends it's enabled for the syntethic field trial
-  #(for testing purposes only).
+  # Set use_backup_ref_ptr true to use BackupRefPtr as the implementation of
+  # CheckedPtr<T>.  The _fake option doesn't enable BackupRefPtr, but pretends
+  # it's enabled for syntethic field trial (for testing purposes only).
   use_backup_ref_ptr = false
   use_backup_ref_ptr_fake = false
 
-  # If BRP is enabled, additional options are available:
+  # If enabled BackupRefPtr (BRP) is enabled, additional options are available:
   # - enable_runtime_backup_ref_ptr_control: control BRP support at run-time
   #   (disable in some processes)
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
