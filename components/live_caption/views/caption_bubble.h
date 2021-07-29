@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback_helpers.h"
 #include "components/live_caption/views/caption_bubble_model.h"
