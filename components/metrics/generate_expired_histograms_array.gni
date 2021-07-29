@@ -71,6 +71,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/event/histograms.xml",
       "//tools/metrics/histograms/metadata/extension/histograms.xml",
       "//tools/metrics/histograms/metadata/extensions/histograms.xml",
+      "//tools/metrics/histograms/metadata/feature_engagement/histograms.xml",
       "//tools/metrics/histograms/metadata/file/histograms.xml",
       "//tools/metrics/histograms/metadata/fingerprint/histograms.xml",
       "//tools/metrics/histograms/metadata/gcm/histograms.xml",

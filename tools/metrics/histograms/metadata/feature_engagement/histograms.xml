@@ -1,0 +1,378 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+feature engagement along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please send CLs to chromium-metrics-reviews@google.com rather than to specific
+individuals. These CLs will be automatically reassigned to a reviewer within
+about 5 minutes. This approach helps the metrics team to load-balance incoming
+reviews. Googlers can read more about this at go/gwsq-gerrit.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="IPHDatabase">
+  <variant name="AvailabilityStore" summary="Availability store"/>
+  <variant name="EventStore" summary="Event store"/>
+</variants>
+
+<variants name="IPHFeature">
+  <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_NewTab"
+      summary="the new tab adaptive button in the top toolbar"/>
+  <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_Share"
+      summary="the share adaptive button in the top toolbar"/>
+  <variant name="IPH_AdaptiveButtonInTopToolbarCustomization_VoiceSearch"
+      summary="the voice search adaptive button in the top toolbar"/>
+  <variant name="IPH_AddToHomescreenMessage"
+      summary="educating users about adding website shortcuts to their home
+               screen (using a message UI)"/>
+  <variant name="IPH_AddToHomescreenTextBubble"
+      summary="educating users about adding website shortcuts to their home
+               screen (using a text bubble)"/>
+  <variant name="IPH_BadgedReadingList" summary="badged reading list"/>
+  <variant name="IPH_Bookmark" summary="bookmark"/>
+  <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
+  <variant name="IPH_ChromeDuet"
+      summary="notifying users that search accelerator is at the bottom of
+               the screen"/>
+  <variant name="IPH_ChromeDuetHomeButton"
+      summary="notifying users that home button has moved to the bottom of
+               the screen"/>
+  <variant name="IPH_ChromeDuetTabSwitcherButton"
+      summary="notifying users that tab switcher button has moved to the
+               bottom of the screen"/>
+  <variant name="IPH_ChromeHomeExpand"
+      summary="Chrome Home shown on cold start"/>
+  <variant name="IPH_ChromeHomeMenuHeader"
+      summary="Chrome Home shown as a header in the app menu">
+    <obsolete>
+      Unused as of 03/2018
+    </obsolete>
+  </variant>
+  <variant name="IPH_ChromeHomePullToRefresh"
+      summary="Chrome Home shown after a pull-to-refresh"/>
+  <variant name="IPH_ContextualSearch" summary="">
+    <obsolete>
+      Replaced with IPH_ContextualSearchWebSearch.
+    </obsolete>
+  </variant>
+  <variant name="IPH_ContextualSearchInPanelHelp"
+      summary="promoting longpress from within the panel"/>
+  <variant name="IPH_ContextualSearchOptIn"
+      summary="opting-in to contextual search"/>
+  <variant name="IPH_ContextualSearchPanel" summary="">
+    <obsolete>
+      Replaced with IPH_ContextualSearchPromotePanelOpen.
+    </obsolete>
+  </variant>
+  <variant name="IPH_ContextualSearchPromotePanelOpen"
+      summary="opening the contextual search panel"/>
+  <variant name="IPH_ContextualSearchPromoteTap"
+      summary="tap trigger for contextual search"/>
+  <variant name="IPH_ContextualSearchTap" summary="">
+    <obsolete>
+      Replaced with IPH_ContextualSearchPromoteTap.
+    </obsolete>
+  </variant>
+  <variant name="IPH_ContextualSearchTappedButShouldLongpress"
+      summary="contextual search to help users that try to trigger the
+               feature with a tap to long-press instead"/>
+  <variant name="IPH_ContextualSearchTranslationEnable"
+      summary="contextual search to help users enable our privacy policy in
+               order to get better translations"/>
+  <variant name="IPH_ContextualSearchWebSearch"
+      summary="contextual search for users who use web search"/>
+  <variant name="IPH_ContextualSuggestions" summary="contextual suggestions">
+    <obsolete>
+      This feature was deprecated in M74
+    </obsolete>
+  </variant>
+  <variant name="IPH_DataSaverDetail" summary="data saver detail"/>
+  <variant name="IPH_DataSaverMilestonePromo"
+      summary="data saver milestone promo"/>
+  <variant name="IPH_DataSaverPreview" summary="data saver preview"/>
+  <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
+  <variant name="IPH_DesktopTabGroupsNewGroup"
+      summary="creating a new tab group"/>
+  <variant name="IPH_DownloadHome" summary="download home"/>
+  <variant name="IPH_DownloadInfobarDownloadContinuing"
+      summary="download infobar informing that downloads are still in
+               progress"/>
+  <variant name="IPH_DownloadInfoBarDownloadsAreFaster"
+      summary="download infobar informing that downloads are now faster than
+               before"/>
+  <variant name="IPH_DownloadPage" summary="download page"/>
+  <variant name="IPH_DownloadPageScreenshot"
+      summary="download page for screenshot"/>
+  <variant name="IPH_DownloadSettings"
+      summary="accessing download settings from download home"/>
+  <variant name="IPH_EphemeralTab"
+      summary="new label on the context menu for Ephemeral Tab"/>
+  <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
+  <variant name="IPH_FeedCardMenu" summary="feed card menu on NTP"/>
+  <variant name="IPH_FeedHeaderMenu" summary="feed header menu on NTP"/>
+  <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
+  <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
+  <variant name="IPH_HomePageButton" summary="home page button">
+    <obsolete>
+      This feature was deprecated in M79
+    </obsolete>
+  </variant>
+  <variant name="IPH_HomepagePromoCard"
+      summary="homepage promo card displayed on new tab page">
+    <obsolete>
+      Feature was deprecated in January 2021.
+    </obsolete>
+  </variant>
+  <variant name="IPH_HomepageTile" summary="homepage tile">
+    <obsolete>
+      This feature was deprecated in M79
+    </obsolete>
+  </variant>
+  <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
+  <variant name="IPH_IncognitoWindow" summary="incognito window"/>
+  <variant name="IPH_KeyboardAccessoryAddressFilling"
+      summary="address autofill suggestions"/>
+  <variant name="IPH_KeyboardAccessoryPasswordFilling"
+      summary="password autofill suggestions"/>
+  <variant name="IPH_KeyboardAccessoryPaymentFilling"
+      summary="payments autofill suggestions"/>
+  <variant name="IPH_KeyboardAccessoryPaymentOffer"
+      summary="payments autofill suggestions that have an offer"/>
+  <variant name="IPH_KeyboardAccessoryPaymentVirtualCard"
+      summary="payment autofill suggestions that are virtual cards"/>
+  <variant name="IPH_LiveCaption" summary="Live Caption"/>
+  <variant name="IPH_LongPressToolbarTip" summary="LongPress toolbar"/>
+  <variant name="IPH_MicToolbar" summary="the mic button in the toolbar"/>
+  <variant name="IPH_NewIncognitoTabTip" summary="new incognito tab tip"/>
+  <variant name="IPH_NewTab" summary="new tab"/>
+  <variant name="IPH_NewTabPageButton" summary="NewTabPageButton feature">
+    <obsolete>
+      This feature was deprecated in M79
+    </obsolete>
+  </variant>
+  <variant name="IPH_NewTabPageHomeButton" summary="new tab page button"/>
+  <variant name="IPH_NewTabTip" summary="new tab tip"/>
+  <variant name="IPH_PageInfo" summary="opening PageInfo"/>
+  <variant name="IPH_PasswordsAccountStorage"
+      summary="passwords account storage"/>
+  <variant name="IPH_PreviewsOmniboxUI"
+      summary="the Previews UI in the Android Omnibox"/>
+  <variant name="IPH_ProfileSwitch"
+      summary="switching profiles using the profile menu"/>
+  <variant name="IPH_PwaInstallAvailableFeature"
+      summary="surfacing the Android PWA install option"/>
+  <variant name="IPH_QuietNotificationPrompts"
+      summary="the quiet notification prompts feature"/>
+  <variant name="IPH_ReadingListDiscovery"
+      summary="first time a tab is added to reading list"/>
+  <variant name="IPH_ReadingListEntryPoint"
+      summary="educating users to click the star icon to add a tab to reading
+               list"/>
+  <variant name="IPH_ReadingListMessages"
+      summary="the Reading List entry point in iOS tools menu"/>
+  <variant name="IPH_ReadLaterAppMenuBookmarks" summary="read later app menu"/>
+  <variant name="IPH_ReadLaterAppMenuBookmarkThisPage"
+      summary="read later app menu"/>
+  <variant name="IPH_ReadLaterBottomSheet"
+      summary="read later bottom sheet entry point"/>
+  <variant name="IPH_ReadLaterContextMenu"
+      summary="read later context menu entry point"/>
+  <variant name="IPH_ReopenTab" summary="reopening closed tabs"/>
+  <variant name="IPH_SharedHighlightingBuilder"
+      summary="the in product help message to notify the user that the share
+               action can preemptively share a link-to-text"/>
+  <variant name="IPH_StartSurfaceTabSwitcherHomeButton"
+      summary="home button on the tab switcher when start surface is enabled"/>
+  <variant name="IPH_TabGroupsDragAndDrop"
+      summary="educating user to drop one tab on another tab to create group"/>
+  <variant name="IPH_TabGroupsQuicklyComparePages"
+      summary="long pressing a link to open in a tab group"/>
+  <variant name="IPH_TabGroupsTapToSeeAnotherTab" summary="tab strip"/>
+  <variant name="IPH_TabGroupsYourTabsTogether"
+      summary="tab switcher cards with multiple tab thumbnails"/>
+  <variant name="IPH_TabSearch" summary="tab search discovery"/>
+  <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
+  <variant name="IPH_TranslateMenuButton" summary="translate menu button"/>
+  <variant name="IPH_UpdatedConnectionSecurityIndicators"
+      summary="updated omnibox connection security indicators"/>
+  <variant name="IPH_VideoTutorial_NTP_ChromeIntro"
+      summary="Video tutorial card on NTP about introduction to chrome"/>
+  <variant name="IPH_VideoTutorial_NTP_Download"
+      summary="Video tutorial card on NTP about downloading in chrome"/>
+  <variant name="IPH_VideoTutorial_NTP_Search"
+      summary="Video tutorial card on NTP about search in chrome"/>
+  <variant name="IPH_VideoTutorial_NTP_Summary"
+      summary="Video tutorial summary card on NTP"/>
+  <variant name="IPH_VideoTutorial_NTP_VoiceSearch"
+      summary="Video tutorial card on NTP about voice search in chrome"/>
+  <variant name="IPH_WebFeedFollow"
+      summary="proactive Web Feed follow recommendations"/>
+  <variant name="IPH_WebFeedPostFollowDialog"
+      summary="Web Feed successful follow operations"/>
+  <variant name="IPH_WebUITabStrip" summary="opening the WebUI tab strip"/>
+</variants>
+
+<histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
+    expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if in-product help configuration is parsed correctly, and the
+    failure reasons for parsing failures.
+  </summary>
+</histogram>
+
+<histogram name="InProductHelp.Db.Init.{IPHDatabase}" enum="BooleanSuccess"
+    expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if {IPHDatabase} database initialization succeeds for in-product
+    help.
+  </summary>
+  <token key="IPHDatabase" variants="IPHDatabase"/>
+</histogram>
+
+<histogram name="InProductHelp.Db.Load" enum="BooleanSuccess"
+    expires_after="2021-07-28">
+  <obsolete>
+    Deleted on 2021-07-28. Use InProductHelp.Db.Load.AvailabilityStore or
+    InProductHelp.Db.Load.EventStore instead.
+  </obsolete>
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if either the availability store or event store databases
+    successfully loads the data for in-product help.
+  </summary>
+</histogram>
+
+<histogram name="InProductHelp.Db.Load.{IPHDatabase}" enum="BooleanSuccess"
+    expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if {IPHDatabase} database successfully loads the data for in-product
+    help.
+  </summary>
+  <token key="IPHDatabase" variants="IPHDatabase"/>
+</histogram>
+
+<histogram name="InProductHelp.Db.TotalEvents" units="events"
+    expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records the total number of event records in the database for in-product
+    help after the event model is loaded.
+  </summary>
+</histogram>
+
+<histogram name="InProductHelp.Db.Update.{IPHDatabase}" enum="BooleanSuccess"
+    expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if {IPHDatabase} database update succeeds for in-product help.
+  </summary>
+  <token key="IPHDatabase" variants="IPHDatabase"/>
+</histogram>
+
+<histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
+    enum="BooleanSuccess" expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if the model is ready when in-product help event happens for
+    {IPHFeature}.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="InProductHelp.Promos.IPH_ReopenTab.DismissedAt"
+    enum="ReopenTabPromoStepAtDismissal" expires_after="M76">
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Last step of in-product help (IPH) for reopening tabs that user followed
+    before finishing the IPH flow or dismissing it early. Recorded when the IPH
+    flow is dismissed, which is at one of three possible times: when the promo
+    bubble times out, when the menu is closed after the user opens it for IPH,
+    or when the user opens the last closed tab. The last is considered a
+    success.
+  </summary>
+</histogram>
+
+<histogram name="InProductHelp.Promos.Snooze.{IPHFeature}" units="SnoozeType"
+    expires_after="2021-11-21">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Record the number of first-time snoozes and repeating snoozes of an
+    in-product help bubble for {IPHFeature} when the user clicks the snooze
+    button. A snooze of an IPH that has been snoozed before is a repeating
+    snooze.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="InProductHelp.Promos.SnoozeCountAtAcknowledge.{IPHFeature}"
+    units="times" expires_after="2021-11-21">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Record the number of previous snoozes when an in-product help bubble for
+    {IPHFeature} is dismissed because the acknowledge button is clicked.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="InProductHelp.Promos.SnoozeCountAtFollow.{IPHFeature}"
+    units="times" expires_after="2021-11-21">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Record the number of previous snoozes when an in-product help bubble for
+    {IPHFeature} is dismissed because the user follows the promo, e.g. a
+    relevant control is clicked.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="InProductHelp.Promos.SnoozeCountAtTrigger.{IPHFeature}"
+    units="times" expires_after="2021-11-21">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Record the number of previous snoozes when an in-product help bubble for
+    {IPHFeature} is triggered.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+<histogram name="InProductHelp.ShouldTriggerHelpUI.{IPHFeature}"
+    enum="TriggerHelpUIResult" expires_after="2021-12-26">
+  <owner>nyquist@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    Records if in-product help for {IPHFeature} is shown to the user, and the
+    failure reasons if in-product help is not shown. Recorded on its own across
+    all in-product help features, in addition to being a base name for
+    feature-specific histograms.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -194,7 +194,6 @@ void RecordEventDbLoadEvent(bool success, const std::vector<Event>& events) {
   std::string histogram_name =
       "InProductHelp.Db.Load." + ToDbHistogramSuffix(StoreType::EVENTS_STORE);
   base::UmaHistogramBoolean(histogram_name, success);
-  UMA_HISTOGRAM_BOOLEAN("InProductHelp.Db.Load", success);
 
   if (!success)
     return;
@@ -212,7 +211,6 @@ void RecordAvailabilityDbLoadEvent(bool success) {
       "InProductHelp.Db.Load." +
       ToDbHistogramSuffix(StoreType::AVAILABILITY_STORE);
   base::UmaHistogramBoolean(histogram_name, success);
-  UMA_HISTOGRAM_BOOLEAN("InProductHelp.Db.Load", success);
 }
 
 void RecordConfigParsingEvent(ConfigParsingEvent event) {
