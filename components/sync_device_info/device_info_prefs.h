@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_PREFS_H_
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 

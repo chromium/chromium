@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <utility>
-#include <vector>
 
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
