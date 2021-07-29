@@ -69,6 +69,20 @@ $ out/android/bin/run_content_browsertests \
     --test-launcher-filter-file=testing/buildbot/filters/foo.content_browsertests.filter
 ```
 
+### Multiple filter files
+
+We are in the process of unifying behavior across all test runners, but the
+current status is Work in Progress.
+
+#### Gtest and Android
+
+Multiple filter files should be separated by a ';', passed with one flag.
+
+#### Web tests
+
+Multiple filter files should be passed with multiple flags.
+
+
 ## Applicability
 
 Test filter files described here are currently only supported for gtest-based

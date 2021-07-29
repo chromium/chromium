@@ -409,7 +409,7 @@ def main():
     arch = args.arch or DetermineArch(device)
     cts_release = args.cts_release or DetermineCtsRelease(device)
 
-    if (args.test_filter_file or args.test_filter
+    if (args.test_filter_files or args.test_filter
         or args.isolated_script_test_filter):
       # TODO(aluo): auto-determine the module based on the test filter and the
       # available tests in each module
