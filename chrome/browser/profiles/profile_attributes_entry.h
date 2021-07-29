@@ -276,7 +276,6 @@ class ProfileAttributesEntry {
 
   // Loads and saves the data to the local state.
   const base::Value* GetEntryData() const;
-  void SetEntryData(base::Value data);
 
   // Internal getter that returns a base::Value*, or nullptr if the key is not
   // present.
@@ -302,11 +301,16 @@ class ProfileAttributesEntry {
 
   // Internal setters that accept basic data types. Return if the original data
   // is different from the new data, i.e. whether actual update is done.
-  bool SetString(const char* key, std::string value);
-  bool SetString16(const char* key, std::u16string value);
+  bool SetString(const char* key, const std::string& value);
+  bool SetString16(const char* key, const std::u16string& value);
   bool SetDouble(const char* key, double value);
   bool SetBool(const char* key, bool value);
   bool SetInteger(const char* key, int value);
+
+  // Generic setter, used to implement the more specific ones. If the value was
+  // missing and `value` is the default value (e.g. false, 0, empty string...),
+  // the value is written and this returns true.
+  bool SetValue(const char* key, base::Value value);
 
   // Clears value stored for |key|. Returns if the original data is different
   // from the new data, i.e. whether actual update is done.
