@@ -7,7 +7,6 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
-#include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -33,7 +32,6 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -2016,64 +2014,12 @@ TEST_F(TextFragmentAnchorTest, TextDirectiveInSvg) {
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 }
 
-// Ensure we restore the highlight on page reload, but that we do not scroll to
-// the text fragment.
-TEST_F(TextFragmentAnchorTest, Reload) {
-  SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
-  LoadURL("https://example.com/test.html#:~:text=test");
-  const String& html = R"HTML(
-    <!DOCTYPE html>
-    <style>
-      body {
-        height: 2200px;
-      }
-      #first {
-        position: absolute;
-        top: 1000px;
-      }
-      #second {
-        position: absolute;
-        top: 2000px;
-      }
-    </style>
-    <p id="first">This is a test page</p>
-    <p id="second">This is some more text</p>
-  )HTML";
-  request.Complete(html);
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  Compositor().BeginFrame();
-
-  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-
-  // Scroll to the top before reloading.
-  GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(), mojom::blink::ScrollType::kProgrammatic);
-  Compositor().BeginFrame();
-
-  // Reload the page.
-  SimRequest reload_request("https://example.com/test.html#:~:text=test",
-                            "text/html");
-  MainFrame().StartReload(WebFrameLoadType::kReload);
-  reload_request.Complete(html);
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  Compositor().BeginFrame();
-
-  // Make sure the text fragment is highlighted.
-  EXPECT_EQ(*GetDocument().getElementById("first"), *GetDocument().CssTarget());
-  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
-
-  // Make sure the page is not scrolled to the highlight, but to the last place
-  // it was before the reload; in this case the top of the page.
-  EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
-}
-
-// Ensure we don't restore a dismissed highlight on page reload.
-TEST_F(TextFragmentAnchorTest, ReloadAfterDismissing) {
+// Ensure we restore the text highlight on page reload
+// TODO(bokan): This test is disabled as this functionality was suppressed in
+// https://crrev.com/c/2135407; it would be better addressed by providing a
+// highlight-only function. See the TODO in
+// https://wicg.github.io/ScrollToTextFragment/#restricting-the-text-fragment
+TEST_F(TextFragmentAnchorTest, DISABLED_HighlightOnReload) {
   SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
   LoadURL("https://example.com/test.html#:~:text=test");
   const String& html = R"HTML(
@@ -2098,20 +2044,13 @@ TEST_F(TextFragmentAnchorTest, ReloadAfterDismissing) {
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  // Dismiss the highlight.
-  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor()->Dismiss());
+  // Tap to dismiss the highlight.
+  SimulateClick(10, 10);
+  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
 
-  // Make sure the URL was updated.
-  KURL url = GetDocument()
-                 .GetFrame()
-                 ->Loader()
-                 .GetDocumentLoader()
-                 ->GetHistoryItem()
-                 ->Url();
-  EXPECT_EQ("https://example.com/test.html", url.GetString());
-
-  // Reload the page.
-  SimRequest reload_request(url.GetString(), "text/html");
+  // Reload the page and expect the highlight to be restored.
+  SimRequest reload_request("https://example.com/test.html#:~:text=test",
+                            "text/html");
   MainFrame().StartReload(WebFrameLoadType::kReload);
   reload_request.Complete(html);
 
@@ -2119,8 +2058,8 @@ TEST_F(TextFragmentAnchorTest, ReloadAfterDismissing) {
   Compositor().BeginFrame();
   Compositor().BeginFrame();
 
-  // Make sure the text fragment is not highlighted.
-  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(*GetDocument().getElementById("text"), *GetDocument().CssTarget());
+  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 }
 
 // Ensure that we can have text directives combined with non-text directives

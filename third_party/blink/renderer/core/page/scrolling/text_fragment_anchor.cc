@@ -65,11 +65,14 @@ bool ParseTextDirective(const String& fragment_directive,
   return out_selectors->size() > 0;
 }
 
-// Determines whether the text fragment should be scrolled-to in the context of
-// the current |frame|.
-bool CheckSecurityRestrictionsForScrolling(LocalFrame& frame) {
+bool CheckSecurityRestrictions(LocalFrame& frame) {
   // This algorithm checks the security restrictions detailed in
   // https://wicg.github.io/ScrollToTextFragment/#should-allow-a-text-fragment
+  // TODO(bokan): These are really only relevant for observable actions like
+  // scrolling. We should consider allowing highlighting regardless of these
+  // conditions. See the TODO in the relevant spec section:
+  // https://wicg.github.io/ScrollToTextFragment/#restricting-the-text-fragment
+
   if (!frame.Loader().GetDocumentLoader()->ConsumeTextFragmentToken())
     return false;
 
@@ -165,12 +168,8 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreateFragmentDirective(
     return nullptr;
   }
 
-  // The security checks only impact observable events like scrolling to the
-  // text fragment. Highlighting the text fragment is non-observable and thus
-  // can safely be done in those cases as well. More details available at
-  // https://wicg.github.io/ScrollToTextFragment/#restricting-the-text-fragment
-  if (!CheckSecurityRestrictionsForScrolling(frame)) {
-    should_scroll = false;
+  if (!CheckSecurityRestrictions(frame)) {
+    return nullptr;
   } else if (!should_scroll) {
     if (frame.Loader().GetDocumentLoader() &&
         !frame.Loader().GetDocumentLoader()->NavigationScrollAllowed()) {
@@ -419,12 +418,6 @@ void TextFragmentAnchor::DidFindMatch(
     if (AXObjectCache* cache = frame_->GetDocument()->ExistingAXObjectCache())
       cache->HandleScrolledToAnchor(&node);
 
-    // Set the sequential focus navigation to the start of selection.
-    // Even if this element isn't focusable, "Tab" press will
-    // start the search to find the next focusable element from this element.
-    frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
-        range.StartPosition().NodeAsRangeFirstNode());
-
     metrics_->DidScroll();
 
     // We scrolled the text into view if the main document scrolled or the text
@@ -444,6 +437,12 @@ void TextFragmentAnchor::DidFindMatch(
       EphemeralRange(ToPositionInDOMTree(range.StartPosition()),
                      ToPositionInDOMTree(range.EndPosition()));
   frame_->GetDocument()->Markers().AddTextFragmentMarker(dom_range);
+
+  // Set the sequential focus navigation to the start of selection.
+  // Even if this element isn't focusable, "Tab" press will
+  // start the search to find the next focusable element from this element.
+  frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
+      range.StartPosition().NodeAsRangeFirstNode());
 }
 
 void TextFragmentAnchor::DidFinishSearch() {
