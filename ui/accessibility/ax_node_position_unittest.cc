@@ -10087,7 +10087,6 @@ TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
   EXPECT_EQ(*before_inline_box_5, *before_root_1);
 
   EXPECT_LT(*before_root_1, *middle_root_1);
-  EXPECT_GT(*before_paragraph_6, *before_inline_box_5);
   EXPECT_LT(*before_paragraph_2, *before_inline_box_8);
 
   EXPECT_EQ(*middle_root_1, *before_paragraph_6);
@@ -10098,7 +10097,9 @@ TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
   EXPECT_GT(*middle_root_1, *after_paragraph_2);
   EXPECT_LT(*after_paragraph_2, *middle_root_1);
   EXPECT_GT(*middle_root_1, *after_inline_box_5);
-  EXPECT_LT(*after_inline_box_5, *middle_root_1);
+
+  EXPECT_EQ(*after_root_1, *middle_inline_box_8);
+  EXPECT_EQ(*middle_inline_box_8, *after_root_1);
 
   // An upstream affinity on the root before the second paragraph attaches the
   // position to the end of the previous line, i.e. moves it to the end of the
@@ -10114,17 +10115,59 @@ TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
   // the object's start.
   EXPECT_EQ(*middle_root_1_upstream, *middle_inline_box_5);
   EXPECT_EQ(*middle_inline_box_5, *middle_root_1_upstream);
+  // However, this should not apply when the two positions compared are in
+  // different subtrees, i.e. when they are not ancestors of one another.
+  EXPECT_LT(*before_inline_box_5, *middle_root_1);
+  EXPECT_LT(*before_inline_box_5, *before_paragraph_6);
+  EXPECT_LT(*before_inline_box_5, *before_inline_box_8);
+  EXPECT_LT(*middle_inline_box_5, *middle_root_1);
+  EXPECT_LT(*middle_inline_box_5, *before_paragraph_6);
+  EXPECT_LT(*middle_inline_box_5, *before_inline_box_8);
+  EXPECT_LT(*after_inline_box_5, *middle_root_1);
+  EXPECT_LT(*after_inline_box_5, *before_paragraph_6);
+  EXPECT_LT(*after_inline_box_5, *before_inline_box_8);
 
   EXPECT_EQ(*after_root_1, *after_paragraph_6);
   EXPECT_EQ(*after_paragraph_6, *after_root_1);
   EXPECT_EQ(*after_root_1, *after_inline_box_8);
   EXPECT_EQ(*after_inline_box_8, *after_root_1);
 
-  // According to the IAccessible2 Spec, a position inside an embedded object
-  // should be equivalent to a position right after it, if the former is not at
-  // the object's start.
+  // Perform some of the same checks with ignored nodes, to ensure that the slow
+  // path (i.e. `AXPosition::SlowCompareTo`) is being used. Also, remove line
+  // breaking objects, to prevent affinity from being used as a distinguishing
+  // characteristic between positions in the two paragraphs.
+  root_1.AddState(ax::mojom::State::kIgnored);
+  root_1.RemoveBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject);
+  paragraph_2.AddState(ax::mojom::State::kIgnored);
+  paragraph_2.RemoveBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject);
+  inline_box_5.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
+                               inline_box_8.id);
+  paragraph_6.AddState(ax::mojom::State::kIgnored);
+  paragraph_6.RemoveBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject);
+  inline_box_8.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
+                               inline_box_5.id);
+  AXTreeUpdate update;
+  update.root_id = root_1.id;
+  update.nodes = {root_1, paragraph_2, inline_box_5, paragraph_6, inline_box_8};
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
   EXPECT_EQ(*after_root_1, *middle_inline_box_8);
   EXPECT_EQ(*middle_inline_box_8, *after_root_1);
+  EXPECT_LT(*before_inline_box_5, *middle_root_1);
+  EXPECT_LT(*before_inline_box_5, *before_paragraph_6);
+  EXPECT_LT(*before_inline_box_5, *before_inline_box_8);
+  // The absence of a line break now makes the two positions equivalent. A
+  // position on the root after the embedded object character representing the
+  // paragraph, could (according to the IAccessible2 Spec) indicate any position
+  // inside the paragraph, except if the position is before the paragraph.
+  EXPECT_EQ(*middle_inline_box_5, *middle_root_1);
+  EXPECT_LT(*middle_inline_box_5, *before_paragraph_6);
+  EXPECT_LT(*middle_inline_box_5, *before_inline_box_8);
+  EXPECT_EQ(*after_inline_box_5, *middle_root_1);
+  EXPECT_EQ(*after_inline_box_5, *before_paragraph_6);
+  EXPECT_EQ(*after_inline_box_5, *before_inline_box_8);
 }
 
 TEST_F(AXPositionTest, OperatorsLessThanAndGreaterThan) {
