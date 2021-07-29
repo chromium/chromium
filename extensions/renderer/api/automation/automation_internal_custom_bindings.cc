@@ -2250,13 +2250,6 @@ ui::AXNode* AutomationInternalCustomBindings::GetPreviousInTreeOrder(
   return walker;
 }
 
-float AutomationInternalCustomBindings::GetDeviceScaleFactor() const {
-  // |context| and/or its RenderFrame might be nullptr in tests.
-  if (device_scale_factor_for_test_)
-    return *device_scale_factor_for_test_;
-  return context()->GetRenderFrame()->GetDeviceScaleFactor();
-}
-
 void AutomationInternalCustomBindings::RouteTreeIDFunction(
     const std::string& name,
     TreeIDFunction callback) {
@@ -2872,7 +2865,10 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
     // that does not, unscale by the device scale factor.
     if (previous_tree_wrapper->HasDeviceScaleFactor() &&
         !tree_wrapper->HasDeviceScaleFactor()) {
-      float scale_factor = GetDeviceScaleFactor();
+      // TODO(crbug/1234225): This calculation should be included in
+      // |AXRelativeBounds::transform|.
+      const float scale_factor = parent_of_root->data().GetFloatAttribute(
+          ax::mojom::FloatAttribute::kChildTreeScale);
       if (scale_factor > 0)
         bounds.Scale(1.0 / scale_factor);
     }

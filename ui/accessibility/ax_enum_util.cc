@@ -962,6 +962,8 @@ const char* ToString(ax::mojom::FloatAttribute float_attribute) {
       return "fontWeight";
     case ax::mojom::FloatAttribute::kTextIndent:
       return "textIndent";
+    case ax::mojom::FloatAttribute::kChildTreeScale:
+      return "childTreeScale";
   }
 
   return "";

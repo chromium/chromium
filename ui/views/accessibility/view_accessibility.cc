@@ -17,6 +17,8 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/accessibility/views_ax_tree_manager.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
@@ -277,6 +279,15 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
          "ViewAccessibility::OverrideChildTreeID.";
   if (child_tree_id_) {
     data->AddChildTreeId(child_tree_id_.value());
+
+    if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
+      const float scale_factor =
+          display::Screen::GetScreen()
+              ->GetDisplayNearestView(view_->GetWidget()->GetNativeView())
+              .device_scale_factor();
+      data->AddFloatAttribute(ax::mojom::FloatAttribute::kChildTreeScale,
+                              scale_factor);
+    }
   }
 }
 

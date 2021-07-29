@@ -18,6 +18,7 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_platform.h"
+#include "ui/compositor/layer.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/widget/widget.h"
@@ -200,6 +201,11 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
       }
 
       out_node_data->AddChildTreeId(child_ax_tree_id);
+
+      const float scale_factor =
+          window_->GetToplevelWindow()->layer()->device_scale_factor();
+      out_node_data->AddFloatAttribute(
+          ax::mojom::FloatAttribute::kChildTreeScale, scale_factor);
     }
   }
 }

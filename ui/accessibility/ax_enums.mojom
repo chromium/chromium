@@ -698,6 +698,7 @@ enum IntAttribute {
   kDOMNodeId = 60,
 };
 
+// Next version: 2
 // Next value: 8
 [Extensible, Stable, Uuid="6ee6b6eb-8af4-488f-96d5-343e56be5beb"]
 enum FloatAttribute {
@@ -719,6 +720,10 @@ enum FloatAttribute {
 
   // The text indent of the text, in mm.
   kTextIndent = 7,
+
+  // Only on ChromeOS. The scaling factor applied to the child tree.
+  // Used with kChildTreeId.
+  [MinVersion=1] kChildTreeScale = 8,
 };
 
 // These attributes can take three states:

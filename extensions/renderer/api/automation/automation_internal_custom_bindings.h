@@ -77,8 +77,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
     return ObjectBackedNativeHandler::context();
   }
 
-  float GetDeviceScaleFactor() const;
-
   void SendNodesRemovedEvent(ui::AXTree* tree, const std::vector<int>& ids);
   bool SendTreeChangeEvent(api::automation::TreeChangeType change_type,
                            ui::AXTree* tree,
@@ -280,8 +278,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   // Keeps track  of the single desktop tree, if it exists.
   ui::AXTreeID desktop_tree_id_ = ui::AXTreeIDUnknown();
-
-  absl::optional<float> device_scale_factor_for_test_;
 
   DISALLOW_COPY_AND_ASSIGN(AutomationInternalCustomBindings);
 };

@@ -1584,6 +1584,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::FloatAttribute::kTextIndent:
         result += " text_indent=" + value;
         break;
+      case ax::mojom::FloatAttribute::kChildTreeScale:
+        result += " child_tree_scale=" + value;
+        break;
       case ax::mojom::FloatAttribute::kNone:
         break;
     }

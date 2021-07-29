@@ -58,10 +58,6 @@ class AutomationInternalCustomBindingsTest
     return automation_internal_bindings_->tree_id_to_tree_wrapper_map_;
   }
 
-  void SetDeviceScaleFactor(float scale) {
-    automation_internal_bindings_->device_scale_factor_for_test_ = scale;
-  }
-
   void SendOnAccessibilityEvents(
       const ExtensionMsg_AccessibilityEventBundleParams& event_bundle,
       bool is_active_profile) {
@@ -333,8 +329,6 @@ TEST_F(AutomationInternalCustomBindingsTest,
 }
 
 TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
-  SetDeviceScaleFactor(2);
-
   // two trees each with a button.
   std::vector<ExtensionMsg_AccessibilityEventBundleParams> bundles;
   for (int i = 0; i < 2; i++) {
@@ -373,6 +367,9 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
       ax::mojom::StringAttribute::kChildTreeNodeAppId, "app1");
   wrapper1_button_data.AddStringAttribute(ax::mojom::StringAttribute::kAppId,
                                           "app1");
+
+  wrapper0_button_data.AddFloatAttribute(
+      ax::mojom::FloatAttribute::kChildTreeScale, 2.0);
 
   for (auto& bundle : bundles)
     SendOnAccessibilityEvents(bundle, true /* active profile */);
