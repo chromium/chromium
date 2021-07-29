@@ -15,7 +15,9 @@ namespace mojo {
 
 template <>
 struct StructTraits<smbfs::mojom::FilePathDataView, base::FilePath> {
-  static std::string path(const base::FilePath& path);
+  static const std::string& path(const base::FilePath& path) {
+    return path.value();
+  }
 
   static bool Read(smbfs::mojom::FilePathDataView data, base::FilePath* out);
 };
