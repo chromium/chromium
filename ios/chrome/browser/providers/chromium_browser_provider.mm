@@ -16,7 +16,6 @@
 #include "ios/public/provider/chrome/browser/overrides_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -32,7 +31,6 @@ ChromiumBrowserProvider::ChromiumBrowserProvider()
       user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
       voice_search_provider_(std::make_unique<ChromiumVoiceSearchProvider>()),
       spotlight_provider_(std::make_unique<ChromiumSpotlightProvider>()),
-      fullscreen_provider_(std::make_unique<FullscreenProvider>()),
       overrides_provider_(std::make_unique<OverridesProvider>()),
       discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
@@ -89,10 +87,6 @@ BrandedImageProvider* ChromiumBrowserProvider::GetBrandedImageProvider() const {
 
 SpotlightProvider* ChromiumBrowserProvider::GetSpotlightProvider() const {
   return spotlight_provider_.get();
-}
-
-FullscreenProvider* ChromiumBrowserProvider::GetFullscreenProvider() const {
-  return fullscreen_provider_.get();
 }
 
 OverridesProvider* ChromiumBrowserProvider::GetOverridesProvider() const {

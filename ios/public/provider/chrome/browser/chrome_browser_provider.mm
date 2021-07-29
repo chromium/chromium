@@ -107,10 +107,6 @@ SpotlightProvider* ChromeBrowserProvider::GetSpotlightProvider() const {
   return nullptr;
 }
 
-FullscreenProvider* ChromeBrowserProvider::GetFullscreenProvider() const {
-  return nullptr;
-}
-
 BrowserURLRewriterProvider*
 ChromeBrowserProvider::GetBrowserURLRewriterProvider() const {
   return nullptr;

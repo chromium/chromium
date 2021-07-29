@@ -4,11 +4,7 @@
 
 source_set("ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "fullscreen_provider.h",
-    "fullscreen_provider.mm",
-    "logo_vendor.h",
-  ]
+  sources = [ "logo_vendor.h" ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/voice",

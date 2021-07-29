@@ -21,7 +21,6 @@ class AppDistributionProvider;
 class BrandedImageProvider;
 class BrowserURLRewriterProvider;
 class DiscoverFeedProvider;
-class FullscreenProvider;
 class MailtoHandlerProvider;
 class OmahaServiceProvider;
 class OverridesProvider;
@@ -146,9 +145,6 @@ class ChromeBrowserProvider {
 
   // Returns a valid non-null instance of the mailto handler provider.
   virtual MailtoHandlerProvider* GetMailtoHandlerProvider() const;
-
-  // Returns an instance of the fullscreen provider.
-  virtual FullscreenProvider* GetFullscreenProvider() const;
 
   // Returns an instance of the BrowserURLRewriter provider.
   virtual BrowserURLRewriterProvider* GetBrowserURLRewriterProvider() const;

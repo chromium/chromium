@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,12 +18,6 @@
 #endif
 
 @implementation FullscreenAppInterface
-
-+ (BOOL)isFullscreenInitialized {
-  return ios::GetChromeBrowserProvider()
-      .GetFullscreenProvider()
-      ->IsInitialized();
-}
 
 + (UIEdgeInsets)currentViewportInsets {
   web::WebState* webState = chrome_test_util::GetCurrentWebState();
