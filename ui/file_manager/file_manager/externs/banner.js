@@ -6,12 +6,13 @@ import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 
 /**
  * All Banners are extended from this interface.
- * @interface
+ * @abstract
  */
-export class Banner {
+export class Banner extends HTMLElement {
   /**
    * Returns the volume types the banner where the banner is enabled.
    * @return {!Array<!Banner.AllowedVolumeType>}
+   * @abstract
    */
   allowedVolumeTypes() {}
 

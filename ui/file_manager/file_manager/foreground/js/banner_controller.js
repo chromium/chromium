@@ -8,6 +8,8 @@ import {xfm} from '../../common/js/xfm.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
+import {DirectoryModel} from './directory_model.js';
+
 /**
  * Local storage key suffix for how many times a banner was shown.
  * @type {string}
@@ -27,18 +29,21 @@ const LAST_DISMISSED_SUFFIX = '_LAST_DISMISSED';
  * at the right time.
  */
 export class BannerController extends EventTarget {
-  constructor() {
+  /**
+   * @param {!DirectoryModel} directoryModel
+   */
+  constructor(directoryModel) {
     super();
 
     /**
      * Warning banners ordered by priority. Index 0 is the highest priority.
-     * @private {!Array<!Banner|!HTMLElement>}
+     * @private {!Array<!Banner>}
      */
     this.warningBanners_ = [];
     /**
      * Educational banners ordered by priority. Index 0 is the highest
      * priority.
-     * @private {!Array<!Banner|!HTMLElement>}
+     * @private {!Array<!Banner>}
      */
     this.educationalBanners_ = [];
 
@@ -49,7 +54,17 @@ export class BannerController extends EventTarget {
      */
     this.localStorageCache_ = {};
 
+    /**
+     * Maintains the state of the current volume that has been navigated. This
+     * is updated by the directory-changed event.
+     * @type {?VolumeInfo}
+     * @private
+     */
+    this.currentVolume_ = null;
+
     xfm.storage.onChanged.addListener(this.onStorageChanged_.bind(this));
+    this.directoryModel_ = directoryModel;
+    this.container_ = document.querySelector('#banners');
   }
 
   /**
@@ -88,12 +103,111 @@ export class BannerController extends EventTarget {
             this.localStorageCache_[key] = storedValue;
           }
         }
-        // TODO(benreich): Call the reconcile method here once the method has
-        // been implemented.
+        this.reconcile();
         resolve();
       });
     });
   }
+
+  /**
+   * Loops through all the banners and checks whether they should be shown or
+   * not. If shown, picks the highest priority banner.
+   */
+  reconcile() {
+    this.currentVolume_ = this.directoryModel_.getCurrentVolumeInfo();
+
+    /** @type {?Banner} */
+    let bannerToShow = null;
+
+    // Identify if (given current conditions) any of the warning banners should
+    // be shown or hidden.
+    const orderedBanners =
+        this.warningBanners_.concat(this.educationalBanners_);
+    for (const banner of orderedBanners) {
+      if (!this.shouldShowBanner_(banner)) {
+        this.maybeHideBanner_(banner);
+        continue;
+      }
+
+      if (!bannerToShow) {
+        bannerToShow = banner;
+      }
+    }
+
+    if (bannerToShow) {
+      this.showBanner_(bannerToShow);
+    }
+  }
+
+  /**
+   * Checks if the banner should be visible.
+   * @param {!Banner} banner The banner to check.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowBanner_(banner) {
+    const allowedVolumeTypes = banner.allowedVolumeTypes();
+    if (!isAllowedVolume(this.currentVolume_, allowedVolumeTypes)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if the banner exists (add to DOM if not) and ensure it's visible.
+   * @param {!Banner} banner The banner to hide.
+   * @private
+   */
+  showBanner_(banner) {
+    if (banner.parentElement !== this.container_) {
+      this.container_.appendChild(/** @type {Node} */ (banner));
+    }
+
+    banner.setAttribute('hidden', false);
+    banner.setAttribute('aria-hidden', false);
+
+    banner.onShow();
+  }
+
+  /**
+   * Hide the banner if it exists in the DOM.
+   * @param {!Banner} banner The banner to hide.
+   * @private
+   */
+  maybeHideBanner_(banner) {
+    if (banner.parentElement !== this.container_) {
+      return;
+    }
+
+    banner.setAttribute('hidden', true);
+    banner.setAttribute('aria-hidden', true);
+  }
+
+  /**
+   * Creates all the warning banners with the supplied tagName's. This will
+   * populate the |warningBanners_| array with HTMLElement's.
+   * @param {!Array<string>} bannerTagNames The HTMLElement tagName's to create.
+   */
+  setWarningBannersInOrder(bannerTagNames) {
+    for (const tagName of bannerTagNames) {
+      this.warningBanners_.push(
+          /** @type {!Banner} */ (document.createElement(tagName)));
+    }
+  }
+
+  /**
+   * Creates all the educational banners with the supplied tagName's. This will
+   * populate the |educationalBanners_| array with HTMLElement's.
+   * @param {!Array<string>} bannerTagNames The HTMLElement tagName's to create.
+   */
+  setEducationalBannersInOrder(bannerTagNames) {
+    for (const tagName of bannerTagNames) {
+      this.educationalBanners_.push(
+          /** @type {!Banner} */ (document.createElement(tagName)));
+    }
+  }
+
 
   /**
    * Listens for localStorage changes to ensure instance cache is in sync.
@@ -117,12 +231,17 @@ export class BannerController extends EventTarget {
 /**
  * Identifies if the current volume is in the list of allowed volume type
  * array for a specific banner.
- * @param {!VolumeInfo} currentVolume Volume that is currently navigated.
+ * @param {?VolumeInfo} currentVolume Volume that is currently navigated.
  * @param {!Array<!Banner.AllowedVolumeType>} allowedVolumeTypes Array of
  * allowed volumes
  * @return {boolean}
  */
 export function isAllowedVolume(currentVolume, allowedVolumeTypes) {
+  // Some entries return null despite being valid volume (e.g. the root entry
+  // for a USB drive).
+  if (!currentVolume) {
+    return false;
+  }
   for (let i = 0; i < allowedVolumeTypes.length; i++) {
     const {type, id} = allowedVolumeTypes[i];
     if (currentVolume.volumeType !== type) {
