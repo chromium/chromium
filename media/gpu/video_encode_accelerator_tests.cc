@@ -137,9 +137,9 @@ class VideoEncoderTest : public ::testing::Test {
       const VideoDecoderConfig& decoder_config,
       const size_t last_frame_index,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
-      absl::optional<size_t> vp9_spatial_layer_index_to_decode,
-      absl::optional<size_t> num_vp9_temporal_layers_to_decode,
-      const std::vector<gfx::Size>& vp9_spatial_layer_resolutions) {
+      absl::optional<size_t> spatial_layer_index_to_decode,
+      absl::optional<size_t> temporal_layer_index_to_decode,
+      const std::vector<gfx::Size>& spatial_layer_resolutions) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
 
     // Attach a video frame writer to store individual frames to disk if
@@ -149,13 +149,21 @@ class VideoEncoderTest : public ::testing::Test {
     base::FilePath output_folder = base::FilePath(g_env->OutputFolder())
                                        .Append(g_env->GetTestOutputFilePath());
     if (frame_output_config.output_mode != FrameOutputMode::kNone) {
+      base::FilePath::StringType output_file_prefix;
+      if (spatial_layer_index_to_decode) {
+        output_file_prefix +=
+            FILE_PATH_LITERAL("SL") +
+            base::NumberToString(*spatial_layer_index_to_decode);
+      }
+      if (temporal_layer_index_to_decode) {
+        output_file_prefix +=
+            FILE_PATH_LITERAL("TL") +
+            base::NumberToString(*temporal_layer_index_to_decode);
+      }
+
       image_writer = VideoFrameFileWriter::Create(
           output_folder, frame_output_config.output_format,
-          frame_output_config.output_limit,
-          vp9_spatial_layer_index_to_decode
-              ? base::NumberToString(*vp9_spatial_layer_index_to_decode) +
-                    base::NumberToString(*num_vp9_temporal_layers_to_decode)
-              : "");
+          frame_output_config.output_limit, output_file_prefix);
       LOG_ASSERT(image_writer);
       if (frame_output_config.output_mode == FrameOutputMode::kAll)
         video_frame_processors.push_back(std::move(image_writer));
@@ -178,8 +186,8 @@ class VideoEncoderTest : public ::testing::Test {
     video_frame_processors.push_back(std::move(ssim_validator));
     return BitstreamValidator::Create(
         decoder_config, last_frame_index, std::move(video_frame_processors),
-        vp9_spatial_layer_index_to_decode, num_vp9_temporal_layers_to_decode,
-        vp9_spatial_layer_resolutions);
+        spatial_layer_index_to_decode, temporal_layer_index_to_decode,
+        spatial_layer_resolutions);
   }
 
   std::vector<std::unique_ptr<BitstreamProcessor>> CreateBitstreamProcessors(
@@ -187,11 +195,11 @@ class VideoEncoderTest : public ::testing::Test {
       const VideoEncoderClientConfig& config) {
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     const gfx::Rect visible_rect(config.output_resolution);
-    std::vector<gfx::Size> vp9_spatial_layer_resolutions;
+    std::vector<gfx::Size> spatial_layer_resolutions;
     // |config.spatial_layers| is filled only in temporal layer or spatial layer
     // encoding.
     for (const auto& sl : config.spatial_layers)
-      vp9_spatial_layer_resolutions.emplace_back(sl.width, sl.height);
+      spatial_layer_resolutions.emplace_back(sl.width, sl.height);
 
     const VideoCodec codec =
         VideoCodecProfileToVideoCodec(config.output_profile);
@@ -203,27 +211,26 @@ class VideoEncoderTest : public ::testing::Test {
           g_env->OutputFolder()
               .Append(g_env->GetTestOutputFilePath())
               .Append(video->FilePath().BaseName().ReplaceExtension(extension));
-      if (!vp9_spatial_layer_resolutions.empty()) {
+      if (!spatial_layer_resolutions.empty()) {
         CHECK_GE(config.num_spatial_layers, 1u);
         CHECK_GE(config.num_temporal_layers, 1u);
-        for (size_t vp9_spatial_layer_index_to_write = 0;
-             vp9_spatial_layer_index_to_write < config.num_spatial_layers;
-             ++vp9_spatial_layer_index_to_write) {
+        for (size_t spatial_layer_index_to_write = 0;
+             spatial_layer_index_to_write < config.num_spatial_layers;
+             ++spatial_layer_index_to_write) {
           const gfx::Size& layer_size =
-              vp9_spatial_layer_resolutions[vp9_spatial_layer_index_to_write];
-          for (size_t num_vp9_temporal_layers_to_write = 1;
-               num_vp9_temporal_layers_to_write <= config.num_temporal_layers;
-               ++num_vp9_temporal_layers_to_write) {
+              spatial_layer_resolutions[spatial_layer_index_to_write];
+          for (size_t temporal_layer_index_to_write = 0;
+               temporal_layer_index_to_write < config.num_temporal_layers;
+               ++temporal_layer_index_to_write) {
             bitstream_processors.emplace_back(BitstreamFileWriter::Create(
                 output_bitstream_filepath.InsertBeforeExtensionASCII(
                     FILE_PATH_LITERAL(".SL") +
-                    base::NumberToString(vp9_spatial_layer_index_to_write) +
+                    base::NumberToString(spatial_layer_index_to_write) +
                     FILE_PATH_LITERAL(".TL") +
-                    base::NumberToString(num_vp9_temporal_layers_to_write - 1)),
+                    base::NumberToString(temporal_layer_index_to_write)),
                 codec, layer_size, config.framerate,
-                config.num_frames_to_encode, vp9_spatial_layer_index_to_write,
-                num_vp9_temporal_layers_to_write,
-                vp9_spatial_layer_resolutions));
+                config.num_frames_to_encode, spatial_layer_index_to_write,
+                temporal_layer_index_to_write, spatial_layer_resolutions));
             LOG_ASSERT(bitstream_processors.back());
           }
         }
@@ -264,14 +271,14 @@ class VideoEncoderTest : public ::testing::Test {
       return bitstream_processors;
     }
 
-    if (!vp9_spatial_layer_resolutions.empty()) {
+    if (!spatial_layer_resolutions.empty()) {
       CHECK_GE(config.num_spatial_layers, 1u);
       CHECK_GE(config.num_temporal_layers, 1u);
-      for (size_t vp9_spatial_layer_index_to_decode = 0;
-           vp9_spatial_layer_index_to_decode < config.num_spatial_layers;
-           ++vp9_spatial_layer_index_to_decode) {
+      for (size_t spatial_layer_index_to_decode = 0;
+           spatial_layer_index_to_decode < config.num_spatial_layers;
+           ++spatial_layer_index_to_decode) {
         const gfx::Size& layer_size =
-            vp9_spatial_layer_resolutions[vp9_spatial_layer_index_to_decode];
+            spatial_layer_resolutions[spatial_layer_index_to_decode];
         VideoDecoderConfig decoder_config(
             codec, config.output_profile,
             VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
@@ -280,13 +287,13 @@ class VideoEncoderTest : public ::testing::Test {
         VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
             base::BindRepeating(&VideoEncoderTest::GetModelFrame,
                                 base::Unretained(this), gfx::Rect(layer_size));
-        for (size_t num_temporal_layers_to_decode = 1;
-             num_temporal_layers_to_decode <= config.num_temporal_layers;
-             ++num_temporal_layers_to_decode) {
+        for (size_t temporal_layer_index_to_decode = 0;
+             temporal_layer_index_to_decode < config.num_temporal_layers;
+             ++temporal_layer_index_to_decode) {
           bitstream_processors.emplace_back(CreateBitstreamValidator(
               video, decoder_config, config.num_frames_to_encode - 1,
-              get_model_frame_cb, vp9_spatial_layer_index_to_decode,
-              num_temporal_layers_to_decode, vp9_spatial_layer_resolutions));
+              get_model_frame_cb, spatial_layer_index_to_decode,
+              temporal_layer_index_to_decode, spatial_layer_resolutions));
           LOG_ASSERT(bitstream_processors.back());
         }
       }
@@ -307,7 +314,7 @@ class VideoEncoderTest : public ::testing::Test {
       bitstream_processors.emplace_back(CreateBitstreamValidator(
           video, decoder_config, config.num_frames_to_encode - 1,
           get_model_frame_cb, absl::nullopt, absl::nullopt,
-          /*vp9_spatial_layer_resolutions=*/{}));
+          /*spatial_layer_resolutions=*/{}));
       LOG_ASSERT(bitstream_processors.back());
     }
     return bitstream_processors;
