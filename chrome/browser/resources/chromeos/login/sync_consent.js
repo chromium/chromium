@@ -38,7 +38,7 @@ Polymer({
     isChildAccount_: Boolean,
 
     /** @private */
-    splitSettingsSyncEnabled_: {
+    syncConsentOptionalEnabled_: {
       type: Boolean,
       value: false,
     },
@@ -77,7 +77,7 @@ Polymer({
    */
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
-    this.splitSettingsSyncEnabled_ = data['splitSettingsSyncEnabled'];
+    this.syncConsentOptionalEnabled_ = data['syncConsentOptionalEnabled'];
   },
 
   /**
@@ -143,7 +143,7 @@ Polymer({
    * @private
    */
   getDefaultUIStep_() {
-    return this.splitSettingsSyncEnabled_ ? UIState.SPLIT : UIState.NO_SPLIT;
+    return this.syncConsentOptionalEnabled_ ? UIState.SPLIT : UIState.NO_SPLIT;
   },
 
   /**
@@ -152,7 +152,7 @@ Polymer({
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);
-    assert(!this.splitSettingsSyncEnabled_);
+    assert(!this.syncConsentOptionalEnabled_);
     chrome.send('login.SyncConsentScreen.nonSplitSettingsContinue', [
       opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
       this.getConsentConfirmation_(e.path)
@@ -173,7 +173,7 @@ Polymer({
    * @private
    */
   onAcceptTap_(event) {
-    assert(this.splitSettingsSyncEnabled_);
+    assert(this.syncConsentOptionalEnabled_);
     assert(event.path);
     chrome.send('login.SyncConsentScreen.acceptAndContinue', [
       this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
@@ -186,7 +186,7 @@ Polymer({
    * @private
    */
   onDeclineTap_(event) {
-    assert(this.splitSettingsSyncEnabled_);
+    assert(this.syncConsentOptionalEnabled_);
     assert(event.path);
     chrome.send('login.SyncConsentScreen.declineAndContinue', [
       this.getConsentDescription_(), this.getConsentConfirmation_(event.path)

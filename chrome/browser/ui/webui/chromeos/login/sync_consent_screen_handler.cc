@@ -168,7 +168,7 @@ void SyncConsentScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
   base::DictionaryValue data;
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
-  data.SetBoolean("splitSettingsSyncEnabled",
+  data.SetBoolean("syncConsentOptionalEnabled",
                   chromeos::features::IsSyncConsentOptionalEnabled());
   ShowScreenWithData(kScreenId, &data);
 }
