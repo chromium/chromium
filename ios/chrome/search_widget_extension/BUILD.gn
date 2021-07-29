@@ -89,16 +89,6 @@ source_set("search_widget") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "search_widget_view_controller_unittest.mm" ]
-  deps = [
-    ":search_widget",
-    "//testing/gtest",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 repack_locales("packed_resources") {
   input_locales = ios_packed_locales
   output_locales = ios_packed_locales_as_mac_outputs
