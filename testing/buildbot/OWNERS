@@ -15,6 +15,9 @@ rmhasan@google.com
 per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 per-file variants.pyl=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
+# For Lacros version skew tests related reviews
+per-file chromium.fyi.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
+
 # For V8 and DevTools related reviews.
 machenbach@chromium.org
 
