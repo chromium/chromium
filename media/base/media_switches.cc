@@ -325,7 +325,13 @@ const base::Feature kMemoryPressureBasedSourceBufferGC{
 // Enable binding multiple shared images to a single GpuMemoryBuffer for
 // software decoded video frames created by the GpuMemoryBufferVideoFramePool.
 const base::Feature kMultiPlaneSoftwareVideoSharedImages{
-    "MultiPlaneSoftwareVideoSharedImages", base::FEATURE_DISABLED_BY_DEFAULT};
+  "MultiPlaneSoftwareVideoSharedImages",
+#if defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Enable binding multiple shared images to a single GpuMemoryBuffer for video
 // frames created by video capture.
