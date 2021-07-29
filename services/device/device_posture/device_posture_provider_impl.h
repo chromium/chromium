@@ -36,9 +36,9 @@ class DevicePostureProviderImpl : public mojom::DevicePostureProvider {
 
  private:
   // DevicePostureProvider implementation.
-  void SetListener(
+  void AddListenerAndGetCurrentPosture(
       mojo::PendingRemote<mojom::DevicePostureProviderClient> client,
-      SetListenerCallback callback) override;
+      AddListenerAndGetCurrentPostureCallback callback) override;
   void OnReceiverConnectionError();
 
   std::unique_ptr<DevicePosturePlatformProvider> platform_provider_;

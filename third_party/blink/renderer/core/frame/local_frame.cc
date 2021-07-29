@@ -1363,6 +1363,10 @@ void LocalFrame::UpdateCSSFoldEnvironmentVariables(
   }
 }
 
+device::mojom::blink::DevicePostureType LocalFrame::GetDevicePosture() {
+  return mojo_handler_->GetDevicePosture();
+}
+
 double LocalFrame::DevicePixelRatio() const {
   if (!page_)
     return 0;

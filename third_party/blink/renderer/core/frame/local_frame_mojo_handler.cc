@@ -352,11 +352,13 @@ void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(text_input_host_);
 #endif
   visitor->Trace(reporting_service_);
+  visitor->Trace(device_posture_provider_service_);
   visitor->Trace(local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
   visitor->Trace(main_frame_receiver_);
   visitor->Trace(high_priority_frame_receiver_);
   visitor->Trace(fullscreen_video_receiver_);
+  visitor->Trace(device_posture_receiver_);
 }
 
 void LocalFrameMojoHandler::WasAttachedAsLocalMainFrame() {
@@ -407,6 +409,22 @@ mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
             frame_->GetTaskRunner(TaskType::kInternalDefault)));
   }
   return reporting_service_.get();
+}
+
+device::mojom::blink::DevicePostureType
+LocalFrameMojoHandler::GetDevicePosture() {
+  if (device_posture_provider_service_.is_bound())
+    return current_device_posture_;
+
+  auto task_runner = frame_->GetTaskRunner(TaskType::kInternalDefault);
+  frame_->GetBrowserInterfaceBroker().GetInterface(
+      device_posture_provider_service_.BindNewPipeAndPassReceiver(task_runner));
+
+  device_posture_provider_service_->AddListenerAndGetCurrentPosture(
+      device_posture_receiver_.BindNewPipeAndPassRemote(task_runner),
+      WTF::Bind(&LocalFrameMojoHandler::OnPostureChanged,
+                WrapPersistent(this)));
+  return current_device_posture_;
 }
 
 Page* LocalFrameMojoHandler::GetPage() const {
@@ -766,6 +784,18 @@ void LocalFrameMojoHandler::OnScreensChange() {
     // Allow fullscreen requests shortly after user-generated screens changes.
     frame_->transient_allow_fullscreen_.Activate();
   }
+}
+
+void LocalFrameMojoHandler::OnPostureChanged(
+    device::mojom::blink::DevicePostureType posture) {
+  if (!RuntimeEnabledFeatures::DevicePostureEnabled())
+    return;
+  current_device_posture_ = posture;
+  // A change of the device posture requires re-evaluation of media queries
+  // for the local frame subtree (the device posture affect the
+  // "device-posture" feature).
+  frame_->MediaQueryAffectingValueChangedForLocalSubtree(
+      MediaValueChange::kOther);
 }
 
 void LocalFrameMojoHandler::PostMessageEvent(

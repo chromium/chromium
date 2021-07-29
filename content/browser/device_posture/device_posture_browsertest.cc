@@ -115,6 +115,45 @@ IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureAddEventListenerTest) {
   EXPECT_EQ("folded-over", EvalJs(shell(), "postureReceived"));
 }
 
+IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureMediaQueries) {
+  // This test will check that device posture MQs are evaluated correctly.
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+  EXPECT_EQ("continuous", EvalJs(shell(), "navigator.devicePosture.type"));
+  EXPECT_EQ(
+      true,
+      EvalJs(shell(),
+             R"(window.matchMedia('(device-posture: continuous)').matches)"));
+  EXPECT_EQ(false, EvalJs(shell(), R"(
+    var foldedOverMQL = window.matchMedia('(device-posture: folded-over)');
+    foldedOverMQL.matches;
+  )"));
+
+  EXPECT_EQ(false, EvalJs(shell(), R"(
+    var foldedMQL = window.matchMedia('(device-posture: folded)');
+    foldedMQL.matches;
+  )"));
+
+  EXPECT_EQ(true, ExecJs(shell(), R"(
+    var mediaQueryPostureChanged = new Promise(resolve => {
+      foldedOverMQL.addEventListener('change', () => {
+        resolve(foldedOverMQL.matches);
+      });
+    });
+  )"));
+
+  set_current_posture(device::mojom::DevicePostureType::kFoldedOver);
+  EXPECT_EQ(true, EvalJs(shell(), "mediaQueryPostureChanged"));
+  EXPECT_EQ(true, ExecJs(shell(), R"(
+    var mediaQueryPostureChanged = new Promise(resolve => {
+      foldedMQL.addEventListener('change', () => {
+        resolve(foldedMQL.matches);
+      });
+    });
+  )"));
+  set_current_posture(device::mojom::DevicePostureType::kFolded);
+  EXPECT_EQ(true, EvalJs(shell(), "mediaQueryPostureChanged"));
+}
+
 }  //  namespace
 
 }  // namespace content

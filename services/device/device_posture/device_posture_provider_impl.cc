@@ -24,9 +24,9 @@ DevicePostureProviderImpl::DevicePostureProviderImpl(
 
 DevicePostureProviderImpl::~DevicePostureProviderImpl() = default;
 
-void DevicePostureProviderImpl::SetListener(
+void DevicePostureProviderImpl::AddListenerAndGetCurrentPosture(
     mojo::PendingRemote<mojom::DevicePostureProviderClient> client,
-    SetListenerCallback callback) {
+    AddListenerAndGetCurrentPostureCallback callback) {
   clients_.Add(std::move(client));
   mojom::DevicePostureType posture = platform_provider_->GetDevicePosture();
   std::move(callback).Run(posture);

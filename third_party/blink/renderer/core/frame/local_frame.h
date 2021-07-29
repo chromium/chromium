@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/payment_request_token.h"
@@ -86,7 +87,7 @@ class SingleThreadTaskRunner;
 namespace gfx {
 class Point;
 class Range;
-}
+}  // namespace gfx
 
 namespace blink {
 
@@ -359,6 +360,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void WindowSegmentsChanged(const WebVector<gfx::Rect>& window_segments);
   void UpdateCSSFoldEnvironmentVariables(
       const WebVector<gfx::Rect>& window_segments);
+
+  device::mojom::blink::DevicePostureType GetDevicePosture();
 
   String SelectedText() const;
   String SelectedTextForClipboard() const;

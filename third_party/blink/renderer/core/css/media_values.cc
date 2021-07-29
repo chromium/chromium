@@ -310,8 +310,7 @@ ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
 
 device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
     LocalFrame* frame) {
-  // TODO(darktears): Retrieve information from the host.
-  return device::mojom::blink::DevicePostureType::kContinuous;
+  return frame->GetDevicePosture();
 }
 
 bool MediaValues::ComputeLengthImpl(double value,
