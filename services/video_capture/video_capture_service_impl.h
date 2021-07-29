@@ -28,7 +28,7 @@ class VideoSourceProviderImpl;
 
 class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
  public:
-  explicit VideoCaptureServiceImpl(
+  VideoCaptureServiceImpl(
       mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
   ~VideoCaptureServiceImpl() override;
