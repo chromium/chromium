@@ -1132,6 +1132,99 @@ TEST_F(AXPositionTest, GetTextFromLineBreak) {
   ASSERT_EQ(u"\n", text_position->GetText());
 }
 
+TEST_F(AXPositionTest, IsInLineBreak) {
+  // "Line <1>".
+  TestPositionType text_field_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_field_.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_field_position);
+  EXPECT_FALSE(text_field_position->IsPointingToLineBreak());
+  // "Line 1<>".
+  TestPositionType static_text1_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), static_text1_.id, 6 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, static_text1_position);
+  EXPECT_FALSE(static_text1_position->IsPointingToLineBreak());
+  // Before the line break.
+  text_field_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_field_.id, 6 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_field_position);
+  EXPECT_TRUE(text_field_position->IsPointingToLineBreak());
+  // After the line break.
+  text_field_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_field_.id, 7 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_field_position);
+  EXPECT_FALSE(text_field_position->IsPointingToLineBreak());
+  text_field_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_field_.id, 7 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, text_field_position);
+  EXPECT_TRUE(text_field_position->IsPointingToLineBreak());
+
+  TestPositionType line_break_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), line_break_.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, line_break_position);
+  EXPECT_TRUE(line_break_position->IsPointingToLineBreak());
+  line_break_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), line_break_.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, line_break_position);
+  EXPECT_TRUE(line_break_position->IsPointingToLineBreak());
+  // An upstream affinity should not matter on leaf nodes.
+  line_break_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), line_break_.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, line_break_position);
+  EXPECT_TRUE(line_break_position->IsPointingToLineBreak());
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData text_field_data;
+  text_field_data.id = 2;
+  text_field_data.role = ax::mojom::Role::kTextField;
+  text_field_data.SetValue(" \n");
+
+  root_data.child_ids = {text_field_data.id};
+  SetTree(CreateAXTree({root_data, text_field_data}));
+
+  TestPositionType root_data_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_data.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, root_data_position);
+  EXPECT_FALSE(root_data_position->IsPointingToLineBreak());
+  root_data_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_data.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, root_data_position);
+  EXPECT_TRUE(root_data_position->IsPointingToLineBreak());
+  root_data_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_data.id, 2 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, root_data_position);
+  EXPECT_FALSE(root_data_position->IsPointingToLineBreak());
+}
+
+TEST_F(AXPositionTest, IsInWhiteSpace) {
+  // Before the line break. Even though the leaf equivalent position is inside
+  // the line break which is certainly whitespace, the whole of the text field
+  // does not only have whitespace in it.
+  TestPositionType text_field_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), text_field_.id, 6 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_field_position);
+  EXPECT_FALSE(text_field_position->IsInWhiteSpace());
+  TestPositionType line_break_position = AXNodePosition::CreateTextPosition(
+      GetTreeID(), line_break_.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, line_break_position);
+  EXPECT_TRUE(line_break_position->IsInWhiteSpace());
+}
+
 TEST_F(AXPositionTest, GetMaxTextOffsetFromNullPosition) {
   TestPositionType text_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, text_position);

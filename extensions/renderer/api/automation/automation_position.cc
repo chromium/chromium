@@ -116,7 +116,8 @@ gin::ObjectTemplateBuilder AutomationPosition::GetObjectTemplateBuilder(
       .SetMethod("moveToPreviousAnchorPosition",
                  &AutomationPosition::MoveToPreviousAnchorPosition)
       .SetMethod("maxTextOffset", &AutomationPosition::MaxTextOffset)
-      .SetMethod("isInLineBreak", &AutomationPosition::IsInLineBreak)
+      .SetMethod("isPointingToLineBreak",
+                 &AutomationPosition::IsPointingToLineBreak)
       .SetMethod("isInTextObject", &AutomationPosition::IsInTextObject)
       .SetMethod("isInWhiteSpace", &AutomationPosition::IsInWhiteSpace)
       .SetMethod("isValid", &AutomationPosition::IsValid)
@@ -399,8 +400,8 @@ int AutomationPosition::MaxTextOffset(gin::Arguments* arguments) {
   return position_->MaxTextOffset();
 }
 
-bool AutomationPosition::IsInLineBreak(gin::Arguments* arguments) {
-  return position_->IsInLineBreak();
+bool AutomationPosition::IsPointingToLineBreak(gin::Arguments* arguments) {
+  return position_->IsPointingToLineBreak();
 }
 
 bool AutomationPosition::IsInTextObject(gin::Arguments* arguments) {

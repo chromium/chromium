@@ -346,7 +346,7 @@ class AXRange {
 
           // Collapse all whitespace following any line break.
           found_trailing_newline =
-              start->IsInLineBreak() ||
+              start->GetAnchor()->IsLineBreak() ||
               (found_trailing_newline && start->IsInWhiteSpace());
         }
 
@@ -420,7 +420,7 @@ class AXRange {
       // want to directly retrieve their bounding rectangles.
       AXOffscreenResult offscreen_result;
       gfx::Rect current_rect =
-          (current_line_start->IsInLineBreak() ||
+          (current_line_start->GetAnchor()->IsLineBreak() ||
            current_line_start->IsInTextObject())
               ? delegate->GetInnerTextRangeBoundsRect(
                     current_line_start->tree_id(),

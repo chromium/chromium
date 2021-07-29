@@ -583,6 +583,8 @@ bool AXNode::IsText() const {
 }
 
 bool AXNode::IsLineBreak() const {
+  // The last condition captures inline text nodes whose only content is an '\n'
+  // character.
   return data().role == ax::mojom::Role::kLineBreak ||
          (data().role == ax::mojom::Role::kInlineTextBox &&
           GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));

@@ -3846,11 +3846,35 @@ class AXPosition {
     }
   }
 
-  // Determines if the anchor containing this position is a <br> or a text
-  // object whose parent's anchor is an enclosing <br>.
-  bool IsInLineBreak() const {
+  // Determines if this position is pointing to text inside a node that causes a
+  // line break. For example, a tree position pointing to a <br> element or a
+  // text node whose only content is the
+  // '\n' character, or a text position pointing to a '\n' character in its
+  // anchor's text representation.
+  bool IsPointingToLineBreak() const {
     if (IsNullPosition())
       return false;
+
+    // The position might be an ancestor position that does not currently point
+    // to a line break node, but once resolved to a leaf position, it might do
+    // so. This could only occur when we have a text position, because tree
+    // positions do not point to text unless they are anchored directly to a
+    // text node.
+    if (IsTextPosition()) {
+      AXPositionInstance leaf_text_position = AsLeafTextPosition();
+      DCHECK(leaf_text_position->GetAnchor());
+      if (leaf_text_position->GetAnchor()->IsLineBreak())
+        return true;
+      std::u16string text = leaf_text_position->GetText();
+      if (text.empty() ||
+          static_cast<size_t>(leaf_text_position->text_offset()) >=
+              text.length()) {
+        return false;
+      }
+      return text[leaf_text_position->text_offset()] == '\n';
+    }
+
+    // Tree position.
     return GetAnchor()->IsLineBreak();
   }
 
@@ -3863,7 +3887,10 @@ class AXPosition {
 
   // Determines if the text representation of this position's anchor contains
   // only whitespace characters; <br> objects span a single '\n' character, so
-  // positions inside line breaks are also considered "in whitespace".
+  // positions inside line breaks are also considered "in whitespace". Note that
+  // by the above definition, if a position is pointing to a whitespace
+  // character, but not all of the text inside the position's anchor is
+  // whitespace, this method returns false.
   bool IsInWhiteSpace() const {
     if (IsNullPosition())
       return false;
@@ -3906,7 +3933,7 @@ class AXPosition {
   ax::mojom::Role GetRole() const {
     if (IsNullPosition())
       return ax::mojom::Role::kUnknown;
-    return GetAnchor()->data().role;
+    return GetAnchor()->GetRole();
   }
 
  protected:
@@ -4126,6 +4153,8 @@ class AXPosition {
   bool IsInLineBreakingObject() const {
     if (IsNullPosition())
       return false;
+    // TODO(nektar): Remove list marker from the list of objects in Blink that
+    // are marked as line-breaking.
     return GetAnchor()->GetBoolAttribute(
         ax::mojom::BoolAttribute::kIsLineBreakingObject);
   }
