@@ -574,7 +574,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopePWAPopupsHaveCorrectSize) {
 
 // Tests that using window.open to create a popup window in scope results in
 // a correctly sized window.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopePWAPopupsHaveCorrectSize) {
+// TODO(crbug.com/1234260): Stabilize the test.
+#if defined(OS_LINUX)
+#define MAYBE_InScopePWAPopupsHaveCorrectSize \
+  DISABLED_InScopePWAPopupsHaveCorrectSize
+#else
+#define MAYBE_InScopePWAPopupsHaveCorrectSize InScopePWAPopupsHaveCorrectSize
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       MAYBE_InScopePWAPopupsHaveCorrectSize) {
   const GURL app_url = GetSecureAppURL();
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
