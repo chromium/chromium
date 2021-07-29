@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ScalingType} from 'chrome://print/print_preview.js';
+import {PrintPreviewModelElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
