@@ -1,10 +1,9 @@
 <style include="diagnostics-shared diagnostics-fonts">
 </style>
-
 <diagnostics-card is-networking-card>
     <!-- TODO(michaelcheco): Add localized strings. -->
   <template is="dom-if" if="[[showTroubleConnectingState_]]">
-    <network-troubleshooting id="networkTroubleshooting" 
+    <network-troubleshooting id="networkTroubleshooting"
         slot="left-panel" network-type="[[networkType_]]">
     </network-troubleshooting>
   </template>
@@ -14,5 +13,6 @@
   <network-info slot="body" guid="[[guid]]" network="[[network]]">
   </network-info>
   <ip-config-info-drawer id="ipConfigInfoDrawer" network="[[network]]"
-    slot="routines"></ip-config-info-drawer>
+      slot="routines">
+  </ip-config-info-drawer>
 </diagnostics-card>

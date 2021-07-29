@@ -4,32 +4,33 @@
   <div class="horizontal-data-point-container">
     <div class="data-point-container">
       <data-point id="name" header="Network Name"
-        value="[[network.name]]"
-        orientation="horizontal">
+          value="[[network.name]]"
+          orientation="horizontal">
       </data-point>
       <data-point id="ipAddress" header="IP Address"
-        value="[[network.ipConfig.ipAddress]]"
-        orientation="horizontal">
+          value="[[network.ipConfig.ipAddress]]"
+          orientation="horizontal">
       </data-point>
       <data-point id="bssid" header="BSSID"
-        value="[[network.typeProperties.wifi.bssid]]"
-        orientation="horizontal">
+          value="[[network.typeProperties.wifi.bssid]]"
+          orientation="horizontal">
       </data-point>
     </div>
     <div class="divider-horizontal"></div>
     <div class="data-point-container">
       <!-- TODO(ashleydp): Update test when security data provided. -->
       <data-point id="security" header="[[i18n('networkSecurityLabel')]]"
-        value=""
-        orientation="horizontal">
+          value=""
+          orientation="horizontal">
       </data-point>
       <data-point id="signalStrength" header="Signal Strength"
-        value="[[signalStrength_]]"
-        orientation="horizontal">
+          value="[[signalStrength_]]"
+          orientation="horizontal">
       </data-point>
       <data-point id="channel" header="Channel"
-        value="[[getChannelDescription_(network.typeProperties.wifi.frequency)]]"
-        orientation="horizontal">
+          value="[[getChannelDescription_(
+            network.typeProperties.wifi.frequency)]]"
+          orientation="horizontal">
       </data-point>
     </div>
   </div>

@@ -25,7 +25,6 @@
     display: flex;
   }
 </style>
-
 <div id="networkListContainer" class="diagnostics-cards-container">
   <div class="diagnostics-cards-container">
     <template is="dom-if" if="[[activeGuid_]]">
@@ -43,7 +42,6 @@
   </dom-repeat>
   <div class="settings-link-container">
     <iron-icon icon="cr:settings_icon" id="settingsIcon"></iron-icon>
-    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]">
-    </div>
+    <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]"></div>
   </div>
 </div>
