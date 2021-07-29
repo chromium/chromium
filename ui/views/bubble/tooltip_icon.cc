@@ -13,6 +13,8 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/style/platform_style.h"
 
@@ -25,9 +27,10 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
       bubble_(nullptr),
       preferred_width_(0) {
   SetFocusBehavior(PlatformStyle::kDefaultFocusBehavior);
-  // TODO(pbos): This default FocusRing looks unpolished in this context,
-  // TooltipIcon should probably have padding and focus should show be a circle.
   FocusRing::Install(this);
+  SetBorder(CreateEmptyBorder(
+      LayoutProvider::Get()->GetInsetsMetric(INSETS_VECTOR_IMAGE_BUTTON)));
+  InstallCircleHighlightPathGenerator(this);
 }
 
 TooltipIcon::~TooltipIcon() {
