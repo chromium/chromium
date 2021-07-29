@@ -5,7 +5,6 @@
 #include "components/find_in_page/find_tab_helper.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
