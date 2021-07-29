@@ -133,6 +133,12 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     DVLOGF(1) << "Input visible size could not be empty";
     return false;
   }
+
+  if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
+    DVLOGF(1) << "Neither temporal nor spatial layer supported";
+    return false;
+  }
+
   visible_size_ = config.input_visible_size;
   // For 4:2:0, the pixel sizes have to be even.
   if ((visible_size_.width() % 2 != 0) || (visible_size_.height() % 2 != 0)) {
