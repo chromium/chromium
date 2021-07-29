@@ -68,6 +68,12 @@ ABSL_NAMESPACE_END
 #define ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE 1
 #endif
 
+#ifdef ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
+#error ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE cannot be directly set
+#elif defined(__EMSCRIPTEN__)
+#define ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE 1
+#endif
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {

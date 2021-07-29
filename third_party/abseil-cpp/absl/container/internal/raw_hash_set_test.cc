@@ -58,6 +58,9 @@ using ::testing::Lt;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
+// Convenience function to static cast to ctrl_t.
+ctrl_t CtrlT(int i) { return static_cast<ctrl_t>(i); }
+
 TEST(Util, NormalizeCapacity) {
   EXPECT_EQ(1, NormalizeCapacity(0));
   EXPECT_EQ(1, NormalizeCapacity(1));
@@ -170,15 +173,19 @@ TEST(Group, EmptyGroup) {
 
 TEST(Group, Match) {
   if (Group::kWidth == 16) {
-    ctrl_t group[] = {kEmpty, 1, kDeleted, 3, kEmpty, 5, kSentinel, 7,
-                      7,      5, 3,        1, 1,      1, 1,         1};
+    ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
+                      ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
+                      CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
+                      CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
     EXPECT_THAT(Group{group}.Match(0), ElementsAre());
     EXPECT_THAT(Group{group}.Match(1), ElementsAre(1, 11, 12, 13, 14, 15));
     EXPECT_THAT(Group{group}.Match(3), ElementsAre(3, 10));
     EXPECT_THAT(Group{group}.Match(5), ElementsAre(5, 9));
     EXPECT_THAT(Group{group}.Match(7), ElementsAre(7, 8));
   } else if (Group::kWidth == 8) {
-    ctrl_t group[] = {kEmpty, 1, 2, kDeleted, 2, 1, kSentinel, 1};
+    ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
+                      ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
+                      ctrl_t::kSentinel, CtrlT(1)};
     EXPECT_THAT(Group{group}.Match(0), ElementsAre());
     EXPECT_THAT(Group{group}.Match(1), ElementsAre(1, 5, 7));
     EXPECT_THAT(Group{group}.Match(2), ElementsAre(2, 4));
@@ -189,11 +196,15 @@ TEST(Group, Match) {
 
 TEST(Group, MatchEmpty) {
   if (Group::kWidth == 16) {
-    ctrl_t group[] = {kEmpty, 1, kDeleted, 3, kEmpty, 5, kSentinel, 7,
-                      7,      5, 3,        1, 1,      1, 1,         1};
+    ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
+                      ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
+                      CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
+                      CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
     EXPECT_THAT(Group{group}.MatchEmpty(), ElementsAre(0, 4));
   } else if (Group::kWidth == 8) {
-    ctrl_t group[] = {kEmpty, 1, 2, kDeleted, 2, 1, kSentinel, 1};
+    ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
+                      ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
+                      ctrl_t::kSentinel, CtrlT(1)};
     EXPECT_THAT(Group{group}.MatchEmpty(), ElementsAre(0));
   } else {
     FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
@@ -202,11 +213,15 @@ TEST(Group, MatchEmpty) {
 
 TEST(Group, MatchEmptyOrDeleted) {
   if (Group::kWidth == 16) {
-    ctrl_t group[] = {kEmpty, 1, kDeleted, 3, kEmpty, 5, kSentinel, 7,
-                      7,      5, 3,        1, 1,      1, 1,         1};
+    ctrl_t group[] = {ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted,  CtrlT(3),
+                      ctrl_t::kEmpty, CtrlT(5), ctrl_t::kSentinel, CtrlT(7),
+                      CtrlT(7),       CtrlT(5), CtrlT(3),          CtrlT(1),
+                      CtrlT(1),       CtrlT(1), CtrlT(1),          CtrlT(1)};
     EXPECT_THAT(Group{group}.MatchEmptyOrDeleted(), ElementsAre(0, 2, 4));
   } else if (Group::kWidth == 8) {
-    ctrl_t group[] = {kEmpty, 1, 2, kDeleted, 2, 1, kSentinel, 1};
+    ctrl_t group[] = {ctrl_t::kEmpty,    CtrlT(1), CtrlT(2),
+                      ctrl_t::kDeleted,  CtrlT(2), CtrlT(1),
+                      ctrl_t::kSentinel, CtrlT(1)};
     EXPECT_THAT(Group{group}.MatchEmptyOrDeleted(), ElementsAre(0, 3));
   } else {
     FAIL() << "No test coverage for Group::kWidth==" << Group::kWidth;
@@ -217,28 +232,32 @@ TEST(Batch, DropDeletes) {
   constexpr size_t kCapacity = 63;
   constexpr size_t kGroupWidth = container_internal::Group::kWidth;
   std::vector<ctrl_t> ctrl(kCapacity + 1 + kGroupWidth);
-  ctrl[kCapacity] = kSentinel;
-  std::vector<ctrl_t> pattern = {kEmpty, 2, kDeleted, 2, kEmpty, 1, kDeleted};
+  ctrl[kCapacity] = ctrl_t::kSentinel;
+  std::vector<ctrl_t> pattern = {
+      ctrl_t::kEmpty, CtrlT(2), ctrl_t::kDeleted, CtrlT(2),
+      ctrl_t::kEmpty, CtrlT(1), ctrl_t::kDeleted};
   for (size_t i = 0; i != kCapacity; ++i) {
     ctrl[i] = pattern[i % pattern.size()];
     if (i < kGroupWidth - 1)
       ctrl[i + kCapacity + 1] = pattern[i % pattern.size()];
   }
   ConvertDeletedToEmptyAndFullToDeleted(ctrl.data(), kCapacity);
-  ASSERT_EQ(ctrl[kCapacity], kSentinel);
+  ASSERT_EQ(ctrl[kCapacity], ctrl_t::kSentinel);
   for (size_t i = 0; i < kCapacity + kGroupWidth; ++i) {
     ctrl_t expected = pattern[i % (kCapacity + 1) % pattern.size()];
-    if (i == kCapacity) expected = kSentinel;
-    if (expected == kDeleted) expected = kEmpty;
-    if (IsFull(expected)) expected = kDeleted;
+    if (i == kCapacity) expected = ctrl_t::kSentinel;
+    if (expected == ctrl_t::kDeleted) expected = ctrl_t::kEmpty;
+    if (IsFull(expected)) expected = ctrl_t::kDeleted;
     EXPECT_EQ(ctrl[i], expected)
-        << i << " " << int{pattern[i % pattern.size()]};
+        << i << " " << static_cast<int>(pattern[i % pattern.size()]);
   }
 }
 
 TEST(Group, CountLeadingEmptyOrDeleted) {
-  const std::vector<ctrl_t> empty_examples = {kEmpty, kDeleted};
-  const std::vector<ctrl_t> full_examples = {0, 1, 2, 3, 5, 9, 127, kSentinel};
+  const std::vector<ctrl_t> empty_examples = {ctrl_t::kEmpty, ctrl_t::kDeleted};
+  const std::vector<ctrl_t> full_examples = {
+      CtrlT(0), CtrlT(1), CtrlT(2),   CtrlT(3),
+      CtrlT(5), CtrlT(9), CtrlT(127), ctrl_t::kSentinel};
 
   for (ctrl_t empty : empty_examples) {
     std::vector<ctrl_t> e(Group::kWidth, empty);
@@ -871,7 +890,7 @@ TEST(Table, RehashWithNoResize) {
   const size_t capacity = t.capacity();
 
   // Remove elements from all groups except the first and the last one.
-  // All elements removed from full groups will be marked as kDeleted.
+  // All elements removed from full groups will be marked as ctrl_t::kDeleted.
   const size_t erase_begin = Group::kWidth / 2;
   const size_t erase_end = (t.size() / Group::kWidth - 1) * Group::kWidth;
   for (size_t i = erase_begin; i < erase_end; ++i) {

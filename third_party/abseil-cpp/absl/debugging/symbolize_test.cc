@@ -146,8 +146,22 @@ static const char *TrySymbolize(void *pc) {
   return TrySymbolizeWithLimit(pc, sizeof(try_symbolize_buffer));
 }
 
-#if defined(ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE) || \
-    defined(ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE)
+#if defined(ABSL_INTERNAL_HAVE_ELF_SYMBOLIZE) ||    \
+    defined(ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE) || \
+    defined(ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE)
+
+// Test with a return address.
+void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
+#if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
+  void *return_address = __builtin_return_address(0);
+  const char *symbol = TrySymbolize(return_address);
+  ABSL_RAW_CHECK(symbol != nullptr, "TestWithReturnAddress failed");
+  ABSL_RAW_CHECK(strcmp(symbol, "main") == 0, "TestWithReturnAddress failed");
+  std::cout << "TestWithReturnAddress passed" << std::endl;
+#endif
+}
+
+#ifndef ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
 
 TEST(Symbolize, Cached) {
   // Compilers should give us pointers to them.
@@ -418,6 +432,7 @@ TEST(Symbolize, ForEachSection) {
   close(fd);
 }
 #endif  // !ABSL_INTERNAL_HAVE_DARWIN_SYMBOLIZE
+#endif  // !ABSL_INTERNAL_HAVE_EMSCRIPTEN_SYMBOLIZE
 
 // x86 specific tests.  Uses some inline assembler.
 extern "C" {
@@ -464,17 +479,6 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithPCInsideInlineFunction() {
   std::cout << "TestWithPCInsideInlineFunction passed" << std::endl;
 #endif
 }
-}
-
-// Test with a return address.
-void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
-#if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
-  void *return_address = __builtin_return_address(0);
-  const char *symbol = TrySymbolize(return_address);
-  ABSL_RAW_CHECK(symbol != nullptr, "TestWithReturnAddress failed");
-  ABSL_RAW_CHECK(strcmp(symbol, "main") == 0, "TestWithReturnAddress failed");
-  std::cout << "TestWithReturnAddress passed" << std::endl;
-#endif
 }
 
 #if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
@@ -559,7 +563,6 @@ TEST(Symbolize, SymbolizeWithDemangling) {
 
 #endif  // !defined(ABSL_CONSUME_DLL)
 #else  // Symbolizer unimplemented
-
 TEST(Symbolize, Unimplemented) {
   char buf[64];
   EXPECT_FALSE(absl::Symbolize((void *)(&nonstatic_func), buf, sizeof(buf)));

@@ -270,12 +270,14 @@ cc_library(
     srcs = [
         "internal/cord_internal.cc",
         "internal/cord_rep_btree.cc",
+        "internal/cord_rep_btree_navigator.cc",
         "internal/cord_rep_consume.cc",
         "internal/cord_rep_ring.cc",
     ],
     hdrs = [
         "internal/cord_internal.h",
         "internal/cord_rep_btree.h",
+        "internal/cord_rep_btree_navigator.h",
         "internal/cord_rep_consume.h",
         "internal/cord_rep_flat.h",
         "internal/cord_rep_ring.h",
@@ -306,6 +308,22 @@ cc_test(
     name = "cord_rep_btree_test",
     size = "medium",
     srcs = ["internal/cord_rep_btree_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":cord_rep_test_util",
+        ":strings",
+        "//absl/base:config",
+        "//absl/base:raw_logging_internal",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_rep_btree_navigator_test",
+    size = "medium",
+    srcs = ["internal/cord_rep_btree_navigator_test.cc"],
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [

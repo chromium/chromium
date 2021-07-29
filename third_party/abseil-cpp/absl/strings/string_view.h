@@ -191,7 +191,9 @@ class string_view {
           ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept
       // This is implemented in terms of `string_view(p, n)` so `str.size()`
       // doesn't need to be reevaluated after `ptr_` is set.
-      : string_view(str.data(), str.size()) {}
+      // The length check is also skipped since it is unnecessary and causes
+      // code bloat.
+      : string_view(str.data(), str.size(), SkipCheckLengthTag{}) {}
 
   // Implicit constructor of a `string_view` from NUL-terminated `str`. When
   // accepting possibly null strings, use `absl::NullSafeStringView(str)`
@@ -594,6 +596,12 @@ class string_view {
   }
 
  private:
+  // The constructor from std::string delegates to this constuctor.
+  // See the comment on that constructor for the rationale.
+  struct SkipCheckLengthTag {};
+  string_view(const char* data, size_type len, SkipCheckLengthTag) noexcept
+      : ptr_(data), length_(len) {}
+
   static constexpr size_type kMaxSize =
       (std::numeric_limits<difference_type>::max)();
 

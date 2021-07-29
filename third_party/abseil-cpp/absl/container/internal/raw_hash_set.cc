@@ -37,24 +37,22 @@ inline size_t RandomSeed() {
   return value ^ static_cast<size_t>(reinterpret_cast<uintptr_t>(&counter));
 }
 
-bool ShouldInsertBackwards(size_t hash, ctrl_t* ctrl) {
+bool ShouldInsertBackwards(size_t hash, const ctrl_t* ctrl) {
   // To avoid problems with weak hashes and single bit tests, we use % 13.
   // TODO(kfm,sbenza): revisit after we do unconditional mixing
   return (H1(hash, ctrl) ^ RandomSeed()) % 13 > 6;
 }
 
-void ConvertDeletedToEmptyAndFullToDeleted(
-    ctrl_t* ctrl, size_t capacity) {
-  assert(ctrl[capacity] == kSentinel);
+void ConvertDeletedToEmptyAndFullToDeleted(ctrl_t* ctrl, size_t capacity) {
+  assert(ctrl[capacity] == ctrl_t::kSentinel);
   assert(IsValidCapacity(capacity));
   for (ctrl_t* pos = ctrl; pos < ctrl + capacity; pos += Group::kWidth) {
     Group{pos}.ConvertSpecialToEmptyAndFullToDeleted(pos);
   }
   // Copy the cloned ctrl bytes.
   std::memcpy(ctrl + capacity + 1, ctrl, NumClonedBytes());
-  ctrl[capacity] = kSentinel;
+  ctrl[capacity] = ctrl_t::kSentinel;
 }
-
 
 }  // namespace container_internal
 ABSL_NAMESPACE_END

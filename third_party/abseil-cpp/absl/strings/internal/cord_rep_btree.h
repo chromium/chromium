@@ -507,9 +507,9 @@ inline const CordRepBtree* CordRep::btree() const {
 
 inline void CordRepBtree::InitInstance(int height, size_t begin, size_t end) {
   tag = BTREE;
-  storage[0] = height;
-  storage[1] = begin;
-  storage[2] = end;
+  storage[0] = static_cast<uint8_t>(height);
+  storage[1] = static_cast<uint8_t>(begin);
+  storage[2] = static_cast<uint8_t>(end);
 }
 
 inline CordRep* CordRepBtree::Edge(size_t index) const {

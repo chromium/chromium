@@ -287,7 +287,7 @@ EXPORTS
     ?Consume@cord_internal@absl@@YAXPAUCordRep@12@V?$FunctionRef@$$A6AXPAUCordRep@cord_internal@absl@@II@Z@2@@Z
     ?ConsumeUnboundConversion@str_format_internal@absl@@YAPBDPBD0PAUUnboundConversion@12@PAH@Z
     ?ConvertDateTime@absl@@YA?AUTimeConversion@1@_JHHHHHVTimeZone@1@@Z
-    ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPACI@Z
+    ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPAW4ctrl_t@12@I@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NMABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
@@ -609,6 +609,7 @@ EXPORTS
     ?PutPaddedString@FormatSinkImpl@str_format_internal@absl@@QAE_NVstring_view@3@HH_N@Z
     ?RawLog@raw_logging_internal@absl@@YAXW4LogSeverity@2@PBDH1ZZ
     ?RawLoggingFullySupported@raw_logging_internal@absl@@YA_NXZ
+    ?Read@CordRepBtreeNavigator@cord_internal@absl@@QAE?AUReadResult@123@II@Z
     ?ReadDigits@?$BigUnsigned@$03@strings_internal@absl@@AAEHPBD0H@Z
     ?ReadDigits@?$BigUnsigned@$0FE@@strings_internal@absl@@AAEHPBD0H@Z
     ?ReadFloatMantissa@?$BigUnsigned@$03@strings_internal@absl@@QAEHABUParsedFloat@23@H@Z
@@ -663,7 +664,7 @@ EXPORTS
     ?SetToZero@?$BigUnsigned@$0FE@@strings_internal@absl@@QAEXXZ
     ?ShiftLeft@?$BigUnsigned@$03@strings_internal@absl@@QAEXH@Z
     ?ShiftLeft@?$BigUnsigned@$0FE@@strings_internal@absl@@QAEXH@Z
-    ?ShouldInsertBackwards@container_internal@absl@@YA_NIPAC@Z
+    ?ShouldInsertBackwards@container_internal@absl@@YA_NIPBW4ctrl_t@12@@Z
     ?Signal@CondVar@absl@@QAEXXZ
     ?SignalAll@CondVar@absl@@QAEXXZ
     ?SimpleAtob@absl@@YA_NVstring_view@1@PA_N@Z
@@ -673,6 +674,7 @@ EXPORTS
     ?SizeofCordRepConcat@CordTestAccess@strings_internal@absl@@SAIXZ
     ?SizeofCordRepExternal@CordTestAccess@strings_internal@absl@@SAIXZ
     ?SizeofCordRepSubstring@CordTestAccess@strings_internal@absl@@SAIXZ
+    ?Skip@CordRepBtreeNavigator@cord_internal@absl@@QAE?AUPosition@123@I@Z
     ?SlowLock@SpinLock@base_internal@absl@@AAEXXZ
     ?SlowUnlock@SpinLock@base_internal@absl@@AAEXI@Z
     ?SnprintF@str_format_internal@absl@@YAHPADIVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z

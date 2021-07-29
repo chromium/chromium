@@ -49,6 +49,7 @@
 
 # include "absl/debugging/internal/stacktrace_aarch64-inl.inc"
 # include "absl/debugging/internal/stacktrace_arm-inl.inc"
+# include "absl/debugging/internal/stacktrace_emscripten-inl.inc"
 # include "absl/debugging/internal/stacktrace_generic-inl.inc"
 # include "absl/debugging/internal/stacktrace_powerpc-inl.inc"
 # include "absl/debugging/internal/stacktrace_unimplemented-inl.inc"

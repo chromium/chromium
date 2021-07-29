@@ -17,7 +17,6 @@ EXPORTS
     ??$Base64EscapeInternal@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@strings_internal@absl@@YAXPEBE_KPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@_NPEBD@Z
     ??$CallOnceImpl@A6AXXZ$$V@base_internal@absl@@YAXPEAU?$atomic@I@__1@std@@W4SchedulingMode@01@A6AXXZ@Z
     ??$CastAndCallFunction@$$CBU?$atomic@_N@__1@std@@@Condition@absl@@CA_NPEBV01@@Z
-    ??$Compare@$0FE@$0FE@@strings_internal@absl@@YAHAEBV?$BigUnsigned@$0FE@@01@0@Z
     ??$Dispatch@C@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
     ??$Dispatch@D@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
     ??$Dispatch@E@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
@@ -304,7 +303,7 @@ EXPORTS
     ?Consume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?ConsumeUnboundConversion@str_format_internal@absl@@YAPEBDPEBD0PEAUUnboundConversion@12@PEAH@Z
     ?ConvertDateTime@absl@@YA?AUTimeConversion@1@_JHHHHHVTimeZone@1@@Z
-    ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPEAC_K@Z
+    ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPEAW4ctrl_t@12@_K@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NMAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOAEBVFormatConversionSpecImpl@12@PEAVFormatSinkImpl@12@@Z
@@ -627,6 +626,7 @@ EXPORTS
     ?PutPaddedString@FormatSinkImpl@str_format_internal@absl@@QEAA_NVstring_view@3@HH_N@Z
     ?RawLog@raw_logging_internal@absl@@YAXW4LogSeverity@2@PEBDH1ZZ
     ?RawLoggingFullySupported@raw_logging_internal@absl@@YA_NXZ
+    ?Read@CordRepBtreeNavigator@cord_internal@absl@@QEAA?AUReadResult@123@_K0@Z
     ?ReadDigits@?$BigUnsigned@$03@strings_internal@absl@@AEAAHPEBD0H@Z
     ?ReadDigits@?$BigUnsigned@$0FE@@strings_internal@absl@@AEAAHPEBD0H@Z
     ?ReadFloatMantissa@?$BigUnsigned@$03@strings_internal@absl@@QEAAHAEBUParsedFloat@23@H@Z
@@ -681,7 +681,7 @@ EXPORTS
     ?SetToZero@?$BigUnsigned@$0FE@@strings_internal@absl@@QEAAXXZ
     ?ShiftLeft@?$BigUnsigned@$03@strings_internal@absl@@QEAAXH@Z
     ?ShiftLeft@?$BigUnsigned@$0FE@@strings_internal@absl@@QEAAXH@Z
-    ?ShouldInsertBackwards@container_internal@absl@@YA_N_KPEAC@Z
+    ?ShouldInsertBackwards@container_internal@absl@@YA_N_KPEBW4ctrl_t@12@@Z
     ?Signal@CondVar@absl@@QEAAXXZ
     ?SignalAll@CondVar@absl@@QEAAXXZ
     ?SimpleAtob@absl@@YA_NVstring_view@1@PEA_N@Z
@@ -691,6 +691,7 @@ EXPORTS
     ?SizeofCordRepConcat@CordTestAccess@strings_internal@absl@@SA_KXZ
     ?SizeofCordRepExternal@CordTestAccess@strings_internal@absl@@SA_KXZ
     ?SizeofCordRepSubstring@CordTestAccess@strings_internal@absl@@SA_KXZ
+    ?Skip@CordRepBtreeNavigator@cord_internal@absl@@QEAA?AUPosition@123@_K@Z
     ?SlowLock@SpinLock@base_internal@absl@@AEAAXXZ
     ?SlowUnlock@SpinLock@base_internal@absl@@AEAAXI@Z
     ?SnprintF@str_format_internal@absl@@YAHPEAD_KVUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z

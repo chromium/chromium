@@ -195,6 +195,7 @@ if (build_with_chromium) {
         "absl/strings:cordz_info_test",
         "absl/strings:cordz_test",
         "absl/strings:cordz_update_scope_test",
+        "absl/strings:cord_rep_btree_navigator_test",
         "absl/strings:cordz_update_tracker_test",
         "absl/strings:match_test",
         "absl/strings:str_replace_test",
