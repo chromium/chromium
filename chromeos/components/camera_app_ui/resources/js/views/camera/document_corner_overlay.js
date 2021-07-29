@@ -219,6 +219,10 @@ export class DocumentCornerOverlay {
       return;
     }
     const deviceOperator = await DeviceOperator.getInstance();
+    if (deviceOperator === null) {
+      // Skip showing indicator on fake camera.
+      return;
+    }
     this.detectorId_ = await deviceOperator.registerDocumentCornersDetector(
         assertString(this.deviceId_), (corners) => {
           if (corners.length === 0) {

@@ -31,7 +31,6 @@ export const I18nString = {
   DOCUMENT_MODE_DIALOG_TITLE: 'document_mode_dialog_title',
   ERROR_MSG_CAMERA_PAUSED: 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING: 'error_msg_empty_recording',
-  ERROR_MSG_EXPERT_MODE_NOT_SUPPORTED: 'error_msg_expert_mode_not_supported',
   ERROR_MSG_FILE_SYSTEM_FAILED: 'error_msg_file_system_failed',
   ERROR_MSG_GALLERY_EXPORT_FAILED: 'error_msg_gallery_export_failed',
   ERROR_MSG_NO_CAMERA: 'error_msg_no_camera',

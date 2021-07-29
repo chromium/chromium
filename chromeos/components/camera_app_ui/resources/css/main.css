@@ -874,6 +874,10 @@ body.mirror:not(.streaming) #preview-video {
   transform: scale(-1.03, 1.03);
 }
 
+body.use-fake-camera #view-expert-settings label.require-chromeos-vcd {
+  display: none;
+}
+
 #expert-controls {
   font-size: 14px;
   left: 60px;
