@@ -84,6 +84,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/badging/badge_manager.h"
+#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
 #include "components/pdf/browser/pdf_web_contents_helper.h"  // nogncheck
 #endif
 
@@ -360,6 +361,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     PluginObserver::BindPluginHost(
         mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost>(
             std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
+#if !defined(OS_ANDROID)
+  if (interface_name == chrome::mojom::SyncEncryptionKeysExtension::Name_) {
+    SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
+        mojo::PendingAssociatedReceiver<
+            chrome::mojom::SyncEncryptionKeysExtension>(std::move(*handle)),
         render_frame_host);
     return true;
   }

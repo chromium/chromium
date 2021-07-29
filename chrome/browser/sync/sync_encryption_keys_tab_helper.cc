@@ -17,8 +17,8 @@
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -49,12 +49,15 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
  public:
   EncryptionKeyApi(content::WebContents* web_contents,
                    syncer::SyncService* sync_service)
-      : sync_service_(sync_service),
-        receivers_(web_contents,
-                   this,
-                   content::WebContentsFrameReceiverSetPassKey()) {
+      : sync_service_(sync_service), receivers_(web_contents, this) {
     DCHECK(web_contents);
     DCHECK(sync_service);
+  }
+
+  void BindReceiver(mojo::PendingAssociatedReceiver<
+                        chrome::mojom::SyncEncryptionKeysExtension> receiver,
+                    content::RenderFrameHost* rfh) {
+    receivers_.Bind(rfh, std::move(receiver));
   }
 
   // chrome::mojom::SyncEncryptionKeysExtension:
@@ -97,7 +100,7 @@ class SyncEncryptionKeysTabHelper::EncryptionKeyApi
  private:
   syncer::SyncService* const sync_service_;
 
-  content::WebContentsFrameReceiverSet<
+  content::RenderFrameHostReceiverSet<
       chrome::mojom::SyncEncryptionKeysExtension>
       receivers_;
 
@@ -128,6 +131,20 @@ void SyncEncryptionKeysTabHelper::CreateForWebContents(
                                 web_contents, sync_service)));
 }
 
+// static
+void SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(
+    mojo::PendingAssociatedReceiver<chrome::mojom::SyncEncryptionKeysExtension>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = SyncEncryptionKeysTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->encryption_key_api_->BindReceiver(std::move(receiver), rfh);
+}
+
 SyncEncryptionKeysTabHelper::SyncEncryptionKeysTabHelper(
     content::WebContents* web_contents,
     syncer::SyncService* sync_service)
@@ -154,6 +171,10 @@ void SyncEncryptionKeysTabHelper::DidFinishNavigation(
     encryption_key_api_ =
         std::make_unique<EncryptionKeyApi>(web_contents(), sync_service_);
   }
+}
+
+bool SyncEncryptionKeysTabHelper::IsEncryptionKeysApiBoundForTesting() {
+  return encryption_key_api_ != nullptr;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncEncryptionKeysTabHelper)

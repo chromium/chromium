@@ -12,7 +12,6 @@
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -39,13 +38,14 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
     SyncEncryptionKeysTabHelper::CreateForWebContents(web_contents());
   }
 
-  content::WebContentsTester* web_contents_tester() {
-    return content::WebContentsTester::For(web_contents());
+  bool IsEncryptionKeysApiBound() {
+    auto* tab_helper =
+        SyncEncryptionKeysTabHelper::FromWebContents(web_contents());
+    return tab_helper->IsEncryptionKeysApiBoundForTesting();
   }
 
-  content::WebContentsReceiverSet* frame_receiver_set() {
-    return content::WebContentsReceiverSet::GetForWebContents<
-        chrome::mojom::SyncEncryptionKeysExtension>(web_contents());
+  content::WebContentsTester* web_contents_tester() {
+    return content::WebContentsTester::For(web_contents());
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -60,22 +60,22 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(SyncEncryptionKeysTabHelperTest, ShouldExposeMojoApiToAllowedOrigin) {
-  ASSERT_THAT(frame_receiver_set(), IsNull());
+  ASSERT_FALSE(IsEncryptionKeysApiBound());
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
-  EXPECT_THAT(frame_receiver_set(), NotNull());
+  EXPECT_TRUE(IsEncryptionKeysApiBound());
 }
 
 TEST_F(SyncEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiToUnallowedOrigin) {
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));
-  EXPECT_THAT(frame_receiver_set(), IsNull());
+  EXPECT_FALSE(IsEncryptionKeysApiBound());
 }
 
 TEST_F(SyncEncryptionKeysTabHelperTest, ShouldNotExposeMojoApiIfNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
-  ASSERT_THAT(frame_receiver_set(), NotNull());
+  ASSERT_TRUE(IsEncryptionKeysApiBound());
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));
-  EXPECT_THAT(frame_receiver_set(), IsNull());
+  EXPECT_FALSE(IsEncryptionKeysApiBound());
 }
 
 TEST_F(SyncEncryptionKeysTabHelperTest,
@@ -83,7 +83,7 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   content::RenderFrameHost* subframe =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  ASSERT_THAT(frame_receiver_set(), NotNull());
+  ASSERT_TRUE(IsEncryptionKeysApiBound());
 
   content::NavigationSimulator::CreateRendererInitiated(GURL("http://page.com"),
                                                         subframe)
@@ -91,23 +91,23 @@ TEST_F(SyncEncryptionKeysTabHelperTest,
   // For the receiver set to be fully updated, a mainframe navigation is needed.
   // Otherwise the test passes regardless of whether the logic is buggy.
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
-  EXPECT_THAT(frame_receiver_set(), NotNull());
+  EXPECT_TRUE(IsEncryptionKeysApiBound());
 }
 
 TEST_F(SyncEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiIfNavigationFailed) {
   web_contents_tester()->NavigateAndFail(GaiaUrls::GetInstance()->gaia_url(),
                                          net::ERR_ABORTED);
-  EXPECT_THAT(frame_receiver_set(), IsNull());
+  EXPECT_FALSE(IsEncryptionKeysApiBound());
 }
 
 TEST_F(SyncEncryptionKeysTabHelperTest,
        ShouldNotExposeMojoApiIfNavigatedAwayToErrorPage) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
-  ASSERT_THAT(frame_receiver_set(), NotNull());
+  ASSERT_TRUE(IsEncryptionKeysApiBound());
   web_contents_tester()->NavigateAndFail(GURL("http://page.com"),
                                          net::ERR_ABORTED);
-  EXPECT_THAT(frame_receiver_set(), IsNull());
+  EXPECT_FALSE(IsEncryptionKeysApiBound());
 }
 
 }  // namespace
