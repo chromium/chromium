@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
