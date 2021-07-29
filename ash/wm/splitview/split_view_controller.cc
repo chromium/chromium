@@ -1010,6 +1010,11 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
 
   const bool horizontal = IsLayoutHorizontal();
   const bool snap_left_or_top = IsPhysicalLeftOrTop(snap_position);
+
+  // TODO(crbug.com/1231308): Clean-up: make sure only tablet mode uses
+  // SplitViewController and migrate
+  // `SplitViewController::GetSnappedWindowBoundsInScreen()` calls in clamshell
+  // mode to `GetSnappedWindowBounds()` in window_positioning_utils.cc.
   const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
   const int work_area_size = GetDividerEndPosition();
   const int divider_position =

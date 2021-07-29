@@ -207,4 +207,44 @@ std::u16string GetDisplayErrorNotificationMessageForTest() {
   return std::u16string();
 }
 
+OrientationLockType GetDisplayNaturalOrientation(
+    const display::Display& display) {
+  const display::ManagedDisplayInfo& info =
+      Shell::Get()->display_manager()->GetDisplayInfo(display.id());
+  const gfx::Size size = info.GetSizeInPixelWithPanelOrientation();
+  return size.width() > size.height() ? OrientationLockType::kLandscape
+                                      : OrientationLockType::kPortrait;
+}
+
+OrientationLockType RotationToOrientation(OrientationLockType natural,
+                                          display::Display::Rotation rotation) {
+  if (natural == OrientationLockType::kLandscape) {
+    // To be consistent with Android, the rotation of the primary portrait
+    // on naturally landscape device is 270.
+    switch (rotation) {
+      case display::Display::ROTATE_0:
+        return OrientationLockType::kLandscapePrimary;
+      case display::Display::ROTATE_90:
+        return OrientationLockType::kPortraitSecondary;
+      case display::Display::ROTATE_180:
+        return OrientationLockType::kLandscapeSecondary;
+      case display::Display::ROTATE_270:
+        return OrientationLockType::kPortraitPrimary;
+    }
+  } else {  // Natural portrait
+    switch (rotation) {
+      case display::Display::ROTATE_0:
+        return OrientationLockType::kPortraitPrimary;
+      case display::Display::ROTATE_90:
+        return OrientationLockType::kLandscapePrimary;
+      case display::Display::ROTATE_180:
+        return OrientationLockType::kPortraitSecondary;
+      case display::Display::ROTATE_270:
+        return OrientationLockType::kLandscapeSecondary;
+    }
+  }
+  NOTREACHED();
+  return OrientationLockType::kAny;
+}
+
 }  // namespace ash

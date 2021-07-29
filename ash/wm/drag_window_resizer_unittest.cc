@@ -709,7 +709,7 @@ TEST_F(DragWindowResizerTest, WarpMousePointer) {
 TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
   // The secondary display is logically on the right, but on the system (e.g. X)
   // layer, it's below the primary one. See UpdateDisplay() in ash_test_base.cc.
-  UpdateDisplay("400x400,800x800*2");
+  UpdateDisplay("600x400,1000x800*2");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2U, root_windows.size());
   const display::Display display0 =
@@ -763,7 +763,7 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
 TEST_F(DragWindowResizerTest, MoveWindowAcrossDisplays) {
   // The secondary display is logically on the right, but on the system (e.g. X)
   // layer, it's below the primary one. See UpdateDisplay() in ash_test_base.cc.
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("400x300,400x300");
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   ASSERT_EQ(2U, root_windows.size());

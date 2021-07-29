@@ -1122,7 +1122,7 @@ TEST_F(FullscreenMagnifierControllerTest, DragWindow) {
 
 // Tests that the magnifier gets updated while drag a window across displays.
 TEST_F(FullscreenMagnifierControllerTest, DragWindowAcrossDisplays) {
-  UpdateDisplay("0+0-500x500, 500+0-500x500");
+  UpdateDisplay("0+0-500x450, 500+0-500x450");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   // Create a window and start dragging by grabbing its caption.

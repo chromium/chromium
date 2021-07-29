@@ -689,6 +689,8 @@ void WindowState::AdjustSnappedBounds(gfx::Rect* bounds) {
     return;
   gfx::Rect maximized_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window_);
+  // TODO(crbug.com/1233342): Update snap width ratio to snap ratio to support
+  // vertical split.
   if (snapped_width_ratio_) {
     bounds->set_width(
         static_cast<int>(*snapped_width_ratio_ * maximized_bounds.width()));

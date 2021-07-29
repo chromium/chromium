@@ -11,6 +11,7 @@
 #include "ash/accelerometer/accelerometer_types.h"
 #include "ash/ash_export.h"
 #include "ash/display/display_configuration_controller.h"
+#include "ash/display/display_util.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -28,18 +29,6 @@ class Window;
 }
 
 namespace ash {
-
-enum class OrientationLockType {
-  kAny,
-  kNatural,
-  kCurrent,
-  kPortrait,
-  kLandscape,
-  kPortraitPrimary,
-  kPortraitSecondary,
-  kLandscapePrimary,
-  kLandscapeSecondary,
-};
 
 // Test if the orientation lock type is primary/landscape/portrait.
 bool IsPrimaryOrientation(OrientationLockType type);

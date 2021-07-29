@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ui/display/display.h"
 
 namespace aura {
 class Window;
@@ -26,6 +27,18 @@ class Rect;
 namespace ash {
 class AshWindowTreeHost;
 class MouseWarpController;
+
+enum class OrientationLockType {
+  kAny,
+  kNatural,
+  kCurrent,
+  kPortrait,
+  kLandscape,
+  kPortraitPrimary,
+  kPortraitSecondary,
+  kLandscapePrimary,
+  kLandscapeSecondary,
+};
 
 // Creates a MouseWarpController for the current display
 // configuration. |drag_source| is the window where dragging
@@ -61,6 +74,15 @@ bool IsRectContainedByAnyDisplay(const gfx::Rect& rect_in_screen);
 ASH_EXPORT std::u16string ConvertRefreshRateToString16(float refresh_rate);
 
 ASH_EXPORT std::u16string GetDisplayErrorNotificationMessageForTest();
+
+// Returns the orientation of a |display| at a rotation of 0.
+OrientationLockType GetDisplayNaturalOrientation(
+    const display::Display& display);
+
+// Returns orientation type when rotating a display with |natural|
+// orientation with |rotation|.
+OrientationLockType RotationToOrientation(OrientationLockType natural,
+                                          display::Display::Rotation rotation);
 
 }  // namespace ash
 

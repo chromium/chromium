@@ -411,10 +411,9 @@ TEST_F(SystemGestureEventFilterTest, DragLeftNearEdgeSnaps) {
   int drag_x = work_area.x() + 20 - points[0].x();
   generator.GestureMultiFingerScroll(kTouchPoints, points, 120, kSteps, drag_x,
                                      0);
-
-  EXPECT_EQ(
-      GetDefaultLeftSnappedWindowBoundsInParent(toplevel_window).ToString(),
-      toplevel_window->bounds().ToString());
+  EXPECT_EQ(GetDefaultSnappedWindowBoundsInParent(toplevel_window,
+                                                  SnapViewType::kPrimary),
+            toplevel_window->bounds());
 }
 
 TEST_F(SystemGestureEventFilterTest, DragRightNearEdgeSnaps) {
@@ -440,9 +439,9 @@ TEST_F(SystemGestureEventFilterTest, DragRightNearEdgeSnaps) {
   int drag_x = work_area.right() - 20 - points[0].x();
   generator.GestureMultiFingerScroll(kTouchPoints, points, 120, kSteps, drag_x,
                                      0);
-  EXPECT_EQ(
-      GetDefaultRightSnappedWindowBoundsInParent(toplevel_window).ToString(),
-      toplevel_window->bounds().ToString());
+  EXPECT_EQ(GetDefaultSnappedWindowBoundsInParent(toplevel_window,
+                                                  SnapViewType::kSecondary),
+            toplevel_window->bounds());
 }
 
 // Tests that the window manager does not consume gesture events targeted to

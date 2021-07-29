@@ -34,8 +34,10 @@ void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
   }
   gfx::Rect phantom_bounds_in_screen =
       (snap == chromeos::SnapDirection::kLeft)
-          ? GetDefaultLeftSnappedWindowBoundsInParent(window)
-          : GetDefaultRightSnappedWindowBoundsInParent(window);
+          ? GetDefaultSnappedWindowBoundsInParent(window,
+                                                  SnapViewType::kPrimary)
+          : GetDefaultSnappedWindowBoundsInParent(window,
+                                                  SnapViewType::kSecondary);
   ::wm::ConvertRectToScreen(window->parent(), &phantom_bounds_in_screen);
   phantom_window_controller_->Show(phantom_bounds_in_screen);
 }

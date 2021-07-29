@@ -538,8 +538,8 @@ TEST_F(WorkspaceWindowResizerTest, Edge) {
   WindowState* window_state = WindowState::Get(window_.get());
 
   {
-    gfx::Rect expected_bounds_in_parent(
-        GetDefaultLeftSnappedWindowBoundsInParent(window_.get()));
+    gfx::Rect expected_bounds_in_parent(GetDefaultSnappedWindowBoundsInParent(
+        window_.get(), SnapViewType::kPrimary));
 
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get());
@@ -555,8 +555,8 @@ TEST_F(WorkspaceWindowResizerTest, Edge) {
   }
   // Try the same with the right side.
   {
-    gfx::Rect expected_bounds_in_parent(
-        GetDefaultRightSnappedWindowBoundsInParent(window_.get()));
+    gfx::Rect expected_bounds_in_parent(GetDefaultSnappedWindowBoundsInParent(
+        window_.get(), SnapViewType::kSecondary));
 
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get());

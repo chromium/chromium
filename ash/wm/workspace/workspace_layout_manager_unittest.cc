@@ -563,7 +563,7 @@ TEST_F(WorkspaceLayoutManagerTest, NotifyFullscreenChanges) {
 // GetTargetBounds to check if snapped bounds need to be changed.
 TEST_F(WorkspaceLayoutManagerTest,
        SnappedWindowMayNotAdjustBoundsOnWorkAreaChanged) {
-  UpdateDisplay("300x400");
+  UpdateDisplay("600x400");
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));
   WindowState* window_state = WindowState::Get(window.get());
@@ -596,7 +596,7 @@ TEST_F(WorkspaceLayoutManagerTest,
 // area width change, the snapped window width is updated upon snapped width
 // ratio (crbug.com/688583).
 TEST_F(WorkspaceLayoutManagerTest, AdjustSnappedBoundsWidth) {
-  UpdateDisplay("300x400");
+  UpdateDisplay("600x400");
   // Create two snapped windows, one left snapped, one right snapped.
   std::unique_ptr<aura::Window> window1(
       CreateTestWindow(gfx::Rect(10, 20, 100, 200)));

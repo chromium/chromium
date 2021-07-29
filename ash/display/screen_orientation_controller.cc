@@ -51,37 +51,6 @@ OrientationLockType GetDisplayNaturalOrientation() {
                                       : OrientationLockType::kPortrait;
 }
 
-OrientationLockType RotationToOrientation(OrientationLockType natural,
-                                          display::Display::Rotation rotation) {
-  if (natural == OrientationLockType::kLandscape) {
-    // To be consistent with Android, the rgotation of the primary portrait
-    // on naturally landscape device is 270.
-    switch (rotation) {
-      case display::Display::ROTATE_0:
-        return OrientationLockType::kLandscapePrimary;
-      case display::Display::ROTATE_90:
-        return OrientationLockType::kPortraitSecondary;
-      case display::Display::ROTATE_180:
-        return OrientationLockType::kLandscapeSecondary;
-      case display::Display::ROTATE_270:
-        return OrientationLockType::kPortraitPrimary;
-    }
-  } else {  // Natural portrait
-    switch (rotation) {
-      case display::Display::ROTATE_0:
-        return OrientationLockType::kPortraitPrimary;
-      case display::Display::ROTATE_90:
-        return OrientationLockType::kLandscapePrimary;
-      case display::Display::ROTATE_180:
-        return OrientationLockType::kPortraitSecondary;
-      case display::Display::ROTATE_270:
-        return OrientationLockType::kLandscapeSecondary;
-    }
-  }
-  NOTREACHED();
-  return OrientationLockType::kAny;
-}
-
 // Returns the rotation that matches the orientation type.
 // Returns ROTATE_0 if the given orientation is ANY, which is used
 // to indicate that user didn't lock orientation.
