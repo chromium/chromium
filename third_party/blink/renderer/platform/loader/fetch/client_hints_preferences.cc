@@ -64,7 +64,6 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
   // Note: .Ascii() would convert tab to ?, which is undesirable.
   absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
       network::ParseClientHintsHeader(header_value.Latin1());
-
   if (!parsed_ch.has_value())
     return;
 

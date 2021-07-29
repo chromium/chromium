@@ -35,27 +35,14 @@
 
 namespace {
 
-// Creates a serialized AtomicString header value out of the input string, using
-// structured headers as described in
-// https://www.rfc-editor.org/rfc/rfc8941.html.
-const AtomicString SerializeStringHeader(std::string str) {
+// Simple function to add quotes to make headers strings.
+const AtomicString SerializeHeaderString(std::string str) {
   std::string output;
   if (!str.empty()) {
     output = net::structured_headers::SerializeItem(
                  net::structured_headers::Item(str))
                  .value_or(std::string());
   }
-
-  return AtomicString(output.c_str());
-}
-
-// Creates a serialized AtomicString header value out of the input boolean,
-// using structured headers as described in
-// https://www.rfc-editor.org/rfc/rfc8941.html.
-const AtomicString SerializeBoolHeader(const bool value) {
-  const std::string output = net::structured_headers::SerializeItem(
-                                 net::structured_headers::Item(value))
-                                 .value_or(std::string());
 
   return AtomicString(output.c_str());
 }
@@ -164,7 +151,9 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     }
 
     // We also send Sec-CH-UA-Mobile to all hints. It is a one-bit header
-    // identifying if the browser has opted for a "mobile" experience.
+    // identifying if the browser has opted for a "mobile" experience
+    // Formatted using the "sh-boolean" format from:
+    // https://httpwg.org/http-extensions/draft-ietf-httpbis-header-structure.html#boolean
     // ShouldSendClientHint is called to make sure it's controlled by
     // PermissionsPolicy.
     if (ShouldSendClientHint(
@@ -174,7 +163,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAMobile)],
-          SerializeBoolHeader(ua->mobile));
+          ua->mobile ? "?1" : "?0");
     }
   }
 
@@ -304,7 +293,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAArch)],
-          SerializeStringHeader(ua->architecture));
+          SerializeHeaderString(ua->architecture));
     }
 
     if (ShouldSendClientHint(
@@ -314,7 +303,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAPlatform)],
-          SerializeStringHeader(ua->platform));
+          SerializeHeaderString(ua->platform));
     }
 
     if (ShouldSendClientHint(
@@ -324,7 +313,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAPlatformVersion)],
-          SerializeStringHeader(ua->platform_version));
+          SerializeHeaderString(ua->platform_version));
     }
 
     if (ShouldSendClientHint(
@@ -334,7 +323,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAModel)],
-          SerializeStringHeader(ua->model));
+          SerializeHeaderString(ua->model));
     }
 
     if (ShouldSendClientHint(
@@ -344,7 +333,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAFullVersion)],
-          SerializeStringHeader(ua->full_version));
+          SerializeHeaderString(ua->full_version));
     }
 
     if (ShouldSendClientHint(
@@ -354,20 +343,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           blink::kClientHintsHeaderMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUABitness)],
-          SerializeStringHeader(ua->bitness));
-    }
-
-    if (ShouldSendClientHint(
-            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
-            network::mojom::blink::WebClientHintsType::kUAReduced,
-            hints_preferences)) {
-      // If the UA-Reduced client hint should be sent according to the hints
-      // preferences, it means the Origin Trial token for User-Agent Reduction
-      // has already been validated.
-      request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
-              network::mojom::blink::WebClientHintsType::kUAReduced)],
-          SerializeBoolHeader(true));
+          SerializeHeaderString(ua->bitness));
     }
   }
 
