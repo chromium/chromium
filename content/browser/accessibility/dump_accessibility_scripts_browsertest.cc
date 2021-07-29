@@ -170,6 +170,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SetSelectionTextarea) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       SetSelectedTextRangeContenteditable) {
+  RunMacSelectionTest(
+      FILE_PATH_LITERAL("set-selectedtextrange-contenteditable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AXNextWordEndTextMarkerForTextMarker) {
   RunMacTextMarkerTest(
       FILE_PATH_LITERAL("ax-next-word-end-text-marker-for-text-marker.html"));
