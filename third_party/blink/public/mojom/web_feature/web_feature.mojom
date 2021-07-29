@@ -3281,6 +3281,7 @@ enum WebFeature {
   kV8URLPattern_CompareComponent_Method = 3966,
   kEarlyHintsPreload = 3967,
   kClientHintsUAReduced = 3968,
+  kSpeculationRulesPrerender = 3969,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

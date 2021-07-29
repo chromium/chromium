@@ -12,6 +12,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -120,13 +121,17 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
 
   auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host());
   for (const auto& it : candidates) {
-    // TODO(crbug.com/1176054): Support cross-origin prerendering.
-    // TODO(crbug.com/1197133): Record the cancellation reason of no same-origin
-    // candidates via UMA.
-    if (it->action != blink::mojom::SpeculationAction::kPrerender ||
-        !origin().IsSameOriginWith(url::Origin::Create(it->url))) {
+    if (it->action != blink::mojom::SpeculationAction::kPrerender)
       continue;
-    }
+
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
+
+    // TODO(crbug.com/1176054): Support cross-origin prerendering.
+    // TODO(crbug.com/1197133): Record the cancellation reason of no
+    // same-origin candidates via UMA.
+    if (!origin().IsSameOriginWith(url::Origin::Create(it->url)))
+      continue;
 
     // TODO(https://crbug.com/1217903): Set up `attributes->size`.
     auto attributes = blink::mojom::PrerenderAttributes::New();
