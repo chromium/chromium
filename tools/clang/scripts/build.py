@@ -467,6 +467,8 @@ def main():
                       default=sys.platform in ('linux2', 'darwin'))
   args = parser.parse_args()
 
+  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
+
   # TODO(crbug.com/1233845): Remove in the next Clang roll.
   if args.llvm_force_head_revision:
     global RELEASE_VERSION
@@ -531,8 +533,6 @@ def main():
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                        universal_newlines=True).rstrip()
-
-  global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
 
   if args.build_dir:
     LLVM_BUILD_DIR = args.build_dir
