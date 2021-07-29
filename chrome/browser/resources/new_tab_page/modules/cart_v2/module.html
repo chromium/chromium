@@ -144,6 +144,7 @@
     align-items: center;
     display: flex;
     height: 83px;
+    margin-inline-start: 16px;
     overflow-x: hidden;
     text-align: center;
   }
@@ -317,7 +318,16 @@
             </div>
             <template is="dom-if" if="[[item.productImageUrls.length]]">
               <span class="item-count">
-                &nbsp•&nbsp[[item.productImageUrls.length]]
+                <template is="dom-if"
+                    if="[[isOne_(item.productImageUrls.length)]]">
+                  [[i18n('modulesCartItemCountSingular',
+                    item.productImageUrls.length)]]
+                </template>
+                <template is="dom-if"
+                    if="[[!isOne_(item.productImageUrls.length)]]">
+                  [[i18n('modulesCartItemCountMultiple',
+                    item.productImageUrls.length)]]
+                </template>
               </span>
             </template>
             <template is="dom-if" if="[[item.discountText]]">

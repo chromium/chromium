@@ -149,6 +149,15 @@ class ChromeCartModuleElement extends mixinBehaviors
   }
 
   /**
+   * @param {number} length
+   * @return {boolean}
+   * @private
+   */
+  isOne_(length) {
+    return length === 1;
+  }
+
+  /**
    * @param {!Event} e
    * @private
    */

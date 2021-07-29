@@ -257,6 +257,10 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_REJECT_CONFIRMATION},
       {"modulesCartDiscountConsentConfirmationDismiss",
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONFIRMATION_DISMISS},
+      {"modulesCartItemCountSingular",
+       IDS_NTP_MODULES_CART_ITEM_COUNT_SINGULAR},
+      {"modulesCartItemCountMultiple",
+       IDS_NTP_MODULES_CART_ITEM_COUNT_MULTIPLE},
   };
   source->AddLocalizedStrings(kStrings);
 

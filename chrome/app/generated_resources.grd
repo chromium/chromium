@@ -5880,6 +5880,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_LOWER_YOUR" desc="Name of the chrome cart module in lowercase shown in various UIs.">
         your carts
       </message>
+      <message name="IDS_NTP_MODULES_CART_ITEM_COUNT_SINGULAR" desc="Item count displayed on chrome cart module when there is a single item in a cart.">
+        <ph name="ITEM_COUNT_ONE">$1<ex>1</ex></ph> item
+      </message>
+      <message name="IDS_NTP_MODULES_CART_ITEM_COUNT_MULTIPLE" desc="Item count displayed on chrome cart module when there are multiple items in a cart.">
+        <ph name="ITEM_COUNT_MULTIPLE">$1<ex>2</ex></ph> items
+      </message>
       <message name="IDS_NTP_MODULES_DRIVE_SENTENCE" desc="Name of the Drive module in sentence case shown in various UIs.">
         Google Drive files
       </message>

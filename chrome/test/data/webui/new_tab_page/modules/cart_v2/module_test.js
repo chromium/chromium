@@ -83,9 +83,18 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
             {url: 'https://image8.com'}, {url: 'https://image9.com'}
           ],
         },
+        {
+          merchant: 'Nike',
+          cartUrl: {url: 'https://nike.com'},
+          productImageUrls: [{url: 'https://image10.com'}],
+        },
       ];
       testProxy.handler.setResultFor(
           'getMerchantCarts', Promise.resolve({carts}));
+      loadTimeData.overrideValues({
+        modulesCartItemCountSingular: '$1 item',
+        modulesCartItemCountMultiple: '$1 items',
+      });
 
       // Act.
       const moduleElement = await chromeCartV2Descriptor.initialize();
@@ -94,14 +103,14 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
-      assertEquals(4, cartItems.length);
+      assertEquals(5, cartItems.length);
       assertEquals(446, moduleElement.offsetHeight);
-      assertEquals(1, metrics.count('NewTabPage.Carts.CartCount', 4));
+      assertEquals(1, metrics.count('NewTabPage.Carts.CartCount', 5));
 
       assertEquals('https://amazon.com/', cartItems[0].href);
       assertEquals('Amazon', cartItems[0].querySelector('.merchant').innerText);
       let itemCount = cartItems[0].querySelector('.item-count').innerText;
-      assertEquals('3', itemCount.slice(-1));
+      assertEquals('3 items', itemCount);
       let thumbnailList =
           cartItems[0].querySelector('.thumbnail-list').querySelectorAll('img');
       assertEquals(3, thumbnailList.length);
@@ -113,7 +122,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals('https://ebay.com/', cartItems[1].href);
       assertEquals('eBay', cartItems[1].querySelector('.merchant').innerText);
       itemCount = cartItems[1].querySelector('.item-count').innerText;
-      assertEquals('2', itemCount.slice(-1));
+      assertEquals('2 items', itemCount);
       thumbnailList =
           cartItems[1].querySelector('.thumbnail-list').querySelectorAll('img');
       assertEquals(2, thumbnailList.length);
@@ -134,7 +143,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(
           'Walmart', cartItems[3].querySelector('.merchant').innerText);
       itemCount = cartItems[3].querySelector('.item-count').innerText;
-      assertEquals('4', itemCount.slice(-1));
+      assertEquals('4 items', itemCount);
       thumbnailList =
           cartItems[3].querySelector('.thumbnail-list').querySelectorAll('img');
       assertEquals(3, thumbnailList.length);
@@ -142,40 +151,16 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals('https://image7.com', thumbnailList[1].autoSrc);
       assertEquals('https://image8.com', thumbnailList[2].autoSrc);
       assertEquals(null, cartItems[1].querySelector('.thumbnail-fallback'));
-    });
 
-    // TODO: Add warm welcome and enable test.
-    test.skip('shows welcome surface in cart module', async () => {
-      const carts = [
-        {
-          merchant: 'Foo',
-          cartUrl: {url: 'https://foo.com'},
-          productImageUrls: [],
-        },
-      ];
-      testProxy.handler.setResultFor(
-          'getMerchantCarts', Promise.resolve({carts}));
-      testProxy.handler.setResultFor(
-          'getWarmWelcomeVisible', Promise.resolve({welcomeVisible: true}));
-
-      // Arrange.
-      const moduleElement = await chromeCartV2Descriptor.initialize();
-      document.body.append(moduleElement);
-      moduleElement.$.cartItemRepeat.render();
-
-      // Assert.
-      const headerChip =
-          moduleElement.shadowRoot.querySelector('ntp-module-header')
-              .shadowRoot.querySelector('#chip');
-      const headerDescription =
-          moduleElement.shadowRoot.querySelector('ntp-module-header')
-              .shadowRoot.querySelector('#description');
-      assertEquals(
-          loadTimeData.getString('modulesCartHeaderNew'), headerChip.innerText);
-      assertEquals(
-          loadTimeData.getString('modulesCartWarmWelcome'),
-          headerDescription.innerText);
-      assertEquals(227, moduleElement.offsetHeight);
+      assertEquals('https://nike.com/', cartItems[4].href);
+      assertEquals('Nike', cartItems[4].querySelector('.merchant').innerText);
+      itemCount = cartItems[4].querySelector('.item-count').innerText;
+      assertEquals('1 item', itemCount);
+      thumbnailList =
+          cartItems[4].querySelector('.thumbnail-list').querySelectorAll('img');
+      assertEquals(1, thumbnailList.length);
+      assertEquals('https://image10.com', thumbnailList[0].autoSrc);
+      assertEquals(null, cartItems[4].querySelector('.thumbnail-fallback'));
     });
 
     test(
