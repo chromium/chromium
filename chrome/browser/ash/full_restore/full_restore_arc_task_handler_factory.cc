@@ -12,7 +12,7 @@
 #include "components/full_restore/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // static
@@ -49,4 +49,4 @@ KeyedService* FullRestoreArcTaskHandlerFactory::BuildServiceInstanceFor(
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

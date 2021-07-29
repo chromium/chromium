@@ -688,7 +688,7 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
         // restore feature is enabled and the profile is a regular user
         // profile), defer the browser launching to FullRestoreService code.
         auto* full_restore_service =
-            chromeos::full_restore::FullRestoreService::GetForProfile(
+            ash::full_restore::FullRestoreService::GetForProfile(
                 profile_to_open);
         if (full_restore_service) {
           full_restore_service->LaunchBrowserWhenReady();

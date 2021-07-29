@@ -139,7 +139,7 @@ class ASH_EXPORT ShellDelegate {
   // data can be constructed, which can happen if the |window| does not have
   // an app id associated with it, or we're not in the primary active user
   // session.
-  virtual std::unique_ptr<full_restore::AppLaunchInfo>
+  virtual std::unique_ptr<::full_restore::AppLaunchInfo>
   GetAppLaunchDataForDeskTemplate(aura::Window* window) const = 0;
 };
 

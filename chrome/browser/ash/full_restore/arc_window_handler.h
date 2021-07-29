@@ -14,9 +14,9 @@
 
 namespace full_restore {
 struct AppRestoreData;
-}
+}  // namespace full_restore
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // The ArcWindowHandler class provides control for ARC ghost window.
@@ -98,6 +98,6 @@ class ArcWindowHandler {
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_ARC_WINDOW_HANDLER_H_

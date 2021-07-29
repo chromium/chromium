@@ -19,7 +19,7 @@ enum class AppTypeName;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // The FullRestoreAppLaunchHandler class calls FullRestoreReadHandler to read
@@ -111,6 +111,6 @@ class ScopedLaunchBrowserForTesting {
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_FULL_RESTORE_APP_LAUNCH_HANDLER_H_

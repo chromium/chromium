@@ -25,7 +25,7 @@
 #include "ui/views/test/scoped_views_test_helper.h"
 #include "ui/views/test/views_test_base.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 namespace {
@@ -128,4 +128,4 @@ TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
 #endif
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

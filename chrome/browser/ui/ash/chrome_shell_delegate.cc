@@ -349,7 +349,7 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
-std::unique_ptr<full_restore::AppLaunchInfo>
+std::unique_ptr<::full_restore::AppLaunchInfo>
 ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     aura::Window* window) const {
   const user_manager::User* active_user =

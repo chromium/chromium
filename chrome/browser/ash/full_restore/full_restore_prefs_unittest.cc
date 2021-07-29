@@ -16,7 +16,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // Unit tests for full_restore_prefs.
@@ -130,4 +130,4 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

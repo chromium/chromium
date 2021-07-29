@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // static
@@ -101,4 +101,4 @@ void FullRestoreArcTaskHandler::Shutdown() {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

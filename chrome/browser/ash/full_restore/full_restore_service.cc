@@ -33,7 +33,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 bool g_restore_for_testing = true;
@@ -83,7 +83,7 @@ void FullRestoreService::Init() {
                           weak_ptr_factory_.GetWeakPtr()));
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
         user->GetAccountId(), CanPerformRestore(prefs));
@@ -242,7 +242,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {
 
 void FullRestoreService::Restore() {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(
         user->GetAccountId(), true);
@@ -267,7 +267,7 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
   base::UmaHistogramEnumeration(kRestoreSettingHistogramName, restore_option);
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user) {
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestorePref(
         user->GetAccountId(), CanPerformRestore(profile_->GetPrefs()));
@@ -294,4 +294,4 @@ ScopedRestoreForTesting::~ScopedRestoreForTesting() {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

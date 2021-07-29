@@ -291,7 +291,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_launch_browser_for_testing(
-      std::unique_ptr<chromeos::full_restore::ScopedLaunchBrowserForTesting>
+      std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
           launch_browser_for_testing) {
     launch_browser_for_testing_ = std::move(launch_browser_for_testing);
   }
@@ -360,7 +360,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // is enabled. However almost all existing browser tests assume a browser is
   // created. Add ScopedLaunchBrowserForTesting to force creating a browser for
   // testing, when the full restore feature is enabled.
-  std::unique_ptr<chromeos::full_restore::ScopedLaunchBrowserForTesting>
+  std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
       launch_browser_for_testing_;
 #endif
 };

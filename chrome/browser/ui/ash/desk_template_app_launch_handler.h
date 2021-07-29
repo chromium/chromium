@@ -25,7 +25,7 @@ struct WindowInfo;
 // The DeskTemplateAppLaunchHandler class is passed in the desk template restore
 // data and profile, and will launch apps and web pages based on the template.
 class DeskTemplateAppLaunchHandler
-    : public chromeos::AppLaunchHandler,
+    : public ash::AppLaunchHandler,
       public full_restore::DeskTemplateReadHandler::Delegate {
  public:
   explicit DeskTemplateAppLaunchHandler(Profile* profile);
@@ -48,8 +48,7 @@ class DeskTemplateAppLaunchHandler
  protected:
   // chromeos::AppLaunchHandler:
   void OnExtensionLaunching(const std::string& app_id) override;
-  base::WeakPtr<chromeos::AppLaunchHandler> GetWeakPtrAppLaunchHandler()
-      override;
+  base::WeakPtr<ash::AppLaunchHandler> GetWeakPtrAppLaunchHandler() override;
 
  private:
   // Go through the restore data launch list and launches the browser windows.

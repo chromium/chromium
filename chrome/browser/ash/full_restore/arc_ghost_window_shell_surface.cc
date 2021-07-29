@@ -16,12 +16,10 @@
 #include "ui/views/window/caption_button_types.h"
 
 namespace {
-
 constexpr int kDiameter = 24;
-
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
@@ -155,4 +153,4 @@ void ArcGhostWindowShellSurface::SetShellAppId(
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

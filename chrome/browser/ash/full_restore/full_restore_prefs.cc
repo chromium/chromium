@@ -11,7 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // An integer pref to define whether restore apps and web pages on startup.
@@ -82,4 +82,4 @@ void UpdateRestorePrefIfNecessary(PrefService* prefs) {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

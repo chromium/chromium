@@ -27,7 +27,7 @@ constexpr base::TimeDelta kClearRestoreDataDuration =
 }  // namespace
 
 DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(Profile* profile)
-    : chromeos::AppLaunchHandler(profile) {
+    : ash::AppLaunchHandler(profile) {
   full_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(this);
 }
 
@@ -88,11 +88,11 @@ int32_t DeskTemplateAppLaunchHandler::FetchRestoreWindowId(
 }
 
 bool DeskTemplateAppLaunchHandler::IsFullRestoreRunning() const {
-  chromeos::full_restore::FullRestoreService* full_restore_service =
-      chromeos::full_restore::FullRestoreService::GetForProfile(profile_);
+  ash::full_restore::FullRestoreService* full_restore_service =
+      ash::full_restore::FullRestoreService::GetForProfile(profile_);
   if (!full_restore_service)
     return false;
-  chromeos::full_restore::FullRestoreAppLaunchHandler*
+  ash::full_restore::FullRestoreAppLaunchHandler*
       full_restore_app_launch_handler =
           full_restore_service->app_launch_handler();
   DCHECK(full_restore_app_launch_handler);
@@ -115,7 +115,7 @@ void DeskTemplateAppLaunchHandler::OnExtensionLaunching(
     restore_data_clone_->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
-base::WeakPtr<chromeos::AppLaunchHandler>
+base::WeakPtr<ash::AppLaunchHandler>
 DeskTemplateAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
   return weak_ptr_factory_.GetWeakPtr();
 }

@@ -19,9 +19,9 @@ class Profile;
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 class FullRestoreAppLaunchHandler;
@@ -143,14 +143,6 @@ class ScopedRestoreForTesting {
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace full_restore {
-using ::chromeos::full_restore::FullRestoreService;
-}
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_FULL_RESTORE_SERVICE_H_

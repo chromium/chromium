@@ -253,7 +253,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   CertStoreService::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
   ash::ApkWebAppService::Get(profile);
-  chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(profile);
+  ash::full_restore::FullRestoreArcTaskHandler::GetForProfile(profile);
 
   // ARC Container-only services.
   if (!arc::IsArcVmEnabled()) {

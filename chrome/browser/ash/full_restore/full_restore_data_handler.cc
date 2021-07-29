@@ -12,7 +12,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 FullRestoreDataHandler::FullRestoreDataHandler(Profile* profile)
@@ -47,4 +47,4 @@ void FullRestoreDataHandler::OnAppRegistryCacheWillBeDestroyed(
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

@@ -55,8 +55,8 @@ class TestShellDelegate : public ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackPageForPersistentDesksBar() override {}
-  std::unique_ptr<full_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
-      aura::Window* window) const override;
+  std::unique_ptr<::full_restore::AppLaunchInfo>
+  GetAppLaunchDataForDeskTemplate(aura::Window* window) const override;
 
  private:
   // True if the current top window can go back.

@@ -14,7 +14,7 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 ArcWindowHandler::WindowSessionResolver::WindowSessionResolver(
@@ -142,4 +142,4 @@ void ArcWindowHandler::OnWindowInfoUpdated(int window_id,
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

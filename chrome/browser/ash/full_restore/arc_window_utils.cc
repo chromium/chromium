@@ -27,7 +27,7 @@ void ScaleToRoundedRect(apps::mojom::Rect* rect, double scale_factor) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 bool IsArcGhostWindowEnabled() {
@@ -75,4 +75,4 @@ const std::string WindowIdToAppId(int window_id) {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

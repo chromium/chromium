@@ -55,7 +55,7 @@ void ArcShelfSpinnerItemController::ItemSelected(
   if (window_info_ &&
       window_info_->window_id >
           full_restore::kArcSessionIdOffsetForRestoredLaunching) {
-    chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
+    ash::full_restore::FullRestoreArcTaskHandler::GetForProfile(
         observed_profile_)
         ->arc_app_launch_handler()
         ->LaunchApp(app_id());
@@ -103,7 +103,7 @@ void ArcShelfSpinnerItemController::OnAppConnectionReady() {
   // this item when timeout.
   if (IsCreatedByFullRestore() && !close_timer_) {
     close_timer_ = std::make_unique<base::OneShotTimer>();
-    close_timer_->Start(FROM_HERE, chromeos::full_restore::kStopRestoreDelay,
+    close_timer_->Start(FROM_HERE, ash::full_restore::kStopRestoreDelay,
                         base::BindOnce(&ArcShelfSpinnerItemController::Close,
                                        weak_ptr_factory_.GetWeakPtr()));
   }

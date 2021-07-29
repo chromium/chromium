@@ -22,7 +22,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -213,4 +213,4 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

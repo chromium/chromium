@@ -93,7 +93,7 @@ base::FilePath TestShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
-std::unique_ptr<full_restore::AppLaunchInfo>
+std::unique_ptr<::full_restore::AppLaunchInfo>
 TestShellDelegate::GetAppLaunchDataForDeskTemplate(aura::Window* window) const {
   return nullptr;
 }

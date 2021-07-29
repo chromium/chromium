@@ -27,7 +27,7 @@
 #include "components/full_restore/full_restore_save_handler.h"
 #include "extensions/common/constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 namespace {
@@ -55,7 +55,7 @@ FullRestoreAppLaunchHandler::~FullRestoreAppLaunchHandler() = default;
 void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady() {
   if (g_launch_browser_for_testing ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kForceLaunchBrowser)) {
+          switches::kForceLaunchBrowser)) {
     ForceLaunchBrowserForTesting();
     return;
   }
@@ -224,4 +224,4 @@ ScopedLaunchBrowserForTesting::~ScopedLaunchBrowserForTesting() {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

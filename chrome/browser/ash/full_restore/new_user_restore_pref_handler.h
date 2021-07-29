@@ -14,7 +14,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // This class handles the new user's OS restore pref "restore_apps_and_pages".
@@ -70,6 +70,6 @@ class NewUserRestorePrefHandler
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_NEW_USER_RESTORE_PREF_HANDLER_H_

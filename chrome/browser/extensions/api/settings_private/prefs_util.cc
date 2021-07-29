@@ -665,7 +665,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Restore apps and pages on startup
-  (*s_allowlist)[chromeos::full_restore::kRestoreAppsAndPagesPrefName] =
+  (*s_allowlist)[ash::full_restore::kRestoreAppsAndPagesPrefName] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
 
   // Timezone settings.

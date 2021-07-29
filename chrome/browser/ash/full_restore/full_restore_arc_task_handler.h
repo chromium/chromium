@@ -15,7 +15,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 class ArcAppLaunchHandler;
@@ -84,6 +84,6 @@ class FullRestoreArcTaskHandler : public KeyedService,
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_FULL_RESTORE_ARC_TASK_HANDLER_H_

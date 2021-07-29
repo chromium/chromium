@@ -27,7 +27,7 @@ namespace apps {
 class AppUpdate;
 }  // namespace apps
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 class ArcAppLaunchHandlerArcAppBrowserTest;
@@ -234,7 +234,8 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   bool should_apply_cpu_restirction_ = false;
 
-  mojo::Remote<cros_healthd::mojom::CrosHealthdProbeService> probe_service_;
+  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
+      probe_service_;
 
   // Cpu usage rate count window. It save the cpu usage in a time interval.
   std::list<CpuTick> cpu_tick_window_;
@@ -253,6 +254,6 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_ARC_APP_LAUNCH_HANDLER_H_

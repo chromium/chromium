@@ -10,7 +10,7 @@
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 NewUserRestorePrefHandler::NewUserRestorePrefHandler(Profile* profile)
@@ -46,7 +46,7 @@ void NewUserRestorePrefHandler::OnStartedSyncing(const std::string& path) {
 void NewUserRestorePrefHandler::OnIsSyncingChanged() {
   // Wait until the initial sync happens.
   auto* pref_service = PrefServiceSyncableFromProfile(profile_);
-  bool is_syncing = chromeos::features::IsSplitSettingsSyncEnabled()
+  bool is_syncing = features::IsSplitSettingsSyncEnabled()
                         ? pref_service->AreOsPrefsSyncing()
                         : pref_service->IsSyncing();
   if (!is_syncing)
@@ -77,4 +77,4 @@ void NewUserRestorePrefHandler::OnPreferenceChanged(
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

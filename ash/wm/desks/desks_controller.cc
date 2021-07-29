@@ -878,7 +878,7 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* window : mru_windows) {
-    std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
+    std::unique_ptr<::full_restore::AppLaunchInfo> app_launch_info =
         shell->shell_delegate()->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)
       continue;

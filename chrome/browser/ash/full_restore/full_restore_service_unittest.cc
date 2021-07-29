@@ -45,7 +45,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 namespace {
@@ -579,4 +579,4 @@ TEST_F(FullRestoreServiceTest, NotRestore) {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

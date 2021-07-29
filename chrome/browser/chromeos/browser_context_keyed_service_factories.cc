@@ -65,7 +65,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
-  chromeos::full_restore::FullRestoreServiceFactory::GetInstance();
+  ash::full_restore::FullRestoreServiceFactory::GetInstance();
   CroshLoaderFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
 #if defined(USE_CUPS)

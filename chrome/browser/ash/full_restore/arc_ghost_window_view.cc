@@ -55,7 +55,7 @@ class Throbber : public views::View {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 ArcGhostWindowView::ArcGhostWindowView(int throbber_diameter,
@@ -88,7 +88,7 @@ void ArcGhostWindowView::InitLayout(uint32_t theme_color, int diameter) {
 }
 
 void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   DCHECK(profile);
 
@@ -120,4 +120,4 @@ void ArcGhostWindowView::OnIconLoaded(apps::mojom::IconType icon_type,
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

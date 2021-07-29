@@ -19,7 +19,7 @@ const int TEST_DISPLAY_HEIGHT = 1440;
 const double TEST_SCALE_FACTOR = 2.0;
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 class ArcWindowUtilsTest : public testing::Test {
@@ -97,4 +97,4 @@ TEST_F(ArcWindowUtilsTest, ArcWindowInfoValidDisplayAndBoundsTest) {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

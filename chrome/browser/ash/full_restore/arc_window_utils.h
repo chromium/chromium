@@ -8,7 +8,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 absl::optional<double> GetDisplayScaleFactor(int64_t display_id);
@@ -34,6 +34,6 @@ bool IsValidThemeColor(uint32_t theme_color);
 const std::string WindowIdToAppId(int window_id);
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_ARC_WINDOW_UTILS_H_

@@ -61,7 +61,7 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
     arc_session_manager->AddObserver(this);
 
   auto* arc_handler =
-      chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
+      ash::full_restore::FullRestoreArcTaskHandler::GetForProfile(
           observed_profile_);
   if (arc_handler)
     arc_handler->OnShelfReady();
@@ -682,7 +682,7 @@ void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
 
   // Close the ghost window.
   auto* arc_handler =
-      chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
+      ash::full_restore::FullRestoreArcTaskHandler::GetForProfile(
           observed_profile_);
   if (arc_handler && arc_handler->window_handler())
     arc_handler->window_handler()->CloseWindow(session_id);

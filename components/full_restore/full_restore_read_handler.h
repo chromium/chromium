@@ -23,13 +23,13 @@
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 class FullRestoreAppLaunchHandlerBrowserTest;
 class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest;
 class FullRestoreServiceTestHavingFullRestoreFile;
-}
-}
+}  // namespace full_restore
+}  // namespace ash
 
 namespace full_restore {
 
@@ -152,11 +152,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
 
  private:
   friend class ArcReadHandler;
-  friend class ::chromeos::full_restore::FullRestoreAppLaunchHandlerBrowserTest;
-  friend class ::chromeos::full_restore::
+  friend class ::ash::full_restore::FullRestoreAppLaunchHandlerBrowserTest;
+  friend class ::ash::full_restore::
       FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest;
-  friend class ::chromeos::full_restore::
-      FullRestoreServiceTestHavingFullRestoreFile;
+  friend class ::ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
   friend class FullRestoreReadHandlerTestApi;
 
   // Gets the app launch information from `profile_path` for `app_id` and

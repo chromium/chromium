@@ -10,7 +10,7 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // The ArcGhostWindowDelegate class is a self controlled shell surface delegate
@@ -18,10 +18,10 @@ namespace full_restore {
 // changed, notify ARC.
 class ArcGhostWindowDelegate
     : public exo::ClientControlledShellSurface::Delegate,
-      public chromeos::full_restore::ArcWindowHandler::Observer {
+      public ArcWindowHandler::Observer {
  public:
   ArcGhostWindowDelegate(exo::ClientControlledShellSurface* shell_surface,
-                         chromeos::full_restore::ArcWindowHandler* handler,
+                         ArcWindowHandler* handler,
                          int window_id,
                          int64_t display_id,
                          gfx::Rect bounds);
@@ -64,12 +64,11 @@ class ArcGhostWindowDelegate
   exo::ClientControlledShellSurface* shell_surface_;
 
   ArcWindowHandler* arc_handler_;
-  base::ScopedObservation<chromeos::full_restore::ArcWindowHandler,
-                          chromeos::full_restore::ArcWindowHandler::Observer>
+  base::ScopedObservation<ArcWindowHandler, ArcWindowHandler::Observer>
       observation_{this};
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_ARC_GHOST_WINDOW_DELEGATE_H_

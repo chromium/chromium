@@ -9,7 +9,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // The FullRestoreDataHandler class observes AppRegistryCache to remove the app
@@ -34,6 +34,6 @@ class FullRestoreDataHandler : public apps::AppRegistryCache::Observer {
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_FULL_RESTORE_DATA_HANDLER_H_

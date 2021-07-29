@@ -8,7 +8,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // Enum that specifies restore options on startup. The values must not be
@@ -57,6 +57,6 @@ void SetDefaultRestorePrefIfNecessary(PrefService* prefs);
 void UpdateRestorePrefIfNecessary(PrefService* prefs);
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_FULL_RESTORE_PREFS_H_

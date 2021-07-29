@@ -86,7 +86,7 @@ struct TypeConverter<arc::mojom::ArcPackageInfoPtr,
 
 }  // namespace mojo
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 namespace {
@@ -780,8 +780,7 @@ class FullRestoreAppLaunchHandlerChromeAppBrowserTest
   FullRestoreAppLaunchHandlerChromeAppBrowserTest() {
     ResetRestoreForTesting();
     set_launch_browser_for_testing(
-        std::make_unique<
-            chromeos::full_restore::ScopedLaunchBrowserForTesting>());
+        std::make_unique<ScopedLaunchBrowserForTesting>());
   }
   ~FullRestoreAppLaunchHandlerChromeAppBrowserTest() override = default;
 };
@@ -2473,7 +2472,8 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
   auto* window_state = ash::WindowState::Get(window);
   const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&left_snap_event);
-  const WindowStateType pre_save_state_type = window_state->GetStateType();
+  const chromeos::WindowStateType pre_save_state_type =
+      window_state->GetStateType();
   EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped, pre_save_state_type);
   const gfx::Rect pre_save_bounds = window->GetBoundsInScreen();
 
@@ -2585,4 +2585,4 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest);
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

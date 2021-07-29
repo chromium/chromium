@@ -270,7 +270,7 @@ void InProcessBrowserTest::Initialize() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   launch_browser_for_testing_ =
-      std::make_unique<chromeos::full_restore::ScopedLaunchBrowserForTesting>();
+      std::make_unique<ash::full_restore::ScopedLaunchBrowserForTesting>();
 #endif
 }
 

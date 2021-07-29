@@ -1283,7 +1283,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::InlineLoginHandlerChromeOS::RegisterProfilePrefs(registry);
   ash::first_run::RegisterProfilePrefs(registry);
   ash::file_system_provider::RegisterProfilePrefs(registry);
-  chromeos::full_restore::RegisterProfilePrefs(registry);
+  ash::full_restore::RegisterProfilePrefs(registry);
   ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
   chromeos::login::SecurityTokenSessionController::RegisterProfilePrefs(
       registry);

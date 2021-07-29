@@ -11,9 +11,9 @@
 
 namespace views {
 class ImageView;
-}
+}  // namespace views
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // The view of ARC ghost window content. It shows the icon of app and a
@@ -43,6 +43,6 @@ class ArcGhostWindowView : public views::View {
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_ARC_GHOST_WINDOW_VIEW_H_

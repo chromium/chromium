@@ -10,7 +10,7 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 class ArcWindowHandler;
@@ -58,6 +58,6 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
 };
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_ARC_GHOST_WINDOW_SHELL_SURFACE_H_

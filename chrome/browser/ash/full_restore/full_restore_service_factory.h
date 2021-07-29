@@ -11,9 +11,9 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 // Singleton factory that builds and owns FullRestoreService.
@@ -40,6 +40,13 @@ class FullRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
+}  // namespace full_restore
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+namespace full_restore {
+using ::ash::full_restore::FullRestoreServiceFactory;
 }  // namespace full_restore
 }  // namespace chromeos
 

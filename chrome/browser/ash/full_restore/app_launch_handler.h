@@ -13,11 +13,11 @@
 namespace apps {
 class AppUpdate;
 enum class AppTypeName;
-}
+}  // namespace apps
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // The AppLaunchHandler class launches apps from `restore_data_` as well as
 // observes app updates.
@@ -62,6 +62,6 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   virtual void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_FULL_RESTORE_APP_LAUNCH_HANDLER_H_

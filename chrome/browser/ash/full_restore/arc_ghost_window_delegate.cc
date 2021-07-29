@@ -10,14 +10,14 @@
 
 namespace {
 const int kNullWindowState = -1;
-}
+}  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 ArcGhostWindowDelegate::ArcGhostWindowDelegate(
     exo::ClientControlledShellSurface* shell_surface,
-    chromeos::full_restore::ArcWindowHandler* handler,
+    ArcWindowHandler* handler,
     int window_id,
     int64_t display_id,
     gfx::Rect bounds)
@@ -169,4 +169,4 @@ void ArcGhostWindowDelegate::UpdateWindowInfoToArc() {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash

@@ -75,7 +75,7 @@ constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace full_restore {
 
 ArcAppLaunchHandler::ArcAppLaunchHandler() {
@@ -747,4 +747,4 @@ void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
 }
 
 }  // namespace full_restore
-}  // namespace chromeos
+}  // namespace ash
