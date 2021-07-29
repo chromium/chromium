@@ -2,39 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.share.clipboard;
+package org.chromium.components.browser_ui.share;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CLIPBOARD_SHARED_URI;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CLIPBOARD_SHARED_URI_TIMESTAMP;
+import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI;
+import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.Clipboard.ImageFileProvider.ClipboardFileMetadata;
 
 /**
  * Tests for ClipboardImageFileProvider.
  */
-@RunWith(BaseRobolectricTestRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 public class ClipboardImageFileProviderUnitTest {
     private static final Uri CONTENT_URI = Uri.parse("content://package/path/image.png");
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-
     ClipboardImageFileProvider mClipboardImageFileProvider;
-    SharedPreferencesManager mSharedPreferencesManager;
 
     @Before
     public void setUp() throws Exception {
@@ -47,21 +43,22 @@ public class ClipboardImageFileProviderUnitTest {
     }
 
     @Test
+    @SmallTest
     @Feature("ClipboardImageFileProvider")
     public void testStoreLastCopiedImageMetadata() {
         long timestamp = System.currentTimeMillis();
         mClipboardImageFileProvider.storeLastCopiedImageMetadata(
                 new ClipboardFileMetadata(CONTENT_URI, timestamp));
 
-        String uriString =
-                SharedPreferencesManager.getInstance().readString(CLIPBOARD_SHARED_URI, null);
-        long timestampActual =
-                SharedPreferencesManager.getInstance().readLong(CLIPBOARD_SHARED_URI_TIMESTAMP);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        String uriString = prefs.getString(CLIPBOARD_SHARED_URI, null);
+        long timestampActual = prefs.getLong(CLIPBOARD_SHARED_URI_TIMESTAMP, 0L);
         Assert.assertEquals(CONTENT_URI.toString(), uriString);
         Assert.assertEquals(timestamp, timestampActual);
     }
 
     @Test
+    @SmallTest
     @Feature("ClipboardImageFileProvider")
     public void testGetLastCopiedImageMetadata() {
         long timestamp = System.currentTimeMillis();
@@ -74,19 +71,19 @@ public class ClipboardImageFileProviderUnitTest {
     }
 
     @Test
+    @SmallTest
     @Feature("ClipboardImageFileProvider")
     public void testClearLastCopiedImageMetadata() {
         long timestamp = System.currentTimeMillis();
         mClipboardImageFileProvider.storeLastCopiedImageMetadata(
                 new ClipboardFileMetadata(CONTENT_URI, timestamp));
 
-        Assert.assertTrue(SharedPreferencesManager.getInstance().contains(CLIPBOARD_SHARED_URI));
-        Assert.assertTrue(
-                SharedPreferencesManager.getInstance().contains(CLIPBOARD_SHARED_URI_TIMESTAMP));
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        Assert.assertTrue(prefs.contains(CLIPBOARD_SHARED_URI));
+        Assert.assertTrue(prefs.contains(CLIPBOARD_SHARED_URI_TIMESTAMP));
 
         mClipboardImageFileProvider.clearLastCopiedImageMetadata();
-        Assert.assertFalse(SharedPreferencesManager.getInstance().contains(CLIPBOARD_SHARED_URI));
-        Assert.assertFalse(
-                SharedPreferencesManager.getInstance().contains(CLIPBOARD_SHARED_URI_TIMESTAMP));
+        Assert.assertFalse(prefs.contains(CLIPBOARD_SHARED_URI));
+        Assert.assertFalse(prefs.contains(CLIPBOARD_SHARED_URI_TIMESTAMP));
     }
 }

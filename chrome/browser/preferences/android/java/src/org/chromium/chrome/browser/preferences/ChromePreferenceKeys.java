@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.preferences;
 
+import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI;
+import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
+
 import org.chromium.base.annotations.CheckDiscard;
 
 import java.util.Arrays;
@@ -137,13 +140,6 @@ public final class ChromePreferenceKeys {
      */
     public static final KeyPrefix CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP =
             new KeyPrefix("Chrome.Survey.PromptDisplayedTimestamp.*");
-
-    /** The URI of Chrome shared URI to Android system clibpoard. */
-    public static final String CLIPBOARD_SHARED_URI = "Chrome.Clipboard.SharedUri";
-
-    /** The timestamp of Chrome shared URI to Android system clibpoard. */
-    public static final String CLIPBOARD_SHARED_URI_TIMESTAMP =
-            "Chrome.Clipboard.SharedUriTimestamp";
 
     /**
      * The ID generated to represent the current browser installation in the DM Server for Cloud

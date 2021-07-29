@@ -4,14 +4,23 @@
 
 import("//build/config/android/rules.gni")
 
+# Constants only target without dependencies to allow embedders to only include relevant code.
+android_library("constants_java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/share/ClipboardConstants.java",
+  ]
+}
+
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/browser_ui/share/ClipboardImageFileProvider.java",
     "java/src/org/chromium/components/browser_ui/share/ShareDialogAdapter.java",
     "java/src/org/chromium/components/browser_ui/share/ShareHelper.java",
     "java/src/org/chromium/components/browser_ui/share/ShareImageFileUtils.java",
     "java/src/org/chromium/components/browser_ui/share/ShareParams.java",
   ]
   deps = [
+    ":constants_java",
     ":java_resources",
     "//base:base_java",
     "//components/browser_ui/util/android:java",
@@ -36,8 +45,12 @@ android_resources("java_resources") {
 android_library("javatests") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/components/browser_ui/share/ShareImageFileUtilsTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/share/ClipboardImageFileProviderUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/share/ShareImageFileUtilsTest.java",
+  ]
   deps = [
+    ":constants_java",
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",

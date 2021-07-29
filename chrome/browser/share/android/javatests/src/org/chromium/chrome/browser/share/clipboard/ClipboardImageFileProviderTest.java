@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.ui.base.Clipboard;
 
 import java.io.ByteArrayOutputStream;
