@@ -90,28 +90,34 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override {
     model_ = model;
     model_observation_.Observe(model_);
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override {
     model_ = nullptr;
     model_observation_.Reset();
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemsAdded(
       const std::vector<const HoldingSpaceItem*>& items) override {
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   void OnHoldingSpaceItemsRemoved(
       const std::vector<const HoldingSpaceItem*>& items) override {
-    UpdateAnimations();
+    // The removal of `items` can be safely ignored if none were in progress.
+    const bool removed_in_progress_item = std::any_of(
+        items.begin(), items.end(), [](const HoldingSpaceItem* item) {
+          return item->IsInitialized() && !item->progress().IsComplete();
+        });
+    if (removed_in_progress_item)
+      UpdateAnimations(/*for_removal=*/true);
   }
 
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override {
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
@@ -127,7 +133,7 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
           item, HoldingSpaceProgressRingAnimation::Type::kPulse);
     }
 
-    UpdateAnimations();
+    UpdateAnimations(/*for_removal=*/false);
   }
 
   // Erases all animations, notifying any animation changed callbacks.
@@ -212,8 +218,9 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
                           : nullptr);
   }
 
-  // Updates animation state for the current `model_` state.
-  void UpdateAnimations() {
+  // Updates animation state for the current `model_` state. If `for_removal` is
+  // `true`, the update was triggered by holding space item removal.
+  void UpdateAnimations(bool for_removal) {
     // If no `model_` is currently attached, there should be no animations.
     // Animations will be updated if and when a `model_` is attached.
     if (model_ == nullptr) {
@@ -275,10 +282,18 @@ class HoldingSpaceAnimationRegistry::ProgressRingAnimationDelegate
 
     if (cumulative_progress_.IsComplete()) {
       if (!last_cumulative_progress.IsComplete()) {
-        // If `cumulative_progress_` has just become complete, ensure that a
-        // pulse animation is created and started.
-        EnsureAnimationOfTypeForKey(
-            controller_, HoldingSpaceProgressRingAnimation::Type::kPulse);
+        if (for_removal) {
+          // If `cumulative_progress_` has just become complete as a result of
+          // one or more holding space items being removed, the `controller_`
+          // should not have an associated animation.
+          EraseAnimationForKey(controller_);
+        } else {
+          // If `cumulative_progress_` has just become complete and is *not* due
+          // to the removal of one or more holding space items, ensure that a
+          // pulse animation is created and started.
+          EnsureAnimationOfTypeForKey(
+              controller_, HoldingSpaceProgressRingAnimation::Type::kPulse);
+        }
       } else {
         // If `cumulative_progress_` was already complete, it should be allowed
         // to continue a pulse animation if one was previously created and
