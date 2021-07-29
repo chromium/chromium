@@ -787,7 +787,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7378889811480108604">El modo de Ahorro de batería está desactivado</translation>
 <translation id="7392563512730092880">Puedes configurarlo más tarde en la Configuración cuando lo desees.</translation>
 <translation id="7398254312354928459">Se cambió la conexión de red</translation>
-<translation id="7405710164030118432">Para desbloquear el dispositivo, ingresa el código de acceso para padres de Family Link</translation>
+<translation id="7405710164030118432">Para desbloquear el dispositivo, ingresa el código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Completa la configuración de la red móvil</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7413851974711031813">Presiona Esc para cerrar</translation>
@@ -944,7 +944,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante</translation>
 <translation id="8641805545866562088">Se está actualizando la lista de perfiles. Espera unos minutos.</translation>
 <translation id="8646417893960517480">Temporizador: <ph name="TOTAL_TIME" /></translation>
-<translation id="8647931990447795414">Para agregar una persona, ingresa tu código de acceso para padres de Family Link.</translation>
+<translation id="8647931990447795414">Para agregar una persona, ingresa tu código de acceso parental de Family Link.</translation>
 <translation id="8649101189709089199">Seleccionar para pronunciar</translation>
 <translation id="8652175077544655965">Cerrar configuración</translation>
 <translation id="8653151467777939995">Mostrar la configuración de las notificaciones: Están activadas</translation>
@@ -998,7 +998,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> en uso</translation>
 <translation id="899350903320462459">Desbloquea el dispositivo como <ph name="LOGIN_ID" /> para realizar la acción con las notificaciones</translation>
-<translation id="9017320285115481645">Ingresa el código de acceso para padres de Family Link.</translation>
+<translation id="9017320285115481645">Ingresa el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Se restablecerá el dispositivo</translation>

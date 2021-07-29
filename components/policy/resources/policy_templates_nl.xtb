@@ -699,22 +699,21 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Als je het beleid niet toepast of niet instelt, wordt Fast Transition niet gebruikt.</translation>
 <translation id="1977581177449752640">Als je dit beleid instelt, gebruikt de host voor externe toegang een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Als je een willekeurig beschikbaar clientcertificaat wilt gebruiken, stel je dit in op <ph name="WILDCARD_VALUE" />. De functie wordt uitgezet als je deze leeg laat of niet instelt.</translation>
-<translation id="1988345404999458987">Biedt configuraties voor beschikbare afdrukservers.
+<translation id="1988345404999458987">Biedt configuraties voor beschikbare printerservers.
 
-      Met dit beleid kun je configuratie van externe afdrukservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
+      Met dit beleid kun je configuratie van externe printerservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Het bestand mag niet groter zijn dan 1 MB en moet een matrix van records (json-objecten) bevatten. Elke record moet de velden 'id', 'url' en 'display_name' bevatten, met tekenreeksen als waarden. De waarden van het veld 'id' moeten uniek zijn.
 
       Het bestand wordt gedownload en opgeslagen in het cachegeheugen. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt opnieuw gedownload wanneer de URL of de hash wordt gewijzigd.
 
-      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven afdrukservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
+      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven printerservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
 
       Als dit beleid niet is ingesteld of is ingesteld op een onjuiste waarde, is geen enkele van de opgegeven serverprinters zichtbaar voor gebruikers.
 
-      Het aantal afdrukservers is momenteel beperkt tot zestien. Alleen de eerste zestien afdrukservers in de lijst worden opgevraagd.
+      Het aantal printerservers is momenteel beperkt tot zestien. Alleen de eerste zestien printerservers in de lijst worden opgevraagd.
 
-      Dit beleid is vergelijkbaar met <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />, behalve dat dit beleid wordt toegepast per apparaat.
-      </translation>
+      Dit beleid is vergelijkbaar met <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />, behalve dat dit beleid wordt toegepast per apparaat.</translation>
 <translation id="1988371335297483117">Nettoladingen (payloads) voor automatische updates voor <ph name="PRODUCT_OS_NAME" /> kunnen worden gedownload via HTTP in plaats van HTTPS. Hierdoor kunnen HTTP-downloads transparant in het HTTP-cachegeheugen worden opgeslagen.
 
       Als dit beleid is ingesteld op 'True' probeert <ph name="PRODUCT_OS_NAME" /> nettoladingen voor automatische updates te downloaden via HTTP. Als het beleid is ingesteld op 'False' of niet is geconfigureerd, wordt HTTPS gebruikt voor het downloaden van nettoladingen voor automatische updates.</translation>
@@ -1397,13 +1396,13 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2869762730352628426">Automatisch klikken op het inlogscherm aanzetten</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2874209944580848064">Opmerking voor <ph name="PRODUCT_OS_NAME" />-apparaten die Android-apps ondersteunen:</translation>
-<translation id="2875192972412983412">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters.
+<translation id="2875192972412983412">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters beschikbaar met ID's die overeenkomen met de waarden in dit beleid.
 
       De ID's moeten overeenkomen met het veld 'id' in het bestand dat is gespecificeerd in <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />.
 
-      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle afdrukservers.</translation>
+      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle printerservers.</translation>
 <translation id="2877225735001246144">CNAME-lookup bij verwerking van Kerberos-verificatie uitzetten</translation>
 <translation id="288448261660192095">Als je dit beleid toepast, worden de fysieke invoer- en uitvoerapparaten van hosts voor externe toegang uitgezet tijdens een externe verbinding.
 
@@ -2728,13 +2727,13 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4661889655253181651">Met instellingen voor content kun je opgeven hoe content van een bepaald type (zoals cookies, afbeeldingen of JavaScript) wordt verwerkt.</translation>
 <translation id="4663509616441994711">Samenvoegen van cloudbeleidsregels op gebruikersniveau uitzetten.</translation>
 <translation id="4665897631924472251">Instellingen voor extensiebeheer</translation>
-<translation id="4666930704271463612">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters.
+<translation id="4666930704271463612">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters beschikbaar met ID's die overeenkomen met de waarden in dit beleid.
 
       De ID's moeten overeenkomen met het veld 'id' in het bestand dat is gespecificeerd in <ph name="EXTERNAL_PRINT_SERVERS_POLICY" />.
 
-      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle afdrukservers.
+      Als dit beleid niet is ingesteld, wordt er niet gefilterd en wordt er rekening gehouden met alle printerservers.
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
 <translation id="4668325077104657568">Standaardinstelling voor afbeeldingen</translation>
@@ -3430,13 +3429,13 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="5561811616825571914">Clientcertificaten automatisch selecteren voor deze sites op het inlogscherm</translation>
 <translation id="5565178130821694365">Het wachtwoord moet elke twee dagen (48 uur) worden opgegeven</translation>
 <translation id="5566210228171064229">Afdrukken zowel met als zonder pincode toestaan</translation>
-<translation id="5572971233886879856">Specificeert de subset van afdrukservers die worden aangeroepen voor serverprinters. Dit is alleen van toepassing op het beleid <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
+<translation id="5572971233886879856">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters. Dit is alleen van toepassing op het beleid <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Als dit beleid wordt gebruikt, zijn alleen serverprinters met ID's die overeenkomen met de waarden in dit beleid beschikbaar voor de gebruiker via het apparaatbeleid.
 
       De ID's moeten overeenkomen met het veld 'id' in het bestand dat is gespecificeerd in <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
-      Als je dit beleid niet instelt, wordt filteren overgeslagen en houdt <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> rekening met alle afdrukservers.</translation>
+      Als je dit beleid niet instelt, wordt filteren overgeslagen en houdt <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> rekening met alle printerservers.</translation>
 <translation id="557360560705413259">Als deze instelling aanstaat, gebruikt <ph name="PRODUCT_NAME" /> de commonName van een servercertificaat, zodat deze overeenkomt met een hostnaam als er een subjectAlternativeName-extensie ontbreekt voor het certificaat, zolang het certificaat kan worden gevalideerd en is gekoppeld aan lokaal geïnstalleerde CA-certificaten.
 
       Houd er rekening mee dat dit niet wordt aanbevolen, aangezien zodoende de extensie nameConstraints, waarmee kan worden beperkt voor welke hostnamen een bepaald certificaat kan worden geautoriseerd, kan worden omzeild.
@@ -4410,20 +4409,19 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="6894178810167845842">URL van pagina 'Nieuw tabblad'</translation>
 <translation id="6897730193187922386">Berichten over beëindiging van <ph name="CLOUD_PRINT_NAME" /> onderdrukken</translation>
 <translation id="6899705656741990703">Proxyinstellingen automatisch detecteren</translation>
-<translation id="6902561336084511004">Biedt configuraties voor beschikbare afdrukservers.
+<translation id="6902561336084511004">Biedt configuraties voor beschikbare printerservers.
 
-      Met dit beleid kun je configuratie van externe afdrukservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
+      Met dit beleid kun je configuratie van externe printerservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Het bestand mag niet groter zijn dan 1 MB en moet een matrix van records (json-objecten) bevatten. Elke record moet de velden 'id', 'url' en 'display_name' bevatten, met tekenreeksen als waarden. De waarden van het veld 'id' moeten uniek zijn.
 
       Het bestand wordt gedownload en opgeslagen in het cachegeheugen. De cryptografische hash wordt gebruikt om de integriteit van de download te verifiëren. Het bestand wordt opnieuw gedownload wanneer de URL of de hash wordt gewijzigd.
 
-      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven afdrukservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
+      Als dit beleid is ingesteld op de juiste waarde, proberen apparaten opgegeven printerservers naar beschikbare printers te vragen die het IPP-protocol gebruiken.
 
       Als dit beleid niet is ingesteld of is ingesteld op een onjuiste waarde, is geen enkele van de opgegeven serverprinters zichtbaar voor gebruikers.
 
-      Het aantal afdrukservers is momenteel beperkt tot zestien. Alleen de eerste zestien afdrukservers in de lijst worden opgevraagd.
-      </translation>
+      Het aantal printerservers is momenteel beperkt tot zestien. Alleen de eerste zestien printerservers in de lijst worden opgevraagd.</translation>
 <translation id="6903814433019432303">Dit beleid wordt alleen toegepast in de winkelmodus.
 
       Bepaalt welke reeks URL's moet worden geladen als de demosessie wordt gestart. Dit beleid overschrijft alle andere procedures voor het instellen van de eerste URL en kan daarom alleen worden toegepast in een sessie die niet is toegewezen aan een specifieke gebruiker.</translation>

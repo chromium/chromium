@@ -2484,7 +2484,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3658871634334445293">Accélération de TrackPoint</translation>
 <translation id="3659830472545192450">Voice Match aide l'Assistant Google à identifier votre voix sur votre Chromebook et à vous distinguer.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnalisés. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
+    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnels. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
 <translation id="3660234220361471169">Non approuvé</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains de vos paramètres ont été corrompus par un autre programme. Leurs valeurs par défaut ont été rétablies.</translation>
@@ -4237,7 +4237,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5612734644261457353">Désolé, nous ne pouvons toujours pas valider votre mot de passe. Remarque : si vous l'avez modifié dernièrement, votre nouveau mot de passe ne sera appliqué qu'une fois que vous vous serez déconnecté. Veuillez donc utiliser votre ancien mot de passe.</translation>
 <translation id="561308544008485315">Voice Match aide l'Assistant Google à identifier votre voix sur votre Chromebook et à vous reconnaître. Pour économiser la batterie, "Hey Google" n'est activé que si votre appareil est branché sur une source d'alimentation. Pour modifier ce réglage, accédez aux paramètres.
     <ph name="BR" />
-    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnalisés. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
+    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnels. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5616726534702877126">Conserver la taille</translation>

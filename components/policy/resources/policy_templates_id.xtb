@@ -1280,7 +1280,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan tidak disetel, tidak ada situs yang akan ditambahkan ke daftar.
 
       Catatan: Elemen juga dapat ditambahkan ke daftar ini melalui kebijakan <ph name="USE_IE_SITELIST_POLICY_NAME" /> dan <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
-<translation id="2640898752536996430">Memaksa pengguna logout.</translation>
+<translation id="2640898752536996430">Paksa pengguna logout.</translation>
 <translation id="264093234299818170">Semua printer akan ditampilkan, kecuali printer yang tercantum dalam daftar yang tidak diizinkan.</translation>
 <translation id="264252574246191885">Tidak terdaftar</translation>
 <translation id="2647069081229792812">Aktifkan atau nonaktifkan pengeditan bookmark</translation>
@@ -2132,7 +2132,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika tidak ada kebijakan tertentu yang diprioritaskan, lihat <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />. Pola URL di antara 3 kebijakan ini tidak boleh bertentangan.</translation>
 <translation id="3760148113224469113">Selalu wajibkan pengguna mengonfirmasi perintah protokol eksternal</translation>
-<translation id="3760231600118073732">Mengunci sesi saat ini.</translation>
+<translation id="3760231600118073732">Kunci sesi aktif.</translation>
 <translation id="3761222804122755011">WebRTC hanya akan menggunakan antarmuka yang terhubung ke internet publik, tetapi dapat terhubung menggunakan alamat IP pribadi.</translation>
 <translation id="3762520180381586267">Menyetel kebijakan ke Aktif berarti <ph name="PRODUCT_OS_NAME" /> akan memicu mulai ulang jika pengguna mematikan perangkat. <ph name="PRODUCT_OS_NAME" /> mengganti semua tombol matikan dalam UI dengan tombol mulai ulang. Jika pengguna mematikan perangkat menggunakan tombol daya, perangkat tidak akan otomatis memulai ulang, meskipun kebijakan diaktifkan.
 
@@ -2241,7 +2241,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika ditentukan, akan menambahkan parameter kueri yang disebut 'membatasi' ke URL yang digunakan untuk mengambil sumber Variasi. Nilai parameter akan menjadi nilai yang ditentukan dalam kebijakan ini.
 
       Jika tidak ditentukan, tidak akan memodifikasi URL sumber Variasi.</translation>
-<translation id="3863409707075047163">Versi SSL minimum diaktifkan</translation>
+<translation id="3863409707075047163">Versi SSL minimum yang diaktifkan</translation>
 <translation id="3864129983143201415">Konfigurasi bahasa yang diizinkan dalam sesi pengguna</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="386723261607812952">Menetapkan jenis kaca pembesar layar di layar login</translation>
@@ -4085,7 +4085,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika Anda menetapkan kebijakan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, pengguna perlu menentukan untuk menampilkan atau menyembunyikan pintasan aplikasi dari menu konteks kolom bookmark.</translation>
 <translation id="6394350458541421998">Kebijakan ini tidak lagi digunakan sejak <ph name="PRODUCT_OS_NAME" /> versi 29. Gunakan kebijakan PresentationScreenDimDelayScale sebagai gantinya.</translation>
-<translation id="6401669939808766804">Keluarkan pengguna</translation>
+<translation id="6401669939808766804">Paksa pengguna logout</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
 <translation id="6407093060083181305">Mengonfigurasi daftar penginstalan ekstensi yang tidak diizinkan</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
@@ -4202,7 +4202,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
        Menyetel kebijakan ke Aktif memungkinkan Anda menentukan server proxy yang digunakan oleh Chrome dan mencegah pengguna mengubah setelan proxy. Chrome dan aplikasi ARC akan mengabaikan semua opsi terkait proxy yang ditentukan dari command line. Kebijakan ini hanya berlaku jika kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" /> tidak ditentukan.
 
        Opsi lain akan diabaikan jika Anda memilih:
-         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Jangan pernah menggunakan server proxy dan selalu hubungkan secara langsung 
+         * <ph name="PROXY_MODE_ENUM_DIRECT" /> = Jangan pernah gunakan server proxy dan selalu hubungkan secara langsung 
          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> = Gunakan setelan proxy sistem
          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> = Deteksi otomatis server proxy
 

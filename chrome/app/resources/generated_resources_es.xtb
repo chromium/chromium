@@ -1937,7 +1937,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3046910703532196514">Página web (completa)</translation>
 <translation id="304747341537320566">Motores de voz</translation>
 <translation id="3048917188684939573">Registros de envío y del dispositivo</translation>
-<translation id="3051250416341590778">Tamaño de la pantalla</translation>
+<translation id="3051250416341590778">Tamaño de visualización</translation>
 <translation id="3053013834507634016">Uso de claves de certificado</translation>
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
 <translation id="3054766768827382232">Al inhabilitarla, tus periféricos funcionan mejor, pero puede que expongan tus datos personales mediante un uso no autorizado.</translation>
@@ -3652,7 +3652,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4940845626435830013">Reservar tamaño de disco</translation>
 <translation id="4941074198479265146">Los sitios se suelen conectar a dispositivos MIDI para usarlos en funciones como crear y editar música.</translation>
 <translation id="4941246025622441835">Utiliza esta solicitud de dispositivo al registrar el dispositivo para la administración empresarial:</translation>
-<translation id="4941627891654116707">Tamaño de la fuente</translation>
+<translation id="4941627891654116707">Tamaño de fuente</translation>
 <translation id="494286511941020793">Ayuda para la configuración de proxy</translation>
 <translation id="4943368462779413526">Balón de fútbol</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" solicita conectarse a un puerto serie</translation>
@@ -5741,7 +5741,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7287411021188441799">Recuperar fondo predeterminado</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> PPP</translation>
-<translation id="7289225569524511578">Abrir aplicación de fondos de pantalla</translation>
+<translation id="7289225569524511578">Abrir aplicación de fondos de pantalla.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />: permiso solicitado, pulsa F6 para responder</translation>
 <translation id="7290242001003353852">Este servicio de inicio de sesión (que se aloja en <ph name="SAML_DOMAIN" />) está accediendo a la cámara.</translation>
 <translation id="7295614427631867477">Ten en cuenta que Android, Google Play y las aplicaciones asociadas se rigen por sus propias políticas de recogida y uso de datos.</translation>
@@ -5944,7 +5944,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7513029293694390567">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está inhabilitada, se te solicitará la confirmación cada vez que intentes iniciar sesión en un sitio web.</translation>
 <translation id="7514239104543605883">Copiar en tu dispositivo</translation>
 <translation id="7514365320538308">Descargar</translation>
-<translation id="7514417110442087199">Añadir asignación</translation>
+<translation id="7514417110442087199">Añadir mapeo</translation>
 <translation id="751523031290522286">El administrador ha bloqueado <ph name="APP_NAME" />. Pide permiso al administrador para usar esta aplicación.</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> está en pausa</translation>
 <translation id="7517063221058203587">{0,plural, =1{Actualizar dispositivo dentro de 1 minuto}other{Actualizar dispositivo dentro de # minutos}}</translation>

@@ -207,7 +207,7 @@
 <translation id="2337236196941929873">તમે મુલાકાત લઈ શકો એવું Chromeનું માનવું હોય, તે પેજ તે પહેલેથી લોડ કરે છે. આમ કરવા માટે, Chrome કુકીનો ઉપયોગ કરી શકે છે. જો તમે કુકી માટે મંજૂરી આપો, તો સાઇટથી તમારી ઓળખ છુપાવવા માટે તેને એન્ક્રિપ્ટ કરવામાં અને Google મારફતે પેજ મોકલવામાં આવી શકે છે.</translation>
 <translation id="234265804618409743">તમારો કૅમેરા ખોલી શકતાં નથી. કંઈક ખોટું થયું.</translation>
 <translation id="2345671828921229300">કોઈ શબ્દને શોધવા માટે, તેને સ્પર્શ કરી રાખો</translation>
-<translation id="2349710944427398404">Chrome દ્વારા ઉપયોગમાં લેવાયેલ કુલ સ્ટોરેજ, એકાઉન્ટ્સ, બુકમાર્ક્સ અને સાચવેલ સેટિંગ્સ સહિત</translation>
+<translation id="2349710944427398404">Chrome દ્વારા ઉપયોગમાં લેવાયેલી કુલ સ્ટોરેજ, એકાઉન્ટ, બુકમાર્ક અને સાચવેલા સેટિંગ સહિત</translation>
 <translation id="2353636109065292463">તમારું ઇન્ટરનેટ કનેક્શન તપાસી રહ્યાં છીએ</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2369533728426058518">ટૅબ્સ ખોલો</translation>
@@ -479,7 +479,7 @@
 <translation id="4135200667068010335">કોઈ ટૅબ સાથે શેર કરવાના ડિવાઇસની સૂચિ બંધ છે.</translation>
 <translation id="4141536112466364990">Chrome વિશે જાણો</translation>
 <translation id="4149994727733219643">વેબપેજ માટે સરળ દૃશ્ય</translation>
-<translation id="4165986682804962316">સાઇટ સેટિંગ્સ</translation>
+<translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
 <translation id="4170011742729630528">સેવા ઉપલબ્ધ નથી; પછી ફરીથી પ્રયાસ કરો</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ડેટા વપરાયો</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
@@ -488,7 +488,7 @@
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
 <translation id="4209895695669353772">Google દ્વારા સૂચવેલ વ્યક્તિગત કરેલ કન્ટેન્ટ મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="4225895483398857530">ટૂલબારનો શૉર્ટકટ</translation>
-<translation id="4242533952199664413">સેટિંગ્સ ખોલો</translation>
+<translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4248098802131000011">ડેટા ઉલ્લંઘનો અને અન્ય સુરક્ષા સંબંધિત સમસ્યાઓથી તમારા પાસવર્ડને સલામત રાખો</translation>
 <translation id="4250229828105606438">સ્ક્રીનશૉટ</translation>
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
@@ -518,7 +518,7 @@
 <translation id="4472118726404937099">સમગ્ર ઉપકરણો સિંક કરવા અને વ્યક્તિગત કરવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="447252321002412580">Chromeની સુવિધાઓ અને પ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="4479972344484327217">Chrome માટે <ph name="MODULE" /> ઇન્સ્ટૉલ કરી રહ્યાં છે…</translation>
-<translation id="4487967297491345095">Chrome નો તમામ ઍપ્લિકેશન ડેટા કાયમીરૂપે કાઢી નાખવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ્સ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
+<translation id="4487967297491345095">Chromeનો તમામ ઍપ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
 <translation id="449126573531210296">તમારા Google એકાઉન્ટ સાથે સિંક કરેલા પાસવર્ડ એન્ક્રિપ્ટ કરો</translation>
 <translation id="4493497663118223949">લાઇટ મોડ ચાલુ છે</translation>
 <translation id="4504667196171871375">વાઇ-ફાઇ અને મોબાઇલ ડેટા પર</translation>
@@ -660,7 +660,7 @@
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319359161174645648">Google Chromeની ભલામણ કરે છે</translation>
-<translation id="5324858694974489420">પેરેંટલ સેટિંગ્સ</translation>
+<translation id="5324858694974489420">માતાપિતાના સેટિંગ</translation>
 <translation id="5327248766486351172">નામ</translation>
 <translation id="5342314432463739672">પરવાનગીની વિનંતી કરી</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
@@ -688,7 +688,7 @@
 <translation id="5512137114520586844">આ એકાઉન્ટ <ph name="PARENT_NAME" /> દ્વારા મેનેજ થાય છે.</translation>
 <translation id="5514904542973294328">આ ઉપકરણના વ્યવસ્થાપકે અક્ષમ કરેલ છે</translation>
 <translation id="5515439363601853141">તમારો પાસવર્ડ જોવા માટે અનલૉક કરો</translation>
-<translation id="5517095782334947753">તમારી પાસે <ph name="FROM_ACCOUNT" /> ના બુકમાર્ક્સ, ઇતિહાસ, પાસવર્ડ્સ અને અન્ય સેટિંગ્સ છે.</translation>
+<translation id="5517095782334947753">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ છે.</translation>
 <translation id="5524843473235508879">રીડાયરેક્ટ કરવાનું અવરોધિત.</translation>
 <translation id="5527082711130173040">ઉપકરણો માટે સ્કેન કરવા Chrome ને સ્થાન ઍક્સેસની જરૂર છે. <ph name="BEGIN_LINK1" />પરવાનગીઓ અપડેટ કરો<ph name="END_LINK1" />. સ્થાન ઍક્સેસ પણ <ph name="BEGIN_LINK2" />આ ઉપકરણ માટે બંધ કરેલ છે<ph name="END_LINK2" />.</translation>
 <translation id="5534640966246046842">સાઇટ કૉપિ કરી</translation>
@@ -960,7 +960,7 @@
 <translation id="7146622961999026732">આ સાઇટ અને ઍપ તમારા માટે મહત્ત્વના લાગી રહ્યાં છે:</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
 <translation id="7173114856073700355">સેટિંગ ખોલો</translation>
-<translation id="7177466738963138057">તમે આને થોડા સમય પછી સેટિંગ્સમાં જઈને બદલી શકો છો</translation>
+<translation id="7177466738963138057">તમે આને થોડા સમય પછી સેટિંગમાં જઈને બદલી શકો છો</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7187993566681480880">તમને Chrome પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં ઉપયોગમાં લેવાઈ શકે છે.</translation>
 <translation id="718926126787620637">બુકમાર્ક ફોલ્ડરોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
@@ -1124,7 +1124,7 @@
 <translation id="8115259494083109761">કોઈ QR કોડને સ્કૅન કરવા માટે, Chromeને તમારા કૅમેરાનો ઉપયોગ કરવા દો</translation>
 <translation id="8127542551745560481">હોમપેજમાં ફેરફાર કરો</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
-<translation id="8137558756159375272">શોધો ને ટચ પસંદ કરાયેલ શબ્દ અને હાલના પૃષ્ઠને સંદર્ભ તરીકે Google શોધને મોકલે છે. તમે તેને <ph name="BEGIN_LINK" />સેટિંગ્સ<ph name="END_LINK" /> માં બંધ કરી શકો છો.</translation>
+<translation id="8137558756159375272">'શોધવા માટે ટચ કરો' પસંદ કરાયેલ શબ્દ અને હાલના પેજને સંદર્ભ તરીકે Google Searchને મોકલે છે. તમે તેને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં બંધ કરી શકો છો.</translation>
 <translation id="8153351135626613369">જ્યારે Assistantને જાણ થશે કે તે સપોર્ટ કરવામાં આવતી વેબસાઇટ પર તમને સહાય કરી શકે છે, ત્યારે તે દેખાશે</translation>
 <translation id="8156139159503939589">તમે કઈ ભાષાઓ વાંચી શકો છો?</translation>
 <translation id="8168435359814927499">કન્ટેન્ટ</translation>
@@ -1294,7 +1294,7 @@
 <translation id="938850635132480979">ભૂલ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="948039501338975565">બુકમાર્ક ફોલ્ડરોની સૂચિ</translation>
-<translation id="95817756606698420">Chrome, ચાઇનામાં શોધ માટે <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> નો ઉપયોગ કરી શકે છે. તમે આને <ph name="BEGIN_LINK" />સેટિંગ્સ<ph name="END_LINK" />માં બદલી શકો છો.</translation>
+<translation id="95817756606698420">Chrome, ચાઇનામાં શોધ માટે <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />નો ઉપયોગ કરી શકે છે. તમે આને <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં બદલી શકો છો.</translation>
 <translation id="962979164594783469">આ ઍપ ઇન્સ્ટૉલ કરો</translation>
 <translation id="968900484120156207">તમે મુલાકાત લીધેલા પેજ અહીં દેખાય છે</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> મિનિટ બાકી</translation>

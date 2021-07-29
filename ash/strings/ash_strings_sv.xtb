@@ -104,7 +104,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
 <translation id="1761222317188459878">Aktivera och inaktivera nätverksanslutning. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + punkt har ändrats. Om du vill använda Insert-tangenten trycker du på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Backsteg.</translation>
-<translation id="1771761307086386028">Rulla åt höger</translation>
+<translation id="1771761307086386028">Scrolla åt höger</translation>
 <translation id="1782199038061388045">Översätt</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1804572139604454141">Inspelningen avslutades eftersom det är mycket ont om utrymme på hårddisken</translation>
@@ -625,7 +625,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="5992218262414051481">Högkontrastläget har aktiverats. Tryck på Ctrl+Sök+H igen om du vill inaktivera det.</translation>
 <translation id="6018164090099858612">Spegelläge avslutas</translation>
-<translation id="602001110135236999">Rulla åt vänster</translation>
+<translation id="602001110135236999">Scrolla åt vänster</translation>
 <translation id="602472752137106327">Visa fönster från alla skrivbord, alternativknapp har markerats</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>

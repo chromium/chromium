@@ -126,7 +126,7 @@
 <translation id="1756785467854861272">Mörk magenta</translation>
 <translation id="1758693804775271377">Bläddra bland lektionerna om det här ämnet genom att svepa åt vänster eller höger med ett finger</translation>
 <translation id="1765245556747822181">Svep uppåt med ett finger</translation>
-<translation id="1771761307086386028">Rulla åt höger</translation>
+<translation id="1771761307086386028">Scrolla åt höger</translation>
 <translation id="1781173782405573156">Pass through-tangent</translation>
 <translation id="1787176709638001873">Lösenordsinmatning</translation>
 <translation id="180203835522132923">Sök + O, sedan W</translation>
@@ -721,7 +721,7 @@
 <translation id="6006064078185310784">{COUNT,plural, =1{bakstreck}other{# bakstreck}}</translation>
 <translation id="6010616110396250088">Fallande ordning</translation>
 <translation id="6017514345406065928">Grön</translation>
-<translation id="602001110135236999">Rulla åt vänster</translation>
+<translation id="602001110135236999">Scrolla åt vänster</translation>
 <translation id="6034000775414344507">Ljusgrå</translation>
 <translation id="6036135911048686884">Tryck och dra för att utforska</translation>
 <translation id="6037602951055904232">Panorera framåt</translation>

@@ -123,7 +123,7 @@
 <translation id="4306392492252714209">Ta bort från urklipp.</translation>
 <translation id="4316910396681052118">ALLA APPAR</translation>
 <translation id="4491109536499578614">Bild</translation>
-<translation id="4588090240171750605">Rulla åt höger</translation>
+<translation id="4588090240171750605">Scrolla åt höger</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, betyg <ph name="RATING_SCORE" /></translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, apprekommendation</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
@@ -175,7 +175,7 @@
 <translation id="6166852626429024716">Sök på enheten, i appar, inställningar och på webben …</translation>
 <translation id="6264365405983206840">Markera &amp;alla</translation>
 <translation id="6351032674660237738">APPFÖRSLAG</translation>
-<translation id="6364916375976753737">Rulla åt vänster</translation>
+<translation id="6364916375976753737">Scrolla åt vänster</translation>
 <translation id="6394627529324717982">Komma</translation>
 <translation id="6397363302884558537">Sluta tala</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{för 1 sek sedan}other{för # sek sedan}}</translation>

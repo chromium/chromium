@@ -1102,7 +1102,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5023310440958281426">Revisa las políticas del administrador.</translation>
 <translation id="5029568752722684782">Borrar la copia</translation>
 <translation id="5030338702439866405">Proporcionada por</translation>
-<translation id="503069730517007720">Se requiere un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. Tu administrador de IT debe analizar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para corregir este problema. <ph name="FURTHER_EXPLANATION" /></translation>
+<translation id="503069730517007720">Se requiere un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. Tu administrador de TI debe analizar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para corregir este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Acerca de Google Traductor</translation>
 <translation id="503498442187459473"><ph name="HOST" /> desea usar tu cámara y micrófono</translation>
 <translation id="5039762155821394373">Tamaño de fuente</translation>
@@ -1920,7 +1920,7 @@ Detalles adicionales:
 <translation id="8103161714697287722">Forma de pago</translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8118489163946903409">Forma de pago</translation>
-<translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de IT que corrija este problema.</translation>
+<translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" no se instaló correctamente en tu computadora o red. Solicita al administrador de TI que corrija este problema.</translation>
 <translation id="8128526133099929547">Ingresaste tu contraseña en un sitio engañoso. Chrome te recomienda que la cambies ahora en <ph name="WEBSITE_1" /> y otros sitios donde la uses.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>

@@ -581,7 +581,7 @@
 <translation id="1616298854599875024">확장 프로그램 '<ph name="IMPORT_NAME" />'은(는) 공유 모듈이 아니므로 가져올 수 없습니다</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{데이터가 조직 보안 정책을 준수하는지 확인하는 중입니다.}=1{파일이 조직 보안 정책을 준수하는지 확인하는 중입니다.}other{파일이 조직 보안 정책을 준수하는지 확인하는 중입니다.}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
-<translation id="1618268899808219593">고객센터(H)</translation>
+<translation id="1618268899808219593">고객센터(&amp;H)</translation>
 <translation id="1620307519959413822">잘못된 비밀번호입니다. 다시 시도하거나 '비밀번호 찾기'를 클릭하여 재설정하세요.</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1621485112342885423">장바구니</translation>
@@ -808,7 +808,7 @@
 <translation id="1826516787628120939">확인 중</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
 <translation id="1828378091493947763">이 기기에서 지원되지 않는 플러그인입니다.</translation>
-<translation id="1828879788654007962">{COUNT,plural, =0{모두 열기(O)}=1{북마크 열기(O)}other{{COUNT}개 모두 열기(&amp;O)}}</translation>
+<translation id="1828879788654007962">{COUNT,plural, =0{모두 열기(&amp;O)}=1{북마크 열기(&amp;O)}other{{COUNT}개 모두 열기(&amp;O)}}</translation>
 <translation id="1828901632669367785">시스템 대화상자를 사용하여 인쇄...</translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="1829192082282182671">축소(&amp;O)</translation>
@@ -2687,7 +2687,7 @@
 <translation id="3844888638014364087">그림 이모티콘 삽입됨</translation>
 <translation id="3846116211488856547">웹사이트, Android 앱 등을 개발할 수 있는 도구를 이용해 보세요. Linux를 설치하면 <ph name="DOWNLOAD_SIZE" />의 데이터가 다운로드됩니다.</translation>
 <translation id="3847319713229060696">모든 웹 사용자를 위한 보안 개선에 참여</translation>
-<translation id="3848547754896969219">시크릿 창에서 열기(I)</translation>
+<translation id="3848547754896969219">시크릿 창에서 열기(&amp;I)</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3851428669031642514">안전하지 않은 스크립트 로드</translation>
 <translation id="3854599674806204102">옵션을 선택하세요.</translation>
@@ -2732,7 +2732,7 @@
 <translation id="3894123633473837029">Sherlog를 통해 최근 어시스턴트 기록을 포함합니다. ID, 위치 및 디버그 정보가 포함될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">폴더 추가</translation>
 <translation id="3894770151966614831">Google 계정으로 옮기시겠습니까?</translation>
-<translation id="3895076768659607631">검색엔진 관리(M)…</translation>
+<translation id="3895076768659607631">검색엔진 관리(&amp;M)…</translation>
 <translation id="3895090224522145010">Kerberos 사용자 이름</translation>
 <translation id="389521680295183045">사용자가 현재 기기를 사용 중인지 사이트에서 확인을 요청할 수 있음</translation>
 <translation id="3897298432557662720">{COUNT,plural, =1{이미지 1개}other{이미지 #개}}</translation>
@@ -4370,7 +4370,7 @@
 <translation id="5747785204778348146">개발자 - 불안정</translation>
 <translation id="5747809636523347288"><ph name="URL" /> 붙여넣기 및 이동(&amp;S)</translation>
 <translation id="5754152670305761216">보호된 콘텐츠 재생이 허용됨</translation>
-<translation id="5756163054456765343">고객센터(H)</translation>
+<translation id="5756163054456765343">고객센터(&amp;H)</translation>
 <translation id="5758631781033351321">여기에서 읽기 목록을 확인할 수 있습니다</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" />을(를) 통해 인쇄하려고 전송한 문서를 <ph name="APP_NAME" />에서 읽을 수 있습니다.</translation>
 <translation id="5763751966069581670">USB 기기를 찾을 수 없습니다.</translation>
@@ -4569,7 +4569,7 @@
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> 시작</translation>
 <translation id="5973041996755340290">‘<ph name="CLIENT_NAME" />’에서 이 브라우저에 대한 디버깅을 시작함</translation>
 <translation id="5973605538625120605">PIN 변경</translation>
-<translation id="5975056890546437204">{COUNT,plural, =0{시크릿 창에서 모두 열기(I)}=1{시크릿 창에서 열기(I)}other{시크릿 창에서 URL {COUNT}개 모두 열기(I)}}</translation>
+<translation id="5975056890546437204">{COUNT,plural, =0{시크릿 창에서 모두 열기(&amp;I)}=1{시크릿 창에서 열기(&amp;I)}other{시크릿 창에서 URL {COUNT}개 모두 열기(&amp;I)}}</translation>
 <translation id="5975792506968920132">배터리 충전율</translation>
 <translation id="5976160379964388480">기타</translation>
 <translation id="5978277834170881274">기본 맞춤법 검사 사용(&amp;U)</translation>
@@ -5219,7 +5219,7 @@
 <translation id="6690659332373509948">파일을 파싱할 수 없음: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google 대시보드에서 동기화된 데이터 관리</translation>
 <translation id="6691541770654083180">지구</translation>
-<translation id="6691936601825168937">앞으로(F)</translation>
+<translation id="6691936601825168937">앞으로(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{페이지 1쪽}other{페이지 {COUNT}쪽}}</translation>
 <translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
 <translation id="6697690052557311665">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 'Linux와 공유'를 선택하세요.</translation>
@@ -5285,7 +5285,7 @@
 <translation id="6778737459546443941">부모님이 아직 승인하지 않았습니다.</translation>
 <translation id="6779447100905857289">장바구니</translation>
 <translation id="677965093459947883">아주 작게</translation>
-<translation id="6781005693196527806">검색엔진 관리(M)…</translation>
+<translation id="6781005693196527806">검색엔진 관리(&amp;M)…</translation>
 <translation id="6781284683813954823">기념일 로고 링크</translation>
 <translation id="6781978626986383437">Linux 백업이 취소됨</translation>
 <translation id="6782067259631821405">잘못된 PIN</translation>
@@ -5536,7 +5536,7 @@
 <translation id="7025190659207909717">모바일 데이터 서비스 관리</translation>
 <translation id="7025895441903756761">보안 및 개인정보 보호</translation>
 <translation id="7026552751317161576">웹 앱이 여러 형식의 파일을 열도록 허용 안함</translation>
-<translation id="7027258625819743915">{COUNT,plural, =0{시크릿 창에서 모두 열기(I)}=1{시크릿 창에서 열기(I)}other{시크릿 창에서 {COUNT}개 모두 열기(I)}}</translation>
+<translation id="7027258625819743915">{COUNT,plural, =0{시크릿 창에서 모두 열기(&amp;I)}=1{시크릿 창에서 열기(&amp;I)}other{시크릿 창에서 {COUNT}개 모두 열기(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>

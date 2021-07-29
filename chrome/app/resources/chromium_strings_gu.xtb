@@ -95,7 +95,7 @@
 <translation id="3889543394854987837">Chromium ને ખોલવા માટે તમારા નામને ક્લિક કરો અને બ્રાઉઝ કરવાનું પ્રારંભ કરો.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> આ Chromium પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chromium તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
 <translation id="3945058413678539331">Chromium પાસવર્ડની કૉપિ કરવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
-<translation id="4036079820698952681"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ્સ<ph name="END_LINK" />ની જાણ કરીને Chromium ને બહેતર બનાવવામાં સહાય કરો</translation>
+<translation id="4036079820698952681"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chromium</translation>
 <translation id="421369550622382712">Chromium માટે શ્રેષ્ઠ એપ્લીકેશન્સ, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો.</translation>
@@ -111,7 +111,7 @@
 <translation id="452711251841752011">Chromium પર આપનું સ્વાગત છે; નવી બ્રાઉઝર વિન્ડો ખોલી છે</translation>
 <translation id="4544142686420020088">કંઈક ખોટુ થયું હોવાને કારણે Chromium અપડેટ થયું નથી. <ph name="BEGIN_LINK" />Chromium અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">નવી Chromium પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>
-<translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ઉપકરણો પર તમારા બુકમાર્ક્સ, ઇતિહાસ અને અન્ય સેટિંગ્સને ઍક્સેસ કરી શકો છો.</translation>
+<translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને અન્ય સેટિંગને ઍક્સેસ કરી શકો છો.</translation>
 <translation id="459535195905078186">Chromium ઍપ્લિકેશનો</translation>
 <translation id="4665829708273112819">ચેતવણી: એક્સ્ટેન્શનને તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી Chromium અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેન્શનને બંધ કરવા માટે, આ વિકલ્પની પસંદગી નાપસંદ કરો.</translation>
 <translation id="4677944499843243528">બીજા કમ્પ્યુટર (<ph name="HOST_NAME" />) પર પ્રોફાઇલ બીજી Chromium પ્રક્રિયા (<ph name="PROCESS_ID" />) દ્વારા ઉપયોગમાં હોય એવું લાગે છે. Chromium એ પ્રોફાઇલને લૉક કરી છે જેથી તે દૂષિત ન થઈ જાય. જો તમને ખાતરી છે કે કોઈ અન્ય પ્રક્રિયાઓ આ પ્રોફાઇલનો ઉપયોગ કરી રહી નથી, તો તમે પ્રોફાઇલને અનલૉક કરી અને Chromium ને ફરીથી લોંચ કરી શકો છો.</translation>
@@ -213,7 +213,7 @@
 <translation id="731795002583552498">Chromium ને અપડેટ કરી રહ્યું છે</translation>
 <translation id="7318036098707714271">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
-Chromium તમારી સેટિંગ્સને પુનઃપ્રાપ્ત કરવામાં અક્ષમ છે.</translation>
+Chromium તમારા સેટિંગને રિકવર શકતું નથી.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
 <translation id="734373864078049451">તમારું વેબ, બુકમાર્ક્સ, અને અન્ય Chromium સામગ્રી અહીં રહે છે.</translation>

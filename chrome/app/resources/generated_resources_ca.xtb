@@ -1972,7 +1972,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3088128611727407543">S'està preparant el perfil de l'aplicació...</translation>
 <translation id="3088325635286126843">&amp;Canvia el nom...</translation>
 <translation id="3089064280130434511">Impedeix que els llocs web obrin i col·loquin finestres a les teves pantalles</translation>
-<translation id="3089137131053189723">S'ha esborrat la cerca</translation>
+<translation id="3089137131053189723">La cerca s'ha esborrat</translation>
 <translation id="3090589793601454425">No les moguis</translation>
 <translation id="3090819949319990166">No es pot copiar el fitxer crx extern a <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" vinculat</translation>
@@ -4970,7 +4970,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6429384232893414837">Error d'actualització</translation>
 <translation id="6430814529589430811">ASCII codificat en Base64, certificat únic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurarà les actualitzacions automàtiques per a tots els usuaris d'aquest equip.</translation>
-<translation id="6434104957329207050">Velocitat d'escaneig del punter</translation>
+<translation id="6434104957329207050">Velocitat de la cerca per punt</translation>
 <translation id="6434309073475700221">Descarta els canvis</translation>
 <translation id="6434325376267409267">El dispositiu s'ha d'actualitzar perquè puguis utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Mostra-ho a Web Store</translation>
@@ -5516,7 +5516,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7017219178341817193">Afegeix una pàgina nova</translation>
 <translation id="7017354871202642555">No es pot configurar el mode després d'haver configurat la finestra.</translation>
 <translation id="7018275672629230621">Llegir i canviar l'historial de navegació</translation>
-<translation id="7019805045859631636">Ràpid</translation>
+<translation id="7019805045859631636">Ràpida</translation>
 <translation id="7022562585984256452">S'ha definit la pàgina d'inici.</translation>
 <translation id="7023206482239788111">Privacy Sandbox preserva la vitalitat del web obert creant millors maneres de dur a terme aquests serveis, sense que els llocs web es vegin afectats i impedint que es faci un seguiment ocult de les teves accions al web.</translation>
 <translation id="7024588353896425985">Gestors de fitxers</translation>
@@ -6456,7 +6456,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8042142357103597104">Opacitat del text</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> no respon.</translation>
-<translation id="8044899503464538266">Lent</translation>
+<translation id="8044899503464538266">Lenta</translation>
 <translation id="8045253504249021590">La sincronització s'ha aturat a través del Tauler de control de Google.</translation>
 <translation id="8045923671629973368">Introdueix l'identificador de l'aplicació o l'URL de Web Store</translation>
 <translation id="8046132381940444654">Un representant del servei d'atenció al client pot utilitzar el número EID per ajudar-te a activar el servei</translation>

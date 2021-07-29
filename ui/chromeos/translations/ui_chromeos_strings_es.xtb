@@ -311,7 +311,7 @@
 <translation id="4364327530094270451">Melón</translation>
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">Enlace externo</translation>
-<translation id="4418686080762064601">Crear una combinación de teclas para tus archivos</translation>
+<translation id="4418686080762064601">Crea un acceso directo a tus archivos</translation>
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4470564870223067757">Hangul de doble alternancia</translation>
 <translation id="4477002475007461989">Rumano</translation>
@@ -727,7 +727,7 @@
 <translation id="8437209419043462667">EE. UU.</translation>
 <translation id="8456681095658380701">El nombre no es válido</translation>
 <translation id="8459404855768962328">Si copias este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
-<translation id="8461467696380332069">Haz clic con el botón derecho en un archivo y selecciona Fijar en la estantería para poder acceder con rapidez a los archivos de la estantería.</translation>
+<translation id="8461467696380332069">Haz clic con el botón derecho en un archivo y selecciona Fijar en la estantería para acceder rápidamente a tus archivos desde la estantería.</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8466234950814670489">Archivo tar</translation>
 <translation id="8475647382427415476">Google Drive no ha podido sincronizar <ph name="FILENAME" /> en este momento. Este servicio volverá a intentarlo más tarde.</translation>
@@ -755,7 +755,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Se ha seleccionado <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
-<translation id="8750438273876807512">Mantén pulsado un archivo, toca <ph name="ICON" /> y selecciona Fijar en la estantería para poder acceder con rapidez a los archivos de la estantería.</translation>
+<translation id="8750438273876807512">Mantén pulsado un archivo, toca <ph name="ICON" /> y selecciona Fijar en la estantería para acceder rápidamente a tus archivos desde la estantería.</translation>
 <translation id="8775404590947523323">Los cambios se guardan de forma automática.<ph name="BREAKS" />Para guardar una copia de la imagen original, desactiva la opción "Sobrescribir original".</translation>
 <translation id="8802459921616481935">Mover a la papelera</translation>
 <translation id="8808686172382650546">Gato</translation>

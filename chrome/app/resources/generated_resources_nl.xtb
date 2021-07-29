@@ -769,7 +769,7 @@
 <translation id="1803545009660609783">Opnieuw trainen</translation>
 <translation id="1805738995123446102">Achtergrondtabblad gebruikt je microfoon</translation>
 <translation id="1805822111539868586">Weergaven bekijken</translation>
-<translation id="1805888043020974594">Afdrukserver</translation>
+<translation id="1805888043020974594">Printerserver</translation>
 <translation id="1805967612549112634">Pincode bevestigen</translation>
 <translation id="1806335016774576568">Overschakelen naar een andere geopende app</translation>
 <translation id="1809483812148634490">Apps die je hebt gedownload via Google Play worden van deze Chromebook verwijderd.
@@ -2315,7 +2315,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="347670947055184738">Het systeem kan het beleid voor je apparaat niet ophalen.</translation>
 <translation id="347785443197175480"><ph name="HOST" /> toegang blijven geven tot je camera en microfoon</translation>
 <translation id="3479552764303398839">Niet nu</translation>
-<translation id="3479685872808224578">Kan de afdrukserver niet vinden. Controleer het adres en probeer het opnieuw.</translation>
+<translation id="3479685872808224578">Kan de printerserver niet vinden. Controleer het adres en probeer het opnieuw.</translation>
 <translation id="3480612136143976912">Pas het formaat en de stijl voor Live ondertiteling aan. Sommige apps en sites maken ook gebruik van deze instelling.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> tabbladen gevonden</translation>
 <translation id="3481268647794498892">Wordt geopend in <ph name="ALTERNATIVE_BROWSER_NAME" /> over <ph name="COUNTDOWN_SECONDS" /> seconden</translation>
@@ -2532,7 +2532,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3708684582558000260">Niet toestaan dat gesloten sites het sturen of ontvangen van gegevens afronden</translation>
 <translation id="3709244229496787112">De browser is afgesloten voordat het downloaden is voltooid.</translation>
 <translation id="3711931198657368127">Pl&amp;akken en naar <ph name="URL" /> gaan</translation>
-<translation id="3711945201266135623">Er zijn <ph name="NUM_PRINTERS" /> printers gevonden op de afdrukserver</translation>
+<translation id="3711945201266135623">Er zijn <ph name="NUM_PRINTERS" /> printers gevonden op de printerserver</translation>
 <translation id="3712050472459130149">Accountupdate vereist</translation>
 <translation id="3712217561553024354">Dit apparaat toestaan andere apparaten met je Google-account te vinden die een mobiele internetverbinding hebben</translation>
 <translation id="3712897371525859903">Pagina opslaan &amp;als...</translation>
@@ -3534,7 +3534,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4830121310592638841">Vragen als een site vensters op je schermen wil openen en plaatsen</translation>
 <translation id="4830502475412647084">OS-update installeren</translation>
 <translation id="4830573902900904548">Je <ph name="DEVICE_TYPE" /> kan geen verbinding maken met internet via <ph name="NETWORK_NAME" />. Kies een ander netwerk. <ph name="LEARN_MORE_LINK_START" />Meer informatie<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833683849865011483">Er is één printer gevonden op de afdrukserver</translation>
+<translation id="4833683849865011483">Er is één printer gevonden op de printerserver</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="4836504898754963407">Vingerafdrukken beheren</translation>
 <translation id="4837128290434901661">Teruggaan naar Google Zoeken?</translation>
@@ -5845,7 +5845,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="740624631517654988">Pop-up geblokkeerd</translation>
 <translation id="7407430846095439694">Importeren en binden</translation>
 <translation id="7407504355934009739">De meeste mensen blokkeren meldingen van deze site</translation>
-<translation id="740810853557944681">Een afdrukserver toevoegen</translation>
+<translation id="740810853557944681">Een printerserver toevoegen</translation>
 <translation id="7409549334477097887">Extra groot</translation>
 <translation id="7409735910987429903">Sites sturen mogelijk pop-ups om advertenties te tonen of gebruiken omleidingen die je naar websites leiden die je mogelijk niet wilt bezoeken</translation>
 <translation id="7410344089573941623">Vragen of <ph name="HOST" /> toegang wil tot je camera en microfoon</translation>
@@ -5871,7 +5871,7 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="7434509671034404296">Ontwikkelaar</translation>
 <translation id="7434635829372401939">Je instellingen synchroniseren</translation>
 <translation id="7434757724413878233">Muisversnelling</translation>
-<translation id="7434969625063495310">Kan de afdrukserver niet toevoegen. Controleer de configuratie van de server en probeer het opnieuw.</translation>
+<translation id="7434969625063495310">Kan de printerserver niet toevoegen. Controleer de configuratie van de server en probeer het opnieuw.</translation>
 <translation id="7436921188514130341">Asjemenou! Er is iets misgegaan bij het veranderen van de naam.</translation>
 <translation id="7438495332316988804">Je kunt de standaardbrowser vinden door Chrome te typen in de Launcher.</translation>
 <translation id="7439519621174723623">Voeg een apparaatnaam toe om door te gaan</translation>
@@ -6890,7 +6890,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8540503336857689453">Het wordt om veiligheidsredenen niet aangeraden om een verborgen netwerk te gebruiken.</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="854071720451629801">Markeren als gelezen</translation>
-<translation id="8541462173655894684">Er zijn geen printers gevonden op de afdrukserver</translation>
+<translation id="8541462173655894684">Er zijn geen printers gevonden op de printerserver</translation>
 <translation id="8542618328173222274">Vragen als een site je virtualreality-apparaten en -gegevens wil gebruiken</translation>
 <translation id="8543556556237226809">Vragen? Neem contact op met de persoon die je profiel beheert.</translation>
 <translation id="8546186510985480118">Weinig ruimte beschikbaar op het apparaat</translation>

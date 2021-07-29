@@ -362,7 +362,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3359142382821736686">seprtr</translation>
 <translation id="3363015957057974366">Pantailako hurrengo elementu interaktibora joateko ere erabil dezakezu tabuladorea. Bilaketa-teklaren gainean aurkituko duzu. Aurrera egiteko, saka ezazu.</translation>
 <translation id="3366946046494222386">Tutoriala (<ph name="TOPIC" />), <ph name="LESSONS" /> ikasgai</translation>
-<translation id="3374537878095184207">{COUNT,plural, =1{plus ikurra}other{# plus ikur}}</translation>
+<translation id="3374537878095184207">{COUNT,plural, =1{batuketa-ikurra}other{# batuketa-ikur}}</translation>
 <translation id="338583716107319301">Bereizlea</translation>
 <translation id="3389259863310851658">Aurreko inprimaki-eremua</translation>
 <translation id="3393605254399152980">Arrastatu hatz bat sakatzen ari zarena entzuteko</translation>

@@ -118,7 +118,7 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1125550662859510761">Izgleda kao <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Izvorno)</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web lokacija, preuzimanja i ekstenzija. I dalje ćete dobijati zaštitu Sigurno pregledanje, tamo gdje je dostupna, na drugim Googleovim uslugama kao što su Gmail i Pretraživanje.</translation>
-<translation id="112752777279960360">Da postavite Android telefon koji će se prvi put koristiti kao sigurnosni ključ s ovim računarom, otvorite Chrome na telefonu i posjetite "Postavke &gt; Lozinke &gt; Koristi telefon kao sigurnosni ključ". Zatim dodirnite "Poveži novi uređaj" i skenirajte ovaj QR kôd.</translation>
+<translation id="112752777279960360">Da postavite Android telefon koji će se prvi put koristiti kao sigurnosni ključ s ovim računarom, otvorite Chrome na telefonu i posjetite "Postavke &gt; Lozinke &gt; Koristite telefon kao sigurnosni ključ". Zatim dodirnite "Poveži novi uređaj" i skenirajte ovaj QR kôd.</translation>
 <translation id="1128109161498068552">Ne dozvoli web lokacijama da koriste sistemske poruke za pristupanje MIDI uređajima</translation>
 <translation id="1128591060186966949">Uređivanje pretraživača</translation>
 <translation id="1129850422003387628">Upravljajte aplikacijama</translation>
@@ -2114,7 +2114,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3253448572569133955">Nepoznat račun</translation>
 <translation id="3254084468305910013">{COUNT,plural, =0{Nije pronađen nijedan sigurnosni problem}=1{Pronađen je {COUNT} sigurnosni problem}one{Pronađen je {COUNT} sigurnosni problem}few{Pronađena su {COUNT} sigurnosna problema}other{Pronađeno je {COUNT} sigurnosnih problema}}</translation>
 <translation id="3254516606912442756">Automatsko određivanje vremenske zone je onemogućeno</translation>
-<translation id="3254715652085014625">Otvorite Chrome na Android telefonu i posjetite "Postavke &gt; Lozinke &gt; Koristi telefon kao sigurnosni ključ" i slijedite pružene upute.</translation>
+<translation id="3254715652085014625">Otvorite Chrome na Android telefonu i posjetite "Postavke &gt; Lozinke &gt; Koristite telefon kao sigurnosni ključ" i slijedite pružene upute.</translation>
 <translation id="3255355328033513170">Svi podaci koje pohrani web lokacija <ph name="SITE_GROUP_NAME" /> i bilo koje web lokacije vezane za nju će biti izbrisani. To uključuje kolačiće. Bit ćete odjavljeni s tih web lokacija, uključujući i otvorene kartice.</translation>
 <translation id="3259723213051400722">Pokušajte ponovo.</translation>
 <translation id="3261268979727295785">Za stariju djecu možete dodati roditeljski nadzor kada završite postavljanje. Informacije o roditeljskom nadzoru možete pronaći u aplikaciji Istražite.</translation>

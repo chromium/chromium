@@ -866,7 +866,7 @@
 <translation id="1885106732301550621">فضای دیسک</translation>
 <translation id="1886996562706621347">به سایت‌ها اجازه داده شود درخواست کنند که کنترل‌کننده پیش‌فرض برای پروتکل‌ها شوند (توصیه می‌شود)</translation>
 <translation id="1887442540531652736">خطای ورود به سیستم</translation>
-<translation id="1887597546629269384">‏دوباره بگویید «Hey Google»</translation>
+<translation id="1887597546629269384">‏دوباره بگویید «Ok Google»</translation>
 <translation id="1890674179660343635">‏&lt;span&gt;شناسه: &lt;/span&gt;‏<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">فضای دیسک بسیار کم است. لطفاً فضای دیسک را آزاد کنید.</translation>
 <translation id="189210018541388520">باز کردن تمام صفحه</translation>
@@ -3287,7 +3287,7 @@
 <translation id="4531924570968473143">چه شخصی را می‌خواهید به این <ph name="DEVICE_TYPE" /> اضافه کنید؟</translation>
 <translation id="4532625150642446981">«<ph name="USB_DEVICE_NAME" />» درحال استفاده است. اختصاص دادن مجدد دستگاه وقتی درحال استفاده است می‌تواند باعث بروز خطا شود. مطمئنید می‌خواهید ادامه دهید؟</translation>
 <translation id="4532646538815530781">این سایت از حسگرهای حرکتی استفاده می‌کند</translation>
-<translation id="4533846798469727141">‏اکنون بگویید «Hey Google»</translation>
+<translation id="4533846798469727141">‏اکنون بگویید «Ok Google»</translation>
 <translation id="4533985347672295764">‏زمان پردازش CPU</translation>
 <translation id="4534661889221639075">دوباره امتحان کنید.</translation>
 <translation id="4535127706710932914">نمایه پیش‌فرض</translation>

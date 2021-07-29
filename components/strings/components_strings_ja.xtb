@@ -1194,7 +1194,7 @@
 <translation id="5327248766486351172">名前</translation>
 <translation id="5329858041417644019">ご使用のブラウザは管理されていません</translation>
 <translation id="5332219387342487447">配送方法</translation>
-<translation id="5333022057423422993">最近使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>
+<translation id="5333022057423422993">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5334013548165032829">詳細なシステムログ</translation>
 <translation id="5334145288572353250">住所を保存しますか？</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
@@ -1312,7 +1312,7 @@
 <translation id="5784606427469807560">カードの確認中に問題が発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="5785756445106461925">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの見た目が変わる可能性もあります。</translation>
 <translation id="5786044859038896871">カード情報を入力しますか？</translation>
-<translation id="578633867165174378">最近使用したパスワードがデータ侵害で検出されました。このパスワードを今すぐ変更することをおすすめします。</translation>
+<translation id="578633867165174378">たった今使用したパスワードがデータ侵害で検出されました。このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> を入力しますか？</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5804427196348435412">NFC デバイスの使用</translation>
@@ -1508,7 +1508,7 @@
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
 <translation id="6583674473685352014">B6（封筒）</translation>
-<translation id="6587182488465657433">最近使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
+<translation id="6587182488465657433">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>

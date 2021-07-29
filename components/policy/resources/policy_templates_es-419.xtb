@@ -2818,7 +2818,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
           Si no la estableces, el audio mono estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4768446404233019970">Habilitar los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
-<translation id="4770334626033858263">La configuración que se usa para generar y verificar el código de acceso para padres.</translation>
+<translation id="4770334626033858263">La configuración que se usa para generar y verificar el código de acceso parental.</translation>
 <translation id="4787763197941188108">Anula el tamaño predeterminado para la página de impresión.
 
       <ph name="PAGE_SIZE_NAME" /> debe contener uno de los formatos incluidos o "personalizado" si el tamaño del papel necesario no está en la lista. Si se proporciona un valor "personalizado", se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Describe el ancho y altura deseados en micrómetros. De lo contrario, no se debe especificar la propiedad <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Se ignorará la política que infrinja estas reglas.
@@ -3683,7 +3683,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5860010874344790473">Si habilitas la política, se enviarán registros del sistema al servidor de administración para que los administradores puedan supervisarlos.
 
       Si la inhabilitas o no la estableces, no se enviarán registros del sistema.</translation>
-<translation id="5861856285460256766">Configuración del código de acceso superior</translation>
+<translation id="5861856285460256766">Configuración del código de acceso parental</translation>
 <translation id="5868414965372171132">Configuración de red de usuario</translation>
 <translation id="587242272905978723">Permite que <ph name="PLUGIN_VM_NAME" /> recopile datos de uso de <ph name="PLUGIN_VM_NAME" />.
 
@@ -5083,7 +5083,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7613115815080726221">El período sin intervención del usuario después del cual se toma una acción de inactividad (en milisegundos).</translation>
 <translation id="7614663184588396421">Lista de los esquemas de protocolo inhabilitados</translation>
 <translation id="7616631530432070402">Se habilitarán los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
-<translation id="7620869951155758729">Esta política especifica la configuración que se usa para generar y verificar el código de acceso superior.
+<translation id="7620869951155758729">Esta política especifica la configuración que se usa para generar y verificar el código de acceso parental.
 
       |current_config| se utiliza siempre para generar el código de acceso; sin embargo, debe usarse para validarlo solo cuando no puede validarse con |future_config|.
       |future_config| es la configuración principal que se utiliza para validar el código de acceso.
@@ -5092,7 +5092,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Esta política está diseñada para rotar la configuración del código de acceso de forma gradual. La configuración nueva siempre se coloca en |future_config| y, a su vez, el valor existente se pasa a |current_config|. Los valores anteriores de |current_config| se trasladan a |old_configs| y se quitan después de que finaliza el ciclo de rotación.
 
       Esta política solo se aplica al usuario menor de edad.
-      Si se establece esta política, el código de acceso superior podrá verificarse en el dispositivo del usuario menor de edad.
+      Si se establece esta política, el código de acceso parental podrá verificarse en el dispositivo del usuario menor de edad.
       Si no se establece, no es posible verificar el código en esos dispositivos.</translation>
 <translation id="7629840767216985001">Si estableces el valor "True" para la política, se activará el cursor grande en la pantalla de acceso. Si estableces el valor "False", se desactivará el cursor en esa pantalla.
 
