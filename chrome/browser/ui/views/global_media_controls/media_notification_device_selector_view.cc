@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -94,7 +95,8 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
     const std::string& current_device_id,
     const SkColor& foreground_color,
     const SkColor& background_color,
-    GlobalMediaControlsEntryPoint entry_point)
+    GlobalMediaControlsEntryPoint entry_point,
+    bool show_expand_button)
     : delegate_(delegate),
       current_device_id_(current_device_id),
       foreground_color_(foreground_color),
@@ -119,6 +121,9 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
   expand_button_->SetCallback(base::BindRepeating(
       &MediaNotificationDeviceSelectorView::ExpandButtonPressed,
       base::Unretained(this)));
+
+  if (!show_expand_button)
+    expand_button_strip_->SetVisible(false);
 
   device_entry_views_container_ = AddChildView(std::make_unique<views::View>());
   device_entry_views_container_->SetLayoutManager(
@@ -214,6 +219,8 @@ void MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices(
           : media::AudioDeviceDescription::kDefaultDeviceId);
 
   UpdateVisibility();
+  for (auto& observer : observers_)
+    observer.OnMediaNotificationDeviceSelectorUpdated(device_entry_ui_map_);
 }
 
 void MediaNotificationDeviceSelectorView::OnColorsChanged(
@@ -392,10 +399,35 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
   device_entry_views_container_->Layout();
 
   UpdateVisibility();
+  for (auto& observer : observers_)
+    observer.OnMediaNotificationDeviceSelectorUpdated(device_entry_ui_map_);
 }
 
 void MediaNotificationDeviceSelectorView::OnControllerInvalidated() {
   cast_controller_.reset();
+}
+
+void MediaNotificationDeviceSelectorView::OnDeviceSelected(int tag) {
+  auto it = device_entry_ui_map_.find(tag);
+  DCHECK(it != device_entry_ui_map_.end());
+
+  if (it->second->GetType() == DeviceEntryUIType::kAudio)
+    delegate_->OnAudioSinkChosen(it->second->raw_device_id());
+  else
+    StartCastSession(static_cast<CastDeviceEntryView*>(it->second));
+}
+
+void MediaNotificationDeviceSelectorView::OnDropdownButtonClicked() {
+  ExpandButtonPressed();
+}
+
+bool MediaNotificationDeviceSelectorView::IsDeviceSelectorExpanded() {
+  return is_expanded_;
+}
+
+void MediaNotificationDeviceSelectorView::AddObserver(
+    MediaNotificationDeviceSelectorObserver* observer) {
+  observers_.AddObserver(observer);
 }
 
 void MediaNotificationDeviceSelectorView::StartCastSession(

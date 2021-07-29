@@ -225,6 +225,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     MediaNotificationContainer* container,
     base::WeakPtr<MediaNotificationItem> item,
     std::unique_ptr<views::View> notification_controls_view,
+    std::unique_ptr<views::View> notification_footer_view,
     int notification_width)
     : container_(container), item_(std::move(item)) {
   DCHECK(container_);
@@ -405,7 +406,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     util_buttons_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kStart);
     util_buttons_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
+        views::BoxLayout::CrossAxisAlignment::kStretch);
 
     {
       // The picture-in-picture button appears directly under the media
@@ -421,6 +422,9 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
           std::move(picture_in_picture_button));
     }
 
+    auto* footer_view = util_buttons_container->AddChildView(
+        std::move(notification_footer_view));
+    util_buttons_layout->SetFlexForView(footer_view, 1);
     AddChildView(std::move(util_buttons_container));
   }
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
+#include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,11 +29,13 @@ namespace media_router {
 class CastDialogSinkButton;
 }
 class MediaNotificationDeviceSelectorViewDelegate;
+class MediaNotificationDeviceSelectorObserver;
 
 class MediaNotificationDeviceSelectorView
     : public views::View,
       public IconLabelBubbleView::Delegate,
-      public media_router::CastDialogController::Observer {
+      public media_router::CastDialogController::Observer,
+      public MediaNotificationFooterView::Delegate {
  public:
   METADATA_HEADER(MediaNotificationDeviceSelectorView);
   MediaNotificationDeviceSelectorView(
@@ -42,7 +45,8 @@ class MediaNotificationDeviceSelectorView
       const std::string& current_device_id,
       const SkColor& foreground_color,
       const SkColor& background_color,
-      GlobalMediaControlsEntryPoint entry_point);
+      GlobalMediaControlsEntryPoint entry_point,
+      bool show_expand_button = true);
   ~MediaNotificationDeviceSelectorView() override;
 
   // Called when audio output devices are discovered.
@@ -63,6 +67,13 @@ class MediaNotificationDeviceSelectorView
   //  media_router::CastDialogController::Observer
   void OnModelUpdated(const media_router::CastDialogModel& model) override;
   void OnControllerInvalidated() override;
+
+  // MediaNotificationFooterview::Delegate
+  void OnDeviceSelected(int tag) override;
+  void OnDropdownButtonClicked() override;
+  bool IsDeviceSelectorExpanded() override;
+
+  void AddObserver(MediaNotificationDeviceSelectorObserver* observer);
 
   views::Button* GetExpandButtonForTesting();
   std::string GetEntryLabelForTesting(views::View* entry_view);
@@ -127,6 +138,8 @@ class MediaNotificationDeviceSelectorView
   base::CallbackListSubscription is_device_switching_enabled_subscription_;
 
   std::unique_ptr<media_router::CastDialogController> cast_controller_;
+
+  base::ObserverList<MediaNotificationDeviceSelectorObserver> observers_;
 
   // Each button has a unique tag, which is used to look up DeviceEntryUI* in
   // |device_entry_ui_map_|.

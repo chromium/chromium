@@ -60,6 +60,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
       MediaNotificationContainer* container,
       base::WeakPtr<MediaNotificationItem> item,
       std::unique_ptr<views::View> notification_controls_view,
+      std::unique_ptr<views::View> notification_footer_view,
       int notification_width);
   MediaNotificationViewModernImpl(const MediaNotificationViewModernImpl&) =
       delete;

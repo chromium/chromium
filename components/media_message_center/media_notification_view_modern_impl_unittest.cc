@@ -252,7 +252,7 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     // On creation, the view should notify |item_|.
     auto view = std::make_unique<MediaNotificationViewModernImpl>(
         &container_, item_.GetWeakPtr(), std::make_unique<views::View>(),
-        kViewWidth);
+        std::make_unique<views::View>(), kViewWidth);
     view->SetSize(kViewSize);
 
     media_session::MediaMetadata metadata;

@@ -25,6 +25,7 @@ class DeviceEntryUI {
   DeviceEntryUI& operator=(const DeviceEntryUI&) = delete;
   virtual ~DeviceEntryUI() = default;
 
+  const gfx::VectorIcon* icon() const { return icon_; }
   const std::string& raw_device_id() const { return raw_device_id_; }
   const std::string& device_name() const { return device_name_; }
 

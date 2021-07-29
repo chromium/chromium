@@ -35,6 +35,7 @@ class SlideOutController;
 class CastMediaNotificationItem;
 class MediaNotificationDeviceSelectorView;
 class MediaNotificationContainerObserver;
+class MediaNotificationFooterView;
 class MediaNotificationService;
 
 // MediaNotificationContainerImplView holds a media notification for display
@@ -143,7 +144,8 @@ class MediaNotificationContainerImplView
   class DismissButton;
 
   void AddStopCastButton(CastMediaNotificationItem* item);
-  void AddDeviceSelectorView(bool is_local_media_session);
+  void AddDeviceSelectorView(bool is_local_media_session,
+                             bool show_expand_button);
   void StopCasting(CastMediaNotificationItem* item);
   void UpdateStopCastButtonIcon();
   void UpdateStopCastButtonBackground();
@@ -177,6 +179,7 @@ class MediaNotificationContainerImplView
   DismissButton* dismiss_button_ = nullptr;
   media_message_center::MediaNotificationView* view_ = nullptr;
   MediaNotificationDeviceSelectorView* device_selector_view_ = nullptr;
+  MediaNotificationFooterView* footer_view_ = nullptr;
 
   // Only shows up for cast notifications.
   views::View* stop_button_strip_ = nullptr;
