@@ -3398,6 +3398,12 @@ gfx::Rect TabStrip::GetDropBounds(int drop_index,
   // The X location the indicator points to.
   int center_x = -1;
 
+  if (GetTabCount() == 0) {
+    // If the tabstrip is empty, it doesn't matter where the drop arrow goes.
+    // The tabstrip can only be transiently empty, e.g. during shutdown.
+    return gfx::Rect();
+  }
+
   Tab* tab = tab_at(std::min(drop_index, GetTabCount() - 1));
   const bool first_in_group =
       drop_index < GetTabCount() && tab->group().has_value() &&
