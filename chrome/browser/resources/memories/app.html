@@ -1,0 +1,20 @@
+<style>
+  :host {
+    display: block;
+  }
+
+  cr-toolbar {
+    --cr-toolbar-field-width: var(--cluster-width);
+  }
+
+  history-clusters {
+    height: calc(100% - var(--cr-toolbar-height));
+    overflow-x: hidden;
+  }
+</style>
+<clusters-router query="{{query_}}"></clusters-router>
+<cr-toolbar id="toolbar" page-name="History Clusters"
+    clear-label="$i18n{clearLabel}" search-prompt="$i18n{searchPrompt}"
+    on-search-changed="onSearchChanged_">
+</cr-toolbar>
+<history-clusters query="{{query_}}"></history-clusters>

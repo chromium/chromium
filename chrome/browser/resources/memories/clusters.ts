@@ -150,12 +150,12 @@ class HistoryClustersElement extends PolymerElement {
   }
 
   /**
-   * Called when an event is received from a cluster that should be removed or
+   * Called with `event` received from a cluster that should be removed or
    * restructured due to all its visits or its top visit having been removed.
    * Contains the id of the Cluster in question.
    * @private
    */
-  private onClusterChangedOrRemoved_() {
+  private onClusterChangedOrRemoved_(event: CustomEvent<bigint>) {
     // Request up to as many of the freshest clusters as currently shown until
     // now.
     this.onBrowserIdle_().then(() => {

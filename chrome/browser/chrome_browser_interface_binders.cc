@@ -136,6 +136,7 @@
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
+#include "chrome/browser/ui/webui/history_clusters/memories_ui.h"
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -691,7 +692,7 @@ void PopulateChromeWebUIFrameBinders(
 
   if (base::FeatureList::IsEnabled(history_clusters::kMemories)) {
     RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
-                                           HistoryUI>(map);
+                                           HistoryUI, MemoriesUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

@@ -35,6 +35,7 @@ group("resources") {
       "gaia_auth_host:resources",
       "history:resources",
       "management:resources",
+      "memories:resources",
       "new_tab_page:resources",
       "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
