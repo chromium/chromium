@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/chromeos_buildflags.h"
 
 extern const base::Feature kProcessGaiaRemoveLocalAccountHeader;
 
 extern const base::Feature kAccountPoliciesLoadedWithoutSync;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const base::Feature kMultiProfileAccountConsistency;
+#endif
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

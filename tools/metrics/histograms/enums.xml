@@ -48660,6 +48660,7 @@ from previous Chrome versions.
   <int value="-364604989"
       label="LinkManagedNoticeToChromeUIManagementURL:disabled"/>
   <int value="-364587218" label="ResourceLoadScheduler:enabled"/>
+  <int value="-364510698" label="MultiProfileAccountConsistency:disabled"/>
   <int value="-364325011" label="enable-files-quick-view"/>
   <int value="-364267715" label="disable-native-cups"/>
   <int value="-363885137" label="StoragePressureEvent:disabled"/>
@@ -50714,6 +50715,7 @@ from previous Chrome versions.
   <int value="1313850691" label="Metal:disabled"/>
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
   <int value="1316142697" label="canvas-2d-layers"/>
+  <int value="1316607485" label="MultiProfileAccountConsistency:enabled"/>
   <int value="1317562265" label="SeccompSandboxAndroid:disabled"/>
   <int value="1318073661" label="MaterialDesignExtensions:enabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>

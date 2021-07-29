@@ -7678,6 +7678,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingSeparateNetworkContexts)},
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"multi-profile-account-consistency",
+     flag_descriptions::kMultiProfileAccountConsistencyName,
+     flag_descriptions::kMultiProfileAccountConsistencyDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(kMultiProfileAccountConsistency)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

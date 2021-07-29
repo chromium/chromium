@@ -12,5 +12,11 @@ const base::Feature kProcessGaiaRemoveLocalAccountHeader{
 // Allows policies to be loaded on a managed account without activating sync.
 // Uses enterprise confirmation dialog for managed accounts signin outside of
 // the profile picker.
-extern const base::Feature kAccountPoliciesLoadedWithoutSync{
+const base::Feature kAccountPoliciesLoadedWithoutSync{
     "AccountPoliciesLoadedWithoutSync", base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Enable support for account consistency across multiple profiles.
+const base::Feature kMultiProfileAccountConsistency{
+    "MultiProfileAccountConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
