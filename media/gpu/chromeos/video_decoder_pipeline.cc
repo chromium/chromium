@@ -76,7 +76,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
-    std::unique_ptr<MediaLog> /*media_log*/) {
+    std::unique_ptr<MediaLog> media_log) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(frame_converter);
@@ -90,7 +90,8 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 
   auto* pipeline = new VideoDecoderPipeline(
       std::move(client_task_runner), std::move(frame_pool),
-      std::move(frame_converter), std::move(create_decoder_function_cb));
+      std::move(frame_converter), std::move(media_log),
+      std::move(create_decoder_function_cb));
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
 }
@@ -132,6 +133,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
+    std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb)
     : client_task_runner_(std::move(client_task_runner)),
       decoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -139,6 +141,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
+      media_log_(std::move(media_log)),
       create_decoder_function_cb_(std::move(create_decoder_function_cb)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
@@ -304,8 +307,14 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4) << "Initialization status = " << status.code();
 
-  if (!status.is_ok())
+  if (!status.is_ok()) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "VideoDecoderPipeline |decoder_| Initialize() failed, status: "
+        << status.code();
     decoder_ = nullptr;
+  }
+  MEDIA_LOG(INFO, media_log_)
+      << "VideoDecoderPipeline |decoder_| Initialize() successful";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (decoder_ && decoder_->NeedsTranscryption()) {
@@ -497,6 +506,7 @@ bool VideoDecoderPipeline::HasPendingFrames() const {
 void VideoDecoderPipeline::OnError(const std::string& msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   VLOGF(1) << msg;
+  MEDIA_LOG(ERROR, media_log_) << "VideoDecoderPipeline " << msg;
 
   has_error_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

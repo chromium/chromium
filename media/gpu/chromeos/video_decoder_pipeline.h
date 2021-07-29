@@ -196,6 +196,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
+      std::unique_ptr<MediaLog> media_log,
       CreateDecoderFunctionCB create_decoder_function_cb);
 
   void InitializeTask(const VideoDecoderConfig& config,
@@ -264,6 +265,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // |decoder_task_runner_|.
   std::unique_ptr<VideoFrameConverter> frame_converter_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  const std::unique_ptr<MediaLog> media_log_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The transcryptor for transcrypting DecoderBuffers when needed by the HW

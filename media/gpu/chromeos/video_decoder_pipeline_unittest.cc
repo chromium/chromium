@@ -13,6 +13,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -139,6 +140,7 @@ class VideoDecoderPipelineTest
             base::ThreadTaskRunnerHandle::Get(),
             std::move(pool_),
             std::move(converter_),
+            std::make_unique<MockMediaLog>(),
             // This callback needs to be configured in the individual tests.
             base::BindOnce(&VideoDecoderPipelineTest::CreateNullMockDecoder))) {
   }
