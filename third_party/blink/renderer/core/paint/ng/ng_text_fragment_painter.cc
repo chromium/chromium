@@ -264,7 +264,6 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   Node* node = layout_object->GetNode();
   TextPaintStyle text_style =
       TextPainterBase::TextPaintingStyle(document, style, paint_info);
-  // TODO(crbug.com/1179585): Support SVG Paint Servers (e.g. Gradient, Pattern)
   if (UNLIKELY(selection)) {
     selection->ComputeSelectionStyle(document, style, node, paint_info,
                                      text_style);
