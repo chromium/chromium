@@ -368,7 +368,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DiskUsage.NumUserHomeDirectories"
-    units="home directories" expires_after="2021-08-01">
+    units="home directories" expires_after="2022-08-01">
   <owner>achuith@chromium.org</owner>
   <owner>tls@chromium.org</owner>
   <summary>
@@ -376,13 +376,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.DiskUsage.OldestUserOnDevice" units="units"
-    expires_after="2021-08-01">
+<histogram name="Platform.DiskUsage.OldestUserOnDevice" units="days"
+    expires_after="2022-08-01">
   <owner>achuith@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
-    Days since last login of the least recently user on device. Logged once a
-    day, if disk usage is high.
+    Number of days between now and the last login of the device's least recent
+    user. Logged once a day, if disk usage is high.
   </summary>
 </histogram>
 
@@ -434,18 +434,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Emmc.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2021-10-04">
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
-    eMMC [5.0] Device life time estimation for flash. This field provides an
-    estimated indication about the device life time that is reflected by the
+    eMMC [5.0] Device lifetime estimation for flash. This field provides an
+    estimated indication about the device lifetime that is reflected by the
     averaged wear out of memory of a given type relative to its maximum
     estimated lifetime.
   </summary>
 </histogram>
 
-<histogram name="Platform.FileSystem.ErrorCount" units="units"
-    expires_after="2021-08-01">
+<histogram name="Platform.FileSystem.ErrorCount" units="errors"
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of file system errors, as reported by dumpe2fs &quot;FS Error
@@ -454,7 +454,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.FileSystem.FsckNeeded" enum="Boolean"
-    expires_after="2021-08-01">
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     True when kernel reports that the file system needs deep recovery. File
@@ -464,7 +464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.FileSystem.RecoveryNeeded" enum="Boolean"
-    expires_after="2021-08-01">
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     True when kernel reports that the file system needed recovery at boot. It
@@ -766,8 +766,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.ReadSectorsLong" units="units"
-    expires_after="2021-08-01">
+<histogram name="Platform.ReadSectorsLong" units="sectors per second"
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of disk sectors per second read by Chrome OS in a long interval
@@ -775,8 +775,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.ReadSectorsShort" units="units"
-    expires_after="2021-10-04">
+<histogram name="Platform.ReadSectorsShort" units="sectors per second"
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of disk sectors per second read by Chrome OS in a short interval
@@ -795,7 +795,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SATA.LogicalSectorsRead" units="512-byte sectors"
-    expires_after="2021-08-01">
+    expires_after="2021-12-05">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -805,7 +805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SATA.LogicalSectorsWritten" units="512-byte sectors"
-    expires_after="2021-08-01">
+    expires_after="2021-12-05">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -815,7 +815,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SATA.PercentageUsed" units="%"
-    expires_after="2021-08-01">
+    expires_after="2021-12-05">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -873,7 +873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.StatefulTrim.TimeBetweenTrim" units="hours"
-    expires_after="2021-06-08">
+    expires_after="2021-12-05">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -886,7 +886,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.StatefulTrim.TrimmedAmount" units="MiB"
-    expires_after="2021-06-08">
+    expires_after="2021-12-05">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -947,7 +947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Storage.Ufs.LifeUsed" enum="EmmcLifeUsed"
-    expires_after="2021-08-01">
+    expires_after="2021-12-05">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <summary>
@@ -1439,8 +1439,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.WriteSectorsLong" units="units"
-    expires_after="2021-08-01">
+<histogram name="Platform.WriteSectorsLong" units="sectors per second"
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of disk sectors per second written by Chrome OS in a long interval
@@ -1448,8 +1448,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.WriteSectorsShort" units="units"
-    expires_after="2021-08-01">
+<histogram name="Platform.WriteSectorsShort" units="sectors per second"
+    expires_after="2022-10-01">
   <owner>gwendal@google.com</owner>
   <summary>
     Number of disk sectors per second written by Chrome OS in a short interval
