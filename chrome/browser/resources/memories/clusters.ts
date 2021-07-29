@@ -28,7 +28,9 @@ import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisi
  * infinite scrolling as well as deletion of visits within the clusters.
  */
 
-const RESULTS_PER_PAGE: number = 5;
+// Chosen fairly arbitrarily. We want to fill the whole vertical viewport.
+// See `onClustersQueryResult_()` for details.
+const RESULTS_PER_PAGE: number = 10;
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -255,6 +257,27 @@ class HistoryClustersElement extends PolymerElement {
     } else {
       this.result_ = result;
     }
+
+    // Handle the "tall monitor" edge case: if the returned results are are
+    // shorter than the vertical viewport, the "container" div will not have a
+    // scrollbar, and the user will never be able to trigger the
+    // iron-scroll-threshold to request more results. Therefore, immediately
+    // request more results if there is no scrollbar to fill the viewport.
+    //
+    // This should happen quite rarely in the queryless state since the backend
+    // transparently tries to get at least ~100 visits to cluster.
+    //
+    // This is likely to happen very frequently in the search query state, since
+    // many clusters will not match the search query and will be discarded.
+    //
+    // Do this on browser idle to avoid jank and to give the DOM a chance to be
+    // updated with the results we just got.
+    this.onBrowserIdle_().then(() => {
+      const container = this.$.container;
+      if (container.scrollHeight <= container.clientHeight) {
+        this.onScrolledToBottom_();
+      }
+    });
   }
 
   private onQueryChanged_() {
