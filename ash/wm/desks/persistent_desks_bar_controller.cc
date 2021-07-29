@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -207,6 +208,9 @@ void PersistentDesksBarController::DestroyBarWidget() {
 }
 
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
+  if (!desks_restore_util::HasPrimaryUserUsedDesksRecently())
+    return false;
+
   if (!is_enabled_)
     return false;
 

@@ -171,11 +171,6 @@ class ASH_EXPORT Desk {
   // accounts for cases where the user removes the active desk.
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
-  // Returns the time from base::Time::Now() to Jan 1, 2010 in the local
-  // timezeone in days as an int. We use Jan 1, 2010 as an arbitrary epoch
-  // since it is a well-known date in the past.
-  int GetDaysFromLocalEpoch() const;
-
  private:
   friend class DesksTestApi;
 
@@ -243,8 +238,6 @@ class ASH_EXPORT Desk {
   // creation.
   int first_day_visited_ = -1;
   int last_day_visited_ = -1;
-
-  base::Clock* override_clock_ = nullptr;
 
   // Tracks whether |this| has been interacted with this week. This value is
   // reset by the DesksController.

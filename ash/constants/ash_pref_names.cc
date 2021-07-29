@@ -625,15 +625,6 @@ const char kSuggestLogoutAfterClosingLastWindow[] =
 // A dictionary pref that maps usernames to wallpaper info.
 const char kUserWallpaperInfo[] = "user_wallpaper_info";
 
-// A boolean pref that indicates whether the user has used desks recently.
-// A user has `used` desks means that there are desks added, removed or renamed
-// by the user. `Recently` means the `used` action happens between 07/27/2021
-// and 09/07/2021. Only the users that used desks in this period of time will be
-// included in the experiment of bento bar and overview button. Note, this pref
-// will not be set to false once it has been set to true. But this perf could be
-// removed after the experiment.
-const char kUserHasUsedDesksRecently[] = "ash.user_has_used_desks_recently";
-
 // A dictionary pref that maps usernames to wallpaper info.
 // This is for wallpapers that are syncable across devices.
 const char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";

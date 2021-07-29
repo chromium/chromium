@@ -41,10 +41,6 @@ class DesksTestApi {
   static bool IsDesksBarLeftGradientVisible();
   static bool IsDesksBarRightGradientVisible();
 
-  // Overrides the `override_clock_` of `desk` with `test_clock` for mocking
-  // time in tests.
-  static void OverrideDeskClock(Desk* desk, base::Clock* test_clock);
-
   // Resets `first_day_visited_` and `last_day_visited_` of `desk` for testing
   // to the current date.
   static void ResetDeskVisitedMetrics(Desk* desk);
