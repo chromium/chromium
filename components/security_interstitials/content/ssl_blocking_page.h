@@ -6,7 +6,6 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_H_
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
