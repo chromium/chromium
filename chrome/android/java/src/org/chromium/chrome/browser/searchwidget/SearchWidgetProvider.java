@@ -354,7 +354,10 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     /** See {@link #sDefaultSearchEngineUrl}. */
     static String getDefaultSearchEngineUrl() {
-        // TODO(yusufo): Get rid of this.
+        // TODO(ender): Get rid of this.
+        if (sDefaultSearchEngineUrl == null) {
+            updateCachedEngineName();
+        }
         return sDefaultSearchEngineUrl;
     }
 }

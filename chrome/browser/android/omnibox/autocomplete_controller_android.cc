@@ -521,6 +521,7 @@ AutocompleteControllerAndroid::Factory::Factory()
     : BrowserContextKeyedServiceFactory(
           "AutocompleteControllerAndroid",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(ShortcutsBackendFactory::GetInstance());
 }
 

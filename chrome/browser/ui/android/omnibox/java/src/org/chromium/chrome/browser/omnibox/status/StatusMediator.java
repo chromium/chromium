@@ -326,7 +326,8 @@ public class StatusMediator
 
         if (mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
             setStatusIconShown(true);
-        } else if (UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
+        } else if (mProfileSupplier.get() != null
+                && UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -345,7 +346,8 @@ public class StatusMediator
         updateStatusVisibility();
 
         // Only fade the animation on the new tab page.
-        if (UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
+        if (mProfileSupplier.get() != null
+                && UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
             float focusAnimationProgress = percent;
             if (!mUrlHasFocus) {
                 focusAnimationProgress = MathUtils.clamp(
@@ -528,8 +530,8 @@ public class StatusMediator
      */
     boolean shouldDisplaySearchEngineIcon() {
         boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
-        boolean showIconOnNTP =
-                UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())
+        boolean showIconOnNTP = mProfileSupplier.get() != null
+                && UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())
                 && !mLocationBarDataProvider.isLoading() && !mIsTablet
                 && (mUrlHasFocus || mUrlFocusPercent > 0);
 
