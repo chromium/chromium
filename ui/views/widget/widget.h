@@ -686,11 +686,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool IsMinimized() const;
 
   // Accessors for fullscreen state.
-  // If `delay` is true, some underlying implementations will set their target
+  // If `delay` is given, some underlying implementations will set their target
   // fullscreen state and then post a delayed task to request the actual window
   // transition, in order to handle some platform-specific quirks in specific
   // fullscreen scenarios. See crbug.com/1210548 and crbug.com/1034783.
-  void SetFullscreen(bool fullscreen, bool delay = false);
+  void SetFullscreen(bool fullscreen, base::TimeDelta delay = {});
   bool IsFullscreen() const;
 
   // macOS: Sets whether the window can share fullscreen windows' spaces.

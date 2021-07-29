@@ -787,7 +787,7 @@ bool Widget::IsMinimized() const {
   return native_widget_->IsMinimized();
 }
 
-void Widget::SetFullscreen(bool fullscreen, bool delay) {
+void Widget::SetFullscreen(bool fullscreen, base::TimeDelta delay) {
   if (IsFullscreen() == fullscreen)
     return;
 
