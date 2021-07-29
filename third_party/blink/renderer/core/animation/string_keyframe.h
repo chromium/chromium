@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class CSSPropertyName;
 class StyleSheetContents;
 
 // An implementation of Keyframe used for CSS Animations, web-animations, and
@@ -41,7 +42,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
       const String& value,
       SecureContextMode,
       StyleSheetContents*);
-  void SetCSSPropertyValue(const CSSProperty&, const CSSValue&);
+  void SetCSSPropertyValue(const CSSPropertyName&, const CSSValue&);
   void RemoveCustomCSSProperty(const PropertyHandle& property);
 
   void SetPresentationAttributeValue(const CSSProperty&,

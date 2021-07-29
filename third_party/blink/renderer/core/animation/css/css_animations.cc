@@ -116,11 +116,12 @@ StringKeyframeVector ProcessKeyframesRule(
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
     for (unsigned j = 0; j < properties.PropertyCount(); j++) {
+      CSSPropertyValueSet::PropertyReference property_reference =
+          properties.PropertyAt(j);
       // TODO(crbug.com/980160): Remove access to static Variable instance.
-      const CSSProperty& property =
-          CSSProperty::Get(properties.PropertyAt(j).Id());
+      const CSSProperty& property = CSSProperty::Get(property_reference.Id());
       if (property.PropertyID() == CSSPropertyID::kAnimationTimingFunction) {
-        const CSSValue& value = properties.PropertyAt(j).Value();
+        const CSSValue& value = property_reference.Value();
         scoped_refptr<TimingFunction> timing_function;
         if (value.IsInheritedValue() && parent_style->Animations()) {
           timing_function = parent_style->Animations()->TimingFunctionList()[0];
@@ -137,8 +138,21 @@ StringKeyframeVector ProcessKeyframesRule(
         const CSSProperty& physical_property =
             property.ResolveDirectionAwareProperty(text_direction,
                                                    writing_mode);
-        keyframe->SetCSSPropertyValue(physical_property,
-                                      properties.PropertyAt(j).Value());
+
+        // Calling ResolveDirectionAwareProperty on the static Variable instance
+        // must return the same instance.
+        DCHECK((&physical_property == &property) ||
+               !Variable::IsStaticInstance(property));
+        // We can not call GetCSSPropertyName on the static Variable instance,
+        // but since (&physical_property == &property), we can get the name from
+        // the original |property_reference|.
+        //
+        // TODO(crbug.com/980160): Remove static Variable instance.
+        const CSSPropertyName& name =
+            Variable::IsStaticInstance(physical_property)
+                ? property_reference.Name()
+                : physical_property.GetCSSPropertyName();
+        keyframe->SetCSSPropertyValue(name, property_reference.Value());
       }
     }
     keyframes.push_back(keyframe);
@@ -325,7 +339,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
 
       if (source_index != target_index) {
         keyframe->SetCSSPropertyValue(
-            css_property, rule_keyframe->CssPropertyValue(property));
+            property.GetCSSPropertyName(),
+            rule_keyframe->CssPropertyValue(property));
       }
 
       current_offset_properties.insert(&css_property);
