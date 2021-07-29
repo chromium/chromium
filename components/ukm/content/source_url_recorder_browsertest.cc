@@ -14,6 +14,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
@@ -266,4 +267,61 @@ IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverBrowserTest,
     EXPECT_TRUE(content::NavigateToURL(shell(), url));
     EXPECT_NE(nullptr, GetSourceForNavigationId(observer.navigation_id()));
   }
+}
+
+class SourceUrlRecorderWebContentsObserverPrerenderBrowserTest
+    : public SourceUrlRecorderWebContentsObserverBrowserTest {
+ public:
+  SourceUrlRecorderWebContentsObserverPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &SourceUrlRecorderWebContentsObserverPrerenderBrowserTest::
+                web_contents,
+            base::Unretained(this))) {}
+  ~SourceUrlRecorderWebContentsObserverPrerenderBrowserTest() override =
+      default;
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* web_contents() { return shell()->web_contents(); }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(SourceUrlRecorderWebContentsObserverPrerenderBrowserTest,
+                       IgnoreUrlInPrerender) {
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  content::NavigationHandleObserver observer(web_contents(), url);
+  EXPECT_TRUE(content::NavigateToURL(shell(), url));
+  EXPECT_TRUE(observer.has_committed());
+  const ukm::UkmSource* source1 =
+      GetSourceForNavigationId(observer.navigation_id());
+  EXPECT_NE(nullptr, source1);
+  EXPECT_EQ(1u, source1->urls().size());
+  EXPECT_EQ(url, source1->url());
+  EXPECT_EQ(url, GetAssociatedURLForWebContentsDocument());
+
+  // Load a page in the prerendering.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/title1.html?prerendering");
+  content::NavigationHandleObserver prerender_observer(web_contents(),
+                                                       prerender_url);
+  prerender_helper()->AddPrerender(prerender_url);
+
+  // Ensure no UKM source was created for the prerendering navigation.
+  EXPECT_EQ(nullptr,
+            GetSourceForNavigationId(prerender_observer.navigation_id()));
+
+  EXPECT_EQ(url, GetAssociatedURLForWebContentsDocument());
+
+  // Navigate the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  const ukm::UkmSource* source2 =
+      GetSourceForNavigationId(prerender_observer.navigation_id());
+  EXPECT_EQ(1u, source2->urls().size());
+  EXPECT_EQ(prerender_url, source2->url());
+  EXPECT_EQ(prerender_url, GetAssociatedURLForWebContentsDocument());
+  EXPECT_NE(source1, source2);
 }
