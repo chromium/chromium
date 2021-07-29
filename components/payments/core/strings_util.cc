@@ -4,7 +4,6 @@
 
 #include "components/payments/core/strings_util.h"
 
-#include <vector>
 
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
