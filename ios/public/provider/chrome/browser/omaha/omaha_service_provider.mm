@@ -12,17 +12,9 @@ OmahaServiceProvider::OmahaServiceProvider() {}
 
 OmahaServiceProvider::~OmahaServiceProvider() {}
 
-void OmahaServiceProvider::Start() {
-  Initialize();
-}
+void OmahaServiceProvider::Start() {}
 
-void OmahaServiceProvider::Initialize() {}
-
-void OmahaServiceProvider::Stop() {
-  ShutDown();
-}
-
-void OmahaServiceProvider::ShutDown() {}
+void OmahaServiceProvider::Stop() {}
 
 GURL OmahaServiceProvider::GetUpdateServerURL() const {
   return GURL();

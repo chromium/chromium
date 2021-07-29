@@ -21,13 +21,9 @@ class OmahaServiceProvider {
 
   // Starts the provider.  This method will be called on the UI thread.
   virtual void Start();
-  // DEPRECATED, use Start().
-  virtual void Initialize();
 
   // Stops the provider.  This method will be called on the UI thread.
   virtual void Stop();
-  // DEPRECATED, use Stop().
-  virtual void ShutDown();
 
   // Returns the URL to use for update checks.
   virtual GURL GetUpdateServerURL() const;
