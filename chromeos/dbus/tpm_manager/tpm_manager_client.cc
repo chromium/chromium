@@ -85,6 +85,12 @@ class TpmManagerClientImpl : public TpmManagerClient {
     CallProtoMethod(::tpm_manager::kGetVersionInfo, request,
                     std::move(callback));
   }
+  void GetSupportedFeatures(
+      const ::tpm_manager::GetSupportedFeaturesRequest& request,
+      GetSupportedFeaturesCallback callback) override {
+    CallProtoMethod(::tpm_manager::kGetSupportedFeatures, request,
+                    std::move(callback));
+  }
   void GetDictionaryAttackInfo(
       const ::tpm_manager::GetDictionaryAttackInfoRequest& request,
       GetDictionaryAttackInfoCallback callback) override {

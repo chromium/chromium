@@ -113,6 +113,7 @@ class TpmManagerClientTest : public testing::Test {
   // The expected replies to the respective D-Bus calls.
   ::tpm_manager::GetTpmNonsensitiveStatusReply expected_status_reply_;
   ::tpm_manager::GetVersionInfoReply expected_version_info_reply_;
+  ::tpm_manager::GetSupportedFeaturesReply expected_supported_features_reply_;
   ::tpm_manager::GetDictionaryAttackInfoReply expected_get_da_info_reply_;
   ::tpm_manager::TakeOwnershipReply expected_take_ownership_reply_;
   ::tpm_manager::ClearStoredOwnerPasswordReply expected_clear_password_reply_;
@@ -139,6 +140,9 @@ class TpmManagerClientTest : public testing::Test {
       writer.AppendProtoAsArrayOfBytes(expected_status_reply_);
     } else if (method_call->GetMember() == ::tpm_manager::kGetVersionInfo) {
       writer.AppendProtoAsArrayOfBytes(expected_version_info_reply_);
+    } else if (method_call->GetMember() ==
+               ::tpm_manager::kGetSupportedFeatures) {
+      writer.AppendProtoAsArrayOfBytes(expected_supported_features_reply_);
     } else if (method_call->GetMember() ==
                ::tpm_manager::kGetDictionaryAttackInfo) {
       writer.AppendProtoAsArrayOfBytes(expected_get_da_info_reply_);
@@ -222,6 +226,39 @@ TEST_F(TpmManagerClientTest, GetVersionInfoDBusFailure) {
       &result_reply);
   client_->GetVersionInfo(::tpm_manager::GetVersionInfoRequest(),
                           std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(::tpm_manager::STATUS_DBUS_ERROR, result_reply.status());
+}
+
+TEST_F(TpmManagerClientTest, GetSupportedFeatures) {
+  expected_supported_features_reply_.set_status(::tpm_manager::STATUS_SUCCESS);
+  expected_supported_features_reply_.set_support_u2f(true);
+  ::tpm_manager::GetSupportedFeaturesReply result_reply;
+  auto callback = base::BindOnce(
+      [](::tpm_manager::GetSupportedFeaturesReply* result_reply,
+         const ::tpm_manager::GetSupportedFeaturesReply& reply) {
+        *result_reply = reply;
+      },
+      &result_reply);
+  client_->GetSupportedFeatures(::tpm_manager::GetSupportedFeaturesRequest(),
+                                std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(expected_supported_features_reply_.status(), result_reply.status());
+  EXPECT_EQ(expected_supported_features_reply_.support_u2f(),
+            result_reply.support_u2f());
+}
+
+TEST_F(TpmManagerClientTest, GetSupportedFeaturesDBusFailure) {
+  shall_message_parsing_fail_ = true;
+  ::tpm_manager::GetSupportedFeaturesReply result_reply;
+  auto callback = base::BindOnce(
+      [](::tpm_manager::GetSupportedFeaturesReply* result_reply,
+         const ::tpm_manager::GetSupportedFeaturesReply& reply) {
+        *result_reply = reply;
+      },
+      &result_reply);
+  client_->GetSupportedFeatures(::tpm_manager::GetSupportedFeaturesRequest(),
+                                std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(::tpm_manager::STATUS_DBUS_ERROR, result_reply.status());
 }
