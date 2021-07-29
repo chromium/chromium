@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/device_name_store_impl.h"
 
-#include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/device_name_applier_impl.h"
+#include "chrome/browser/chromeos/device_name_validator.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -14,33 +14,7 @@
 namespace chromeos {
 
 namespace {
-
 const char kDefaultDeviceName[] = "ChromeOS";
-
-// For maximum compatibility with existing network services (e.g., Active
-// Directory), the upper limit for hostname length is 15 characters.
-const int kMaxDeviceNameLength = 15;
-
-const char kDeviceNameAllowedChars[] = "0123456789-abcdefghijklmnopqrstuvwxyz";
-
-bool IsValidDeviceName(const std::string& device_name) {
-  // Device name be not be empty string.
-  if (device_name.empty())
-    return false;
-
-  // Device name should be <=15 characters long.
-  if (device_name.length() > kMaxDeviceNameLength)
-    return false;
-
-  // Device name may contain only letters, numbers and hyphens.
-  if (!base::ContainsOnlyChars(base::ToLowerASCII(device_name),
-                               kDeviceNameAllowedChars)) {
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 DeviceNameStoreImpl::DeviceNameStoreImpl(

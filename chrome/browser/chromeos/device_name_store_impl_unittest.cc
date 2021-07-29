@@ -307,58 +307,26 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameConfigurable) {
   EXPECT_EQ(0u, GetNumObserverCalls());
 
   // SetDeviceName() should update the name for
-  // kPolicyHostnameConfigurableByManagedUser policy.
+  // kPolicyHostnameConfigurableByManagedUser policy if name is valid.
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
             get_device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceName("TestName");
   EXPECT_EQ(1u, GetNumObserverCalls());
 
-  // New device name set is same as previous one, hence observer should not be
-  // notified.
+  // New device name set is valid but same as previous one, hence observer
+  // should not be notified.
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
             get_device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceName("TestName");
   EXPECT_EQ(1u, GetNumObserverCalls());
 
-  // Verify valid device name changes.
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
-            get_device_name_store()->SetDeviceName("TestName123"));
-  VerifyDeviceName("TestName123");
-  EXPECT_EQ(2u, GetNumObserverCalls());
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
-            get_device_name_store()->SetDeviceName("TestName-"));
-  VerifyDeviceName("TestName-");
-  EXPECT_EQ(3u, GetNumObserverCalls());
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
-            get_device_name_store()->SetDeviceName("012345678901234"));
-  VerifyDeviceName("012345678901234");
-  EXPECT_EQ(4u, GetNumObserverCalls());
-
-  // Verify invalid device name changes.
-
-  // Name is an empty string.
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kInvalidName,
-            get_device_name_store()->SetDeviceName(""));
-  VerifyDeviceName("012345678901234");
-  EXPECT_EQ(4u, GetNumObserverCalls());
-
+  // SetDeviceName() should not update the name for
+  // kPolicyHostnameConfigurableByManagedUser policy if name is invalid.
   // Name contains a whitespace.
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kInvalidName,
             get_device_name_store()->SetDeviceName("Test Name"));
-  VerifyDeviceName("012345678901234");
-  EXPECT_EQ(4u, GetNumObserverCalls());
-
-  // Name contains >15 characters.
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kInvalidName,
-            get_device_name_store()->SetDeviceName("0123456789012345"));
-  VerifyDeviceName("012345678901234");
-  EXPECT_EQ(4u, GetNumObserverCalls());
-
-  // Name contains special characters @, #, !, &.
-  EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kInvalidName,
-            get_device_name_store()->SetDeviceName("Testname@#!&"));
-  VerifyDeviceName("012345678901234");
-  EXPECT_EQ(4u, GetNumObserverCalls());
+  VerifyDeviceName("TestName");
+  EXPECT_EQ(1u, GetNumObserverCalls());
 }
 
 TEST_F(DeviceNameStoreImplTest, ManagedDevicePolicyChanges) {
