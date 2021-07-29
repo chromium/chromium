@@ -1247,6 +1247,10 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug.com/1143122): remove this after migration.
+    experiments = {
+        "chromium.chromium_tests.use_rbe_cas": 50,
+    },
 )
 
 try_.chromium_linux_builder(
@@ -1368,6 +1372,10 @@ try_.chromium_linux_builder(
     ssd = True,
     main_list_view = "try",
     tryjob = try_.job(),
+    # TODO(crbug.com/1143122): remove this after migration.
+    experiments = {
+        "chromium.chromium_tests.use_rbe_cas": 50,
+    },
 )
 
 try_.chromium_linux_builder(
