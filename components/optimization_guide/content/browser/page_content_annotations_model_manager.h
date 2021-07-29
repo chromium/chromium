@@ -32,9 +32,8 @@ class PageContentAnnotationsModelManager {
 
   // Requests to annotate |text|, will invoke |callback| when completed.
   //
-  // This will execute all supported models in the following order:
-  // * Page entities
-  // * Page topics
+  // This will execute all supported models based on the models_to_execute
+  // param on the PageContentAnnotationsService feature.
   void Annotate(const std::string& text, PageContentAnnotatedCallback callback);
 
   // Returns the version of the page topics model that is currently being used
@@ -45,17 +44,37 @@ class PageContentAnnotationsModelManager {
  private:
   friend class PageContentAnnotationsModelManagerTest;
 
+  // Runs the next model on |text| based on |current_model_index|. If the
+  // last model in |ordered_models_to_execute_| has executed, it will invoke
+  // |callback| with the contents of |current_annotations|.
+  //
+  // |current_annotations|, |callback|, and |current_model_index| will be passed
+  // through a series of callbacks and will be invoked after the last model
+  // executes.
+  void ExecuteNextModelOrInvokeCallback(
+      const std::string& text,
+      std::unique_ptr<history::VisitContentModelAnnotations>
+          current_annotations,
+      PageContentAnnotatedCallback callback,
+      absl::optional<size_t> current_model_index);
+
+  // Set up the machinery for execution of the page entities model. This should
+  // only be run at construction.
+  void SetUpPageEntitiesModel(OptimizationGuideModelProvider* model_provider);
+
   // Requests to execute the page entities model with |text|, populate
   // |current_annotations| with detected entities on success, and proceed to
   // execute any subsequent models.
   //
-  // |current_annotations| and |callback| will be passed through a series of
-  /// callbacks and will be invoked after the last model executes.
+  // |current_annotations|, |callback|, and |current_model_index| will be passed
+  // through a series of callbacks and will be invoked after the last model
+  // executes.
   void ExecutePageEntitiesModel(
       const std::string& text,
       std::unique_ptr<history::VisitContentModelAnnotations>
           current_annotations,
-      PageContentAnnotatedCallback callback);
+      PageContentAnnotatedCallback callback,
+      size_t current_model_index);
 
   // Invoked when the page entities model has finished executing. If |output| is
   // populated, |current_annotations| will be populated with the detected
@@ -68,19 +87,27 @@ class PageContentAnnotationsModelManager {
       std::unique_ptr<history::VisitContentModelAnnotations>
           current_annotations,
       PageContentAnnotatedCallback callback,
+      size_t current_model_index,
       const absl::optional<std::vector<tflite::task::core::Category>>& output);
+
+  // Set up the machinery for execution of the page topics model. This should
+  // only be run at construction.
+  void SetUpPageTopicsModel(
+      OptimizationGuideModelProvider* optimization_guide_model_provider);
 
   // Requests to execute the page topics model with |text|, populate
   // |current_annotations| with detected topics on success, and proceed to
   // execute any subsequent models.
   //
-  // |current_annotations| and |callback| will be passed through a series of
-  /// callbacks and will be invoked after the last model executes.
+  // |current_annotations|, |callback|, and |current_model_index| will be passed
+  // through a series of callbacks and will be invoked after the last model
+  // executes.
   void ExecutePageTopicsModel(
       const std::string& text,
       std::unique_ptr<history::VisitContentModelAnnotations>
           current_annotations,
-      PageContentAnnotatedCallback callback);
+      PageContentAnnotatedCallback callback,
+      size_t current_model_index);
 
   // Invoked when the page topics model has finished executing. If |output| is
   // populated, |current_annotations| will be populated based on that.
@@ -89,9 +116,11 @@ class PageContentAnnotationsModelManager {
   // contents of |current_annotations| after it has populated it based on
   // |output|.
   void OnPageTopicsModelExecutionCompleted(
+      const std::string& text,
       std::unique_ptr<history::VisitContentModelAnnotations>
           current_annotations,
       PageContentAnnotatedCallback callback,
+      size_t current_model_index,
       const proto::PageTopicsModelMetadata& model_metadata,
       const absl::optional<std::vector<tflite::task::core::Category>>& output);
 
@@ -103,10 +132,19 @@ class PageContentAnnotationsModelManager {
       history::VisitContentModelAnnotations* out_content_annotations) const;
 
   // The model executor responsible for executing the page topics model.
+  //
+  // Can be nullptr if the page topics model will not be running for the
+  // session.
   std::unique_ptr<BertModelExecutorHandle> page_topics_model_executor_handle_;
 
   // The model executor responsible for executing the page entities model.
+  //
+  // Can be nullptr if the page entities model will not be running for the
+  // session.
   std::unique_ptr<PageEntitiesModelExecutor> page_entities_model_executor_;
+
+  // The ordering of models to execute on the page content of each page load.
+  std::vector<proto::OptimizationTarget> ordered_models_to_execute_;
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};

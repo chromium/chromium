@@ -926,7 +926,7 @@ void OptimizationGuideHintsManager::OnPredictionUpdated(
 void OptimizationGuideHintsManager::FetchHintsForPredictions(
     std::vector<GURL> target_urls) {
   // Collect hosts, stripping duplicates, but preserving the ordering.
-  InsertionOrderedSet<std::string> target_hosts;
+  optimization_guide::InsertionOrderedSet<std::string> target_hosts;
   for (const auto& url : target_urls) {
     target_hosts.insert(url.host());
   }

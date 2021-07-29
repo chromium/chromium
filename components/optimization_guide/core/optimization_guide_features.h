@@ -195,6 +195,15 @@ uint64_t MaxSizeForPageContentTextDump();
 // Whether we should write content annotations to History Service.
 bool ShouldWriteContentAnnotationsToHistoryService();
 
+// Returns an ordered vector of models to execute on the page content for each
+// page load. It is guaranteed that an optimization target will only be present
+// at most once in the returned vector. However, it is not guaranteed that it
+// will only contain models that the current PageContentAnnotationsService
+// supports, so it is up to the caller to ensure that it can execute the
+// specified models.
+std::vector<optimization_guide::proto::OptimizationTarget>
+GetPageContentModelsToExecute();
+
 // Whether the model files that use |OptimizationTargetModelExecutor| should be
 // loaded for each execution, and then unloaded once complete.
 bool LoadModelFileForEachExecution();

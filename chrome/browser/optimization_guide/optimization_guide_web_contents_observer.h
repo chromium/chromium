@@ -96,7 +96,7 @@ class OptimizationGuideWebContentsObserver
   OptimizationGuideKeyedService* optimization_guide_keyed_service_ = nullptr;
 
   // List of predicted URLs to fetch hints for once the page reaches onload.
-  InsertionOrderedSet<GURL> hints_target_urls_;
+  optimization_guide::InsertionOrderedSet<GURL> hints_target_urls_;
 
   // Whether a hints request for predicted URLs has been fired off for this page
   // loads. Used to avoid sending more than one predicted URLs hints request per

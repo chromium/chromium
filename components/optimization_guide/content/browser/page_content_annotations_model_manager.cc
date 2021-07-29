@@ -4,12 +4,19 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
+#include "base/metrics/histogram_macros_local.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/page_entities_model_executor.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#include "components/optimization_guide/internal/page_entities_model_executor_impl.h"
+#endif
 
 namespace optimization_guide {
 
@@ -37,6 +44,117 @@ GetOrCreateCurrentContentModelAnnotations(
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  for (auto opt_target : features::GetPageContentModelsToExecute()) {
+    if (opt_target == proto::OPTIMIZATION_TARGET_PAGE_TOPICS) {
+      SetUpPageTopicsModel(optimization_guide_model_provider);
+      ordered_models_to_execute_.push_back(opt_target);
+    } else if (opt_target == proto::OPTIMIZATION_TARGET_PAGE_ENTITIES) {
+      SetUpPageEntitiesModel(optimization_guide_model_provider);
+      ordered_models_to_execute_.push_back(opt_target);
+    } else {
+      // TODO(crbug/1228790): Add histogram for if this happens.
+    }
+  }
+}
+
+PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
+    default;
+
+void PageContentAnnotationsModelManager::Annotate(
+    const std::string& text,
+    PageContentAnnotatedCallback callback) {
+  ExecuteNextModelOrInvokeCallback(text, /*current_annotations=*/nullptr,
+                                   std::move(callback),
+                                   /*current_model_index=*/absl::nullopt);
+}
+
+void PageContentAnnotationsModelManager::ExecuteNextModelOrInvokeCallback(
+    const std::string& text,
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    PageContentAnnotatedCallback callback,
+    absl::optional<size_t> current_model_index) {
+  size_t next_model_index_to_execute = current_model_index.value_or(-1) + 1;
+  if (next_model_index_to_execute >= ordered_models_to_execute_.size()) {
+    // We have run all the models, so run the callback.
+    DCHECK(callback);
+    std::move(callback).Run(current_annotations
+                                ? absl::make_optional(*current_annotations)
+                                : absl::nullopt);
+    return;
+  }
+
+  // Execute the next model.
+  proto::OptimizationTarget optimization_target =
+      ordered_models_to_execute_.at(next_model_index_to_execute);
+  switch (optimization_target) {
+    case proto::OPTIMIZATION_TARGET_PAGE_TOPICS:
+      ExecutePageTopicsModel(text, std::move(current_annotations),
+                             std::move(callback), next_model_index_to_execute);
+      break;
+    case proto::OPTIMIZATION_TARGET_PAGE_ENTITIES:
+      ExecutePageEntitiesModel(text, std::move(current_annotations),
+                               std::move(callback),
+                               next_model_index_to_execute);
+      break;
+    default:
+      NOTREACHED();
+      // NOTREACHED is a no-op in release builds, so just run next model.
+      ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
+                                       std::move(callback),
+                                       next_model_index_to_execute);
+  }
+}
+
+void PageContentAnnotationsModelManager::SetUpPageEntitiesModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelRequested",
+      true);
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  page_entities_model_executor_ =
+      std::make_unique<PageEntitiesModelExecutorImpl>(
+          optimization_guide_model_provider);
+#endif
+}
+
+void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
+    const std::string& text,
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    PageContentAnnotatedCallback callback,
+    size_t current_model_index) {
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelExecutionRequested",
+      true);
+  if (page_entities_model_executor_) {
+    page_entities_model_executor_->ExecuteModelWithInput(
+        text, base::BindOnce(&PageContentAnnotationsModelManager::
+                                 OnPageEntitiesModelExecutionCompleted,
+                             weak_ptr_factory_.GetWeakPtr(), text,
+                             std::move(current_annotations),
+                             std::move(callback), current_model_index));
+    return;
+  }
+  OnPageEntitiesModelExecutionCompleted(text, std::move(current_annotations),
+                                        std::move(callback),
+                                        current_model_index,
+                                        /*output=*/absl::nullopt);
+}
+
+void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
+    const std::string& text,
+    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
+    PageContentAnnotatedCallback callback,
+    size_t current_model_index,
+    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
+  // TODO(crbug/1228790): Convert page entities to history representation.
+  ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
+                                   std::move(callback), current_model_index);
+}
+
+void PageContentAnnotationsModelManager::SetUpPageTopicsModel(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
   proto::Any model_metadata;
   model_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
   proto::PageTopicsModelMetadata page_topics_model_metadata;
@@ -52,54 +170,18 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
           proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
-
-  // TODO(crbug/1228790): Create page entities model executor based on internal
-  // once the internal executor implements the PageEntitiesModelExecutor
-  // interface.
-}
-
-PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
-    default;
-
-void PageContentAnnotationsModelManager::Annotate(
-    const std::string& text,
-    PageContentAnnotatedCallback callback) {
-  ExecutePageEntitiesModel(text, /*current_annotations=*/nullptr,
-                           std::move(callback));
-}
-
-void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
-    const std::string& text,
-    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
-    PageContentAnnotatedCallback callback) {
-  if (page_entities_model_executor_) {
-    page_entities_model_executor_->ExecuteModelWithInput(
-        text,
-        base::BindOnce(&PageContentAnnotationsModelManager::
-                           OnPageEntitiesModelExecutionCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), text,
-                       std::move(current_annotations), std::move(callback)));
-  } else {
-    OnPageEntitiesModelExecutionCompleted(text, std::move(current_annotations),
-                                          std::move(callback),
-                                          /*output=*/absl::nullopt);
-  }
-}
-
-void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
-    const std::string& text,
-    std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
-    PageContentAnnotatedCallback callback,
-    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
-  // TODO(crbug/1228790): Convert page entities to history representation.
-  ExecutePageTopicsModel(text, std::move(current_annotations),
-                         std::move(callback));
 }
 
 void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
     const std::string& text,
     std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
-    PageContentAnnotatedCallback callback) {
+    PageContentAnnotatedCallback callback,
+    size_t current_model_index) {
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageTopicsModelExecutionRequested",
+      true);
+
   bool model_available = page_topics_model_executor_handle_->ModelAvailable();
 
   base::UmaHistogramBoolean(
@@ -110,7 +192,8 @@ void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
     // TODO(crbug/1177102): Figure out if we want to enqueue it for later if
     // model isn't ready, but if we call this when the model isn't ready, it
     // will just return absl::nullopt for now.
-    std::move(callback).Run(absl::nullopt);
+    ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
+                                     std::move(callback), current_model_index);
     return;
   }
 
@@ -120,7 +203,8 @@ void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
   if (!model_metadata) {
     NOTREACHED();
     // Continue to run the callback since NOTREACHED is a no-op in prod.
-    std::move(callback).Run(absl::nullopt);
+    ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
+                                     std::move(callback), current_model_index);
     return;
   }
 
@@ -135,22 +219,25 @@ void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
   }
   if (!has_supported_output) {
     // TODO(crbug/1177102): Add histogram.
-    std::move(callback).Run(absl::nullopt);
+    ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
+                                     std::move(callback), current_model_index);
     return;
   }
 
   page_topics_model_executor_handle_->ExecuteModelWithInput(
       base::BindOnce(&PageContentAnnotationsModelManager::
                          OnPageTopicsModelExecutionCompleted,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), text,
                      std::move(current_annotations), std::move(callback),
-                     *model_metadata),
+                     current_model_index, *model_metadata),
       text);
 }
 
 void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
+    const std::string& text,
     std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
     PageContentAnnotatedCallback callback,
+    size_t current_model_index,
     const proto::PageTopicsModelMetadata& model_metadata,
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
   if (output) {
@@ -160,11 +247,8 @@ void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
         model_metadata, *output, current_annotations.get());
   }
 
-  if (current_annotations) {
-    std::move(callback).Run(*current_annotations);
-    return;
-  }
-  std::move(callback).Run(absl::nullopt);
+  ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
+                                   std::move(callback), current_model_index);
 }
 
 absl::optional<int64_t>

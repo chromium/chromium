@@ -4,7 +4,11 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
 
+#include "base/containers/flat_map.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
@@ -16,36 +20,43 @@ namespace optimization_guide {
 
 using testing::UnorderedElementsAre;
 
-class PageTopicsModelObserverTracker
-    : public TestOptimizationGuideModelProvider {
+class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget target,
       const absl::optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) override {
-    // Make sure we send what is expected.
-    if (target != proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS) {
-      return;
-    }
-    registered_model_metadata_ = model_metadata;
+    registered_model_metadata_.insert_or_assign(target, model_metadata);
   }
 
-  absl::optional<proto::Any> registered_model_metadata() const {
-    return registered_model_metadata_;
+  bool DidRegisterForTarget(
+      proto::OptimizationTarget target,
+      absl::optional<proto::Any>* out_model_metadata) const {
+    auto it = registered_model_metadata_.find(target);
+    if (it == registered_model_metadata_.end())
+      return false;
+    *out_model_metadata = registered_model_metadata_.at(target);
+    return true;
   }
 
  private:
-  absl::optional<proto::Any> registered_model_metadata_;
+  base::flat_map<proto::OptimizationTarget, absl::optional<proto::Any>>
+      registered_model_metadata_;
 };
 
 class PageContentAnnotationsModelManagerTest : public testing::Test {
  public:
-  PageContentAnnotationsModelManagerTest() = default;
+  PageContentAnnotationsModelManagerTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentAnnotations,
+        {{"models_to_execute", "OPTIMIZATION_TARGET_PAGE_TOPICS"}});
+  }
   ~PageContentAnnotationsModelManagerTest() override = default;
 
   void SetUp() override {
-    model_observer_tracker_ =
-        std::make_unique<PageTopicsModelObserverTracker>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+    model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
     model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
         model_observer_tracker_.get());
   }
@@ -96,7 +107,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     return content_annotations;
   }
 
-  PageTopicsModelObserverTracker* model_observer_tracker() const {
+  ModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
   }
 
@@ -113,18 +124,27 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     return annotations;
   }
 
+  base::HistogramTester* histogram_tester() const {
+    return histogram_tester_.get();
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<PageTopicsModelObserverTracker> model_observer_tracker_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 };
 
-TEST_F(PageContentAnnotationsModelManagerTest, RegistersCorrectModelMetadata) {
-  absl::optional<proto::Any> registered_model_metadata =
-      model_observer_tracker()->registered_model_metadata();
+TEST_F(PageContentAnnotationsModelManagerTest,
+       SetsUpModelsCorrectlyBasedOnFeatureParams) {
+  absl::optional<proto::Any> registered_model_metadata;
+  EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
+      proto::OPTIMIZATION_TARGET_PAGE_TOPICS, &registered_model_metadata));
   EXPECT_TRUE(registered_model_metadata.has_value());
   absl::optional<proto::PageTopicsModelMetadata> page_topics_model_metadata =
       ParsedAnyMetadata<proto::PageTopicsModelMetadata>(
@@ -135,6 +155,13 @@ TEST_F(PageContentAnnotationsModelManagerTest, RegistersCorrectModelMetadata) {
       page_topics_model_metadata->supported_output(),
       UnorderedElementsAre(proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED,
                            proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES));
+
+  // The feature param did not specify page entities, so we expect for it to not
+  // be requested.
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelRequested",
+      0);
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -354,6 +381,79 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 
 TEST_F(PageContentAnnotationsModelManagerTest, AnnotateModelNotAvailable) {
   EXPECT_FALSE(Annotate("sometext").has_value());
+}
+
+class PageContentAnnotationsModelManagerEntitiesOnlyTest
+    : public PageContentAnnotationsModelManagerTest {
+ public:
+  PageContentAnnotationsModelManagerEntitiesOnlyTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentAnnotations,
+        {{"models_to_execute", "OPTIMIZATION_TARGET_PAGE_ENTITIES"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
+       SetsUpModelsCorrectlyBasedOnFeatureParams) {
+  // The feature param did not specify page topics, so we expect for it to not
+  // be requested.
+  absl::optional<proto::Any> registered_model_metadata;
+  EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
+      proto::OPTIMIZATION_TARGET_PAGE_TOPICS, &registered_model_metadata));
+
+  // But it did specify page entities.
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelRequested",
+      true, 1);
+}
+
+TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
+       AnnotateNoModelsFinishedExecuting) {
+  Annotate("sometext");
+
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelExecutionRequested",
+      true, 1);
+
+  // We expect that the page topics model will not be requested for execution.
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageTopicsModelExecutionRequested",
+      0);
+}
+
+class PageContentAnnotationsModelManagerMultipleModelsTest
+    : public PageContentAnnotationsModelManagerTest {
+ public:
+  PageContentAnnotationsModelManagerMultipleModelsTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentAnnotations,
+        {{"models_to_execute",
+          "OPTIMIZATION_TARGET_PAGE_ENTITIES,OPTIMIZATION_TARGET_PAGE_"
+          "TOPICS"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageContentAnnotationsModelManagerMultipleModelsTest,
+       AnnotateRequestBothModels) {
+  Annotate("sometext");
+
+  histogram_tester()->ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsModelManager."
+      "PageEntitiesModelExecutionRequested",
+      true, 1);
+
+  // We expect that the page topics model will also be requested for execution.
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ModelAvailable", 1);
 }
 
 }  // namespace optimization_guide

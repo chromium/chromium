@@ -17,6 +17,7 @@
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
 namespace optimization_guide {
+namespace {
 
 class TestModelExecutor
     : public BaseModelExecutor<std::vector<float>, const std::vector<float>&> {
@@ -509,4 +510,5 @@ TEST_F(ModelExecutorWithModelLoadingTest, LoadModelFileForEachExecution) {
       true, 2);
 }
 
+}  // namespace
 }  // namespace optimization_guide
