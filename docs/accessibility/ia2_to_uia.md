@@ -85,7 +85,7 @@ include clean-up of COM references neither does it have error handling.*
   // We also need to convert the retrieved IA2 element unique id from long to
   // VARIANT.VT_BSTR to be consumed by UIA. For demo purpose, I utilize
   // std::string here as an intermediary step to convert to VARIANT.VT_BSTR.
-  std::string unique_id_str = std::to_string(unique_id_long);
+  std::wstring unique_id_str = std::to_wstring(unique_id_long);
 
   VARIANT unique_id_variant;
   unique_id_variant.vt = VT_BSTR;
@@ -111,13 +111,17 @@ does not require the shared unique id. Consider the same example above.
 
   // Retrieve the LegacyIAccessiblePattern of the button UIA element.
   IUIAutomationLegacyIAccessiblePattern* legacy_iaccessible_pattern;
-  legacy_iaccessible_pattern->GetCurrentPatternAs(
+  button_uia->GetCurrentPatternAs(
       UIA_LegacyIAccessiblePatternId,
       IID_PPV_ARGS(&legacy_iaccessible_pattern));
 
   // Retrieve the IAccessible element from button UIA element.
+  // Note: According to UIA doc, GetIAccessible returns NULL if a client
+  // attempts to retrieve the IAccessible interface for an element originally
+  // supported by a proxy object from OLEACC.dll, or by the UIA-to-MSAA Bridge.
+  // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nf-uiautomationclient-iuiautomationlegacyiaccessiblepattern-getiaccessible
   IAccessible* button_iaccessible;
-  legacy_iaccessible_pattern->GetIAccessible(&iaccessible);
+  legacy_iaccessible_pattern->GetIAccessible(&button_iaccessible);
 
   // Use QueryService to retrieve button's IAccessible2 element from IAccessible
   // element.
@@ -126,7 +130,7 @@ does not require the shared unique id. Consider the same example above.
   if (SUCCEEDED(button_iaccessible->QueryInterface(
           IID_PPV_ARGS(&service_provider)))) {
     service_provider->QueryService(
-        IID_PPV_ARGS(&button_ia2 /* final result */));
+        IID_IAccessible, IID_PPV_ARGS(&button_ia2 /* final result */));
   }
 ~~~
 
