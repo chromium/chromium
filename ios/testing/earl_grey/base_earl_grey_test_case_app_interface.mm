@@ -4,8 +4,6 @@
 
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 
-#import <UIKit/UIKit.h>
-
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 
@@ -17,12 +15,6 @@
 
 + (void)logMessage:(NSString*)message {
   DLOG(WARNING) << base::SysNSStringToUTF8(message);
-}
-
-+ (void)enableFastAnimation {
-  for (UIWindow* window in [UIApplication sharedApplication].windows) {
-    [[window layer] setSpeed:100];
-  }
 }
 
 @end

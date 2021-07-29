@@ -11,7 +11,6 @@
 #import "base/ios/crb_protocol_observers.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/testing/earl_grey/app_launch_manager_app_interface.h"
-#import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOServiceException.h"
@@ -228,8 +227,6 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 
   [self ensureAppLaunchedWithArgs:arguments
                    relaunchPolicy:configuration.relaunch_policy];
-
-  [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
 }
 
 - (void)ensureAppLaunchedWithFeaturesEnabled:
