@@ -128,17 +128,11 @@ class GnGenerator(object):
         self.TARGET_ENVIRONMENT_VALUES[self._target]))
 
     if self._target == 'maccatalyst':
-      # Building for "catalyst" environment has not been open-sourced thus can't
-      # use ToT clang and need to use Xcode's version instead. This version of
-      # clang does not generate the same warning as ToT clang, so do not treat
-      # warnings as errors.
-      # TODO(crbug.com/1145947): remove once clang ToT supports "macabi".
-      args.append(('use_xcode_clang', True))
-      args.append(('treat_warnings_as_errors', False))
-
-      # The "catalyst" environment is only supported from iOS 13.0 SDK. Until
-      # Chrome uses this SDK, it needs to be overridden for "catalyst" builds.
-      args.append(('ios_deployment_target', '"13.0"'))
+      # TODO(crbug.com/1173902): Remove when support for iOS 13.0 is dropped.
+      # The "catalyst" environment is only supported from iOS 13.1+. Until
+      # Chrome builds with this deployment target, overrides it when building
+      # for "catalyst".
+      args.append(('ios_deployment_target', '"13.1"'))
 
     # If extra arguments are passed to the function, pass them before the
     # user overrides (if any).
