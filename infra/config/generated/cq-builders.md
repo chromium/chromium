@@ -471,6 +471,9 @@ as required builders.
 * [mac-rel-rts](https://ci.chromium.org/p/chromium/builders/try/mac-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-rel-rts))
   * Experiment percentage: 1.0
 
+* [win10-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/win10-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10-rel-orchestrator)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10-rel-orchestrator))
+  * Experiment percentage: 15.0
+
 * [win10_chromium_x64_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10_chromium_x64_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10_chromium_x64_rel_ng_rts))
   * Experiment percentage: 5.0
 

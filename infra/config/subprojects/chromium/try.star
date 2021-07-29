@@ -1873,6 +1873,9 @@ try_.chromium_win_builder(
         "compilator": "win10-rel-compilator",
     },
     service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+    tryjob = try_.job(
+        experiment_percentage = 15,
+    ),
 )
 
 try_.chromium_win_builder(
