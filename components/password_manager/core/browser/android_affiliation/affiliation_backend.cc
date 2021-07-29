@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 #include <algorithm>
-#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/location.h"
