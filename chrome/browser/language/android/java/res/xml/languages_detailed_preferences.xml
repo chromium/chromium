@@ -46,7 +46,6 @@
         <PreferenceCategory
             android:key="translation_advanced_settings_section"
             android:layout="@layout/preference_category_no_title_or_padding"
-            app:initialExpandedChildrenCount="0"
             app:allowDividerAbove="true"
             app:allowDividerBelow="false">
 
