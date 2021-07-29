@@ -92,10 +92,3 @@ source_set("unit_tests") {
     ]
   }
 }
-
-if (is_android) {
-  java_cpp_enum("optimization_guide_generated_enums") {
-    sources = [ "optimization_guide_decider.h" ]
-    visibility = [ "//chrome/browser/optimization_guide/android:*" ]
-  }
-}

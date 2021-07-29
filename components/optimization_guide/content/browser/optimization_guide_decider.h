@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -19,30 +20,6 @@ class NavigationHandle;
 class GURL;
 
 namespace optimization_guide {
-
-// Represents the decision made by the optimization guide.
-// Keep in sync with OptimizationGuideOptimizationGuideDecision in enums.xml.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.optimization_guide
-enum class OptimizationGuideDecision {
-  // The necessary information to make the decision is not yet available.
-  kUnknown,
-  // The necessary information to make the decision is available and the
-  // decision is affirmative.
-  kTrue,
-  // The necessary information to make the decision is available and the
-  // decision is negative.
-  kFalse,
-
-  // New values above this line.
-  kMaxValue = kFalse,
-};
-
-using OptimizationGuideTargetDecisionCallback =
-    base::OnceCallback<void(optimization_guide::OptimizationGuideDecision)>;
-
-using OptimizationGuideDecisionCallback =
-    base::OnceCallback<void(optimization_guide::OptimizationGuideDecision,
-                            const optimization_guide::OptimizationMetadata&)>;
 
 class OptimizationGuideDecider {
  public:

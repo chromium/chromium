@@ -46,6 +46,7 @@ static_library("core") {
     "optimization_filter.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
+    "optimization_guide_decision.h",
     "optimization_guide_enums.h",
     "optimization_guide_features.cc",
     "optimization_guide_features.h",
@@ -223,5 +224,12 @@ source_set("unit_tests") {
       "//third_party/tflite-support",
       "//third_party/tflite-support:tflite-support-proto",
     ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("optimization_guide_generated_enums") {
+    sources = [ "optimization_guide_decision.h" ]
+    visibility = [ "//chrome/browser/optimization_guide/android:*" ]
   }
 }
