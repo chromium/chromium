@@ -13,14 +13,15 @@
 
 namespace chromeos {
 
-class CellularInhibitor;
-class NetworkStateHandler;
-class NetworkDeviceHandler;
-class NetworkConfigurationHandler;
-class FakeNetworkConnectionHandler;
 class CellularConnectionHandler;
+class CellularESimInstaller;
 class CellularESimUninstallHandler;
-class CellularESimProfileHandler;
+class CellularInhibitor;
+class FakeNetworkConnectionHandler;
+class NetworkConfigurationHandler;
+class NetworkDeviceHandler;
+class NetworkStateHandler;
+class TestCellularESimProfileHandler;
 
 namespace cellular_setup {
 
@@ -62,13 +63,19 @@ class ESimTestBase : public testing::Test {
     return network_state_handler_.get();
   }
 
+  TestCellularESimProfileHandler* cellular_esim_profile_handler() {
+    return cellular_esim_profile_handler_.get();
+  }
+
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
  private:
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
-  std::unique_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_;
+  std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
+  std::unique_ptr<TestCellularESimProfileHandler>
+      cellular_esim_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimUninstallHandler>
