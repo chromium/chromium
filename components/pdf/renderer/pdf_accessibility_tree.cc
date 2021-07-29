@@ -1228,13 +1228,19 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
           CompareTextRuns<ppapi::PdfAccessibilityChoiceFieldInfo>)) {
     return false;
   }
-  // Text run index of an |choice_field| works on the same logic as the text run
-  // index of a |link| as mentioned above.
-  // |index_in_page| of a |choice_field| follows the same index validation rules
-  // as of links.
   for (const auto& choice_field : choice_fields) {
+    // Text run index of an `choice_field` works on the same logic as the text
+    // run index of a `link` as mentioned above.
+    // `index_in_page` of a `choice_field` follows the same index validation
+    // rules as of links.
     if (choice_field.text_run_index > text_runs.size() ||
         choice_field.index_in_page >= choice_fields.size()) {
+      return false;
+    }
+
+    // The type should be valid.
+    if (choice_field.type < PP_PRIVATECHOICEFIELD_LISTBOX ||
+        choice_field.type > PP_PRIVATECHOICEFIELD_LAST) {
       return false;
     }
   }
@@ -1256,6 +1262,13 @@ bool PdfAccessibilityTree::IsDataFromPluginValid(
         button.index_in_page >= buttons.size()) {
       return false;
     }
+
+    // The type should be valid.
+    if (button.type < PP_PRIVATEBUTTON_FIRST ||
+        button.type > PP_PRIVATEBUTTON_LAST) {
+      return false;
+    }
+
     // For radio button or checkbox, value of |button.control_index| should
     // always be less than |button.control_count|.
     if ((button.type == PP_PrivateButtonType::PP_PRIVATEBUTTON_CHECKBOX ||

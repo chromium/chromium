@@ -443,6 +443,30 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundCheckBox) {
                                                            page_objects));
 }
 
+TEST(PdfAccessibilityTreeUnitTest, InvalidButtonType) {
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
+  text_runs.emplace_back(kFirstTextRun);
+  text_runs.emplace_back(kSecondTextRun);
+
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars(
+      std::begin(kDummyCharsData), std::end(kDummyCharsData));
+
+  ppapi::PdfAccessibilityPageObjects page_objects;
+
+  {
+    ppapi::PdfAccessibilityButtonInfo button;
+    button.type = static_cast<PP_PrivateButtonType>(666);
+    button.text_run_index = 0;
+    button.control_index = 1;
+    button.control_count = 2;
+    button.index_in_page = 0;
+    page_objects.form_fields.buttons.push_back(std::move(button));
+  }
+
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           page_objects));
+}
+
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageLink) {
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
@@ -521,10 +545,34 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInChoiceFeild) {
 
   {
     ppapi::PdfAccessibilityChoiceFieldInfo choice_field;
+    choice_field.type =
+        PP_PrivateChoiceFieldType::PP_PRIVATECHOICEFIELD_LISTBOX;
     choice_field.text_run_index = 2;
     choice_field.index_in_page = 1;
     page_objects.form_fields.choice_fields.push_back(std::move(choice_field));
   }
+  EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
+                                                           page_objects));
+}
+
+TEST(PdfAccessibilityTreeUnitTest, InvalidChoiceFieldType) {
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
+  text_runs.emplace_back(kFirstTextRun);
+  text_runs.emplace_back(kSecondTextRun);
+
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars(
+      std::begin(kDummyCharsData), std::end(kDummyCharsData));
+
+  ppapi::PdfAccessibilityPageObjects page_objects;
+
+  {
+    ppapi::PdfAccessibilityChoiceFieldInfo choice_field;
+    choice_field.type = static_cast<PP_PrivateChoiceFieldType>(666);
+    choice_field.text_run_index = 0;
+    choice_field.index_in_page = 0;
+    page_objects.form_fields.choice_fields.push_back(std::move(choice_field));
+  }
+
   EXPECT_FALSE(PdfAccessibilityTree::IsDataFromPluginValid(text_runs, chars,
                                                            page_objects));
 }
