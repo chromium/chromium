@@ -550,7 +550,7 @@ component("views") {
     deps += [ "//ui/base/ime/chromeos" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos || is_fuchsia) {
     public += [ "color_chooser/color_chooser_view.h" ]
     sources += [ "color_chooser/color_chooser_view.cc" ]
   }

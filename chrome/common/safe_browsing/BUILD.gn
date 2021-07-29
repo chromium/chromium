@@ -101,7 +101,7 @@ if (safe_browsing_mode == 1) {
     } else if (is_win) {
       sources += [ "binary_feature_extractor_win.cc" ]
     }
-    if (is_posix) {
+    if (is_posix || is_fuchsia) {
       sources += [ "binary_feature_extractor_posix.cc" ]
     }
 

@@ -6820,7 +6820,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
     {"incognito-brand-consistency-for-desktop",
      flag_descriptions::kIncognitoBrandConsistencyForDesktopName,
      flag_descriptions::kIncognitoBrandConsistencyForDesktopDescription,
@@ -6838,7 +6838,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInheritNativeThemeFromParentWidgetDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(views::features::kInheritNativeThemeFromParentWidget)},
-#endif
+#endif  // defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) ||
+        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
     {"content-settings-redesign",
      flag_descriptions::kContentSettingsRedesignName,

@@ -57,10 +57,11 @@ class DeviceTrustService : public KeyedService {
       std::unique_ptr<DeviceTrustSignalReporter> reporter);
   using SignalReportCallback = base::OnceCallback<void(bool)>;
   void SetSignalReportCallbackForTesting(SignalReportCallback cb);
-
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC) || \
+    defined(OS_FUCHSIA)
   std::string GetAttestationCredentialForTesting() const;
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC) ||
+        // defined(OS_FUCHSIA)
 
   // Starts flow that actually builds a response.
   void BuildChallengeResponse(const std::string& challenge,

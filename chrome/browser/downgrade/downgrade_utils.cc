@@ -35,7 +35,7 @@ bool MoveWithoutFallback(const base::FilePath& source,
   auto result = ::MoveFileEx(source.value().c_str(), target.value().c_str(), 0);
   PLOG_IF(ERROR, !result) << source << " -> " << target;
   return result;
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   // Windows compatibility: if |target| exists, |source| and |target|
   // must be the same type, either both files, or both directories.
   base::stat_wrapper_t target_info;

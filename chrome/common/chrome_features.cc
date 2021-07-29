@@ -538,7 +538,7 @@ const base::Feature kIncognitoBrandConsistencyForAndroid{
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 // When enabled, removes any theme or background customization done by the user
 // on the Incognito UI.
 const base::Feature kIncognitoBrandConsistencyForDesktop{

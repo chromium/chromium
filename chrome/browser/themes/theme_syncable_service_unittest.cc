@@ -58,8 +58,10 @@ static const char kCustomThemeUrl[] = "http://update.url/foo";
 #if defined(OS_WIN)
 const base::FilePath::CharType kExtensionFilePath[] =
     FILE_PATH_LITERAL("c:\\foo");
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
+#else
+#error "Unknown platform"
 #endif
 
 const ThemeHelper& GetThemeHelper() {

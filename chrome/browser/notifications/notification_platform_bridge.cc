@@ -18,7 +18,7 @@ std::string NotificationPlatformBridge::GetProfileId(Profile* profile) {
     return "";
 #if defined(OS_WIN)
   return base::WideToUTF8(profile->GetBaseName().value());
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   return profile->GetBaseName().value();
 #else
 #error "Not implemented for !OS_WIN && !OS_POSIX."

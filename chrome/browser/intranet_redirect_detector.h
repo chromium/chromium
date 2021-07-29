@@ -28,7 +28,7 @@ class SimpleURLLoader;
 class PrefRegistrySimple;
 
 #if !(defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-      defined(OS_CHROMEOS))
+      defined(OS_CHROMEOS) || defined(OS_FUCHSIA))
 #error "IntranetRedirectDetector should only be built on Desktop platforms."
 #endif
 

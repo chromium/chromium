@@ -139,9 +139,11 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
 #if defined(OS_WIN)
   base::FilePath::StringType host_path(base::UTF8ToWide(host));
   base::FilePath::StringType scheme_port_path(base::UTF8ToWide(scheme_port));
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   base::FilePath::StringType host_path(host);
   base::FilePath::StringType scheme_port_path(scheme_port);
+#else
+#error "Unknown platform"
 #endif
 
   return app_data_dir.Append(host_path).Append(scheme_port_path);

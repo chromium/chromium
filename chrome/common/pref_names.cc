@@ -2088,10 +2088,10 @@ const char kAuthNegotiateDelegateByKdcPolicy[] =
     "auth.negotiate_delegate_by_kdc_policy";
 #endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
 
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
 // Boolean that specifies whether NTLMv2 is enabled.
 const char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
-#endif  // defined(OS_POSIX)
+#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Boolean whether Kerberos functionality is enabled.
