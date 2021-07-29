@@ -1486,7 +1486,8 @@ are declared in tools/grit/grit_rule.gni.
         Keyword
       </message>
       <message name="IDS_SEARCH_ENGINES_EDITOR_DESCRIPTION_COLUMN"
-               desc="Title of the description column in the search engines editor">
+               desc="Title of the description column in the search engines editor"
+               translateable="false">
         Name
       </message>
 

@@ -257,7 +257,7 @@
 
   <!-- Fields & Editors, sentence-cased -->
   <if expr="not use_titlecase">
-    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Sentence-cased. [CHAR_LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Sentence-cased. [CHAR_LIMIT=32]" meaning="Name of a person" formatter_data="android_java">
       Name
     </message>
     <message name="IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing a phone number. Sentence-cased. [CHAR_LIMIT=32]">
@@ -293,7 +293,7 @@
   </if>  <!-- not use_titlecase -->
   <!-- Fields & Editors, Title-cased -->
   <if expr="use_titlecase">
-    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Title-Cased. [CHAR_LIMIT=32]" formatter_data="android_java">
+    <message name="IDS_PAYMENTS_NAME_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing the full name of a person. Title-Cased. [CHAR_LIMIT=32]" meaning="Name of a person" formatter_data="android_java">
       Name
     </message>
     <message name="IDS_PAYMENTS_PHONE_FIELD_IN_CONTACT_DETAILS" desc="The label for text input field containing a phone number. Title-Cased. [CHAR_LIMIT=32]">

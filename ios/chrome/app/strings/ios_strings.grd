@@ -288,7 +288,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_AUTOFILL_COUNTRY" desc="Title of the field of a profile address representing the country/nation of the address. [Length: 15em] [iOS only]">
         Country
       </message>
-      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME" desc="The placeholder text for credit card holder name text field to add new credit card. [iOS only]">
+      <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME" desc="The placeholder text for credit card holder name text field to add new credit card. [iOS only]" meaning="Name of a person">
           Name
       </message>
       <message name="IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
@@ -441,7 +441,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_ITEM_COUNT" desc="Displayed when there are more than one item in a bookmark folder [Length: 30em.]">
         <ph name="COUNT">$1<ex>42</ex></ph> items
       </message>
-      <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]">
+      <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]" meaning="Name of an inanimate object">
         Name
       </message>
       <message name="IDS_IOS_BOOKMARK_NEW_BOOKMARKS_BAR_TITLE" desc="Text that describes the bookmarks present in the bookmarks bar for chrome on desktop. [Length: 30em.] [iOS only]">

@@ -102,7 +102,7 @@
   <message name="IDS_FILE_BROWSER_DOWNLOADS_DIRECTORY_WARNING_FILESNG" desc="Warning displayed to user when viewing downloads folder.">
     Caution: These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK">&lt;a href="javascript://"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_NAME_COLUMN_LABEL" desc="Name column label.">
+  <message name="IDS_FILE_BROWSER_NAME_COLUMN_LABEL" desc="Name column label." meaning="Name of an inanimate object">
     Name
   </message>
   <message name="IDS_FILE_BROWSER_SIZE_COLUMN_LABEL" desc="Size column label.">
