@@ -120,7 +120,8 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
 
   PrefService* prefs = client_->GetPrefs();
 
-  if (most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
+  if (most_visited_sites_ &&
+      most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
     popular_sites_json_.clear();
 
     const std::string* url = dict->FindStringPath("popular.overrideURL");
@@ -170,7 +171,8 @@ void NTPTilesInternalsMessageHandler::HandleUpdate(
 void NTPTilesInternalsMessageHandler::HandleViewPopularSitesJson(
     const base::ListValue* args) {
   DCHECK_EQ(0u, args->GetSize());
-  if (!most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
+  if (!most_visited_sites_ ||
+      !most_visited_sites_->DoesSourceExist(ntp_tiles::TileSource::POPULAR)) {
     return;
   }
 
