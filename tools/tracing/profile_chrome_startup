@@ -40,6 +40,11 @@ def _CreateOptionParser():
   parser = util.get_main_options(parser)
 
   browsers = sorted(util.get_supported_browsers().keys())
+  parser.add_option('--enable_profiler', help='Comma-separated string of '
+                    'profiling options to use. Supports options for memory or '
+                    'cpu or both. Ex: --enable_profiler=memory '
+                    'or --enable_profiler=memory,cpu. ',
+                    dest='enable_profiler')
   parser.add_option('--browser', help='Select among installed browsers. '
                     'One of ' + ', '.join(browsers) + ', "stable" is used by '
                     'default.', type='choice', choices=browsers,
@@ -66,11 +71,41 @@ def _CreateOptionParser():
 
   return parser
 
+def _SetProfilingCategories(options):
+  """Sets --chrome_categories flag.
+
+  Uses the --enable_profile flag to modify the --chrome_categories flag for
+  specific profiling options.
+
+  Args:
+    The command-line options given.
+  """
+  if options.enable_profiler is None:
+    return
+
+  if options.chrome_categories is None:
+    options.chrome_categories = ''
+  profile_options = options.enable_profiler.split(',')
+  # Add to the --chrome_categories flag.
+  if 'cpu' in profile_options:
+    if options.chrome_categories:
+      options.chrome_categories += ','
+    options.chrome_categories += 'disabled-by-default-cpu_profiler'
+  if 'memory' in profile_options:
+    if options.chrome_categories:
+      options.chrome_categories += ',disabled-by-default-memory-infra'
+    else:
+      # If heap profiling is enabled and no categories are provided, it is
+      # usually not helpful to include other information in traces. '-*'
+      # disables other default categories so that only memory data is recorded.
+      options.chrome_categories += 'disabled-by-default-memory-infra,-*'
+
 
 def main():
   parser = _CreateOptionParser()
   options, _ = parser.parse_args()
 
+  _SetProfilingCategories(options)
   flag_utils.SetupLogging(options.verbosity)
 
   # Run Tracing
