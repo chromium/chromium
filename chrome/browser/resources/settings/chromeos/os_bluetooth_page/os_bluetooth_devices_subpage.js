@@ -11,6 +11,7 @@ import '../../settings_shared_css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+/** @polymer */
 class SettingsBluetoothDevicesSubpageElement extends PolymerElement {
   static get is() {
     return 'os-settings-bluetooth-devices-subpage';

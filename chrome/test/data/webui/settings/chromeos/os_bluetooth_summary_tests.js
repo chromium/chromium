@@ -11,18 +11,18 @@
 // #import {assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
-suite('OsBluetoothPageTest', function() {
-  /** @type {!SettingsBluetoothPageElement|undefined} */
-  let bluetoothPage;
+suite('OsBluetoothSummaryTest', function() {
+  /** @type {!SettingsBluetoothSummaryElement|undefined} */
+  let bluetoothSummary;
 
   setup(function() {
-    bluetoothPage = document.createElement('os-settings-bluetooth-page');
-    document.body.appendChild(bluetoothPage);
+    bluetoothSummary = document.createElement('os-settings-bluetooth-summary');
+    document.body.appendChild(bluetoothSummary);
     Polymer.dom.flush();
   });
 
   test('Base Test', function() {
-    const bluetoothSummary = bluetoothPage.$$('os-settings-bluetooth-summary');
-    assertTrue(!!bluetoothSummary);
+    const iconButton = bluetoothSummary.$$('#iconButton');
+    assertTrue(!!iconButton);
   });
 });

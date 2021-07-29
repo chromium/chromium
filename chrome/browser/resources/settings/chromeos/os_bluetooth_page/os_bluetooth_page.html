@@ -7,14 +7,8 @@
 </style>
 <settings-animated-pages id="pages" section="bluetooth">
   <div route-path="default">
-    <!-- TODO(crbug.com/1010321): Move to bluetooth summary page -->
-    <div id="bluetoothSummary" class="settings-box two-line no-padding">
-      <cr-icon-button class="subpage-arrow layout end"
-          on-click="onSubpageArrowTap_"
-          aria-label="$i18n{bluetoothPageTitle}"
-          aria-roledescription="$i18n{subpageArrowRoleDescription}">
-      </cr-icon-button>
-    </div>
+    <os-settings-bluetooth-summary>
+    </os-settings-bluetooth-summary>
   </div>
   <template is="dom-if" route-path="/bluetoothDevices">
     <settings-subpage page-title="$i18n{bluetoothPageTitle}">

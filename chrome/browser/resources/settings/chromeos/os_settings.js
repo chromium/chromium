@@ -71,6 +71,7 @@ import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.m.js';
 import './os_bluetooth_page/os_bluetooth_devices_subpage.js';
 import './os_bluetooth_page/os_bluetooth_page.js';
+import './os_bluetooth_page/os_bluetooth_summary.js';
 import './os_icons.m.js';
 import './os_people_page/account_manager.m.js';
 import './os_people_page/os_people_page.m.js';

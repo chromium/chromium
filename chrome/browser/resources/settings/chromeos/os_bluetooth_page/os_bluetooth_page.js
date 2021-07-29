@@ -13,13 +13,12 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../../settings_shared_css.js';
 import '../../settings_page/settings_animated_pages.js';
 import './os_bluetooth_devices_subpage.js';
+import './os_bluetooth_summary.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Router} from '../../router.js';
-import {routes} from '../os_route.m.js';
 
 /**
  * @constructor
@@ -28,6 +27,7 @@ import {routes} from '../os_route.m.js';
 const SettingsBluetoothPageElementBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
+/** @polymer */
 class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
   static get is() {
     return 'os-settings-bluetooth-page';
@@ -35,11 +35,6 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   static get template() {
     return html`{__html_template__}`;
-  }
-
-  /** @private */
-  onSubpageArrowTap_() {
-    Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
   }
 }
 
