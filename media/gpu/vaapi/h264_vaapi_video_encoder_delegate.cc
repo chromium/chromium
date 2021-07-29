@@ -17,11 +17,16 @@
 
 namespace media {
 namespace {
-// An IDR every 2048 frames, no I frames and no B frames.
-// We choose IDR period to equal MaxFrameNum so it must be a power of 2.
-constexpr int kIDRPeriod = 2048;
-constexpr int kIPeriod = 0;
-constexpr int kIPPeriod = 1;
+// An IDR every 2048 frames (must be >= 16 per spec), no I frames and no B
+// frames. We choose IDR period to equal MaxFrameNum so it must be a power of 2.
+// Produce an IDR at least once per this many frames. Must be >= 16 (per spec).
+constexpr uint32_t kIDRPeriod = 2048;
+static_assert(kIDRPeriod >= 16u, "idr_period_frames must be >= 16");
+// Produce an I frame at least once per this many frames.
+constexpr uint32_t kIPeriod = 0;
+// How often do we need to have either an I or a P frame in the stream.
+// A period of 1 implies no B frames.
+constexpr uint32_t kIPPeriod = 1;
 
 // The qp range is 0-51 in H264. Select 26 because of the center value.
 constexpr uint8_t kDefaultQP = 26;
@@ -32,12 +37,11 @@ constexpr uint8_t kMinQP = 24;
 constexpr uint8_t kMaxQP = 42;
 
 // Subjectively chosen bitrate window size for rate control, in ms.
-constexpr int kCPBWindowSizeMs = 1500;
+constexpr uint32_t kCPBWindowSizeMs = 1500;
 
 // Subjectively chosen.
 constexpr size_t kMaxNumReferenceFrames = 4;
 constexpr size_t kMaxRefIdxL0Size = kMaxNumReferenceFrames;
-constexpr size_t kMaxRefIdxL1Size = 0;
 
 // HRD parameters (ch. E.2.2 in H264 spec).
 constexpr int kBitRateScale = 0;  // bit_rate_scale for SPS HRD parameters.
@@ -88,10 +92,7 @@ static void InitVAPictureH264(VAPictureH264* va_pic) {
 }  // namespace
 
 H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
-    : idr_period_frames(kIDRPeriod),
-      i_period_frames(kIPeriod),
-      ip_period_frames(kIPPeriod),
-      bitrate_bps(0),
+    : bitrate_bps(0),
       framerate(0),
       cpb_window_size_ms(kCPBWindowSizeMs),
       cpb_size_bits(0),
@@ -99,8 +100,7 @@ H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       min_qp(kMinQP),
       max_qp(kMaxQP),
       max_num_ref_frames(kMaxNumReferenceFrames),
-      max_ref_pic_list0_size(kMaxRefIdxL0Size),
-      max_ref_pic_list1_size(kMaxRefIdxL1Size) {}
+      max_ref_pic_list0_size(kMaxRefIdxL0Size) {}
 
 H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -178,11 +178,8 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
 
   curr_params_.max_ref_pic_list0_size =
       std::min(kMaxRefIdxL0Size, ave_config.max_num_ref_frames & 0xffff);
-  curr_params_.max_ref_pic_list1_size = std::min(
-      kMaxRefIdxL1Size, (ave_config.max_num_ref_frames >> 16) & 0xffff);
   curr_params_.max_num_ref_frames =
-      std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size +
-                                           curr_params_.max_ref_pic_list1_size);
+      std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size);
 
   VideoBitrateAllocation initial_bitrate_allocation;
   initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
@@ -222,7 +219,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
     frame_num_ = 0;
 
   pic->frame_num = frame_num_++;
-  frame_num_ %= curr_params_.idr_period_frames;
+  frame_num_ %= kIDRPeriod;
 
   if (pic->frame_num == 0) {
     pic->idr = true;
@@ -235,17 +232,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
     encode_job->ProduceKeyframe();
   }
 
-  if (pic->idr || (curr_params_.i_period_frames != 0 &&
-                   pic->frame_num % curr_params_.i_period_frames == 0)) {
-    pic->type = H264SliceHeader::kISlice;
-  } else {
-    pic->type = H264SliceHeader::kPSlice;
-  }
-  if (curr_params_.ip_period_frames != 1) {
-    NOTIMPLEMENTED() << "B frames not implemented";
-    return false;
-  }
-
+  pic->type = pic->idr ? H264SliceHeader::kISlice : H264SliceHeader::kPSlice;
   pic->ref = true;
   pic->pic_order_cnt = pic->frame_num * 2;
   pic->top_field_order_cnt = pic->pic_order_cnt;
@@ -257,8 +244,7 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob* encode_job) {
             << " POC: " << pic->pic_order_cnt;
 
   if (!SubmitFrameParameters(encode_job, curr_params_, current_sps_,
-                             current_pps_, pic, ref_pic_list0_,
-                             std::list<scoped_refptr<H264Picture>>())) {
+                             current_pps_, pic, ref_pic_list0_)) {
     DVLOGF(1) << "Failed submitting frame parameters";
     return false;
   }
@@ -360,13 +346,11 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.seq_parameter_set_id = 0;
   current_sps_.chroma_format_idc = kChromaFormatIDC;
 
-  DCHECK_GE(curr_params_.idr_period_frames, 16u)
-      << "idr_period_frames must be >= 16";
   current_sps_.log2_max_frame_num_minus4 =
-      base::bits::Log2Ceiling(curr_params_.idr_period_frames) - 4;
+      base::bits::Log2Ceiling(kIDRPeriod) - 4;
   current_sps_.pic_order_cnt_type = 0;
   current_sps_.log2_max_pic_order_cnt_lsb_minus4 =
-      base::bits::Log2Ceiling(curr_params_.idr_period_frames * 2) - 4;
+      base::bits::Log2Ceiling(kIDRPeriod * 2) - 4;
   current_sps_.max_num_ref_frames = curr_params_.max_num_ref_frames;
 
   current_sps_.frame_mbs_only_flag = true;
@@ -434,7 +418,7 @@ void H264VaapiVideoEncoderDelegate::UpdatePPS() {
   memset(&current_pps_, 0, sizeof(H264PPS));
 
   current_pps_.seq_parameter_set_id = current_sps_.seq_parameter_set_id;
-  current_pps_.pic_parameter_set_id = 0;
+  DCHECK_EQ(current_pps_.pic_parameter_set_id, 0);
 
   current_pps_.entropy_coding_mode_flag =
       current_sps_.profile_idc >= H264SPS::kProfileIDCMain;
@@ -442,10 +426,7 @@ void H264VaapiVideoEncoderDelegate::UpdatePPS() {
   DCHECK_GT(curr_params_.max_ref_pic_list0_size, 0u);
   current_pps_.num_ref_idx_l0_default_active_minus1 =
       curr_params_.max_ref_pic_list0_size - 1;
-  current_pps_.num_ref_idx_l1_default_active_minus1 =
-      curr_params_.max_ref_pic_list1_size > 0
-          ? curr_params_.max_ref_pic_list1_size - 1
-          : curr_params_.max_ref_pic_list1_size;
+  DCHECK_EQ(current_pps_.num_ref_idx_l1_default_active_minus1, 0);
   DCHECK_LE(curr_params_.initial_qp, 51u);
   current_pps_.pic_init_qp_minus26 =
       static_cast<int>(curr_params_.initial_qp) - 26;
@@ -625,8 +606,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     const H264SPS& sps,
     const H264PPS& pps,
     scoped_refptr<H264Picture> pic,
-    const std::list<scoped_refptr<H264Picture>>& ref_pic_list0,
-    const std::list<scoped_refptr<H264Picture>>& ref_pic_list1) {
+    const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VAEncSequenceParameterBufferH264 seq_param = {};
@@ -635,9 +615,9 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   SPS_TO_SP(seq_parameter_set_id);
   SPS_TO_SP(level_idc);
 
-  seq_param.intra_period = encode_params.i_period_frames;
-  seq_param.intra_idr_period = encode_params.idr_period_frames;
-  seq_param.ip_period = encode_params.ip_period_frames;
+  seq_param.intra_period = kIPeriod;
+  seq_param.intra_idr_period = kIDRPeriod;
+  seq_param.ip_period = kIPPeriod;
   seq_param.bits_per_second = encode_params.bitrate_bps;
 
   SPS_TO_SP(max_num_ref_frames);
@@ -728,35 +708,23 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
   for (VAPictureH264& picture : slice_param.RefPicList1)
     InitVAPictureH264(&picture);
 
-  VAPictureH264* ref_frames_entry = pic_param.ReferenceFrames;
-  VAPictureH264* ref_list_entry = slice_param.RefPicList0;
-  // Initialize the current entry on slice and picture reference lists to
-  // |ref_pic| and advance list pointers.
-  auto fill_ref_frame = [&ref_frames_entry,
-                         &ref_list_entry](scoped_refptr<H264Picture> ref_pic) {
+  for (size_t i = 0; i < ref_pic_list0.size(); ++i) {
+    H264Picture& ref_pic = *ref_pic_list0[i];
     VAPictureH264 va_pic_h264;
     InitVAPictureH264(&va_pic_h264);
-    va_pic_h264.picture_id = ref_pic->AsVaapiH264Picture()->GetVASurfaceID();
+    va_pic_h264.picture_id = ref_pic.AsVaapiH264Picture()->GetVASurfaceID();
     va_pic_h264.flags = 0;
-
-    *ref_frames_entry = va_pic_h264;
-    *ref_list_entry = va_pic_h264;
-    ++ref_frames_entry;
-    ++ref_list_entry;
-  };
-
-  // Fill slice_param.RefPicList{0,1} with pictures from ref_pic_list{0,1},
-  // respectively, and pic_param.ReferenceFrames with entries from both.
-  std::for_each(ref_pic_list0.begin(), ref_pic_list0.end(), fill_ref_frame);
-  ref_list_entry = slice_param.RefPicList1;
-  std::for_each(ref_pic_list1.begin(), ref_pic_list1.end(), fill_ref_frame);
+    // Initialize the current entry on slice and picture reference lists to
+    // |ref_pic| and advance list pointers.
+    pic_param.ReferenceFrames[i] = va_pic_h264;
+    slice_param.RefPicList0[i] = va_pic_h264;
+  }
 
   VAEncMiscParameterRateControl rate_control_param;
   VAEncMiscParameterFrameRate framerate_param;
   VAEncMiscParameterHRD hrd_param;
   FillVAEncRateControlParams(
-      encode_params.bitrate_bps,
-      base::strict_cast<uint32_t>(encode_params.cpb_window_size_ms),
+      encode_params.bitrate_bps, encode_params.cpb_window_size_ms,
       base::strict_cast<uint32_t>(pic_param.pic_init_qp),
       base::strict_cast<uint32_t>(encode_params.min_qp),
       base::strict_cast<uint32_t>(encode_params.max_qp),

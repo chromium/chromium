@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <list>
 
+#include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "media/filters/h264_bitstream_buffer.h"
 #include "media/gpu/h264_dpb.h"
@@ -30,17 +31,6 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   struct EncodeParams {
     EncodeParams();
 
-    // Produce an IDR at least once per this many frames.
-    // Must be >= 16 (per spec).
-    size_t idr_period_frames;
-
-    // Produce an I frame at least once per this many frames.
-    size_t i_period_frames;
-
-    // How often do we need to have either an I or a P frame in the stream.
-    // A period of 1 implies no B frames.
-    size_t ip_period_frames;
-
     // Bitrate in bps.
     uint32_t bitrate_bps;
 
@@ -48,7 +38,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
     uint32_t framerate;
 
     // Bitrate window size in ms.
-    unsigned int cpb_window_size_ms;
+    uint32_t cpb_window_size_ms;
 
     // Bitrate window size in bits.
     unsigned int cpb_size_bits;
@@ -63,9 +53,6 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
     // Maximum size of reference picture list 0.
     size_t max_ref_pic_list0_size;
-
-    // Maximum size of reference picture list 1.
-    size_t max_ref_pic_list1_size;
   };
 
   H264VaapiVideoEncoderDelegate(scoped_refptr<VaapiWrapper> vaapi_wrapper,
@@ -113,8 +100,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       const H264SPS& sps,
       const H264PPS& pps,
       scoped_refptr<H264Picture> pic,
-      const std::list<scoped_refptr<H264Picture>>& ref_pic_list0,
-      const std::list<scoped_refptr<H264Picture>>& ref_pic_list1);
+      const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0);
 
   // Current SPS, PPS and their packed versions. Packed versions are NALUs
   // in AnnexB format *without* emulation prevention three-byte sequences
@@ -153,7 +139,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   // Currently active reference frames.
   // RefPicList0 per spec (spec section 8.2.4.2).
-  std::list<scoped_refptr<H264Picture>> ref_pic_list0_;
+  base::circular_deque<scoped_refptr<H264Picture>> ref_pic_list0_;
 
   DISALLOW_COPY_AND_ASSIGN(H264VaapiVideoEncoderDelegate);
 };
