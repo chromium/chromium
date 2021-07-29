@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundGraphicsModeRestriction, Policies} from '../native_layer.js';
 import {Cdd, CddCapabilities, VendorCapability} from './cdd.js';
@@ -187,376 +187,347 @@ STICKY_SETTING_NAMES.push('pin', 'pinValue');
  */
 const MINIMUM_HEIGHT_MICRONS = 25400;
 
+Polymer({
+  is: 'print-preview-model',
 
-/** @polymer */
-export class PrintPreviewModelElement extends PolymerElement {
-  static get is() {
-    return 'print-preview-model';
-  }
+  _template: null,
 
-  static get template() {
-    return null;
-  }
-
-  static get properties() {
-    return {
-      /**
-       * Object containing current settings of Print Preview, for use by Polymer
-       * controls.
-       * Initialize all settings to available so that more settings always stays
-       * in a collapsed state during startup, when document information and
-       * printer capabilities may arrive at slightly different times.
-       * @type {!Settings}
-       */
-      settings: {
-        type: Object,
-        notify: true,
-        value() {
-          return {
-            pages: {
-              value: [1],
-              unavailableValue: [],
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: false,
+  properties: {
+    /**
+     * Object containing current settings of Print Preview, for use by Polymer
+     * controls.
+     * Initialize all settings to available so that more settings always stays
+     * in a collapsed state during startup, when document information and
+     * printer capabilities may arrive at slightly different times.
+     * @type {!Settings}
+     */
+    settings: {
+      type: Object,
+      notify: true,
+      value() {
+        return {
+          pages: {
+            value: [1],
+            unavailableValue: [],
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: false,
+          },
+          copies: {
+            value: 1,
+            unavailableValue: 1,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: false,
+          },
+          collate: {
+            value: true,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isCollateEnabled',
+            updatesPreview: false,
+          },
+          layout: {
+            value: false, /* portrait */
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isLandscapeEnabled',
+            updatesPreview: true,
+          },
+          color: {
+            value: true, /* color */
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isColorEnabled',
+            updatesPreview: true,
+          },
+          mediaSize: {
+            value: {},
+            unavailableValue: {
+              width_microns: 215900,
+              height_microns: 279400,
             },
-            copies: {
-              value: 1,
-              unavailableValue: 1,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: false,
-            },
-            collate: {
-              value: true,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isCollateEnabled',
-              updatesPreview: false,
-            },
-            layout: {
-              value: false, /* portrait */
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isLandscapeEnabled',
-              updatesPreview: true,
-            },
-            color: {
-              value: true, /* color */
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isColorEnabled',
-              updatesPreview: true,
-            },
-            mediaSize: {
-              value: {},
-              unavailableValue: {
-                width_microns: 215900,
-                height_microns: 279400,
-              },
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'mediaSize',
-              updatesPreview: true,
-            },
-            margins: {
-              value: MarginsType.DEFAULT,
-              unavailableValue: MarginsType.DEFAULT,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'marginsType',
-              updatesPreview: true,
-            },
-            customMargins: {
-              value: {},
-              unavailableValue: {},
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'customMargins',
-              updatesPreview: true,
-            },
-            dpi: {
-              value: {},
-              unavailableValue: {},
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'dpi',
-              updatesPreview: false,
-            },
-            scaling: {
-              value: '100',
-              unavailableValue: '100',
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'scaling',
-              updatesPreview: true,
-            },
-            scalingType: {
-              value: ScalingType.DEFAULT,
-              unavailableValue: ScalingType.DEFAULT,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'scalingType',
-              updatesPreview: true,
-            },
-            scalingTypePdf: {
-              value: ScalingType.DEFAULT,
-              unavailableValue: ScalingType.DEFAULT,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'scalingTypePdf',
-              updatesPreview: true,
-            },
-            duplex: {
-              value: true,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isDuplexEnabled',
-              updatesPreview: false,
-            },
-            duplexShortEdge: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isDuplexShortEdge',
-              updatesPreview: false,
-            },
-            cssBackground: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isCssBackgroundEnabled',
-              updatesPreview: true,
-            },
-            selectionOnly: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            headerFooter: {
-              value: true,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isHeaderFooterEnabled',
-              updatesPreview: true,
-            },
-            rasterize: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            vendorItems: {
-              value: {},
-              unavailableValue: {},
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'vendorOptions',
-              updatesPreview: false,
-            },
-            pagesPerSheet: {
-              value: 1,
-              unavailableValue: 1,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            // This does not represent a real setting value, and is used only to
-            // expose the availability of the other options settings section.
-            otherOptions: {
-              value: null,
-              unavailableValue: null,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: false,
-            },
-            // This does not represent a real settings value, but is used to
-            // propagate the correctly formatted ranges for print tickets.
-            ranges: {
-              value: [],
-              unavailableValue: [],
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: '',
-              updatesPreview: true,
-            },
-            recentDestinations: {
-              value: [],
-              unavailableValue: [],
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'recentDestinations',
-              updatesPreview: false,
-            },
-            // <if expr="chromeos or lacros">
-            pin: {
-              value: false,
-              unavailableValue: false,
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'isPinEnabled',
-              updatesPreview: false,
-            },
-            pinValue: {
-              value: '',
-              unavailableValue: '',
-              valid: true,
-              available: true,
-              setByPolicy: false,
-              setFromUi: false,
-              key: 'pinValue',
-              updatesPreview: false,
-            },
-            // </if>
-          };
-        },
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'mediaSize',
+            updatesPreview: true,
+          },
+          margins: {
+            value: MarginsType.DEFAULT,
+            unavailableValue: MarginsType.DEFAULT,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'marginsType',
+            updatesPreview: true,
+          },
+          customMargins: {
+            value: {},
+            unavailableValue: {},
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'customMargins',
+            updatesPreview: true,
+          },
+          dpi: {
+            value: {},
+            unavailableValue: {},
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'dpi',
+            updatesPreview: false,
+          },
+          scaling: {
+            value: '100',
+            unavailableValue: '100',
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'scaling',
+            updatesPreview: true,
+          },
+          scalingType: {
+            value: ScalingType.DEFAULT,
+            unavailableValue: ScalingType.DEFAULT,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'scalingType',
+            updatesPreview: true,
+          },
+          scalingTypePdf: {
+            value: ScalingType.DEFAULT,
+            unavailableValue: ScalingType.DEFAULT,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'scalingTypePdf',
+            updatesPreview: true,
+          },
+          duplex: {
+            value: true,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isDuplexEnabled',
+            updatesPreview: false,
+          },
+          duplexShortEdge: {
+            value: false,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isDuplexShortEdge',
+            updatesPreview: false,
+          },
+          cssBackground: {
+            value: false,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isCssBackgroundEnabled',
+            updatesPreview: true,
+          },
+          selectionOnly: {
+            value: false,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: true,
+          },
+          headerFooter: {
+            value: true,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isHeaderFooterEnabled',
+            updatesPreview: true,
+          },
+          rasterize: {
+            value: false,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: true,
+          },
+          vendorItems: {
+            value: {},
+            unavailableValue: {},
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'vendorOptions',
+            updatesPreview: false,
+          },
+          pagesPerSheet: {
+            value: 1,
+            unavailableValue: 1,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: true,
+          },
+          // This does not represent a real setting value, and is used only to
+          // expose the availability of the other options settings section.
+          otherOptions: {
+            value: null,
+            unavailableValue: null,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: false,
+          },
+          // This does not represent a real settings value, but is used to
+          // propagate the correctly formatted ranges for print tickets.
+          ranges: {
+            value: [],
+            unavailableValue: [],
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: '',
+            updatesPreview: true,
+          },
+          recentDestinations: {
+            value: [],
+            unavailableValue: [],
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'recentDestinations',
+            updatesPreview: false,
+          },
+          // <if expr="chromeos or lacros">
+          pin: {
+            value: false,
+            unavailableValue: false,
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'isPinEnabled',
+            updatesPreview: false,
+          },
+          pinValue: {
+            value: '',
+            unavailableValue: '',
+            valid: true,
+            available: true,
+            setByPolicy: false,
+            setFromUi: false,
+            key: 'pinValue',
+            updatesPreview: false,
+          },
+          // </if>
+        };
       },
+    },
 
-      settingsManaged: {
-        type: Boolean,
-        notify: true,
-        value: false,
-      },
+    settingsManaged: {
+      type: Boolean,
+      notify: true,
+      value: false,
+    },
 
-      /** @type {!Destination} */
-      destination: Object,
+    /** @type {!Destination} */
+    destination: Object,
 
-      /** @type {!DocumentSettings} */
-      documentSettings: Object,
+    /** @type {!DocumentSettings} */
+    documentSettings: Object,
 
-      /** @type {Margins} */
-      margins: Object,
+    /** @type {Margins} */
+    margins: Object,
 
-      /** @type {!Size} */
-      pageSize: Object,
+    /** @type {!Size} */
+    pageSize: Object,
 
-      /** @private {number} */
-      maxSheets: {
-        type: Number,
-        value: 0,
-        notify: true,
-      }
-    };
-  }
+    /** @private {number} */
+    maxSheets: {
+      type: Number,
+      value: 0,
+      notify: true,
+    }
+  },
 
-  static get observers() {
-    return [
-      'updateSettingsFromDestination_(destination.capabilities)',
-      'updateSettingsAvailabilityFromDocumentSettings_(' +
-          'documentSettings.isModifiable, documentSettings.isFromArc,' +
-          'documentSettings.hasCssMediaStyles, documentSettings.hasSelection)',
-      'updateHeaderFooterAvailable_(' +
-          'margins, settings.margins.value, settings.mediaSize.value)',
+  observers: [
+    'updateSettingsFromDestination_(destination.capabilities)',
+    'updateSettingsAvailabilityFromDocumentSettings_(' +
+        'documentSettings.isModifiable, documentSettings.isFromArc,' +
+        'documentSettings.hasCssMediaStyles, documentSettings.hasSelection)',
+    'updateHeaderFooterAvailable_(' +
+        'margins, settings.margins.value, settings.mediaSize.value)',
+  ],
 
-    ];
-  }
+  /** @private {boolean} */
+  initialized_: false,
 
-  constructor() {
-    super();
+  /** @private {?SerializedSettings} */
+  stickySettings_: null,
 
-    /** @private {boolean} */
-    this.initialized_ = false;
+  /** @private {?PolicySettings} */
+  policySettings_: null,
 
-    /** @private {?SerializedSettings} */
-    this.stickySettings_ = null;
-
-    /** @private {?PolicySettings} */
-    this.policySettings_ = null;
-
-    /** @private {?Cdd} */
-    this.lastDestinationCapabilities_ = null;
-  }
+  /** @private {?Cdd} */
+  lastDestinationCapabilities_: null,
 
   /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
+  attached() {
     assert(!instance);
     instance = this;
     whenReadyResolver.resolve();
-  }
+  },
 
   /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
+  detached() {
     instance = null;
     whenReadyResolver = new PromiseResolver();
-  }
-
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
+  },
 
   /**
    * @param {string} settingName Name of the setting to get.
@@ -567,7 +538,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         /** @type {Setting} */ (this.get(settingName, this.settings));
     assert(setting, 'Setting is missing: ' + settingName);
     return setting;
-  }
+  },
 
   /**
    * @param {string} settingName Name of the setting to get the value for.
@@ -576,7 +547,7 @@ export class PrintPreviewModelElement extends PolymerElement {
   getSettingValue(settingName) {
     const setting = this.getSetting(settingName);
     return setting.available ? setting.value : setting.unavailableValue;
-  }
+  },
 
   /**
    * Updates settings.settingPath to |value|. Fires a preview-setting-changed
@@ -593,9 +564,9 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.set(`settings.${settingPath}`, value);
     const newValue = this.getSettingValue(settingName);
     if (newValue !== oldValue && setting.updatesPreview) {
-      this.fire_('preview-setting-changed');
+      this.fire('preview-setting-changed');
     }
-  }
+  },
 
   /**
    * Sets settings.settingName.value to |value|, unless updating the setting is
@@ -618,9 +589,9 @@ export class PrintPreviewModelElement extends PolymerElement {
       this.setSettingPath_(`${settingName}.setFromUi`, true);
     }
     if (fireStickyEvent && this.initialized_) {
-      this.fire_('sticky-setting-changed', this.getStickySettings_());
+      this.fire('sticky-setting-changed', this.getStickySettings_());
     }
-  }
+  },
 
   /**
    * @param {string} settingName Name of the setting to set
@@ -644,9 +615,9 @@ export class PrintPreviewModelElement extends PolymerElement {
       this.setSettingPath_(`${settingName}.setFromUi`, true);
     }
     if (!noSticky && setting.key && this.initialized_) {
-      this.fire_('sticky-setting-changed', this.getStickySettings_());
+      this.fire('sticky-setting-changed', this.getStickySettings_());
     }
-  }
+  },
 
   /**
    * Sets the validity of |settingName| to |valid|. If the validity is changed,
@@ -664,9 +635,9 @@ export class PrintPreviewModelElement extends PolymerElement {
     const shouldFireEvent = valid !== setting.valid;
     this.set(`settings.${settingName}.valid`, valid);
     if (shouldFireEvent) {
-      this.fire_('setting-valid-changed', valid);
+      this.fire('setting-valid-changed', valid);
     }
-  }
+  },
 
   /**
    * Updates the availability of the settings sections and values of dpi and
@@ -694,7 +665,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     this.updateSettingsValues_(caps);
-  }
+  },
 
   /**
    * @param {?CddCapabilities} caps The printer capabilities.
@@ -732,7 +703,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (this.documentSettings) {
       this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
     }
-  }
+  },
 
   /** @private */
   updateSettingsAvailabilityFromDestinationAndDocumentSettings_() {
@@ -761,7 +732,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         !this.documentSettings.isFromArc && !!caps && !!caps.dpi &&
             !!caps.dpi.option && caps.dpi.option.length > 1);
     this.setSettingPath_('layout.available', this.isLayoutAvailable_(caps));
-  }
+  },
 
   /** @private */
   updateSettingsAvailabilityFromDocumentSettings_() {
@@ -802,7 +773,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (this.destination) {
       this.updateSettingsAvailabilityFromDestinationAndDocumentSettings_();
     }
-  }
+  },
 
   /** @private */
   updateHeaderFooterAvailable_() {
@@ -812,7 +783,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     this.setSettingPath_(
         'headerFooter.available', this.isHeaderFooterAvailable_());
-  }
+  },
 
   /**
    * @return {boolean} Whether the header/footer setting should be available.
@@ -846,7 +817,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     return !this.margins ||
         this.margins.get(CustomMarginsOrientation.TOP) > 0 ||
         this.margins.get(CustomMarginsOrientation.BOTTOM) > 0;
-  }
+  },
 
   /**
    * @param {?CddCapabilities} caps The printer capabilities.
@@ -867,7 +838,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       hasLandscapeOption = hasLandscapeOption || option.type === 'LANDSCAPE';
     });
     return hasLandscapeOption && hasAutoOrPortraitOption;
-  }
+  },
 
   /**
    * @param {?CddCapabilities} caps The printer capabilities.
@@ -998,7 +969,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
       this.setSetting('vendorItems', vendorSettings, true);
     }
-  }
+  },
 
   /**
    * Caches the sticky settings and sets up the recent destinations. Sticky
@@ -1049,7 +1020,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     savedSettings.recentDestinations = recentDestinations;
 
     this.stickySettings_ = savedSettings;
-  }
+  },
 
   /**
    * Helper function for configurePolicySetting_(). Sets value and managed flag
@@ -1070,7 +1041,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       managed: managed,
       applyOnDestinationUpdate: applyOnDestinationUpdate,
     };
-  }
+  },
 
   /**
    * Helper function for setPolicySettings(). Calculates value and managed flag
@@ -1111,7 +1082,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       default:
         break;
     }
-  }
+  },
 
   /**
    * Sets settings in accordance to policies from native code, and prevents
@@ -1141,7 +1112,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       };
     }
     // </if>
-  }
+  },
 
   applyStickySettings() {
     if (this.stickySettings_) {
@@ -1159,8 +1130,8 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.initialized_ = true;
     this.updateManaged_();
     this.stickySettings_ = null;
-    this.fire_('sticky-setting-changed', this.getStickySettings_());
-  }
+    this.fire('sticky-setting-changed', this.getStickySettings_());
+  },
 
   /**
    * Helper function for applyStickySettings(). Checks if the setting
@@ -1190,7 +1161,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         this.setSetting(settingName, ScalingType.CUSTOM);
       }
     }
-  }
+  },
 
   /** @private */
   applyPolicySettings_() {
@@ -1211,7 +1182,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         }
       }
     }
-  }
+  },
 
   // TODO (crbug.com/1069802): Migrate these policies from Destination.policies
   // to NativeInitialSettings.policies.
@@ -1281,7 +1252,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     }
 
     this.updateManaged_();
-  }
+  },
 
   /** @private */
   updateManaged_() {
@@ -1294,12 +1265,12 @@ export class PrintPreviewModelElement extends PolymerElement {
       const setting = this.getSetting(settingName);
       return setting.available && setting.setByPolicy;
     });
-  }
+  },
 
   /** @return {boolean} Whether the model has been initialized. */
   initialized() {
     return this.initialized_;
-  }
+  },
 
   /**
    * @return {string} The current serialized settings.
@@ -1318,7 +1289,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     });
 
     return JSON.stringify(serialization);
-  }
+  },
 
   /**
    * @return {!DuplexMode} The duplex mode selected.
@@ -1331,7 +1302,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     return this.getSettingValue('duplexShortEdge') ? DuplexMode.SHORT_EDGE :
                                                      DuplexMode.LONG_EDGE;
-  }
+  },
 
   /**
    * @return {!DuplexType} The duplex type selected.
@@ -1344,7 +1315,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
     return this.getSettingValue('duplexShortEdge') ? DuplexType.SHORT_EDGE :
                                                      DuplexType.LONG_EDGE;
-  }
+  },
 
   /**
    * Creates a string that represents a print ticket.
@@ -1432,7 +1403,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     // </if>
 
     return JSON.stringify(ticket);
-  }
+  },
 
   /**
    * Creates an object that represents a Google Cloud Print print ticket.
@@ -1529,7 +1500,5 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     }
     return JSON.stringify(cjt);
-  }
-}
-
-customElements.define(PrintPreviewModelElement.is, PrintPreviewModelElement);
+  },
+});
