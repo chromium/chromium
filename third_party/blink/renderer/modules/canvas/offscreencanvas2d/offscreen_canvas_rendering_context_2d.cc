@@ -425,19 +425,8 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
     GetState().SetFont(*cached_font, Host()->GetFontSelector());
   } else {
     auto* style =
-        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+        CSSParser::ParseFont(new_font, Host()->GetTopExecutionContext());
     if (!style)
-      return;
-
-    CSSParser::ParseValue(style, CSSPropertyID::kFont, new_font, true,
-                          Host()->GetTopExecutionContext());
-
-    // According to
-    // http://lists.w3.org/Archives/Public/public-html/2009Jul/0947.html,
-    // the "inherit", "initial" and "unset" values must be ignored.
-    const CSSValue* font_value =
-        style->GetPropertyCSSValue(CSSPropertyID::kFontSize);
-    if (!font_value || font_value->IsCSSWideKeyword())
       return;
 
     FontDescription desc =
