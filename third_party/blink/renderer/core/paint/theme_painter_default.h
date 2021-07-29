@@ -111,6 +111,8 @@ class ThemePainterDefault final : public ThemePainter {
                           GraphicsContextStateSaver&,
                           float zoom_level);
 
+  void AdjustColorScheme(mojom::ColorScheme&, bool);
+
   // ThemePaintDefault is a part object of m_theme.
   LayoutThemeDefault& theme_;
 };

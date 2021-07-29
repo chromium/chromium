@@ -1388,7 +1388,7 @@ SkColor NativeThemeBase::GetControlColor(ControlColorId color_id,
   if (InForcedColorsMode() && features::IsForcedColorsEnabled())
     return GetHighContrastControlColor(color_id, color_scheme);
 
-  if(color_scheme == ColorScheme::kDark)
+  if (color_scheme == ColorScheme::kDark)
     return GetDarkModeControlColor(color_id);
 
   switch (color_id) {
