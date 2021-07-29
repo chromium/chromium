@@ -206,10 +206,6 @@ MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
-  icon->SetImage(gfx::CreateVectorIcon(
-      kGlobalMediaControlsIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-
   tray_container()->SetMargin(kMediaTrayPadding, 0);
   icon_ = tray_container()->AddChildView(std::move(icon));
 }
@@ -419,6 +415,13 @@ void MediaTray::AnchorUpdated() {
 
   bubble_->GetBubbleView()->SetAnchorRect(
       shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
+}
+
+void MediaTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(gfx::CreateVectorIcon(
+      kGlobalMediaControlsIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
 }
 
 }  // namespace ash
