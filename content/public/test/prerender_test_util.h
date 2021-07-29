@@ -85,7 +85,10 @@ class PrerenderTestHelper {
   PrerenderTestHelper& operator=(const PrerenderTestHelper&) = delete;
 
   // This installs a network monitor on the http server. Be sure to call this
-  // before starting the server.
+  // before starting the server. It does not matter which of these you use (you
+  // can use either or both).
+  // TODO(crbug.com/1230090): we should migrate to SetUp.
+  void SetUp(net::test_server::EmbeddedTestServer* http_server);
   void SetUpOnMainThread(net::test_server::EmbeddedTestServer* http_server);
 
   // Attempts to lookup the host for the given |gurl|. Returns
@@ -152,6 +155,7 @@ class PrerenderTestHelper {
   base::OnceClosure monitor_callback_ GUARDED_BY(lock_);
   base::Lock lock_;
   WebContents::Getter get_web_contents_fn_;
+  bool has_set_up_ = false;
 };
 
 }  // namespace test

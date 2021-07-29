@@ -223,12 +223,19 @@ PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;
 
-void PrerenderTestHelper::SetUpOnMainThread(
+void PrerenderTestHelper::SetUp(
     net::test_server::EmbeddedTestServer* http_server) {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   EXPECT_FALSE(http_server->Started());
   http_server->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderTestHelper::MonitorResourceRequest, base::Unretained(this)));
+  has_set_up_ = true;
+}
+
+void PrerenderTestHelper::SetUpOnMainThread(
+    net::test_server::EmbeddedTestServer* http_server) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  if (!has_set_up_)
+    SetUp(http_server);
 }
 
 int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
@@ -311,8 +318,20 @@ void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
 // static
 void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
                                               const GURL& gurl) {
+  if (web_contents.IsLoading()) {
+    // Ensure that any ongoing navigation is complete prior to the construction
+    // of |observer| below (this navigation may complete while executing ExecJs
+    // machinery).
+    content::TestNavigationObserver initial_observer(&web_contents);
+    initial_observer.set_wait_event(
+        content::TestNavigationObserver::WaitEvent::kLoadStopped);
+    initial_observer.Wait();
+  }
+
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   content::TestNavigationObserver observer(&web_contents);
+  observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kLoadStopped);
   // Ignore the result of ExecJs().
   //
   // Depending on timing, activation could destroy the current WebContents
