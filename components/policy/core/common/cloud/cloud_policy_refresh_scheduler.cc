@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -95,8 +96,8 @@ CloudPolicyRefreshScheduler::~CloudPolicyRefreshScheduler() {
 
 void CloudPolicyRefreshScheduler::SetDesiredRefreshDelay(
     int64_t refresh_delay) {
-  refresh_delay_ms_ = std::min(std::max(refresh_delay, kRefreshDelayMinMs),
-                               kRefreshDelayMaxMs);
+  refresh_delay_ms_ =
+      base::clamp(refresh_delay, kRefreshDelayMinMs, kRefreshDelayMaxMs);
   ScheduleRefresh();
 }
 
