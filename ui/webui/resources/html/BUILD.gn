@@ -39,7 +39,6 @@ generate_grd("build_grdp") {
     "parse_html_subset.html",
     "promise_resolver.html",
     "test_loader.html",
-    "trash.html",
     "util.html",
   ]
 
