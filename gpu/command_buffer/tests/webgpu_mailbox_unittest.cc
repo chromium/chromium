@@ -395,7 +395,7 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   // Create a the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      viz::ResourceFormat::BGRA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -413,12 +413,33 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 
   webgpu()->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
                              reservation.id, reservation.generation,
-                             WGPUTextureUsage_RenderAttachment,
+                             WGPUTextureUsage_CopySrc,
                              reinterpret_cast<GLbyte*>(&mailbox));
   webgpu()->DissociateMailbox(reservation.id, reservation.generation);
 
-  // Try using the texture, it should produce a validation error.
-  wgpu::TextureView view = texture.CreateView();
+  wgpu::TextureDescriptor dst_desc = {};
+  dst_desc.size = {1, 1};
+  dst_desc.usage = wgpu::TextureUsage::CopyDst;
+  dst_desc.format = wgpu::TextureFormat::BGRA8Unorm;
+
+  wgpu::ImageCopyTexture src_image = {};
+  src_image.texture = texture;
+
+  wgpu::ImageCopyTexture dst_image = {};
+  dst_image.texture = device.CreateTexture(&dst_desc);
+
+  wgpu::Extent3D extent = {1, 1};
+
+  // Try using the texture in a copy command; it should produce a validation
+  // error.
+  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+  encoder.CopyTextureToTexture(&src_image, &dst_image, &extent);
+  wgpu::CommandBuffer commandBuffer = encoder.Finish();
+
+  // Wait so it's clear the validation error after this when we call Submit.
+  WaitForCompletion(device);
+  device.GetQueue().Submit(1, &commandBuffer);
+
   EXPECT_CALL(*mock_device_error_callback,
               Call(WGPUErrorType_Validation, testing::_, testing::_))
       .Times(1);
