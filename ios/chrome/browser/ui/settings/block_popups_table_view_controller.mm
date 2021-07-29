@@ -289,6 +289,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Deletes the item at the |indexPaths|. Removes the SectionIdentifierExceptions
 // if it is now empty.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
+  NSSortDescriptor* sortDescriptor =
+      [[NSSortDescriptor alloc] initWithKey:@"item" ascending:NO];
+  indexPaths = [indexPaths sortedArrayUsingDescriptors:@[ sortDescriptor ]];
+
   for (NSIndexPath* indexPath in indexPaths) {
     size_t urlIndex = indexPath.item;
     std::string urlToRemove;
