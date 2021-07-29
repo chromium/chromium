@@ -762,18 +762,19 @@ ScriptPromise Cache::matchAll(ScriptState* script_state,
                               const V8RequestInfo* request,
                               const CacheQueryOptions* options,
                               ExceptionState& exception_state) {
-  DCHECK(request);
   Request* request_object = nullptr;
-  switch (request->GetContentType()) {
-    case V8RequestInfo::ContentType::kRequest:
-      request_object = request->GetAsRequest();
-      break;
-    case V8RequestInfo::ContentType::kUSVString:
-      request_object = Request::Create(script_state, request->GetAsUSVString(),
-                                       exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
-      break;
+  if (request) {
+    switch (request->GetContentType()) {
+      case V8RequestInfo::ContentType::kRequest:
+        request_object = request->GetAsRequest();
+        break;
+      case V8RequestInfo::ContentType::kUSVString:
+        request_object = Request::Create(
+            script_state, request->GetAsUSVString(), exception_state);
+        if (exception_state.HadException())
+          return ScriptPromise();
+        break;
+    }
   }
   return MatchAllImpl(script_state, request_object, options);
 }
@@ -887,18 +888,19 @@ ScriptPromise Cache::keys(ScriptState* script_state,
                           const V8RequestInfo* request,
                           const CacheQueryOptions* options,
                           ExceptionState& exception_state) {
-  DCHECK(request);
   Request* request_object = nullptr;
-  switch (request->GetContentType()) {
-    case V8RequestInfo::ContentType::kRequest:
-      request_object = request->GetAsRequest();
-      break;
-    case V8RequestInfo::ContentType::kUSVString:
-      request_object = Request::Create(script_state, request->GetAsUSVString(),
-                                       exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
-      break;
+  if (request) {
+    switch (request->GetContentType()) {
+      case V8RequestInfo::ContentType::kRequest:
+        request_object = request->GetAsRequest();
+        break;
+      case V8RequestInfo::ContentType::kUSVString:
+        request_object = Request::Create(
+            script_state, request->GetAsUSVString(), exception_state);
+        if (exception_state.HadException())
+          return ScriptPromise();
+        break;
+    }
   }
   return KeysImpl(script_state, request_object, options);
 }
