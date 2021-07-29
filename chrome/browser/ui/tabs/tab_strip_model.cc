@@ -1003,6 +1003,11 @@ void TabStripModel::AddWebContents(
     group = GetTabGroupForTab(index);
   }
 
+  // Pinned tabs cannot be added to a group.
+  if (add_types & ADD_PINNED) {
+    group = absl::nullopt;
+  }
+
   if (ui::PageTransitionTypeIncludingQualifiersIs(transition,
                                                   ui::PAGE_TRANSITION_TYPED) &&
       index == count()) {
