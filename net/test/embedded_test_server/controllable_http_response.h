@@ -30,7 +30,7 @@ namespace test_server {
 // multiple ControllableHttpResponses for the same path, they're used in the
 // order they were created.
 //
-// If |relative_url_is_prefix| is true, |relative_url| is only compared agaisnt
+// If |relative_url_is_prefix| is true, |relative_url| is only compared against
 // the start of the URL being requested, which allows matching against (possibly
 // variable) query strings, for instance.
 class ControllableHttpResponse {
