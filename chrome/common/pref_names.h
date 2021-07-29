@@ -719,6 +719,8 @@ extern const char kHardwareKeyboardLayout[];
 extern const char kShouldAutoEnroll[];
 extern const char kAutoEnrollmentPowerLimit[];
 extern const char kShouldRetrieveDeviceState[];
+extern const char kEnrollmentPsmResult[];
+extern const char kEnrollmentPsmDeterminationTime[];
 extern const char kDeviceActivityTimes[];
 extern const char kAppActivityTimes[];
 extern const char kUserActivityTimes[];

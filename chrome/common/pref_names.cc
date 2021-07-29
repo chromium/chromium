@@ -2206,6 +2206,16 @@ const char kShouldAutoEnroll[] = "ShouldAutoEnroll";
 // decision has been made yet.
 const char kShouldRetrieveDeviceState[] = "ShouldRetrieveDeviceState";
 
+// An integer pref. Its valid values are defined in
+// enterprise_management::DeviceRegisterRequest::PsmExecutionResult enum which
+// indicates all possible PSM execution results in the Chrome OS enrollment
+// flow.
+const char kEnrollmentPsmResult[] = "EnrollmentPsmResult";
+
+// An int64 pref to record the timestamp of PSM retrieving the device's
+// determination successfully in the Chrome OS enrollment flow.
+const char kEnrollmentPsmDeterminationTime[] = "EnrollmentPsmDeterminationTime";
+
 // An integer pref with the maximum number of bits used by the client in a
 // previous auto-enrollment request. If the client goes through an auto update
 // during OOBE and reboots into a version of the OS with a larger maximum

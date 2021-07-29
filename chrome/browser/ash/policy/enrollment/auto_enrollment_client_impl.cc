@@ -265,6 +265,13 @@ class PsmHelper {
 
     time_start_ = base::TimeTicks::Now();
 
+    // Set the initial PSM execution result as unknown until it finishes
+    // successfully or due to an error.
+    // Also, clear the PSM determination timestamp.
+    local_state_->SetInteger(prefs::kEnrollmentPsmResult,
+                             em::DeviceRegisterRequest::PSM_RESULT_UNKNOWN);
+    local_state_->ClearPref(prefs::kEnrollmentPsmDeterminationTime);
+
     on_completion_callback_ = std::move(callback);
 
     // Start the protocol and its timeout timer.
@@ -317,6 +324,12 @@ class PsmHelper {
     // Note that kUMAPsmResult histogram is only using initial enrollment as a
     // suffix until PSM support FRE.
     base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_, psm_result);
+
+    // Records the PSM execution as an error in local_state, so that value will
+    // be used in the DeviceRegisterRequest while performing manual enrollment.
+    local_state_->SetInteger(prefs::kEnrollmentPsmResult,
+                             em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+    local_state_->CommitPendingWrite();
 
     // Stop the PSM timer.
     psm_timeout_.Stop();
@@ -501,8 +514,10 @@ class PsmHelper {
         private_membership::MembershipResponse membership_response =
             membership_responses_map.Get(psm_rlwe_id_);
 
+        const bool membership_result = membership_response.is_member();
+
         LOG(WARNING) << "PSM determination successful. Identifier "
-                     << (membership_response.is_member() ? "" : "not ")
+                     << (membership_result ? "" : "not ")
                      << "present on the server";
 
         // Reset the |psm_request_job_| to allow another call to
@@ -514,8 +529,19 @@ class PsmHelper {
 
         // Cache the decision in local_state, so that it is reused in case
         // the device reboots before completing OOBE.
+        // Also, record the PSM determination timestamp and its execution
+        // result in local state. Because both values will be used in the
+        // DeviceRegisterRequest while performing manual enrollment.
         local_state_->SetBoolean(prefs::kShouldRetrieveDeviceState,
-                                 membership_response.is_member());
+                                 membership_result);
+        local_state_->SetTime(prefs::kEnrollmentPsmDeterminationTime,
+                              base::Time::Now());
+        local_state_->SetInteger(
+            prefs::kEnrollmentPsmResult,
+            membership_result
+                ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+                : em::DeviceRegisterRequest::
+                      PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
         local_state_->CommitPendingWrite();
 
         std::move(on_completion_callback_).Run();
@@ -887,6 +913,9 @@ void AutoEnrollmentClientImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShouldAutoEnroll, false);
   registry->RegisterIntegerPref(prefs::kAutoEnrollmentPowerLimit, -1);
   registry->RegisterBooleanPref(prefs::kShouldRetrieveDeviceState, false);
+  registry->RegisterIntegerPref(prefs::kEnrollmentPsmResult, -1);
+  registry->RegisterTimePref(prefs::kEnrollmentPsmDeterminationTime,
+                             base::Time());
 }
 
 void AutoEnrollmentClientImpl::Start() {

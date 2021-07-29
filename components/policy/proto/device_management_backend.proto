@@ -197,7 +197,29 @@ message DeviceRegisterRequest {
   // Identification of the device that is not already available.
   optional DeviceRegisterIdentification device_register_identification = 18;
 
-  // Next id: 19.
+  // Indicates all possible PSM protocol final results without specifying the
+  // root cause in case of an error.
+  enum PsmExecutionResult {
+    // PSM protocol started and it hasn't finished successfully or terminated
+    // due to a protocol's error.
+    PSM_RESULT_UNKNOWN = 0;
+
+    // PSM finished successfully and there was a state for the device.
+    PSM_RESULT_SUCCESSFUL_WITH_STATE = 1;
+
+    // PSM finished successfully and there was no state for the device.
+    PSM_RESULT_SUCCESSFUL_WITHOUT_STATE = 2;
+
+    // PSM terminated due to an error.
+    PSM_RESULT_ERROR = 3;
+  }
+  optional PsmExecutionResult psm_execution_result = 19;
+
+  // Timestamp of PSM retrieving the device's determination successfully in
+  // milliseconds since epoch.
+  optional int64 psm_determination_timestamp_ms = 20;
+
+  // Next id: 21.
 }
 
 // Identification of a device used during its registration.

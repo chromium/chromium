@@ -48,6 +48,9 @@
 namespace em = enterprise_management;
 namespace psm_rlwe = private_membership::rlwe;
 
+// An enum for PSM execution result values.
+using PsmExecutionResult = em::DeviceRegisterRequest_PsmExecutionResult;
+
 namespace policy {
 
 namespace {
@@ -1446,9 +1449,12 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
         chromeos::switches::kEnterpriseEnablePsm,
         ash::AutoEnrollmentController::kEnablePsmAlways);
 
-    // Verify that PSM state pref has not been set before.
+    // Verify that all PSM prefs have not been set before.
     ASSERT_EQ(local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState),
               nullptr);
+    ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmDeterminationTime),
+              nullptr);
+    ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmResult), nullptr);
 
     // Set up the base class AutoEnrollmentClientImplTest after the private set
     // membership has been enabled.
@@ -1568,6 +1574,29 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     return psm_last_request_.private_set_membership_request();
   }
 
+  // Returns the PSM execution result that has been stored in
+  // prefs::kEnrollmentPsmResult. If prefs::kEnrollmentPsmResult is not set, or
+  // its value is invalid compared to PsmExecutionResult enum values, then it
+  // will return PSM_RESULT_UNKNOWN. Otherwise, it will return the coressponding
+  // result.
+  PsmExecutionResult GetPsmExecutionResult() const {
+    const base::Value* psm_execution_result =
+        local_state_->GetUserPref(prefs::kEnrollmentPsmResult);
+    if (!psm_execution_result ||
+        !em::DeviceRegisterRequest_PsmExecutionResult_IsValid(
+            psm_execution_result->GetInt()))
+      return em::DeviceRegisterRequest::PSM_RESULT_UNKNOWN;
+    return static_cast<PsmExecutionResult>(psm_execution_result->GetInt());
+  }
+
+  // Returns the PSM determination timestamp that has been stored in
+  // prefs::kEnrollmentPsmDeterminationTime.
+  // Note: The function will return a NULL object of base::Time if
+  // prefs::kEnrollmentPsmDeterminationTime is not set.
+  base::Time GetPsmDeterminationTimestamp() const {
+    return local_state_->GetTime(prefs::kEnrollmentPsmDeterminationTime);
+  }
+
   StateDiscoveryResult GetStateDiscoveryResult() const {
     const base::Value* device_state_value =
         local_state_->GetUserPref(prefs::kShouldRetrieveDeviceState);
@@ -1684,6 +1713,15 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
 
 TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
   InSequence sequence;
+
+  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithPsmQueryResponse();
 
@@ -1697,9 +1735,15 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(GetStateDiscoveryResult(),
-            GetExpectedMembershipResult()
+            kExpectedMembershipResult
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      kExpectedMembershipResult
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1719,6 +1763,9 @@ TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kEmptyQueryResponseError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1737,6 +1784,9 @@ TEST_P(PsmHelperTest, EmptyRlweOprfResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kEmptyOprfResponseError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1756,6 +1806,9 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kConnectionError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1777,6 +1830,9 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kConnectionError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
@@ -1796,6 +1852,9 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweOprfResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
@@ -1814,6 +1873,9 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1826,6 +1888,14 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
 
 TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   InSequence sequence;
+
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithPsmQueryResponse();
 
@@ -1840,6 +1910,13 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
           ? StateDiscoveryResult::kSuccessHasServerSideState
           : StateDiscoveryResult::kSuccessNoServerSideState;
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
+
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
 
   // Verify that none of the PSM requests have been sent again. And its cached
   // membership result hasn't changed.
@@ -1870,9 +1947,13 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const StateDiscoveryResult expected_state_result =
+  const StateDiscoveryResult kExxpectedStateResult =
       StateDiscoveryResult::kFailure;
-  EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
+  const PsmExecutionResult kExpectedPsmExecutionResult =
+      em::DeviceRegisterRequest::PSM_RESULT_ERROR;
+  EXPECT_EQ(GetStateDiscoveryResult(), kExxpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
 
   // Verify that none of the PSM requests have been sent again. And its cached
   // membership result hasn't changed.
@@ -1883,7 +1964,9 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   client()->Retry();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
+  EXPECT_EQ(GetStateDiscoveryResult(), kExxpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1926,6 +2009,9 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweQueryFailedAndHashDanceSucceeded) {
 
   // Verify failure of PSM protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1979,6 +2065,9 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceSucceeded) {
 
   // Verify failure of PSM protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
@@ -2011,6 +2100,13 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceSucceeded) {
 TEST_P(PsmHelperAndHashDanceTest, PsmSucceedAndHashDanceSucceed) {
   InSequence sequence;
 
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   // Succeed for both PSM RLWE requests.
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithPsmQueryResponse();
@@ -2035,6 +2131,12 @@ TEST_P(PsmHelperAndHashDanceTest, PsmSucceedAndHashDanceSucceed) {
             GetExpectedMembershipResult()
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -2077,6 +2179,13 @@ TEST_P(PsmHelperAndHashDanceTest,
        PsmSucceedAndHashDanceSucceedForNoEnrollment) {
   InSequence sequence;
 
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   // Succeed for both PSM RLWE requests.
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithPsmQueryResponse();
@@ -2095,6 +2204,12 @@ TEST_P(PsmHelperAndHashDanceTest,
             GetExpectedMembershipResult()
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -2144,6 +2259,9 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceFailed) {
 
   // Verify failure of PSM protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
@@ -2166,6 +2284,13 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceFailed) {
 TEST_P(PsmHelperAndHashDanceTest,
        RetryLogicAfterPsmSucceededAndHashDanceSucceeded) {
   InSequence sequence;
+
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
   // Succeed for both PSM RLWE requests.
   ServerWillReplyWithPsmOprfResponse();
@@ -2192,6 +2317,12 @@ TEST_P(PsmHelperAndHashDanceTest,
           ? StateDiscoveryResult::kSuccessHasServerSideState
           : StateDiscoveryResult::kSuccessNoServerSideState;
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
 
   // Verify Hash dance result.
   VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
@@ -2261,6 +2392,9 @@ TEST_P(PsmHelperAndHashDanceTest,
   const StateDiscoveryResult expected_psm_state_result =
       StateDiscoveryResult::kFailure;
   EXPECT_EQ(GetStateDiscoveryResult(), expected_psm_state_result);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
 
   // Verify failure of Hash dance by inexistence of its cached decision.
   EXPECT_FALSE(HasCachedDecision());
@@ -2344,6 +2478,9 @@ TEST_P(PsmHelperAndHashDanceTest,
 
   // Verify failure of PSM protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
+  EXPECT_EQ(GetPsmExecutionResult(),
+            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
                       /*success_time_recorded=*/false);
   ExpectPsmRequestStatusHistogram(DM_STATUS_TEMPORARY_UNAVAILABLE,
@@ -2384,6 +2521,8 @@ TEST_P(PsmHelperAndHashDanceTest,
   InSequence sequence;
 
   const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
 
   DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
   DeviceManagementService::JobForTesting psm_rlwe_query_job;
@@ -2439,6 +2578,12 @@ TEST_P(PsmHelperAndHashDanceTest,
             GetExpectedMembershipResult()
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
   ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
                       /*success_time_recorded=*/true);
   ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
