@@ -2981,7 +2981,7 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDtlsTransport-getRemoteCerti
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-audio.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/no-media-call.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Timeout ]
+# crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-close.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Timeout ]
@@ -7284,6 +7284,9 @@ crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html
 crbug.com/1233792 virtual/synchronous_html_parser/http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Pass ]
 crbug.com/1234057 [ Mac ] external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
 crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-image.https.html [ Failure Pass ]
+
+# Temporary disabling to allow landing https://webrtc-review.googlesource.com/c/src/+/227120
+crbug.com/webrtc/12906 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Timeout Pass Failure ]
 
 # Sheriff 2021-07-29
 crbug.com/626703 [ Mac ] external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass ]
