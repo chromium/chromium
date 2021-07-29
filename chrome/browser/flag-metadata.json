@@ -3036,6 +3036,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "fast-pair",
+    "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "feed-interactive-refresh",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 99

@@ -5704,6 +5704,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHideArcMediaNotificationsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHideArcMediaNotifications)},
 
+    {"fast-pair", flag_descriptions::kFastPairName,
+     flag_descriptions::kFastPairDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPair)},
+
     {"reduce-display-notifications",
      flag_descriptions::kReduceDisplayNotificationsName,
      flag_descriptions::kReduceDisplayNotificationsDescription, kOsCrOS,

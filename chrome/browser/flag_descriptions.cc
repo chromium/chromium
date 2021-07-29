@@ -4389,6 +4389,13 @@ const char kDisplayIdentificationDescription[] =
     "in the Displays Settings page. Only shown when the Displays Settings page "
     "is open.";
 
+const char kFastPairName[] = "Enable Fast Pair";
+const char kFastPairDescription[] =
+    "Enables Google Fast Pair service which uses BLE to discover supported "
+    "nearby Bluetooth devices and surfaces a notification for quick pairing. "
+    "Use along with #bluetooth-advertisement-monitoring to allow background "
+    "scanning.";
+
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 const char kUseHDRTransferFunctionDescription[] =
