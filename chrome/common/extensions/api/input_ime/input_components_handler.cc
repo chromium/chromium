@@ -48,12 +48,13 @@ InputComponentsHandler::~InputComponentsHandler() = default;
 
 bool InputComponentsHandler::Parse(Extension* extension,
                                    std::u16string* error) {
-  auto info = std::make_unique<InputComponents>();
   const base::Value* list_value;
   if (!extension->manifest()->GetList(keys::kInputComponents, &list_value)) {
     *error = base::ASCIIToUTF16(errors::kInvalidInputComponents);
     return false;
   }
+
+  auto info = std::make_unique<InputComponents>();
   for (size_t i = 0; i < list_value->GetList().size(); ++i) {
     const base::Value& module_value = list_value->GetList()[i];
     if (!module_value.is_dict()) {
@@ -138,14 +139,14 @@ bool InputComponentsHandler::Parse(Extension* extension,
       options_page_url = extensions::OptionsPageInfo::GetOptionsPage(extension);
     }
 
-    info->input_components.push_back(InputComponentInfo());
-    info->input_components.back().name = *name_str;
-    info->input_components.back().id = id_str;
-    info->input_components.back().languages = languages;
-    info->input_components.back().layouts.insert(layouts.begin(),
-        layouts.end());
-    info->input_components.back().options_page_url = options_page_url;
-    info->input_components.back().input_view_url = input_view_url;
+    InputComponentInfo component;
+    component.name = *name_str;
+    component.id = std::move(id_str);
+    component.languages = std::move(languages);
+    component.layouts = std::move(layouts);
+    component.options_page_url = std::move(options_page_url);
+    component.input_view_url = std::move(input_view_url);
+    info->input_components.push_back(std::move(component));
   }
   extension->SetManifestData(keys::kInputComponents, std::move(info));
   return true;
