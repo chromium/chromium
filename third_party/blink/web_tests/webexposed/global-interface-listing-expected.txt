@@ -1109,7 +1109,7 @@ interface CanvasRenderingContext2D
     getter textBaseline
     getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     method addHitRegion
     method arc
     method arcTo
@@ -1191,7 +1191,7 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface CaptureHandleChangeEvent : Event
     attribute @@toStringTag
     method captureHandle
@@ -5962,7 +5962,7 @@ interface OffscreenCanvasRenderingContext2D
     getter textBaseline
     getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     method arc
     method arcTo
     method beginLayer
@@ -6038,7 +6038,7 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface Option
     attribute @@toStringTag
     getter defaultSelected

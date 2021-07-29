@@ -704,7 +704,7 @@ interface CanvasRenderingContext2D
     getter textBaseline
     getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     method arc
     method arcTo
     method beginPath
@@ -773,7 +773,7 @@ interface CanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface ChannelMergerNode : AudioNode
     attribute @@toStringTag
     method constructor
@@ -4262,7 +4262,7 @@ interface OffscreenCanvasRenderingContext2D
     getter textAlign
     getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     getter textBaseline
     method arc
     method arcTo
@@ -4330,7 +4330,7 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface Option
     attribute @@toStringTag
     getter defaultSelected

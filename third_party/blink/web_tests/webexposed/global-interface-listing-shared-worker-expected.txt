@@ -931,7 +931,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter textBaseline
 [Worker]     getter textLetterSpacing
 [Worker]     getter textRendering
-[Worker]     getter textWordSpacing
+[Worker]     getter wordSpacing
 [Worker]     method arc
 [Worker]     method arcTo
 [Worker]     method beginLayer
@@ -1007,7 +1007,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter textBaseline
 [Worker]     setter textLetterSpacing
 [Worker]     setter textRendering
-[Worker]     setter textWordSpacing
+[Worker]     setter wordSpacing
 [Worker] interface Path2D
 [Worker]     attribute @@toStringTag
 [Worker]     method addPath

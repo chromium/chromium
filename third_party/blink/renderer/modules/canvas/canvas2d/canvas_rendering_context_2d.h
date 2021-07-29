@@ -125,7 +125,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void setDirection(const String&);
 
   void setTextLetterSpacing(const double letter_spacing);
-  void setTextWordSpacing(const double word_spacing);
+  void setWordSpacing(const double word_spacing);
   void setTextRendering(const String&);
 
   void setFontKerning(const String&);

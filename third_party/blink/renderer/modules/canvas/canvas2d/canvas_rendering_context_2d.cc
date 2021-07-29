@@ -798,7 +798,7 @@ void CanvasRenderingContext2D::setTextLetterSpacing(
                                   Host()->GetFontSelector());
 }
 
-void CanvasRenderingContext2D::setTextWordSpacing(const double word_spacing) {
+void CanvasRenderingContext2D::setWordSpacing(const double word_spacing) {
   if (UNLIKELY(!std::isfinite(word_spacing)))
     return;
 
@@ -806,7 +806,7 @@ void CanvasRenderingContext2D::setTextWordSpacing(const double word_spacing) {
     setFont(font());
 
   float word_spacing_float = clampTo<float>(word_spacing);
-  GetState().SetTextWordSpacing(word_spacing_float, Host()->GetFontSelector());
+  GetState().SetWordSpacing(word_spacing_float, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setTextRendering(

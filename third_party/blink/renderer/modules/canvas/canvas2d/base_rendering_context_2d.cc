@@ -2408,8 +2408,8 @@ double BaseRenderingContext2D::textLetterSpacing() const {
   return GetState().GetTextLetterSpacing();
 }
 
-double BaseRenderingContext2D::textWordSpacing() const {
-  return GetState().GetTextWordSpacing();
+double BaseRenderingContext2D::wordSpacing() const {
+  return GetState().GetWordSpacing();
 }
 
 String BaseRenderingContext2D::textRendering() const {

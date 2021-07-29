@@ -328,7 +328,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
   void setTextBaseline(const String&);
 
   double textLetterSpacing() const;
-  double textWordSpacing() const;
+  double wordSpacing() const;
   String textRendering() const;
 
   String fontKerning() const;

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1445 tests; 1414 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1445 tests; 1411 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -496,7 +496,7 @@ PASS CanvasRenderingContext2D interface: attribute textAlign
 PASS CanvasRenderingContext2D interface: attribute textBaseline
 PASS CanvasRenderingContext2D interface: attribute direction
 PASS CanvasRenderingContext2D interface: attribute textLetterSpacing
-PASS CanvasRenderingContext2D interface: attribute textWordSpacing
+FAIL CanvasRenderingContext2D interface: attribute textWordSpacing assert_true: The prototype object must have a property "textWordSpacing" expected true got false
 PASS CanvasRenderingContext2D interface: attribute fontKerning
 PASS CanvasRenderingContext2D interface: attribute fontStretch
 PASS CanvasRenderingContext2D interface: attribute fontVariantCaps
@@ -618,7 +618,7 @@ PASS CanvasRenderingContext2D interface: document.createElement("canvas").getCon
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textBaseline" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "direction" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textLetterSpacing" with the proper type
-PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textWordSpacing" with the proper type
+FAIL CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "textWordSpacing" with the proper type assert_inherits: property "textWordSpacing" not found in prototype chain
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontKerning" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontStretch" with the proper type
 PASS CanvasRenderingContext2D interface: document.createElement("canvas").getContext("2d") must inherit property "fontVariantCaps" with the proper type
@@ -794,7 +794,7 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
 PASS OffscreenCanvasRenderingContext2D interface: attribute textLetterSpacing
-PASS OffscreenCanvasRenderingContext2D interface: attribute textWordSpacing
+FAIL OffscreenCanvasRenderingContext2D interface: attribute textWordSpacing assert_true: The prototype object must have a property "textWordSpacing" expected true got false
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps

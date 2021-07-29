@@ -1011,7 +1011,7 @@ interface OffscreenCanvasRenderingContext2D
     getter textBaseline
     getter textLetterSpacing
     getter textRendering
-    getter textWordSpacing
+    getter wordSpacing
     method arc
     method arcTo
     method beginLayer
@@ -1087,7 +1087,7 @@ interface OffscreenCanvasRenderingContext2D
     setter textBaseline
     setter textLetterSpacing
     setter textRendering
-    setter textWordSpacing
+    setter wordSpacing
 interface Path2D
     attribute @@toStringTag
     method addPath

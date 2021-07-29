@@ -749,8 +749,8 @@ void CanvasRenderingContext2DState::SetTextLetterSpacing(
   SetFont(font_description, selector);
 }
 
-void CanvasRenderingContext2DState::SetTextWordSpacing(float word_spacing,
-                                                       FontSelector* selector) {
+void CanvasRenderingContext2DState::SetWordSpacing(float word_spacing,
+                                                   FontSelector* selector) {
   DCHECK(realized_font_);
   FontDescription font_description(GetFontDescription());
   font_description.SetWordSpacing(word_spacing);

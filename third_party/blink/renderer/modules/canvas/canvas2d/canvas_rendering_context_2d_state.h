@@ -145,8 +145,8 @@ class CanvasRenderingContext2DState final
   void SetTextLetterSpacing(float letter_space, FontSelector* selector);
   float GetTextLetterSpacing() const { return letter_spacing_; }
 
-  void SetTextWordSpacing(float word_space, FontSelector* selector);
-  float GetTextWordSpacing() const { return word_spacing_; }
+  void SetWordSpacing(float word_space, FontSelector* selector);
+  float GetWordSpacing() const { return word_spacing_; }
 
   void SetTextRendering(TextRenderingMode text_rendering,
                         FontSelector* selector);

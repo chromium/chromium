@@ -486,7 +486,7 @@ void OffscreenCanvasRenderingContext2D::setTextLetterSpacing(
                                   Host()->GetFontSelector());
 }
 
-void OffscreenCanvasRenderingContext2D::setTextWordSpacing(
+void OffscreenCanvasRenderingContext2D::setWordSpacing(
     const double word_spacing) {
   if (UNLIKELY(!std::isfinite(word_spacing)))
     return;
@@ -495,7 +495,7 @@ void OffscreenCanvasRenderingContext2D::setTextWordSpacing(
     setFont(font());
 
   float word_spacing_float = clampTo<float>(word_spacing);
-  GetState().SetTextWordSpacing(word_spacing_float, Host()->GetFontSelector());
+  GetState().SetWordSpacing(word_spacing_float, Host()->GetFontSelector());
 }
 
 void OffscreenCanvasRenderingContext2D::setTextRendering(

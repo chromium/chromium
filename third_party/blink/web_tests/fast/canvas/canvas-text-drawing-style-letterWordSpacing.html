@@ -7,15 +7,15 @@ test(function(t) {
 
     // Verify initial values:
     assert_equals(ctx.textLetterSpacing, 0);
-    assert_equals(ctx.textWordSpacing, 0);
+    assert_equals(ctx.wordSpacing, 0);
 
     ctx.textLetterSpacing = 3;
     assert_equals(ctx.textLetterSpacing, 3);
-    assert_equals(ctx.textWordSpacing, 0);
-    ctx.textWordSpacing = 5;
+    assert_equals(ctx.wordSpacing, 0);
+    ctx.wordSpacing = 5;
     assert_equals(ctx.textLetterSpacing, 3);
-    assert_equals(ctx.textWordSpacing, 5);
+    assert_equals(ctx.wordSpacing, 5);
 
-}, "Test basic functionality of textLetterSpacing and textWordSpacing.");
+}, "Test basic functionality of textLetterSpacing and wordSpacing.");
 </script>
 </body>
