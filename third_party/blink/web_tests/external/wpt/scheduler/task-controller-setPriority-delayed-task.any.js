@@ -5,7 +5,7 @@
 promise_test(t => {
   let taskCount = 0;
   const start = performance.now();
-  const controller = new TaskController('background');
+  const controller = new TaskController({priority: 'background'});
 
   const task1 = scheduler.postTask(() => {
     assert_equals(++taskCount, 1);

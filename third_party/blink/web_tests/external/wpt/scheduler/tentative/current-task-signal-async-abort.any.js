@@ -3,7 +3,7 @@
 'use strict';
 
 promise_test(t => {
-  const controller = new TaskController('user-blocking');
+  const controller = new TaskController({priority: 'user-blocking'});
   return scheduler.postTask(async () => {
     await new Promise(resolve => setTimeout(resolve, 0));
     const task = scheduler.postTask(() => {}, {signal: scheduler.currentTaskSignal});
