@@ -908,27 +908,22 @@ static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
                     WebFeature::kPrefersContrastMediaFeature);
 
   auto preferred_contrast = media_values.GetPreferredContrast();
-  ForcedColors forced_colors = media_values.GetForcedColors();
 
   if (!value.IsValid()) {
-    return forced_colors != ForcedColors::kNone ||
-           preferred_contrast != mojom::blink::PreferredContrast::kNoPreference;
+    return preferred_contrast != mojom::blink::PreferredContrast::kNoPreference;
   }
 
   if (!value.is_id)
     return false;
 
   switch (value.id) {
-    case CSSValueID::kForced:
-      return forced_colors == ForcedColors::kActive;
     case CSSValueID::kMore:
       return preferred_contrast == mojom::blink::PreferredContrast::kMore;
     case CSSValueID::kLess:
       return preferred_contrast == mojom::blink::PreferredContrast::kLess;
     case CSSValueID::kNoPreference:
-      return forced_colors != ForcedColors::kActive &&
-             preferred_contrast ==
-                 mojom::blink::PreferredContrast::kNoPreference;
+      return preferred_contrast ==
+             mojom::blink::PreferredContrast::kNoPreference;
     default:
       NOTREACHED();
       return false;

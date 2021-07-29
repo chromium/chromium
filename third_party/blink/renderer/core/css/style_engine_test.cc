@@ -1647,15 +1647,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
       @media (prefers-contrast: less) {
         body { color: orange }
       }
-      @media (prefers-contrast: forced) {
-        body { color: yellow }
-      }
-      @media (prefers-contrast: forced) and (prefers-contrast: more) {
-        body { color: green }
-      }
-      @media (prefers-contrast: forced) and (prefers-contrast: less) {
-        body { color: purple }
-      }
     </style>
     <body></body>
   )HTML");
@@ -1676,26 +1667,6 @@ TEST_F(StyleEngineTest, MediaQueriesChangeSpecificPrefersContrast) {
       mojom::blink::PreferredContrast::kLess);
   UpdateAllLifecyclePhases();
   EXPECT_EQ(MakeRGB(255, 165, 0),
-            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
-                GetCSSPropertyColor()));
-
-  color_scheme_helper.SetForcedColors(GetDocument(), ForcedColors::kActive);
-  UpdateAllLifecyclePhases();
-  EXPECT_EQ(MakeRGB(128, 0, 128),
-            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
-                GetCSSPropertyColor()));
-
-  color_scheme_helper.SetPreferredContrast(
-      mojom::blink::PreferredContrast::kMore);
-  UpdateAllLifecyclePhases();
-  EXPECT_EQ(MakeRGB(0, 128, 0),
-            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
-                GetCSSPropertyColor()));
-
-  color_scheme_helper.SetPreferredContrast(
-      mojom::blink::PreferredContrast::kNoPreference);
-  UpdateAllLifecyclePhases();
-  EXPECT_EQ(MakeRGB(255, 255, 0),
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyColor()));
 }

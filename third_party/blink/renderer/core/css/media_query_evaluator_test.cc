@@ -190,7 +190,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_nopreference_cases[] = {
     {"(prefers-contrast)", false},
     {"(prefers-contrast: more)", false},
     {"(prefers-contrast: less)", false},
-    {"(prefers-contrast: forced)", false},
     {"(prefers-contrast: no-preference)", true},
     {nullptr, false}  // Do not remove the terminator line.
 };
@@ -199,7 +198,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_more_cases[] = {
     {"(prefers-contrast)", true},
     {"(prefers-contrast: more)", true},
     {"(prefers-contrast: less)", false},
-    {"(prefers-contrast: forced)", false},
     {"(prefers-contrast: no-preference)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
@@ -208,34 +206,6 @@ MediaQueryEvaluatorTestCase g_preferscontrast_less_cases[] = {
     {"(prefers-contrast)", true},
     {"(prefers-contrast: more)", false},
     {"(prefers-contrast: less)", true},
-    {"(prefers-contrast: forced)", false},
-    {"(prefers-contrast: no-preference)", false},
-    {nullptr, false}  // Do not remove the terminator line.
-};
-
-MediaQueryEvaluatorTestCase g_preferscontrast_forced_cases[] = {
-    {"(prefers-contrast)", true},
-    {"(prefers-contrast: more)", false},
-    {"(prefers-contrast: less)", false},
-    {"(prefers-contrast: forced)", true},
-    {"(prefers-contrast: no-preference)", false},
-    {nullptr, false}  // Do not remove the terminator line.
-};
-
-MediaQueryEvaluatorTestCase g_preferscontrast_forced_more_cases[] = {
-    {"(prefers-contrast)", true},
-    {"(prefers-contrast: more)", true},
-    {"(prefers-contrast: less)", false},
-    {"(prefers-contrast: forced)", true},
-    {"(prefers-contrast: no-preference)", false},
-    {nullptr, false}  // Do not remove the terminator line.
-};
-
-MediaQueryEvaluatorTestCase g_preferscontrast_forced_less_cases[] = {
-    {"(prefers-contrast)", true},
-    {"(prefers-contrast: more)", false},
-    {"(prefers-contrast: less)", true},
-    {"(prefers-contrast: forced)", true},
     {"(prefers-contrast: no-preference)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
@@ -533,31 +503,6 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_preferscontrast_less_cases, media_query_evaluator);
-  }
-
-  // Prefers-contrast - forced.
-  {
-    data.preferred_contrast = mojom::blink::PreferredContrast::kNoPreference;
-    data.forced_colors = ForcedColors::kActive;
-    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_preferscontrast_forced_cases, media_query_evaluator);
-  }
-
-  // Prefers-contrast - forced and more.
-  {
-    data.preferred_contrast = mojom::blink::PreferredContrast::kMore;
-    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_preferscontrast_forced_more_cases, media_query_evaluator);
-  }
-
-  // Prefers-contrast - forced and less.
-  {
-    data.preferred_contrast = mojom::blink::PreferredContrast::kLess;
-    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(*media_values);
-    TestMQEvaluator(g_preferscontrast_forced_less_cases, media_query_evaluator);
   }
 }
 
