@@ -57,6 +57,7 @@ public class WebLayerTest {
         Assert.assertFalse(userAgent.isEmpty());
     }
 
+    @MinWebLayerVersion(94)
     @Test
     @SmallTest
     public void deletesTemporaryImagesOnInit() throws TimeoutException {
