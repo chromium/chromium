@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_CHECK_ON_TOP_WORKER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

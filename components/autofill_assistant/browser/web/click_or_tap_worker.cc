@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/web/click_or_tap_worker.h"
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 

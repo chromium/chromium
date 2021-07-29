@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_ACTION_H_
 
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SELECT_OPTION_ACTION_H_
 
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
