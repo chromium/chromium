@@ -11,6 +11,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -25,11 +26,11 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
                       kChromeosProjectorAppUntrustedResourcesSize);
   source->AddResourcePaths(resources);
 
-  // TODO(b/193670945): Set allowed parent frame source to enable embedding
-  // untrusted content in trusted schema.
   // TODO(b/193579885): Add ink WASM.
   // TODO(b/193579885): Override content security policy to support loading wasm
   // resources.
+
+  source->AddFrameAncestor(GURL(kChromeUITrustedProjectorAppUrl));
 
   return source;
 }

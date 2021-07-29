@@ -14,6 +14,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/common/url_constants.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace chromeos {
 
@@ -26,6 +28,13 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppTrustedResources,
                       kChromeosProjectorAppTrustedResourcesSize));
+
+  std::string csp =
+      std::string("frame-src ") + kChromeUIUntrustedProjectorAppUrl + ";";
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, csp);
+
   return source;
 }
 
@@ -81,6 +90,7 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
 
   web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
 
 TrustedProjectorUI::~TrustedProjectorUI() = default;

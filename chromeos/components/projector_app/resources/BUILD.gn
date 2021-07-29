@@ -17,6 +17,9 @@ generate_grd("build_untrusted_grd") {
 
 generate_grd("build_trusted_grd") {
   input_files = [
+    "annotator/annotator_embedder.html",
+    "annotator/annotator_embedder.css",
+    "annotator/annotator_embedder_impl.js",
     "player_app/player_app.html",
     "player_app/player_app.js",
     "player_app/player_app.css",
