@@ -20,6 +20,8 @@ source_set("ntp") {
 
 source_set("constants") {
   sources = [
+    "discover_feed_constants.h",
+    "discover_feed_constants.mm",
     "new_tab_page_constants.h",
     "new_tab_page_constants.mm",
     "new_tab_page_header_constants.h",
