@@ -192,6 +192,8 @@ source_set("ax_assistant") {
   ]
 
   deps = [ ":accessibility" ]
+
+  public_deps = [ ":ax_enums_mojo" ]
 }
 
 static_library("test_support") {
