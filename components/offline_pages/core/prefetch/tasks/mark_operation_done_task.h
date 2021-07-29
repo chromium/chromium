@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_MARK_OPERATION_DONE_TASK_H_
 
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"

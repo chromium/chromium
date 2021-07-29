@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"

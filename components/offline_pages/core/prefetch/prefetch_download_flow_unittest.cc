@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/background_service/test/test_download_service.h"

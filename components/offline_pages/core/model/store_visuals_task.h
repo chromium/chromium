@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STORE_VISUALS_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STORE_VISUALS_TASK_H_
 
-#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

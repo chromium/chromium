@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_GET_OPERATION_REQUEST_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_GET_OPERATION_REQUEST_H_
 
-#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"

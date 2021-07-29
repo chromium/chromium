@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"

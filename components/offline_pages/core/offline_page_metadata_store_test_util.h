@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_OFFLINE_PAGE_METADATA_STORE_TEST_UTIL_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
