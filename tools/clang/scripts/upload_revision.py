@@ -48,6 +48,7 @@ Cq-Include-Trybots: chromium/try:win-official,win32-official
 Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,mac-chrome
+Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
 '''
 
 is_win = sys.platform.startswith('win32')
