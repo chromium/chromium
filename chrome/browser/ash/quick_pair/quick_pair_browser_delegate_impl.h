@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_QUICK_PAIR_QUICK_PAIR_BROWSER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_QUICK_PAIR_QUICK_PAIR_BROWSER_DELEGATE_IMPL_H_
 
-#include "ash/quick_pair/quick_pair_browser_delegate.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 
 namespace network {
 class SharedURLLoaderFactory;

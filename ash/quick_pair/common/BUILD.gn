@@ -29,6 +29,8 @@ component("common") {
     "pair_failure.h",
     "protocol.cc",
     "protocol.h",
+    "quick_pair_browser_delegate.cc",
+    "quick_pair_browser_delegate.h",
   ]
 
   deps = [

@@ -90,7 +90,6 @@ source_set("chromeos") {
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
     "//ash/public/mojom",
-    "//ash/quick_pair",
     "//ash/quick_pair/common",
     "//ash/webui/diagnostics_ui",
     "//ash/webui/file_manager:file_manager_ui",

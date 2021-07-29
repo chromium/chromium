@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/quick_pair_browser_delegate.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
