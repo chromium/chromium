@@ -34,12 +34,12 @@ class ExtractMetadataTestCase(unittest.TestCase):
     return (self.trace_processor_path, self.trace_file, query)
 
   def _CreateRunQueryResults(self,
-                             version_number_results=[],
-                             os_name_results=[],
-                             architecture_results=[],
-                             bitness_results=[],
-                             version_code_results=[],
-                             modules_results=[]):
+                             version_number_results=frozenset([]),
+                             os_name_results=frozenset([]),
+                             architecture_results=frozenset([]),
+                             bitness_results=frozenset([]),
+                             version_code_results=frozenset([]),
+                             modules_results=frozenset([])):
     """Mock return of RunQuery calls.
 
     See trace_processor.RunQuery for the format of the query results.

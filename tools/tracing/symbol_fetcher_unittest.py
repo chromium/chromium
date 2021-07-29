@@ -21,6 +21,7 @@ from metadata_extractor import OSName
 import symbol_fetcher
 from symbol_fetcher import ANDROID_X86_FOLDERS, ANDROID_ARM_FOLDERS, GCS_SYMBOLS
 import breakpad_file_extractor
+
 import mock
 
 
@@ -56,8 +57,7 @@ class SymbolFetcherTestBase(unittest.TestCase):
     self.RenameBreakpadFiles_stash = symbol_fetcher.RenameBreakpadFiles
 
     # Ignore this function. It is tested separately.
-    symbol_fetcher.RenameBreakpadFiles = mock.MagicMock(
-        side_effect=self._emptyFunc)
+    symbol_fetcher.RenameBreakpadFiles = mock.MagicMock()
 
   def tearDown(self):
     shutil.rmtree(self.breakpad_output_dir)
@@ -71,9 +71,6 @@ class SymbolFetcherTestBase(unittest.TestCase):
     symbol_fetcher._FetchAndUnzipGCSFile = self.FetchAndUnzipGCSFile_stash
     breakpad_file_extractor._RunDumpSyms = self.RunDumpSyms_stash
     symbol_fetcher.RenameBreakpadFiles = self.RenameBreakpadFiles_stash
-
-  def _emptyFunc(*args):
-    return
 
   def _createMetadataExtractor(self,
                                version_number=None,
@@ -99,9 +96,10 @@ class SymbolFetcherTestBase(unittest.TestCase):
                                              bitness='64')
 
     exception_msg = 'Failed to extract trace OS name: ' + self.trace_file
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
   def testOSNameNotRecognized(self):
     metadata = self._createMetadataExtractor(version_number='123',
@@ -110,9 +108,10 @@ class SymbolFetcherTestBase(unittest.TestCase):
                                              bitness='64')
 
     exception_msg = 'Trace OS "blah" is not supported: ' + self.trace_file
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
   def testNoVersionNumber(self):
     metadata = self._createMetadataExtractor(version_number=None,
@@ -121,21 +120,22 @@ class SymbolFetcherTestBase(unittest.TestCase):
                                              bitness='64')
 
     exception_msg = 'Failed to extract trace version number: ' + self.trace_file
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
 
 class MacAndLinuxTestCase(SymbolFetcherTestBase):
   def setUp(self):
-    super().setUp()
+    super(MacAndLinuxTestCase, self).setUp()
 
     cloud_storage.Get = mock.Mock()
     # Default: Cloud storage has |gcs_file|.zip file. We use |side_effect|
     # because tests that overwrite this will need to use |side_effect|.
     cloud_storage.Exists = mock.Mock(side_effect=[True])
     # Default: Ignore |_UnzipFile| function so we don't unzip fake files.
-    symbol_fetcher._UnzipFile = mock.MagicMock(side_effect=self._emptyFunc)
+    symbol_fetcher._UnzipFile = mock.MagicMock()
 
   def _ensureUnzipAndRenameCalls(self):
     zip_file = os.path.join(self.breakpad_output_dir, 'breakpad-info.zip')
@@ -235,9 +235,7 @@ class MacAndLinuxTestCase(SymbolFetcherTestBase):
     # Cloud storage does not have |gcs_file| or |gcs_file|.zip extension.
     cloud_storage.Exists.side_effect = [False, False]
 
-    with self.assertRaisesRegex(
-        Exception, ('Failed to find symbols on GCS: desktop-\\*/123/linux64/'
-                    'breakpad-info\\[.zip\\]')):
+    with self.assertRaises(Exception):
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
     self.assertEqual(cloud_storage.Exists.call_count, 2)
@@ -249,8 +247,7 @@ class MacAndLinuxTestCase(SymbolFetcherTestBase):
                                              architecture='x86_64',
                                              bitness='32')
 
-    with self.assertRaisesRegex(ValueError,
-                                '32 bit Linux traces are not supported.'):
+    with self.assertRaises(ValueError):
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir)
 
@@ -260,7 +257,7 @@ class MacAndLinuxTestCase(SymbolFetcherTestBase):
 
 class AndroidTestCase(SymbolFetcherTestBase):
   def setUp(self):
-    super().setUp()
+    super(AndroidTestCase, self).setUp()
 
     # Base directories for Android symbols.
     self.out = tempfile.mkdtemp(dir=self.breakpad_output_dir)
@@ -427,14 +424,14 @@ class AndroidTestCase(SymbolFetcherTestBase):
     match_arch_folder = 'x86_64'
     symbol_fetcher._FetchGCSFile = mock.Mock(
         side_effect=self._mockVersionCodeFetcher(match_arch_folder, metadata))
-    extract_files = self._setUpBasicRunDumpSyms()
+    self._setUpBasicRunDumpSyms()
 
     exception_msg = 'Failed to extract architecture: ' + self.trace_file
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
-
+    self.assertIn(exception_msg, str(e.exception))
     self._ensureRunDumpSymsAndRenameNotCalled()
 
   def testMissingVersionCode(self):
@@ -446,14 +443,14 @@ class AndroidTestCase(SymbolFetcherTestBase):
     match_arch_folder = 'x86_64'
     symbol_fetcher._FetchGCSFile = mock.Mock(
         side_effect=self._mockVersionCodeFetcher(match_arch_folder, metadata))
-    extract_files = self._setUpBasicRunDumpSyms()
+    self._setUpBasicRunDumpSyms()
 
     exception_msg = 'Failed to extract version code: ' + self.trace_file
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
-
+    self.assertIn(exception_msg, str(e.exception))
     self._ensureRunDumpSymsAndRenameNotCalled()
 
   def testAndroidMissingDumpsymsPath(self):
@@ -465,16 +462,16 @@ class AndroidTestCase(SymbolFetcherTestBase):
     match_arch_folder = 'x86_64'
     symbol_fetcher._FetchGCSFile = mock.Mock(
         side_effect=self._mockVersionCodeFetcher(match_arch_folder, metadata))
-    extract_files = self._setUpBasicRunDumpSyms()
+    self._setUpBasicRunDumpSyms()
 
     exception_msg = ('Path to dump_syms binary is required for symbolizing '
                      'official Android traces.')
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata,
                                              self.breakpad_output_dir,
                                              dump_syms_path=None)
-
+    self.assertIn(exception_msg, str(e.exception))
     self._ensureRunDumpSymsAndRenameNotCalled()
 
   def testFailsToFetchAllVersionCodesFiles(self):
@@ -483,18 +480,18 @@ class AndroidTestCase(SymbolFetcherTestBase):
                                              architecture='x86_64',
                                              bitness='64',
                                              version_code='358923')
-    match_arch_folder = 'x86_64'
+
     # Fails to fetch all 'version_codes.txt' files from GCS.
     symbol_fetcher._FetchGCSFile = mock.MagicMock(return_value=False)
-    extract_files = self._setUpBasicRunDumpSyms()
+    self._setUpBasicRunDumpSyms()
 
     exception_msg = ('Failed to determine architecture folder: ' +
                      self.trace_file)
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
-
+    self.assertIn(exception_msg, str(e.exception))
     self._ensureRunDumpSymsAndRenameNotCalled()
 
   def testNoFilesMatchTraceVersionCode(self):
@@ -507,15 +504,15 @@ class AndroidTestCase(SymbolFetcherTestBase):
     match_arch_folder = None  # No valid paths can be None.
     symbol_fetcher._FetchGCSFile = mock.Mock(
         side_effect=self._mockVersionCodeFetcher(match_arch_folder, metadata))
-    extract_files = self._setUpBasicRunDumpSyms()
+    self._setUpBasicRunDumpSyms()
 
     exception_msg = ('Failed to determine architecture folder: ' +
                      self.trace_file)
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
-
+    self.assertIn(exception_msg, str(e.exception))
     self._ensureRunDumpSymsAndRenameNotCalled()
 
   def testFailsToFetchSymbolFiles(self):
@@ -529,15 +526,16 @@ class AndroidTestCase(SymbolFetcherTestBase):
         side_effect=self._mockVersionCodeFetcher(match_arch_folder, metadata))
     # Fails to fetch all symbol files from GCS.
     symbol_fetcher._FetchAndUnzipGCSFile = mock.MagicMock(return_value=False)
-    extract_files = self._setUpBasicRunDumpSyms()
+    self._setUpBasicRunDumpSyms()
 
     gcs_folder = ('android-B0urB0N/' + metadata.version_number + '/' +
                   match_arch_folder)
     exception_msg = 'No symbol files could be found on GCS:' + gcs_folder
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
+    self.assertIn(exception_msg, str(e.exception))
 
     # Expect to try to download all symbol files.
     expected_calls = self._getExpectedSymbolFileFetches(match_arch_folder,
@@ -562,11 +560,11 @@ class AndroidTestCase(SymbolFetcherTestBase):
     exception = (
         'No breakpad symbols could be extracted from files in the subtree: ' +
         self.breakpad_output_dir)
-    with self.assertRaisesRegex(Exception, exception):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
-
+    self.assertIn(exception, str(e.exception))
     expected_calls = self._getExpectedSymbolFileFetches(match_arch_folder,
                                                         metadata)
     symbol_fetcher._FetchAndUnzipGCSFile.assert_has_calls(expected_calls,
@@ -596,14 +594,14 @@ class AndroidTestCase(SymbolFetcherTestBase):
       with open(new_file, 'w') as f:
         f.write('MODULE mac x86_64 329FDEA987BC name.so')
 
-    exception = (
+    exception_msg = (
         'No breakpad symbols could be extracted from files in the subtree: ' +
         self.breakpad_output_dir)
-    with self.assertRaisesRegex(Exception, exception):
+    with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,
                                              self.dump_syms_path)
-
+    self.assertIn(exception_msg, str(e.exception))
     expected_calls = self._getExpectedSymbolFileFetches(match_arch_folder,
                                                         metadata)
     symbol_fetcher._FetchAndUnzipGCSFile.assert_has_calls(expected_calls,
@@ -819,18 +817,13 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file2, 'w') as file2:
       file2.write('MODULE mac x86_64 12ABC8987DE name.so')
 
-    # Build regex to check. Order of file printing doesn't matter,
-    # but one file must be the original file and one file must be
-    # the module name file.
-    module_name = os.path.join(self.breakpad_output_dir, '12ABC8987DE.breakpad')
-    file_regex = '(({bf1}|{bf2}), {mod})|({mod}, ({bf1}|{bf2}))'.format(
-        bf1=breakpad_file1, bf2=breakpad_file2, mod=module_name)
-    assertion_regex = ('Symbol file modules ids are not unique: 12ABC8987DE'
-                       '\nSee these files: ' + file_regex)
+    # Check that the right exception is raised.
+    exception_msg = ('Symbol file modules ids are not unique')
 
-    with self.assertRaisesRegex(AssertionError, assertion_regex):
+    with self.assertRaises(AssertionError) as e:
       symbol_fetcher.RenameBreakpadFiles(self.breakpad_dir,
                                          self.breakpad_output_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
     # Check breakpad file with repeated module id is not moved. More
     # complicated because either of the breakpad files could be moved.
@@ -853,19 +846,12 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file2, 'w') as file2:
       file2.write('MODULE mac x86_64 ABCE4853004895 name.so')
 
-    # Build regex to check. Order of file printing doesn't matter,
-    # but one file must be the original file and one file must be
-    # the module name file.
-    module_name = os.path.join(self.breakpad_output_dir,
-                               'ABCE4853004895.breakpad')
-    file_regex = '(({bf1}|{bf2}), {mod})|({mod}, ({bf1}|{bf2}))'.format(
-        bf1=breakpad_file1, bf2=breakpad_file2, mod=module_name)
-    assertion_regex = ('Symbol file modules ids are not unique: ABCE4853004895'
-                       '\nSee these files: ' + file_regex)
-
-    with self.assertRaisesRegex(AssertionError, assertion_regex):
+    # Check that the right exception is raised.
+    exception_msg = ('Symbol file modules ids are not unique')
+    with self.assertRaises(AssertionError) as e:
       symbol_fetcher.RenameBreakpadFiles(self.breakpad_dir,
                                          self.breakpad_output_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
     # Check breakpad file with repeated module id is not moved. More
     # complicated because either of the breakpad files could be moved.

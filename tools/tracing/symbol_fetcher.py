@@ -57,7 +57,8 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
     _ConvertSymbolsToBreakpad(breakpad_output_dir, dump_syms_path)
     RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
   elif metadata.os_name == OSName.WINDOWS:
-    _GetWindowsSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
+    raise Exception(
+        'Windows platform is not currently supported for symbolization.')
   elif metadata.os_name == OSName.LINUX or metadata.os_name == OSName.MAC:
     _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
     RenameBreakpadFiles(breakpad_output_dir, breakpad_output_dir)
@@ -215,14 +216,6 @@ def _FetchBreakpadSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
     if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_file, breakpad_zip,
                                  breakpad_output_dir):
       raise Exception('Failed to find symbols on GCS: %s[.zip].' % (gcs_file))
-
-
-def _GetWindowsSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
-  """Fetches and extract Windows symbolization file.
-  """
-  # TODO(rhuckleberry): Implement windows fetching.
-  raise Exception(
-      'Windows platform is not currently supported for symbolization.')
 
 
 def _ConvertSymbolsToBreakpad(symbols_root, dump_syms_path):

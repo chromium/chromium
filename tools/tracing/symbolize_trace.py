@@ -31,8 +31,8 @@ def SymbolizeTrace(trace_file, options):
     options: The options set by the command line args.
 
   Raises:
-    Exception: if breakpad_output_dir is not empty.
-    FileNotFoundError: if path to local breakpad directory is invalid.
+    Exception: if breakpad_output_dir is not empty or if path to local breakpad
+      directory is invalid.
   """
   need_cleanup = False
   if options.local_breakpad_dir is None:
@@ -53,7 +53,7 @@ def SymbolizeTrace(trace_file, options):
         logging.debug('Created directory to hold symbol files.')
   else:
     if not os.path.isdir(options.local_breakpad_dir):
-      raise FileNotFoundError('Local breakpad directory is not valid.')
+      raise Exception('Local breakpad directory is not valid.')
     options.breakpad_output_dir = options.local_breakpad_dir
 
   _EnsureBreakpadSymbols(trace_file, options)
@@ -148,15 +148,14 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
     with open(output_file, 'w') as f:
       f.write(trace_data)
       f.write(symbol_data)
-      logging.debug(
-          'Symbolized {file}({x} bytes) with {y} bytes of symbol data'.format(
-              file=trace_file, x=len(trace_data), y=len(symbol_data)))
+      logging.debug('Symbolized %s(%d bytes) with %d bytes of symbol data',
+                    trace_file, len(trace_data), len(symbol_data))
 
 
 def _RunSymbolizer(cmd, env, stdout):
   proc = subprocess.Popen(cmd, env=env, stdout=stdout, stderr=subprocess.PIPE)
   out, stderr = proc.communicate()
-  logging.debug('STDOUT:{}'.format(str(out)))
-  logging.debug('STDERR:{}'.format(str(stderr)))
+  logging.debug('STDOUT:%s', str(out))
+  logging.debug('STDERR:%s', str(stderr))
   if proc.returncode != 0:
     raise RuntimeError(str(stderr))

@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 import os
-import logging
+import sys
 import unittest
 
 import symbolize_trace
@@ -14,7 +14,14 @@ import breakpad_file_extractor
 import tempfile
 import shutil
 
-from unittest.mock import MagicMock
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, 'perf'))
+
+from core import path_util
+path_util.AddPyUtilsToPath()
+path_util.AddTracingToPath()
+
+import mock
+#from unittest.mock import mock.MagicMock
 
 
 class TestOptions():
@@ -32,7 +39,8 @@ class TestOptions():
 
 class SymbolizeTraceTestCase(unittest.TestCase):
   def side_effect(self, cmd, env, stdout):
-    stdout.write('Symbol data.')
+    if cmd and env:
+      stdout.write('Symbol data.')
 
   def setUp(self):
     self.options = TestOptions()
@@ -43,10 +51,11 @@ class SymbolizeTraceTestCase(unittest.TestCase):
     self.MetadataExtractor = metadata_extractor.MetadataExtractor
     self.ExtractBreakpadFiles = breakpad_file_extractor.ExtractBreakpadFiles
 
-    symbolize_trace._RunSymbolizer = MagicMock(side_effect=self.side_effect)
-    symbol_fetcher.GetTraceBreakpadSymbols = MagicMock()
-    metadata_extractor.MetadataExtractor = MagicMock()
-    breakpad_file_extractor.ExtractBreakpadFiles = MagicMock()
+    symbolize_trace._RunSymbolizer = mock.MagicMock(
+        side_effect=self.side_effect)
+    symbol_fetcher.GetTraceBreakpadSymbols = mock.MagicMock()
+    metadata_extractor.MetadataExtractor = mock.MagicMock()
+    breakpad_file_extractor.ExtractBreakpadFiles = mock.MagicMock()
 
   def tearDown(self):
     # Unstash functions.
@@ -62,13 +71,7 @@ class SymbolizeTraceTestCase(unittest.TestCase):
       test_trace_file.write('Trace data.')
       trace_file = test_trace_file.name
 
-    # Check logs to see if a breakpad output directory was created.
-    with self.assertLogs(level=logging.DEBUG) as logger:
-      symbolize_trace.SymbolizeTrace(trace_file, self.options)
-    self.assertIn(
-        'DEBUG:root:Created temporary directory to hold symbol files.',
-        logger.output)
-    self.assertIn('DEBUG:root:Cleaning up symbol files.', logger.output)
+    symbolize_trace.SymbolizeTrace(trace_file, self.options)
 
     metadata_extractor.MetadataExtractor.assert_called_once()
     symbol_fetcher.GetTraceBreakpadSymbols.assert_called_once()
@@ -95,11 +98,7 @@ class SymbolizeTraceTestCase(unittest.TestCase):
       test_trace_file.write('Trace data.')
       trace_file = test_trace_file.name
 
-    # Check logs to see if a breakpad output directory was created.
-    with self.assertLogs(level=logging.DEBUG) as logger:
-      symbolize_trace.SymbolizeTrace(trace_file, self.options)
-    self.assertIn('DEBUG:root:Created directory to hold symbol files.',
-                  logger.output)
+    symbolize_trace.SymbolizeTrace(trace_file, self.options)
 
     metadata_extractor.MetadataExtractor.assert_called_once()
     symbol_fetcher.GetTraceBreakpadSymbols.assert_called_once()
@@ -156,10 +155,11 @@ class SymbolizeTraceTestCase(unittest.TestCase):
       trace_file = test_trace_file.name
 
     # Check that exception is thrown for non-empty breakpad output directory.
+    exception_msg = 'Breakpad output directory is not empty:'
     with tempfile.NamedTemporaryFile(dir=self.options.breakpad_output_dir):
-      with self.assertRaisesRegex(Exception,
-                                  '^Breakpad output directory is not empty:'):
+      with self.assertRaises(Exception) as e:
         symbolize_trace.SymbolizeTrace(trace_file, self.options)
+    self.assertIn(exception_msg, str(e.exception))
 
     # Remove files and temp directory.
     os.remove(trace_file)
@@ -172,9 +172,10 @@ class SymbolizeTraceTestCase(unittest.TestCase):
       test_trace_file.write('Trace data.')
       trace_file = test_trace_file.name
 
-    with self.assertRaisesRegex(FileNotFoundError,
-                                'Local breakpad directory is not valid.'):
+    exception_msg = 'Local breakpad directory is not valid.'
+    with self.assertRaises(Exception) as e:
       symbolize_trace.SymbolizeTrace(trace_file, self.options)
+    self.assertIn(exception_msg, str(e.exception))
 
   def testValidLocalBreakpadDir(self):
     self.options.local_breakpad_dir = tempfile.mkdtemp()
@@ -314,12 +315,13 @@ class SymbolizeTraceTestCase(unittest.TestCase):
         (self.options.local_build_dir, unstripped_dir))
 
     # Test when there is no 'lib.unstripped' subdirectory.
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception) as e:
       symbolize_trace.SymbolizeTrace(trace_file, self.options)
+    self.assertIn(exception_msg, str(e.exception))
 
     # Test when there is a 'lib.unstripped' subdirectory.
     os.mkdir(unstripped_dir)
-    with self.assertRaisesRegex(Exception, exception_msg):
+    with self.assertRaises(Exception):
       symbolize_trace.SymbolizeTrace(trace_file, self.options)
 
     # Remove files and temp directory.

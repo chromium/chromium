@@ -3,14 +3,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from logging import exception
 import os
+import sys
 import unittest
 
 import breakpad_file_extractor
 import tempfile
 import shutil
 
-from unittest.mock import MagicMock, call
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, 'perf'))
+
+from core import path_util
+path_util.AddPyUtilsToPath()
+path_util.AddTracingToPath()
+
+import metadata_extractor
+from metadata_extractor import OSName
+from core.tbmv3 import trace_processor
+
+import mock
 
 
 class ExtractBreakpadTestCase(unittest.TestCase):
@@ -44,19 +56,20 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     with open(test_output_file_path, 'w'):
       pass
 
-    # Create tempfiles that should be ignored.
-    temp_toc_file = tempfile.NamedTemporaryFile(suffix='.TOC', dir=build_dir)
-    temp_java_file = tempfile.NamedTemporaryFile(suffix='.java', dir=build_dir)
-    temp_zip_file = tempfile.NamedTemporaryFile(suffix='.zip', dir=build_dir)
-    temp_apk_file = tempfile.NamedTemporaryFile(suffix='_apk', dir=build_dir)
-    temp_dwp_file = tempfile.NamedTemporaryFile(suffix='.so.dwp', dir=build_dir)
-    temp_dwo_file = tempfile.NamedTemporaryFile(suffix='.so.dwo', dir=build_dir)
-    monochrome_zip = tempfile.NamedTemporaryFile(suffix='_chromesymbols.zip',
-                                                 dir=build_dir)
-
-    breakpad_file_extractor._RunDumpSyms = MagicMock()
-    breakpad_file_extractor.ExtractBreakpadFiles(dump_syms_path, build_dir,
-                                                 breakpad_dir)
+    # Create tempfiles that should be ignored when extracting symbol files.
+    with tempfile.NamedTemporaryFile(
+        suffix='.TOC', dir=build_dir), tempfile.NamedTemporaryFile(
+            suffix='.java', dir=build_dir), tempfile.NamedTemporaryFile(
+                suffix='.zip', dir=build_dir), tempfile.NamedTemporaryFile(
+                    suffix='_apk', dir=build_dir), tempfile.NamedTemporaryFile(
+                        suffix='.so.dwp',
+                        dir=build_dir), tempfile.NamedTemporaryFile(
+                            suffix='.so.dwo',
+                            dir=build_dir), tempfile.NamedTemporaryFile(
+                                suffix='_chromesymbols.zip', dir=build_dir):
+      breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
+      breakpad_file_extractor.ExtractBreakpadFiles(dump_syms_path, build_dir,
+                                                   breakpad_dir)
 
     breakpad_file_extractor._RunDumpSyms.assert_called_once_with(
         dump_syms_path, test_input_file.name, test_output_file_path)
@@ -87,13 +100,14 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     # Create files in |test_build_dir|. All files are removed when
     # |test_build_dir| is recursively deleted.
     input_filenames = []
-    suffixes = ['.so', '.exe']
-    for suffix in suffixes:
-      new_file = tempfile.NamedTemporaryFile(suffix=suffix,
-                                             dir=self.test_build_dir,
-                                             delete=False)
-      input_filenames.append(new_file.name)
-    # Add chrome file. Is not a temp file because it needs to be named 'chrome'.
+    so_file = os.path.join(self.test_build_dir, 'test_file.so')
+    with open(so_file, 'w') as _:
+      pass
+    input_filenames.append(so_file)
+    exe_file = os.path.join(self.test_build_dir, 'test_file.exe')
+    with open(exe_file, 'w') as _:
+      pass
+    input_filenames.append(exe_file)
     chrome_file = os.path.join(self.test_build_dir, 'chrome')
     with open(chrome_file, 'w') as _:
       pass
@@ -108,16 +122,15 @@ class ExtractBreakpadTestCase(unittest.TestCase):
       with open(test_output_file_path, 'w'):
         pass
       output_file_paths.append(test_output_file_path)
-
-    breakpad_file_extractor._RunDumpSyms = MagicMock()
+    breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
     breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
                                                  self.test_build_dir,
                                                  self.test_breakpad_dir)
 
     # Check that each call expected call to _RunDumpSyms() has been made.
     expected_calls = [
-        call(self.test_dump_syms_binary, input_filename,
-             output_file_paths[file_iter])
+        mock.call(self.test_dump_syms_binary, input_filename,
+                  output_file_paths[file_iter])
         for file_iter, input_filename in enumerate(input_filenames)
     ]
     breakpad_file_extractor._RunDumpSyms.assert_has_calls(expected_calls,
@@ -137,23 +150,29 @@ class ExtractBreakpadTestCase(unittest.TestCase):
                      set(os.listdir(self.test_breakpad_dir)))
 
   def testDumpSymsNotFound(self):
-    breakpad_file_extractor._RunDumpSyms = MagicMock()
-    with self.assertRaisesRegex(FileNotFoundError, 'dump_syms is missing.'):
+    breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
+    exception_msg = 'dump_syms is missing.'
+    with self.assertRaises(Exception) as e:
       breakpad_file_extractor.ExtractBreakpadFiles('fake/path/dump_syms',
                                                    self.test_build_dir,
                                                    self.test_breakpad_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
   def testFakeDirectories(self):
-    breakpad_file_extractor._RunDumpSyms = MagicMock()
-    with self.assertRaisesRegex(FileNotFoundError,
-                                'Invalid breakpad output directory'):
+    breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
+    exception_msg = 'Invalid breakpad output directory'
+    with self.assertRaises(Exception) as e:
       breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
                                                    self.test_build_dir,
                                                    'fake_breakpad_dir')
-    with self.assertRaisesRegex(FileNotFoundError, 'Invalid build directory'):
+    self.assertIn(exception_msg, str(e.exception))
+
+    exception_msg = 'Invalid build directory'
+    with self.assertRaises(Exception) as e:
       breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
                                                    'fake_binary_dir',
                                                    self.test_breakpad_dir)
+    self.assertIn(exception_msg, str(e.exception))
 
   def testSymbolizedNoFiles(self):
     did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
@@ -175,7 +194,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     with open(extracted_file, 'w') as _:
       pass
 
-    breakpad_file_extractor._RunDumpSyms = MagicMock()
+    breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
     breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
                                                  self.test_build_dir,
                                                  self.test_breakpad_dir,

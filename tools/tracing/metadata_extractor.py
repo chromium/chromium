@@ -174,7 +174,7 @@ class MetadataExtractor:
     try:
       return trace_processor.RunQuery(self._trace_processor_path,
                                       self._trace_file, sql)[0]['str_value']
-    except:
+    except Exception:
       return None
 
   def _GetIntValueFromQuery(self, sql):
@@ -183,7 +183,7 @@ class MetadataExtractor:
     try:
       return trace_processor.RunQuery(self._trace_processor_path,
                                       self._trace_file, sql)[0]['int_value']
-    except:
+    except Exception:
       return None
 
   def _ExtractValidModuleMap(self):
@@ -206,5 +206,5 @@ class MetadataExtractor:
         return None
       return module_map
 
-    except:
+    except Exception:
       return None

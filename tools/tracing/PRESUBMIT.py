@@ -12,13 +12,15 @@ USE_PYTHON3 = True
 
 
 def RunUnittests(input_api, output_api):
-  tests = input_api.canned_checks.GetUnitTestsInDirectory(
-      input_api,
-      output_api,
-      '.',
-      files_to_check=[r'.+_unittests\.py$'],
-      run_on_python2=False)
-  return input_api.RunTests(tests)
+  results = []
+  # Run Pylint over the files in the directory.
+  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  results.extend(input_api.RunTests(pylint_checks))
+
+  results.extend(
+      input_api.canned_checks.RunUnitTestsInDirectory(
+          input_api, output_api, '.', files_to_check=[r'.+_unittest\.py$']))
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):

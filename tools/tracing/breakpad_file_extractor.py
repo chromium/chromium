@@ -32,21 +32,21 @@ def ExtractBreakpadFiles(dump_syms_path,
     False, otherwise
 
   Raises:
-    FileNotFoundError: If the dump_syms binary or the input and output
+    Exception: If the dump_syms binary or the input and output
       directories cannot be found.
   """
   # Check to see if |dump_syms_path| is a file.
   dump_syms_binary = _GetDumpSyms(dump_syms_path, build_dir)
   if dump_syms_binary is None:
-    raise FileNotFoundError(
+    raise Exception(
         'dump_syms is missing. you can build dump_syms in the {build_dir} by'
         'running ninja -C {build_dir} dump_syms'.format(build_dir=build_dir))
 
   # Check if |build_dir| and |breakpad_base_dir| are directories.
   if not os.path.isdir(build_dir):
-    raise FileNotFoundError('Invalid build directory.')
+    raise Exception('Invalid build directory.')
   if not os.path.isdir(breakpad_output_dir):
-    raise FileNotFoundError('Invalid breakpad output directory.')
+    raise Exception('Invalid breakpad output directory.')
 
   # If on Android, lib.unstripped will hold symbols for binaries.
   symbol_dir = build_dir
@@ -83,12 +83,10 @@ def _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
     proc = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
   stderr = proc.communicate()[1]
   if proc.returncode != 0:
-    logging.warning('{dump_syms_err}'.format(dump_syms_err=str(stderr)))
-    logging.debug(
-        'Could not create breakpad symbols {file}'.format(file=input_file_path))
+    logging.warning('%s', str(stderr))
+    logging.debug('Could not create breakpad symbols %s', input_file_path)
     return False
-  logging.debug(
-      'Created breakpad symbols from {file}'.format(file=input_file_path))
+  logging.debug('Created breakpad symbols from %s', input_file_path)
   return True
 
 

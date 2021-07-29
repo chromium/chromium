@@ -7,7 +7,6 @@ third_party/catapult folder. It is consumed as a library by the
 executable profile_chrome_startup script.
 """
 
-import logging
 import os
 import subprocess
 import sys
@@ -102,7 +101,7 @@ def _DisplayInBrowser(options, trace_file):
                                    os.pardir, trace_file)
     cmd = [open_trace_ui_path, '-i', trace_file_path]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate()
+    stderr = p.communicate()[1]
     if p.returncode != 0:
       raise RuntimeError('failed: ' + stderr)
   elif sys.platform == 'darwin':
