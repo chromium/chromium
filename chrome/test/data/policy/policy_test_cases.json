@@ -14429,7 +14429,7 @@
     ]
   },
   "IntegratedWebAuthenticationAllowed": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Policy was removed"
   },
   "ClearBrowsingDataOnExitList": {
     "os": [
