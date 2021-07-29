@@ -45,6 +45,7 @@ const debug_suites_list = [
   'AcceleratorViewTest',
   'AcceleratorRowTest',
   'AcceleratorEditDialogTest',
+  'AcceleratorSubsectionTest',
   'FakeShortcutProviderTest',
   'ShortcutCustomizationApp',
 ];

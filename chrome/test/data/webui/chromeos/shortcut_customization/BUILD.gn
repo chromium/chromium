@@ -46,6 +46,14 @@ js_library("accelerator_row_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("accelerator_subsection_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shortcut_customization_ui/resources:accelerator_subsection",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("accelerator_view_test") {
   deps = [
     "../..:chai_assert",
