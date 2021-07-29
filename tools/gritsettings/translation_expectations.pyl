@@ -91,7 +91,7 @@
   # The omnibox_pedal_synonyms are translated only into a subset of the languages.
   "omnibox_pedal_synonyms_grd": {
     "languages": [
-      "ar", "de", "fr", "ja", "zh-CN",
+      "ar", "es-419", "fr", "ja", "zh-TW",
     ],
     "files": [
       "components/omnibox/resources/omnibox_pedal_synonyms.grd",
