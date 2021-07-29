@@ -268,16 +268,21 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
 // lookups are enabled, and that opting out of real-time checks works as
 // expected.
 TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
-  TestingApplicationContext::GetGlobal();
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get());
+
+  // Wait for an initial result to make sure the Safe Browsing database has
+  // been initialized, before calling into functions that mark URLs as safe
+  // or unsafe in the database.
+  GURL safe_url(kSafePage);
+  client.CheckUrl(safe_url);
+  client.WaitForResult();
 
   // Opt into real-time checks.
   browser_state_->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
-  GURL safe_url(kSafePage);
   MarkUrlAsRealTimeSafe(safe_url);
-  TestUrlCheckerClient client(safe_browsing_service_.get(),
-                              browser_state_.get());
   client.CheckUrl(safe_url);
   EXPECT_TRUE(client.result_pending());
   client.WaitForResult();
