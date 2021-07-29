@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/infobars/infobar_controller_delegate.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 
-@protocol InfobarUIDelegate;
 namespace infobars {
 class InfoBarDelegate;
 }
@@ -63,18 +62,10 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   bool high_priority() const { return high_priority_; }
   void set_high_priority(bool high_priority);
 
-  // Returns the InfobarUIDelegate associated to this Infobar.
-  id<InfobarUIDelegate> InfobarUIDelegate();
-
-  // Remove the infobar view from infobar container view.
-  void RemoveView();
-
   // Returns a weak pointer to the infobar.
   base::WeakPtr<InfoBarIOS> GetWeakPtr();
 
  protected:
-  void PlatformSpecificSetOwner() override;
-  void PlatformSpecificOnCloseSoon() override;
 
  private:
   // InfoBarControllerDelegate overrides:
@@ -82,7 +73,6 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
   void RemoveInfoBar() override;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-  id<InfobarUIDelegate> ui_delegate_ = nil;
   InfobarType infobar_type_;
   bool accepted_ = false;
   bool skip_banner_ = false;

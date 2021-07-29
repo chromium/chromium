@@ -5,11 +5,7 @@
 source_set("infobars") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "infobar_container_ios.h",
-    "infobar_container_ios.mm",
     "infobar_controller+protected.h",
-    "infobar_controller.h",
-    "infobar_controller.mm",
     "infobar_ios.h",
     "infobar_ios.mm",
     "infobar_manager_impl.h",
@@ -20,7 +16,6 @@ source_set("infobars") {
   deps = [
     ":public",
     "//ios/chrome/browser/ui/infobars:feature_flags",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/web",
     "//ui/gfx",
@@ -62,7 +57,6 @@ source_set("badge") {
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/badges:util",
     "//ios/chrome/browser/ui/infobars:feature_flags",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]

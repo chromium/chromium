@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 source_set("public") {
-  sources = [
-    "infobar_container.h",
-    "infobar_positioner.h",
-  ]
+  sources = [ "infobar_positioner.h" ]
 }
 
 source_set("constants") {
@@ -27,59 +24,6 @@ source_set("feature_flags") {
   deps = [
     "//components/version_info",
     "//ios/chrome/common",
-  ]
-}
-
-source_set("infobars_ui") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "infobar_badge_ui_delegate.h",
-    "infobar_container_consumer.h",
-    "infobar_ui_delegate.h",
-    "legacy_infobar_container_view_controller.h",
-    "legacy_infobar_container_view_controller.mm",
-  ]
-  deps = [
-    ":public",
-    "resources:infobar_autofill_address_icon",
-    "resources:infobar_downloading",
-    "resources:infobar_email_icon",
-    "resources:infobar_hide_password_icon",
-    "resources:infobar_phone_icon",
-    "resources:infobar_popup_blocker",
-    "resources:infobar_profile_icon",
-    "resources:infobar_reveal_password_icon",
-    "resources:infobar_save_card_icon",
-    "resources:infobar_settings_icon",
-    "resources:infobar_translate_icon",
-    "resources:infobar_warning",
-    "//base",
-    "//base:i18n",
-    "//components/strings",
-    "//ios/chrome/app/theme:theme",
-    "//ios/chrome/app/theme:theme_grit",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
-    "//ios/chrome/browser/ui/fancy_ui",
-    "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:ui",
-    "//ios/chrome/browser/ui/resources:password_key",
-    "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/ui",
-    "//ios/third_party/material_components_ios",
-    "//ui/base",
-    "//ui/gfx",
-    "//url",
-  ]
-  public_deps = [ ":constants" ]
-  frameworks = [
-    "CoreGraphics.framework",
-    "QuartzCore.framework",
-    "UIKit.framework",
   ]
 }
 

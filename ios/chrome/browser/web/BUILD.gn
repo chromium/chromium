@@ -215,6 +215,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/infobars/coordinators",
+    "//ios/chrome/browser/ui/infobars/resources:infobar_popup_blocker",
     "//ios/chrome/browser/ui/reading_list:features",
     "//ios/chrome/browser/ui/reading_list:reading_list_javascript_feature",
     "//ios/chrome/browser/ui/util",
