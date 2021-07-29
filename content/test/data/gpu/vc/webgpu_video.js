@@ -47,7 +47,7 @@ struct VertexOutput {
 }
 `,
 
-  fragment: `
+  fragment_external_texture: `
 [[binding(0), group(0)]] var mySampler: sampler;
 [[binding(1), group(0)]] var myTexture: texture_external;
 
@@ -56,6 +56,17 @@ fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
   return textureSampleLevel(myTexture, mySampler, fragUV);
 }
 `,
+
+  fragment: `
+[[binding(0), group(0)]] var mySampler: sampler;
+[[binding(1), group(0)]] var myTexture: texture_2d<f32>;
+
+[[stage(fragment)]]
+fn main([[location(0)]] fragUV : vec2<f32>) -> [[location(0)]] vec4<f32> {
+  return textureSample(myTexture, mySampler, fragUV);
+}
+`,
+
   vertex_icons: `
 [[stage(vertex)]]
 fn main([[location(0)]] position : vec2<f32>)
@@ -294,26 +305,19 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
-  const bindGroupLayout = device.createBindGroupLayout({
-    entries: [
-      {
-        binding: 0,
-        visibility: GPUShaderStage.FRAGMENT,
-        sampler: {type: 'filtering'},
-      },
-      {
-        binding: 1,
-        visibility: GPUShaderStage.FRAGMENT,
-        externalTexture: {},
-      },
-    ],
-  });
+  let fragmentShaderModeul;
+  if (useImportTextureApi) {
+    fragmentShaderModule = device.createShaderModule({
+      code: wgslShaders.fragment_external_texture,
+    });
+  } else {
+    fragmentShaderModule = device.createShaderModule({
+      code: wgslShaders.fragment,
+    });
+  }
 
-  const pipelineLayout =
-      device.createPipelineLayout({bindGroupLayouts: [bindGroupLayout]});
 
   const pipeline = device.createRenderPipeline({
-    layout: pipelineLayout,
     vertex: {
       module: device.createShaderModule({
         code: wgslShaders.vertex,
@@ -338,9 +342,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       }],
     },
     fragment: {
-      module: device.createShaderModule({
-        code: wgslShaders.fragment,
-      }),
+      module: fragmentShaderModule,
       entryPoint: 'main',
       targets: [{
         format: swapChainFormat,
@@ -367,20 +369,36 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   });
 
   const videoTextures = [];
-  for (let i = 0; i < videos.length; ++i) {
-    videoTextures[i] = device.createTexture({
-      size: {
-        width: videos[i].videoWidth,
-        height: videos[i].videoHeight,
-        depthOrArrayLayers: 1,
-      },
-      format: 'rgba8unorm',
-      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED |
-        GPUTextureUsage.RENDER_ATTACHMENT,
-    });
-  }
-
   const bindGroups = [];
+
+  if (!useImportTextureApi) {
+    for (let i = 0; i < videos.length; ++i) {
+      videoTextures[i] = device.createTexture({
+        size: {
+          width: videos[i].videoWidth,
+          height: videos[i].videoHeight,
+          depthOrArrayLayers: 1,
+        },
+        format: 'rgba8unorm',
+        usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED |
+            GPUTextureUsage.RENDER_ATTACHMENT,
+      });
+
+      bindGroups[i] = device.createBindGroup({
+        layout: pipeline.getBindGroupLayout(0),
+        entries: [
+          {
+            binding: 0,
+            resource: sampler,
+          },
+          {
+            binding: 1,
+            resource: videoTextures[i].createView(),
+          },
+        ],
+      });
+    }
+  }
 
   const externalTextureDescriptor = [];
   for (let i = 0; i < videos.length; ++i) {
@@ -421,7 +439,8 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
     code: wgslShaders.fragment_output_blue,
   });
-  const pipelineForIcons = device.createRenderPipeline(renderPipelineDescriptorForIcon);
+  const pipelineForIcons =
+      device.createRenderPipeline(renderPipelineDescriptorForIcon);
 
   // For rendering the voice bar animation
   const vertexBufferForAnimation =
@@ -431,14 +450,45 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
     code: wgslShaders.fragment_output_white,
   });
-  const pipelineForAnimation = device.createRenderPipeline(renderPipelineDescriptorForIcon);
+  const pipelineForAnimation =
+      device.createRenderPipeline(renderPipelineDescriptorForIcon);
 
   // For rendering the borders of the last video
   renderPipelineDescriptorForIcon.fragment.module = device.createShaderModule({
     code: wgslShaders.fragment_output_light_blue,
   });
-  renderPipelineDescriptorForIcon.primitive.topology = 'line-list' ;
-  const pipelineForVideoBorders = device.createRenderPipeline(renderPipelineDescriptorForIcon);
+  renderPipelineDescriptorForIcon.primitive.topology = 'line-list';
+  const pipelineForVideoBorders =
+      device.createRenderPipeline(renderPipelineDescriptorForIcon);
+
+
+  // For drawing icons and animated voice bar. Add UI to the command encoder.
+  let index_voice_bar = 0;
+  function addUICommands(passEncoder) {
+    // Icons
+    passEncoder.setPipeline(pipelineForIcons);
+    passEncoder.setVertexBuffer(0, verticesBufferForIcons);
+    passEncoder.draw(videos.length * 6);
+
+    // Animated voice bar on the last video.
+    index_voice_bar++;
+    if (index_voice_bar >= 10)
+      index_voice_bar = 0;
+
+    passEncoder.setPipeline(pipelineForAnimation);
+    passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+    passEncoder.draw(
+        /*vertexCount=*/ 6, 1, /*firstVertex=*/ index_voice_bar * 6);
+
+    // Borders of the last video
+    // Is there a way to set the line width?
+    passEncoder.setPipeline(pipelineForVideoBorders);
+    passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
+    // vertexCount = 4 lines * 2 vertices = 8;
+    // firstVertex = the end of the voice bar vetices =
+    // 10 steps * 6 vertices = 60;
+    passEncoder.draw(/*vertexCount=*/ 8, 1, /*firstVertex=*/ 60);
+  }
 
   // videos #0-#3 : 30 fps.
   // videos #3-#15: 15 fps.
@@ -467,7 +517,6 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   // for comparison.
   const frameTime30Fps = 32;
   let lastTimestamp = performance.now();
-  let index_voice_bar = 0;
 
   const oneFrame = (timestamp) => {
     const elapsed = timestamp - lastTimestamp;
@@ -493,13 +542,14 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       then((videoFrames) => {
         for (let i = 0; i < videos.length; ++i) {
           if (videoFrames[i] != undefined) {
-            device.queue.copyImageBitmapToTexture(
-              { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
-              { texture: videoTextures[i] },
-              {
-                width: videos[i].videoWidth, height: videos[i].videoHeight,
-                depthOrArrayLayers: 1
-              }
+            device.queue.copyExternalImageToTexture(
+                {source: videoFrames[i], origin: {x: 0, y: 0}},
+                {texture: videoTextures[i]},
+                {
+                  width: videos[i].videoWidth,
+                  height: videos[i].videoHeight,
+                  depthOrArrayLayers: 1
+                },
             );
             videoIsReady[i] = false;
           }
@@ -513,35 +563,14 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
         // Add UI on Top of all videos.
         if (addUI) {
-          // Icons
-          passEncoder.setPipeline(pipelineForIcons);
-          passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-          passEncoder.draw(videos.length * 6);
-
-          // Animated voice bar on the last video.
-          index_voice_bar++;
-          if (index_voice_bar >= 10)
-            index_voice_bar = 0;
-
-          passEncoder.setPipeline(pipelineForAnimation);
-          passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
-          passEncoder.draw(/*vertexCount=*/6, 1, /*firstVertex=*/index_voice_bar * 6, 0);
-
-          // Borders of the last video
-          // Is there a way to set the line width?
-          passEncoder.setPipeline(pipelineForVideoBorders);
-          passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
-          // vertexCount = 4 lines * 2 vertices = 8;
-          // firstVertex = the end of the voice bar vetices =
-          // 10 steps * 6 vertices = 60;
-          passEncoder.draw(/*vertexCount=*/8, 1, /*firstVertex=*/60, 0);
+          addUICommands(passEncoder);
         }
         passEncoder.endPass();
         device.queue.submit([commandEncoder.finish()]);
 
         window.requestAnimationFrame(oneFrame);
       });
-  }
+  };
 
   const oneFrameWithImportTextureApi = (timestamp) => {
     const elapsed = timestamp - lastTimestamp;
@@ -590,34 +619,13 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
 
     // Add UI on Top of all videos.
     if (addUI) {
-      // Icons
-      passEncoder.setPipeline(pipelineForIcons);
-      passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-      passEncoder.draw(videos.length * 6);
-
-      // Animated voice bar on the last video.
-      index_voice_bar++;
-      if (index_voice_bar >= 10)
-        index_voice_bar = 0;
-
-      passEncoder.setPipeline(pipelineForAnimation);
-      passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
-      passEncoder.draw(/*vertexCount=*/6, 1, /*firstVertex=*/index_voice_bar * 6, 0);
-
-      // Borders of the last video
-      // Is there a way to set the line width?
-      passEncoder.setPipeline(pipelineForVideoBorders);
-      passEncoder.setVertexBuffer(0, vertexBufferForAnimation);
-      // vertexCount = 4 lines * 2 vertices = 8;
-      // firstVertex = the end of the voice bar vetices =
-      // 10 steps * 6 vertices = 60;
-      passEncoder.draw(/*vertexCount=*/8, 1, /*firstVertex=*/60, 0);
+      addUICommands(passEncoder);
     }
     passEncoder.endPass();
     device.queue.submit([commandEncoder.finish()]);
 
     window.requestAnimationFrame(oneFrameWithImportTextureApi);
-  }
+  };
 
   if (useImportTextureApi) {
     window.requestAnimationFrame(oneFrameWithImportTextureApi);
