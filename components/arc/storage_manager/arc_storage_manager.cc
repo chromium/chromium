@@ -5,7 +5,6 @@
 #include "components/arc/storage_manager/arc_storage_manager.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/memory/singleton.h"
