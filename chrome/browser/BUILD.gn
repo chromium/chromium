@@ -1517,10 +1517,6 @@ static_library("browser") {
     "sharesheet/sharesheet_types.h",
     "sharing/ack_message_handler.cc",
     "sharing/ack_message_handler.h",
-    "sharing/click_to_call/click_to_call_utils.cc",
-    "sharing/click_to_call/click_to_call_utils.h",
-    "sharing/click_to_call/phone_number_regex.cc",
-    "sharing/click_to_call/phone_number_regex.h",
     "sharing/features.cc",
     "sharing/features.h",
     "sharing/ping_message_handler.cc",
@@ -5691,6 +5687,15 @@ static_library("browser") {
     }
   }
 
+  if (enable_click_to_call) {
+    sources += [
+      "sharing/click_to_call/click_to_call_utils.cc",
+      "sharing/click_to_call/click_to_call_utils.h",
+      "sharing/click_to_call/phone_number_regex.cc",
+      "sharing/click_to_call/phone_number_regex.h",
+    ]
+  }
+
   if (enable_background_mode) {
     sources += [
       "background/background_application_list_model.cc",
@@ -6430,37 +6435,41 @@ static_library("browser") {
       "local_discovery/service_discovery_device_lister.h",
       "local_discovery/service_discovery_shared_client.cc",
       "local_discovery/service_discovery_shared_client.h",
-      "printing/cloud_print/cloud_print_printer_list.cc",
-      "printing/cloud_print/cloud_print_printer_list.h",
-      "printing/cloud_print/device_description.cc",
-      "printing/cloud_print/device_description.h",
-      "printing/cloud_print/gcd_api_flow.cc",
-      "printing/cloud_print/gcd_api_flow.h",
-      "printing/cloud_print/gcd_api_flow_impl.cc",
-      "printing/cloud_print/gcd_api_flow_impl.h",
-      "printing/cloud_print/gcd_constants.cc",
-      "printing/cloud_print/gcd_constants.h",
-      "printing/cloud_print/privet_confirm_api_flow.cc",
-      "printing/cloud_print/privet_confirm_api_flow.h",
-      "printing/cloud_print/privet_constants.cc",
-      "printing/cloud_print/privet_constants.h",
-      "printing/cloud_print/privet_device_lister.cc",
-      "printing/cloud_print/privet_device_lister.h",
-      "printing/cloud_print/privet_device_lister_impl.cc",
-      "printing/cloud_print/privet_device_lister_impl.h",
-      "printing/cloud_print/privet_http.cc",
-      "printing/cloud_print/privet_http.h",
-      "printing/cloud_print/privet_http_asynchronous_factory.cc",
-      "printing/cloud_print/privet_http_asynchronous_factory.h",
-      "printing/cloud_print/privet_http_asynchronous_factory_impl.cc",
-      "printing/cloud_print/privet_http_asynchronous_factory_impl.h",
-      "printing/cloud_print/privet_http_impl.cc",
-      "printing/cloud_print/privet_http_impl.h",
-      "printing/cloud_print/privet_local_printer_lister.cc",
-      "printing/cloud_print/privet_local_printer_lister.h",
-      "printing/cloud_print/privet_url_loader.cc",
-      "printing/cloud_print/privet_url_loader.h",
     ]
+    if (enable_basic_printing) {
+      sources += [
+        "printing/cloud_print/cloud_print_printer_list.cc",
+        "printing/cloud_print/cloud_print_printer_list.h",
+        "printing/cloud_print/device_description.cc",
+        "printing/cloud_print/device_description.h",
+        "printing/cloud_print/gcd_api_flow.cc",
+        "printing/cloud_print/gcd_api_flow.h",
+        "printing/cloud_print/gcd_api_flow_impl.cc",
+        "printing/cloud_print/gcd_api_flow_impl.h",
+        "printing/cloud_print/gcd_constants.cc",
+        "printing/cloud_print/gcd_constants.h",
+        "printing/cloud_print/privet_confirm_api_flow.cc",
+        "printing/cloud_print/privet_confirm_api_flow.h",
+        "printing/cloud_print/privet_constants.cc",
+        "printing/cloud_print/privet_constants.h",
+        "printing/cloud_print/privet_device_lister.cc",
+        "printing/cloud_print/privet_device_lister.h",
+        "printing/cloud_print/privet_device_lister_impl.cc",
+        "printing/cloud_print/privet_device_lister_impl.h",
+        "printing/cloud_print/privet_http.cc",
+        "printing/cloud_print/privet_http.h",
+        "printing/cloud_print/privet_http_asynchronous_factory.cc",
+        "printing/cloud_print/privet_http_asynchronous_factory.h",
+        "printing/cloud_print/privet_http_asynchronous_factory_impl.cc",
+        "printing/cloud_print/privet_http_asynchronous_factory_impl.h",
+        "printing/cloud_print/privet_http_impl.cc",
+        "printing/cloud_print/privet_http_impl.h",
+        "printing/cloud_print/privet_local_printer_lister.cc",
+        "printing/cloud_print/privet_local_printer_lister.h",
+        "printing/cloud_print/privet_url_loader.cc",
+        "printing/cloud_print/privet_url_loader.h",
+      ]
+    }
 
     if (enable_mdns) {
       sources += [
@@ -6468,9 +6477,13 @@ static_library("browser") {
         "local_discovery/service_discovery_client_impl.h",
         "local_discovery/service_discovery_client_mdns.cc",
         "local_discovery/service_discovery_client_mdns.h",
-        "printing/cloud_print/privet_traffic_detector.cc",
-        "printing/cloud_print/privet_traffic_detector.h",
       ]
+      if (enable_basic_printing) {
+        sources += [
+          "printing/cloud_print/privet_traffic_detector.cc",
+          "printing/cloud_print/privet_traffic_detector.h",
+        ]
+      }
     }
   }
 
