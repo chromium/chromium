@@ -5,7 +5,11 @@
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -44,15 +48,37 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
 }  // namespace
 
 bool EnabledClientHints::IsEnabled(const WebClientHintsType type) const {
-  if (IsDisabledByFeature(type)) {
-    return false;
-  }
   return enabled_types_[static_cast<int>(type)];
 }
 
 void EnabledClientHints::SetIsEnabled(const WebClientHintsType type,
                                       const bool should_send) {
-  enabled_types_[static_cast<int>(type)] = should_send;
+  enabled_types_[static_cast<int>(type)] =
+      IsDisabledByFeature(type) ? false : should_send;
+}
+
+void EnabledClientHints::SetIsEnabled(
+    const GURL& url,
+    const net::HttpResponseHeaders* response_headers,
+    const network::mojom::WebClientHintsType type,
+    const bool should_send) {
+  bool enabled = should_send;
+  if (type == WebClientHintsType::kUAReduced) {
+    enabled &= blink::TrialTokenValidator().RequestEnablesFeature(
+        url, response_headers, "UserAgentReduction", base::Time::Now());
+  }
+  SetIsEnabled(type, enabled);
+}
+
+std::vector<WebClientHintsType> EnabledClientHints::GetEnabledHints() const {
+  std::vector<WebClientHintsType> hints;
+  for (int v = 0; v <= static_cast<int>(WebClientHintsType::kMaxValue); ++v) {
+    const auto hint = static_cast<WebClientHintsType>(v);
+    if (IsEnabled(hint)) {
+      hints.push_back(hint);
+    }
+  }
+  return hints;
 }
 
 }  // namespace blink
