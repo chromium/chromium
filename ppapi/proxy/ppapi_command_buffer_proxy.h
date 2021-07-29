@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_PROXY_COMMAND_BUFFER_PROXY_H_
-#define PPAPI_PROXY_COMMAND_BUFFER_PROXY_H_
+#ifndef PPAPI_PROXY_PPAPI_COMMAND_BUFFER_PROXY_H_
+#define PPAPI_PROXY_PPAPI_COMMAND_BUFFER_PROXY_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -114,4 +114,4 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
 }  // namespace proxy
 }  // namespace ppapi
 
-#endif // PPAPI_PROXY_COMMAND_BUFFER_PROXY_H_
+#endif  // PPAPI_PROXY_PPAPI_COMMAND_BUFFER_PROXY_H_

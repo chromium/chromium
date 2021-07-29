@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_PROXY_SERIALIZED_HANDLES_H_
-#define PPAPI_PROXY_SERIALIZED_HANDLES_H_
+#ifndef PPAPI_PROXY_SERIALIZED_HANDLE_H_
+#define PPAPI_PROXY_SERIALIZED_HANDLE_H_
 
 #include <stdint.h>
 
@@ -171,4 +171,4 @@ class PPAPI_PROXY_EXPORT SerializedHandle {
 }  // namespace proxy
 }  // namespace ppapi
 
-#endif  // PPAPI_PROXY_SERIALIZED_HANDLES_H_
+#endif  // PPAPI_PROXY_SERIALIZED_HANDLE_H_

@@ -106,4 +106,4 @@ class PPAPI_SHARED_EXPORT MediaStreamBufferManager {
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHAERD_IMPL_MEDIA_STREAM_BUFFER_MANAGER_H_
+#endif  // PPAPI_SHARED_IMPL_MEDIA_STREAM_BUFFER_MANAGER_H_

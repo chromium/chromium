@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_PPB_IMAGE_DATA_PROXY_H_
-#define PPAPI_PPB_IMAGE_DATA_PROXY_H_
+#ifndef PPAPI_PROXY_PPB_IMAGE_DATA_PROXY_H_
+#define PPAPI_PROXY_PPB_IMAGE_DATA_PROXY_H_
 
 #include <stdint.h>
 
@@ -193,4 +193,4 @@ class PPB_ImageData_Proxy : public InterfaceProxy {
 }  // namespace proxy
 }  // namespace ppapi
 
-#endif  // PPAPI_PPB_IMAGE_DATA_PROXY_H_
+#endif  // PPAPI_PROXY_PPB_IMAGE_DATA_PROXY_H_

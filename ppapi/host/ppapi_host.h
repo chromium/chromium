@@ -147,4 +147,4 @@ class PPAPI_HOST_EXPORT PpapiHost : public IPC::Sender, public IPC::Listener {
 }  // namespace host
 }  // namespace ppapi
 
-#endif  // PPAPI_HOST_PPAPIE_HOST_H_
+#endif  // PPAPI_HOST_PPAPI_HOST_H_

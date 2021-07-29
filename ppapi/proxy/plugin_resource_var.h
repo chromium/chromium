@@ -38,4 +38,4 @@ class PPAPI_PROXY_EXPORT PluginResourceVar : public ppapi::ResourceVar {
   DISALLOW_COPY_AND_ASSIGN(PluginResourceVar);
 };
 
-#endif
+#endif  // PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_

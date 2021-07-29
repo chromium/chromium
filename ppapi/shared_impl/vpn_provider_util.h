@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHAERD_IMPL_VPN_PROVIDER_UTIL_H_
-#define PPAPI_SHAERD_IMPL_VPN_PROVIDER_UTIL_H_
+#ifndef PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_
+#define PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_
 
 #include <memory>
 
@@ -39,4 +39,4 @@ class PPAPI_SHARED_EXPORT VpnProviderSharedBuffer {
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHAERD_IMPL_VPN_PROVIDER_UTIL_H_
+#endif  // PPAPI_SHARED_IMPL_VPN_PROVIDER_UTIL_H_

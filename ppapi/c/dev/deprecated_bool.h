@@ -39,5 +39,5 @@ typedef char bool;
  * End addtogroup PP
  */
 
-#endif  /* PPAPI_C_DEV_DEPRECATED_BOOL_H_ */
+#endif  // PPAPI_C_DEV_DEPRECATED_BOOL_H_
 

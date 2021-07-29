@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHARED_IMPL_GRAPHICS_3D_IMPL_H_
-#define PPAPI_SHARED_IMPL_GRAPHICS_3D_IMPL_H_
+#ifndef PPAPI_SHARED_IMPL_PPB_GRAPHICS_3D_SHARED_H_
+#define PPAPI_SHARED_IMPL_PPB_GRAPHICS_3D_SHARED_H_
 
 #include <stdint.h>
 
@@ -97,4 +97,4 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHARED_IMPL_GRAPHICS_3D_IMPL_H_
+#endif  // PPAPI_SHARED_IMPL_PPB_GRAPHICS_3D_SHARED_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHARED_IMPL_FILE_REF_CREATE_INFO_H
-#define PPAPI_SHARED_IMPL_FILE_REF_CREATE_INFO_H
+#ifndef PPAPI_SHARED_IMPL_FILE_REF_CREATE_INFO_H_
+#define PPAPI_SHARED_IMPL_FILE_REF_CREATE_INFO_H_
 
 #include <string>
 
@@ -49,4 +49,4 @@ PPAPI_SHARED_EXPORT FileRefCreateInfo
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHARED_IMPL_FILE_REF_CREATE_INFO_H
+#endif  // PPAPI_SHARED_IMPL_FILE_REF_CREATE_INFO_H_
