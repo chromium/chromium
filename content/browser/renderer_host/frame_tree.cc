@@ -52,12 +52,12 @@ std::set<SiteInstance*> CollectSiteInstances(FrameTree* tree) {
 // If |node| is the placeholder FrameTreeNode for an embedded frame tree,
 // returns the inner tree's main frame's FrameTreeNode. Otherwise, returns null.
 FrameTreeNode* GetInnerTreeMainFrameNode(FrameTreeNode* node) {
-  // TODO(1196715): Currently, inner frame trees are only implemented using
-  // multiple WebContents. Once pages can be embedded with MPArch, traverse
-  // them here as well.
+  FrameTreeNode* inner_main_frame_tree_node = FrameTreeNode::GloballyFindByID(
+      node->current_frame_host()->inner_tree_main_frame_tree_node_id());
   RenderFrameHostImpl* inner_tree_main_frame =
-      node->frame_tree()->render_frame_delegate()->GetMainFrameForInnerDelegate(
-          node);
+      inner_main_frame_tree_node
+          ? inner_main_frame_tree_node->current_frame_host()
+          : nullptr;
 
   if (inner_tree_main_frame) {
     DCHECK_NE(node->frame_tree(), inner_tree_main_frame->frame_tree());

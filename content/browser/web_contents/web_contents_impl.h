@@ -726,8 +726,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                 bool is_audible) override;
   media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback() override;
-  RenderFrameHostImpl* GetMainFrameForInnerDelegate(
-      FrameTreeNode* frame_tree_node) override;
   std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
       RenderFrameHostImpl* owner) override;
   void RegisterProtocolHandler(RenderFrameHostImpl* source,

@@ -1421,6 +1421,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       document_associated_data_(
           std::make_unique<DocumentAssociatedData>(*this)),
       lifecycle_state_(lifecycle_state),
+      inner_tree_main_frame_tree_node_id_(
+          FrameTreeNode::kFrameTreeNodeInvalidId),
       anonymous_(parent_ ? parent_->anonymous() : false),
       code_cache_host_receivers_(
           GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()) {

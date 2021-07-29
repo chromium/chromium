@@ -507,12 +507,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnFrameAudioStateChanged(RenderFrameHostImpl* host,
                                         bool is_audible) {}
 
-  // Returns the main frame of the inner delegate that is attached to this
-  // delegate using |frame_tree_node|. Returns nullptr if no such inner delegate
-  // exists.
-  virtual RenderFrameHostImpl* GetMainFrameForInnerDelegate(
-      FrameTreeNode* frame_tree_node);
-
   // Returns FrameTreeNodes that are logically owned by another frame even
   // though this relationship is not yet reflected in their frame trees. This
   // can happen, for example, with unattached guests and orphaned portals.

@@ -704,8 +704,10 @@ void BackForwardCacheImpl::CanStoreRenderFrameHostLater(
   }
 
   // Do not store documents if they have inner WebContents.
-  if (rfh->IsOuterDelegateFrame())
+  if (rfh->inner_tree_main_frame_tree_node_id() !=
+      FrameTreeNode::kFrameTreeNodeInvalidId) {
     result->No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
+  }
 
   const bool has_unload_handler = rfh->GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType::kUnloadHandler);

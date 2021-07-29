@@ -2290,9 +2290,6 @@ void WebContentsImpl::AttachInnerWebContents(
   DCHECK_EQ(this, render_frame_host_impl->delegate()->GetAsWebContents());
   DCHECK(render_frame_host_impl->GetParent());
 
-  // Mark |render_frame_host_impl| as outer delegate frame.
-  render_frame_host_impl->SetIsOuterDelegateFrame(true);
-
   RenderFrameHostManager* inner_render_manager =
       inner_web_contents_impl->GetRenderManager();
   RenderFrameHostImpl* inner_main_frame =
@@ -2301,6 +2298,10 @@ void WebContentsImpl::AttachInnerWebContents(
       inner_main_frame->render_view_host();
   auto* outer_render_manager =
       render_frame_host_impl->frame_tree_node()->render_manager();
+
+  // Make |render_frame_host_impl| an outer delegate frame.
+  render_frame_host_impl->set_inner_tree_main_frame_tree_node_id(
+      inner_main_frame->frame_tree_node()->frame_tree_node_id());
 
   // When attaching a WebContents as an inner WebContents, we need to replace
   // the Webcontents' view with a WebContentsViewChildFrame.
@@ -2384,7 +2385,10 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
                         "WebContentsImpl::DetachFromOuterWebContents");
   auto* outer_web_contents = GetOuterWebContents();
   DCHECK(outer_web_contents);
-  GetMainFrame()->ParentOrOuterDelegateFrame()->SetIsOuterDelegateFrame(false);
+  GetMainFrame()
+      ->ParentOrOuterDelegateFrame()
+      ->set_inner_tree_main_frame_tree_node_id(
+          FrameTreeNode::kFrameTreeNodeInvalidId);
 
   RecursivelyUnregisterFrameSinkIds();
 
@@ -8591,13 +8595,6 @@ WebContentsImpl::GetRecordAggregateWatchTimeCallback() {
           delegate->MediaWatchTimeChanged(watch_time);
       },
       delegate_->GetDelegateWeakPtr(), GetMainFrameLastCommittedURL());
-}
-
-RenderFrameHostImpl* WebContentsImpl::GetMainFrameForInnerDelegate(
-    FrameTreeNode* frame_tree_node) {
-  if (auto* web_contents = node_.GetInnerWebContentsInFrame(frame_tree_node))
-    return web_contents->GetMainFrame();
-  return nullptr;
 }
 
 std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(

@@ -493,8 +493,10 @@ void RenderFrameProxyHost::RouteMessageEvent(
     // Check if there is an inner delegate involved; if so target its main
     // frame or otherwise return since there is no point in forwarding the
     // message.
-    target_rfh = target_rfh->delegate()->GetMainFrameForInnerDelegate(
-        target_rfh->frame_tree_node());
+    FrameTreeNode* target_ftn = FrameTreeNode::GloballyFindByID(
+        target_rfh->inner_tree_main_frame_tree_node_id());
+    target_rfh = target_ftn ? target_ftn->current_frame_host() : nullptr;
+
     if (!target_rfh || !target_rfh->IsRenderFrameLive())
       return;
   }

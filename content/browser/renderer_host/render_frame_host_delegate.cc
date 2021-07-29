@@ -147,11 +147,6 @@ Visibility RenderFrameHostDelegate::GetVisibility() {
   return Visibility::HIDDEN;
 }
 
-RenderFrameHostImpl* RenderFrameHostDelegate::GetMainFrameForInnerDelegate(
-    FrameTreeNode* frame_tree_node) {
-  return nullptr;
-}
-
 std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
     RenderFrameHostImpl* owner) {
   return {};

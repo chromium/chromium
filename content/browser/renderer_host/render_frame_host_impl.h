@@ -1859,10 +1859,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the global root RenderFrameHostImpl in the outermost WebContents.
   RenderFrameHostImpl* GetOutermostMainFrame();
 
-  void SetIsOuterDelegateFrame(bool is_outer_frame) {
-    is_outer_delegate_frame_ = is_outer_frame;
+  void set_inner_tree_main_frame_tree_node_id(int id) {
+    inner_tree_main_frame_tree_node_id_ = id;
   }
-  bool IsOuterDelegateFrame() { return is_outer_delegate_frame_; }
+  int inner_tree_main_frame_tree_node_id() {
+    return inner_tree_main_frame_tree_node_id_;
+  }
 
   // These are the content internal equivalents of
   // |RenderFrameHost::ForEachRenderFrameHost| whose comment can be referred to
@@ -3818,8 +3820,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
 
   // Indicates whether this frame is an outer delegate frame for some other
-  // RenderFrameHost.
-  bool is_outer_delegate_frame_ = false;
+  // RenderFrameHost. This will be a valid ID if so, and
+  // `kFrameTreeNodeInvalidId` otherwise.
+  int inner_tree_main_frame_tree_node_id_;
 
   // Indicates whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used on a document (regardless of the outcome).
