@@ -6,27 +6,20 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "chrome/browser/platform_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
-
-// Returns:
-//    |value| if |lower_bound| < |value| < |upper_bound|
-//    |lower_bound| if |value| < |lower_bound| < |upper_bound|
-//    |upper_bound| if |lower_bound| < |upper_bound| < |value|
-int NormalizeValueBasedOnBounds(int lower_bound, int upper_bound, int value) {
-  return std::max(lower_bound, std::min(upper_bound, value));
-}
 
 void CalculatePopupXAndWidth(int popup_preferred_width,
                              const gfx::Rect& window_bounds,
                              const gfx::Rect& element_bounds,
                              bool is_rtl,
                              gfx::Rect* popup_bounds) {
-  int right_growth_start = NormalizeValueBasedOnBounds(
-      window_bounds.x(), window_bounds.right(), element_bounds.x());
-  int left_growth_end = NormalizeValueBasedOnBounds(
-      window_bounds.x(), window_bounds.right(), element_bounds.right());
+  int right_growth_start =
+      base::clamp(element_bounds.x(), window_bounds.x(), window_bounds.right());
+  int left_growth_end = base::clamp(element_bounds.right(), window_bounds.x(),
+                                    window_bounds.right());
 
   int right_available = window_bounds.right() - right_growth_start;
   int left_available = left_growth_end - window_bounds.x();
@@ -55,10 +48,10 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
                               const gfx::Rect& window_bounds,
                               const gfx::Rect& element_bounds,
                               gfx::Rect* popup_bounds) {
-  int top_growth_end = NormalizeValueBasedOnBounds(
-      window_bounds.y(), window_bounds.bottom(), element_bounds.y());
-  int bottom_growth_start = NormalizeValueBasedOnBounds(
-      window_bounds.y(), window_bounds.bottom(), element_bounds.bottom());
+  int top_growth_end = base::clamp(element_bounds.y(), window_bounds.y(),
+                                   window_bounds.bottom());
+  int bottom_growth_start = base::clamp(
+      element_bounds.bottom(), window_bounds.y(), window_bounds.bottom());
 
   int top_available = top_growth_end - window_bounds.y();
   int bottom_available = window_bounds.bottom() - bottom_growth_start;
