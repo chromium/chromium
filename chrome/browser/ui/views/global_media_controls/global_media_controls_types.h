@@ -19,7 +19,8 @@ enum class GlobalMediaControlsEntryPoint {
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Keep this in sync with its counterpart
+// in tools/metrics/histograms/enums.xml.
 enum class GlobalMediaControlsCastActionAndEntryPoint {
   kStartViaToolbarIcon = 0,
   kStopViaToolbarIcon = 1,
