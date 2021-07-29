@@ -15,6 +15,7 @@
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "pdf/accessibility_structs.h"
 #include "ppapi/c/pp_bool.h"
+#include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/ppapi_host.h"
@@ -361,8 +362,8 @@ int32_t PepperPDFHost::OnHostMsgSetPluginCanSave(
 
 void PepperPDFHost::CreatePdfAccessibilityTreeIfNeeded() {
   if (!pdf_accessibility_tree_) {
-    pdf_accessibility_tree_ = std::make_unique<PdfAccessibilityTree>(
-        GetRenderFrame(), host_->GetPluginInstance(pp_instance()));
+    pdf_accessibility_tree_ =
+        std::make_unique<PdfAccessibilityTree>(GetRenderFrame(), this);
   }
 }
 
@@ -416,6 +417,14 @@ void PepperPDFHost::SetSelectionBounds(const gfx::PointF& base,
       host_->GetPluginInstance(pp_instance());
   if (instance)
     instance->SetSelectionBounds(base, extent);
+}
+
+void PepperPDFHost::HandleAccessibilityAction(
+    const PP_PdfAccessibilityActionData& action_data) {
+  content::PepperPluginInstance* instance =
+      host_->GetPluginInstance(pp_instance());
+  if (instance)
+    instance->HandleAccessibilityAction(action_data);
 }
 
 }  // namespace pdf

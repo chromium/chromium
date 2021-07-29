@@ -11,9 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "components/pdf/renderer/pdf_accessibility_action_handler.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -1126,9 +1126,11 @@ class PdfAccessibilityTreeBuilder {
 
 PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
-    content::PepperPluginInstance* plugin_instance)
+    PdfAccessibilityActionHandler* action_handler)
     : content::RenderFrameObserver(render_frame),
-      plugin_instance_(plugin_instance) {}
+      action_handler_(action_handler) {
+  DCHECK(action_handler_);
+}
 
 PdfAccessibilityTree::~PdfAccessibilityTree() {
   // Even if `render_accessibility` is disabled, still let it know `this` is
@@ -1607,9 +1609,7 @@ bool PdfAccessibilityTree::ShowContextMenu() {
 
 void PdfAccessibilityTree::HandleAction(
     const PP_PdfAccessibilityActionData& action_data) {
-  // TODO(ankk): Ensure `plugin_instance_` can never be nullptr.
-  if (plugin_instance_)
-    plugin_instance_->HandleAccessibilityAction(action_data);
+  action_handler_->HandleAccessibilityAction(action_data);
 }
 
 absl::optional<PdfAccessibilityTree::AnnotationInfo>

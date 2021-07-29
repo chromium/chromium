@@ -30,7 +30,6 @@ struct AccessibilityViewportInfo;
 }  // namespace chrome_pdf
 
 namespace content {
-class PepperPluginInstance;
 class RenderAccessibility;
 class RenderFrame;
 }  // namespace content
@@ -41,11 +40,13 @@ class Transform;
 
 namespace pdf {
 
+class PdfAccessibilityActionHandler;
+
 class PdfAccessibilityTree : public content::PluginAXTreeSource,
                              public content::RenderFrameObserver {
  public:
   PdfAccessibilityTree(content::RenderFrame* render_frame,
-                       content::PepperPluginInstance* plugin_instance);
+                       PdfAccessibilityActionHandler* action_handler);
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
@@ -144,7 +145,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   ui::AXTree tree_;
 
   // Unowned. Must outlive |this|.
-  content::PepperPluginInstance* const plugin_instance_;
+  PdfAccessibilityActionHandler* const action_handler_;
 
   // |zoom_| signifies the zoom level set in for the browser content.
   // |scale_| signifies the scale level set by user. Scale is applied

@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "components/pdf/renderer/pdf_accessibility_action_handler.h"
 #include "ipc/ipc_platform_file.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,7 +49,8 @@ namespace pdf {
 class PdfAccessibilityTree;
 
 class PepperPDFHost : public ppapi::host::ResourceHost,
-                      public mojom::PdfListener {
+                      public mojom::PdfListener,
+                      public PdfAccessibilityActionHandler {
  public:
   class PrintClient {
    public:
@@ -88,6 +90,10 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
   void MoveRangeSelectionExtent(const gfx::PointF& extent) override;
   void SetSelectionBounds(const gfx::PointF& base,
                           const gfx::PointF& extent) override;
+
+  // PdfAccessibilityActionHandler:
+  void HandleAccessibilityAction(
+      const PP_PdfAccessibilityActionData& action_data) override;
 
  private:
   int32_t OnHostMsgDidStartLoading(ppapi::host::HostMessageContext* context);
