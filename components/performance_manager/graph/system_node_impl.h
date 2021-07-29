@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
