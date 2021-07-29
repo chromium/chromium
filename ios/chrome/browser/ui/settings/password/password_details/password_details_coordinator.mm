@@ -161,8 +161,7 @@
                          browser:self.browser
                            title:nil
                          message:message
-                   barButtonItem:self.viewController.navigationItem
-                                     .rightBarButtonItem];
+                   barButtonItem:self.viewController.deleteButton];
 
   __weak __typeof(self) weakSelf = self;
 
