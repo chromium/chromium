@@ -325,7 +325,7 @@ void OptimizationGuideStore::OnLoadEntriesToPurgeExpired(
     std::unique_ptr<EntryMap> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!success)
+  if (!success || !entries)
     return;
 
   EntryKeySet expired_keys_to_remove;
@@ -692,13 +692,12 @@ void OptimizationGuideStore::OnLoadMetadata(
     bool success,
     std::unique_ptr<EntryMap> metadata_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(metadata_entries);
 
   // Create a scoped load metadata result recorder. It records the result when
   // its destructor is called.
   ScopedLoadMetadataResultRecorder result_recorder;
 
-  if (!success) {
+  if (!success || !metadata_entries) {
     result_recorder.set_result(
         OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
             kLoadMetadataFailed);
@@ -938,7 +937,7 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
     base::OnceClosure callback,
     bool success,
     std::unique_ptr<EntryMap> entries) {
-  if (!success) {
+  if (!success || !entries) {
     std::move(callback).Run();
     return;
   }
