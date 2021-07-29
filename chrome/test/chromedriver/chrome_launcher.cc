@@ -553,6 +553,13 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
         "interpreted incorrectly";
 #endif
 
+#if defined(OS_MAC)
+  // Chrome is a third party process with respect to ChromeDriver. This allows
+  // Chrome to get its own permissions attributed on Mac instead of relying on
+  // ChromeDriver.
+  options.disclaim_responsibility = true;
+#endif  // OS_MAC
+
 #if defined(OS_WIN)
   std::string command_string = base::WideToUTF8(command.GetCommandLineString());
 #else

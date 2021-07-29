@@ -125,11 +125,6 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTestLegacy.testContextMenuEventFired',
     # Flaky: https://crbug.com/1157533.
     'ChromeDriverTest.testShadowDomFindElement',
-    # Failing: https://crbug.com/1223643.
-    'ChromeDriverSecureContextTest.testRemoveCredential',
-    'ChromeDriverSecureContextTest.testRemoveAllCredentials',
-    'ChromeDriverSecureContextTest.testAddVirtualAuthenticatorDefaultParams',
-    'ChromeDriverSecureContextTest.testSetUserVerified',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
