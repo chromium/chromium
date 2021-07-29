@@ -155,6 +155,9 @@ test("native_theme_unittests") {
 
   if (is_mac) {
     sources += [ "native_theme_mac_unittest.mm" ]
-    deps += [ "//ui/color" ]
+    deps += [
+      "//ui/color",
+      "//ui/gfx:test_support",
+    ]
   }
 }
