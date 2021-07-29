@@ -8,7 +8,6 @@
 
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/base64.h"
 #include "base/location.h"
