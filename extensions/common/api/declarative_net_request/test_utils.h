@@ -62,6 +62,7 @@ struct TestRuleQueryKeyValue : public DictionarySource {
 
   absl::optional<std::string> key;
   absl::optional<std::string> value;
+  absl::optional<bool> replace_only;
 
   std::unique_ptr<base::DictionaryValue> ToValue() const override;
 };

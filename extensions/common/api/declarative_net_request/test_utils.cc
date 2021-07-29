@@ -98,6 +98,7 @@ std::unique_ptr<base::DictionaryValue> TestRuleQueryKeyValue::ToValue() const {
   auto dict = std::make_unique<base::DictionaryValue>();
   SetValue(dict.get(), kQueryKeyKey, key);
   SetValue(dict.get(), kQueryValueKey, value);
+  SetValue(dict.get(), kQueryReplaceOnlyKey, replace_only);
   return dict;
 }
 

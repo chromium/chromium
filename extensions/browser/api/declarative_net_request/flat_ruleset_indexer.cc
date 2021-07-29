@@ -154,8 +154,9 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
           net::EscapeQueryParamValue(query_pair.key, use_plus));
       FlatStringOffset value = builder->CreateSharedString(
           net::EscapeQueryParamValue(query_pair.value, use_plus));
+      bool replace_only = query_pair.replace_only && *query_pair.replace_only;
       add_or_replace_queries.push_back(
-          flat::CreateQueryKeyValue(*builder, key, value));
+          flat::CreateQueryKeyValue(*builder, key, value, replace_only));
     }
     add_or_replace_params = builder->CreateVector(add_or_replace_queries);
   }

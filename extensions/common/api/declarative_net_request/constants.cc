@@ -51,6 +51,7 @@ const char kQueryTransformRemoveParamsKey[] = "removeParams";
 const char kQueryTransformAddReplaceParamsKey[] = "addOrReplaceParams";
 const char kQueryKeyKey[] = "key";
 const char kQueryValueKey[] = "value";
+const char kQueryReplaceOnlyKey[] = "replaceOnly";
 const char kRegexSubstitutionKey[] = "regexSubstitution";
 const char kRegexSubstitutionPath[] = "action.redirect.regexSubstitution";
 const char kRequestHeadersKey[] = "requestHeaders";

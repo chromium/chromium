@@ -102,6 +102,10 @@ namespace declarativeNetRequest {
   dictionary QueryKeyValue {
     DOMString key;
     DOMString value;
+
+    // If true, the query key is replaced only if it's already present.
+    // Otherwise, the key is also added if it's missing. Defaults to false.
+    boolean? replaceOnly;
   };
 
   // Describes modification to the url query.
