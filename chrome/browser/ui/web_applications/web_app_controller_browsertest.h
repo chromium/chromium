@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_CONTROLLER_BROWSERTEST_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

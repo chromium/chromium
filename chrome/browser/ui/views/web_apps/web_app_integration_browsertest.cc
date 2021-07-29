@@ -4,7 +4,7 @@
 
 #include "base/path_service.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_browsertest_base.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -13,8 +13,7 @@ namespace web_app {
 
 namespace {
 
-const std::string kTestCaseFileName =
-    "web_app_integration_browsertest_cases.csv";
+const char kTestCaseFileName[] = "web_app_integration_browsertest_cases.csv";
 
 // Returns the path of the requested file in the test data directory.
 base::FilePath GetTestFileDir() {

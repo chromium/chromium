@@ -1,8 +1,8 @@
 # [Web Apps](../README.md) - Operating System Integration
 
-The WebAppProvider system has to provide a lot of integrations with operating system surfaces for web apps. This functionality is usually different per operating system, and is usually invoked through the [`OsIntegrationManager`](../components/os_integration_manager.h).
+The WebAppProvider system has to provide a lot of integrations with operating system surfaces for web apps. This functionality is usually different per operating system, and is usually invoked through the [`OsIntegrationManager`](../os_integration_manager.h).
 
-The [`OsIntegrationManager`](../components/os_integration_manager.h)'s main responsibility is support the following operations:
+The [`OsIntegrationManager`](../os_integration_manager.h)'s main responsibility is support the following operations:
 1. Install operating system integration for a given web app.
 1. Update operating system integration for a given web app.
 1. Uninstall/remove operating system integration for a given web app.

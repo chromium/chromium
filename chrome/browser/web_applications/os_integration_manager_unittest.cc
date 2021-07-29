@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 
 #include <memory>
 
@@ -106,8 +106,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (override));
   MOCK_METHOD(void,
               UnregisterFileHandlers,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool)> callback),
+              (const AppId& app_id, base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(void,
               UnregisterProtocolHandlers,

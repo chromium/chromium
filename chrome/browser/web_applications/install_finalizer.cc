@@ -10,9 +10,9 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

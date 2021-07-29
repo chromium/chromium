@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"

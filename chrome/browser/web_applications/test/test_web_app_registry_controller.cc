@@ -6,8 +6,8 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app.h"

@@ -27,7 +27,7 @@ An example is [test_os_integration_manager.h](../test/test_os_integration_manage
 
 A class that start with `Mock` is a [gmock](https://github.com/google/googletest/tree/HEAD/googlemock) version of the class. This allows the user to have complete control of exactly what that class does, verify it is called exactly as expected, etc. These tend to be much more powerful to use than a `Fake`, as you can easily specify every possible case you might want to check, like which arguments are called and the exact calling order of multiple functions, even across multiple mocks. The downside is that they require creating a mock class & learning how to use gmock.
 
-An example is [MockOsIntegrationManager](../components/os_integration_manager_unittest.cc) inside of the unittest file.
+An example is [MockOsIntegrationManager](../os_integration_manager_unittest.cc) inside of the unittest file.
 
 ## Unit tests
 Unit tests have the following benefits
