@@ -49,6 +49,8 @@ function setupFakeShimlessRmaService_() {
   service.automaticallyTriggerProvisioningObservation();
   service.automaticallyTriggerCalibrationObservation();
 
+  service.setGetRsuDisableWriteProtectChallengeResult('##challenge code##')
+
   service.setGetOriginalSerialNumberResult('serial# 0001')
   service.setGetRegionListResult(fakeDeviceRegions);
   service.setGetOriginalRegionResult(1);

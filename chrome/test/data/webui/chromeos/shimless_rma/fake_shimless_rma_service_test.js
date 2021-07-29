@@ -328,6 +328,20 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
+  test('GetRsuDisableWriteProtectChallengeUndefined', () => {
+    return service.getRsuDisableWriteProtectChallenge().then((serialNumber) => {
+      assertEquals(serialNumber, undefined);
+    });
+  });
+
+  test('SetGetRsuDisableWriteProtectChallengeResultUpdatesResult', () => {
+    let expected_challenge = '9876543210';
+    service.setGetRsuDisableWriteProtectChallengeResult(expected_challenge);
+    return service.getRsuDisableWriteProtectChallenge().then((challenge) => {
+      assertEquals(challenge.challenge, expected_challenge);
+    });
+  });
+
   test('SetRsuDisableWriteProtectCodeOk', () => {
     let states = [
       {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},

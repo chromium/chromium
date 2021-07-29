@@ -34,6 +34,12 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
       },
 
       /** @protected {string} */
+      rsuChallenge_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected {string} */
       rsuCode_: {
         type: String,
         value: '',
@@ -45,6 +51,15 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
   ready() {
     super.ready();
     this.shimlessRmaService_ = getShimlessRmaService();
+    this.getRsuChallenge_();
+  }
+
+  /** @private */
+  getRsuChallenge_() {
+    this.shimlessRmaService_.getRsuDisableWriteProtectChallenge().then(
+        (result) => {
+          this.rsuChallenge_ = result.challenge;
+        });
   }
 
   /** @return {!Promise<!StateResult>} */

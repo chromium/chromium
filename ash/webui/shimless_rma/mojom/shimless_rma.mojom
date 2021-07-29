@@ -361,6 +361,10 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Method for kEnterRSUWPDisableCode state.
   //
+  // Get the RSU challenge code.
+  // Returns the challenge as a string.
+  GetRsuDisableWriteProtectChallenge() => (string challenge);
+  // TODO(gavindodd): Get the challenge as a QR code.
   // Attempt to disable HWWP using a RSU code.
   // Returns the next state to display and an error code.
   SetRsuDisableWriteProtectCode(string code)

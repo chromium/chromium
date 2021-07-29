@@ -53,7 +53,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       ChooseManuallyDisableWriteProtectCallback callback) override;
   void ChooseRsuDisableWriteProtect(
       ChooseRsuDisableWriteProtectCallback callback) override;
-  // TODO(gavindodd): GetRsuDisableChallengeCode()
+  void GetRsuDisableWriteProtectChallenge(
+      GetRsuDisableWriteProtectChallengeCallback callback) override;
   void SetRsuDisableWriteProtectCode(
       const std::string& code,
       SetRsuDisableWriteProtectCodeCallback callback) override;

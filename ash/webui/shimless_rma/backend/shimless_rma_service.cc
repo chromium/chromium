@@ -207,6 +207,18 @@ void ShimlessRmaService::ChooseRsuDisableWriteProtect(
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::GetRsuDisableWriteProtectChallenge(
+    GetRsuDisableWriteProtectChallengeCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableRsu) {
+    LOG(ERROR)
+        << "GetRsuDisableWriteProtectChallenge called from incorrect state "
+        << state_proto_.state_case();
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(state_proto_.wp_disable_rsu().challenge_code());
+}
+
 void ShimlessRmaService::SetRsuDisableWriteProtectCode(
     const std::string& code,
     SetRsuDisableWriteProtectCodeCallback callback) {

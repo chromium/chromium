@@ -255,6 +255,21 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{challenge: string}>}
+   */
+  getRsuDisableWriteProtectChallenge() {
+    return this.methods_.resolveMethod('getRsuDisableWriteProtectChallenge');
+  }
+
+  /**
+   * @param {string} challenge
+   */
+  setGetRsuDisableWriteProtectChallengeResult(challenge) {
+    this.methods_.setResult(
+        'getRsuDisableWriteProtectChallenge', {challenge: challenge});
+  }
+
+  /**
    * @param {string} code
    * @return {!Promise<!StateResult>}
    */
@@ -661,6 +676,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('chooseManuallyDisableWriteProtect');
     this.methods_.register('chooseRsuDisableWriteProtect');
+    this.methods_.register('getRsuDisableWriteProtectChallenge');
     this.methods_.register('setRsuDisableWriteProtectCode');
 
     this.methods_.register('getComponentList');
