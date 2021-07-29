@@ -19,6 +19,7 @@ per-file dom_distiller_strings.grdp=file://components/dom_distiller/OWNERS
 per-file error_page_strings.grdp=file://components/error_page/OWNERS
 per-file fullscreen_control_strings.grdp=file://components/fullscreen_control/OWNERS
 per-file heavy_ad_intervention_strings.grdp=file://components/heavy_ad_intervention/OWNERS
+per-file history_clusters_strings.grdp=file://components/history_clusters/OWNERS
 per-file javascript_dialogs_strings.grdp=file://components/javascript_dialogs/OWNERS
 per-file live_caption_strings.grdp=file://components/live_caption/OWNERS
 per-file management_mobile_strings.grdp=file://components/management/OWNERS

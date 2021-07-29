@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Strings for the chrome://memories page -->
+<!-- Strings for the chrome://history/journeys page -->
 
+<!-- TODO(crbug.com/1173908): Add strings currently hardcoded in HistoryUI. -->
 <grit-part>
-  <message name="IDS_MEMORIES_PAGE_TITLE" desc="Title of chrome://memories page.">
-    Memories
-  </message>
 </grit-part>

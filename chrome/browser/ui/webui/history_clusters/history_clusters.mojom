@@ -81,7 +81,7 @@ struct URLVisit {
 };
 
 // Represents a cluster of visits generated from device history by the browser
-// and displayed in the chrome://memories WebUI. Contains cluster-level metadata
+// and displayed in chrome://history/journeys. Contains cluster-level metadata
 // (e.g., last_visit_time) derived from the metadata of constituent visits.
 struct Cluster {
   // Cluster identifier. See //components/history/core/browser/history_types.h

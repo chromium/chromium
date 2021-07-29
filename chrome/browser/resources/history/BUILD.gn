@@ -70,6 +70,7 @@ preprocess_if_expr("preprocess") {
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
+    "history_clusters/browser_proxy.ts",
     "history.ts",
     "lazy_load.ts",
     "query_manager.ts",
@@ -83,6 +84,14 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
     "app.ts",
+    "history_clusters/cluster.ts",
+    "history_clusters/clusters.ts",
+    "history_clusters/page_favicon.ts",
+    "history_clusters/search_query.ts",
+    "history_clusters/shared_style.ts",
+    "history_clusters/shared_vars.ts",
+    "history_clusters/top_visit.ts",
+    "history_clusters/url_visit.ts",
     "history_item.ts",
     "history_list.ts",
     "history_toolbar.ts",
@@ -112,7 +121,7 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("web_components") {
+html_to_js("web_components_local") {
   js_files = [
     "app.ts",
     "history_item.ts",
@@ -127,6 +136,13 @@ html_to_js("web_components") {
   ]
 }
 
+group("web_components") {
+  public_deps = [
+    ":web_components_local",
+    "history_clusters:web_components",
+  ]
+}
+
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
@@ -136,16 +152,16 @@ ts_library("build_ts") {
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
-    "history_clusters/browser_proxy.js",
-    "history_clusters/cluster.js",
-    "history_clusters/clusters.js",
+    "history_clusters/browser_proxy.ts",
+    "history_clusters/cluster.ts",
+    "history_clusters/clusters.ts",
     "history_clusters/history_clusters.mojom-webui.js",
-    "history_clusters/page_favicon.js",
-    "history_clusters/search_query.js",
-    "history_clusters/shared_style.js",
-    "history_clusters/shared_vars.js",
-    "history_clusters/top_visit.js",
-    "history_clusters/visit_row.js",
+    "history_clusters/page_favicon.ts",
+    "history_clusters/search_query.ts",
+    "history_clusters/shared_style.ts",
+    "history_clusters/shared_vars.ts",
+    "history_clusters/top_visit.ts",
+    "history_clusters/url_visit.ts",
     "history_item.ts",
     "history_list.ts",
     "history_toolbar.ts",
@@ -166,29 +182,10 @@ ts_library("build_ts") {
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   extra_deps = [
-    ":copy_history_clusters",
     ":copy_history_clusters_mojom",
     ":preprocess",
     ":preprocess_generated",
   ]
-}
-
-copy("copy_history_clusters") {
-  sources = [
-    "$target_gen_dir/../memories/tsc/browser_proxy.js",
-    "$target_gen_dir/../memories/tsc/cluster.js",
-    "$target_gen_dir/../memories/tsc/clusters.js",
-    "$target_gen_dir/../memories/tsc/page_favicon.js",
-    "$target_gen_dir/../memories/tsc/search_query.js",
-    "$target_gen_dir/../memories/tsc/shared_style.js",
-    "$target_gen_dir/../memories/tsc/shared_vars.js",
-    "$target_gen_dir/../memories/tsc/top_visit.js",
-    "$target_gen_dir/../memories/tsc/visit_row.js",
-  ]
-  outputs = [
-    "$target_gen_dir/$preprocess_folder/history_clusters/{{source_file_part}}",
-  ]
-  deps = [ "//chrome/browser/resources/memories:build_ts" ]
 }
 
 copy("copy_history_clusters_mojom") {

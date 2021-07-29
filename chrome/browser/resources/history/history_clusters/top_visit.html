@@ -91,17 +91,17 @@
     transform: rotate(180deg);
   }
 </style>
-<visit-row is-top-visit visit="[[visit]]"></visit-row>
+<url-visit is-top-visit visit="[[visit]]"></url-visit>
 <div id="related-content">
   <div id="related-visits">
     <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
-      <visit-row visit="[[item]]"></visit-row>
+      <url-visit visit="[[item]]"></url-visit>
     </template>
     <!-- Disable animation on iron-collapse, as the parent iron-list can't
          easily handle it. -->
     <iron-collapse opened="[[expanded_]]" no-animation>
       <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
-        <visit-row visit="[[item]]"></visit-row>
+        <url-visit visit="[[item]]"></url-visit>
       </template>
     </iron-collapse>
   </div>

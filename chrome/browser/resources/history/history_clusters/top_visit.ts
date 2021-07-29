@@ -4,7 +4,7 @@
 
 import './search_query.js';
 import './shared_style.js';
-import './visit_row.js';
+import './url_visit.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 

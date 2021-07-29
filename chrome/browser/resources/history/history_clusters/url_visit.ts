@@ -31,7 +31,7 @@ const annotationToStringId: Map<number, string> = new Map([
 
 declare global {
   interface HTMLElementTagNameMap {
-    'visit-row': VisitRowElement;
+    'url-visit': VisitRowElement;
   }
 }
 
@@ -44,7 +44,7 @@ interface VisitRowElement {
 
 class VisitRowElement extends PolymerElement {
   static get is() {
-    return 'visit-row';
+    return 'url-visit';
   }
 
   static get template() {
