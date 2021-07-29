@@ -11,6 +11,19 @@
  */
 
 /**
+ * Modifier values are based off of ui::Accelerator. Must be kept in sync with
+ * ui::Accelerator and ui::KeyEvent.
+ *
+ * @enum {number}
+ */
+export const Modifier = {
+  SHIFT: 1 << 1,
+  CONTROL: 1 << 2,
+  ALT: 1 << 3,
+  COMMAND: 1 << 4,
+};
+
+/**
  * Enumeration of accelerator sources.
  * @enum {number}
  */
@@ -66,8 +79,8 @@ export let AcceleratorInfo;
 /**
  * Type alias for AcceleratorConfig. This is a two level map, with the top
  * level identifying the source of the shortcuts, and second level the integer
- * id for the action.
- * @typedef {!Map<!AcceleratorSource, !Map<number, !AcceleratorInfo>>}
+ * id for the action with the leaf value being a list of Accelerator Info.
+ * @typedef {!Map<!AcceleratorSource, !Map<number, !Array<!AcceleratorInfo>>>}
  */
 export let AcceleratorConfig;
 

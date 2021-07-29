@@ -6,20 +6,20 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-const ModifierKeys = [
-  /*Shift=*/16,
-  /*Alt=*/17,
-  /*Ctrl=*/18,
-  /*MetaLeft=*/91,
-  /*MetaRight=*/92,
+const ModifierKeyCodes = [
+  /*Shift=*/ 16,
+  /*Alt=*/ 17,
+  /*Ctrl=*/ 18,
+  /*MetaLeft=*/ 91,
+  /*MetaRight=*/ 92,
 ]
 
-/**
- * @fileoverview
- * 'shortcut-input' is the shortcut input element that consumes user inputs and
- * displays the shortcut.
- */
-export class ShortcutInputElement extends PolymerElement {
+    /**
+     * @fileoverview
+     * 'shortcut-input' is the shortcut input element that consumes user inputs
+     * and displays the shortcut.
+     */
+    export class ShortcutInputElement extends PolymerElement {
   static get is() {
     return 'shortcut-input';
   }
@@ -180,7 +180,7 @@ export class ShortcutInputElement extends PolymerElement {
    * @private
    */
   isModifierKey_(e) {
-    return ModifierKeys.includes(e.keyCode);
+    return ModifierKeyCodes.includes(e.keyCode);
   }
 }
 

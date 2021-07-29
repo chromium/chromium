@@ -32,8 +32,9 @@ polymer_element_files = [
 generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
-    "index.html",
+    "fake_data.js",
     "fake_shortcut_provider.js",
+    "index.html",
     "mojo_interface_provider.js",
     "shortcut_types.js",
   ]
@@ -135,6 +136,10 @@ js_library("chromeos_shortcuts_page") {
   ]
 }
 
+js_library("fake_data") {
+  deps = [ ":shortcut_types" ]
+}
+
 js_library("fake_shortcut_provider") {
   deps = [
     "//ash/webui/common/resources:fake_method_resolver",
@@ -156,6 +161,7 @@ js_library("input_key") {
 
 js_library("mojo_interface_provider") {
   deps = [
+    ":fake_data",
     ":fake_shortcut_provider",
     ":shortcut_types",
     "//ui/webui/resources/js:cr.m",

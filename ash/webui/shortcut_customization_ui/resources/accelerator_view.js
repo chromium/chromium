@@ -3,20 +3,14 @@
 // found in the LICENSE file.
 
 import './input_key.js'
-
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// Modifier values are based off of ui::Accelerator. Must be kept in sync with
-// ui::Accelerator.
-export const ModifierKeys = {
-  SHIFT: /*EF_SHIFT_DOWN=*/ 1 << 1,
-  CONTROL: /*EF_CONTROL_DOWN=*/ 1 << 2,
-  ALT: /*EF_ALT_DOWN=*/ 1 << 3,
-  COMMAND: /*EF_COMMAND_DOWN=*/ 1 << 4,
-}
+import {Modifier} from './shortcut_types.js';
+
+
 
 const ModifierRawKeys = [
   /*Shift=*/16,
@@ -40,13 +34,13 @@ const KeyState = {
  */
 function GetModifierString(modifier) {
   switch(modifier) {
-    case ModifierKeys.SHIFT:
+    case Modifier.SHIFT:
       return 'shift';
-    case ModifierKeys.CONTROL:
+    case Modifier.CONTROL:
       return 'ctrl';
-    case ModifierKeys.ALT:
+    case Modifier.ALT:
       return 'alt';
-    case ModifierKeys.COMMAND:
+    case Modifier.COMMAND:
       return 'meta';
     default:
       assertNotReached();
@@ -119,8 +113,8 @@ export class AcceleratorViewElement extends PolymerElement {
    */
   getModifiers_() {
     let modifiers = [];
-    for (const key in ModifierKeys) {
-      const modifier = ModifierKeys[key];
+    for (const key in Modifier) {
+      const modifier = Modifier[key];
       if (this.accelerator.modifiers & modifier) {
         modifiers.push(GetModifierString(modifier));
       }
@@ -226,18 +220,18 @@ export class AcceleratorViewElement extends PolymerElement {
   keystrokeToAccelerator_(e) {
     const output = {modifiers: 0, key: ''};
     if (e.metaKey) {
-      output.modifiers = output.modifiers | ModifierKeys.COMMAND;
+      output.modifiers = output.modifiers | Modifier.COMMAND;
     }
     if (e.ctrlKey) {
-      output.modifiers = output.modifiers | ModifierKeys.CONTROL;
+      output.modifiers = output.modifiers | Modifier.CONTROL;
     }
     if (e.altKey) {
-      output.modifiers = output.modifiers | ModifierKeys.ALT;
+      output.modifiers = output.modifiers | Modifier.ALT;
     }
     // Shift key isn't registered as a modifier unless a non-modifer key is
     // pressed in conjunction with the keystroke.
     if (e.key == "Shift" || e.shiftKey) {
-      output.modifiers = output.modifiers | ModifierKeys.SHIFT;
+      output.modifiers = output.modifiers | Modifier.SHIFT;
     }
 
     // Only add non-modifier keys as the pending key.
@@ -262,7 +256,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   getCtrlState_() {
-    return this.getModifierState_(ModifierKeys.CONTROL);
+    return this.getModifierState_(Modifier.CONTROL);
   }
 
   /**
@@ -270,7 +264,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   getAltState_() {
-    return this.getModifierState_(ModifierKeys.ALT);
+    return this.getModifierState_(Modifier.ALT);
   }
 
   /**
@@ -278,7 +272,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   getShiftState_() {
-    return this.getModifierState_(ModifierKeys.SHIFT);
+    return this.getModifierState_(Modifier.SHIFT);
   }
 
   /**
@@ -286,7 +280,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * @private
    */
   getSearchState_() {
-    return this.getModifierState_(ModifierKeys.COMMAND);
+    return this.getModifierState_(Modifier.COMMAND);
   }
 
   /**

@@ -4,7 +4,7 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/accelerator_row.js';
-import {ModifierKeys} from 'chrome://shortcut-customization/accelerator_view.js';
+import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals} from '../../chai_assert.js';
 
@@ -27,12 +27,8 @@ export function acceleratorRowTest() {
     // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
     // version.
     const accelerators = [
-      {
-        modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
-        key: 'g',
-        rawKey: 0x0
-      },
-      {modifiers: ModifierKeys.CONTROL, key: 'c', rawKey: 0x0}
+      {modifiers: Modifier.SHIFT | Modifier.CONTROL, key: 'g', rawKey: 0x0},
+      {modifiers: Modifier.CONTROL, key: 'c', rawKey: 0x0}
     ];
     const description = 'test shortcut';
 

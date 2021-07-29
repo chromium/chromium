@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {fakeAcceleratorConfig} from 'chrome://shortcut-customization/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
 import {AcceleratorConfig} from 'chrome://shortcut-customization/shortcut_types.js';
 
@@ -25,6 +26,15 @@ export function fakeShortcutProviderTest() {
     provider.setFakeAcceleratorConfig(expected);
     return provider.getAllAcceleratorConfig().then((result) => {
       assertDeepEquals(expected, result);
+    });
+  });
+
+  test('GetAllAcceleratorConfigDefaultFake', () => {
+    // TODO(zentaro): Remove this test once real data is ready.
+    const expected = new Map();
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
     });
   });
 }

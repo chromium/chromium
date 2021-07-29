@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorViewElement, ModifierKeys} from 'chrome://shortcut-customization/accelerator_view.js';
+import {AcceleratorViewElement} from 'chrome://shortcut-customization/accelerator_view.js';
+import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
 
@@ -26,7 +27,7 @@ export function acceleratorViewTest() {
     // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
     // version.
     const accelerator = {
-      modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
+      modifiers: Modifier.SHIFT | Modifier.CONTROL,
       key: 'g',
       rawKey: 0x0,
     };
@@ -49,7 +50,7 @@ export function acceleratorViewTest() {
     // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
     // version.
     const accelerator = {
-      modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
+      modifiers: Modifier.SHIFT | Modifier.CONTROL,
       key: 'g',
       rawKey: 0x0,
     };

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {fakeAcceleratorConfig} from './fake_data.js'
+import {FakeShortcutProvider} from './fake_shortcut_provider.js'
 import {ShortcutProviderInterface} from './shortcut_types.js'
 
 /**
@@ -24,11 +26,29 @@ export function setShortcutProviderForTesting(testProvider) {
 }
 
 /**
+ * Sets up a FakeShortcutProvider to be used at runtime.
+ * TODO(zentaro): Remove once mojo bindings are implemented.
+ */
+function setupFakeShortcutProvider() {
+  // Create provider.
+  let provider = new FakeShortcutProvider();
+
+  // Setup accelerator config.
+  provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+
+  // Set the fake provider.
+  setShortcutProviderForTesting(provider);
+}
+
+/**
  * @return {!ShortcutProviderInterface}
  */
 export function getShortcutProvider() {
-  // TODO(zentaro): Instantiate a real mojo interface here.
-  assert(!!shortcutProvider);
+  if (!shortcutProvider) {
+    // TODO(zentaro): Instantiate a real mojo interface here.
+    setupFakeShortcutProvider();
+  }
 
+  assert(!!shortcutProvider);
   return shortcutProvider;
 }

@@ -4,7 +4,7 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accelerator_edit_view.js';
-import {ModifierKeys} from 'chrome://shortcut-customization/accelerator_view.js';
+import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -27,7 +27,7 @@ export function acceleratorEditViewTest() {
     // TODO(jimmyxgong): Update the type of the test accelerator with the mojom
     // version.
     const accelerator = {
-      modifiers: ModifierKeys.SHIFT | ModifierKeys.CONTROL,
+      modifiers: Modifier.SHIFT | Modifier.CONTROL,
       key: 'g',
       rawKey: 0x0
     };
