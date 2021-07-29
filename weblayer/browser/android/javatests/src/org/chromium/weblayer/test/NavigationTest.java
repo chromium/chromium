@@ -651,6 +651,7 @@ public class NavigationTest {
                 curRedirectedCount, Arrays.asList(Uri.parse(url), Uri.parse(finalUrl)));
     }
 
+    @MinWebLayerVersion(94)
     @Test
     @SmallTest
     public void testGetPageInOnNavigationCompletedForIncompleteNavigation() throws Exception {
