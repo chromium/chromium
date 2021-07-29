@@ -19,14 +19,14 @@ namespace base {
 
 // LogListenerSafe implementation that invokes a caller-supplied callback for
 // each received message.
-class TestLogListenerSafe
+class TestLogListenerSafe final
     : public fuchsia::logger::testing::LogListenerSafe_TestBase {
  public:
   using OnLogMessageCallback =
       base::RepeatingCallback<void(const fuchsia::logger::LogMessage&)>;
 
   TestLogListenerSafe();
-  ~TestLogListenerSafe() final;
+  ~TestLogListenerSafe() override;
 
   TestLogListenerSafe(const TestLogListenerSafe&) = delete;
   TestLogListenerSafe& operator=(const TestLogListenerSafe&) = delete;
@@ -36,11 +36,11 @@ class TestLogListenerSafe
 
  private:
   // LogListenerSafe implementation.
-  void Log(fuchsia::logger::LogMessage message, LogCallback callback) final;
+  void Log(fuchsia::logger::LogMessage message, LogCallback callback) override;
   void LogMany(std::vector<fuchsia::logger::LogMessage> messages,
-               LogManyCallback callback) final;
-  void Done() final;
-  void NotImplemented_(const std::string& name) final;
+               LogManyCallback callback) override;
+  void Done() override;
+  void NotImplemented_(const std::string& name) override;
 
   OnLogMessageCallback on_log_message_;
 };
