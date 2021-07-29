@@ -7,7 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "url/gurl.h"
 #include "weblayer/browser/browser_process.h"
@@ -111,10 +111,9 @@ void ActivateSubresourceFilterInWebContentsForURL(
   database_manager->AddBlocklistedUrl(
       url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
 
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
-  throttle_manager->set_database_manager_for_testing(
-      std::move(database_manager));
+  subresource_filter::ContentSubresourceFilterWebContentsHelper::
+      FromWebContents(web_contents)
+          ->SetDatabaseManagerForTesting(std::move(database_manager));
 }
 
 OneShotNavigationObserver::OneShotNavigationObserver(Shell* shell)

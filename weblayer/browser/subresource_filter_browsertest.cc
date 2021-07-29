@@ -363,9 +363,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents, 1);
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
-      web_contents)
-      ->OnReloadRequested();
+  GetPrimaryPageThrottleManager()->OnReloadRequested();
   navigation_observer.Wait();
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -386,9 +384,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents, 1);
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
-      web_contents)
-      ->OnReloadRequested();
+  GetPrimaryPageThrottleManager()->OnReloadRequested();
   navigation_observer.Wait();
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
@@ -413,8 +409,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   auto* ads_intervention_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
@@ -440,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   NavigateAndWaitForCompletion(url, shell());
@@ -502,8 +496,6 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   auto* ads_intervention_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
@@ -529,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   NavigateAndWaitForCompletion(url, shell());
@@ -559,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(
   // intervention. This intervention is a no-op.
   test_clock->Advance(subresource_filter::kAdsInterventionDuration.Get() -
                       base::TimeDelta::FromMinutes(30));
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 
@@ -612,8 +604,6 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
   auto* ads_intervention_manager =
       SubresourceFilterProfileContextFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
@@ -636,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger an ads violation and renavigate to the page. Interventions are not
   // enforced so no activation should occur.
-  throttle_manager->OnAdsViolationTriggered(
+  GetPrimaryPageThrottleManager()->OnAdsViolationTriggered(
       web_contents->GetMainFrame(),
       subresource_filter::mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 

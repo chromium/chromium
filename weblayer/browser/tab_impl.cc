@@ -34,8 +34,9 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -275,15 +276,15 @@ GetDatabaseManagerFromSafeBrowsingService() {
 #endif
 }
 
-// Creates a ContentSubresourceFilterThrottleManager for |web_contents|, passing
-// it the needed embedder-level state.
-void CreateContentSubresourceFilterThrottleManagerForWebContents(
+// Creates a ContentSubresourceFilterWebContentsHelper for |web_contents|,
+// passing it the needed embedder-level state.
+void CreateContentSubresourceFilterWebContentsHelper(
     content::WebContents* web_contents) {
   subresource_filter::RulesetService* ruleset_service =
       BrowserProcess::GetInstance()->subresource_filter_ruleset_service();
   subresource_filter::VerifiedRulesetDealer::Handle* dealer =
       ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
-  subresource_filter::ContentSubresourceFilterThrottleManager::
+  subresource_filter::ContentSubresourceFilterWebContentsHelper::
       CreateForWebContents(
           web_contents,
           SubresourceFilterProfileContextFactory::GetForBrowserContext(
@@ -365,8 +366,7 @@ TabImpl::TabImpl(ProfileImpl* profile,
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents_.get());
 #endif
 
-  CreateContentSubresourceFilterThrottleManagerForWebContents(
-      web_contents_.get());
+  CreateContentSubresourceFilterWebContentsHelper(web_contents_.get());
 
   sessions::SessionTabHelper::CreateForWebContents(
       web_contents_.get(),

@@ -13,6 +13,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -24,30 +25,32 @@
 namespace subresource_filter {
 
 ProfileInteractionManager::ProfileInteractionManager(
-    content::WebContents* web_contents,
     SubresourceFilterProfileContext* profile_context)
-    : content::WebContentsObserver(web_contents),
-      profile_context_(profile_context) {
-  DCHECK(web_contents);
-}
+    : profile_context_(profile_context) {}
 
 ProfileInteractionManager::~ProfileInteractionManager() = default;
 
-void ProfileInteractionManager::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
-    ads_violation_triggered_for_last_committed_navigation_ = false;
-  }
+void ProfileInteractionManager::DidCreatePage(content::Page& page) {
+  // A new ProfileInteractionManager is created for each page so we should only
+  // call this, at most, once.
+  DCHECK(!page_);
+  page_ = &page;
 }
 
 void ProfileInteractionManager::OnReloadRequested() {
+  // A reload request comes from browser so it will always be associated with
+  // the primary page.
+  DCHECK(page_);
+  DCHECK(page_->IsPrimary());
+
   ContentSubresourceFilterThrottleManager::LogAction(
       SubresourceFilterAction::kAllowlistedSite);
   profile_context_->settings_manager()->AllowlistSite(
-      web_contents()->GetLastCommittedURL());
+      page_->GetMainDocument().GetLastCommittedURL());
 
-  web_contents()->GetController().Reload(content::ReloadType::NORMAL, true);
+  // Since the reload comes from the primary page, the use of WebContents here
+  // is correct.
+  GetWebContents()->GetController().Reload(content::ReloadType::NORMAL, true);
 }
 
 // TODO(https://crbug.com/1131969): Consider adding reporting when
@@ -124,14 +127,20 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
 }
 
 void ProfileInteractionManager::MaybeShowNotification() {
-  const GURL& top_level_url = web_contents()->GetLastCommittedURL();
+  // The caller should make sure this is only called from pages that are
+  // currently primary.
+  DCHECK(page_);
+  DCHECK(page_->IsPrimary());
+
+  const GURL& top_level_url = page_->GetMainDocument().GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
 #if defined(OS_ANDROID)
     // NOTE: It is acceptable for the embedder to not have installed an infobar
     // manager.
     if (auto* infobar_manager =
-            infobars::ContentInfoBarManager::FromWebContents(web_contents())) {
+            infobars::ContentInfoBarManager::FromWebContents(
+                GetWebContents())) {
       subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager);
     }
 #endif
@@ -142,7 +151,7 @@ void ProfileInteractionManager::MaybeShowNotification() {
     // which comes from a specific frame).
     content_settings::PageSpecificContentSettings* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
-            web_contents()->GetMainFrame());
+            &page_->GetMainDocument());
     content_settings->OnContentBlocked(ContentSettingsType::ADS);
 
     ContentSubresourceFilterThrottleManager::LogAction(
@@ -152,6 +161,12 @@ void ProfileInteractionManager::MaybeShowNotification() {
     ContentSubresourceFilterThrottleManager::LogAction(
         SubresourceFilterAction::kUISuppressed);
   }
+}
+
+content::WebContents* ProfileInteractionManager::GetWebContents() {
+  DCHECK(page_);
+  DCHECK(page_->IsPrimary());
+  return content::WebContents::FromRenderFrameHost(&page_->GetMainDocument());
 }
 
 }  // namespace subresource_filter

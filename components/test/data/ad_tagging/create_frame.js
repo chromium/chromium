@@ -4,15 +4,27 @@
 
 'use strict';
 
-function createFrame(url, name, sbox_attr) {
-  let frame = document.createElement('iframe');
+function createFrame(url, name, sbox_attr, load_callback, error_callback) {
+  const frame = document.createElement('iframe');
   frame.name = name;
   frame.id = name;
   frame.src = url;
+  if (load_callback !== undefined) {
+    frame.onload = load_callback;
+  }
+  if (error_callback !== undefined) {
+    frame.onerror = error_callback;
+  }
   if (sbox_attr !== undefined) {
     frame.sandbox = sbox_attr;
   }
   document.body.appendChild(frame);
+}
+
+function createFramePromise(url, name, sbox_attr) {
+  return new Promise((resolve, reject) => {
+    createFrame(url, name, sbox_attr, resolve, reject);
+  });
 }
 
 function windowOpenFromNonAdScript() {
@@ -20,23 +32,23 @@ function windowOpenFromNonAdScript() {
 }
 
 async function createDocWrittenFrame(name, base_url) {
-  let doc_body = await fetch('frame_factory.html');
-  let doc_text = await doc_body.text();
+  const docBody = await fetch('frame_factory.html');
+  const docText = await docBody.text();
 
-  let frame = document.createElement('iframe');
+  const frame = document.createElement('iframe');
   frame.name = name;
   document.body.appendChild(frame);
 
   frame.contentDocument.open();
   frame.onload = function() {
     window.domAutomationController.send(true);
-  }
-  frame.contentDocument.write(doc_text);
+  };
+  frame.contentDocument.write(docText);
   frame.contentDocument.close();
 }
 
 function createFrameWithDocWriteAbortedLoad(name) {
-  let frame = document.createElement('iframe');
+  const frame = document.createElement('iframe');
   frame.name = name;
 
   // slow takes 100 seconds to load, plenty of time to overwrite the
@@ -56,7 +68,7 @@ function createFrameWithDocWriteAbortedLoad(name) {
 }
 
 function createFrameWithWindowStopAbortedLoad(name) {
-  let frame = document.createElement('iframe');
+  const frame = document.createElement('iframe');
   frame.name = name;
 
   // slow takes 100 seconds to load, plenty of time to overwrite the
@@ -68,17 +80,17 @@ function createFrameWithWindowStopAbortedLoad(name) {
   // We load the scripts in frame_factory.html to allow subframe creation. We
   // set the async attribute to false to ensure that these scripts are loaded in
   // insertion order.
-  let script1 = document.createElement('script');
+  const script1 = document.createElement('script');
   script1.async = false;
   script1.src = 'create_frame.js';
   frame.contentDocument.head.appendChild(script1);
 
-  let script2 = document.createElement('script');
+  const script2 = document.createElement('script');
   script2.async = false;
   script2.src = 'ad_script.js';
   frame.contentDocument.head.appendChild(script2);
 
-  let script3 = document.createElement('script');
+  const script3 = document.createElement('script');
   script3.async = false;
   script3.src = 'ad_script_2.js';
   // Set title so we know when all scripts have loaded.

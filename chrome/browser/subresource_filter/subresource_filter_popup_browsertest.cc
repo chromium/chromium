@@ -67,8 +67,6 @@ void RoundTripAndVerifyLogMessages(
 
 }  // namespace
 
-const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
-
 // Tests that subresource_filter interacts well with the abusive enforcement in
 // chrome/browser/ui/blocked_content/safe_browsing_triggered_popup_blocker.
 class SubresourceFilterPopupBrowserTest
