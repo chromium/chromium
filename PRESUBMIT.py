@@ -1183,6 +1183,9 @@ _KNOWN_ROBOTS = set(
   ) | set('%s@owners-cleanup-prod.google.com.iam.gserviceaccount.com' % s
           for s in ('swarming-tasks',))
 
+_INVALID_GRD_FILE_LINE = [
+        (r'<file lang=.* path=.*', 'Path should come before lang in GRD files.')
+]
 
 def _IsCPlusPlusFile(input_api, file_path):
   """Returns True if this file contains C++-like code (and not Python,
@@ -5249,3 +5252,19 @@ def CheckDeprecationOfPreferences(input_api, output_api):
       potential_problems
     )]
   return []
+
+def CheckConsistentGrdChanges(input_api, output_api):
+  """Changes to GRD files must be consistent for tools to read them."""
+  changed_grds = input_api.AffectedFiles(
+      include_deletes=False,
+      file_filter=lambda f: f.LocalPath().endswith(('.grd')))
+  errors = []
+  invalid_file_regexes = [(input_api.re.compile(matcher), msg) for matcher, msg in _INVALID_GRD_FILE_LINE]
+  for grd in changed_grds:
+    for i, line in enumerate(grd.NewContents()):
+      for matcher, msg in invalid_file_regexes:
+        if matcher.search(line):
+          errors.append(output_api.PresubmitError('Problem on {grd}:{i} - {msg}'.format(grd=grd.LocalPath(), i=i + 1, msg=msg)))
+  return errors
+
+
