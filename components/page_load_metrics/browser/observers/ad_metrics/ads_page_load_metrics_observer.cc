@@ -28,7 +28,6 @@
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -156,11 +155,8 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
     content::WebContents* web_contents,
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     const ApplicationLocaleGetter& application_locale_getter) {
-  // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
-  // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
-  // this should use the associated page rather than the primary page.
   if (!base::FeatureList::IsEnabled(subresource_filter::kAdTagging) ||
-      !subresource_filter::ContentSubresourceFilterWebContentsHelper::
+      !subresource_filter::ContentSubresourceFilterThrottleManager::
           FromWebContents(web_contents))
     return nullptr;
   return std::make_unique<AdsPageLoadMetricsObserver>(
@@ -457,7 +453,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // If the AdsPageLoadMetricsObserver is created, this does not return nullptr.
   auto* throttle_manager =
       subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromNavigationHandle(*navigation_handle);
+          FromWebContents(navigation_handle->GetWebContents());
   DCHECK(throttle_manager);
 
   const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
@@ -628,12 +624,9 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
   const int kMaxMobileAdDensityByHeight = 30;
   if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
       kMaxMobileAdDensityByHeight) {
-    // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
-    // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
-    // this should use the associated page rather than the primary page.
     auto* throttle_manager =
-        subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-            GetDelegate().GetWebContents()->GetPrimaryPage());
+        subresource_filter::ContentSubresourceFilterThrottleManager::
+            FromWebContents(GetDelegate().GetWebContents());
     // AdsPageLoadMetricsObserver is not created unless there is a
     // throttle manager.
     DCHECK(throttle_manager);
@@ -1163,12 +1156,9 @@ void AdsPageLoadMetricsObserver::MaybeTriggerStrictHeavyAdIntervention() {
       blocklist::BlocklistReason::kUserOptedOutOfHost)
     return;
 
-  // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
-  // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
-  // this should use the associated page rather than the primary page.
   auto* throttle_manager =
-      subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-          GetDelegate().GetWebContents()->GetPrimaryPage());
+      subresource_filter::ContentSubresourceFilterThrottleManager::
+          FromWebContents(GetDelegate().GetWebContents());
   // AdsPageLoadMetricsObserver is not created unless there is a
   // throttle manager.
   DCHECK(throttle_manager);

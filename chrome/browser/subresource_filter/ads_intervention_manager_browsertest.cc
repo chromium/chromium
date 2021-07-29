@@ -22,6 +22,7 @@ namespace subresource_filter {
 
 namespace {
 
+const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 const char kAdsInterventionRecordedHistogram[] =
     "SubresourceFilter.PageLoad.AdsInterventionTriggered";
 const char kTimeSinceAdsInterventionTriggeredHistogram[] =
@@ -38,12 +39,6 @@ class AdsInterventionManagerTestWithEnforcement
         subresource_filter::kAdsInterventionsEnforced);
   }
 
-  subresource_filter::ContentSubresourceFilterThrottleManager*
-  current_throttle_manager() {
-    return subresource_filter::ContentSubresourceFilterThrottleManager::
-        FromPage(web_contents()->GetPrimaryPage());
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -52,6 +47,8 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
                        AdsInterventionEnforced_PageActivated) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents());
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   ads_intervention_manager()->set_clock_for_testing(test_clock.get());
 
@@ -76,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
 
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
-  current_throttle_manager()->OnAdsViolationTriggered(
+  throttle_manager->OnAdsViolationTriggered(
       web_contents()->GetMainFrame(),
       mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   ui_test_utils::NavigateToURL(browser(), url);
@@ -137,6 +134,8 @@ IN_PROC_BROWSER_TEST_F(
     MultipleAdsInterventions_PageActivationClearedAfterFirst) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents());
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   ads_intervention_manager()->set_clock_for_testing(test_clock.get());
 
@@ -161,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Trigger an ads violation and renavigate the page. Should trigger
   // subresource filter activation.
-  current_throttle_manager()->OnAdsViolationTriggered(
+  throttle_manager->OnAdsViolationTriggered(
       web_contents()->GetMainFrame(),
       mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
   ui_test_utils::NavigateToURL(browser(), url);
@@ -192,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(
   // intervention. This intervention is a no-op.
   test_clock->Advance(subresource_filter::kAdsInterventionDuration.Get() -
                       base::TimeDelta::FromMinutes(30));
-  current_throttle_manager()->OnAdsViolationTriggered(
+  throttle_manager->OnAdsViolationTriggered(
       web_contents()->GetMainFrame(),
       mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 
@@ -234,12 +233,6 @@ class AdsInterventionManagerTestWithoutEnforcement
         subresource_filter::kAdsInterventionsEnforced);
   }
 
-  subresource_filter::ContentSubresourceFilterThrottleManager*
-  current_throttle_manager() {
-    return subresource_filter::ContentSubresourceFilterThrottleManager::
-        FromPage(web_contents()->GetPrimaryPage());
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -248,6 +241,8 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithoutEnforcement,
                        AdsInterventionNotEnforced_NoPageActivation) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents());
   auto test_clock = std::make_unique<base::SimpleTestClock>();
   ads_intervention_manager()->set_clock_for_testing(test_clock.get());
 
@@ -269,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithoutEnforcement,
 
   // Trigger an ads violation and renavigate to the page. Interventions are not
   // enforced so no activation should occur.
-  current_throttle_manager()->OnAdsViolationTriggered(
+  throttle_manager->OnAdsViolationTriggered(
       web_contents()->GetMainFrame(),
       mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
 

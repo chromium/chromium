@@ -6,7 +6,6 @@
 
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
@@ -59,9 +58,10 @@ void InstallFakeSafeBrowsingDatabaseManagerInWebContents(
   scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
       base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
 
-  subresource_filter::ContentSubresourceFilterWebContentsHelper::
-      FromWebContents(web_contents)
-          ->SetDatabaseManagerForTesting(std::move(database_manager));
+  auto* throttle_manager = subresource_filter::
+      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
+  throttle_manager->set_database_manager_for_testing(
+      std::move(database_manager));
 }
 #endif
 
@@ -145,12 +145,6 @@ bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
 
 bool SubresourceFilterBrowserTest::StartEmbeddedTestServerAutomatically() {
   return true;
-}
-
-subresource_filter::ContentSubresourceFilterThrottleManager*
-SubresourceFilterBrowserTest::GetPrimaryPageThrottleManager() {
-  return subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-      web_contents()->GetPrimaryPage());
 }
 
 }  // namespace weblayer

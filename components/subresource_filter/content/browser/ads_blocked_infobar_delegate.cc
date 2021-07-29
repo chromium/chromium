@@ -78,9 +78,8 @@ std::u16string AdsBlockedInfobarDelegate::GetButtonLabel(
 }
 
 bool AdsBlockedInfobarDelegate::Cancel() {
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar())
-          ->GetPrimaryPage())
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar()))
       ->OnReloadRequested();
   return true;
 }

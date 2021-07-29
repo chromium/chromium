@@ -23,7 +23,6 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
@@ -167,9 +166,10 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     auto* contents = RenderViewHostTestHarness::web_contents();
     throttle_manager_test_support_ =
         std::make_unique<ThrottleManagerTestSupport>(contents);
-    ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
-        contents, throttle_manager_test_support_->profile_context(),
-        /*database_manager=*/nullptr, ruleset_dealer_.get());
+    throttle_manager_ =
+        std::make_unique<ContentSubresourceFilterThrottleManager>(
+            throttle_manager_test_support_->profile_context(),
+            /*database_manager=*/nullptr, ruleset_dealer_.get(), contents);
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
     NavigateAndCommit(GURL("https://test.com"));
     Observe(contents);
@@ -211,10 +211,8 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
               fake_safe_browsing_database_));
     }
     std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-
-    ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-        *navigation_handle)
-        ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
+    throttle_manager_->MaybeAppendNavigationThrottles(navigation_handle,
+                                                      &throttles);
     for (auto& it : throttles) {
       navigation_handle->RegisterThrottleForTesting(std::move(it));
     }
@@ -365,6 +363,8 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
 
   TestSafeBrowsingActivationThrottleDelegate delegate_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> ruleset_dealer_;
+
+  std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager_;
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;

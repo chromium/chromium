@@ -1360,9 +1360,9 @@ void ContentSettingSubresourceFilterBubbleModel::OnLearnMoreClicked() {
 
 void ContentSettingSubresourceFilterBubbleModel::CommitChanges() {
   if (is_checked_) {
-    subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-        web_contents()->GetPrimaryPage())
-        ->OnReloadRequested();
+    subresource_filter::ContentSubresourceFilterThrottleManager::
+        FromWebContents(web_contents())
+            ->OnReloadRequested();
   }
 }
 

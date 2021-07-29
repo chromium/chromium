@@ -36,6 +36,8 @@
 
 namespace subresource_filter {
 
+const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
+
 class SubresourceFilterSettingsBrowserTest
     : public SubresourceFilterBrowserTest {
  public:
@@ -181,8 +183,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-      web_contents()->GetPrimaryPage())
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      web_contents())
       ->OnReloadRequested();
   navigation_observer.Wait();
 
@@ -201,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterSettingsBrowserTest,
 
   // Allowlist via a reload.
   content::TestNavigationObserver navigation_observer(web_contents(), 1);
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-      web_contents()->GetPrimaryPage())
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
+      web_contents())
       ->OnReloadRequested();
   navigation_observer.Wait();
 

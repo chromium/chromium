@@ -27,7 +27,6 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -194,6 +193,8 @@ class ContentSubresourceFilterThrottleManagerTest
         RenderViewHostTestHarness::web_contents();
     CreateAgentForHost(web_contents->GetMainFrame());
 
+    NavigateAndCommit(GURL("https://example.first"));
+
     // Initialize the ruleset dealer. Allowlisted URLs must also match a
     // disallowed rule in order to work correctly.
     std::vector<proto::UrlRule> rules;
@@ -225,16 +226,16 @@ class ContentSubresourceFilterThrottleManagerTest
     // ShowNotification() being invoked.
     throttle_manager_test_support_->SetShouldUseSmartUI(false);
 
-    ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
-        web_contents, throttle_manager_test_support_->profile_context(),
-        /*database_manager=*/nullptr, dealer_handle_.get());
+    throttle_manager_ =
+        std::make_unique<ContentSubresourceFilterThrottleManager>(
+            throttle_manager_test_support_->profile_context(),
+            /*database_manager=*/nullptr, dealer_handle_.get(), web_contents);
 
     Observe(web_contents);
-
-    NavigateAndCommit(GURL("https://example.first"));
   }
 
   void TearDown() override {
+    throttle_manager_.reset();
     throttle_manager_test_support_.reset();
     dealer_handle_.reset();
     base::RunLoop().RunUntilIdle();
@@ -290,7 +291,7 @@ class ContentSubresourceFilterThrottleManagerTest
   }
 
   bool ManagerHasRulesetHandle() {
-    return throttle_manager()->ruleset_handle_for_testing();
+    return throttle_manager_->ruleset_handle_for_testing();
   }
 
   bool ads_blocked_in_content_settings() {
@@ -340,10 +341,8 @@ class ContentSubresourceFilterThrottleManagerTest
             : WILL_PROCESS_RESPONSE;
     throttles.push_back(std::make_unique<MockPageStateActivationThrottle>(
         navigation_handle, state));
-
-    ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-        *navigation_handle)
-        ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
+    throttle_manager_->MaybeAppendNavigationThrottles(navigation_handle,
+                                                      &throttles);
 
     created_safe_browsing_throttle_for_last_navigation_ = false;
     for (auto& it : throttles) {
@@ -367,8 +366,7 @@ class ContentSubresourceFilterThrottleManagerTest
   }
 
   ContentSubresourceFilterThrottleManager* throttle_manager() {
-    return ContentSubresourceFilterThrottleManager::FromPage(
-        RenderViewHostTestHarness::web_contents()->GetPrimaryPage());
+    return throttle_manager_.get();
   }
 
   bool created_safe_browsing_throttle_for_current_navigation() const {
@@ -379,7 +377,7 @@ class ContentSubresourceFilterThrottleManagerTest
     scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
         base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
 
-    web_contents_helper()->SetDatabaseManagerForTesting(
+    throttle_manager_->set_database_manager_for_testing(
         std::move(database_manager));
   }
 
@@ -388,16 +386,13 @@ class ContentSubresourceFilterThrottleManagerTest
   }
 
  private:
-  ContentSubresourceFilterWebContentsHelper* web_contents_helper() {
-    return ContentSubresourceFilterWebContentsHelper::FromWebContents(
-        RenderViewHostTestHarness::web_contents());
-  }
-
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
   std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
+
+  std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager_;
 
   std::map<content::RenderFrameHost*,
            std::unique_ptr<FakeSubresourceFilterAgent>>
@@ -964,11 +959,10 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 #endif
 }
 
-TEST_F(ContentSubresourceFilterThrottleManagerTest,
-       CreateHelperForWebContents) {
+TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   auto web_contents =
       content::RenderViewHostTestHarness::CreateTestWebContents();
-  ASSERT_EQ(ContentSubresourceFilterWebContentsHelper::FromWebContents(
+  ASSERT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),
             nullptr);
 
@@ -982,30 +976,31 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest,
 
     // CreateForWebContents() should not do anything if the subresource filter
     // feature is not enabled.
-    ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
+    ContentSubresourceFilterThrottleManager::CreateForWebContents(
         web_contents.get(), profile_context, /*database_manager=*/nullptr,
         dealer_handle());
-    EXPECT_EQ(ContentSubresourceFilterWebContentsHelper::FromWebContents(
+    EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                   web_contents.get()),
               nullptr);
   }
 
   // If the subresource filter feature is enabled (as it is by default),
   // CreateForWebContents() should create and attach an instance.
-  ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
+  ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents.get(), profile_context,
       /*database_manager=*/nullptr, dealer_handle());
-  auto* helper = ContentSubresourceFilterWebContentsHelper::FromWebContents(
-      web_contents.get());
-  EXPECT_NE(helper, nullptr);
+  auto* throttle_manager =
+      ContentSubresourceFilterThrottleManager::FromWebContents(
+          web_contents.get());
+  EXPECT_NE(throttle_manager, nullptr);
 
   // A second call should not attach a different instance.
-  ContentSubresourceFilterWebContentsHelper::CreateForWebContents(
+  ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents.get(), profile_context,
       /*database_manager=*/nullptr, dealer_handle());
-  EXPECT_EQ(ContentSubresourceFilterWebContentsHelper::FromWebContents(
+  EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),
-            helper);
+            throttle_manager);
 }
 
 TEST_F(ContentSubresourceFilterThrottleManagerTest,
@@ -1303,28 +1298,12 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        FirstDisallowedLoadCalledOutOfOrder) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
-
-  auto* web_contents = RenderViewHostTestHarness::web_contents();
-  mojo::AssociatedRemote<mojom::SubresourceFilterHost> remote;
-  ContentSubresourceFilterThrottleManager::BindReceiver(
-      remote.BindNewEndpointAndPassDedicatedReceiver(),
-      &web_contents->GetPrimaryPage().GetMainDocument());
-  ASSERT_TRUE(remote.is_bound());
-  ASSERT_TRUE(remote.is_connected());
-
   NavigateAndCommitMainFrame(GURL(kTestURLWithNoActivation));
 
-  // Simulate the previous navigation sending an IPC that a load was
-  // disallowed.  This could happen e.g. for cross-process navigations, which
-  // have no ordering guarantees. Navigating to a new page will usually dispose
-  // the remote end of the mojo binding so the mojo call will be a no-op,
-  // though in some cases the binding may survive (e.g. page is put into
-  // BFCache). Ensure that even if it does survive, a stale call doesn't show
-  // UI.
-  remote.FlushForTesting();
-  remote->DidDisallowFirstSubresource();
-  base::RunLoop().RunUntilIdle();
-
+  // Simulate the previous navigation sending an IPC that a load was disallowed.
+  // This could happen e.g. for cross-process navigations, which have no
+  // ordering guarantees.
+  throttle_manager()->DidDisallowFirstSubresource();
   EXPECT_FALSE(ads_blocked_in_content_settings());
 #if defined(OS_ANDROID)
   EXPECT_FALSE(presenting_ads_blocked_infobar());
@@ -1424,115 +1403,6 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   tester.ExpectTotalCount(kReadyToCommitResultsInCommitHistogram, 0);
   tester.ExpectTotalCount(
       kReadyToCommitResultsInCommitRestrictedAdFrameNavigationHistogram, 0);
-}
-
-// Basic test of throttle manager lifetime and getter methods. Ensure a new
-// page creating navigation creates a new throttle manager and it's reachable
-// using FromNavigationHandle until commit time. Once committed that same
-// throttle manager should now be associated with the new page.
-TEST_P(ContentSubresourceFilterThrottleManagerTest,
-       ThrottleManagerLifetime_Basic) {
-  auto* initial_throttle_manager =
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage());
-  EXPECT_TRUE(initial_throttle_manager);
-
-  CreateTestNavigation(GURL(kTestURLWithNoActivation), main_rfh());
-  navigation_simulator()->Start();
-
-  auto* throttle_manager_at_start =
-      ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-          *navigation_simulator()->GetNavigationHandle());
-
-  // Starting a main-frame, cross-document navigation creates a new throttle
-  // manager but doesn't replace the one on the current page yet.
-  EXPECT_TRUE(throttle_manager_at_start);
-  EXPECT_NE(throttle_manager_at_start, initial_throttle_manager);
-  EXPECT_EQ(
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
-      initial_throttle_manager);
-
-  navigation_simulator()->ReadyToCommit();
-
-  EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-                *navigation_simulator()->GetNavigationHandle()),
-            throttle_manager_at_start);
-  EXPECT_EQ(
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
-      initial_throttle_manager);
-
-  navigation_simulator()->Commit();
-
-  // Now that the navigation committed, it should be associated with the current
-  // page.
-  EXPECT_FALSE(navigation_simulator()->GetNavigationHandle());
-  ASSERT_EQ(main_rfh()->GetLastCommittedURL(), kTestURLWithNoActivation);
-  EXPECT_EQ(
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
-      throttle_manager_at_start);
-
-  // A new navigation creates a new throttle manager.
-  NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
-  EXPECT_NE(
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
-      throttle_manager_at_start);
-}
-
-// Ensure subframe navigations do not create a new throttle manager and
-// FromNavigation gets the correct one.
-TEST_P(ContentSubresourceFilterThrottleManagerTest,
-       ThrottleManagerLifetime_Subframe) {
-  NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
-
-  auto* throttle_manager =
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage());
-  ASSERT_TRUE(throttle_manager);
-
-  CreateSubframeWithTestNavigation(
-      GURL("https://www.example.com/not_disallowed.html"), main_rfh());
-  navigation_simulator()->Start();
-
-  // Using FromNavigation on a subframe navigation should retrieve the throttle
-  // manager from the current Page.
-  EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-                *navigation_simulator()->GetNavigationHandle()),
-            throttle_manager);
-
-  navigation_simulator()->Commit();
-
-  // Committing the subframe navigation should not change the Page's throttle
-  // manager.
-  EXPECT_EQ(
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
-      throttle_manager);
-}
-
-// Same document navigations are similar to subframes: do not create a new
-// throttle manager and FromNavigation gets the existing one.
-// TODO(bokan): Would be good to test lifetime from some WebContentsObserver
-// methods that can see the navigation handle for a same-document navigation.
-// Some additional tests that would be good is to verify the behavior of the
-// FromNavigationHandle/FromPage methods around the DidFinishNavigation time
-// when it's transferred.
-TEST_P(ContentSubresourceFilterThrottleManagerTest,
-       ThrottleManagerLifetime_SameDocument) {
-  const GURL kUrl = GURL(kTestURLWithDryRun);
-  const GURL kSameDocumentUrl =
-      GURL(base::StringPrintf("%s#ref", kTestURLWithDryRun));
-
-  NavigateAndCommitMainFrame(kUrl);
-
-  auto* throttle_manager =
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage());
-  ASSERT_TRUE(throttle_manager);
-
-  CreateTestNavigation(kSameDocumentUrl, main_rfh());
-  navigation_simulator()->CommitSameDocument();
-
-  // Committing the same-document navigation should not change the Page's
-  // throttle manager.
-  EXPECT_EQ(
-      ContentSubresourceFilterThrottleManager::FromPage(main_rfh()->GetPage()),
-      throttle_manager);
 }
 
 // TODO(csharrison): Make sure the following conditions are exercised in tests:

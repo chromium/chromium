@@ -841,7 +841,7 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
 
   if (auto* throttle_manager =
           subresource_filter::ContentSubresourceFilterThrottleManager::
-              FromNavigationHandle(*handle)) {
+              FromWebContents(handle->GetWebContents())) {
     throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
   }
 
