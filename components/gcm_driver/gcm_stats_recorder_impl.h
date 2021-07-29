@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"

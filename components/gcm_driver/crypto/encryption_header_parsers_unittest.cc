@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
 
 #include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
