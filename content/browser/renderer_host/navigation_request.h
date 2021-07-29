@@ -324,6 +324,7 @@ class CONTENT_EXPORT NavigationRequest
   void RegisterThrottleForTesting(
       std::unique_ptr<NavigationThrottle> navigation_throttle) override;
   bool IsDeferredForTesting() override;
+  bool IsCommitDeferringConditionDeferredForTesting() override;
   bool WasStartedFromContextMenu() override;
   const GURL& GetSearchableFormURL() override;
   const std::string& GetSearchableFormEncoding() override;
@@ -361,7 +362,6 @@ class CONTENT_EXPORT NavigationRequest
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
-  bool IsCommitDeferringConditionDeferredForTesting();
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.

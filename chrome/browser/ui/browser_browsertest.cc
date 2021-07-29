@@ -604,6 +604,68 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ClearPendingOnFailUnlessNTP) {
   }
 }
 
+// Test for crbug.com/1232447. Ensure that a non-user-initiated navigation
+// doesn't commit while a JS dialog is showing.
+IN_PROC_BROWSER_TEST_F(BrowserTest, DialogDefersNavigationCommit) {
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kEmptyUrl(embedded_test_server()->GetURL("/empty.html"));
+  const GURL kSecondUrl(embedded_test_server()->GetURL("/title1.html"));
+
+  ui_test_utils::NavigateToURL(browser(), kEmptyUrl);
+
+  content::TestNavigationManager manager(contents, kSecondUrl);
+  auto* js_dialog_manager =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(contents);
+
+  // Start a non-user-gesture navigation to the second page but block after the
+  // request is started.
+  {
+    auto script = content::JsReplace("window.location = $1;", kSecondUrl);
+    ASSERT_TRUE(content::ExecJs(contents->GetMainFrame(), script,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    ASSERT_TRUE(manager.WaitForRequestStart());
+  }
+
+  // Show a modal JavaScript dialog.
+  {
+    base::RunLoop run_loop;
+
+    js_dialog_manager->SetDialogShownCallbackForTesting(run_loop.QuitClosure());
+    contents->GetMainFrame()->ExecuteJavaScriptForTests(u"alert('one'); ",
+                                                        base::NullCallback());
+    run_loop.Run();
+
+    ASSERT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
+  }
+
+  // Continue the navigation through the response and on to commit. Since a
+  // dialog is showing, this should cause the navigation to be deferred before
+  // commit and the dialog should remain showing.
+  {
+    ASSERT_TRUE(manager.WaitForResponse());
+    manager.ResumeNavigation();
+
+    content::NavigationHandle* handle = manager.GetNavigationHandle();
+    EXPECT_FALSE(handle->IsWaitingToCommit());
+    EXPECT_TRUE(handle->IsCommitDeferringConditionDeferredForTesting());
+    EXPECT_TRUE(js_dialog_manager->IsShowingDialogForTesting());
+  }
+
+  // Dismiss the dialog. This should resume the navigation.
+  {
+    js_dialog_manager->ClickDialogButtonForTesting(true, std::u16string());
+    ASSERT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
+
+    content::NavigationHandle* handle = manager.GetNavigationHandle();
+    EXPECT_FALSE(handle->IsCommitDeferringConditionDeferredForTesting());
+    EXPECT_TRUE(handle->IsWaitingToCommit());
+  }
+
+  manager.WaitForNavigationFinished();
+}
+
 // Test for crbug.com/297289.  Ensure that modal dialogs are closed when a
 // cross-process navigation is ready to commit.
 IN_PROC_BROWSER_TEST_F(BrowserTest, CrossProcessNavCancelsDialogs) {

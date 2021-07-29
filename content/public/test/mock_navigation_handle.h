@@ -152,6 +152,7 @@ class MockNavigationHandle : public NavigationHandle {
               RegisterThrottleForTesting,
               (std::unique_ptr<NavigationThrottle>));
   MOCK_METHOD(bool, IsDeferredForTesting, ());
+  MOCK_METHOD(bool, IsCommitDeferringConditionDeferredForTesting, ());
   MOCK_METHOD(void,
               RegisterSubresourceOverride,
               (blink::mojom::TransferrableURLLoaderPtr));

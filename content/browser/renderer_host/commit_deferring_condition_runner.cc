@@ -16,7 +16,6 @@ std::unique_ptr<CommitDeferringConditionRunner>
 CommitDeferringConditionRunner::Create(NavigationRequest& navigation_request) {
   auto runner =
       base::WrapUnique(new CommitDeferringConditionRunner(navigation_request));
-  runner->RegisterDeferringConditions(navigation_request);
   return runner;
 }
 

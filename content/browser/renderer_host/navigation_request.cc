@@ -3646,6 +3646,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
 
   DCHECK_EQ(result.action(), NavigationThrottle::PROCEED);
 
+  commit_deferrer_->RegisterDeferringConditions(*this);
   commit_deferrer_->ProcessChecks();
 
   // DO NOT ADD CODE after this. The previous call to ProcessChecks may have
