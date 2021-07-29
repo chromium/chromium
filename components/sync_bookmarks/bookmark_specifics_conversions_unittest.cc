@@ -49,8 +49,9 @@ enum class InvalidBookmarkSpecificsError {
   kInvalidGUID = 5,
   kInvalidParentGUID = 6,
   kInvalidUniquePosition = 7,
+  kBannedGUID = 8,
 
-  kMaxValue = kInvalidUniquePosition,
+  kMaxValue = kBannedGUID,
 };
 
 sync_pb::UniquePosition RandomUniquePosition() {
@@ -677,6 +678,27 @@ TEST(BookmarkSpecificsConversionsTest,
   histogram_tester.ExpectBucketCount(
       "Sync.InvalidBookmarkSpecifics",
       /*sample=*/InvalidBookmarkSpecificsError::kInvalidUniquePosition,
+      /*expected_count=*/1);
+}
+
+TEST(BookmarkSpecificsConversionsTest,
+     ShouldBeInvalidBookmarkSpecificsWithBannedGUID) {
+  ASSERT_THAT(bookmarks::BookmarkNode::kBannedGuidDueToPastSyncBug,
+              Eq(InferGuidFromLegacyOriginatorId(
+                     /*originator_cache_guid=*/"",
+                     /*originator_client_item_id=*/"")
+                     .AsLowercaseString()));
+
+  base::HistogramTester histogram_tester;
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::BookmarkSpecifics* bm_specifics = specifics.mutable_bookmark();
+  bm_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
+  *bm_specifics->mutable_unique_position() = RandomUniquePosition();
+  bm_specifics->set_guid(bookmarks::BookmarkNode::kBannedGuidDueToPastSyncBug);
+  EXPECT_FALSE(IsValidBookmarkSpecifics(*bm_specifics));
+  histogram_tester.ExpectBucketCount(
+      "Sync.InvalidBookmarkSpecifics",
+      /*sample=*/InvalidBookmarkSpecificsError::kBannedGUID,
       /*expected_count=*/1);
 }
 

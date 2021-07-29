@@ -54,8 +54,9 @@ enum class InvalidBookmarkSpecificsError {
   kInvalidGUID = 5,
   kInvalidParentGUID = 6,
   kInvalidUniquePosition = 7,
+  kBannedGUID = 8,
 
-  kMaxValue = kInvalidUniquePosition,
+  kMaxValue = kBannedGUID,
 };
 
 void LogInvalidSpecifics(InvalidBookmarkSpecificsError error) {
@@ -410,9 +411,15 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
     is_valid = false;
   }
   const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+
   if (!guid.is_valid()) {
-    DLOG(ERROR) << "Invalid bookmark: invalid GUID in the specifics.";
+    DLOG(ERROR) << "Invalid bookmark: invalid GUID in specifics.";
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidGUID);
+    is_valid = false;
+  } else if (guid.AsLowercaseString() ==
+             bookmarks::BookmarkNode::kBannedGuidDueToPastSyncBug) {
+    DLOG(ERROR) << "Invalid bookmark: banned GUID in specifics.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
     is_valid = false;
   }
   if (specifics.has_parent_guid()) {

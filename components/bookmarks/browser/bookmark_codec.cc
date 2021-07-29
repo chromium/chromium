@@ -306,6 +306,11 @@ bool BookmarkCodec::DecodeNode(const base::Value& value,
       guids_reassigned_ = true;
     }
 
+    if (guid.AsLowercaseString() == BookmarkNode::kBannedGuidDueToPastSyncBug) {
+      guid = base::GUID::GenerateRandomV4();
+      guids_reassigned_ = true;
+    }
+
     // Guard against GUID collisions, which would violate BookmarkModel's
     // invariant that each GUID is unique.
     if (base::Contains(guids_, guid)) {

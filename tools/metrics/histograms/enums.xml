@@ -43026,6 +43026,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Invalid GUID"/>
   <int value="6" label="Invalid parent GUID"/>
   <int value="7" label="Invalid unique position"/>
+  <int value="8" label="Banned GUID"/>
 </enum>
 
 <enum name="InvalidDevicePolicyFilesStatus">

@@ -64,6 +64,11 @@ const char BookmarkNode::kMobileBookmarksNodeGuid[] =
 const char BookmarkNode::kManagedNodeGuid[] =
     "323123f4-9381-5aee-80e6-ea5fca2f7672";
 
+// This value is the result of exercising sync's function
+// syncer::InferGuidForLegacyBookmark() with an empty input.
+const char BookmarkNode::kBannedGuidDueToPastSyncBug[] =
+    "da39a3ee-5e6b-fb0d-b255-bfef95601890";
+
 BookmarkNode::BookmarkNode(int64_t id, const base::GUID& guid, const GURL& url)
     : BookmarkNode(id, guid, url, url.is_empty() ? FOLDER : URL, false) {}
 
@@ -160,6 +165,7 @@ BookmarkNode::BookmarkNode(int64_t id,
       is_permanent_node_(is_permanent_node) {
   DCHECK_NE(type == URL, url.is_empty());
   DCHECK(guid.is_valid());
+  DCHECK_NE(guid.AsLowercaseString(), std::string(kBannedGuidDueToPastSyncBug));
 }
 
 void BookmarkNode::InvalidateFavicon() {
