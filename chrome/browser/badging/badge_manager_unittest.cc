@@ -15,7 +15,6 @@
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
 #include "chrome/browser/web_applications/test/test_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
