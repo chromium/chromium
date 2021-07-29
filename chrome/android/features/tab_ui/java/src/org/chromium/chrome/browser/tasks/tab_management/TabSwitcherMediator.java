@@ -18,7 +18,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -53,7 +52,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -428,9 +426,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mHandler = new Handler();
         mTabContentManager = tabContentManager;
 
-        // TODO(crbug.com/982018): Let the start surface pass in the parameter and add unit test for
-        // it. This is a temporary solution to keep this change minimum.
-        mShowTabsInMruOrder = isShowingTabsInMRUOrder();
+        mShowTabsInMruOrder = TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
 
         mMultiWindowModeObserver = isInMultiWindowMode -> {
             if (isInMultiWindowMode) {
@@ -811,17 +807,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      */
     void setCleanupDelayForTesting(int timeoutMs) {
         mCleanupDelayMsForTesting = timeoutMs;
-    }
-
-    /**
-     * Check if tabs should show in MRU order in current start surface tab switcher.
-     *  @return whether tabs should show in MRU order
-     */
-    static boolean isShowingTabsInMRUOrder() {
-        String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
-        return TextUtils.equals(feature, "twopanes")
-                || StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.getValue()
-                && TextUtils.equals(feature, "single");
     }
 
     /**

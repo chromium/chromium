@@ -11,6 +11,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -45,7 +46,7 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
 
                 resetHandler.resetWithTabList(
                         tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                        false, TabSwitcherMediator.isShowingTabsInMRUOrder());
+                        false, TabSwitcherCoordinator.isShowingTabsInMRUOrder(TabListMode.GRID));
             }
         };
 

@@ -1951,7 +1951,8 @@ const FeatureEntry::FeatureVariation kCommercePriceTrackingAndroidVariations[] =
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {
-    {"start_surface_variation", "single"}};
+    {"start_surface_variation", "single"},
+    {"show_tabs_in_mru_order", "true"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceFinale[] = {
     {"start_surface_variation", "single"},
@@ -1959,6 +1960,7 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceFinale[] = {
     {"home_button_on_grid_tab_switcher", "true"},
     {"new_home_surface_from_home_button", "hide_tab_switcher_only"},
     {"hide_switch_when_no_incognito_tabs", "true"},
+    {"show_tabs_in_mru_order", "true"},
     {"enable_tab_groups_continuation", "true"}};
 
 const FeatureEntry::FeatureParam
@@ -1969,6 +1971,7 @@ const FeatureEntry::FeatureParam
         {"home_button_on_grid_tab_switcher", "true"},
         {"new_home_surface_from_home_button", "hide_mv_tiles_and_tab_switcher"},
         {"hide_switch_when_no_incognito_tabs", "true"},
+        {"show_tabs_in_mru_order", "true"},
         {"enable_tab_groups_continuation", "true"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {

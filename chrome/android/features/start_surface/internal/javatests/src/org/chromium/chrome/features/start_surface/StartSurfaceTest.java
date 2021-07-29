@@ -1589,7 +1589,7 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
-    public void testShow_SingleAsHomepage_ShowTabsInMRUOrder() {
+    public void test_CarouselTabSwitcherShowTabsInMRUOrder() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -1639,8 +1639,8 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_tabs_in_mru_order/true"})
-    public void testShow_TabSwitcher_ShowTabsInMRUOrder() {
-        tabSwitcher_ShowTabsInMRUOrderImpl();
+    public void testShow_GridTabSwitcher_AlwaysShowTabsInCreationOrder() {
+        tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
     }
 
     @Test
@@ -1650,12 +1650,12 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS +
         "/single/show_tabs_in_mru_order/true/show_last_active_tab_only/true"})
-    public void testShowV2_TabSwitcher_ShowTabsInMRUOrder() {
+    public void testShowV2_GridTabSwitcher_AlwaysShowTabsInCreationOrder() {
         // clang-format on
-        tabSwitcher_ShowTabsInMRUOrderImpl();
+        tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
     }
 
-    private void tabSwitcher_ShowTabsInMRUOrderImpl() {
+    private void tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         }
@@ -1696,13 +1696,13 @@ public class StartSurfaceTest {
         TextView title1 =
                 firstViewHolder.itemView.findViewById(org.chromium.chrome.tab_ui.R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(tab2.getTitle(), title1.getText()));
+                () -> Assert.assertEquals(tab1.getTitle(), title1.getText()));
 
         RecyclerView.ViewHolder secondViewHolder = recyclerView.findViewHolderForAdapterPosition(1);
         TextView title2 =
                 secondViewHolder.itemView.findViewById(org.chromium.chrome.tab_ui.R.id.tab_title);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertEquals(tab1.getTitle(), title2.getText()));
+                () -> Assert.assertEquals(tab2.getTitle(), title2.getText()));
     }
 
     /* MV tiles context menu tests starts. */
