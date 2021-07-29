@@ -275,7 +275,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
 BubbleDialogModelHost::~BubbleDialogModelHost() {
   // Remove children as they may refer to the soon-to-be-destructed model.
-  contents_view_->RemoveAllChildViews(true);
+  contents_view_->RemoveAllChildViews();
 }
 
 std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
@@ -340,7 +340,7 @@ void BubbleDialogModelHost::Close() {
   // TODO(pbos): Consider turning this into for-each-field remove field.
   // TODO(pbos): Move this into a better-named call inside contents_view_ to
   // make it clear that the model_ is about to be destroyed.
-  contents_view_->RemoveAllChildViews(true);
+  contents_view_->RemoveAllChildViews();
   fields_.clear();
   model_.reset();
 }

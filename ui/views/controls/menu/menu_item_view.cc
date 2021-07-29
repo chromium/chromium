@@ -402,7 +402,7 @@ void MenuItemView::RemoveAllMenuItems() {
   removed_items_.insert(removed_items_.end(), submenu_->children().begin(),
                         submenu_->children().end());
 
-  submenu_->RemoveAllChildViews(false);
+  submenu_->RemoveAllChildViewsWithoutDeleting();
 }
 
 MenuItemView* MenuItemView::AppendMenuItem(int item_id,

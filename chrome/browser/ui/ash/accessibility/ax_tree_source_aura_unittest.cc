@@ -172,7 +172,7 @@ TEST_F(AXTreeSourceAuraTest, Serialize) {
   ASSERT_EQ(1U, out_update.nodes.size());
 
   // Try removing some child views and re-adding which should fire some events.
-  content_->RemoveAllChildViews(false /* delete_children */);
+  content_->RemoveAllChildViewsWithoutDeleting();
   content_->AddChildView(textfield_);
 
   // Grab the textfield since serialization only walks up the tree (not down

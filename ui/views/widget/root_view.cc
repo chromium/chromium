@@ -209,7 +209,7 @@ RootView::RootView(Widget* widget)
 RootView::~RootView() {
   // If we have children remove them explicitly so to make sure a remove
   // notification is sent for each one of them.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
 // Tree operations -------------------------------------------------------------
@@ -221,7 +221,7 @@ void RootView::SetContentsView(View* contents_view) {
   // Widget pointer is valid.
   SetUseDefaultFillLayout(true);
   if (!children().empty())
-    RemoveAllChildViews(true);
+    RemoveAllChildViews();
   AddChildView(contents_view);
 }
 

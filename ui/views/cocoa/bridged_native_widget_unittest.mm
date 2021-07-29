@@ -543,7 +543,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(
   textfield->SetText(text);
   textfield->SetTextInputType(text_input_type);
   textfield->set_controller(this);
-  view_->RemoveAllChildViews(true);
+  view_->RemoveAllChildViews();
   view_->AddChildView(textfield);
   textfield->SetBoundsRect(bounds_);
 

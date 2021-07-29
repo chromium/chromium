@@ -206,7 +206,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
   void ComboboxChanged() {
     int index = combobox_->GetSelectedIndex();
     DCHECK_LT(index, combobox_model_->GetItemCount());
-    example_shown_->RemoveAllChildViews(false);
+    example_shown_->RemoveAllChildViewsWithoutDeleting();
     example_shown_->AddChildView(combobox_model_->GetItemViewAt(index));
     example_shown_->RequestFocus();
     SetStatus(std::string());

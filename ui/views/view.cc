@@ -316,6 +316,12 @@ void View::RemoveAllChildViews(bool delete_children) {
   UpdateTooltip();
 }
 
+void View::RemoveAllChildViewsWithoutDeleting() {
+  while (!children_.empty())
+    DoRemoveChildView(children_.front(), false, false, nullptr);
+  UpdateTooltip();
+}
+
 bool View::Contains(const View* view) const {
   for (const View* v = view; v; v = v->parent_) {
     if (v == this)

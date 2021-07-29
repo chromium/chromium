@@ -1760,7 +1760,7 @@ void Widget::DestroyRootView() {
   // Remove all children before the unique_ptr reset so that
   // GetWidget()->GetRootView() doesn't return nullptr while the views hierarchy
   // is being torn down.
-  root_view_->RemoveAllChildViews(true);
+  root_view_->RemoveAllChildViews();
   root_view_.reset();
 }
 
