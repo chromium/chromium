@@ -179,10 +179,6 @@ class Manifest final {
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(const std::string& path,
                      const base::Value** out_value) const;
-  // Deprecated: Use the GetList() overload that accepts a base::Value output
-  // parameter instead.
-  bool GetList(const std::string& path,
-               const base::ListValue** out_value) const;
   bool GetList(const std::string& path, const base::Value** out_value) const;
 
   bool GetPathOfType(const std::string& path,

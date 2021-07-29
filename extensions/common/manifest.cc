@@ -366,11 +366,6 @@ bool Manifest::GetDictionary(const std::string& path,
   return GetPathOfType(path, base::Value::Type::DICTIONARY, out_value);
 }
 
-bool Manifest::GetList(
-    const std::string& path, const base::ListValue** out_value) const {
-  return available_values_->GetList(path, out_value);
-}
-
 bool Manifest::GetList(const std::string& path,
                        const base::Value** out_value) const {
   return GetPathOfType(path, base::Value::Type::LIST, out_value);
