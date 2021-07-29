@@ -13,6 +13,7 @@
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
 #include "media/base/video_renderer_sink.h"
+#include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -47,6 +48,7 @@ class MediaFoundationRendererClient
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
+      std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
       media::VideoRendererSink* sink);
 
   ~MediaFoundationRendererClient() override;
@@ -91,8 +93,7 @@ class MediaFoundationRendererClient
   void OnConnectionError();
   void OnRemoteRendererInitialized(media::PipelineStatus status);
   void OnVideoFrameCreated(scoped_refptr<media::VideoFrame> video_frame);
-  void OnDCOMPStreamTextureInitialized(bool success);
-  void OnDCOMPSurfaceTextureReleased();
+  void OnDCOMPTextureInitialized(bool success);
   void OnDCOMPSurfaceHandleCreated(bool success);
   void OnReceivedRemoteDCOMPSurface(mojo::ScopedHandle surface_handle);
   void OnDCOMPSurfaceRegisteredInGPUProcess(
@@ -112,6 +113,8 @@ class MediaFoundationRendererClient
   // Used to forward calls to the MediaFoundationRenderer living in the MF_CDM
   // LPAC Utility process.
   std::unique_ptr<media::MojoRenderer> mojo_renderer_;
+
+  std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
 
   RendererClient* client_ = nullptr;
 

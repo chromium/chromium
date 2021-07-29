@@ -18,8 +18,10 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     std::unique_ptr<media::MojoRenderer> mojo_renderer,
+    std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
     media::VideoRendererSink* sink)
     : mojo_renderer_(std::move(mojo_renderer)),
+      dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
       sink_(sink),
       media_task_runner_(std::move(media_task_runner)),
       compositor_task_runner_(std::move(compositor_task_runner)),
@@ -93,8 +95,15 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
   }
 
   if (has_video_) {
-    // TODO(frankli): Add code to init DCOMPTextureWrapper.
-    NOTIMPLEMENTED() << "Video compositing not implemented yet";
+    using Self = MediaFoundationRendererClient;
+    auto weak_ptr = weak_factory_.GetWeakPtr();
+    dcomp_texture_wrapper_->Initialize(
+        gfx::Size(1, 1),
+        base::BindOnce(&Self::OnDCOMPSurfaceHandleCreated, weak_ptr),
+        base::BindRepeating(&Self::OnCompositionParamsReceived, weak_ptr),
+        base::BindOnce(&Self::OnDCOMPTextureInitialized, weak_ptr));
+    // `init_cb_` will be handled in `OnDCOMPTextureInitialized()`.
+    return;
   }
 
   std::move(init_cb_).Run(status);
@@ -114,7 +123,9 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleCreated(bool success) {
   DCHECK(has_video_);
 
   dcomp_surface_handle_bound_ = true;
-  return;
+  dcomp_texture_wrapper_->CreateVideoFrame(
+      base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface(
@@ -148,6 +159,7 @@ void MediaFoundationRendererClient::RegisterDCOMPSurfaceHandleInGPUProcess(
       mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(surface_handle)));
 
   // TODO(frankli): Pass the |mojo_surface_handle| to Gpu process.
+  NOTIMPLEMENTED();
 }
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess(
@@ -155,42 +167,33 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess(
   DVLOG_FUNC(1);
   DCHECK(has_video_);
 
-  return;
+  NOTIMPLEMENTED();
 }
 
-void MediaFoundationRendererClient::OnDCOMPSurfaceTextureReleased() {
-  DCHECK(has_video_);
-  return;
-}
-
-void MediaFoundationRendererClient::OnDCOMPStreamTextureInitialized(
-    bool success) {
+void MediaFoundationRendererClient::OnDCOMPTextureInitialized(bool success) {
   DVLOG_FUNC(1) << "success=" << success;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(!init_cb_.is_null());
   DCHECK(has_video_);
 
-  media::PipelineStatus status = media::PipelineStatus::PIPELINE_OK;
   if (!success) {
-    status = media::PipelineStatus::PIPELINE_ERROR_INITIALIZATION_FAILED;
+    std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
+    return;
   }
-  if (natural_size_.width() != 0 || natural_size_.height() != 0) {
-    InitializeDCOMPRendering();
-  }
-  std::move(init_cb_).Run(status);
+
+  // Initialize DCOMP texture size to {1, 1} to signify to SwapChainPresenter
+  // that the video output size is not yet known. {1, 1} is chosen as opposed to
+  // {0, 0} because VideoFrameSubmitter will not submit 0x0 video frames.
+  if (natural_size_.IsEmpty())
+    dcomp_texture_wrapper_->UpdateTextureSize(gfx::Size(1, 1));
+
+  std::move(init_cb_).Run(PIPELINE_OK);
 }
 
 void MediaFoundationRendererClient::OnVideoFrameCreated(
     scoped_refptr<media::VideoFrame> video_frame) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationRendererClient::OnVideoFrameCreated,
-                       weak_factory_.GetWeakPtr(), video_frame));
-    return;
-  }
-
   DVLOG_FUNC(1);
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(has_video_);
 
   video_frame->metadata().protected_video = true;
@@ -360,13 +363,16 @@ void MediaFoundationRendererClient::OnVideoNaturalSizeChange(
   DCHECK(has_video_);
 
   natural_size_ = size;
-  // Skip creation of a new video frame if the DCOMP surface has not yet been
-  // bound to the DCOMP texture as we will create a new frame after binding has
-  // completed.
-  if (dcomp_surface_handle_bound_) {
-    // TODO(frankli): Add code to call DCOMPTextureWrapper::CreateVideoFrame().
-  }
+
+  // Ensure we don't update with an empty size as |dcomp_text_wrapper_| was
+  // initialized with size of 1x1.
+  auto texture_size = natural_size_.IsEmpty() ? gfx::Size(1, 1) : natural_size_;
+  dcomp_texture_wrapper_->UpdateTextureSize(texture_size);
   InitializeDCOMPRendering();
+
+  if (dcomp_frame_)
+    sink_->PaintSingleFrame(dcomp_frame_, true);
+
   client_->OnVideoNaturalSizeChange(natural_size_);
 }
 

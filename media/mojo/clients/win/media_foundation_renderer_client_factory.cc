@@ -4,6 +4,7 @@
 
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
 
+#include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/mojo/clients/mojo_renderer.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
@@ -14,8 +15,10 @@ namespace media {
 
 MediaFoundationRendererClientFactory::MediaFoundationRendererClientFactory(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+    GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
     std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory)
     : compositor_task_runner_(std::move(compositor_task_runner)),
+      get_dcomp_texture_cb_(get_dcomp_texture_cb),
       mojo_renderer_factory_(std::move(mojo_renderer_factory)) {
   DVLOG_FUNC(1);
 }
@@ -42,6 +45,9 @@ MediaFoundationRendererClientFactory::CreateRenderer(
   auto renderer_extension_receiver =
       renderer_extension_remote.InitWithNewPipeAndPassReceiver();
 
+  auto dcomp_texture = get_dcomp_texture_cb_.Run();
+  DCHECK(dcomp_texture);
+
   std::unique_ptr<media::MojoRenderer> mojo_renderer =
       mojo_renderer_factory_->CreateMediaFoundationRenderer(
           std::move(renderer_extension_receiver), media_task_runner,
@@ -50,7 +56,8 @@ MediaFoundationRendererClientFactory::CreateRenderer(
   // mojo_renderer's ownership is passed to MediaFoundationRendererClient.
   return std::make_unique<MediaFoundationRendererClient>(
       std::move(renderer_extension_remote), media_task_runner,
-      compositor_task_runner_, std::move(mojo_renderer), video_renderer_sink);
+      compositor_task_runner_, std::move(mojo_renderer),
+      std::move(dcomp_texture), video_renderer_sink);
 }
 
 media::MediaResource::Type

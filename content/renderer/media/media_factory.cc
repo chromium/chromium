@@ -118,6 +118,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
 #endif  // defined(OS_WIN)
@@ -717,11 +718,16 @@ MediaFactory::CreateRendererFactorySelector(
 #if defined(OS_WIN)
   // Only use MediaFoundationRenderer when MediaFoundationCdm is available.
   if (media::MediaFoundationCdm::IsAvailable()) {
+    auto dcomp_texture_creation_cb =
+        base::BindRepeating(&DCOMPTextureWrapperImpl::Create,
+                            render_thread->GetDCOMPTextureFactory(),
+                            render_thread->GetMediaThreadTaskRunner());
+
     factory_selector->AddFactory(
         RendererType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             render_thread->compositor_task_runner(),
-            CreateMojoRendererFactory()));
+            std::move(dcomp_texture_creation_cb), CreateMojoRendererFactory()));
   }
 #endif  // defined(OS_WIN)
 

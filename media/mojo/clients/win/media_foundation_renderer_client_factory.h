@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "media/base/renderer_factory.h"
+#include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 
@@ -18,8 +19,12 @@ namespace media {
 // and its associated MediaFoundationRenderer.
 class MediaFoundationRendererClientFactory : public media::RendererFactory {
  public:
+  using GetDCOMPTextureWrapperCB =
+      base::RepeatingCallback<std::unique_ptr<DCOMPTextureWrapper>()>;
+
   MediaFoundationRendererClientFactory(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+      GetDCOMPTextureWrapperCB get_dcomp_texture_cb,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory);
   ~MediaFoundationRendererClientFactory() override;
 
@@ -36,7 +41,7 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-
+  GetDCOMPTextureWrapperCB get_dcomp_texture_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
 };
 

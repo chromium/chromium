@@ -112,6 +112,10 @@ class VariationsRenderThreadObserver;
 class StreamTextureFactory;
 #endif
 
+#if defined(OS_WIN)
+class DCOMPTextureFactory;
+#endif
+
 // The RenderThreadImpl class represents the main thread, where RenderView
 // instances live.  The RenderThread supports an API that is used by its
 // consumer to talk indirectly to the RenderViews and supporting objects.
@@ -256,6 +260,10 @@ class CONTENT_EXPORT RenderThreadImpl
 #if defined(OS_ANDROID)
   scoped_refptr<StreamTextureFactory> GetStreamTexureFactory();
   bool EnableStreamTextureCopy();
+#endif
+
+#if defined(OS_WIN)
+  scoped_refptr<DCOMPTextureFactory> GetDCOMPTextureFactory();
 #endif
 
   blink::WebVideoCaptureImplManager* video_capture_impl_manager() const {
@@ -528,6 +536,10 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if defined(OS_ANDROID)
   scoped_refptr<StreamTextureFactory> stream_texture_factory_;
+#endif
+
+#if defined(OS_WIN)
+  scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
 #endif
 
   scoped_refptr<viz::ContextProviderCommandBuffer> shared_main_thread_contexts_;

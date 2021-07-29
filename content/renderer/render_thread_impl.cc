@@ -170,6 +170,7 @@
 #if defined(OS_WIN)
 #include <objbase.h>
 #include <windows.h>
+#include "content/renderer/media/win/dcomp_texture_factory.h"
 #endif
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
@@ -1197,7 +1198,6 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
 }
 
 #if defined(OS_ANDROID)
-
 scoped_refptr<StreamTextureFactory> RenderThreadImpl::GetStreamTexureFactory() {
   DCHECK(IsMainThread());
   if (!stream_texture_factory_ || stream_texture_factory_->IsLost()) {
@@ -1214,8 +1214,23 @@ scoped_refptr<StreamTextureFactory> RenderThreadImpl::GetStreamTexureFactory() {
 bool RenderThreadImpl::EnableStreamTextureCopy() {
   return GetContentClient()->UsingSynchronousCompositing();
 }
+#endif  // defined(OS_ANDROID)
 
-#endif
+#if defined(OS_WIN)
+scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {
+  DCHECK(IsMainThread());
+  if (!dcomp_texture_factory_.get() || dcomp_texture_factory_->IsLost()) {
+    scoped_refptr<gpu::GpuChannelHost> channel = EstablishGpuChannelSync();
+    if (!channel) {
+      dcomp_texture_factory_ = nullptr;
+      return nullptr;
+    }
+    dcomp_texture_factory_ = DCOMPTextureFactory::Create(
+        std::move(channel), GetMediaThreadTaskRunner());
+  }
+  return dcomp_texture_factory_;
+}
+#endif  // defined(OS_WIN)
 
 base::WaitableEvent* RenderThreadImpl::GetShutdownEvent() {
   return ChildProcess::current()->GetShutDownEvent();
