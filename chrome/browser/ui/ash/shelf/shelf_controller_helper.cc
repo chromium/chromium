@@ -62,18 +62,10 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
   const GURL url = tab->GetURL();
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension = extensions.GetAppByURL(url);
-  if (extension && !extensions::LaunchesInWindow(profile, extension))
-    return extension;
 
-  // Bookmark app windows should match their launch url extension despite
-  // their web extents.
-  for (const auto& i : extensions) {
-    if (i.get()->from_bookmark() &&
-        extensions::IsInNavigationScopeForLaunchUrl(
-            extensions::AppLaunchInfo::GetLaunchWebURL(i.get()), url) &&
-        !extensions::LaunchesInWindow(profile, i.get())) {
-      return i.get();
-    }
+  if (extension && !extension->from_bookmark() &&
+      !extensions::LaunchesInWindow(profile, extension)) {
+    return extension;
   }
   return nullptr;
 }
@@ -140,7 +132,7 @@ absl::optional<std::string> GetShelfAppIdForWebContents(
   }
 
   const extensions::Extension* extension = GetExtensionForTab(profile, tab);
-  if (extension && !extension->from_bookmark()) {
+  if (extension) {
     return extension->id();
   }
   return absl::nullopt;
