@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "computed_style\.cc": [
-    "+ui/native_theme/native_theme.h",
-  ],
-}

@@ -107,10 +107,6 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
     observer.OnCaptionStyleUpdated();
 }
 
-float NativeTheme::AdjustBorderWidthByZoom(float border_width, float) const {
-  return border_width;
-}
-
 float NativeTheme::AdjustBorderRadiusByZoom(Part part,
                                             float border_radius,
                                             float zoom) const {

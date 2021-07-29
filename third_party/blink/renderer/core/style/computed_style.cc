@@ -82,7 +82,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace blink {
 
@@ -2338,10 +2337,7 @@ int ComputedStyle::OutlineOutsetExtent() const {
 
 float ComputedStyle::GetOutlineStrokeWidthForFocusRing() const {
   if (OutlineStyleIsAuto()) {
-    float width = 3.f;
-    width = ui::NativeTheme::GetInstanceForWeb()->AdjustBorderWidthByZoom(
-        width, EffectiveZoom());
-    return std::max(EffectiveZoom(), width);
+    return std::max(EffectiveZoom(), 3.f);
   }
 
 #if defined(OS_MAC)
