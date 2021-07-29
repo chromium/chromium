@@ -12,8 +12,11 @@ import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -63,6 +66,7 @@ public class StatusView extends LinearLayout {
     private boolean mAnimatingStatusIconHide;
 
     private @StringRes int mAccessibilityToast;
+    private @StringRes int mAccessibilityDoubleTapDescription;
 
     private Drawable mStatusIconDrawable;
 
@@ -255,12 +259,11 @@ public class StatusView extends LinearLayout {
      * @param listener Instance of View.OnClickListener or null.
      */
     void setStatusClickListener(View.OnClickListener listener) {
-        mIconView.setOnClickListener(listener);
-        mVerboseStatusTextView.setOnClickListener(listener);
+        setOnClickListener(listener);
     }
 
     /**
-     * Configure accessibility toasts.
+     * Configure accessibility descriptions.
      */
     void configureAccessibilityDescriptions() {
         View.OnLongClickListener listener = new View.OnLongClickListener() {
@@ -272,7 +275,21 @@ public class StatusView extends LinearLayout {
                         context, view, context.getResources().getString(mAccessibilityToast));
             }
         };
-        mIconView.setOnLongClickListener(listener);
+        setOnLongClickListener(listener);
+
+        setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+
+                if (mAccessibilityDoubleTapDescription == 0) return;
+
+                String onTapDescription =
+                        getContext().getResources().getString(mAccessibilityDoubleTapDescription);
+                info.addAction(new AccessibilityAction(
+                        AccessibilityNodeInfo.ACTION_CLICK, onTapDescription));
+            }
+        });
     }
 
     /**
@@ -312,8 +329,15 @@ public class StatusView extends LinearLayout {
     /**
      * Specify accessibility string presented to user upon long click.
      */
-    void setStatusIconAccessibilityToast(@StringRes int description) {
+    void setStatusAccessibilityToast(@StringRes int description) {
         mAccessibilityToast = description;
+    }
+
+    /**
+     * Specify accessibility string used for "Double tap to" description.
+     */
+    void setStatusAccessibilityDoubleTapDescription(@StringRes int description) {
+        mAccessibilityDoubleTapDescription = description;
     }
 
     /**
@@ -447,7 +471,7 @@ public class StatusView extends LinearLayout {
     // TODO(ender): The final last purpose of this method is to allow
     // ToolbarButtonInProductHelpController set up help bubbles. This dependency is about to
     // change. Do not depend on this method when creating new code.
-    View getSecurityButton() {
+    View getSecurityView() {
         return mIconView;
     }
 

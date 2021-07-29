@@ -216,8 +216,12 @@ public class StatusProperties {
     static final WritableObjectPropertyKey<View.OnClickListener> STATUS_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /** The accessibility string shown upon a long click on security icon. */
-    static final WritableIntPropertyKey STATUS_ICON_ACCESSIBILITY_TOAST_RES =
+    /** The accessibility string shown upon a long click. */
+    static final WritableIntPropertyKey STATUS_ACCESSIBILITY_TOAST_RES =
+            new WritableIntPropertyKey();
+
+    /** The accessibility description read for double tab upon a click on status view. */
+    static final WritableIntPropertyKey STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES =
             new WritableIntPropertyKey();
 
     /** Alpha of the icon. */
@@ -252,7 +256,8 @@ public class StatusProperties {
             SEPARATOR_COLOR_RES,
             SHOW_STATUS_ICON,
             STATUS_CLICK_LISTENER,
-            STATUS_ICON_ACCESSIBILITY_TOAST_RES,
+            STATUS_ACCESSIBILITY_TOAST_RES,
+            STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
             STATUS_ICON_ALPHA,
             STATUS_ICON_DESCRIPTION_RES,
             STATUS_ICON_RESOURCE,

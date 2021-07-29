@@ -213,13 +213,13 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
     /** Returns the view displaying the security icon. */
     public View getSecurityIconView() {
-        return mStatusView.getSecurityButton();
+        return mStatusView.getSecurityView();
     }
 
     /** Returns {@code true} if the security button is currently being displayed. */
     @VisibleForTesting
-    public boolean isSecurityButtonShown() {
-        return mMediator.isSecurityButtonShown();
+    public boolean isSecurityViewShown() {
+        return mMediator.isSecurityViewShown();
     }
 
     /** Returns {@code true} if the search engine status is currently being displayed. */

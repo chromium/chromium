@@ -330,7 +330,7 @@ public class ExpandablePaymentHandlerTest {
                 .check(matches(withContentDescription("Close")));
         onView(withId(R.id.security_icon))
                 .check(matches(isDisplayed()))
-                .check(matches(withContentDescription("Connection is secure. Site information")));
+                .check(matches(withContentDescription("Connection is secure")));
         onView(withId(R.id.origin))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(getOrigin(mServer))));
@@ -427,7 +427,7 @@ public class ExpandablePaymentHandlerTest {
 
         onView(withId(R.id.security_icon))
                 .check(matches(isDisplayed()))
-                .check(matches(withContentDescription("Connection is secure. Site information")));
+                .check(matches(withContentDescription("Connection is secure")));
 
         mRule.runOnUiThread(() -> paymentHandler.hide());
         waitForUiClosed();

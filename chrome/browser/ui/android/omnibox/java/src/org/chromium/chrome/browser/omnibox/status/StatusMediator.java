@@ -61,7 +61,7 @@ public class StatusMediator
     private boolean mPageIsPaintPreview;
     private boolean mPageIsOffline;
     private boolean mShowStatusIconWhenUrlFocused;
-    private boolean mIsSecurityButtonShown;
+    private boolean mIsSecurityViewShown;
     private boolean mShouldCancelCustomFavicon;
     private boolean mIsTablet;
 
@@ -441,8 +441,8 @@ public class StatusMediator
      * Reports whether security icon is shown.
      */
     @VisibleForTesting
-    boolean isSecurityButtonShown() {
-        return mIsSecurityButtonShown;
+    boolean isSecurityViewShown() {
+        return mIsSecurityViewShown;
     }
 
     /**
@@ -476,7 +476,7 @@ public class StatusMediator
         int tint = 0;
         int toast = 0;
 
-        mIsSecurityButtonShown = false;
+        mIsSecurityViewShown = false;
         if (mUrlHasFocus) {
             if (mShowStatusIconWhenUrlFocused) {
                 icon = mUrlBarTextIsSearch ? R.drawable.ic_suggestion_magnifier
@@ -484,7 +484,7 @@ public class StatusMediator
                 tint = mNavigationIconTintRes;
             }
         } else if (mSecurityIconRes != 0) {
-            mIsSecurityButtonShown = true;
+            mIsSecurityViewShown = true;
             icon = mSecurityIconRes;
             tint = mSecurityIconTintRes;
             toast = R.string.menu_page_info;
@@ -497,7 +497,9 @@ public class StatusMediator
         }
 
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
-        mModel.set(StatusProperties.STATUS_ICON_ACCESSIBILITY_TOAST_RES, toast);
+        mModel.set(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES, toast);
+        mModel.set(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
+                R.string.accessibility_toolbar_view_site_info);
     }
 
     /** @return True if the security icon has been set for the search engine icon. */
@@ -560,18 +562,7 @@ public class StatusMediator
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
-        if (mUrlHasFocus) {
-            if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito())) {
-                return 0;
-            } else if (mShowStatusIconWhenUrlFocused) {
-                return R.string.accessibility_toolbar_btn_site_info;
-            }
-        } else if (mSecurityIconRes != 0) {
-            return mSecurityIconDescriptionRes;
-        }
-
-        return 0;
+        return (mSecurityIconRes != 0) ? mSecurityIconDescriptionRes : 0;
     }
 
     /**
