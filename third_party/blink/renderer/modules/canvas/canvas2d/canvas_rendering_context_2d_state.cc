@@ -739,9 +739,8 @@ bool CanvasRenderingContext2DState::PatternIsAccelerated(
   return Style(paint_type)->GetCanvasPattern()->GetPattern()->IsTextureBacked();
 }
 
-void CanvasRenderingContext2DState::SetTextLetterSpacing(
-    float letter_spacing,
-    FontSelector* selector) {
+void CanvasRenderingContext2DState::SetLetterSpacing(float letter_spacing,
+                                                     FontSelector* selector) {
   DCHECK(realized_font_);
   FontDescription font_description(GetFontDescription());
   font_description.SetLetterSpacing(letter_spacing);

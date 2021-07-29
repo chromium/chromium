@@ -2404,8 +2404,8 @@ void BaseRenderingContext2D::CheckOverdraw(
   WillOverwriteCanvas();
 }
 
-double BaseRenderingContext2D::textLetterSpacing() const {
-  return GetState().GetTextLetterSpacing();
+double BaseRenderingContext2D::letterSpacing() const {
+  return GetState().GetLetterSpacing();
 }
 
 double BaseRenderingContext2D::wordSpacing() const {

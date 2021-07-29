@@ -917,6 +917,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter globalCompositeOperation
 [Worker]     getter imageSmoothingEnabled
 [Worker]     getter imageSmoothingQuality
+[Worker]     getter letterSpacing
 [Worker]     getter lineCap
 [Worker]     getter lineDashOffset
 [Worker]     getter lineJoin
@@ -929,7 +930,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter strokeStyle
 [Worker]     getter textAlign
 [Worker]     getter textBaseline
-[Worker]     getter textLetterSpacing
 [Worker]     getter textRendering
 [Worker]     getter wordSpacing
 [Worker]     method arc
@@ -993,6 +993,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter globalCompositeOperation
 [Worker]     setter imageSmoothingEnabled
 [Worker]     setter imageSmoothingQuality
+[Worker]     setter letterSpacing
 [Worker]     setter lineCap
 [Worker]     setter lineDashOffset
 [Worker]     setter lineJoin
@@ -1005,7 +1006,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter strokeStyle
 [Worker]     setter textAlign
 [Worker]     setter textBaseline
-[Worker]     setter textLetterSpacing
 [Worker]     setter textRendering
 [Worker]     setter wordSpacing
 [Worker] interface Path2D

@@ -142,8 +142,8 @@ class CanvasRenderingContext2DState final
   void SetTextBaseline(TextBaseline baseline) { text_baseline_ = baseline; }
   TextBaseline GetTextBaseline() const { return text_baseline_; }
 
-  void SetTextLetterSpacing(float letter_space, FontSelector* selector);
-  float GetTextLetterSpacing() const { return letter_spacing_; }
+  void SetLetterSpacing(float letter_space, FontSelector* selector);
+  float GetLetterSpacing() const { return letter_spacing_; }
 
   void SetWordSpacing(float word_space, FontSelector* selector);
   float GetWordSpacing() const { return word_spacing_; }

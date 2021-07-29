@@ -16,20 +16,20 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-_assertSame(ctx.textLetterSpacing, 0, "ctx.textLetterSpacing", "0");
+_assertSame(ctx.letterSpacing, 0, "ctx.letterSpacing", "0");
 _assertSame(ctx.wordSpacing, 0, "ctx.wordSpacing", "0");
 
-ctx.textLetterSpacing = 3;
-_assertSame(ctx.textLetterSpacing, 3, "ctx.textLetterSpacing", "3");
+ctx.letterSpacing = 3;
+_assertSame(ctx.letterSpacing, 3, "ctx.letterSpacing", "3");
 _assertSame(ctx.wordSpacing, 0, "ctx.wordSpacing", "0");
 
 ctx.wordSpacing = 5;
-_assertSame(ctx.textLetterSpacing, 3, "ctx.textLetterSpacing", "3");
+_assertSame(ctx.letterSpacing, 3, "ctx.letterSpacing", "3");
 _assertSame(ctx.wordSpacing, 5, "ctx.wordSpacing", "5");
 
-ctx.textLetterSpacing = -1;
+ctx.letterSpacing = -1;
 ctx.wordSpacing = -1;
-_assertSame(ctx.textLetterSpacing, -1, "ctx.textLetterSpacing", "-1");
+_assertSame(ctx.letterSpacing, -1, "ctx.letterSpacing", "-1");
 _assertSame(ctx.wordSpacing, -1, "ctx.wordSpacing", "-1");
 t.done();
 

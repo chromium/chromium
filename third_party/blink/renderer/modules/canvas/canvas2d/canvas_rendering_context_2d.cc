@@ -785,8 +785,7 @@ void CanvasRenderingContext2D::setDirection(const String& direction_string) {
   GetState().SetDirection(direction);
 }
 
-void CanvasRenderingContext2D::setTextLetterSpacing(
-    const double letter_spacing) {
+void CanvasRenderingContext2D::setLetterSpacing(const double letter_spacing) {
   if (UNLIKELY(!std::isfinite(letter_spacing)))
     return;
 
@@ -794,8 +793,7 @@ void CanvasRenderingContext2D::setTextLetterSpacing(
     setFont(font());
 
   float letter_spacing_float = clampTo<float>(letter_spacing);
-  GetState().SetTextLetterSpacing(letter_spacing_float,
-                                  Host()->GetFontSelector());
+  GetState().SetLetterSpacing(letter_spacing_float, Host()->GetFontSelector());
 }
 
 void CanvasRenderingContext2D::setWordSpacing(const double word_spacing) {

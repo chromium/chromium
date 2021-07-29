@@ -690,6 +690,7 @@ interface CanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter letterSpacing
     getter lineCap
     getter lineDashOffset
     getter lineJoin
@@ -702,7 +703,6 @@ interface CanvasRenderingContext2D
     getter strokeStyle
     getter textAlign
     getter textBaseline
-    getter textLetterSpacing
     getter textRendering
     getter wordSpacing
     method arc
@@ -759,6 +759,7 @@ interface CanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter letterSpacing
     setter lineCap
     setter lineDashOffset
     setter lineJoin
@@ -771,7 +772,6 @@ interface CanvasRenderingContext2D
     setter strokeStyle
     setter textAlign
     setter textBaseline
-    setter textLetterSpacing
     setter textRendering
     setter wordSpacing
 interface ChannelMergerNode : AudioNode
@@ -4249,6 +4249,7 @@ interface OffscreenCanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter letterSpacing
     getter lineCap
     getter lineDashOffset
     getter lineJoin
@@ -4260,7 +4261,6 @@ interface OffscreenCanvasRenderingContext2D
     getter shadowOffsetY
     getter strokeStyle
     getter textAlign
-    getter textLetterSpacing
     getter textRendering
     getter wordSpacing
     getter textBaseline
@@ -4316,6 +4316,7 @@ interface OffscreenCanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter letterSpacing
     setter lineCap
     setter lineDashOffset
     setter lineJoin
@@ -4328,7 +4329,6 @@ interface OffscreenCanvasRenderingContext2D
     setter strokeStyle
     setter textAlign
     setter textBaseline
-    setter textLetterSpacing
     setter textRendering
     setter wordSpacing
 interface Option
