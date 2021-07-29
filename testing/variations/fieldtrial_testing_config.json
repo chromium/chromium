@@ -5475,39 +5475,15 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledLensThenDefaultMicV12",
+                    "name": "EnabledDefaultMicThenLensV13",
                     "params": {
                         "disableOnIncognito": "true",
                         "enableCameraAssistedSearchOnLowEndDevice": "false",
                         "enableCameraAssistedSearchOnTablet": "false",
                         "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
-                        "searchBoxStartVariantForLensCameraAssistedSearch": "true"
-                    },
-                    "enable_features": [
-                        "LensCameraAssistedSearch"
-                    ]
-                },
-                {
-                    "name": "EnabledDefaultMicThenLensV12",
-                    "params": {
-                        "disableOnIncognito": "true",
-                        "enableCameraAssistedSearchOnLowEndDevice": "false",
-                        "enableCameraAssistedSearchOnTablet": "false",
-                        "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
-                        "searchBoxStartVariantForLensCameraAssistedSearch": "false"
-                    },
-                    "enable_features": [
-                        "LensCameraAssistedSearch"
-                    ]
-                },
-                {
-                    "name": "EnabledDefaultMicThenLensOnLowEndDevicesV12",
-                    "params": {
-                        "disableOnIncognito": "true",
-                        "enableCameraAssistedSearchOnLowEndDevice": "true",
-                        "enableCameraAssistedSearchOnTablet": "false",
-                        "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
-                        "searchBoxStartVariantForLensCameraAssistedSearch": "false"
+                        "searchBoxStartVariantForLensCameraAssistedSearch": "false",
+                        "skipAgsaVersionCheck": "false",
+                        "skipLensEligibilityChecks": "false"
                     },
                     "enable_features": [
                         "LensCameraAssistedSearch"
