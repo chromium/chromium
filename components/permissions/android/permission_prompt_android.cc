@@ -4,7 +4,7 @@
 
 #include "components/permissions/android/permission_prompt_android.h"
 
-#include <memory>
+#include <vector>
 
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"

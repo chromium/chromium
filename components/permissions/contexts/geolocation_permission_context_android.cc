@@ -5,7 +5,6 @@
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
