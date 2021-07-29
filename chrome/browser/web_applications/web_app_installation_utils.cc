@@ -60,21 +60,6 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
   return shortcuts_menu_icons_sizes;
 }
 
-
-void SetWebAppProtocolHandlers(
-    const std::vector<blink::Manifest::ProtocolHandler>& protocol_handlers,
-    WebApp& web_app) {
-  std::vector<apps::ProtocolHandlerInfo> web_app_protocol_handlers;
-  for (const auto& handler : protocol_handlers) {
-    apps::ProtocolHandlerInfo protocol_handler_info;
-    protocol_handler_info.protocol = base::UTF16ToUTF8(handler.protocol);
-    protocol_handler_info.url = handler.url;
-    web_app_protocol_handlers.push_back(std::move(protocol_handler_info));
-  }
-
-  web_app.SetProtocolHandlers(web_app_protocol_handlers);
-}
-
 }  // namespace
 
 void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
@@ -124,7 +109,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
 
   web_app.SetFileHandlers(web_app_info.file_handlers);
   web_app.SetShareTarget(web_app_info.share_target);
-  SetWebAppProtocolHandlers(web_app_info.protocol_handlers, web_app);
+  web_app.SetProtocolHandlers(web_app_info.protocol_handlers);
   web_app.SetUrlHandlers(web_app_info.url_handlers);
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 

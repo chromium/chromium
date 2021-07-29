@@ -15,11 +15,11 @@
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -270,7 +270,7 @@ struct WebApplicationInfo {
   ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps;
 
   // The URL protocols/schemes that the app can handle.
-  std::vector<blink::Manifest::ProtocolHandler> protocol_handlers;
+  std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
 
   // The app intends to act as a URL handler for URLs described by this
   // information.

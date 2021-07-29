@@ -8,8 +8,8 @@
 #include <string>
 
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 class GURL;
 class Profile;

@@ -168,7 +168,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   // Check protocol handlers were updated.
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
   auto protocol_handler = web_app_info.protocol_handlers[0];
-  EXPECT_EQ(protocol_handler.protocol, u"mailto");
+  EXPECT_EQ(protocol_handler.protocol, "mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
   // Check URL handlers were updated.
@@ -474,7 +474,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   // Check protocol handlers were updated.
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
   auto protocol_handler = web_app_info.protocol_handlers[0];
-  EXPECT_EQ(protocol_handler.protocol, u"mailto");
+  EXPECT_EQ(protocol_handler.protocol, "mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
   // Check URL handlers were updated.

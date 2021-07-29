@@ -114,29 +114,6 @@ bool AllowUnpromptedIconUpdate(const AppId& app_id,
 
 }  // namespace
 
-bool HaveProtocolHandlersChanged(
-    const apps::ProtocolHandlers* old_handlers,
-    const std::vector<blink::Manifest::ProtocolHandler>& new_handlers) {
-  if (!old_handlers)
-    return true;
-
-  if (old_handlers->size() != new_handlers.size())
-    return true;
-
-  for (size_t i = 0; i < old_handlers->size(); ++i) {
-    // Compare apps::ProtocolHandlerInfo and blink::Manifest::ProtocolHandler.
-    const apps::ProtocolHandlerInfo& old_handler = (*old_handlers)[i];
-    const blink::Manifest::ProtocolHandler& new_handler = new_handlers[i];
-
-    if (old_handler.protocol != base::UTF16ToUTF8(new_handler.protocol))
-      return true;
-
-    if (old_handler.url != new_handler.url)
-      return true;
-  }
-  return false;
-}
-
 ManifestUpdateTask::ManifestUpdateTask(
     const GURL& url,
     const AppId& app_id,
@@ -307,11 +284,8 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
-  if (HaveProtocolHandlersChanged(
-          /*old_handlers=*/registrar_.GetAppProtocolHandlers(app_id_),
-          /*new_handlers=*/web_application_info_->protocol_handlers)) {
+  if (app->protocol_handlers() != web_application_info_->protocol_handlers)
     return true;
-  }
 
   if (web_application_info_->url_handlers !=
       registrar_.GetAppUrlHandlers(app_id_)) {

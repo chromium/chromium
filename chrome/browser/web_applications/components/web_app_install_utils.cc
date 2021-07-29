@@ -202,6 +202,20 @@ apps::UrlHandlers ToWebAppUrlHandlers(
   return apps_url_handlers;
 }
 
+std::vector<apps::ProtocolHandlerInfo> ToWebAppProtocolHandlers(
+    const std::vector<blink::Manifest::ProtocolHandler>&
+        manifest_protocol_handlers) {
+  std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
+  for (const auto& manifest_protocol_handler : manifest_protocol_handlers) {
+    apps::ProtocolHandlerInfo protocol_handler;
+    protocol_handler.protocol =
+        base::UTF16ToUTF8(manifest_protocol_handler.protocol);
+    protocol_handler.url = manifest_protocol_handler.url;
+    protocol_handlers.push_back(std::move(protocol_handler));
+  }
+  return protocol_handlers;
+}
+
 }  // namespace
 
 apps::FileHandlers CreateFileHandlersFromManifest(
@@ -323,7 +337,8 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 
   web_app_info->share_target = ToWebAppShareTarget(manifest.share_target);
 
-  web_app_info->protocol_handlers = manifest.protocol_handlers;
+  web_app_info->protocol_handlers =
+      ToWebAppProtocolHandlers(manifest.protocol_handlers);
 
   web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
 

@@ -20,9 +20,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -34,8 +34,8 @@ web_app::AppId InstallTestWebApp(Profile* profile) {
   app_info->title = u"Test app";
   app_info->start_url = example_url;
   app_info->scope = example_url;
-  blink::Manifest::ProtocolHandler protocol_handler;
-  protocol_handler.protocol = u"web+test";
+  apps::ProtocolHandlerInfo protocol_handler;
+  protocol_handler.protocol = "web+test";
   protocol_handler.url = GURL("http://example.org/?uri=%s");
   app_info->protocol_handlers.push_back(std::move(protocol_handler));
   return web_app::test::InstallWebApp(profile, std::move(app_info));

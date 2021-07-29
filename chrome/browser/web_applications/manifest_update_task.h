@@ -30,12 +30,6 @@ namespace web_app {
 enum class AppIdentityUpdate;
 struct IconDiff;
 
-// Checks whether protocol handlers have changed. Ignores differences in
-// ordering, which may change after being inserted into a set or map.
-bool HaveProtocolHandlersChanged(
-    const apps::ProtocolHandlers* old_handlers,
-    const std::vector<blink::Manifest::ProtocolHandler>& new_handlers);
-
 class AppIconManager;
 class WebAppRegistrar;
 class WebAppUiManager;

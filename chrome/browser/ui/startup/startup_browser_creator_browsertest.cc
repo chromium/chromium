@@ -2176,7 +2176,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   // ProtocolHandlerRegistry. This is sufficient for testing URL translation and
   // launch at startup.
   web_app::AppId InstallWebAppWithProtocolHandlers(
-      const std::vector<blink::Manifest::ProtocolHandler>& protocol_handlers) {
+      const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
     std::unique_ptr<WebApplicationInfo> info =
         std::make_unique<WebApplicationInfo>();
     info->start_url = GURL(kStartUrl);
@@ -2232,10 +2232,10 @@ IN_PROC_BROWSER_TEST_F(
                                        "WebAppProtocolHandlerIntentPickerView");
 
   // Register web app as a protocol handler that should handle the launch.
-  blink::Manifest::ProtocolHandler protocol_handler;
+  apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
-  protocol_handler.protocol = u"web+test";
+  protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with a handled protocol URL param.
@@ -2264,10 +2264,10 @@ IN_PROC_BROWSER_TEST_F(
                                        "WebAppProtocolHandlerIntentPickerView");
 
   // Register web app as a protocol handler that should handle the launch.
-  blink::Manifest::ProtocolHandler protocol_handler;
+  apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
-  protocol_handler.protocol = u"web+test";
+  protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with a handled protocol URL param.
@@ -2312,10 +2312,10 @@ IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
     MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
   // Register web app as a protocol handler that should *not* handle the launch.
-  blink::Manifest::ProtocolHandler protocol_handler;
+  apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
-  protocol_handler.protocol = u"web+test";
+  protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with an unhandled protocol URL param.
@@ -2352,10 +2352,10 @@ IN_PROC_BROWSER_TEST_F(
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
   // Register web app as a protocol handler that should handle the launch.
-  blink::Manifest::ProtocolHandler protocol_handler;
+  apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
-  protocol_handler.protocol = u"web+test";
+  protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with a handled protocol URL param.
