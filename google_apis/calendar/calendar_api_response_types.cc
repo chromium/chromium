@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
 
 namespace google_apis {
@@ -23,17 +24,13 @@ namespace calendar {
 namespace {
 
 // EventList
-const char kKind[] = "kind";
 const char kTimeZone[] = "timeZone";
-const char kETag[] = "etag";
-const char kItems[] = "items";
 const char kCalendarEventListKind[] = "calendar#events";
 
 // DateTime
 const char kDateTime[] = "dateTime";
 
 // CalendarEvent
-const char kId[] = "id";
 const char kSummary[] = "summary";
 const char kStart[] = "start";
 const char kEnd[] = "end";
@@ -42,14 +39,6 @@ const char kStatus[] = "status";
 const char kHtmlLink[] = "htmlLink";
 const char kCalendarEventKind[] = "calendar#event";
 
-// Checks if the JSON is expected kind.
-// TODO(https://crbug.com/1222483): move this to common and share with drive api
-// parsers.
-bool IsResourceKindExpected(const base::Value& value,
-                            const std::string& expected_kind) {
-  const std::string* kind = value.FindStringKey(kKind);
-  return kind && *kind == expected_kind;
-}
 }  // namespace
 
 DateTime::DateTime() = default;
@@ -85,7 +74,7 @@ CalendarEvent::~CalendarEvent() = default;
 // static
 void CalendarEvent::RegisterJSONConverter(
     base::JSONValueConverter<CalendarEvent>* converter) {
-  converter->RegisterStringField(kId, &CalendarEvent::id_);
+  converter->RegisterStringField(kApiResponseIdKey, &CalendarEvent::id_);
   converter->RegisterStringField(kSummary, &CalendarEvent::summary_);
   converter->RegisterStringField(kHtmlLink, &CalendarEvent::html_link_);
   converter->RegisterStringField(kColorId, &CalendarEvent::color_id_);
@@ -118,9 +107,10 @@ EventList::~EventList() = default;
 void EventList::RegisterJSONConverter(
     base::JSONValueConverter<EventList>* converter) {
   converter->RegisterStringField(kTimeZone, &EventList::time_zone_);
-  converter->RegisterStringField(kETag, &EventList::etag_);
-  converter->RegisterStringField(kKind, &EventList::kind_);
-  converter->RegisterRepeatedMessage<CalendarEvent>(kItems, &EventList::items_);
+  converter->RegisterStringField(kApiResponseETagKey, &EventList::etag_);
+  converter->RegisterStringField(kApiResponseKindKey, &EventList::kind_);
+  converter->RegisterRepeatedMessage<CalendarEvent>(kApiResponseItemsKey,
+                                                    &EventList::items_);
 }
 
 // static

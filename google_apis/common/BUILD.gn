@@ -15,6 +15,8 @@ static_library("common") {
     "auth_service_observer.h",
     "base_requests.cc",
     "base_requests.h",
+    "parser_util.cc",
+    "parser_util.h",
     "request_sender.cc",
     "request_sender.h",
     "task_util.cc",
