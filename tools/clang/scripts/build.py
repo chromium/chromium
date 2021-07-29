@@ -355,14 +355,16 @@ def VerifyZlibSupport():
   clang = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang')
   test_file = '/dev/null'
   if sys.platform == 'win32':
-    clang += '-cl.exe'
+    clang += '.exe'
     test_file = 'nul'
 
   print('Checking for zlib support')
   clang_out = subprocess.check_output([
-      clang, '--driver-mode=gcc', '-target', 'x86_64-unknown-linux-gnu', '-gz',
-      '-c', '-###', '-x', 'c', test_file ],
-      stderr=subprocess.STDOUT, universal_newlines=True)
+      clang, '-target', 'x86_64-unknown-linux-gnu', '-gz', '-c', '-###', '-x',
+      'c', test_file
+  ],
+                                      stderr=subprocess.STDOUT,
+                                      universal_newlines=True)
   if (re.search(r'--compress-debug-sections', clang_out)):
     print('OK')
   else:
