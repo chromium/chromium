@@ -66,9 +66,14 @@ void EasyUnlockGetKeysOperation::GetKeyData() {
 void EasyUnlockGetKeysOperation::OnGetKeyData(
     absl::optional<user_data_auth::GetKeyDataReply> reply) {
   cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
-  std::vector<cryptohome::KeyDefinition> key_definitions =
-      user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
-  if (return_code != cryptohome::MOUNT_ERROR_NONE || key_definitions.empty()) {
+
+  std::vector<cryptohome::KeyDefinition> key_definitions;
+  if (return_code == cryptohome::MOUNT_ERROR_NONE) {
+    key_definitions =
+        user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
+  }
+  
+  if (key_definitions.empty()) {
     // MOUNT_ERROR_KEY_FAILURE is considered as success.
     // Other error codes are treated as failures.
     if (return_code == cryptohome::MOUNT_ERROR_NONE ||
