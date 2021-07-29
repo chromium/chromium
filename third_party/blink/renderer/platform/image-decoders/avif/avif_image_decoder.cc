@@ -445,13 +445,13 @@ bool AVIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
     return false;
   if (IsAllDataReceived())
     return true;
-  avifExtent dataExtent;
-  if (avifDecoderNthImageMaxExtent(decoder_.get(), index, &dataExtent) !=
+  avifExtent data_extent;
+  if (avifDecoderNthImageMaxExtent(decoder_.get(), index, &data_extent) !=
       AVIF_RESULT_OK) {
     return false;
   }
-  return dataExtent.size == 0 ||
-         dataExtent.offset + dataExtent.size <= data_->size();
+  return data_extent.size == 0 ||
+         data_extent.offset + data_extent.size <= data_->size();
 }
 
 base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(size_t index) const {
