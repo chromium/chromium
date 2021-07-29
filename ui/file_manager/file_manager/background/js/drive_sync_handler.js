@@ -6,7 +6,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
 import {str, strf} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
@@ -210,9 +209,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
     xfm.notifications.create(
         DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_, {
           type: 'basic',
-          title: str('FILEMANAGER_APP_NAME'),
+          title: chrome.runtime.getManifest().name,
           message: str('DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE'),
-          iconUrl: getFilesAppIconURL().toString(),
+          iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
           buttons:
               [{title: str('DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON')}]
         },
@@ -321,7 +320,11 @@ export class DriveSyncHandlerImpl extends EventTarget {
   isProcessableEvent(event) {
     const fileUrl = event.fileUrl;
     if (fileUrl) {
-      return fileUrl.startsWith(`filesystem:${toFilesAppURL()}`);
+      const match = 'filesystem:' +
+          (window.isSWA ?
+               'chrome://file-manager' :
+               'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj');
+      return fileUrl.startsWith(match);
     }
     return true;
   }
@@ -431,9 +434,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
       xfm.notifications.create(
           DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, {
             type: 'basic',
-            title: str('FILEMANAGER_APP_NAME'),
+            title: chrome.runtime.getManifest().name,
             message: str('OFFLINE_ENABLE_MESSAGE'),
-            iconUrl: getFilesAppIconURL().toString(),
+            iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
             buttons: [
               {title: str('OFFLINE_ENABLE_REJECT')},
               {title: str('OFFLINE_ENABLE_ACCEPT')},

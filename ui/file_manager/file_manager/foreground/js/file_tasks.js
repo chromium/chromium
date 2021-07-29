@@ -11,7 +11,6 @@ import {AsyncUtil} from '../../common/js/async_util.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -329,7 +328,7 @@ export class FileTasks {
    */
   static isInternalTask_(descriptor) {
     const {appId, taskType, actionId} = descriptor;
-    if (appId !== LEGACY_FILES_EXTENSION_ID || taskType !== 'app') {
+    if (appId !== constants.FILES_APP_EXTENSION_ID || taskType !== 'app') {
       return false;
     }
     switch (actionId) {
@@ -375,7 +374,7 @@ export class FileTasks {
    */
   static annotateTasks_(tasks, entries) {
     const result = [];
-    const id = LEGACY_FILES_EXTENSION_ID;
+    const id = constants.FILES_APP_EXTENSION_ID;
     for (const task of tasks) {
       const {appId, taskType, actionId} = task.descriptor;
 
@@ -647,7 +646,7 @@ export class FileTasks {
 
     this.checkAvailability_(() => {
       const descriptor = {
-        appId: LEGACY_FILES_EXTENSION_ID,
+        appId: constants.FILES_APP_EXTENSION_ID,
         taskType: 'file',
         actionId: 'view-in-browser'
       };
@@ -1318,7 +1317,7 @@ export class FileTasks {
  * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
-  appId: LEGACY_FILES_EXTENSION_ID,
+  appId: constants.FILES_APP_EXTENSION_ID,
   taskType: 'app',
   actionId: 'install-linux-package'
 };
@@ -1328,7 +1327,7 @@ FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
  * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
  */
 FileTasks.FILES_OPEN_ZIP_TASK_DESCRIPTOR = {
-  appId: LEGACY_FILES_EXTENSION_ID,
+  appId: constants.FILES_APP_EXTENSION_ID,
   taskType: 'app',
   actionId: 'open-zip'
 };

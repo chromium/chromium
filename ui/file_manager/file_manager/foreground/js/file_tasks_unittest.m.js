@@ -11,7 +11,6 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
-import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -594,7 +593,7 @@ function setUpInstallLinuxPackage() {
   };
   const fileTask = {
     descriptor: {
-      appId: LEGACY_FILES_EXTENSION_ID,
+      appId: constants.FILES_APP_EXTENSION_ID,
       taskType: 'app',
       actionId: 'install-linux-package'
     },
@@ -651,7 +650,7 @@ export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
             [
               {
                 descriptor: {
-                  appId: LEGACY_FILES_EXTENSION_ID,
+                  appId: constants.FILES_APP_EXTENSION_ID,
                   taskType: 'app',
                   actionId: 'import-crostini-image'
                 },
