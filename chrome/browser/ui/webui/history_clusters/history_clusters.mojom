@@ -74,6 +74,10 @@ struct URLVisit {
   // A calculated score (i.e., calculated based on how long the tab was in
   // foreground etc).
   double score;
+
+  // A key-value dictionary of additional debug info to show. This is not
+  // visible in production, and used for development only.
+  map<string, string> debug_info;
 };
 
 // Represents a cluster of visits generated from device history by the browser

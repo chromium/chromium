@@ -178,7 +178,7 @@ class VisitRowElement extends PolymerElement {
       return '';
     }
 
-    return '(score = ' + this.visit.score.toFixed(2) + ')';
+    return JSON.stringify(this.visit.debugInfo);
   }
 
   /**

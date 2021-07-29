@@ -8,9 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -63,6 +66,14 @@ mojom::URLVisitPtr VisitToMojom(
     visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
   }
   visit_mojom->score = scored_annotated_visit.score;
+
+  if (base::FeatureList::IsEnabled(kDebug)) {
+    visit_mojom->debug_info["score"] = base::NumberToString(visit_mojom->score);
+    visit_mojom->debug_info["visit_duration"] =
+        base::NumberToString(scored_annotated_visit.annotated_visit.visit_row
+                                 .visit_duration.InSecondsF());
+  }
+
   return visit_mojom;
 }
 
