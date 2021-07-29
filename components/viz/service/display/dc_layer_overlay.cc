@@ -386,6 +386,10 @@ void RecordDCLayerResult(DCLayerResult result, QuadList::Iterator it) {
       RecordVideoDCLayerResult(
           result, YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type);
       break;
+    case DrawQuad::Material::kStreamVideoContent:
+      UMA_HISTOGRAM_ENUMERATION(
+          "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
+      break;
     case DrawQuad::Material::kTextureContent:
       UMA_HISTOGRAM_ENUMERATION("GPU.DirectComposition.DCLayerResult.Texture",
                                 result);
