@@ -10,6 +10,7 @@ source_set("web_instance_host") {
   deps = [
     "//base",
     "//base:base_static",
+    "//components/embedder_support",
     "//content/public/common",
     "//fuchsia/base",
     "//fuchsia/engine:switches",

@@ -106,6 +106,7 @@ component("web_engine_core") {
     "//components/cast_streaming/public/mojom",
     "//components/cast_streaming/renderer",
     "//components/cdm/renderer",
+    "//components/embedder_support/origin_trials",
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/keyed_service/content",
