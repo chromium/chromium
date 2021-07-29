@@ -3,19 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals, assertArrayEquals} from '../../../chai_assert.js';
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {adjust, range} from './list_selection_model_test_util.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+
+import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
+
+import {adjust, range} from './list_selection_model_test_util.js';
 // clang-format on
 
 /**
  * @param {number} len size of the selection model.
  * @param {boolean=} dependentLeadItem inverse value for `independentLeadItem_`
  *     defaults to true.
- * @return {!cr.ui.ListSelectionModel}
+ * @return {!ListSelectionModel}
  */
 function createSelectionModel(len, dependentLeadItem) {
-  var sm = new cr.ui.ListSelectionModel(len);
+  var sm = new ListSelectionModel(len);
   sm.independentLeadItem_ = !dependentLeadItem;
   return sm;
 }

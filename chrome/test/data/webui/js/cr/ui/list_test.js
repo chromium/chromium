@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals} from '../../../chai_assert.js';
-// #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+
+import {assertEquals} from '../../../chai_assert.js';
+
 // clang-format on
 
 function testClearPinnedItem() {
@@ -14,10 +16,10 @@ function testClearPinnedItem() {
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
-  cr.ui.decorate(list, cr.ui.List);
+  decorate(list, List);
   document.body.appendChild(list);
 
-  var model = new cr.ui.ArrayDataModel(['Item A', 'Item B']);
+  var model = new ArrayDataModel(['Item A', 'Item B']);
   list.dataModel = model;
   list.selectionModel.setIndexSelected(0, true);
   list.selectionModel.leadIndex = 0;
@@ -36,7 +38,7 @@ function testClickOutsideListItem() {
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
-  cr.ui.decorate(list, cr.ui.List);
+  decorate(list, List);
   document.body.appendChild(list);
 
   // Add a header inside the list.
@@ -44,7 +46,7 @@ function testClickOutsideListItem() {
   header.innerText = 'Title inside the list';
   list.appendChild(header);
 
-  const model = new cr.ui.ArrayDataModel(['Item A', 'Item B']);
+  const model = new ArrayDataModel(['Item A', 'Item B']);
   list.dataModel = model;
 
   list.redraw();

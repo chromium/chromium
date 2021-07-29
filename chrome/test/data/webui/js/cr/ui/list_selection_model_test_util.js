@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 // clang-format on
 
 /**
@@ -13,7 +13,7 @@
  * @param {number} end The last number in the range inclusive.
  * @return {!Array<number>}
  */
-/* #export */ function range(start, end) {
+export function range(start, end) {
   var a = [];
   for (var i = start; i <= end; i++) {
     a.push(i);
@@ -23,13 +23,13 @@
 
 /**
  * Modifies a selection model.
- * @param {!cr.ui.ListSelectionModel|!cr.ui.ListSingleSelectionModel} model The
+ * @param {!ListSelectionModel|!ListSingleSelectionModel} model The
  * selection model to adjust.
  * @param {number} index Starting index of the edit.
  * @param {number} removed Number of entries to remove from the list.
  * @param {number} added Number of entries to add to the list.
  */
-/* #export */ function adjust(model, index, removed, added) {
+export function adjust(model, index, removed, added) {
   var permutation = [];
   for (var i = 0; i < index; i++) {
     permutation.push(i);

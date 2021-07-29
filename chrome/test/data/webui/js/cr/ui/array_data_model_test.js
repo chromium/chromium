@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
-// #import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
 // clang-format on
 
 function testSlice() {
-  var m = new cr.ui.ArrayDataModel([0, 1, 2]);
+  var m = new ArrayDataModel([0, 1, 2]);
   assertArrayEquals([0, 1, 2], m.slice());
   assertArrayEquals([1, 2], m.slice(1));
   assertArrayEquals([1], m.slice(1, 2));
 }
 
 function testPush() {
-  var m = new cr.ui.ArrayDataModel([0, 1, 2]);
+  var m = new ArrayDataModel([0, 1, 2]);
 
   var count = 0;
   m.addEventListener('splice', function(e) {
@@ -34,7 +34,7 @@ function testPush() {
 
 function testSplice() {
   function compare(array, args) {
-    var m = new cr.ui.ArrayDataModel(array.slice());
+    var m = new ArrayDataModel(array.slice());
     var expected = array.slice();
     var result = expected.splice.apply(expected, args);
     assertArrayEquals(result, m.splice.apply(m, args));
@@ -53,7 +53,7 @@ function testSplice() {
 
 function testPermutation() {
   function doTest(sourceArray, spliceArgs) {
-    var m = new cr.ui.ArrayDataModel(sourceArray.slice());
+    var m = new ArrayDataModel(sourceArray.slice());
     var permutation;
     m.addEventListener('permuted', function(event) {
       permutation = event.permutation;
@@ -79,7 +79,7 @@ function testPermutation() {
 }
 
 function testUpdateIndexes() {
-  var m = new cr.ui.ArrayDataModel([1, 2, 3]);
+  var m = new ArrayDataModel([1, 2, 3]);
   var changedIndexes = [];
   m.addEventListener('change', function(event) {
     changedIndexes.push(event.index);
@@ -89,7 +89,7 @@ function testUpdateIndexes() {
 }
 
 function testReplaceItem() {
-  var m = new cr.ui.ArrayDataModel([1, 2, 3]);
+  var m = new ArrayDataModel([1, 2, 3]);
   var permutation = null;
   var changeIndex;
   m.addEventListener('permuted', function(event) {

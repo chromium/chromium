@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals} from '../../../chai_assert.js';
-// #import {Grid} from 'chrome://resources/js/cr/ui/grid.m.js';
-// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+import {Grid} from 'chrome://resources/js/cr/ui/grid.m.js';
+
+import {assertEquals} from '../../../chai_assert.js';
 // clang-format on
 
 /**
  * @suppress {visibility} Allow test to reach to private properties.
  */
 function testGetColumnCount() {
-  var g = cr.ui.Grid.prototype;
+  var g = Grid.prototype;
   g.measured_ = {
     height: 8,
     marginTop: 0,
@@ -32,7 +33,7 @@ function testGetColumnCount() {
   // No item in the list.
   assertEquals(0, columns);
 
-  g.dataModel_ = new cr.ui.ArrayDataModel([0, 1, 2]);
+  g.dataModel_ = new ArrayDataModel([0, 1, 2]);
   g.horizontalPadding_ = 0;
   g.clientWidthWithoutScrollbar_ = 8;
   columns = g.getColumnCount_();

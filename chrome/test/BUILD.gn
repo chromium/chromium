@@ -1296,7 +1296,6 @@ if (!is_android) {
       "//chrome/browser/resources/media/mei_preload:component",
       "//chrome/test/data:web_ui_test_mojom_js_module",
       "//chrome/test/data/webui:modulize_local_runtime_data",
-      "//chrome/test/data/webui/js/cr/ui:modulize_runtime_data",
       "//components/policy/proto",
       "//testing:test_scripts_shared",
       "//third_party/private_membership:private_membership_proto",

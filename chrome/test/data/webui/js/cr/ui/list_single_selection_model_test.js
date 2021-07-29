@@ -3,24 +3,26 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals, assertArrayEquals} from '../../../chai_assert.js';
-// #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
-// #import {adjust} from './list_selection_model_test_util.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+
+import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
+
+import {adjust} from './list_selection_model_test_util.js';
 // clang-format on
 
 /**
  * @param {number} len size of the selection model.
  * @param {boolean=} dependentLeadItem inverse value for `independentLeadItem_`
  *     defaults to true.
- * @return {!cr.ui.ListSingleSelectionModel}
+ * @return {!ListSingleSelectionModel}
  */
 function createSelectionModel(len, dependentLeadItem) {
-  var sm = new cr.ui.ListSingleSelectionModel(len);
+  var sm = new ListSingleSelectionModel(len);
   sm.independentLeadItem_ = !dependentLeadItem;
   return sm;
 }
 
-/* #export */ function testAdjust1() {
+export function testAdjust1() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
@@ -31,7 +33,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertEquals(90, sm.selectedIndex);
 }
 
-/* #export */ function testAdjust2() {
+export function testAdjust2() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 50;
@@ -42,7 +44,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertEquals(50, sm.selectedIndex);
 }
 
-/* #export */ function testAdjust3() {
+export function testAdjust3() {
   var sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
@@ -53,7 +55,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertEquals(110, sm.selectedIndex);
 }
 
-/* #export */ function testAdjust4() {
+export function testAdjust4() {
   var sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 99;
@@ -65,7 +67,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertArrayEquals([], sm.selectedIndexes);
 }
 
-/* #export */ function testAdjust5() {
+export function testAdjust5() {
   var sm = createSelectionModel(1);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 0;
@@ -77,7 +79,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertArrayEquals([10], sm.selectedIndexes);
 }
 
-/* #export */ function testSelectedIndex1() {
+export function testSelectedIndex1() {
   var sm = createSelectionModel(100, true);
 
   sm.selectedIndex = 99;
@@ -87,7 +89,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertArrayEquals([99], sm.selectedIndexes);
 }
 
-/* #export */ function testLeadIndex1() {
+export function testLeadIndex1() {
   var sm = createSelectionModel(100);
 
   sm.leadIndex = 99;
@@ -97,7 +99,7 @@ function createSelectionModel(len, dependentLeadItem) {
   assertArrayEquals([], sm.selectedIndexes);
 }
 
-/* #export */ function testLeadIndex2() {
+export function testLeadIndex2() {
   var sm = createSelectionModel(100, true);
 
   sm.leadIndex = 99;

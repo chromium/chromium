@@ -48,14 +48,8 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
-  LoadTestUrl("js/cr/ui/array_data_model_test.html");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/array_data_model_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/array_data_model_test.js");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -76,51 +70,29 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
   LoadTestUrl("i18n_process_css_test.html");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
-  LoadTestUrl("js/cr/ui/list_test.html");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/list_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/list_test.js");
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
-  LoadTestUrl("js/cr/ui/grid_test.html");
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/grid_test.m.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelTest) {
-  LoadTestUrl("js/cr/ui/list_selection_model_test.html");
+  LoadTestUrl("?module=js/cr/ui/grid_test.js");
 }
 
 // This test is Chrome OS only as the utils file it imports relies on
 // list_single_selection_model, which is only included on Chrome OS.
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/list_selection_model_test.m.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSingleSelectionModelTest) {
-  LoadTestUrl("js/cr/ui/list_single_selection_model_test.html");
+  LoadTestUrl("?module=js/cr/ui/list_selection_model_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest,
                        ListSingleSelectionModelModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/list_single_selection_model_test.m.js");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuTest) {
-  LoadTestUrl("js/cr/ui/menu_test.html");
+  LoadTestUrl("?module=js/cr/ui/list_single_selection_model_test.js");
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/menu_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/menu_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
@@ -131,44 +103,22 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
   LoadTestUrl("parse_html_subset_test.html");
 }
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
-  LoadTestUrl("js/cr/ui/position_util_test.html");
-}
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/position_util_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/position_util_test.js");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
-  LoadTestUrl("js/cr/ui/command_test.html");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/command_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/command_test.js");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerTest) {
-  LoadTestUrl("js/cr/ui/context_menu_handler_test.html");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/context_menu_handler_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/context_menu_handler_test.js");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
-  LoadTestUrl("js/cr/ui/menu_button_test.html");
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
-  LoadTestUrl("?module=js/cr/ui/menu_button_test.m.js");
+  LoadTestUrl("?module=js/cr/ui/menu_button_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {

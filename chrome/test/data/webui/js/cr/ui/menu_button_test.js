@@ -3,21 +3,23 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assertEquals, assertTrue, assertFalse} from '../../../chai_assert.js';
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {MenuButton} from 'chrome://resources/js/cr/ui/menu_button.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {decorate} from 'chrome://resources/js/cr/ui.m.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {MenuButton} from 'chrome://resources/js/cr/ui/menu_button.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+
 // clang-format on
 
 function testMenuShowAndHideEvents() {
   let menu = document.createElement('div');
-  cr.ui.decorate(menu, cr.ui.Menu);
-  menu = /** @type {!cr.ui.Menu} */ (menu);
+  decorate(menu, Menu);
+  menu = /** @type {!Menu} */ (menu);
   document.body.appendChild(menu);
 
   let menuButton = document.createElement('div');
-  cr.ui.decorate(menuButton, cr.ui.MenuButton);
-  menuButton = /** @type {!cr.ui.MenuButton} */ (menuButton);
+  decorate(menuButton, MenuButton);
+  menuButton = /** @type {!MenuButton} */ (menuButton);
   menuButton.menu = menu;
   document.body.appendChild(menuButton);
 
@@ -63,15 +65,15 @@ function testMenuShowAndHideEvents() {
 function testFocusMoves() {
   let menu = document.createElement('div');
   let otherButton = document.createElement('button');
-  cr.ui.decorate(menu, cr.ui.Menu);
-  menu = /** @type {!cr.ui.Menu} */ (menu);
+  decorate(menu, Menu);
+  menu = /** @type {!Menu} */ (menu);
   menu.addMenuItem({});
   document.body.appendChild(menu);
   document.body.appendChild(otherButton);
 
   let menuButton = document.createElement('div');
-  cr.ui.decorate(menuButton, cr.ui.MenuButton);
-  menuButton = /** @type {!cr.ui.MenuButton} */ (menuButton);
+  decorate(menuButton, MenuButton);
+  menuButton = /** @type {!MenuButton} */ (menuButton);
   // Allow to put focus on the menu button by focus().
   menuButton.tabIndex = 1;
   menuButton.menu = menu;

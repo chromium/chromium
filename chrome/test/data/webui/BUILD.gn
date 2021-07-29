@@ -522,7 +522,6 @@ group("modulize") {
   deps = [
     ":modulize_local",
     "./cr_components/chromeos:modulize",
-    "./js/cr/ui:modulize",
   ]
 
   if (is_chromeos_ash) {
