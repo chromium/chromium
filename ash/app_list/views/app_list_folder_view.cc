@@ -743,9 +743,11 @@ void AppListFolderView::DispatchDragEventForReparent(
 
 void AppListFolderView::DispatchEndDragEventForReparent(
     bool events_forwarded_to_drag_drop_host,
-    bool cancel_drag) {
+    bool cancel_drag,
+    std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
   container_view_->apps_grid_view()->EndDragFromReparentItemInRootLevel(
-      events_forwarded_to_drag_drop_host, cancel_drag);
+      events_forwarded_to_drag_drop_host, cancel_drag,
+      std::move(drag_icon_proxy));
   container_view_->ReparentDragEnded();
 
   // The view was not hidden in order to keeping receiving mouse events. Hide it
@@ -791,10 +793,6 @@ void AppListFolderView::CloseFolderPage() {
 
 bool AppListFolderView::IsOEMFolder() const {
   return folder_item_->folder_type() == AppListFolderItem::FOLDER_TYPE_OEM;
-}
-
-void AppListFolderView::SetRootLevelDragViewVisible(bool visible) {
-  container_view_->apps_grid_view()->SetDragViewVisible(visible);
 }
 
 void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
