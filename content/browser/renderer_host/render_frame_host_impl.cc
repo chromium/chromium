@@ -4667,6 +4667,13 @@ void RenderFrameHostImpl::ShowCreatedWindow(
 
 void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
                                         SetWindowRectCallback callback) {
+  // Prerendering pages should not reach this code.
+  if (lifecycle_state_ == LifecycleStateImpl::kPrerendering) {
+    local_main_frame_host_receiver_.ReportBadMessage(
+        "SetWindowRect called during prerendering.");
+    return;
+  }
+
   delegate_->SetWindowRect(bounds);
   std::move(callback).Run();
 }
