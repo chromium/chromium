@@ -112,9 +112,6 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
     actionStackViewTopMargin = -kDefaultMargin;
   }
 
-  CGFloat bannerMultiplier =
-      self.isTallBanner ? kTallBannerMultiplier : kDefaultBannerMultiplier;
-
   CGFloat extraBottomMargin =
       (self.secondaryActionString || self.tertiaryActionString)
           ? 0
@@ -169,8 +166,6 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
         constraintEqualToAnchor:self.scrollContentView.topAnchor],
     [self.imageView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
-    [self.imageView.heightAnchor constraintEqualToAnchor:self.view.heightAnchor
-                                              multiplier:bannerMultiplier],
 
     // Labels contraints. Attach them to the top of the scroll content view, and
     // center them horizontally.
@@ -304,6 +299,12 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   });
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  self.imageView.image = [self scaleImage:self.imageView.image
+                                   toSize:[self computeBannerImageSize]];
+}
+
 #pragma mark - Setter
 
 - (void)setPrimaryActionString:(NSString*)text {
@@ -331,10 +332,39 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 - (UIImageView*)imageView {
   if (!_imageView) {
     _imageView = [[UIImageView alloc] initWithImage:self.bannerImage];
-    _imageView.contentMode = UIViewContentModeScaleAspectFill;
+    _imageView.image = [self scaleImage:_imageView.image
+                                 toSize:[self computeBannerImageSize]];
+    _imageView.clipsToBounds = YES;
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return _imageView;
+}
+
+// Computes banner's image size.
+- (CGSize)computeBannerImageSize {
+  CGFloat bannerMultiplier =
+      self.isTallBanner ? kTallBannerMultiplier : kDefaultBannerMultiplier;
+
+  CGFloat destinationHeight =
+      roundf(self.view.bounds.size.height * bannerMultiplier);
+  CGFloat destinationWidth =
+      roundf(self.imageView.image.size.width /
+             self.imageView.image.size.height * destinationHeight);
+  CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
+  return newSize;
+}
+
+// Returns a new UIImage which is |image| resized to |newSize|.
+- (UIImage*)scaleImage:(UIImage*)image toSize:(CGSize)newSize {
+  if (CGSizeEqualToSize(newSize, image.size)) {
+    return image;
+  }
+
+  UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+  [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+  UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return newImage;
 }
 
 - (UILabel*)titleLabel {
