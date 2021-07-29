@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -77,42 +78,6 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
   return nullptr;
 }
 
-absl::optional<std::string> GetAppIdForTab(Profile* profile,
-                                           content::WebContents* tab) {
-  if (web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::Get(profile)) {
-    // Use the Browser's app name to determine the web app for app windows and
-    // use the tab's url for app tabs.
-
-    // Note: It is possible to come here after a tab got removed from the
-    // browser before it gets destroyed, in which case there is no browser.
-    if (Browser* browser = chrome::FindBrowserWithWebContents(tab)) {
-      if (browser->app_controller() && browser->app_controller()->HasAppId())
-        return browser->app_controller()->GetAppId();
-    }
-
-    absl::optional<web_app::AppId> app_id =
-        provider->registrar().FindAppWithUrlInScope(tab->GetURL());
-    if (app_id && provider->registrar().GetAppUserDisplayMode(*app_id) ==
-                      web_app::DisplayMode::kBrowser) {
-      return app_id;
-    }
-  }
-
-  // Note: It is possible to come here after a tab got removed form the browser
-  // before it gets destroyed, in which case there is no browser.
-  Browser* browser = chrome::FindBrowserWithWebContents(tab);
-
-  // Use the Browser's app name.
-  if (browser && (browser->is_type_app() || browser->is_type_app_popup()))
-    return web_app::GetAppIdFromApplicationName(browser->app_name());
-
-  const extensions::Extension* extension = GetExtensionForTab(profile, tab);
-  if (extension && !extension->from_bookmark())
-    return extension->id();
-  return absl::nullopt;
-}
-
 apps::mojom::LaunchSource ConvertLaunchSource(ash::ShelfLaunchSource source) {
   switch (source) {
     case ash::LAUNCH_FROM_UNKNOWN:
@@ -138,6 +103,48 @@ std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
 }
 
 }  // namespace
+
+absl::optional<std::string> GetShelfAppIdForWebContents(
+    content::WebContents* tab) {
+  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+  // Note: It is possible to come here after a tab got removed form the browser
+  // before it gets destroyed, in which case there is no browser.
+  Browser* browser = chrome::FindBrowserWithWebContents(tab);
+  if (auto* provider = web_app::WebAppProvider::Get(profile)) {
+    // Use the Browser's app name to determine the web app for app windows and
+    // use the tab's url for app tabs.
+
+    if (browser) {
+      web_app::AppBrowserController* app_controller = browser->app_controller();
+      if (app_controller && app_controller->HasAppId()) {
+        return app_controller->GetAppId();
+      }
+    }
+
+    absl::optional<web_app::AppId> app_id =
+        provider->registrar().FindAppWithUrlInScope(tab->GetURL());
+    if (app_id) {
+      const web_app::WebApp* web_app =
+          provider->registrar().GetAppById(*app_id);
+      DCHECK(web_app);
+      if (web_app->user_display_mode() == web_app::DisplayMode::kBrowser &&
+          !web_app->is_uninstalling()) {
+        return app_id;
+      }
+    }
+  }
+
+  // Use the Browser's app name.
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
+    return web_app::GetAppIdFromApplicationName(browser->app_name());
+  }
+
+  const extensions::Extension* extension = GetExtensionForTab(profile, tab);
+  if (extension && !extension->from_bookmark()) {
+    return extension->id();
+  }
+  return absl::nullopt;
+}
 
 ShelfControllerHelper::ShelfControllerHelper(Profile* profile)
     : profile_(profile) {}
@@ -209,9 +216,7 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
 
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
-  absl::optional<std::string> app_id = GetAppIdForTab(
-      Profile::FromBrowserContext(tab->GetBrowserContext()), tab);
-  return app_id.value_or(std::string());
+  return GetShelfAppIdForWebContents(tab).value_or(std::string());
 }
 
 bool ShelfControllerHelper::IsValidIDForCurrentUser(

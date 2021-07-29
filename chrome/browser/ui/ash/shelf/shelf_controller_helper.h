@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class ArcAppListPrefs;
 class ExtensionEnableFlow;
@@ -19,6 +20,10 @@ class Profile;
 namespace content {
 class WebContents;
 }
+
+// A helper to get app ID in a tab for displaying in the shelf.
+absl::optional<std::string> GetShelfAppIdForWebContents(
+    content::WebContents* tab);
 
 // Assists ChromeShelfController with ExtensionService interaction.
 class ShelfControllerHelper : public ExtensionEnableFlowDelegate {

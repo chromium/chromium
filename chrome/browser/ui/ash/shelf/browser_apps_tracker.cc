@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -37,16 +38,10 @@ Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
 }
 
 std::string GetAppId(content::WebContents* contents) {
-  if (auto* helper = web_app::WebAppTabHelper::FromWebContents(contents)) {
-    const web_app::AppId& app_id = helper->GetAppId();
-    if (!app_id.empty()) {
-      return app_id;
-    }
-  }
-  if (auto* helper = extensions::TabHelper::FromWebContents(contents)) {
-    return helper->GetExtensionAppId();
-  }
-  return "";
+  // TODO(crbug.com/1203992): shelf-specific logic doesn't really belong here,
+  // replace with more generic implementation to detect apps, and move
+  // shelf-specific bits to ChromeShelfController.
+  return GetShelfAppIdForWebContents(contents).value_or("");
 }
 
 bool IsBrowserVisible(Browser* browser) {
