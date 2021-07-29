@@ -77,8 +77,9 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desks_helper_->CaptureActiveDeskAsTemplate();
   RecordWindowAndTabCount(desk_template.get());
+  auto desk_template_clone = desk_template->Clone();
   storage_manager_->AddOrUpdateEntry(
-      desk_template->Clone(),
+      std::move(desk_template_clone),
       base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(desk_template)));
@@ -209,11 +210,11 @@ void DesksClient::OnGetTemplateForDeskLaunch(
   }
 
   // Launch the windows as specified in the template to a new desk.
+  const auto template_name = entry->template_name();
   desks_helper_->CreateAndActivateNewDeskForTemplate(
-      entry->template_name(),
-      base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     std::move(callback)));
+      template_name, base::BindOnce(&DesksClient::OnCreateAndActivateNewDesk,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(entry), std::move(callback)));
 }
 
 void DesksClient::OnCreateAndActivateNewDesk(
