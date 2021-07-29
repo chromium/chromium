@@ -269,13 +269,13 @@ class MockSnooper : public Snoopable::Snooper {
 
 // A FakeAudioManager that produces MockAudioOutputStreams, and tracks the last
 // stream that was created and the last stream that was closed.
-class AudioManagerForControllerTest : public media::FakeAudioManager {
+class AudioManagerForControllerTest final : public media::FakeAudioManager {
  public:
   AudioManagerForControllerTest()
       : media::FakeAudioManager(std::make_unique<media::TestAudioThread>(false),
                                 &fake_audio_log_factory_) {}
 
-  ~AudioManagerForControllerTest() final = default;
+  ~AudioManagerForControllerTest() override = default;
 
   MockAudioOutputStream* last_created_stream() const {
     return last_created_stream_;

@@ -95,10 +95,10 @@ class MockAudioOutputIPC : public media::AudioOutputIPC {
   MOCK_METHOD1(SetVolume, void(double volume));
 };
 
-class FakeOutputStreamFactory : public audio::FakeStreamFactory {
+class FakeOutputStreamFactory final : public audio::FakeStreamFactory {
  public:
   FakeOutputStreamFactory() : stream_(), stream_receiver_(&stream_) {}
-  ~FakeOutputStreamFactory() final {}
+  ~FakeOutputStreamFactory() override {}
 
   void CreateOutputStream(
       mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
