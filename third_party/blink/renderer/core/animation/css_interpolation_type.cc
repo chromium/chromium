@@ -212,8 +212,7 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
   const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
   const StyleResolverState& state = css_environment.GetState();
 
-  const AtomicString& name = declaration.GetName();
-  DCHECK_EQ(GetProperty().CustomPropertyName(), name);
+  AtomicString name = GetProperty().CustomPropertyName();
 
   const CSSValue* value = &declaration;
   value = css_environment.Resolve(GetProperty(), value);
@@ -335,7 +334,7 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
   // TODO(andruud): Avoid making the CSSCustomPropertyDeclaration by allowing
   // any CSSValue in CustomProperty::ApplyValue.
   const CSSValue* value = MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-      property.CustomPropertyName(), std::move(variable_data));
+      std::move(variable_data));
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
                               ScopedCSSValue(*value, nullptr));
 }

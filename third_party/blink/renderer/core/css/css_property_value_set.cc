@@ -122,7 +122,6 @@ static uint16_t GetConvertedCSSPropertyID(AtRuleDescriptorID descriptor_id) {
 }
 
 static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
-                            const CSSValue&,
                             uint16_t id,
                             CSSPropertyID property_id) {
   DCHECK_EQ(id, static_cast<uint16_t>(property_id));
@@ -138,20 +137,16 @@ static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
 }
 
 static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
-                            const CSSValue& value,
                             uint16_t id,
                             const AtomicString& custom_property_name) {
   DCHECK_EQ(id, static_cast<uint16_t>(CSSPropertyID::kVariable));
-  return static_cast<uint16_t>(metadata.PropertyID()) == id &&
-         To<CSSCustomPropertyDeclaration>(value).GetName() ==
-             custom_property_name;
+  return metadata.Name() == CSSPropertyName(custom_property_name);
 }
 
 static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
-                            const CSSValue& css_value,
                             uint16_t id,
                             AtRuleDescriptorID descriptor_id) {
-  return IsPropertyMatch(metadata, css_value, id,
+  return IsPropertyMatch(metadata, id,
                          AtRuleDescriptorIDAsCSSPropertyID(descriptor_id));
 }
 
@@ -159,7 +154,7 @@ template <typename T>
 int ImmutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
   uint16_t id = GetConvertedCSSPropertyID(property);
   for (int n = array_size_ - 1; n >= 0; --n) {
-    if (IsPropertyMatch(MetadataArray()[n], *ValueArray()[n], id, property))
+    if (IsPropertyMatch(MetadataArray()[n], id, property))
       return n;
   }
 
@@ -666,8 +661,7 @@ int MutableCSSPropertyValueSet::FindPropertyIndex(T property) const {
 
   const CSSPropertyValue* it = std::find_if(
       begin, end, [property, id](const CSSPropertyValue& css_property) -> bool {
-        return IsPropertyMatch(css_property.Metadata(), *css_property.Value(),
-                               id, property);
+        return IsPropertyMatch(css_property.Metadata(), id, property);
       });
 
   return (it == end) ? -1 : static_cast<int>(it - begin);

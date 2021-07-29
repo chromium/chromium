@@ -57,7 +57,6 @@ InterpolationValue CSSVarCycleInterpolationType::MaybeConvertSingle(
     ConversionCheckers& conversion_checkers) const {
   const auto& declaration = *To<CSSCustomPropertyDeclaration>(
       To<CSSPropertySpecificKeyframe>(keyframe).Value());
-  DCHECK_EQ(GetProperty().CustomPropertyName(), declaration.GetName());
   if ((!declaration.Value() ||
        !declaration.Value()->NeedsVariableResolution()) &&
       !declaration.IsRevert()) {
@@ -119,10 +118,9 @@ void CSSVarCycleInterpolationType::Apply(
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(),
       To<CSSInterpolationEnvironment>(environment).GetState(),
-      ScopedCSSValue(
-          *MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-              GetProperty().CustomPropertyName(), CSSValueID::kUnset),
-          nullptr));
+      ScopedCSSValue(*MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+                         CSSValueID::kUnset),
+                     nullptr));
 }
 
 }  // namespace blink

@@ -55,8 +55,7 @@ void InlineStylePropertyMap::SetCustomProperty(
       To<CSSVariableReferenceValue>(value).VariableDataValue();
   owner_element_->SetInlineStyleProperty(
       CSSPropertyName(property_name),
-      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
-                                                          variable_data));
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(variable_data));
   owner_element_->NotifyInlineStyleMutation();
 }
 

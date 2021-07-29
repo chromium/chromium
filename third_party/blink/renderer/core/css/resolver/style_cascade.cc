@@ -659,8 +659,7 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   if (data == decl.Value())
     return &decl;
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(decl.GetName(),
-                                                            data);
+  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(data);
 }
 
 const CSSValue* StyleCascade::ResolveVariableReference(

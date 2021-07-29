@@ -313,8 +313,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
     case AtRuleDescriptorID::InitialValue: {
       // Note that we must retain leading whitespace here.
       return CSSVariableParser::ParseDeclarationValue(
-          g_null_atom, tokenized_value, false /* is_animation_tainted */,
-          context);
+          tokenized_value, false /* is_animation_tainted */, context);
     }
     case AtRuleDescriptorID::Inherits:
       range.ConsumeWhitespace();

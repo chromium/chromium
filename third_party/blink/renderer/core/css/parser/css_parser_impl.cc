@@ -141,8 +141,7 @@ static inline void FilterProperties(
     if (property.IsImportant() != important)
       continue;
     if (property.Id() == CSSPropertyID::kVariable) {
-      const AtomicString& name =
-          To<CSSCustomPropertyDeclaration>(property.Value())->GetName();
+      AtomicString name = property.Name().ToAtomicString();
       if (seen_custom_properties.Contains(name))
         continue;
       seen_custom_properties.insert(name);
@@ -1224,8 +1223,7 @@ void CSSParserImpl::ConsumeVariableValue(
     bool is_animation_tainted) {
   if (CSSCustomPropertyDeclaration* value =
           CSSVariableParser::ParseDeclarationValue(
-              variable_name, tokenized_value, is_animation_tainted,
-              *context_)) {
+              tokenized_value, is_animation_tainted, *context_)) {
     parsed_properties_.push_back(
         CSSPropertyValue(CSSPropertyName(variable_name), *value, important));
     context_->Count(context_->Mode(), CSSPropertyID::kVariable);

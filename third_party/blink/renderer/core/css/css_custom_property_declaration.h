@@ -17,22 +17,18 @@ namespace blink {
 
 class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
  public:
-  CSSCustomPropertyDeclaration(const AtomicString& name, CSSValueID id)
+  explicit CSSCustomPropertyDeclaration(CSSValueID id)
       : CSSValue(kCustomPropertyDeclarationClass),
-        name_(name),
         value_(nullptr),
         value_id_(id) {
     DCHECK(css_parsing_utils::IsCSSWideKeyword(id));
   }
 
-  CSSCustomPropertyDeclaration(const AtomicString& name,
-                               scoped_refptr<CSSVariableData> value)
+  explicit CSSCustomPropertyDeclaration(scoped_refptr<CSSVariableData> value)
       : CSSValue(kCustomPropertyDeclarationClass),
-        name_(name),
         value_(std::move(value)),
         value_id_(CSSValueID::kInvalid) {}
 
-  const AtomicString& GetName() const { return name_; }
   CSSVariableData* Value() const { return value_.get(); }
 
   bool IsInherit(bool is_inherited_property) const {
@@ -54,7 +50,6 @@ class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  const AtomicString name_;
   scoped_refptr<CSSVariableData> value_;
   CSSValueID value_id_;
 };

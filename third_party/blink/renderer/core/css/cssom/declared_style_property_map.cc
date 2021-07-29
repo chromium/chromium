@@ -68,8 +68,7 @@ void DeclaredStylePropertyMap::SetCustomProperty(
       To<CSSVariableReferenceValue>(value).VariableDataValue();
   GetStyleRule()->MutableProperties().SetProperty(
       CSSPropertyName(property_name),
-      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
-                                                          variable_data));
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(variable_data));
 }
 
 void DeclaredStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {

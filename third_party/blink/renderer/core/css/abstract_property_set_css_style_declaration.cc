@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/css/abstract_property_set_css_style_declaration.h"
 
-#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/style_attribute_mutation_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -38,10 +37,7 @@ unsigned AbstractPropertySetCSSStyleDeclaration::length() const {
 String AbstractPropertySetCSSStyleDeclaration::item(unsigned i) const {
   if (i >= PropertySet().PropertyCount())
     return "";
-  CSSPropertyValueSet::PropertyReference property = PropertySet().PropertyAt(i);
-  if (property.Id() == CSSPropertyID::kVariable)
-    return To<CSSCustomPropertyDeclaration>(property.Value()).GetName();
-  return property.Name().ToAtomicString();
+  return PropertySet().PropertyAt(i).Name().ToAtomicString();
 }
 
 String AbstractPropertySetCSSStyleDeclaration::cssText() const {
