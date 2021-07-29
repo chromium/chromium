@@ -46,7 +46,9 @@ SegmentationPlatformService* SegmentationPlatformServiceFactory::GetForProfile(
 SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SegmentationPlatformService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
     default;
