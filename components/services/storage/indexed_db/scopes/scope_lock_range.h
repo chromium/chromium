@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 #include <iosfwd>
-#include <vector>
 
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
