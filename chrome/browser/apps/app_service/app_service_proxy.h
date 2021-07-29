@@ -10,6 +10,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
 #else
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

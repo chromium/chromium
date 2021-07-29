@@ -55,8 +55,9 @@ namespace web_app {
 
 namespace {
 
-bool IsAppInstalled(apps::AppServiceProxyBase* proxy, const AppId& app_id) {
+bool IsAppInstalled(Profile* profile, const AppId& app_id) {
   bool installed = false;
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&installed](const apps::AppUpdate& update) {
         installed = apps_util::IsInstalled(update.Readiness());
@@ -178,9 +179,7 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
   bool has_migrated = false;
   bool uninstall_triggered = false;
   for (const AppId& from_app : from_apps) {
-    apps::AppServiceProxyBase* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile_);
-    if (!IsAppInstalled(proxy, from_app))
+    if (!IsAppInstalled(profile_, from_app))
       continue;
 
     if (!has_migrated) {
@@ -245,6 +244,7 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
       continue;
     }
 
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     proxy->UninstallSilently(from_app,
                              apps::mojom::UninstallSource::kMigration);
     uninstall_triggered = true;
@@ -265,8 +265,7 @@ void WebAppUiManagerImpl::OnShortcutInfoReceivedSearchShortcutLocations(
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   if (!shortcut_info) {
     // The shortcut info couldn't be found, simply uninstall.
-    apps::AppServiceProxyBase* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     proxy->UninstallSilently(from_app,
                              apps::mojom::UninstallSource::kMigration);
     return;
@@ -282,8 +281,7 @@ void WebAppUiManagerImpl::OnShortcutLocationGathered(
     const AppId& from_app,
     const AppId& app_id,
     ShortcutLocations locations) {
-  apps::AppServiceProxyBase* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   const bool is_extension = proxy->AppRegistryCache().GetAppType(from_app) ==
                             apps::mojom::AppType::kExtension;

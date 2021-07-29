@@ -78,7 +78,11 @@
 namespace {
 
 // Helper to call AppServiceProxyFactory::GetForProfile().
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+apps::AppServiceProxyLacros* GetAppServiceProxy(Profile* profile) {
+#else
 apps::AppServiceProxyBase* GetAppServiceProxy(Profile* profile) {
+#endif
   // Crash if there is no AppService support for |profile|. GetForProfile() will
   // DumpWithoutCrashing, which will not fail a test. No codepath should trigger
   // that in normal operation.

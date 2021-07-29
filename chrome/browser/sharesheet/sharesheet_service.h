@@ -23,7 +23,11 @@ class Profile;
 
 namespace apps {
 struct IntentLaunchInfo;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AppServiceProxyLacros;
+#else
 class AppServiceProxyBase;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace apps
 
 namespace views {
@@ -147,7 +151,11 @@ class SharesheetService : public KeyedService {
 
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  apps::AppServiceProxyLacros* app_service_proxy_;
+#else
   apps::AppServiceProxyBase* app_service_proxy_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Record of all active SharesheetServiceDelegates. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.

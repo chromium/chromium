@@ -16,7 +16,11 @@ class Profile;
 
 namespace apps {
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AppServiceProxyLacros;
+#else
 class AppServiceProxyBase;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Helper class to initialize AppService in unit tests.
 class AppServiceTest {
@@ -47,7 +51,11 @@ class AppServiceTest {
   void FlushMojoCalls();
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AppServiceProxyLacros* app_service_proxy_ = nullptr;
+#else
   AppServiceProxyBase* app_service_proxy_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Profile* profile_ = nullptr;
 };

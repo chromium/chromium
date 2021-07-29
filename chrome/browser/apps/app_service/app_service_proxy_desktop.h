@@ -17,18 +17,11 @@ class Profile;
 
 namespace web_app {
 class WebApps;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class WebAppsPublisherHost;
-#endif
 }  // namespace web_app
 
 namespace apps {
 
 class ExtensionApps;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class FakeLacrosWebAppsHost;
-#endif
 
 // Singleton (per Profile) proxy and cache of an App Service's apps in Chrome
 // browser.
@@ -47,25 +40,13 @@ class AppServiceProxy : public AppServiceProxyBase {
                  gfx::NativeWindow parent_window) override;
   void FlushMojoCallsForTesting() override;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::WebAppsPublisherHost* WebAppsPublisherHostForTesting();
-#endif
-
  private:
   // apps::AppServiceProxyBase overrides:
   void Initialize() override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
 
-  // KeyedService overrides:
-  void Shutdown() override;
-
   std::unique_ptr<web_app::WebApps> web_apps_;
   std::unique_ptr<ExtensionApps> extension_apps_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<FakeLacrosWebAppsHost> fake_lacros_web_apps_host_;
-  std::unique_ptr<web_app::WebAppsPublisherHost> web_apps_publisher_host_;
-#endif
 
   base::WeakPtrFactory<AppServiceProxy> weak_ptr_factory_{this};
 };
