@@ -40,6 +40,7 @@ import org.chromium.weblayer.Navigation;
 import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NavigationState;
+import org.chromium.weblayer.NewTabCallback;
 import org.chromium.weblayer.Page;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
@@ -91,6 +92,17 @@ public class NavigationTest {
     private class IntentInterceptor implements InstrumentationActivity.IntentInterceptor {
         @Override
         public void interceptIntent(Intent intent, int requestCode, Bundle options) {}
+    }
+
+    private <E extends Throwable> void assertThrows(Class<E> exceptionType, Runnable runnable) {
+        Throwable actualException = null;
+        try {
+            runnable.run();
+        } catch (Throwable e) {
+            actualException = e;
+        }
+        assertNotNull("Exception not thrown", actualException);
+        assertEquals(exceptionType, actualException.getClass());
     }
 
     private class Callback extends NavigationCallback {
@@ -637,6 +649,42 @@ public class NavigationTest {
 
         mCallback.onRedirectedCallback.assertCalledWith(
                 curRedirectedCount, Arrays.asList(Uri.parse(url), Uri.parse(finalUrl)));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetPageInOnNavigationCompletedForIncompleteNavigation() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
+
+        // Setup a callback for when the navigation in a new tab completes.
+        CallbackHelper callbackHelper = new CallbackHelper();
+        NewTabCallback newTabCallback = new NewTabCallback() {
+            @Override
+            public void onNewTab(Tab tab, int mode) {
+                NavigationController navigationController = tab.getNavigationController();
+                navigationController.registerNavigationCallback(new NavigationCallback() {
+                    @Override
+                    public void onNavigationCompleted(Navigation navigation) {
+                        // We're looking for a completed but not committed navigation.
+                        assertEquals(NavigationState.WAITING_RESPONSE, navigation.getState());
+                        // Calling getPage() should throw an exception if the state is not COMPLETE.
+                        assertThrows(IllegalStateException.class, () -> { navigation.getPage(); });
+                        navigationController.unregisterNavigationCallback(this);
+                        callbackHelper.notifyCalled();
+                    }
+                });
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.getBrowser().getActiveTab().setNewTabCallback(newTabCallback); });
+
+        // Open a new tab by clicking on the document.
+        mActivityTestRule.executeScriptSync(
+                "document.onclick = () => window.open();", true /* useSeparateIsolate */);
+        EventUtils.simulateTouchCenterOfView(activity.getWindow().getDecorView());
+
+        // Expect no browser crash. Regression test for crbug.com/1233480.
+        callbackHelper.waitForFirst();
     }
 
     @Test
