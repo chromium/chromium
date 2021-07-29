@@ -176,16 +176,17 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
                                                : Suggestion::SUBSTRING_MATCH;
 
-  std::string server_id_for_virtual_card_option;
+  GURL card_art_url_for_virtual_card_option;
   if (virtual_card_option &&
       credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
-    server_id_for_virtual_card_option = credit_card.server_id();
+    card_art_url_for_virtual_card_option = credit_card.card_art_url();
   } else if (virtual_card_option &&
              credit_card.record_type() == CreditCard::LOCAL_CARD) {
     const CreditCard* server_duplicate_card =
         GetServerCardForLocalCard(&credit_card);
     DCHECK(server_duplicate_card);
-    server_id_for_virtual_card_option = server_duplicate_card->server_id();
+    card_art_url_for_virtual_card_option =
+        server_duplicate_card->card_art_url();
     backend_id = server_duplicate_card->guid();
   }
   suggestion.backend_id = backend_id;
@@ -251,9 +252,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
         feature_engagement::kIPHKeyboardAccessoryPaymentVirtualCardFeature.name;
 #endif  // OS_ANDROID
 
-    // TODO(crbug.com/1196021): Populate custom_icon with card art if available
-    // (use server_id_for_virtual_card_option).
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+
+    gfx::Image* image = personal_data_->GetCreditCardArtImageForUrl(
+        card_art_url_for_virtual_card_option);
+    if (image)
+      suggestion.custom_icon = *image;
   }
 
   return suggestion;

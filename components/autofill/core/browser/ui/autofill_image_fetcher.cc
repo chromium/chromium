@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -52,14 +54,18 @@ ImageFetchOperation::ImageFetchOperation(size_t image_count,
     : pending_request_count_(image_count),
       all_fetches_complete_callback_(std::move(callback)) {}
 
-void ImageFetchOperation::ImageFetched(const std::string& card_server_id,
+void ImageFetchOperation::ImageFetched(const GURL& card_art_url,
                                        const gfx::Image& card_art_image) {
   AutofillMetrics::LogImageFetchResult(/*succeeded=*/!card_art_image.IsEmpty());
-
   pending_request_count_--;
 
-  if (!card_art_image.IsEmpty())
-    fetched_card_art_images_[card_server_id] = card_art_image;
+  if (!card_art_image.IsEmpty()) {
+    auto credit_card_art_image = std::make_unique<CreditCardArtImage>();
+    credit_card_art_image->card_art_url = card_art_url;
+    credit_card_art_image->card_art_image = card_art_image;
+
+    fetched_card_art_images_.emplace_back(std::move(credit_card_art_image));
+  }
 
   if (pending_request_count_ == 0U) {
     std::move(all_fetches_complete_callback_)
@@ -81,7 +87,7 @@ AutofillImageFetcher::AutofillImageFetcher(
 AutofillImageFetcher::~AutofillImageFetcher() = default;
 
 void AutofillImageFetcher::FetchImagesForUrls(
-    const std::map<std::string, GURL>& card_server_ids_and_art_urls,
+    const std::vector<GURL>& card_art_urls,
     CardArtImagesFetchedCallback callback) {
   if (!image_fetcher_) {
     std::move(callback).Run({});
@@ -89,40 +95,39 @@ void AutofillImageFetcher::FetchImagesForUrls(
   }
 
   auto image_fetcher_operation = base::MakeRefCounted<ImageFetchOperation>(
-      card_server_ids_and_art_urls.size(), std::move(callback));
+      card_art_urls.size(), std::move(callback));
 
-  for (const auto& card_server_id_and_art_url : card_server_ids_and_art_urls) {
-    FetchImageForUrl(image_fetcher_operation, card_server_id_and_art_url.first,
-                     card_server_id_and_art_url.second);
-  }
+  for (const auto& card_art_url : card_art_urls)
+    FetchImageForUrl(image_fetcher_operation, card_art_url);
 }
 
 void AutofillImageFetcher::FetchImageForUrl(
     const scoped_refptr<ImageFetchOperation>& operation,
-    const std::string& card_server_id,
     const GURL& card_art_url) {
   if (!card_art_url.is_valid()) {
-    OnCardArtImageFetched(operation, card_server_id, gfx::Image(),
+    OnCardArtImageFetched(operation, card_art_url, gfx::Image(),
                           image_fetcher::RequestMetadata());
     return;
   }
 
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
+  params.set_hold_for_expiration_interval(base::TimeDelta::FromMinutes(
+      features::kAutofillImageFetcherDiskCacheExpirationInMinutes.Get()));
   image_fetcher_->FetchImage(
       card_art_url,
       base::BindOnce(&AutofillImageFetcher::OnCardArtImageFetched, operation,
-                     card_server_id),
+                     card_art_url),
       std::move(params));
 }
 
 // static
 void AutofillImageFetcher::OnCardArtImageFetched(
     const scoped_refptr<ImageFetchOperation>& operation,
-    const std::string& card_server_id,
+    const GURL& card_art_url,
     const gfx::Image& card_art_image,
     const image_fetcher::RequestMetadata& metadata) {
-  operation->ImageFetched(card_server_id, card_art_image);
+  operation->ImageFetched(card_art_url, card_art_image);
 }
 
 }  // namespace autofill

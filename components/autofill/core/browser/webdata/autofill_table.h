@@ -35,7 +35,6 @@ class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;
 class CreditCard;
-struct CreditCardArtImage;
 struct CreditCardCloudTokenData;
 struct FormFieldData;
 struct PaymentsCustomerData;
@@ -429,6 +428,7 @@ struct PaymentsCustomerData;
 //                      offer_id in the offer_data table.
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
+// TODO(crbug.com/1196021): Remove unused table.
 // credit_card_art_images
 //                      Contains the card art image for the server credit card.
 //
@@ -595,12 +595,6 @@ class AutofillTable : public WebDatabaseTable,
   bool GetCreditCardCloudTokenData(
       std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
           credit_card_cloud_token_data);
-
-  // Setters and getters related to the credit card art images.
-  bool AddCreditCardArtImage(const CreditCardArtImage& credit_card_art_image);
-  bool GetCreditCardArtImages(
-      std::vector<std::unique_ptr<CreditCardArtImage>>* credit_card_art_images);
-  bool ClearCreditCardArtImage(const std::string& id);
 
   // Setters and getters related to the Google Payments customer data.
   // Passing null to the setter will clear the data.

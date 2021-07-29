@@ -1484,9 +1484,10 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
   // If synced down card is a virtual card, let the client know so that it can
   // show the UI to help user to manually fill the form, if needed.
   if (credit_card->record_type() == CreditCard::VIRTUAL_CARD) {
-    // TODO(crbug.com/1196021): Pass in real card image.
-    client()->OnVirtualCardDataAvailable(credit_card, cvc,
-                                         /*card_image=*/gfx::Image());
+    gfx::Image* card_art_image = personal_data_->GetCreditCardArtImageForUrl(
+        credit_card->card_art_url());
+    client()->OnVirtualCardDataAvailable(
+        credit_card, cvc, card_art_image ? *card_art_image : gfx::Image());
   }
 
   FillCreditCardForm(credit_card_query_id_, credit_card_form_,
