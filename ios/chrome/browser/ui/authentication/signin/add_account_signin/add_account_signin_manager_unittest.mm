@@ -137,7 +137,7 @@ TEST_F(AddAccountSigninManagerTest, AddAccountIntentWithUserCancel) {
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultCanceledByUser
-                                             identity:fake_identity_]);
+                                             identity:nil]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
@@ -209,7 +209,7 @@ TEST_F(AddAccountSigninManagerTest, ReauthIntentWithUserCancel) {
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultCanceledByUser
-                                             identity:fake_identity_]);
+                                             identity:nil]);
 
   [signin_manager_
       showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];

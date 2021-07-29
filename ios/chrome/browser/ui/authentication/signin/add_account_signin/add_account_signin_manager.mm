@@ -117,6 +117,7 @@
       return;
     }
     signinResult = SigninCoordinatorResultCanceledByUser;
+    identity = nil;
   }
 
   [self.delegate addAccountSigninManagerFinishedWithSigninResult:signinResult

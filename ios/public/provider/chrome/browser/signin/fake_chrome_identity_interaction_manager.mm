@@ -166,6 +166,10 @@ static ChromeIdentity* _identity = nil;
 - (void)dismissAndRunCompletionCallbackWithError:(NSError*)error
                                         animated:(BOOL)animated
                                       completion:(void (^)(void))completion {
+  DCHECK(error || FakeChromeIdentityInteractionManager.identity)
+      << "An identity should be set to close the dialog successfully, error: "
+      << error << ", identity "
+      << FakeChromeIdentityInteractionManager.identity;
   if (!self.addAccountViewController) {
     [self runCompletionCallbackWithError:error];
     return;
@@ -174,23 +178,25 @@ static ChromeIdentity* _identity = nil;
   [self.addAccountViewController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:^{
-                           [weakSelf runCompletionCallbackWithError:error];
+                           __strong __typeof(self) strongSelf = weakSelf;
+                           [strongSelf runCompletionCallbackWithError:error];
                            if (completion) {
                              completion();
                            }
-                           weakSelf.viewControllerPresented = NO;
+                           strongSelf.viewControllerPresented = NO;
                          }];
 }
 
 - (void)runCompletionCallbackWithError:(NSError*)error {
   self.addAccountViewController = nil;
+  ChromeIdentity* identity =
+      error ? nil : FakeChromeIdentityInteractionManager.identity;
+  // Reset the identity for the next usage.
+  FakeChromeIdentityInteractionManager.identity = nil;
   if (self.completionCallback) {
-    // Ensure self is not destroyed in the callback.
-    NS_VALID_UNTIL_END_OF_SCOPE FakeChromeIdentityInteractionManager*
-        strongSelf = self;
-    self.completionCallback(FakeChromeIdentityInteractionManager.identity,
-                            error);
+    SigninCompletionCallback completionCallback = self.completionCallback;
     self.completionCallback = nil;
+    completionCallback(identity, error);
   }
 }
 
