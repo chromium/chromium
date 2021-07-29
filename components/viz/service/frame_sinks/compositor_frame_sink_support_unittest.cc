@@ -660,7 +660,8 @@ TEST_F(CompositorFrameSinkSupportTest, ProhibitsUnprivilegedCopyRequests) {
   bool did_receive_aborted_copy_result = false;
   base::RunLoop aborted_copy_run_loop;
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](bool* got_nothing, base::OnceClosure finished,
              std::unique_ptr<CopyOutputResult> result) {
@@ -828,7 +829,8 @@ TEST_F(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
   bool called1 = false;
   base::RunLoop called1_run_loop;
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called1,
                      called1_run_loop.QuitClosure()));
   support_->RequestCopyOfOutput(
@@ -841,7 +843,8 @@ TEST_F(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
   bool called2 = false;
   base::RunLoop called2_run_loop;
   request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called2,
                      called2_run_loop.QuitClosure()));
   support_->RequestCopyOfOutput(
@@ -875,7 +878,8 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
   bool called1 = false;
   base::RunLoop called1_run_loop;
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called1,
                      called1_run_loop.QuitClosure()));
   request->set_source(kArbitrarySourceId1);
@@ -888,7 +892,8 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
   bool called2 = false;
   base::RunLoop called2_run_loop;
   request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called2,
                      called2_run_loop.QuitClosure()));
   request->set_source(kArbitrarySourceId2);
@@ -903,7 +908,8 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
   bool called3 = false;
   base::RunLoop called3_run_loop;
   request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called3,
                      called3_run_loop.QuitClosure()));
   request->set_source(kArbitrarySourceId1);
@@ -1141,7 +1147,8 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   // Send a CopyOutputRequest.
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
   support_->RequestCopyOfOutput(
       {local_surface_id1, SubtreeCaptureId(), std::move(request)});
@@ -1184,7 +1191,8 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   // Send a CopyOutputRequest.
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
   support_->RequestCopyOfOutput(
       {local_surface_id2, SubtreeCaptureId(), std::move(request)});
@@ -1226,7 +1234,8 @@ TEST_F(CompositorFrameSinkSupportTest,
   // Send a CopyOutputRequest. Note that the second surface doesn't even exist
   // yet.
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(StubResultCallback));
   support_->RequestCopyOfOutput(
       {local_surface_id1, SubtreeCaptureId(), std::move(request)});

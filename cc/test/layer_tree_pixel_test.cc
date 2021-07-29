@@ -176,7 +176,8 @@ LayerTreePixelTest::CreateDisplayOutputSurfaceOnThread(
 std::unique_ptr<viz::CopyOutputRequest>
 LayerTreePixelTest::CreateCopyOutputRequest() {
   return std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputResult::Destination::kSystemMemory,
       base::BindOnce(&LayerTreePixelTest::ReadbackResult,
                      base::Unretained(this)));
 }
@@ -184,7 +185,9 @@ LayerTreePixelTest::CreateCopyOutputRequest() {
 void LayerTreePixelTest::ReadbackResult(
     std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());
-  EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_BITMAP);
+  EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  EXPECT_EQ(result->destination(),
+            viz::CopyOutputResult::Destination::kSystemMemory);
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
   result_bitmap_ =
       std::make_unique<SkBitmap>(scoped_bitmap.GetOutScopedBitmap());

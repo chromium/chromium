@@ -91,8 +91,8 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   const viz::FrameSinkId& GetFrameSinkId() const;
 
   // Should only be called when the host has a content layer. Use this for one-
-  // off screen capture, not for video. Always provides RGBA_BITMAP
-  // CopyOutputResults.
+  // off screen capture, not for video. Always provides ResultFormat::RGBA,
+  // ResultDestination::kSystemMemory CopyOutputResults.
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,

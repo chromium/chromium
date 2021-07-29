@@ -651,20 +651,15 @@ void SoftwareRenderer::CopyDrawnRenderPass(
       return;
   }
 
-  // Deliver the result. SoftwareRenderer supports RGBA_BITMAP and I420_PLANES
-  // only. For legacy reasons, if a RGBA_TEXTURE request is being made, clients
-  // are prepared to accept RGBA_BITMAP results.
-  //
-  // TODO(crbug/754872): Get rid of the legacy behavior and send empty results
-  // for RGBA_TEXTURE requests once tab capture is moved into VIZ.
-  const CopyOutputResult::Format result_format =
-      (request->result_format() == CopyOutputResult::Format::RGBA_TEXTURE)
-          ? CopyOutputResult::Format::RGBA_BITMAP
-          : request->result_format();
-  // Note: The CopyOutputSkBitmapResult automatically provides I420 format
+  // Deliver the result. SoftwareRenderer supports system memory destinations
+  // only. For legacy reasons, if a RGBA texture request is being made, clients
+  // are prepared to accept system memory results.
+
+  // Note: The CopyOutputSkBitmapResult already implies that results are
+  // returned in system memory and automatically provides I420 format
   // conversion, if needed.
   request->SendResult(std::make_unique<CopyOutputSkBitmapResult>(
-      result_format, geometry.result_selection, std::move(bitmap)));
+      request->result_format(), geometry.result_selection, std::move(bitmap)));
 }
 
 void SoftwareRenderer::DidChangeVisibility() {

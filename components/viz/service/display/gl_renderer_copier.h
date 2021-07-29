@@ -184,10 +184,11 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
 
   // Renders a scaled/transformed copy of a source texture according to the
   // |request| parameters and other source characteristics. |result_texture|
-  // must be allocated/sized by the caller. For RGBA_BITMAP requests, the image
-  // content will be rendered in top-down row order and maybe red-blue swapped,
-  // to support efficient readback later on. For RGBA_TEXTURE requests, the
-  // image content is always rendered Y-flipped (bottom-up row order).
+  // must be allocated/sized by the caller. For RGBA requests with destination
+  // set to system memory, the image content will be rendered in top-down row
+  // order and maybe red-blue swapped, to support efficient readback later on.
+  // For RGBA requests with ResultDestination::kNativeTextures set, the image
+  // content is always rendered Y-flipped (bottom-up row order).
   void RenderResultTexture(const CopyOutputRequest& request,
                            bool flipped_source,
                            const gfx::ColorSpace& source_color_space,
@@ -257,7 +258,8 @@ class VIZ_SERVICE_EXPORT GLRendererCopier {
                                ReusableThings* things);
 
   // Binds the |things->result_texture| to a framebuffer and calls
-  // StartReadbackFromFramebuffer(). This is for RGBA_BITMAP requests only.
+  // StartReadbackFromFramebuffer(). This is only for RGBA requests with
+  // destination set to kSystemMemory.
   // Assumes the image content is in top-down row order (and is red-blue swapped
   // iff RenderResultTexture() would have done that).
   void StartReadbackFromTexture(std::unique_ptr<CopyOutputRequest> request,

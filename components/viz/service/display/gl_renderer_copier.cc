@@ -38,6 +38,7 @@
 namespace viz {
 
 using ResultFormat = CopyOutputRequest::ResultFormat;
+using ResultDestination = CopyOutputRequest::ResultDestination;
 
 namespace {
 
@@ -130,12 +131,14 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
   // before returning the copy result.
   gfx::ColorSpace dest_color_space = framebuffer_color_space;
   if (!framebuffer_color_space.ToSkColorSpace() &&
-      request->result_format() == ResultFormat::RGBA_BITMAP) {
+      request->result_format() == ResultFormat::RGBA &&
+      request->result_destination() == ResultDestination::kSystemMemory) {
     dest_color_space = gfx::ColorSpace::CreateSRGB();
   }
   // Fast-Path: If no transformation is necessary and no new textures need to be
   // generated, read-back directly from the currently-bound framebuffer.
-  if (request->result_format() == ResultFormat::RGBA_BITMAP &&
+  if (request->result_format() == ResultFormat::RGBA &&
+      request->result_destination() == ResultDestination::kSystemMemory &&
       framebuffer_color_space == dest_color_space && !request->is_scaled()) {
     StartReadbackFromFramebuffer(std::move(request), geometry.readback_offset,
                                  flipped_source, false, result_rect,
@@ -199,23 +202,28 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
   }
 
   switch (request->result_format()) {
-    case ResultFormat::RGBA_BITMAP:
-      EnsureTextureDefinedWithSize(context_provider_->ContextGL(),
-                                   result_rect.size(), &things->result_texture,
-                                   &things->result_texture_size);
-      RenderResultTexture(*request, flipped_source, framebuffer_color_space,
-                          dest_color_space, source_texture, source_texture_size,
-                          sampling_rect, result_rect, things->result_texture,
-                          things.get());
-      StartReadbackFromTexture(std::move(request), result_rect,
-                               dest_color_space, things.get());
-      break;
+    case ResultFormat::RGBA:
 
-    case ResultFormat::RGBA_TEXTURE:
-      RenderAndSendTextureResult(std::move(request), flipped_source,
-                                 framebuffer_color_space, dest_color_space,
-                                 source_texture, source_texture_size,
-                                 sampling_rect, result_rect, things.get());
+      switch (request->result_destination()) {
+        case ResultDestination::kSystemMemory:
+          EnsureTextureDefinedWithSize(
+              context_provider_->ContextGL(), result_rect.size(),
+              &things->result_texture, &things->result_texture_size);
+          RenderResultTexture(*request, flipped_source, framebuffer_color_space,
+                              dest_color_space, source_texture,
+                              source_texture_size, sampling_rect, result_rect,
+                              things->result_texture, things.get());
+          StartReadbackFromTexture(std::move(request), result_rect,
+                                   dest_color_space, things.get());
+          break;
+        case ResultDestination::kNativeTextures:
+          RenderAndSendTextureResult(std::move(request), flipped_source,
+                                     framebuffer_color_space, dest_color_space,
+                                     source_texture, source_texture_size,
+                                     sampling_rect, result_rect, things.get());
+          break;
+      }
+
       break;
 
     case ResultFormat::I420_PLANES:
@@ -271,7 +279,9 @@ void GLRendererCopier::RenderResultTexture(
   GLScaler::Parameters params;
   PopulateScalerParameters(request, source_color_space, dest_color_space,
                            flipped_source, &params);
-  if (request.result_format() == ResultFormat::RGBA_BITMAP) {
+
+  DCHECK_EQ(request.result_format(), ResultFormat::RGBA);
+  if (request.result_destination() == ResultDestination::kSystemMemory) {
     // Render the result in top-down row order, and swizzle, within the GPU so
     // these things don't have to be done, less efficiently, on the CPU later.
     params.flip_output = flipped_source;
@@ -279,7 +289,7 @@ void GLRendererCopier::RenderResultTexture(
         ShouldSwapRedAndBlueForBitmapReadback() ? GL_BGRA_EXT : GL_RGBA;
   } else {
     // Texture results are always in bottom-up row order.
-    DCHECK_EQ(request.result_format(), ResultFormat::RGBA_TEXTURE);
+    DCHECK_EQ(request.result_destination(), ResultDestination::kNativeTextures);
     params.flip_output = !flipped_source;
     DCHECK_EQ(params.swizzle[0], static_cast<GLenum>(GL_RGBA));
   }
@@ -364,7 +374,8 @@ void GLRendererCopier::StartReadbackFromTexture(
     const gfx::Rect& result_rect,
     const gfx::ColorSpace& color_space,
     ReusableThings* things) {
-  DCHECK_EQ(request->result_format(), ResultFormat::RGBA_BITMAP);
+  DCHECK_EQ(request->result_format(), ResultFormat::RGBA);
+  DCHECK_EQ(request->result_destination(), ResultDestination::kSystemMemory);
 
   auto* const gl = context_provider_->ContextGL();
   if (things->readback_framebuffer == 0) {
@@ -396,7 +407,8 @@ class GLPixelBufferRGBAResult final : public CopyOutputResult {
                           GLuint transfer_buffer,
                           bool is_upside_down,
                           bool swap_red_and_blue)
-      : CopyOutputResult(CopyOutputResult::Format::RGBA_BITMAP,
+      : CopyOutputResult(CopyOutputResult::Format::RGBA,
+                         CopyOutputResult::Destination::kSystemMemory,
                          result_rect,
                          /*needs_lock_for_bitmap=*/false),
         color_space_(color_space),
@@ -577,7 +589,8 @@ void GLRendererCopier::StartReadbackFromFramebuffer(
     bool swapped_red_and_blue,
     const gfx::Rect& result_rect,
     const gfx::ColorSpace& color_space) {
-  DCHECK_EQ(request->result_format(), ResultFormat::RGBA_BITMAP);
+  DCHECK_EQ(request->result_format(), ResultFormat::RGBA);
+  DCHECK_EQ(request->result_destination(), ResultDestination::kSystemMemory);
 
   read_pixels_workflows_.emplace_back(std::make_unique<ReadPixelsWorkflow>(
       std::move(request), readback_offset, flipped_source,
@@ -600,7 +613,8 @@ void GLRendererCopier::RenderAndSendTextureResult(
     const gfx::Rect& sampling_rect,
     const gfx::Rect& result_rect,
     ReusableThings* things) {
-  DCHECK_EQ(request->result_format(), ResultFormat::RGBA_TEXTURE);
+  DCHECK_EQ(request->result_format(), ResultFormat::RGBA);
+  DCHECK_EQ(request->result_destination(), ResultDestination::kNativeTextures);
 
   auto* sii = context_provider_->SharedImageInterface();
   gpu::Mailbox mailbox = sii->CreateSharedImage(
@@ -649,6 +663,7 @@ class GLPixelBufferI420Result final : public CopyOutputResult {
                           ContextProvider* context_provider,
                           GLuint transfer_buffer)
       : CopyOutputResult(CopyOutputResult::Format::I420_PLANES,
+                         CopyOutputResult::Destination::kSystemMemory,
                          result_rect,
                          /*needs_lock_for_bitmap=*/false),
         aligned_rect_(aligned_rect),

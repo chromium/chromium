@@ -126,8 +126,8 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Size& output_size,
     base::OnceCallback<void(const SkBitmap&)> callback) {
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size,
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](base::OnceCallback<void(const SkBitmap&)> callback,
              std::unique_ptr<viz::CopyOutputResult> result) {
@@ -142,17 +142,19 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
     const gfx::Size& output_size,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
   CopyFromCompositingSurfaceInternal(
-      src_subrect, output_size,
-      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE, std::move(callback));
+      src_subrect, output_size, viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
+      std::move(callback));
 }
 
 void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
     viz::CopyOutputRequest::ResultFormat format,
+    viz::CopyOutputRequest::ResultDestination destination,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
-  auto request =
-      std::make_unique<viz::CopyOutputRequest>(format, std::move(callback));
+  auto request = std::make_unique<viz::CopyOutputRequest>(format, destination,
+                                                          std::move(callback));
 
   // It is possible for us to not have a valid surface to copy from. Such as
   // if a navigation fails to complete. In such a case do not attempt to request
@@ -378,7 +380,9 @@ void DelegatedFrameHost::DidCopyStaleContent(
   if (frame_evictor_->visible() || result->IsEmpty())
     return;
 
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
+  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  DCHECK_EQ(result->destination(),
+            viz::CopyOutputResult::Destination::kNativeTextures);
 
   DCHECK_NE(frame_eviction_state_, FrameEvictionState::kNotStarted);
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);

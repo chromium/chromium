@@ -17,11 +17,18 @@
 namespace viz {
 
 CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
+                                     ResultDestination result_destination,
                                      CopyOutputRequestCallback result_callback)
     : result_format_(result_format),
+      result_destination_(result_destination),
       result_callback_(std::move(result_callback)),
       scale_from_(1, 1),
       scale_to_(1, 1) {
+  // If format is I420_PLANES, the result must be in system memory. Returning
+  // I420_PLANES via textures is currently not supported.
+  DCHECK(result_format != ResultFormat::I420_PLANES ||
+         result_destination == ResultDestination::kSystemMemory);
+
   DCHECK(!result_callback_.is_null());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("viz", "CopyOutputRequest", this);
 }
@@ -29,8 +36,8 @@ CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
 CopyOutputRequest::~CopyOutputRequest() {
   if (!result_callback_.is_null()) {
     // Send an empty result to indicate the request was never satisfied.
-    SendResult(
-        std::make_unique<CopyOutputResult>(result_format_, gfx::Rect(), false));
+    SendResult(std::make_unique<CopyOutputResult>(
+        result_format_, result_destination_, gfx::Rect(), false));
   }
 }
 
@@ -82,7 +89,7 @@ bool CopyOutputRequest::SendsResultsInCurrentSequence() const {
 // static
 std::unique_ptr<CopyOutputRequest> CopyOutputRequest::CreateStubForTesting() {
   return std::make_unique<CopyOutputRequest>(
-      ResultFormat::RGBA_BITMAP,
+      ResultFormat::RGBA, ResultDestination::kSystemMemory,
       base::BindOnce([](std::unique_ptr<CopyOutputResult>) {}));
 }
 

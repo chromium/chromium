@@ -60,7 +60,7 @@ base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
 class GLRendererCopierPixelTest
     : public cc::PixelTest,
       public testing::WithParamInterface<
-          std::tuple<GLenum, bool, CopyOutputResult::Format, bool, bool>> {
+          std::tuple<GLenum, bool, CopyOutputResult::Destination, bool, bool>> {
  public:
   void SetUp() override {
     SetUpGLWithoutRenderer(gfx::SurfaceOrigin::kBottomLeft);
@@ -70,7 +70,7 @@ class GLRendererCopierPixelTest
 
     source_gl_format_ = std::get<0>(GetParam());
     have_source_texture_ = std::get<1>(GetParam());
-    result_format_ = std::get<2>(GetParam());
+    result_destination_ = std::get<2>(GetParam());
     scale_by_half_ = std::get<3>(GetParam());
     flipped_source_ = std::get<4>(GetParam());
 
@@ -221,7 +221,7 @@ class GLRendererCopierPixelTest
  protected:
   GLenum source_gl_format_;
   bool have_source_texture_;
-  CopyOutputResult::Format result_format_;
+  CopyOutputResult::Destination result_destination_;
   bool scale_by_half_;
   bool flipped_source_;
   SkBitmap source_bitmap_;
@@ -249,7 +249,7 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequest) {
   {
     base::RunLoop loop;
     auto request = std::make_unique<CopyOutputRequest>(
-        result_format_,
+        CopyOutputRequest::ResultFormat::RGBA, result_destination_,
         base::BindOnce(
             [](std::unique_ptr<CopyOutputResult>* result,
                base::OnceClosure quit_closure,
@@ -293,7 +293,7 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequest) {
   // Examine the image in the |result|, and compare it to the baseline PNG file.
   absl::optional<CopyOutputResult::ScopedSkBitmap> scoped_bitmap;
   SkBitmap actual;
-  if (result_format_ == CopyOutputResult::Format::RGBA_BITMAP) {
+  if (result_destination_ == CopyOutputResult::Destination::kSystemMemory) {
     scoped_bitmap = result->ScopedAccessSkBitmap();
     actual = scoped_bitmap->bitmap();
   } else {
@@ -327,9 +327,9 @@ INSTANTIATE_TEST_SUITE_P(
                         static_cast<GLenum>(GL_RGB)),
         // Source: Have texture too?
         testing::Values(false, true),
-        // Result format.
-        testing::Values(CopyOutputResult::Format::RGBA_BITMAP,
-                        CopyOutputResult::Format::RGBA_TEXTURE),
+        // Result destination.
+        testing::Values(CopyOutputResult::Destination::kSystemMemory,
+                        CopyOutputResult::Destination::kNativeTextures),
         // Result scaling: Scale by half?
         testing::Values(false, true),
         // Source content is vertically flipped?

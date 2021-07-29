@@ -454,7 +454,8 @@ TEST_F(DisplayTest, DisplayDamaged) {
     base::RunLoop copy_run_loop;
     bool copy_called = false;
     pass->copy_requests.push_back(std::make_unique<CopyOutputRequest>(
-        CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+        CopyOutputRequest::ResultFormat::RGBA,
+        CopyOutputRequest::ResultDestination::kSystemMemory,
         base::BindOnce(&CopyCallback, &copy_called,
                        copy_run_loop.QuitClosure())));
     pass->id = CompositorRenderPassId{1u};
@@ -4469,7 +4470,8 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
     base::RunLoop copy_run_loop;
     bool copy_called = false;
     pass->copy_requests.push_back(std::make_unique<CopyOutputRequest>(
-        CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+        CopyOutputRequest::ResultFormat::RGBA,
+        CopyOutputRequest::ResultDestination::kSystemMemory,
         base::BindOnce(&CopyCallback, &copy_called,
                        copy_run_loop.QuitClosure())));
     pass->id = CompositorRenderPassId{1u};

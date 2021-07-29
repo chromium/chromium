@@ -225,6 +225,7 @@ class SkiaOutputSurfaceImplOnGpu::CopyOutputResultYUV
                       const gfx::Rect& rect,
                       std::unique_ptr<const SkSurface::AsyncReadResult> result)
       : CopyOutputResult(Format::I420_PLANES,
+                         Destination::kSystemMemory,
                          rect,
                          /*needs_lock_for_bitmap=*/false),
         result_(impl, std::move(result)) {
@@ -307,7 +308,8 @@ class SkiaOutputSurfaceImplOnGpu::CopyOutputResultRGBA
                        const gfx::Rect& rect,
                        std::unique_ptr<const SkSurface::AsyncReadResult> result,
                        const gfx::ColorSpace& color_space)
-      : CopyOutputResult(Format::RGBA_BITMAP,
+      : CopyOutputResult(Format::RGBA,
+                         Destination::kSystemMemory,
                          rect,
                          /*needs_lock_for_bitmap=*/true),
         result_(impl, std::move(result)),
@@ -846,7 +848,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     std::unique_ptr<CopyOutputRequest> request,
     const gpu::Mailbox& mailbox) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::CopyOutput");
-  // TODO(crbug.com/898595): Do this on the GPU instead of CPU with Vulkan.
+  // TODO(https://crbug.com/898595): Do this on the GPU instead of CPU with
+  // Vulkan.
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (context_is_lost_)
@@ -958,7 +961,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         SkSurface::RescaleGamma::kSrc, rescale_mode,
         &CopyOutputResultYUV::OnReadbackDone, context.release());
   } else if (request->result_format() ==
-             CopyOutputRequest::ResultFormat::RGBA_BITMAP) {
+                 CopyOutputRequest::ResultFormat::RGBA &&
+             request->result_destination() ==
+                 CopyOutputRequest::ResultDestination::kSystemMemory) {
     // Perform swizzle during readback.
     const bool skbitmap_is_bgra = (kN32_SkColorType == kBGRA_8888_SkColorType);
     // If we can't convert |color_space| to a SkColorSpace
@@ -984,7 +989,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         dst_info, src_rect, SkSurface::RescaleGamma::kSrc, rescale_mode,
         &CopyOutputResultRGBA::OnReadbackDone, context.release());
   } else if (request->result_format() ==
-             CopyOutputRequest::ResultFormat::RGBA_TEXTURE) {
+                 CopyOutputRequest::ResultFormat::RGBA &&
+             request->result_destination() ==
+                 CopyOutputRequest::ResultDestination::kNativeTextures) {
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
     constexpr auto kUsage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                             gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |

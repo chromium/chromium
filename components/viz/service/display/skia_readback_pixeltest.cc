@@ -75,11 +75,16 @@ void DeleteSharedImage(scoped_refptr<ContextProvider> context_provider,
 class SkiaReadbackPixelTest : public cc::PixelTest,
                               public testing::WithParamInterface<bool> {
  public:
+  CopyOutputResult::Format RequestFormat() const {
+    return CopyOutputResult::Format::RGBA;
+  }
+
   // TODO(kylechar): Add parameter to also test RGBA_TEXTURE when it's
   // supported with the Skia readback API.
-  CopyOutputResult::Format RequestFormat() const {
-    return CopyOutputResult::Format::RGBA_BITMAP;
+  CopyOutputResult::Destination RequestDestination() const {
+    return CopyOutputResult::Destination::kSystemMemory;
   }
+
   bool ScaleByHalf() const { return GetParam(); }
 
   void SetUp() override {
@@ -167,7 +172,7 @@ TEST_P(SkiaReadbackPixelTest, ExecutesCopyRequest) {
   std::unique_ptr<CopyOutputResult> result;
   base::RunLoop loop;
   auto request = std::make_unique<CopyOutputRequest>(
-      RequestFormat(),
+      RequestFormat(), RequestDestination(),
       base::BindOnce(
           [](std::unique_ptr<CopyOutputResult>* result_out,
              base::OnceClosure quit_closure,

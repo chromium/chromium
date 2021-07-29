@@ -1395,7 +1395,8 @@ TEST_F(LayerTest, DedupesCopyOutputRequestsBySource) {
   // layer does not abort either one.
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&ReceiveCopyOutputResultAtomic,
                          base::Unretained(&result_count)));
   layer->RequestCopyOfOutput(std::move(request));
@@ -1404,7 +1405,8 @@ TEST_F(LayerTest, DedupesCopyOutputRequestsBySource) {
   CCTestSuite::RunUntilIdle();
   EXPECT_EQ(0, result_count.load());
   request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&ReceiveCopyOutputResultAtomic,
                      base::Unretained(&result_count)));
   layer->RequestCopyOfOutput(std::move(request));
@@ -1426,7 +1428,8 @@ TEST_F(LayerTest, DedupesCopyOutputRequestsBySource) {
   // the second request using |kArbitrarySourceId1| is made.
   int did_receive_first_result_from_this_source = 0;
   request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&ReceiveCopyOutputResult,
                      &did_receive_first_result_from_this_source));
   request->set_source(kArbitrarySourceId1);
@@ -1438,7 +1441,8 @@ TEST_F(LayerTest, DedupesCopyOutputRequestsBySource) {
   // Make a request from a different source.
   int did_receive_result_from_different_source = 0;
   request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&ReceiveCopyOutputResult,
                      &did_receive_result_from_different_source));
   request->set_source(kArbitrarySourceId2);
@@ -1450,7 +1454,8 @@ TEST_F(LayerTest, DedupesCopyOutputRequestsBySource) {
   // Make a request without specifying the source.
   int did_receive_result_from_anonymous_source = 0;
   request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&ReceiveCopyOutputResult,
                      &did_receive_result_from_anonymous_source));
   layer->RequestCopyOfOutput(std::move(request));
@@ -1461,7 +1466,8 @@ TEST_F(LayerTest, DedupesCopyOutputRequestsBySource) {
   // Make the second request from |kArbitrarySourceId1|.
   int did_receive_second_result_from_this_source = 0;
   request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&ReceiveCopyOutputResult,
                      &did_receive_second_result_from_this_source));
   request->set_source(kArbitrarySourceId1);

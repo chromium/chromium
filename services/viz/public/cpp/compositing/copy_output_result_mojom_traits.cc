@@ -49,15 +49,13 @@ viz::mojom::CopyOutputResultFormat
 EnumTraits<viz::mojom::CopyOutputResultFormat, viz::CopyOutputResult::Format>::
     ToMojom(viz::CopyOutputResult::Format format) {
   switch (format) {
-    case viz::CopyOutputResult::Format::RGBA_BITMAP:
-      return viz::mojom::CopyOutputResultFormat::RGBA_BITMAP;
-    case viz::CopyOutputResult::Format::RGBA_TEXTURE:
-      return viz::mojom::CopyOutputResultFormat::RGBA_TEXTURE;
+    case viz::CopyOutputResult::Format::RGBA:
+      return viz::mojom::CopyOutputResultFormat::RGBA;
     case viz::CopyOutputResult::Format::I420_PLANES:
       break;  // Not intended for transport across service boundaries.
   }
   NOTREACHED();
-  return viz::mojom::CopyOutputResultFormat::RGBA_BITMAP;
+  return viz::mojom::CopyOutputResultFormat::RGBA;
 }
 
 // static
@@ -66,11 +64,37 @@ bool EnumTraits<viz::mojom::CopyOutputResultFormat,
     FromMojom(viz::mojom::CopyOutputResultFormat input,
               viz::CopyOutputResult::Format* out) {
   switch (input) {
-    case viz::mojom::CopyOutputResultFormat::RGBA_BITMAP:
-      *out = viz::CopyOutputResult::Format::RGBA_BITMAP;
+    case viz::mojom::CopyOutputResultFormat::RGBA:
+      *out = viz::CopyOutputResult::Format::RGBA;
       return true;
-    case viz::mojom::CopyOutputResultFormat::RGBA_TEXTURE:
-      *out = viz::CopyOutputResult::Format::RGBA_TEXTURE;
+  }
+  return false;
+}
+
+// static
+viz::mojom::CopyOutputResultDestination
+EnumTraits<viz::mojom::CopyOutputResultDestination,
+           viz::CopyOutputResult::Destination>::
+    ToMojom(viz::CopyOutputResult::Destination destination) {
+  switch (destination) {
+    case viz::CopyOutputResult::Destination::kSystemMemory:
+      return viz::mojom::CopyOutputResultDestination::kSystemMemory;
+    case viz::CopyOutputResult::Destination::kNativeTextures:
+      return viz::mojom::CopyOutputResultDestination::kNativeTextures;
+  }
+}
+
+// static
+bool EnumTraits<viz::mojom::CopyOutputResultDestination,
+                viz::CopyOutputResult::Destination>::
+    FromMojom(viz::mojom::CopyOutputResultDestination input,
+              viz::CopyOutputResult::Destination* out) {
+  switch (input) {
+    case viz::mojom::CopyOutputResultDestination::kSystemMemory:
+      *out = viz::CopyOutputResult::Destination::kSystemMemory;
+      return true;
+    case viz::mojom::CopyOutputResultDestination::kNativeTextures:
+      *out = viz::CopyOutputResult::Destination::kNativeTextures;
       return true;
   }
   return false;
@@ -85,6 +109,14 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
 }
 
 // static
+viz::CopyOutputResult::Destination
+StructTraits<viz::mojom::CopyOutputResultDataView,
+             std::unique_ptr<viz::CopyOutputResult>>::
+    destination(const std::unique_ptr<viz::CopyOutputResult>& result) {
+  return result->destination();
+}
+
+// static
 const gfx::Rect& StructTraits<viz::mojom::CopyOutputResultDataView,
                               std::unique_ptr<viz::CopyOutputResult>>::
     rect(const std::unique_ptr<viz::CopyOutputResult>& result) {
@@ -96,7 +128,8 @@ absl::optional<viz::CopyOutputResult::ScopedSkBitmap>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     bitmap(const std::unique_ptr<viz::CopyOutputResult>& result) {
-  if (result->format() != viz::CopyOutputResult::Format::RGBA_BITMAP)
+  if (result->destination() !=
+      viz::CopyOutputResult::Destination::kSystemMemory)
     return absl::nullopt;
   auto scoped_bitmap = result->ScopedAccessSkBitmap();
   if (!scoped_bitmap.bitmap().readyToDraw()) {
@@ -113,7 +146,8 @@ absl::optional<gpu::Mailbox>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     mailbox(const std::unique_ptr<viz::CopyOutputResult>& result) {
-  if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE ||
+  if (result->destination() !=
+          viz::CopyOutputResult::Destination::kNativeTextures ||
       result->IsEmpty()) {
     return absl::nullopt;
   }
@@ -125,7 +159,8 @@ absl::optional<gpu::SyncToken>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     sync_token(const std::unique_ptr<viz::CopyOutputResult>& result) {
-  if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE ||
+  if (result->destination() !=
+          viz::CopyOutputResult::Destination::kNativeTextures ||
       result->IsEmpty()) {
     return absl::nullopt;
   }
@@ -137,7 +172,8 @@ absl::optional<gfx::ColorSpace>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     color_space(const std::unique_ptr<viz::CopyOutputResult>& result) {
-  if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE ||
+  if (result->destination() !=
+          viz::CopyOutputResult::Destination::kNativeTextures ||
       result->IsEmpty()) {
     return absl::nullopt;
   }
@@ -149,7 +185,8 @@ mojo::PendingRemote<viz::mojom::TextureReleaser>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
     releaser(const std::unique_ptr<viz::CopyOutputResult>& result) {
-  if (result->format() != viz::CopyOutputResult::Format::RGBA_TEXTURE)
+  if (result->destination() !=
+      viz::CopyOutputResult::Destination::kNativeTextures)
     return mojo::NullRemote();
 
   mojo::PendingRemote<viz::mojom::TextureReleaser> releaser;
@@ -167,72 +204,78 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
   // First read into local variables, and then instantiate an appropriate
   // implementation of viz::CopyOutputResult.
   viz::CopyOutputResult::Format format;
+  viz::CopyOutputResult::Destination destination;
   gfx::Rect rect;
 
-  if (!data.ReadFormat(&format) || !data.ReadRect(&rect))
+  if (!data.ReadFormat(&format) || !data.ReadDestination(&destination) ||
+      !data.ReadRect(&rect)) {
     return false;
+  }
 
   if (rect.IsEmpty()) {
     // An empty rect implies an empty result.
-    *out_p =
-        std::make_unique<viz::CopyOutputResult>(format, gfx::Rect(), false);
+    *out_p = std::make_unique<viz::CopyOutputResult>(format, destination,
+                                                     gfx::Rect(), false);
     return true;
   }
 
   switch (format) {
-    case viz::CopyOutputResult::Format::RGBA_BITMAP: {
-      absl::optional<SkBitmap> bitmap_opt;
-      if (!data.ReadBitmap(&bitmap_opt))
-        return false;
-      if (!bitmap_opt) {
-        // During shutdown or switching to background on Android, Chrome will
-        // release GPU context, it will release mapped GPU memory which is used
-        // in SkBitmap, in that case, the sender will send a null bitmap. So we
-        // should consider the copy output result is empty.
-        *out_p =
-            std::make_unique<viz::CopyOutputResult>(format, gfx::Rect(), false);
-        return true;
+    case viz::CopyOutputResult::Format::RGBA:
+      switch (destination) {
+        case viz::CopyOutputResult::Destination::kSystemMemory: {
+          absl::optional<SkBitmap> bitmap_opt;
+          if (!data.ReadBitmap(&bitmap_opt))
+            return false;
+          if (!bitmap_opt) {
+            // During shutdown or switching to background on Android, Chrome
+            // will release GPU context, it will release mapped GPU memory which
+            // is used in SkBitmap, in that case, the sender will send a null
+            // bitmap. So we should consider the copy output result is empty.
+            *out_p = std::make_unique<viz::CopyOutputResult>(
+                format, destination, gfx::Rect(), false);
+            return true;
+          }
+          if (!bitmap_opt->readyToDraw())
+            return false;
+
+          *out_p = std::make_unique<viz::CopyOutputSkBitmapResult>(
+              rect, std::move(*bitmap_opt));
+          return true;
+        }
+
+        case viz::CopyOutputResult::Destination::kNativeTextures: {
+          absl::optional<gpu::Mailbox> mailbox;
+          if (!data.ReadMailbox(&mailbox) || !mailbox)
+            return false;
+          absl::optional<gpu::SyncToken> sync_token;
+          if (!data.ReadSyncToken(&sync_token) || !sync_token)
+            return false;
+          absl::optional<gfx::ColorSpace> color_space;
+          if (!data.ReadColorSpace(&color_space) || !color_space)
+            return false;
+
+          if (mailbox->IsZero()) {
+            // Returns an empty result.
+            *out_p = std::make_unique<viz::CopyOutputResult>(
+                format, destination, gfx::Rect(), false);
+            return true;
+          }
+
+          auto releaser = data.TakeReleaser<
+              mojo::PendingRemote<viz::mojom::TextureReleaser>>();
+          if (!releaser)
+            return false;  // Illegal to provide texture without Releaser.
+
+          // Returns a result with a ReleaseCallback that will return here and
+          // proxy the callback over mojo to the CopyOutputResult's origin via a
+          // mojo::Remote<viz::mojom::TextureReleaser> remote.
+          *out_p = std::make_unique<viz::CopyOutputTextureResult>(
+              rect, *mailbox, *sync_token, *color_space,
+
+              base::BindOnce(&Release, std::move(releaser)));
+          return true;
+        }
       }
-      if (!bitmap_opt->readyToDraw())
-        return false;
-
-      *out_p = std::make_unique<viz::CopyOutputSkBitmapResult>(
-          rect, std::move(*bitmap_opt));
-      return true;
-    }
-
-    case viz::CopyOutputResult::Format::RGBA_TEXTURE: {
-      absl::optional<gpu::Mailbox> mailbox;
-      if (!data.ReadMailbox(&mailbox) || !mailbox)
-        return false;
-      absl::optional<gpu::SyncToken> sync_token;
-      if (!data.ReadSyncToken(&sync_token) || !sync_token)
-        return false;
-      absl::optional<gfx::ColorSpace> color_space;
-      if (!data.ReadColorSpace(&color_space) || !color_space)
-        return false;
-
-      if (mailbox->IsZero()) {
-        // Returns an empty result.
-        *out_p = std::make_unique<viz::CopyOutputResult>(
-            viz::CopyOutputResult::Format::RGBA_TEXTURE, gfx::Rect(), false);
-        return true;
-      }
-
-      auto releaser =
-          data.TakeReleaser<mojo::PendingRemote<viz::mojom::TextureReleaser>>();
-      if (!releaser)
-        return false;  // Illegal to provide texture without Releaser.
-
-      // Returns a result with a ReleaseCallback that will return here and proxy
-      // the callback over mojo to the CopyOutputResult's origin via a
-      // mojo::Remote<viz::mojom::TextureReleaser> remote.
-      *out_p = std::make_unique<viz::CopyOutputTextureResult>(
-          rect, *mailbox, *sync_token, *color_space,
-
-          base::BindOnce(&Release, std::move(releaser)));
-      return true;
-    }
 
     case viz::CopyOutputResult::Format::I420_PLANES:
       break;  // Not intended for transport across service boundaries.

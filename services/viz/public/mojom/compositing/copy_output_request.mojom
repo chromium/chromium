@@ -13,6 +13,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // See components/viz/common/frame_sinks/copy_output_request.h.
 struct CopyOutputRequest {
   CopyOutputResultFormat result_format;
+  CopyOutputResultDestination result_destination;
 
   // Set both to (1,1) for no scaling. Both must have positive X and Y values.
   gfx.mojom.Vector2d scale_from;

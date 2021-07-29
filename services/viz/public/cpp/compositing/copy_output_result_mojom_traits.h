@@ -32,9 +32,22 @@ struct EnumTraits<viz::mojom::CopyOutputResultFormat,
 };
 
 template <>
+struct EnumTraits<viz::mojom::CopyOutputResultDestination,
+                  viz::CopyOutputResult::Destination> {
+  static viz::mojom::CopyOutputResultDestination ToMojom(
+      viz::CopyOutputResult::Destination destination);
+
+  static bool FromMojom(viz::mojom::CopyOutputResultDestination input,
+                        viz::CopyOutputResult::Destination* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::CopyOutputResultDataView,
                     std::unique_ptr<viz::CopyOutputResult>> {
   static viz::CopyOutputResult::Format format(
+      const std::unique_ptr<viz::CopyOutputResult>& result);
+
+  static viz::CopyOutputResult::Destination destination(
       const std::unique_ptr<viz::CopyOutputResult>& result);
 
   static const gfx::Rect& rect(

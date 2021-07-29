@@ -152,7 +152,8 @@ TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
   // Copy the output
   const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&SkiaOutputSurfaceImplTest::CopyRequestCallbackOnGpuThread,
                      base::Unretained(this), output_rect, color_space));
   request->set_result_task_runner(
@@ -212,7 +213,8 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
   base::RunLoop run_loop;
   std::unique_ptr<CopyOutputResult> result;
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](std::unique_ptr<CopyOutputResult>* result_out,
              base::OnceClosure quit_closure,
@@ -251,7 +253,8 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
   base::RunLoop run_loop;
   std::unique_ptr<CopyOutputResult> result;
   auto request = std::make_unique<CopyOutputRequest>(
-      CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(
           [](std::unique_ptr<CopyOutputResult>* result_out,
              base::OnceClosure quit_closure,

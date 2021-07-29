@@ -104,7 +104,8 @@ class SoftwareRendererTest : public testing::Test {
     base::RunLoop loop;
 
     list->back()->copy_requests.push_back(std::make_unique<CopyOutputRequest>(
-        CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+        CopyOutputRequest::ResultFormat::RGBA,
+        CopyOutputRequest::ResultDestination::kSystemMemory,
         base::BindOnce(&SoftwareRendererTest::SaveBitmapResult,
                        base::Unretained(&bitmap_result), loop.QuitClosure())));
 
@@ -120,7 +121,9 @@ class SoftwareRendererTest : public testing::Test {
                                base::OnceClosure quit_closure,
                                std::unique_ptr<CopyOutputResult> result) {
     DCHECK(!result->IsEmpty());
-    DCHECK_EQ(result->format(), CopyOutputResult::Format::RGBA_BITMAP);
+    DCHECK_EQ(result->format(), CopyOutputResult::Format::RGBA);
+    DCHECK_EQ(result->destination(),
+              CopyOutputResult::Destination::kSystemMemory);
     auto scoped_bitmap = result->ScopedAccessSkBitmap();
     (*bitmap_result) =
         std::make_unique<SkBitmap>(scoped_bitmap.GetOutScopedBitmap());

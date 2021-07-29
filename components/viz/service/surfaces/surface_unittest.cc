@@ -105,7 +105,8 @@ TEST(SurfaceTest, CopyRequestLifetime) {
   support->RequestCopyOfOutput(PendingCopyOutputRequest{
       local_surface_id, SubtreeCaptureId(),
       std::make_unique<CopyOutputRequest>(
-          CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          CopyOutputRequest::ResultFormat::RGBA,
+          CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&TestCopyResultCallback, &copy_called,
                          copy_runloop.QuitClosure()))});
   surface->TakeCopyOutputRequestsFromClient();

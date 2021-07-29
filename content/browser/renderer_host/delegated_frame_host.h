@@ -199,6 +199,7 @@ class CONTENT_EXPORT DelegatedFrameHost
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
       viz::CopyOutputRequest::ResultFormat format,
+      viz::CopyOutputRequest::ResultDestination destination,
       viz::CopyOutputRequest::CopyOutputRequestCallback callback);
 
   void SetFrameEvictionStateAndNotifyObservers(

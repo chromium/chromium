@@ -11680,7 +11680,8 @@ TEST_P(LayerTreeHostImplTestWithRenderer, ShutdownReleasesContext) {
   GetPropertyTrees(root)->effect_tree.AddCopyRequest(
       root->effect_tree_index(),
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
           base::BindOnce(&Helper::OnResult, base::Unretained(&helper),
                          copy_request_run_loop.QuitClosure())));
   DrawFrame();

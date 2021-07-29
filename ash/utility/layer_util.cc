@@ -18,7 +18,9 @@ void CopyCopyOutputResultToLayer(
     std::unique_ptr<viz::CopyOutputResult> copy_result,
     ui::Layer* target_layer) {
   DCHECK(!copy_result->IsEmpty());
-  DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
+  DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA);
+  DCHECK_EQ(copy_result->destination(),
+            viz::CopyOutputResult::Destination::kNativeTextures);
 
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGL(
@@ -78,7 +80,8 @@ void CopyLayerContentToNewLayer(ui::Layer* layer, LayerCopyCallback callback) {
   auto new_callback = base::BindOnce(&CopyToNewLayerOnCopyRequestFinished,
                                      std::move(callback), layer->size());
   auto copy_request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
       std::move(new_callback));
   gfx::Rect bounds(layer->size());
   copy_request->set_area(bounds);
@@ -91,7 +94,8 @@ void CopyLayerContentToLayer(ui::Layer* layer,
   auto new_callback =
       base::BindOnce(&CopyToLayerOnCopyRequestFinished, std::move(callback));
   auto copy_request = std::make_unique<viz::CopyOutputRequest>(
-      viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kNativeTextures,
       std::move(new_callback));
   gfx::Rect bounds(layer->size());
   copy_request->set_area(bounds);

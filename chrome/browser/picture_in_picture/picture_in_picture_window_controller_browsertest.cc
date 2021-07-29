@@ -373,7 +373,9 @@ class PictureInPicturePixelComparisonBrowserTest
   void ReadbackResult(base::RepeatingClosure quit_run_loop,
                       std::unique_ptr<viz::CopyOutputResult> result) {
     ASSERT_FALSE(result->IsEmpty());
-    EXPECT_EQ(viz::CopyOutputResult::Format::RGBA_BITMAP, result->format());
+    EXPECT_EQ(viz::CopyOutputResult::Format::RGBA, result->format());
+    EXPECT_EQ(viz::CopyOutputResult::Destination::kSystemMemory,
+              result->destination());
     auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
     result_bitmap_ =
         std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
@@ -413,7 +415,8 @@ class PictureInPicturePixelComparisonBrowserTest
       base::RunLoop run_loop;
       std::unique_ptr<viz::CopyOutputRequest> request =
           std::make_unique<viz::CopyOutputRequest>(
-              viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+              viz::CopyOutputRequest::ResultFormat::RGBA,
+              viz::CopyOutputRequest::ResultDestination::kSystemMemory,
               base::BindOnce(
                   &PictureInPicturePixelComparisonBrowserTest::ReadbackResult,
                   base::Unretained(this), run_loop.QuitClosure()));

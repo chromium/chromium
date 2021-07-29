@@ -668,7 +668,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   auto request = std::make_unique<CopyOutputRequest>(
       pixel_format_ == media::PIXEL_FORMAT_I420
           ? CopyOutputRequest::ResultFormat::I420_PLANES
-          : CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          : CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
                      capture_weak_factory_.GetWeakPtr(), capture_frame_number,
                      oracle_frame_number, content_version_, content_rect,
@@ -730,15 +731,19 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                                      frame->stride(VideoFrame::kUPlane),
                                      frame->stride(VideoFrame::kVPlane));
         break;
-      case CopyOutputResult::Format::RGBA_BITMAP:
-        format = "RGBA_Bitmap";
+      case CopyOutputResult::Format::RGBA:
+
         strides = base::StringPrintf("strideRGBA:%d",
                                      frame->stride(VideoFrame::kARGBPlane));
-        break;
-      case CopyOutputResult::Format::RGBA_TEXTURE:
-        format = "RGBA_Texture";
-        strides = base::StringPrintf("strideRGBA:%d",
-                                     frame->stride(VideoFrame::kARGBPlane));
+
+        switch (result->destination()) {
+          case CopyOutputResult::Destination::kSystemMemory:
+            format = "RGBA_Bitmap";
+            break;
+          case CopyOutputResult::Destination::kNativeTextures:
+            format = "RGBA_Texture";
+            break;
+        }
         break;
     }
     consumer_->OnLog(base::StringPrintf(

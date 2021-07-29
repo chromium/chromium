@@ -273,7 +273,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
   scoped_refptr<ReadbackHolder> holder(new ReadbackHolder);
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&ReadbackHolder::OutputRequestCallback, holder));
   request->set_area(source_rect);
   layer->RequestCopyOfOutput(std::move(request));

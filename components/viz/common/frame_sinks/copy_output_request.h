@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_REQUEST_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/sequenced_task_runner.h"
@@ -43,17 +44,27 @@ class CopyOutputRequestDataView;
 class VIZ_COMMON_EXPORT CopyOutputRequest {
  public:
   using ResultFormat = CopyOutputResult::Format;
+  // Specifies intended destination for the results. For software compositing,
+  // only the system-memory results are supported - even if the
+  // CopyOutputRequest is issued with ResultDestination::kNativeTextures, the
+  // results will still be returned via ResultDestination::kSystemMemory.
+  using ResultDestination = CopyOutputResult::Destination;
 
   using CopyOutputRequestCallback =
       base::OnceCallback<void(std::unique_ptr<CopyOutputResult> result)>;
 
+  // Creates new CopyOutputRequest. I420_PLANES format returned via
+  // kNativeTextures is currently not supported.
   CopyOutputRequest(ResultFormat result_format,
+                    ResultDestination result_destination,
                     CopyOutputRequestCallback result_callback);
 
   ~CopyOutputRequest();
 
   // Returns the requested result format.
   ResultFormat result_format() const { return result_format_; }
+  // Returns the requested result destination.
+  ResultDestination result_destination() const { return result_destination_; }
 
   // Requests that the result callback be run as a task posted to the given
   // |task_runner|. If this is not set, the result callback could be run from
@@ -115,7 +126,8 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // same TaskRunner as that to which the current task was posted.
   bool SendsResultsInCurrentSequence() const;
 
-  // Creates a RGBA_BITMAP request that ignores results, for testing purposes.
+  // Creates a RGBA request with ResultDestination::kSystemMemory that ignores
+  // results, for testing purposes.
   static std::unique_ptr<CopyOutputRequest> CreateStubForTesting();
 
  private:
@@ -126,6 +138,7 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
                                    std::unique_ptr<CopyOutputRequest>>;
 
   const ResultFormat result_format_;
+  const ResultDestination result_destination_;
   CopyOutputRequestCallback result_callback_;
   scoped_refptr<base::SequencedTaskRunner> result_task_runner_;
   gfx::Vector2d scale_from_;

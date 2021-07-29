@@ -25,22 +25,39 @@ namespace viz {
 class VIZ_COMMON_EXPORT CopyOutputResult {
  public:
   enum class Format : uint8_t {
-    // A normal bitmap in system memory. AsSkBitmap() will return a bitmap in
-    // "N32Premul" form.
-    RGBA_BITMAP,
-    // A GL_RGBA texture, referred to by a gpu::Mailbox. Client code can
-    // optionally take ownership of the texture (via TakeTextureOwnership()), if
-    // it is needed beyond the lifetime of CopyOutputResult.
-    RGBA_TEXTURE,
-    // I420 format planes in system memory. This is intended to be used
-    // internally within the VIZ component to support video capture. When
-    // requesting this format, results can only be delivered on the same task
-    // runner sequence that runs the DirectRenderer implementation.
+    // A normal bitmap. When the results are returned in system memory, the
+    // AsSkBitmap() will return a bitmap in "N32Premul" form. When the results
+    // are returned in a texture,  it will be an GL_RGBA texture referred to by
+    // a gpu::Mailbox. Client code can optionally take ownership of the texture
+    // (via a call to |TakeTextureOwnership()|) if it is needed beyond the
+    // lifetime of the CopyOutputResult.
+    RGBA,
+    // I420 format planes. This is intended to be used internally within the VIZ
+    // component to support video capture. When requesting this format, results
+    // can only be delivered on the same task runner sequence that runs the
+    // DirectRenderer implementation. For now, I420 format can be requested only
+    // for system memory.
     I420_PLANES,
   };
 
-  CopyOutputResult(
-      Format format, const gfx::Rect& rect, bool needs_lock_for_bitmap);
+  // Specifies how the results are delivered to the issuer of the request.
+  // This should usually (but not always!) correspond to the value found in
+  // CopyOutputRequest::result_destination() of the request that caused this
+  // result to be produced. For details, see the comment on
+  // CopyOutputRequest::ResultDestination.
+  enum class Destination : uint8_t {
+    // Place the results in system memory.
+    kSystemMemory,
+    // Place the results in native textures. The GPU textures are returned via a
+    // mailbox. The caller can use |GetTextureResult()| and
+    // |TakeTextureOwnership()| to access the results.
+    kNativeTextures,
+  };
+
+  CopyOutputResult(Format format,
+                   Destination destination,
+                   const gfx::Rect& rect,
+                   bool needs_lock_for_bitmap);
 
   virtual ~CopyOutputResult();
 
@@ -50,6 +67,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
 
   // Returns the format of this result.
   Format format() const { return format_; }
+  // Returns the destination of this result.
+  Destination destination() const { return destination_; }
 
   // Returns the result Rect, which is the position and size of the image data
   // within the surface/layer (see CopyOutputRequest::set_area()). If a scale
@@ -113,9 +132,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
                               uint8_t* v_out,
                               int v_out_stride) const;
 
-  // Copies the result of an RGBA_BITMAP into |dest|. The result is in N32Premul
-  // form. Returns true if successful, or false if: 1) the result is empty, or
-  // 2) the result format is not RGBA_BITMAP and conversion is not implemented.
+  // Copies the result into |dest|. The result is in N32Premul form. Returns
+  // true if successful, or false if: 1) the result is empty, or 2) the result
+  // format is not RGBA and conversion is not implemented.
   virtual bool ReadRGBAPlane(uint8_t* dest, int stride) const;
 
   // Returns the color space of the image data returned by ReadRGBAPlane().
@@ -141,6 +160,7 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
 
  private:
   const Format format_;
+  const Destination destination_;
   const gfx::Rect rect_;
   const bool needs_lock_for_bitmap_;
 
@@ -150,8 +170,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   DISALLOW_COPY_AND_ASSIGN(CopyOutputResult);
 };
 
-// Subclass of CopyOutputResult that provides a RGBA_BITMAP result from an
-// SkBitmap (or an I420_PLANES result based on a SkBitmap).
+// Subclass of CopyOutputResult that provides a RGBA result from an
+// SkBitmap (or an I420_PLANES result based on a SkBitmap). Implies that the
+// destination is kSystemMemory.
 class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
  public:
   CopyOutputSkBitmapResult(Format format,

@@ -66,14 +66,16 @@ class LayerTreeHostReadbackPixelTest
 
     if (readback_type() == TestReadBackType::kBitmap) {
       request = std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(
               &LayerTreeHostReadbackPixelTest::ReadbackResultAsBitmap,
               base::Unretained(this)));
     } else {
       DCHECK_NE(renderer_type_, viz::RendererType::kSoftware);
       request = std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
           base::BindOnce(
               &LayerTreeHostReadbackPixelTest::ReadbackResultAsTexture,
               base::Unretained(this)));
@@ -114,7 +116,9 @@ class LayerTreeHostReadbackPixelTest
 
   void ReadbackResultAsTexture(std::unique_ptr<viz::CopyOutputResult> result) {
     EXPECT_TRUE(task_runner_provider()->IsMainThread());
-    ASSERT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
+    ASSERT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+    ASSERT_EQ(result->destination(),
+              viz::CopyOutputResult::Destination::kNativeTextures);
 
     gpu::Mailbox mailbox = result->GetTextureResult()->mailbox;
     gpu::SyncToken sync_token = result->GetTextureResult()->sync_token;

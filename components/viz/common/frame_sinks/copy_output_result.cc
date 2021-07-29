@@ -15,13 +15,16 @@
 namespace viz {
 
 CopyOutputResult::CopyOutputResult(Format format,
+                                   Destination destination,
                                    const gfx::Rect& rect,
                                    bool needs_lock_for_bitmap)
     : format_(format),
+      destination_(destination),
       rect_(rect),
       needs_lock_for_bitmap_(needs_lock_for_bitmap) {
-  DCHECK(format_ == Format::RGBA_BITMAP || format_ == Format::RGBA_TEXTURE ||
-         format_ == Format::I420_PLANES);
+  DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES);
+  DCHECK(destination_ == Destination::kSystemMemory ||
+         destination_ == Destination::kNativeTextures);
 }
 
 CopyOutputResult::~CopyOutputResult() = default;
@@ -29,16 +32,18 @@ CopyOutputResult::~CopyOutputResult() = default;
 bool CopyOutputResult::IsEmpty() const {
   if (rect_.IsEmpty())
     return true;
-  switch (format_) {
-    case Format::RGBA_BITMAP:
-    case Format::I420_PLANES:
-      return false;
-    case Format::RGBA_TEXTURE:
-      if (const TextureResult* result = GetTextureResult())
+
+  switch (destination_) {
+    case Destination::kNativeTextures:
+      if (const TextureResult* result = GetTextureResult()) {
         return result->mailbox.IsZero();
-      else
+      } else {
         return true;
+      }
+    case Destination::kSystemMemory:
+      return false;
   }
+
   NOTREACHED();
   return true;
 }
@@ -126,14 +131,14 @@ gfx::ColorSpace CopyOutputResult::GetRGBAColorSpace() const {
 
 CopyOutputSkBitmapResult::CopyOutputSkBitmapResult(const gfx::Rect& rect,
                                                    SkBitmap bitmap)
-    : CopyOutputSkBitmapResult(Format::RGBA_BITMAP, rect, std::move(bitmap)) {}
+    : CopyOutputSkBitmapResult(Format::RGBA, rect, std::move(bitmap)) {}
 
-CopyOutputSkBitmapResult::CopyOutputSkBitmapResult(
-    CopyOutputResult::Format format,
-    const gfx::Rect& rect,
-    SkBitmap bitmap)
-    : CopyOutputResult(format, rect, false) {
-  DCHECK(format == Format::RGBA_BITMAP || format == Format::I420_PLANES);
+CopyOutputSkBitmapResult::CopyOutputSkBitmapResult(Format format,
+                                                   const gfx::Rect& rect,
+                                                   SkBitmap bitmap)
+    : CopyOutputResult(format, Destination::kSystemMemory, rect, false) {
+  DCHECK(format == Format::RGBA || format == Format::I420_PLANES);
+
   if (!rect.IsEmpty()) {
     DCHECK(!bitmap.pixelRef() || bitmap.pixelRef()->unique());
     DCHECK(!bitmap.readyToDraw() || bitmap.colorSpace());
@@ -177,7 +182,7 @@ CopyOutputTextureResult::CopyOutputTextureResult(
     const gpu::SyncToken& sync_token,
     const gfx::ColorSpace& color_space,
     ReleaseCallback release_callback)
-    : CopyOutputResult(Format::RGBA_TEXTURE, rect, false),
+    : CopyOutputResult(Format::RGBA, Destination::kNativeTextures, rect, false),
       texture_result_(mailbox, sync_token, color_space),
       release_callback_(std::move(release_callback)) {
   DCHECK_EQ(rect.IsEmpty(), mailbox.IsZero());

@@ -211,7 +211,8 @@ void ScreenRotationAnimator::StartRotationAnimation(
     current_async_rotation_request_ = ScreenRotationRequest(*rotation_request);
     RequestCopyScreenRotationContainerLayer(
         std::make_unique<viz::CopyOutputRequest>(
-            viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+            viz::CopyOutputRequest::ResultFormat::RGBA,
+            viz::CopyOutputRequest::ResultDestination::kNativeTextures,
             CreateAfterCopyCallbackBeforeRotation(
                 std::move(rotation_request))));
     screen_rotation_state_ = COPY_REQUESTED;
@@ -320,7 +321,8 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
 
   RequestCopyScreenRotationContainerLayer(
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
           CreateAfterCopyCallbackAfterRotation(std::move(rotation_request))));
 }
 
