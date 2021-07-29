@@ -340,6 +340,7 @@ android_library("test_java") {
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_java",
     "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android_test_helpers:test_support_java",

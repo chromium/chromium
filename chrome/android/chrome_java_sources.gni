@@ -604,7 +604,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunPageDelegate.java",
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunPagerAdapter.java",
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunSignInProcessor.java",
-  "java/src/org/chromium/chrome/browser/firstrun/FirstRunStatus.java",
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunUtils.java",
   "java/src/org/chromium/chrome/browser/firstrun/FirstRunView.java",
   "java/src/org/chromium/chrome/browser/firstrun/ForcedSigninProcessor.java",

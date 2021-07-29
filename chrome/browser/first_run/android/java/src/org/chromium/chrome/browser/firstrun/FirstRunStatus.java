@@ -58,8 +58,8 @@ public class FirstRunStatus {
     }
 
     /**
-    * Checks whether the welcome page should be skipped from the main First Run Experience.
-    */
+     * Checks whether the welcome page should be skipped from the main First Run Experience.
+     */
     public static boolean shouldSkipWelcomePage() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.FIRST_RUN_SKIP_WELCOME_PAGE, false);
