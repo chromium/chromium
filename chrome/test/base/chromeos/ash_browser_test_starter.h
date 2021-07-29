@@ -34,8 +34,6 @@ class AshBrowserTestStarter {
  private:
   // This is XDG_RUNTIME_DIR.
   base::ScopedTempDir scoped_temp_dir_xdg_;
-  // This is user-data-dir used by ash.
-  base::ScopedTempDir scoped_temp_dir_ash_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
