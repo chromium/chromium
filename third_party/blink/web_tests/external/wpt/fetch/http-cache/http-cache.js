@@ -126,7 +126,7 @@ function fetchInit (requests, config) {
   if ('name' in config) init.headers.push(['Test-Name', config.name])
   if ('request_body' in config) init.body = config['request_body']
   if ('mode' in config) init.mode = config['mode']
-  if ('credentials' in config) init.mode = config['credentials']
+  if ('credentials' in config) init.credentials = config['credentials']
   if ('cache' in config) init.cache = config['cache']
   init.headers.push(['Test-Requests', btoa(JSON.stringify(requests))])
   return init
