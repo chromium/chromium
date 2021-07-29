@@ -106,9 +106,6 @@ interface EmbeddedSearch {
 
   // Confirms applied theme changes.
   ConfirmThemeChanges();
-
-  // Called when a user dismisses a promo.
-  BlocklistPromo(string promo_id);
 };
 
 [Native]

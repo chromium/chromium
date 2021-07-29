@@ -260,7 +260,7 @@ Refer to README.md for content description and update process.
  <item id="privet_http_impl" added_in_milestone="62" hash_code="71251498" type="0" content_hash_code="107348604" os_list="linux,windows" file_path="chrome/browser/printing/cloud_print/privet_http_impl.cc"/>
  <item id="profile_avatar" added_in_milestone="62" hash_code="51164680" type="0" content_hash_code="113550845" os_list="linux,windows" file_path="chrome/browser/profiles/profile_avatar_downloader.cc"/>
  <item id="profile_resetter_upload" added_in_milestone="62" hash_code="105330607" type="0" content_hash_code="129329171" os_list="linux,windows" file_path="chrome/browser/profile_resetter/reset_report_uploader.cc"/>
- <item id="promo_service" added_in_milestone="72" hash_code="67052219" type="0" content_hash_code="32939033" os_list="linux,windows" file_path="chrome/browser/search/promos/promo_service.cc"/>
+ <item id="promo_service" added_in_milestone="72" hash_code="67052219" type="0" content_hash_code="32939033" os_list="linux,windows" file_path="chrome/browser/new_tab_page/promos/promo_service.cc"/>
  <item id="proxy_config_direct" added_in_milestone="67" hash_code="119015679" type="0" content_hash_code="119931568" os_list="linux,windows" file_path="net/proxy_resolution/proxy_config_with_annotation.cc"/>
  <item id="proxy_config_headless" added_in_milestone="67" hash_code="133221587" type="0" content_hash_code="77459277" os_list="linux,windows" file_path="headless/lib/browser/headless_request_context_manager.cc"/>
  <item id="proxy_config_settings" added_in_milestone="67" hash_code="136468456" type="0" content_hash_code="19527377" os_list="linux,windows" file_path="components/proxy_config/pref_proxy_config_tracker_impl.cc"/>

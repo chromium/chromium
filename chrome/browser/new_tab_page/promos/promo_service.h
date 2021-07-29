@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_PROMOS_PROMO_SERVICE_H_
-#define CHROME_BROWSER_SEARCH_PROMOS_PROMO_SERVICE_H_
+#ifndef CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_SERVICE_H_
+#define CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_SERVICE_H_
 
 #include <memory>
 
 #include "base/observer_list.h"
-#include "chrome/browser/search/promos/promo_data.h"
-#include "chrome/browser/search/promos/promo_service_observer.h"
+#include "chrome/browser/new_tab_page/promos/promo_data.h"
+#include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -101,4 +101,4 @@ class PromoService : public KeyedService {
   base::WeakPtrFactory<PromoService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SEARCH_PROMOS_PROMO_SERVICE_H_
+#endif  // CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_SERVICE_H_

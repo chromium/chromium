@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_PROMOS_PROMO_DATA_H_
-#define CHROME_BROWSER_SEARCH_PROMOS_PROMO_DATA_H_
+#ifndef CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_DATA_H_
+#define CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_DATA_H_
 
 #include <string>
 
@@ -40,4 +40,4 @@ struct PromoData {
 bool operator==(const PromoData& lhs, const PromoData& rhs);
 bool operator!=(const PromoData& lhs, const PromoData& rhs);
 
-#endif  // CHROME_BROWSER_SEARCH_PROMOS_PROMO_DATA_H_
+#endif  // CHROME_BROWSER_NEW_TAB_PAGE_PROMOS_PROMO_DATA_H_

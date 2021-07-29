@@ -340,10 +340,6 @@ void SearchBox::ConfirmThemeChanges() {
   embedded_search_service_->ConfirmThemeChanges();
 }
 
-void SearchBox::BlocklistPromo(const std::string& promo_id) {
-  embedded_search_service_->BlocklistPromo(promo_id);
-}
-
 void SearchBox::SetPageSequenceNumber(int page_seq_no) {
   page_seq_no_ = page_seq_no;
 }

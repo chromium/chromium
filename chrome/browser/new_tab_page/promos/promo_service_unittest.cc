@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/promos/promo_service.h"
+#include "chrome/browser/new_tab_page/promos/promo_service.h"
 
 #include <utility>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/search/promos/promo_data.h"
+#include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"

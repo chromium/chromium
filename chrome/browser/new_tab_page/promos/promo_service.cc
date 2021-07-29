@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/promos/promo_service.h"
+#include "chrome/browser/new_tab_page/promos/promo_service.h"
 
 #include <utility>
 

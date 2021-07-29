@@ -20,8 +20,6 @@
 #include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/search/promos/promo_service.h"
-#include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search/search_suggest/search_suggest_service.h"
 #include "chrome/browser/search/search_suggest/search_suggest_service_factory.h"
@@ -440,16 +438,6 @@ void SearchTabHelper::OnConfirmThemeChanges() {
       search::DefaultSearchProviderIsGoogle(profile())) {
     chrome_colors_service_->ConfirmThemeChanges();
   }
-}
-
-void SearchTabHelper::BlocklistPromo(const std::string& promo_id) {
-  auto* promo_service = PromoServiceFactory::GetForProfile(profile());
-  if (!promo_service) {
-    NOTREACHED();
-    return;
-  }
-
-  promo_service->BlocklistPromo(promo_id);
 }
 
 Profile* SearchTabHelper::profile() const {

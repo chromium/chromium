@@ -149,9 +149,6 @@ class SearchBox : public content::RenderFrameObserver,
   // Confirms applied theme changes.
   void ConfirmThemeChanges();
 
-  // Called when a user dismisses a promo.
-  void BlocklistPromo(const std::string& promo_id);
-
   bool is_focused() const { return is_focused_; }
   bool is_input_in_progress() const { return is_input_in_progress_; }
   bool is_key_capture_enabled() const { return is_key_capture_enabled_; }
