@@ -8,9 +8,12 @@
 
 #include <gtest/gtest.h>
 #include "base/check.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class RealboxHandlerIconTest : public testing::TestWithParam<bool> {
@@ -41,6 +44,30 @@ TEST_P(RealboxHandlerIconTest, VectorIcons) {
       ASSERT_EQ("chrome://resources/images/icon_bookmark.svg", svg_name);
     } else {
       ASSERT_FALSE(svg_name.empty());
+    }
+  }
+  for (int answer_type = SuggestionAnswer::ANSWER_TYPE_DICTIONARY;
+       answer_type != SuggestionAnswer::ANSWER_TYPE_TOTAL_COUNT;
+       answer_type++) {
+    EXPECT_FALSE(
+        base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kNtpRealboxSuggestionAnswers);
+    EXPECT_TRUE(
+        base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
+    AutocompleteMatch match;
+    SuggestionAnswer answer;
+    answer.set_type(answer_type);
+    match.answer = answer;
+    const bool is_bookmark = GetParam();
+    const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
+    const std::string& svg_name =
+        RealboxHandler::AutocompleteMatchVectorIconToResourceName(vector_icon);
+    if (is_bookmark) {
+      ASSERT_EQ("chrome://resources/images/icon_bookmark.svg", svg_name);
+    } else {
+      ASSERT_FALSE(svg_name.empty());
+      ASSERT_NE("search.svg", svg_name);
     }
   }
 }

@@ -2255,7 +2255,7 @@ suite('NewTabPageRealboxTest', () => {
   //============================================================================
 
   test('match calculator answer type', async () => {
-    const matches = [createCalculatorMatch()];
+    const matches = [createCalculatorMatch({isRichSuggestion: true})];
 
     realbox.$.input.value = '2 + 3';
     realbox.$.input.dispatchEvent(new InputEvent('input'));
@@ -2291,7 +2291,8 @@ suite('NewTabPageRealboxTest', () => {
 
     assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
     assertEquals('5', realbox.$.input.value);
-    assertIconMaskImageUrl(realbox.$.icon, 'calculator.svg');
+
+    assertIconMaskImageUrl(realbox.$.icon, 'search.svg'); // Default Icon
   });
 
   //============================================================================
@@ -2305,7 +2306,8 @@ suite('NewTabPageRealboxTest', () => {
       answer: {
         firstLine: mojoString16('When is Christmas Day'),
         secondLine: mojoString16('Saturday, December 25, 2021')
-      }
+      },
+      isRichSuggestion: true,
     })];
     testProxy.callbackRouterRemote.autocompleteResultChanged({
       input: mojoString16(realbox.$.input.value.trimLeft()),
@@ -2317,5 +2319,22 @@ suite('NewTabPageRealboxTest', () => {
     let matchEls =
         realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
     verifyMatch(matches[0], matchEls[0]);
+
+    // Separator is not displayed
+    assertEquals(
+        window.getComputedStyle(matchEls[0].$.separator).display, 'none');
+
+    let arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+
+    assertIconMaskImageUrl(realbox.$.icon, 'search.svg'); // Default Icon
   });
 });

@@ -44,6 +44,18 @@ class RealboxIconElement extends PolymerElement {
       },
 
       /**
+       * Whether icon is in searchbox or not. Used to prevent
+       * the match icon of rich suggestions from showing in the context of the
+       * realbox input.
+       * @type {boolean}
+       */
+      inSearchbox: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      /**
        * Used as a mask image on #icon if |backgroundImage| is empty.
        * @type {string}
        */
@@ -129,8 +141,7 @@ class RealboxIconElement extends PolymerElement {
    * @private
    */
   computeMaskImage_() {
-    // Use the match icon if available. Otherwise use the default icon.
-    if (this.match) {
+    if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
       return this.match.iconUrl;
     } else {
       return this.defaultIcon;

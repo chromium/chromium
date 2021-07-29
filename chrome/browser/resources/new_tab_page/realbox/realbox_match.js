@@ -66,17 +66,6 @@ class RealboxMatchElement extends PolymerElement {
       },
 
       /**
-       * Whether the match is a rich suggestion. Rich suggestions are displayed
-       * in two lines and may contain image.
-       * @type {boolean}
-       */
-      isRichSuggestion: {
-        type: Boolean,
-        computed: `computeIsRichSuggestion_(match, hasImage)`,
-        reflectToAttribute: true,
-      },
-
-      /**
        * @type {!realbox.mojom.AutocompleteMatch}
        */
       match: {
@@ -326,17 +315,6 @@ class RealboxMatchElement extends PolymerElement {
    */
   computeHasImage_() {
     return this.match && !!this.match.imageUrl;
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsRichSuggestion_() {
-    return this.hasImage ||
-        (this.match &&
-         (this.match.type === SEARCH_CALCULATOR_ANSWER_TYPE ||
-          !!this.match.answer));
   }
 
   /**

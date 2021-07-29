@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -58,6 +59,15 @@ namespace {
 constexpr char kGoogleGIconResourceName[] = "google_g.png";
 constexpr char kSearchIconResourceName[] = "search.svg";
 
+constexpr char kAnswerCurrencyIconResourceName[] = "realbox/icons/currency.svg";
+constexpr char kAnswerDefaultIconResourceName[] = "realbox/icons/default.svg";
+constexpr char kAnswerDictionaryIconResourceName[] =
+    "realbox/icons/definition.svg";
+constexpr char kAnswerFinanceIconResourceName[] = "realbox/icons/finance.svg";
+constexpr char kAnswerSunriseIconResourceName[] = "realbox/icons/sunrise.svg";
+constexpr char kAnswerTranslationIconResourceName[] =
+    "realbox/icons/translation.svg";
+constexpr char kAnswerWhenIsIconResourceName[] = "realbox/icons/when_is.svg";
 constexpr char kBookmarkIconResourceName[] =
     "chrome://resources/images/icon_bookmark.svg";
 constexpr char kCalculatorIconResourceName[] = "realbox/icons/calculator.svg";
@@ -170,6 +180,11 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                           : match.contents,
           ImageLineToString16(match.answer->second_line()));
     }
+    mojom_match->is_rich_suggestion =
+        !match.ImageUrl().is_empty() ||
+        match.type == AutocompleteMatchType::CALCULATOR ||
+        (match.answer.has_value() &&
+         base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
     matches.push_back(std::move(mojom_match));
   }
   return matches;
@@ -221,7 +236,30 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
 // static
 std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
-  if (icon.name == omnibox::kBlankIcon.name) {
+  std::string answerNames[] = {
+      omnibox::kAnswerCurrencyIcon.name,   omnibox::kAnswerDefaultIcon.name,
+      omnibox::kAnswerDictionaryIcon.name, omnibox::kAnswerFinanceIcon.name,
+      omnibox::kAnswerSunriseIcon.name,    omnibox::kAnswerTranslationIcon.name,
+      omnibox::kAnswerWhenIsIcon.name,     omnibox::kAnswerWhenIsIcon.name};
+
+  if (!base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers) &&
+      base::Contains(answerNames, icon.name)) {
+    return kSearchIconResourceName;
+  } else if (icon.name == omnibox::kAnswerCurrencyIcon.name) {
+    return kAnswerCurrencyIconResourceName;
+  } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
+    return kAnswerDefaultIconResourceName;
+  } else if (icon.name == omnibox::kAnswerDictionaryIcon.name) {
+    return kAnswerDictionaryIconResourceName;
+  } else if (icon.name == omnibox::kAnswerFinanceIcon.name) {
+    return kAnswerFinanceIconResourceName;
+  } else if (icon.name == omnibox::kAnswerSunriseIcon.name) {
+    return kAnswerSunriseIconResourceName;
+  } else if (icon.name == omnibox::kAnswerTranslationIcon.name) {
+    return kAnswerTranslationIconResourceName;
+  } else if (icon.name == omnibox::kAnswerWhenIsIcon.name) {
+    return kAnswerWhenIsIconResourceName;
+  } else if (icon.name == omnibox::kBlankIcon.name) {
     return "";  // An empty resource name is effectively a blank icon.
   } else if (icon.name == omnibox::kBookmarkIcon.name) {
     return kBookmarkIconResourceName;

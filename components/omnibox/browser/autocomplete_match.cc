@@ -37,6 +37,7 @@
 #include "url/third_party/mozilla/url_parse.h"
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
@@ -372,15 +373,36 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 }
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+// static
+const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
+  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
+    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+      return omnibox::kAnswerCurrencyIcon;
+    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+      return omnibox::kAnswerDictionaryIcon;
+    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+      return omnibox::kAnswerFinanceIcon;
+    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+      return omnibox::kAnswerSunriseIcon;
+    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+      return omnibox::kAnswerTranslationIcon;
+    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+      return omnibox::kAnswerWhenIsIcon;
+    default:
+      return omnibox::kAnswerDefaultIcon;
+  }
+}
+
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark) const {
   // TODO(https://crbug.com/1024114): Remove crash logging once fixed.
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
                           provider ? provider->type() : -1);
-
   if (is_bookmark)
     return omnibox::kBookmarkIcon;
+  if (answer.has_value())
+    return AnswerTypeToAnswerIcon(answer->type());
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
     case Type::HISTORY_URL:

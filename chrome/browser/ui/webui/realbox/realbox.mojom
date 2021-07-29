@@ -47,6 +47,9 @@ struct AutocompleteMatch {
   // AutocompleteMatchImageAvailable along with the |image_url| and the match
   // index which are used to identify the appropriate match.
   string image_url;
+  // Used to determine if the match has an image, calculator answer or
+  // suggestion answer.
+  bool is_rich_suggestion;
   bool is_search_type;  // Result of AutocompleteMatch::IsSearchType().
   string type;  // Result of AutocompleteMatchType::ToString().
   bool swap_contents_and_description;

@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -135,26 +136,6 @@ const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
       return ash::kHistoryIcon;
     case IconType::kCalculator:
       return ash::kEqualIcon;
-  }
-}
-
-// Converts AutocompleteMatchType::Type to an answer vector icon.
-const gfx::VectorIcon& TypeToAnswerIcon(int type) {
-  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
-    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
-      return omnibox::kAnswerCurrencyIcon;
-    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
-      return omnibox::kAnswerDictionaryIcon;
-    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
-      return omnibox::kAnswerFinanceIcon;
-    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
-      return omnibox::kAnswerSunriseIcon;
-    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
-      return omnibox::kAnswerTranslationIcon;
-    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
-      return omnibox::kAnswerWhenIsIcon;
-    default:
-      return omnibox::kAnswerDefaultIcon;
   }
 }
 
@@ -373,7 +354,8 @@ void OmniboxResult::UpdateIcon() {
         FetchRichEntityImage(match_.answer->image_url());
       } else {
         SetIcon(
-            IconInfo(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())),
+            IconInfo(CreateAnswerIcon(AutocompleteMatch::AnswerTypeToAnswerIcon(
+                         match_.answer->type())),
                      ash::SharedAppListConfig::instance()
                          .search_list_answer_icon_dimension()));
       }
