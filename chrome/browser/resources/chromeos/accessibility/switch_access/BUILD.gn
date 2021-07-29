@@ -123,6 +123,7 @@ js2gtest("switch_access_extjs_tests") {
     "../common/testing/assert_additions.js",
     "../common/testing/callback_helper.js",
     "switch_access_e2e_test_base.js",
+    "test_utility.js",
   ]
 
   # The test base classes generate C++ code with these deps.
