@@ -14,7 +14,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "base/bind.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -191,13 +191,17 @@ gfx::Size ZeroStateDefaultDeskButton::CalculatePreferredSize() const {
   gfx::Canvas::SizeStringInt(DesksController::Get()->desks()[0]->name(),
                              gfx::FontList(), &label_width, &label_height, 0,
                              gfx::Canvas::NO_ELLIPSIS);
-  // This is a broken clamp function that successfully returns a bogus value
-  // when invalid inputs are provided, rather than crashing.
-  // TODO(https://crbug.com/1231837): Migrate this call to use base::clamp()
-  // from base/cxx17_backports.h, and fix all the broken tests that result.
-  const int width = base::BrokenClampThatShouldNotBeUsed(
-      label_width + 2 * kZeroStateDefaultButtonHorizontalPadding,
-      kZeroStateDefaultDeskButtonMinWidth, preview_width);
+
+  // `preview_width` is supposed to be larger than
+  // `kZeroStateDefaultDeskButtonMinWidth`, but it might be not the truth for
+  // tests with extreme abnormal size of display.
+  const int min_width =
+      std::min(preview_width, kZeroStateDefaultDeskButtonMinWidth);
+  const int max_width =
+      std::max(preview_width, kZeroStateDefaultDeskButtonMinWidth);
+  const int width =
+      base::clamp(label_width + 2 * kZeroStateDefaultButtonHorizontalPadding,
+                  min_width, max_width);
   return gfx::Size(width, kZeroStateButtonHeight);
 }
 
