@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <unordered_set>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

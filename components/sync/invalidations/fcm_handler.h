@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_INVALIDATIONS_FCM_HANDLER_H_
 
 #include <string>
-#include <vector>
 
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"

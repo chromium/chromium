@@ -6,7 +6,6 @@
 #define COMPONENTS_SYNC_MODEL_SYNCABLE_SERVICE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

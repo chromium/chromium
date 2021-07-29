@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/time/time.h"

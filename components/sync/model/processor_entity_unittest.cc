@@ -5,7 +5,6 @@
 #include "components/sync/model/processor_entity.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/sync/base/client_tag_hash.h"

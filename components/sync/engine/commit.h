@@ -10,7 +10,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/sync/base/extensions_activity.h"

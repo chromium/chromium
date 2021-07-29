@@ -5,7 +5,6 @@
 #include "components/sync/base/sync_prefs.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
