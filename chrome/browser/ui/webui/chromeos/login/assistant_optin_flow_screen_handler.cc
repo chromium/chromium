@@ -299,8 +299,8 @@ void AssistantOptInFlowScreenHandler::OnActivityControlOptInResult(
   Profile* profile = ProfileManager::GetActiveUserProfile();
   auto data = pending_consent_data_.front();
   pending_consent_data_.pop_front();
-  // TODO(https://crbug.com/1223797): record activity control setting type.
-  RecordActivityControlConsent(profile, data.ui_audit_key, opted_in);
+  RecordActivityControlConsent(profile, data.ui_audit_key, opted_in,
+                               data.setting_type);
   if (opted_in) {
     has_opted_in_any_consent_ = true;
     // TODO(https://crbug.com/1224850): differentiate which activity control is
@@ -485,6 +485,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
         auto data = ConsentData();
         data.consent_token = activity_control_ui.consent_token();
         data.ui_audit_key = activity_control_ui.ui_audit_key();
+        data.setting_type = GetActivityControlConsentSettingType(
+            activity_control_ui.setting_zippy());
         pending_consent_data_.push_back(data);
         zippy_data.Append(
             CreateZippyData(activity_control_ui, /*is_minor_mode=*/true));
@@ -498,6 +500,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
       auto data = ConsentData();
       data.consent_token = activity_control_ui.consent_token();
       data.ui_audit_key = activity_control_ui.ui_audit_key();
+      data.setting_type =
+          sync_pb::UserConsentTypes::AssistantActivityControlConsent::ALL;
       pending_consent_data_.push_back(data);
       zippy_data.Append(
           CreateZippyData(activity_control_ui, /*is_minor_mode=*/false));

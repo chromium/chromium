@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "components/sync/protocol/user_consent_types.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -56,6 +57,10 @@ class AssistantOptInFlowScreenHandler
 
     // An opaque token for audit record.
     std::string ui_audit_key;
+
+    // An enum denoting the Assistant activity control setting type.
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent::SettingType
+        setting_type;
   };
 
   using TView = AssistantOptInFlowScreenView;

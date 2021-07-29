@@ -24,6 +24,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
+using AssistantActivityControlConsent =
+    sync_pb::UserConsentTypes::AssistantActivityControlConsent;
+
 namespace {
 
 bool IsPreferenceDefaultEnabled(const PrefService* prefs,
@@ -231,9 +234,11 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
   return dictionary;
 }
 
-void RecordActivityControlConsent(Profile* profile,
-                                  std::string ui_audit_key,
-                                  bool opted_in) {
+void RecordActivityControlConsent(
+    Profile* profile,
+    std::string ui_audit_key,
+    bool opted_in,
+    AssistantActivityControlConsent::SettingType setting_type) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // This function doesn't care about browser sync consent.
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -245,6 +250,7 @@ void RecordActivityControlConsent(Profile* profile,
   consent.set_ui_audit_key(ui_audit_key);
   consent.set_status(opted_in ? UserConsentTypes::GIVEN
                               : UserConsentTypes::NOT_GIVEN);
+  consent.set_setting_type(setting_type);
 
   ConsentAuditorFactory::GetForProfile(profile)
       ->RecordAssistantActivityControlConsent(account_id, consent);
@@ -260,6 +266,16 @@ bool IsVoiceMatchEnforcedOff(const PrefService* prefs) {
   return prefs->IsManagedPreference(
              assistant::prefs::kAssistantHotwordEnabled) &&
          !prefs->GetBoolean(assistant::prefs::kAssistantHotwordEnabled);
+}
+
+AssistantActivityControlConsent::SettingType
+GetActivityControlConsentSettingType(const SettingZippyList& setting_zippy) {
+  if (setting_zippy.size() > 1) {
+    return AssistantActivityControlConsent::ALL;
+  }
+  // TODO(https://crbug.com/1223797): differentiate between WAA and DA consents
+  // when identifier field is available.
+  return AssistantActivityControlConsent::SETTING_TYPE_UNSPECIFIED;
 }
 
 }  // namespace chromeos
