@@ -61,6 +61,9 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   AccessibilityCursorRingLayer* caret_layer_for_testing() {
     return caret_layer_.get();
   }
+  AccessibilityHighlightLayer* highlight_layer_for_testing() {
+    return highlight_layer_.get();
+  }
   const AccessibilityFocusRingGroup* GetFocusRingGroupForTesting(
       const std::string& focus_ring_id);
 
