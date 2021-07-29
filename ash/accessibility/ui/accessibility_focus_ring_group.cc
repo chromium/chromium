@@ -59,6 +59,7 @@ void AccessibilityFocusRingGroup::UpdateFocusRingsFromInfo(
     AccessibilityLayerDelegate* delegate) {
   previous_focus_rings_.swap(focus_rings_);
   focus_rings_.clear();
+  focus_animation_.reset();
   RectsToRings(focus_ring_info_->rects_in_screen, &(focus_rings_));
   focus_layers_.resize(focus_rings_.size());
   if (focus_rings_.empty())
@@ -71,7 +72,7 @@ void AccessibilityFocusRingGroup::UpdateFocusRingsFromInfo(
   }
 
   if (focus_ring_info_->behavior == FocusRingBehavior::PERSIST &&
-      focus_layers_[0]->CanAnimate() && !no_fade_for_testing_) {
+      !no_fade_for_testing_) {
     // In PERSIST mode, animate the first ring to its destination
     // location, then set the rest of the rings directly.
     // If no_fade_for_testing_ is set, don't wait for animation.
@@ -89,12 +90,14 @@ void AccessibilityFocusRingGroup::UpdateFocusRingsFromInfo(
         focus_ring_info_->color, focus_ring_info_->secondary_color,
         focus_ring_info_->background_color);
   }
-}
 
-bool AccessibilityFocusRingGroup::CanAnimate() const {
-  if (no_fade_for_testing_)
-    return false;
-  return !focus_rings_.empty() && focus_layers_[0]->CanAnimate();
+  // Start watching for animations.
+  if (!no_fade_for_testing_) {
+    focus_animation_ = std::make_unique<AccessibilityAnimationOneShot>(
+        focus_rings_[0].GetBounds(),
+        base::BindRepeating(&AccessibilityFocusRingGroup::AnimateFocusRings,
+                            base::Unretained(this)));
+  }
 }
 
 bool AccessibilityFocusRingGroup::AnimateFocusRings(base::TimeTicks timestamp) {
@@ -326,11 +329,6 @@ void AccessibilityFocusRingGroup::SplitIntoParagraphShape(
   *top = top_rect;
   *middle = middle_rect;
   *bottom = bottom_rect;
-}
-
-void AccessibilityFocusRingGroup::ClearAnimationObservation() {
-  for (auto& focus_layer : focus_layers_)
-    focus_layer->ClearAnimationObservation();
 }
 
 AccessibilityFocusRing AccessibilityFocusRingGroup::RingFromSortedRects(

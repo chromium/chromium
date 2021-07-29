@@ -5,11 +5,8 @@
 #include "ash/accessibility/ui/accessibility_layer.h"
 
 #include "ui/aura/window.h"
-#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 
 namespace ui {
@@ -48,10 +45,6 @@ void AccessibilityLayer::SetSubpixelPositionOffset(
   layer_->SetSubpixelPositionOffset(offset);
 }
 
-bool AccessibilityLayer::CanAnimate() const {
-  return animation_observation_.IsObserving();
-}
-
 void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
                                              const char* layer_name,
                                              const gfx::Rect& bounds,
@@ -80,17 +73,6 @@ void AccessibilityLayer::CreateOrUpdateLayer(aura::Window* root_window,
   layer_->SetBounds(bounds);
   gfx::Rect layer_bounds(0, 0, bounds.width(), bounds.height());
   layer_->SchedulePaint(layer_bounds);
-
-  if (NeedToAnimate()) {
-    // Update the animation observer.
-    display::Display display =
-        display::Screen::GetScreen()->GetDisplayMatching(bounds);
-    ui::Compositor* compositor = root_window->layer()->GetCompositor();
-    if (compositor && !animation_observation_.IsObservingSource(compositor)) {
-      ClearAnimationObservation();
-      animation_observation_.Observe(compositor);
-    }
-  }
 }
 
 void AccessibilityLayer::OnDeviceScaleFactorChanged(
@@ -98,20 +80,6 @@ void AccessibilityLayer::OnDeviceScaleFactorChanged(
     float new_device_scale_factor) {
   if (delegate_)
     delegate_->OnDeviceScaleFactorChanged();
-}
-
-void AccessibilityLayer::OnAnimationStep(base::TimeTicks timestamp) {
-  delegate_->OnAnimationStep(timestamp);
-  // |this| may have been deleted by |delegate_| at this point.
-}
-
-void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  if (compositor && animation_observation_.IsObservingSource(compositor))
-    ClearAnimationObservation();
-}
-
-void AccessibilityLayer::ClearAnimationObservation() {
-  animation_observation_.Reset();
 }
 
 }  // namespace ash

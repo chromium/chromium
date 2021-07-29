@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/accessibility/ui/accessibility_animation_one_shot.h"
 #include "ash/accessibility/ui/accessibility_focus_ring.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_group.h"
 #include "ash/accessibility/ui/accessibility_layer.h"
@@ -77,14 +78,13 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
  private:
   // AccessibilityLayerDelegate overrides.
   void OnDeviceScaleFactorChanged() override;
-  void OnAnimationStep(base::TimeTicks timestamp) override;
 
   void UpdateHighlightFromHighlightRects();
 
   bool AnimateFocusRings(base::TimeTicks timestamp,
                          AccessibilityFocusRingGroup* focus_ring);
-  void AnimateCursorRing(base::TimeTicks timestamp);
-  void AnimateCaretRing(base::TimeTicks timestamp);
+  bool AnimateCursorRing(base::TimeTicks timestamp);
+  bool AnimateCaretRing(base::TimeTicks timestamp);
 
   void OnLayerChange(LayerAnimationInfo* animation_info);
 
@@ -97,10 +97,12 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   LayerAnimationInfo cursor_animation_info_;
   gfx::Point cursor_location_;
   std::unique_ptr<AccessibilityCursorRingLayer> cursor_layer_;
+  std::unique_ptr<AccessibilityAnimationOneShot> cursor_animation_;
 
   LayerAnimationInfo caret_animation_info_;
   gfx::Point caret_location_;
   std::unique_ptr<AccessibilityCursorRingLayer> caret_layer_;
+  std::unique_ptr<AccessibilityAnimationOneShot> caret_animation_;
 
   std::vector<gfx::Rect> highlight_rects_;
   std::unique_ptr<AccessibilityHighlightLayer> highlight_layer_;
