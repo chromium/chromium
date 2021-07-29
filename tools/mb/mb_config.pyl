@@ -1024,7 +1024,7 @@
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host',
       'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
-      'linux-ozone-rel': 'ozone_linux_release_trybot',
+      'linux-ozone-rel': 'ozone_linux_release_trybot_no_symbols',
       'linux-perfetto-rel': 'perfetto_release_trybot',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-rel-orchestrator': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange',
@@ -1117,8 +1117,8 @@
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
-      'mac-rel': 'gpu_tests_release_trybot',
-      'mac-rel-rts': 'gpu_tests_release_trybot',
+      'mac-rel': 'gpu_tests_release_trybot_no_symbols',
+      'mac-rel-rts': 'gpu_tests_release_trybot_no_symbols',
       'mac-arm64-rel': 'mac_arm64_release_trybot',
     },
 
@@ -2255,6 +2255,10 @@
       'gpu_tests', 'release_trybot', 'x86',
     ],
 
+    'gpu_tests_release_trybot_no_symbols': [
+      'gpu_tests', 'release_trybot', 'no_symbols',
+    ],
+
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
     ],
@@ -2588,8 +2592,8 @@
       'ozone_linux', 'release_bot',
     ],
 
-    'ozone_linux_release_trybot': [
-      'ozone_linux', 'release_trybot',
+    'ozone_linux_release_trybot_no_symbols': [
+      'ozone_linux', 'release_trybot', 'no_symbols',
     ],
 
     'perfetto_release_bot': [
