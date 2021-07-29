@@ -43,6 +43,7 @@ class PointScanLayer : public AccessibilityLayer {
   gfx::Rect bounds() { return layer()->bounds(); }
 
   // AccessibilityLayer overrides:
+  bool NeedToAnimate() const override;
   int GetInset() const override;
 
  private:

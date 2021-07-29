@@ -107,8 +107,6 @@ component("ash") {
     "accessibility/switch_access/point_scan_layer.h",
     "accessibility/switch_access/point_scan_layer_animation_info.cc",
     "accessibility/switch_access/point_scan_layer_animation_info.h",
-    "accessibility/ui/accessibility_animation_one_shot.cc",
-    "accessibility/ui/accessibility_animation_one_shot.h",
     "accessibility/ui/accessibility_confirmation_dialog.cc",
     "accessibility/ui/accessibility_confirmation_dialog.h",
     "accessibility/ui/accessibility_cursor_ring_layer.cc",

@@ -78,6 +78,9 @@ bool PointScanLayer::IsMoving() const {
   return is_moving_;
 }
 
+bool PointScanLayer::NeedToAnimate() const {
+  return true;
+}
 int PointScanLayer::GetInset() const {
   return 0;
 }

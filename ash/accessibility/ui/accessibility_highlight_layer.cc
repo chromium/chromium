@@ -57,6 +57,10 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
                       /*stack_at_top=*/false);
 }
 
+bool AccessibilityHighlightLayer::NeedToAnimate() const {
+  return false;
+}
+
 int AccessibilityHighlightLayer::GetInset() const {
   return kLayerMargin;
 }

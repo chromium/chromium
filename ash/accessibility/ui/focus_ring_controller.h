@@ -38,6 +38,7 @@ class ASH_EXPORT FocusRingController : public AccessibilityLayerDelegate,
  private:
   // AccessibilityLayerDelegate.
   void OnDeviceScaleFactorChanged() override;
+  void OnAnimationStep(base::TimeTicks timestamp) override;
 
   // Sets the focused |widget|.
   void SetWidget(views::Widget* widget);
