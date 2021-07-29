@@ -233,93 +233,66 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   // enabled. Both fields are allowed to change as long as the app_id generated
   // from them doesn't change.
   if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableManifestId)) {
-    if (web_application_info_->manifest_id !=
-        registrar_.GetAppManifestId(app_id_)) {
+    if (web_application_info_->manifest_id != app->manifest_id())
       return true;
-    }
-    if (web_application_info_->start_url !=
-        registrar_.GetAppStartUrl(app_id_)) {
+    if (web_application_info_->start_url != app->start_url())
       return true;
-    }
   }
 
-  if (web_application_info_->theme_color !=
-      registrar_.GetAppThemeColor(app_id_))
+  if (web_application_info_->theme_color != app->theme_color())
     return true;
 
-  if (web_application_info_->scope != registrar_.GetAppScopeInternal(app_id_))
+  if (web_application_info_->scope != app->scope())
     return true;
 
-  if (web_application_info_->display_mode !=
-      registrar_.GetAppDisplayMode(app_id_)) {
+  if (web_application_info_->display_mode != app->display_mode())
     return true;
-  }
 
-  if (web_application_info_->display_override !=
-      registrar_.GetAppDisplayModeOverride(app_id_)) {
+  if (web_application_info_->display_override != app->display_mode_override())
     return true;
-  }
 
   // Allow app icon updating for certain apps, or if the existing icons are
   // empty - this means the app icon download during install failed.
   if (AllowUnpromptedIconUpdate(app_id_, registrar_) &&
-      web_application_info_->icon_infos !=
-          registrar_.GetAppIconInfos(app_id_)) {
+      web_application_info_->icon_infos != app->icon_infos()) {
     return true;
   }
 
   if (web_application_info_->shortcuts_menu_item_infos !=
-      registrar_.GetAppShortcutsMenuItemInfos(app_id_)) {
+      app->shortcuts_menu_item_infos()) {
     return true;
   }
 
-  const apps::ShareTarget* app_share_target =
-      registrar_.GetAppShareTarget(app_id_);
-  if (app_share_target) {
-    if (!web_application_info_->share_target ||
-        *web_application_info_->share_target != *app_share_target) {
-      return true;
-    }
-  } else if (web_application_info_->share_target) {
-    return true;
-  }
-
-  if (app->protocol_handlers() != web_application_info_->protocol_handlers)
+  if (web_application_info_->share_target != app->share_target())
     return true;
 
-  if (web_application_info_->url_handlers !=
-      registrar_.GetAppUrlHandlers(app_id_)) {
+  if (web_application_info_->protocol_handlers != app->protocol_handlers())
     return true;
-  }
+
+  if (web_application_info_->url_handlers != app->url_handlers())
+    return true;
 
   if (web_application_info_->note_taking_new_note_url !=
       app->note_taking_new_note_url()) {
     return true;
   }
 
-  if (web_application_info_->capture_links !=
-      registrar_.GetAppCaptureLinks(app_id_)) {
+  if (web_application_info_->capture_links != app->capture_links())
     return true;
-  }
 
   if (os_integration_manager_.IsFileHandlingAPIAvailable(app_id_) &&
       app->file_handlers() != web_application_info_->file_handlers) {
     return true;
   }
 
-  if (web_application_info_->background_color !=
-      registrar_.GetAppBackgroundColor(app_id_)) {
+  if (web_application_info_->background_color != app->background_color())
     return true;
-  }
 
-  if (web_application_info_->manifest_url !=
-      registrar_.GetAppManifestUrl(app_id_)) {
+  if (web_application_info_->manifest_url != app->manifest_url())
     return true;
-  }
 
   if (AllowUnpromptedNameUpdate(app_id_, registrar_) &&
-      web_application_info_->title !=
-          base::UTF8ToUTF16(registrar_.GetAppShortName(app_id_))) {
+      web_application_info_->title != base::UTF8ToUTF16(app->name())) {
     return true;
   }
 
