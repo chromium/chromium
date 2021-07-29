@@ -223,6 +223,7 @@
     'remove_from': [
       'mac-arm64-rel-tests', # TODO(https://crbug.com/1169240): Enable
       'Mac10.11 Tests',
+      'Mac10.12 Tests',
       'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
       'Win10 Tests x64 (dbg)',
     ],
@@ -246,24 +247,6 @@
         ],
         'swarming': {
           'shards': 30,
-        },
-      },
-      'Mac10.11 Tests': {
-        # TODO(kbr): this is essentially redundant.
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'gpu': 'none',
-              'os': 'Mac-10.11.6',
-            },
-          ],
-          'shards': 25,
-        },
-      },
-      'Mac10.12 Tests': {
-        'swarming': {
-          'shards': 25,
         },
       },
       'Mac10.13 Tests': {
