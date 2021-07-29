@@ -42,8 +42,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   ~FullRestoreAppLaunchHandler() override;
 
   // Launches the browser when the restore data is loaded and the user chooses
-  // to restore.
-  void LaunchBrowserWhenReady();
+  // to restore, or the first time running the full restore feature if
+  // `first_run_full_restore` is true.
+  void LaunchBrowserWhenReady(bool first_run_full_restore);
 
   // If the user preference sets always restore or the user selects 'Restore'
   // from the notification dialog, sets the restore flag `should_restore_` as
@@ -83,10 +84,17 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // browsers.
   void LaunchBrowser();
 
+  // Goes through the normal startup browser session restore flow for launching
+  // browsers when upgrading to the full restore version.
+  void LaunchBrowserForFirstRunFullRestore();
+
   // AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
   bool should_restore_ = false;
+
+  // Specifies whether it is the first time to run the full restore feature.
+  bool first_run_full_restore_ = false;
 
   bool are_web_apps_initialized_ = false;
 

@@ -480,6 +480,28 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_TRUE(FindWebAppWindow());
 }
 
+IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
+                       FirstRunFullRestore) {
+  // Add app launch infos.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+                                extension_misc::kChromeAppId, kWindowId1));
+
+  WaitForAppLaunchInfoSaved();
+
+  size_t count = BrowserList::GetInstance()->size();
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/true);
+
+  content::RunAllTasksUntilIdle();
+
+  // Verify there is a new browser launched.
+  EXPECT_EQ(count + 1, BrowserList::GetInstance()->size());
+}
+
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
@@ -500,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
   // Create FullRestoreAppLaunchHandler.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
 
   CreateWebApp();
 
@@ -536,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
 
   // Verify there is new browser launched.
@@ -570,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
 
   // Verify there is no new browser launched.
@@ -598,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
 
   // Verify there is no new browser launched.
@@ -636,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
 
   CreateWebApp();
@@ -669,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
 
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   content::RunAllTasksUntilIdle();
 
   CreateWebApp();
@@ -700,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Launch the browser.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -760,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Launch the browser.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
-  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady(/*first_run_full_restore=*/false);
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
