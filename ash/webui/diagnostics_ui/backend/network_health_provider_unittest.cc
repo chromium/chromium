@@ -41,6 +41,7 @@ constexpr char kEth0NetworkGuid[] = "eth0_network_guid";
 constexpr char kWlan0DevicePath[] = "/device/wlan0";
 constexpr char kWlan0Name[] = "wlan0_name";
 constexpr char kWlan0NetworkGuid[] = "wlan0_network_guid";
+constexpr char kFormattedMacAddress[] = "01:23:45:67:89:AB";
 
 // TODO(https://crbug.com/1164001): remove when network_config is moved to ash.
 namespace network_config = ::chromeos::network_config;
@@ -286,6 +287,20 @@ class NetworkHealthProviderTest : public testing::Test {
 
   void SetWifiBssid(std::string bssid) {
     SetWifiProperty(shill::kWifiBSsid, base::Value(bssid));
+  }
+
+  void SetEthernetMacAddress(const std::string& mac_address) {
+    network_state_helper().device_test()->SetDeviceProperty(
+        kEth0DevicePath, shill::kAddressProperty, base::Value(mac_address),
+        /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetWifiMacAddress(const std::string& mac_address) {
+    network_state_helper().device_test()->SetDeviceProperty(
+        kWlan0DevicePath, shill::kAddressProperty, base::Value(mac_address),
+        /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetupObserver(FakeNetworkListObserver* observer) {
@@ -688,6 +703,59 @@ TEST_F(NetworkHealthProviderTest, EthernetOnlineThenConnectWifi) {
             mojom::NetworkState::kOnline);
   EXPECT_FALSE(list_observer.active_guid().empty());
   ASSERT_EQ(eth_guid, list_observer.active_guid());
+}
+
+TEST_F(NetworkHealthProviderTest, SetupEthernetNetworkWithMacAddress) {
+  // Create an ethernet device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateEthernetDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string eth_guid = list_observer.observer_guids()[0];
+
+  // Put ethernet online and validate it is active.
+  FakeNetworkStateObserver eth_observer;
+  SetupObserver(&eth_observer, eth_guid);
+  AssociateEthernet();
+  SetEthernetOnline();
+  ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
+  size_t eth_state_call_count =
+      ExpectStateObserverFired(eth_observer, /*prior_call_count=*/0);
+  EXPECT_EQ(eth_observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
+
+  SetEthernetMacAddress(kFormattedMacAddress);
+  eth_state_call_count =
+      ExpectStateObserverFired(eth_observer, eth_state_call_count);
+
+  EXPECT_EQ(eth_observer.GetLatestState()->mac_address, kFormattedMacAddress);
+}
+
+TEST_F(NetworkHealthProviderTest, SetupWifiNetworkWithMacAddress) {
+  // Create a wifi device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateWifiDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
+
+  // Put wifi online and validate it is active.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, guid);
+  AssociateWifi();
+  SetWifiOnline();
+  ExpectListObserverFired(list_observer, /*prior_call_count=*/0);
+  size_t state_call_count =
+      ExpectStateObserverFired(observer, /*prior_call_count=*/0);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+
+  SetWifiMacAddress(kFormattedMacAddress);
+  state_call_count = ExpectStateObserverFired(observer, state_call_count);
+
+  EXPECT_EQ(observer.GetLatestState()->mac_address, kFormattedMacAddress);
 }
 
 }  // namespace diagnostics
