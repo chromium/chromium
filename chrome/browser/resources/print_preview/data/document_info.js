@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from './coordinate2d.js';
 import {CustomMarginsOrientation, Margins} from './margins.js';
@@ -40,104 +40,81 @@ export let DocumentSettings;
  */
 export let PageLayoutInfo;
 
+Polymer({
+  is: 'print-preview-document-info',
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const PrintPreviewDocumentInfoElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+  behaviors: [WebUIListenerBehavior],
 
-/** @polymer */
-class PrintPreviewDocumentInfoElement extends
-    PrintPreviewDocumentInfoElementBase {
-  static get is() {
-    return 'print-preview-document-info';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
-  static get properties() {
-    return {
-      /** @type {!DocumentSettings} */
-      documentSettings: {
-        type: Object,
-        notify: true,
-        value() {
-          return {
-            hasCssMediaStyles: false,
-            hasSelection: false,
-            isModifiable: true,
-            isFromArc: false,
-            isScalingDisabled: false,
-            fitToPageScaling: 100,
-            pageCount: 0,
-            title: '',
-          };
-        },
+  properties: {
+    /** @type {!DocumentSettings} */
+    documentSettings: {
+      type: Object,
+      notify: true,
+      value() {
+        return {
+          hasCssMediaStyles: false,
+          hasSelection: false,
+          isModifiable: true,
+          isFromArc: false,
+          isScalingDisabled: false,
+          fitToPageScaling: 100,
+          pageCount: 0,
+          title: '',
+        };
       },
+    },
 
-      inFlightRequestId: {
-        type: Number,
-        value: -1,
-      },
+    inFlightRequestId: {
+      type: Number,
+      value: -1,
+    },
 
-      /** @type {Margins} */
-      margins: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
-       * Size of the pages of the document in points. Actual page-related
-       * information won't be set until preview generation occurs, so use
-       * a default value until then.
-       * @type {!Size}
-       */
-      pageSize: {
-        type: Object,
-        notify: true,
-        value() {
-          return new Size(612, 792);
-        },
-      },
-
-      /**
-       * Printable area of the document in points.
-       * @type {!PrintableArea}
-       */
-      printableArea: {
-        type: Object,
-        notify: true,
-        value() {
-          return new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));
-        },
-      },
-    };
-  }
-
-  constructor() {
-    super();
+    /** @type {Margins} */
+    margins: {
+      type: Object,
+      notify: true,
+    },
 
     /**
-     * Whether this data model has been initialized.
-     * @private {boolean}
+     * Size of the pages of the document in points. Actual page-related
+     * information won't be set until preview generation occurs, so use
+     * a default value until then.
+     * @type {!Size}
      */
-    this.isInitialized_ = false;
-  }
+    pageSize: {
+      type: Object,
+      notify: true,
+      value() {
+        return new Size(612, 792);
+      },
+    },
+
+    /**
+     * Printable area of the document in points.
+     * @type {!PrintableArea}
+     */
+    printableArea: {
+      type: Object,
+      notify: true,
+      value() {
+        return new PrintableArea(new Coordinate2d(0, 0), new Size(612, 792));
+      },
+    },
+  },
+
+  /**
+   * Whether this data model has been initialized.
+   * @private {boolean}
+   */
+  isInitialized_: false,
 
   /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
+  attached() {
     this.addWebUIListener(
         'page-count-ready', this.onPageCountReady_.bind(this));
     this.addWebUIListener(
         'page-layout-ready', this.onPageLayoutReady_.bind(this));
-  }
+  },
 
   /**
    * Initializes the state of the data model.
@@ -153,7 +130,7 @@ class PrintPreviewDocumentInfoElement extends
     this.set('documentSettings.isFromArc', isFromArc);
     this.set('documentSettings.title', title);
     this.set('documentSettings.hasSelection', hasSelection);
-  }
+  },
 
   /**
    * Updates whether scaling is disabled for the document.
@@ -164,7 +141,7 @@ class PrintPreviewDocumentInfoElement extends
     if (this.isInitialized_) {
       this.set('documentSettings.isScalingDisabled', isScalingDisabled);
     }
-  }
+  },
 
   /**
    * Called when the page layout of the document is ready. Always occurs
@@ -196,7 +173,7 @@ class PrintPreviewDocumentInfoElement extends
       this.set('documentSettings.hasCssMediaStyles', hasCustomPageSizeStyle);
       this.margins = margins;
     }
-  }
+  },
 
   /**
    * Called when the document page count is received from the native layer.
@@ -213,8 +190,5 @@ class PrintPreviewDocumentInfoElement extends
     }
     this.set('documentSettings.pageCount', pageCount);
     this.set('documentSettings.fitToPageScaling', fitToPageScaling);
-  }
-}
-
-customElements.define(
-    PrintPreviewDocumentInfoElement.is, PrintPreviewDocumentInfoElement);
+  },
+});

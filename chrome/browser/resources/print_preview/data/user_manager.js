@@ -4,8 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
@@ -19,71 +19,51 @@ import {DestinationStore} from './destination_store.js';
  */
 let UpdateUsersPayload;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const PrintPreviewUserManagerElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+Polymer({
+  is: 'print-preview-user-manager',
 
-/** @polymer */
-class PrintPreviewUserManagerElement extends
-    PrintPreviewUserManagerElementBase {
-  static get is() {
-    return 'print-preview-user-manager';
-  }
+  _template: null,
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
+  behaviors: [WebUIListenerBehavior],
 
-  static get properties() {
-    return {
-      activeUser: {
-        type: String,
-        notify: true,
+  properties: {
+    activeUser: {
+      type: String,
+      notify: true,
+    },
+
+    cloudPrintDisabled: {
+      type: Boolean,
+      observer: 'onCloudPrintDisabledChanged_',
+    },
+
+    /** @type {?DestinationStore} */
+    destinationStore: Object,
+
+    /** @type {!Array<string>} */
+    users: {
+      type: Array,
+      notify: true,
+      value() {
+        return [];
       },
+    },
+  },
 
-      cloudPrintDisabled: {
-        type: Boolean,
-        observer: 'onCloudPrintDisabledChanged_',
-      },
+  /** @private {?CloudPrintInterface} */
+  cloudPrintInterface_: null,
 
-      /** @type {?DestinationStore} */
-      destinationStore: Object,
+  /** @private {boolean} */
+  initialized_: false,
 
-      /** @type {!Array<string>} */
-      users: {
-        type: Array,
-        notify: true,
-        value() {
-          return [];
-        },
-      },
-    };
-  }
-
-  constructor() {
-    super();
-
-    /** @private {?CloudPrintInterface} */
-    this.cloudPrintInterface_ = null;
-
-    /** @private {boolean} */
-    this.initialized_ = false;
-
-    /** @private {!EventTracker} */
-    this.tracker_ = new EventTracker();
-  }
+  /** @private {!EventTracker} */
+  tracker_: new EventTracker(),
 
   /** @override */
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
+  detached() {
     this.tracker_.removeAll();
     this.initialized_ = false;
-  }
+  },
 
   initUserAccounts() {
     assert(!this.initialized_);
@@ -97,7 +77,7 @@ class PrintPreviewUserManagerElement extends
       this.destinationStore.startLoadCloudDestinations(
           DestinationOrigin.COOKIES);
     });
-  }
+  },
 
   /** @private */
   onCloudPrintDisabledChanged_() {
@@ -120,7 +100,7 @@ class PrintPreviewUserManagerElement extends
     if (this.users.length > 0) {
       this.cloudPrintInterface_.setUsers(this.users);
     }
-  }
+  },
 
   /**
    * Updates the cloud print status to NOT_SIGNED_IN if there is an
@@ -140,7 +120,7 @@ class PrintPreviewUserManagerElement extends
     assert(!this.cloudPrintDisabled);
     this.updateActiveUser('');
     console.warn('Google Cloud Print Error: HTTP status 403');
-  }
+  },
 
   /**
    * @param {!CustomEvent<!UpdateUsersPayload>} e Event containing the new
@@ -152,7 +132,7 @@ class PrintPreviewUserManagerElement extends
     if (e.detail.users) {
       this.updateUsers_(e.detail.users);
     }
-  }
+  },
 
   /**
    * @param {!Array<string>} users The full list of signed in users.
@@ -168,7 +148,7 @@ class PrintPreviewUserManagerElement extends
     if (updateActiveUser) {
       this.updateActiveUser(this.users[0] || '');
     }
-  }
+  },
 
   /** @param {string} user The new active user. */
   updateActiveUser(user) {
@@ -184,8 +164,5 @@ class PrintPreviewUserManagerElement extends
     }
 
     this.destinationStore.reloadUserCookieBasedDestinations(user);
-  }
-}
-
-customElements.define(
-    PrintPreviewUserManagerElement.is, PrintPreviewUserManagerElement);
+  },
+});
