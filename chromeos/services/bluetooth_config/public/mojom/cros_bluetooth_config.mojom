@@ -4,6 +4,8 @@
 
 module chromeos.bluetooth_config.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+
 // State of Bluetooth on the device.
 enum BluetoothSystemState {
   // Device does not have access to Bluetooth.
@@ -27,6 +29,69 @@ enum BluetoothSystemState {
 // state.
 struct BluetoothSystemProperties {
   BluetoothSystemState system_state;
+};
+
+// Bluetooth device type, derived from the device's ClassOfDevice attribute.
+enum DeviceType {
+  kUnknown,
+  kComputer,
+  kPhone,
+  kHeadset,
+  kVideoCamera,
+  kGameController,
+  kKeyboard,
+  kMouse,
+  kTablet
+};
+
+// Audio capability, derived from the device's ClassOfDevice attribute.
+enum AudioOutputCapability {
+  // Cannot provide audio output.
+  kNotCapableOfAudioOutput,
+
+  // Can output audio (e.g., Bluetooth headset).
+  kCapableOfAudioOutput
+};
+
+enum DeviceConnectionState {
+  kNotConnected,
+  kConnecting,
+  kConnected
+};
+
+struct BatteryProperties {
+  // From 0 to 100.
+  uint8 battery_percentage;
+};
+
+// Battery info belonging to a device. Initially contains an optional
+// "default" set of properties, but will eventually contain information
+// about multiple batteries per device (e.g., Pixel Buds include battery
+// info about the left earbud, right earbud, and case).
+struct DeviceBatteryInfo {
+  BatteryProperties? default_properties;
+};
+
+// Properties belonging to a Bluetooth device.
+struct BluetoothDeviceProperties {
+  // Unique identifier for this device, which is stable across device reboots.
+  string id;
+
+  // Publicly-visible name provided by the device. If no name is provided by
+  // the device, the device address is used as a name.
+  mojo_base.mojom.String16 public_name;
+
+  // Device type, derived from the ClassOfDevice attribute for the device.
+  DeviceType device_type;
+
+  // Audio output capability of the device; note that this capability is
+  // independent of the device type.
+  AudioOutputCapability audio_capability;
+
+  // Null if no battery information is available for the device.
+  DeviceBatteryInfo? battery_info;
+
+  DeviceConnectionState connection_state;
 };
 
 // Observer for changes to Bluetooth system properties.
