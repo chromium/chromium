@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-07-07T18:46:49.196Z",
+  "time_generated": "2021-07-28T22:42:46.759Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -9,7 +9,7 @@
       "name": "CLEAR_BROWSING_DATA",
       "enabled": true,
       "url": "",
-      "description": "User-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT\nIDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA",
+      "description": "Clear browsing data\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_HINT\nIDS_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA",
       "tags": ""
     },
     {
@@ -17,7 +17,7 @@
       "name": "MANAGE_PASSWORDS",
       "enabled": true,
       "url": "",
-      "description": "User-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS",
+      "description": "Manage passwords in settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_PASSWORDS",
       "tags": ""
     },
     {
@@ -25,7 +25,7 @@
       "name": "UPDATE_CREDIT_CARD",
       "enabled": true,
       "url": "",
-      "description": "User-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT\nIDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD",
+      "description": "Update payment information in settings\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_HINT\nIDS_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CREDIT_CARD",
       "tags": ""
     },
     {
@@ -33,7 +33,7 @@
       "name": "LAUNCH_INCOGNITO",
       "enabled": true,
       "url": "",
-      "description": "User-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT\nIDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO",
+      "description": "Launch an incognito browser window\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT\nIDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO",
       "tags": ""
     },
     {
@@ -41,7 +41,7 @@
       "name": "TRANSLATE",
       "enabled": true,
       "url": "",
-      "description": "User-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_TRANSLATE_HINT\nIDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE",
+      "description": "Translate the current page\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_TRANSLATE_HINT\nIDS_OMNIBOX_PEDAL_TRANSLATE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_TRANSLATE",
       "tags": ""
     },
     {
@@ -49,7 +49,7 @@
       "name": "UPDATE_CHROME",
       "enabled": true,
       "url": "",
-      "description": "User-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT\nIDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME",
+      "description": "Update Chrome\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_UPDATE_CHROME_HINT\nIDS_OMNIBOX_PEDAL_UPDATE_CHROME_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_UPDATE_CHROME",
       "tags": ""
     },
     {
@@ -209,7 +209,7 @@
       "name": "CLOSE_INCOGNITO_WINDOWS",
       "enabled": true,
       "url": "",
-      "description": "Close incognito windows\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_HINT\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS",
+      "description": "Close incognito browser windows\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_HINT\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS",
       "tags": "no_test,incognito"
     },
     {
