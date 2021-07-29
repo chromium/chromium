@@ -7,8 +7,8 @@ import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 
-# Android and Fuchsia do not support DevTools front-end.
-if (!is_android && !is_fuchsia) {
+# Android does not support DevTools front-end.
+if (!is_android) {
   grit("devtools_resources") {
     source = "$root_gen_dir/third_party/devtools-frontend/src/front_end/devtools_resources.grd"
 

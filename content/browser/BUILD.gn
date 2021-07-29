@@ -2342,6 +2342,7 @@ source_set("browser") {
   if (is_fuchsia) {
     sources += [
       "child_process_launcher_helper_fuchsia.cc",
+      "memory/swap_metrics_driver_impl_fuchsia.cc",
       "speech/tts_fuchsia.cc",
     ]
     deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
