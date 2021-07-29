@@ -159,22 +159,28 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
 
 void OnConfirmationModalClosedForSettingsPage(
     gfx::NativeWindow context,
-    content::BrowserContext* browser_context,
+    Profile* profile,
     const FileSystemSettings& settings,
     base::OnceCallback<void(bool)> settings_page_callback,
     SigninExperienceTestObserver* test_observer,
     bool user_confirmed_to_proceed) {
   AuthorizationCompletedCallback converted_cb = base::BindOnce(
-      [](base::OnceCallback<void(bool)> cb,
+      [](PrefService* prefs, const std::string& provider,
+         base::OnceCallback<void(bool)> cb,
          const GoogleServiceAuthError& status, const std::string& access_token,
          const std::string& refresh_token) {
-        std::move(cb).Run(status.state() ==
-                          GoogleServiceAuthError::State::NONE);
+        bool signin_success =
+            (status.state() == GoogleServiceAuthError::State::NONE);
+        if (signin_success) {
+          SetFileSystemOAuth2Tokens(prefs, provider, access_token,
+                                    refresh_token);
+        }
+        std::move(cb).Run(signin_success);
       },
+      profile->GetPrefs(), settings.service_provider,
       std::move(settings_page_callback));
-  OnConfirmationModalClosed(context, browser_context, settings,
-                            std::move(converted_cb), test_observer,
-                            user_confirmed_to_proceed);
+  OnConfirmationModalClosed(context, profile, settings, std::move(converted_cb),
+                            test_observer, user_confirmed_to_proceed);
 }
 
 // Start the sign in experience as triggered by the settings page. Similar to

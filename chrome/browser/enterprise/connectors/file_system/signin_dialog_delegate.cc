@@ -227,11 +227,16 @@ void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
       // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
       // This is handled as case 1c (other errors) by FileSystemRenameHandler.
       state = GoogleServiceAuthError::USER_NOT_SIGNED_UP;
+      DLOG(ERROR) << "Enterprise ID mismatch. Policy: "
+                  << settings_.enterprise_id
+                  << " [vs] Account: " << *enterprise_id;
     } else {
       // Enterprise IDs match, save the info to prefs.
       PrefService* prefs =
           Profile::FromBrowserContext(web_view_->GetBrowserContext())
               ->GetPrefs();
+      DCHECK_EQ(settings_.service_provider,
+                kFileSystemServiceProviderPrefNameBox);
       SetFileSystemAccountInfo(prefs, kFileSystemServiceProviderPrefNameBox,
                                std::move(user_info));
     }
