@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
@@ -222,7 +223,7 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
         "data:image/png;base64,%s", share_button_icon.c_str()));
     doodle->share_button->background_color =
         SkColorSetA(ParseHexColor(share_button_bg),
-                    std::max(0.0, std::min(share_button_opacity, 1.0)) * 255.0);
+                    base::clamp(share_button_opacity, 0.0, 1.0) * 255.0);
   }
   if (type == search_provider_logos::LogoType::ANIMATED) {
     doodle->image_impression_log_url = cta_log_url;

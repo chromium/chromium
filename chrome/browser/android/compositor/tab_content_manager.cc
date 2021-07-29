@@ -17,6 +17,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
@@ -76,7 +77,7 @@ class TabContentManager::TabReadbackRequest {
       double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
           chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
           kDefaultThumbnailAspectRatio);
-      aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
+      aspect_ratio = base::clamp(aspect_ratio, 0.5, 2.0);
       int height = std::min(view_size_in_pixels.height(),
                             (int)(view_size_in_pixels.width() / aspect_ratio));
       view_size_in_pixels.set_height(height);
@@ -399,7 +400,7 @@ void TabContentManager::SendThumbnailToJava(
     double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
         chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
         kDefaultThumbnailAspectRatio);
-    aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
+    aspect_ratio = base::clamp(aspect_ratio, 0.5, 2.0);
 
     int width = std::min(bitmap.width() / scale,
                          (int)(bitmap.height() * aspect_ratio / scale));

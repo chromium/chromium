@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -153,9 +154,8 @@ void DemoModeDetector::SetupTimeouts() {
   // In case we'd be derelict before our timer is set to trigger, reduce
   // the interval so we check again when we're scheduled to go derelict.
   oobe_timer_update_interval_ =
-      std::max(std::min(oobe_timer_update_interval_,
-                        derelict_detection_timeout_ - time_on_oobe_),
-               base::TimeDelta::FromSeconds(0));
+      base::clamp(oobe_timer_update_interval_, base::TimeDelta::FromSeconds(0),
+                  derelict_detection_timeout_ - time_on_oobe_);
 }
 
 bool DemoModeDetector::IsDerelict() {

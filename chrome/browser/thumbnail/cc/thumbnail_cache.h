@@ -79,7 +79,6 @@ class ThumbnailCache : ThumbnailDelegate {
   static base::FilePath GetCacheDirectory();
   static base::FilePath GetFilePath(TabId tab_id);
   static base::FilePath GetJpegFilePath(TabId tab_id);
-  static double clampAspectRatio(double value, double min, double max);
 
  private:
   class ThumbnailMetaData {

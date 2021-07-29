@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/time/default_clock.h"
@@ -200,9 +201,8 @@ void SessionLengthLimiter::UpdateLimit() {
   // Clamp the session length limit to the valid range.
   const base::TimeDelta session_length_limit =
       base::TimeDelta::FromMilliseconds(
-          std::min(std::max(session_length_limit_pref->GetValue()->GetInt(),
-                            kSessionLengthLimitMinMs),
-                   kSessionLengthLimitMaxMs));
+          base::clamp(session_length_limit_pref->GetValue()->GetInt(),
+                      kSessionLengthLimitMinMs, kSessionLengthLimitMaxMs));
 
   // Calculate the session stop time.
   const base::Time session_stop_time =

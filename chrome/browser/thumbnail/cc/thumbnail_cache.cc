@@ -12,6 +12,7 @@
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -279,10 +280,6 @@ base::FilePath ThumbnailCache::GetFilePath(TabId tab_id) {
 
 base::FilePath ThumbnailCache::GetJpegFilePath(TabId tab_id) {
   return GetFilePath(tab_id).AddExtension(".jpeg");
-}
-
-double ThumbnailCache::clampAspectRatio(double value, double min, double max) {
-  return std::max(std::min(value, max), min);
 }
 
 bool ThumbnailCache::CheckAndUpdateThumbnailMetaData(TabId tab_id,
@@ -727,7 +724,7 @@ void ThumbnailCache::JpegProcessingTask(
   // portrait mode, or it would be shown in the wrong aspect ratio in
   // landscape mode.
   int scale = 2;
-  double aspect_ratio = clampAspectRatio(jpeg_aspect_ratio, 0.5, 2.0);
+  double aspect_ratio = base::clamp(jpeg_aspect_ratio, 0.5, 2.0);
 
   int width = std::min(bitmap.width() / scale,
                        (int)(bitmap.height() * aspect_ratio / scale));
