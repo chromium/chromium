@@ -317,9 +317,6 @@ TEST(PlatformThreadTest, CanIncreaseThreadPriority) {
   // On Ubuntu, RLIMIT_NICE and RLIMIT_RTPRIO are 0 by default, so we won't be
   // able to increase priority to any level.
   constexpr bool kCanIncreasePriority = false;
-#elif defined(OS_FUCHSIA)
-  // Fuchsia doesn't support thread priorities.
-  constexpr bool kCanIncreasePriority = false;
 #else
   constexpr bool kCanIncreasePriority = true;
 #endif

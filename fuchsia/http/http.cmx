@@ -8,6 +8,7 @@
       "fuchsia.device.NameProvider",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
+      "fuchsia.media.ProfileProvider",
       "fuchsia.net.NameLookup",
       "fuchsia.net.interfaces.State",
       "fuchsia.posix.socket.Provider"
