@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -197,7 +198,8 @@ void OptimizationGuideKeyedService::Initialize() {
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
-      tab_url_provider_.get(), url_loader_factory);
+      tab_url_provider_.get(), url_loader_factory,
+      content::GetNetworkConnectionTracker());
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, url_loader_factory,
       profile->GetPrefs(), profile);

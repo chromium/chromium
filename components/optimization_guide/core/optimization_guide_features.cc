@@ -199,19 +199,6 @@ int MaxServerBloomFilterByteSize() {
       kOptimizationHints, "max_bloom_filter_byte_size", 250 * 1024 /* 250KB */);
 }
 
-absl::optional<net::EffectiveConnectionType>
-GetMaxEffectiveConnectionTypeForNavigationHintsFetch() {
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      kRemoteOptimizationGuideFetching,
-      "max_effective_connection_type_for_navigation_hints_fetch");
-
-  // Use a default value.
-  if (param_value.empty())
-    return net::EFFECTIVE_CONNECTION_TYPE_4G;
-
-  return net::GetEffectiveConnectionTypeForName(param_value);
-}
-
 base::TimeDelta GetHostHintsFetchRefreshDuration() {
   return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching, "hints_fetch_refresh_duration_in_hours",

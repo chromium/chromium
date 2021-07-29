@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +43,8 @@ class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
                                       /*hint_store=*/nullptr,
                                       /*top_host_provider=*/nullptr,
                                       /*tab_url_provider=*/nullptr,
-                                      /*url_loader_factory=*/nullptr) {}
+                                      /*url_loader_factory=*/nullptr,
+                                      content::GetNetworkConnectionTracker()) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD4(CanApplyOptimizationAsync,
                void(const GURL&,

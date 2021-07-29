@@ -55,11 +55,11 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/network_service_instance.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
@@ -282,7 +282,8 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
     optimization_guide::OptimizationGuideStore* hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : profile_(profile),
       pref_service_(pref_service),
       hint_cache_(std::make_unique<optimization_guide::HintCache>(
@@ -296,15 +297,12 @@ OptimizationGuideHintsManager::OptimizationGuideHintsManager(
               optimization_guide::features::
                   GetOptimizationGuideServiceGetHintsURL(),
               pref_service,
-              content::GetNetworkConnectionTracker())),
+              network_connection_tracker)),
       top_host_provider_(top_host_provider),
       tab_url_provider_(tab_url_provider),
       clock_(base::DefaultClock::GetInstance()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  g_browser_process->network_quality_tracker()
-      ->AddEffectiveConnectionTypeObserver(this);
-
 #if defined(OS_ANDROID)
   if (optimization_guide::features::IsPushNotificationsEnabled()) {
     push_notification_manager_ = std::make_unique<
@@ -333,9 +331,6 @@ OptimizationGuideHintsManager::~OptimizationGuideHintsManager() {
 void OptimizationGuideHintsManager::Shutdown() {
   optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
       ->RemoveObserver(this);
-
-  g_browser_process->network_quality_tracker()
-      ->RemoveEffectiveConnectionTypeObserver(this);
 
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
@@ -1259,11 +1254,6 @@ void OptimizationGuideHintsManager::OnReadyToInvokeRegisteredCallbacks(
   registered_callbacks_.erase(navigation_url);
 }
 
-void OptimizationGuideHintsManager::OnEffectiveConnectionTypeChanged(
-    net::EffectiveConnectionType effective_connection_type) {
-  current_effective_connection_type_ = effective_connection_type;
-}
-
 bool OptimizationGuideHintsManager::HasOptimizationTypeToFetchFor() {
   if (registered_optimization_types_.empty())
     return false;
@@ -1290,24 +1280,7 @@ bool OptimizationGuideHintsManager::IsAllowedToFetchNavigationHints(
   }
   DCHECK(!profile_->IsOffTheRecord());
 
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
-    return false;
-
-  absl::optional<net::EffectiveConnectionType> ect_max_threshold =
-      optimization_guide::features::
-          GetMaxEffectiveConnectionTypeForNavigationHintsFetch();
-  // If the threshold is unavailable, return early since there is no safe way to
-  // proceed.
-  if (!ect_max_threshold.has_value())
-    return false;
-
-  if (current_effective_connection_type_ <
-          net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G ||
-      current_effective_connection_type_ > ect_max_threshold.value()) {
-    return false;
-  }
-
-  return true;
+  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
 }
 
 void OptimizationGuideHintsManager::OnNavigationStartOrRedirect(

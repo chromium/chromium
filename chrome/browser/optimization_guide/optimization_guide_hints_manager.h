@@ -26,8 +26,6 @@
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "net/nqe/effective_connection_type.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -58,7 +56,6 @@ class Profile;
 class OptimizationGuideHintsManager
     : public optimization_guide::OptimizationHintsComponentObserver,
       public optimization_guide::PushNotificationManager::Delegate,
-      public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
       public NavigationPredictorKeyedService::Observer {
  public:
   OptimizationGuideHintsManager(
@@ -67,7 +64,8 @@ class OptimizationGuideHintsManager
       optimization_guide::OptimizationGuideStore* hint_store,
       optimization_guide::TopHostProvider* top_host_provider,
       optimization_guide::TabUrlProvider* tab_url_provider,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker);
 
   ~OptimizationGuideHintsManager() override;
 
@@ -145,11 +143,6 @@ class OptimizationGuideHintsManager
   // Overrides |clock_| for testing.
   void SetClockForTesting(const base::Clock* clock);
 
-  // network::NetworkQualityTracker::EffectiveConnectionTypeObserver
-  // implementation:
-  void OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType type) override;
-
   // Notifies |this| that a navigation with |navigation_handle| has started.
   // |callback| is run when the request has finished regardless of whether there
   // was actually a hint for that load or not. The callback can be used as a
@@ -189,20 +182,15 @@ class OptimizationGuideHintsManager
  private:
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerTest, IsGoogleURL);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_NoRegisteredOptimizationTypes);
+                           HintsFetched_AtSRP);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_ECT_SLOW_2G);
+                           HintsFetched_AtSRP_GoogleLinksIgnored);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_ECT_4G);
+                           HintsFetched_AtNonSRP);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_ECT_4G_GoogleLinksIgnored);
+                           HintsFetched_AtSRP_DuplicatesRemoved);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtNonSRP_ECT_SLOW_2G);
-  FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,
-                           HintsFetched_AtSRP_ECT_SLOW_2G_DuplicatesRemoved);
-  FRIEND_TEST_ALL_PREFIXES(
-      OptimizationGuideHintsManagerFetchingTest,
-      HintsFetched_AtSRP_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemoved);
+                           HintsFetched_AtSRP_NonHTTPOrHTTPSHostsRemoved);
 
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
@@ -452,10 +440,6 @@ class OptimizationGuideHintsManager
   // Whether fetched hints should be cleared when the store is initialized
   // because a new optimization type was registered.
   bool should_clear_hints_for_new_type_ = false;
-
-  // The current estimate of the EffectiveConnectionType.
-  net::EffectiveConnectionType current_effective_connection_type_ =
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   // Used in testing to subscribe to an update event in this class.
   base::OnceClosure next_update_closure_;

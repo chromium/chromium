@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +29,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_component_util.h"
+#include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -54,7 +54,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace {
@@ -224,6 +225,11 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   void SetNetworkConnectionOffline() {
     content::NetworkConnectionChangeSimulator().SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_NONE);
+  }
+
+  void SetNetworkConnectionOnline() {
+    content::NetworkConnectionChangeSimulator().SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_2G);
   }
 
   void SetResponseType(HintsFetcherRemoteResponseType response_type) {
@@ -643,10 +649,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   SetResponseType(HintsFetcherRemoteResponseType::kUnsuccessful);
 
-  // Set the ECT to force a fetch at navigation time.
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
+  // Set the connection online to force a fetch at navigation time.
+  SetNetworkConnectionOnline();
 
   ui_test_utils::NavigateToURL(browser(), GURL("https://unsuccessful.com/"));
 
@@ -664,10 +668,8 @@ IN_PROC_BROWSER_TEST_F(
 
   SetResponseType(HintsFetcherRemoteResponseType::kHung);
 
-  // Set the ECT to force a fetch at navigation time.
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
+  // Set the connection online to force a fetch at navigation time.
+  SetNetworkConnectionOnline();
 
   ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/1"));
   ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/2"));
@@ -821,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
 
 // Test that the hints are fetched at the time of the navigation.
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcher_NavigationFetch_ECT) {
+                       HintsFetcher_NavigationFetch_NetworkChange) {
   {
     base::HistogramTester histogram_tester;
 
@@ -856,34 +858,29 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     EXPECT_EQ(1u, count_hints_requests_received());
   }
 
-  // Change ECT to a low value. Hints should be fetched at the time of
-  // navigation.
+  // When network is online, hints should be fetched at the time of navigation.
   {
     base::HistogramTester histogram_tester;
     ukm::TestAutoSetUkmRecorder ukm_recorder;
     ResetCountHintsRequestsReceived();
 
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_2G);
+    SetNetworkConnectionOnline();
 
     // Navigate to a host not in the seeded site engagement service; it
     // should be recorded as covered by the hints fetcher due to the race.
-    base::flat_set<std::string> expected_request_2g;
-    std::string host_2g("https://unseenhost_2g.com/");
-    expected_request_2g.insert(GURL(host_2g).host());
-    expected_request_2g.insert(GURL(host_2g).spec());
-    SetExpectedHintsRequestForHostsAndUrls(expected_request_2g);
-    ui_test_utils::NavigateToURL(browser(), GURL(host_2g));
+    base::flat_set<std::string> expected_request_online;
+    std::string host_online("https://unseenhost_online.com/");
+    expected_request_online.insert(GURL(host_online).host());
+    expected_request_online.insert(GURL(host_online).spec());
+    SetExpectedHintsRequestForHostsAndUrls(expected_request_online);
+    ui_test_utils::NavigateToURL(browser(), GURL(host_online));
 
     EXPECT_EQ(1u, count_hints_requests_received());
     RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
     // Navigate away so metrics are recorded.
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+    SetNetworkConnectionOffline();
     ui_test_utils::NavigateToURL(browser(), GURL("http://nohints.com/"));
     auto entries = ukm_recorder.GetEntriesByName(
         ukm::builders::OptimizationGuide::kEntryName);
@@ -903,22 +900,20 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
                              kRaceNavigationFetchHostAndURL));
   }
 
-  // Change ECT to unknown. Hints should not be fetched at the time of
-  // navigation as the ECT is unknown so the fetcher should not race.
+  // Disconnect the network. Hints should not be fetched at the time of
+  // navigation so the fetcher should not race.
   {
     base::HistogramTester histogram_tester;
     ResetCountHintsRequestsReceived();
 
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+    SetNetworkConnectionOffline();
 
     base::flat_set<std::string> expected_request_unknown;
-    std::string host_unknown_ect("https://unseenhost_unknown_ect.com/");
-    expected_request_unknown.insert((GURL(host_unknown_ect).host()));
-    expected_request_unknown.insert((GURL(host_unknown_ect).spec()));
+    std::string host_network_offline("https://unseenhost_network_offline.com/");
+    expected_request_unknown.insert((GURL(host_network_offline).host()));
+    expected_request_unknown.insert((GURL(host_network_offline).spec()));
     SetExpectedHintsRequestForHostsAndUrls(expected_request_unknown);
-    ui_test_utils::NavigateToURL(browser(), GURL(host_unknown_ect));
+    ui_test_utils::NavigateToURL(browser(), GURL(host_network_offline));
 
     EXPECT_EQ(0u, count_hints_requests_received());
     RetryForHistogramUntilCountReached(
@@ -928,31 +923,38 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // Navigate away so metrics are recorded.
     base::HistogramTester prev_nav_histogram_tester;
     ukm::TestAutoSetUkmRecorder prev_nav_ukm_recorder;
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+    SetNetworkConnectionOffline();
     ui_test_utils::NavigateToURL(browser(), GURL("http://nohints.com/"));
     auto entries = prev_nav_ukm_recorder.GetEntriesByName(
         ukm::builders::OptimizationGuide::kEntryName);
     EXPECT_EQ(1u, entries.size());
     auto* entry = entries[0];
+    // Hints manager will still attempt to fetch, but the hints fetcher will not
+    // fetch sine network is offline.
     EXPECT_FALSE(prev_nav_ukm_recorder.EntryHasMetric(
         entry, ukm::builders::OptimizationGuide::
                    kNavigationHintsFetchRequestLatencyName));
-    EXPECT_FALSE(prev_nav_ukm_recorder.EntryHasMetric(
+    EXPECT_TRUE(prev_nav_ukm_recorder.EntryHasMetric(
         entry, ukm::builders::OptimizationGuide::
                    kNavigationHintsFetchAttemptStatusName));
+    prev_nav_ukm_recorder.ExpectEntryMetric(
+        entry,
+        ukm::builders::OptimizationGuide::
+            kNavigationHintsFetchAttemptStatusName,
+        static_cast<int>(optimization_guide::RaceNavigationFetchAttemptStatus::
+                             kRaceNavigationFetchNotAttempted));
+    prev_nav_histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation",
+        optimization_guide::HintsFetcherRequestStatus::kNetworkOffline, 1);
   }
 
-  // Change ECT back to a low value. Hints should be fetched at the time of
+  // Enable network connection. Hints should be fetched at the time of
   // navigation.
   {
     base::HistogramTester histogram_tester;
     ResetCountHintsRequestsReceived();
 
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_3G);
+    SetNetworkConnectionOnline();
 
     // Navigate to a host not in the seeded site engagement service; it
     // should be recorded as not covered by the hints fetcher.
@@ -971,9 +973,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // Navigate away so metrics are recorded.
     base::HistogramTester prev_nav_histogram_tester;
     ukm::TestAutoSetUkmRecorder prev_nav_ukm_recorder;
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+    SetNetworkConnectionOffline();
     ui_test_utils::NavigateToURL(browser(), GURL("http://nohints.com/"));
     auto entries = prev_nav_ukm_recorder.GetEntriesByName(
         ukm::builders::OptimizationGuide::kEntryName);
@@ -1000,9 +1000,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     base::HistogramTester histogram_tester;
     ResetCountHintsRequestsReceived();
 
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_3G);
+    SetNetworkConnectionOnline();
 
     // Navigate to a host that was recently fetched. It
     // should be recorded as covered by the hints fetcher.
@@ -1023,9 +1021,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // Navigate away so metrics are recorded.
     base::HistogramTester prev_nav_histogram_tester;
     ukm::TestAutoSetUkmRecorder prev_nav_ukm_recorder;
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(
-            net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
+    SetNetworkConnectionOffline();
     ui_test_utils::NavigateToURL(browser(), GURL("http://nohints.com/"));
     auto entries = prev_nav_ukm_recorder.GetEntriesByName(
         ukm::builders::OptimizationGuide::kEntryName);
@@ -1079,11 +1075,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
   EXPECT_EQ(1u, count_hints_requests_received());
 
-  // Setting the connection type to be slow so the page navigation race fetch
-  // is initiated.
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
+  // Enable the connection so the page navigation race fetch is initiated.
+  SetNetworkConnectionOnline();
   std::string full_url("https://foo.com/test/");
   {
     // Navigate to a host not in the seeded site engagement service; it
@@ -1185,11 +1178,9 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
   EXPECT_EQ(1u, count_hints_requests_received());
 
-  // Setting the connection type to be slow so the page navigation race fetch
-  // is initiated.
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
+  // Enable the network connection so the page navigation race fetch is
+  // initiated.
+  SetNetworkConnectionOnline();
   std::string full_url("https://foo.com/test/");
   {
     // Navigate to a host not in the seeded site engagement service; it
@@ -1278,11 +1269,8 @@ IN_PROC_BROWSER_TEST_F(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
   EXPECT_EQ(1u, count_hints_requests_received());
 
-  // Setting the connection type to be slow so the page navigation race fetch
-  // is initiated.
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
+  // Enable the network connection so the page navigation race fetch is
+  // initiated.
   std::string full_url("https://foo.com/test/");
   {
     // Navigate to a host not in the seeded site engagement service; it
@@ -1348,9 +1336,7 @@ class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
                        HintsFetcher_SRP_Slow_Connection) {
-  g_browser_process->network_quality_tracker()
-      ->ReportEffectiveConnectionTypeForTesting(
-          net::EFFECTIVE_CONNECTION_TYPE_2G);
+  SetNetworkConnectionOnline();
 
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 

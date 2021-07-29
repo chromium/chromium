@@ -41,6 +41,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/test/test_network_connection_tracker.h"
 
 namespace {
 
@@ -148,7 +150,9 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceDisabledBrowserTest,
 class OptimizationGuideKeyedServiceBrowserTest
     : public OptimizationGuideKeyedServiceDisabledBrowserTest {
  public:
-  OptimizationGuideKeyedServiceBrowserTest() {
+  OptimizationGuideKeyedServiceBrowserTest()
+      : network_connection_tracker_(
+            network::TestNetworkConnectionTracker::CreateInstance()) {
     scoped_feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints}, {});
   }
@@ -176,8 +180,7 @@ class OptimizationGuideKeyedServiceBrowserTest
     url_that_redirects_to_no_hints_ =
         https_server_->GetURL("/redirect?https://nohints.com/");
 
-    SetEffectiveConnectionType(
-        net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+    SetConnectionType(network::mojom::ConnectionType::CONNECTION_2G);
   }
 
   void TearDownOnMainThread() override {
@@ -222,12 +225,9 @@ class OptimizationGuideKeyedServiceBrowserTest
     run_loop.Run();
   }
 
-  // Sets the effective connection type that the Network Quality Tracker will
-  // report.
-  void SetEffectiveConnectionType(
-      net::EffectiveConnectionType effective_connection_type) {
-    g_browser_process->network_quality_tracker()
-        ->ReportEffectiveConnectionTypeForTesting(effective_connection_type);
+  // Sets the connection type that the Network Connection Tracker will report.
+  void SetConnectionType(network::mojom::ConnectionType connection_type) {
+    network_connection_tracker_->SetConnectionType(connection_type);
   }
 
   // Sets the callback on the consumer of the OptimizationGuideKeyedService. If
@@ -291,6 +291,10 @@ class OptimizationGuideKeyedServiceBrowserTest
   GURL url_with_hints_;
   GURL url_that_redirects_;
   GURL url_that_redirects_to_no_hints_;
+
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
   optimization_guide::testing::TestHintsComponentCreator
       test_hints_component_creator_;

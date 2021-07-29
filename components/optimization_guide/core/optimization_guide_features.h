@@ -88,12 +88,6 @@ bool IsPushNotificationsEnabled();
 // a bloom filter.
 int MaxServerBloomFilterByteSize();
 
-// Maximum effective connection type at which hints can be fetched for
-// navigations in real-time. Returns null if the hints fetching for navigations
-// is disabled.
-absl::optional<net::EffectiveConnectionType>
-GetMaxEffectiveConnectionTypeForNavigationHintsFetch();
-
 // Returns the duration of the time window before hints expiration during which
 // the hosts should be refreshed. Example: If the hints for a host expire at
 // time T, then they are eligible for refresh at T -

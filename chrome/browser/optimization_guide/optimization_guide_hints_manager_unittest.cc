@@ -46,6 +46,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -255,8 +256,8 @@ class TestHintsFetcherFactory : public optimization_guide::HintsFetcherFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GURL optimization_guide_service_url,
       PrefService* pref_service,
-      network::NetworkConnectionTracker* network_connection_tracker,
-      std::vector<HintsFetcherEndState> fetch_states)
+      const std::vector<HintsFetcherEndState>& fetch_states,
+      network::NetworkConnectionTracker* network_connection_tracker)
       : HintsFetcherFactory(url_loader_factory,
                             optimization_guide_service_url,
                             pref_service,
@@ -319,7 +320,8 @@ class OptimizationGuideHintsManagerTest
 
     hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
         &testing_profile_, pref_service(), hint_store_.get(), top_host_provider,
-        tab_url_provider_.get(), url_loader_factory_);
+        tab_url_provider_.get(), url_loader_factory_,
+        network::TestNetworkConnectionTracker::GetInstance());
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the OptimizationGuideHintsManager
@@ -402,7 +404,7 @@ class OptimizationGuideHintsManagerTest
       const std::vector<HintsFetcherEndState>& fetch_states) {
     return std::make_unique<TestHintsFetcherFactory>(
         url_loader_factory_, GURL("https://hintsserver.com"), pref_service(),
-        network::TestNetworkConnectionTracker::GetInstance(), fetch_states);
+        fetch_states, network::TestNetworkConnectionTracker::GetInstance());
   }
 
   void MoveClockForwardBy(base::TimeDelta time_delta) {
@@ -422,6 +424,16 @@ class OptimizationGuideHintsManagerTest
         std::make_unique<content::MockNavigationHandle>(web_contents);
     navigation_handle->set_url(url);
     return navigation_handle;
+  }
+
+  void SetConnectionOffline() {
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_NONE);
+  }
+
+  void SetConnectionOnline() {
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_4G);
   }
 
   OptimizationGuideHintsManager* hints_manager() const {
@@ -1801,9 +1813,8 @@ TEST_F(OptimizationGuideHintsManagerTest,
        CanApplyOptimizationNoMatchingPageHint) {
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so hint is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           GURL("https://somedomain.org/nomatch"));
@@ -2434,16 +2445,15 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerFetch) {
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetched_AtSRP_ECT_SLOW_2G_DuplicatesRemoved) {
+       HintsFetched_AtSRP_DuplicatesRemoved) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/page1.html");
@@ -2487,16 +2497,15 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetched_AtSRP_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemoved) {
+       HintsFetched_AtSRP_NonHTTPOrHTTPSHostsRemoved) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/page1.html");
@@ -2522,16 +2531,16 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 2, 1);
 }
 
-TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetched_AtSRP_ECT_4G) {
+TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetched_AtSRP) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -2552,16 +2561,16 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetched_AtSRP_ECT_4G) {
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetched_AtSRP_ECT_4G_GoogleLinksIgnored) {
+       HintsFetched_AtSRP_GoogleLinksIgnored) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -2599,9 +2608,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       /*is_allowlist=*/true, &config);
   ProcessHints(config, "1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_without_hints());
@@ -2618,17 +2626,15 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
 }
 
-TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetched_AtNonSRP_ECT_SLOW_2G) {
+TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetched_AtNonSRP) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -2649,16 +2655,15 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetchedAtNavigationTime_ECT_SLOW_2G) {
+       HintsFetchedAtNavigationTime) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_without_hints());
@@ -2686,9 +2691,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_without_hints());
@@ -2721,9 +2725,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithURLHints}));
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_with_hints());
@@ -2751,9 +2754,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithURLHints}));
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   {
     base::HistogramTester histogram_tester;
@@ -2830,9 +2832,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   base::HistogramTester histogram_tester;
   {
@@ -2891,37 +2892,6 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsNotFetchedAtNavigationTime_ECT_UNKNOWN) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
-  InitializeWithDefaultConfig("1.0.0.0");
-
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
-  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
-      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
-          url_without_hints());
-  base::HistogramTester histogram_tester;
-  hints_manager()->OnNavigationStartOrRedirect(navigation_handle.get(),
-                                               base::DoNothing());
-  RunUntilIdle();
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
-  // Make sure navigation data is populated correctly.
-  OptimizationGuideNavigationData* navigation_data =
-      OptimizationGuideKeyedService::GetNavigationDataFromNavigationHandle(
-          navigation_handle.get());
-  EXPECT_FALSE(navigation_data->hints_fetch_latency().has_value());
-  EXPECT_FALSE(navigation_data->hints_fetch_attempt_status().has_value());
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
-}
-
-TEST_F(OptimizationGuideHintsManagerFetchingTest,
        CanApplyOptimizationCalledMidFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
@@ -2929,9 +2899,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so hint will attempt to be fetched.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_without_hints());
@@ -2960,9 +2929,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithNoHints}));
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_without_hints());
@@ -2991,9 +2959,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory({HintsFetcherEndState::kFetchFailed}));
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_without_hints());
@@ -3023,9 +2990,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithURLHints}));
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           url_with_url_keyed_hint());
@@ -3057,9 +3023,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   // Make sure both URL-Keyed and host-keyed hints are processed and cached.
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -3091,9 +3056,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   // Make sure both URL-Keyed and host-keyed hints are processed and cached.
   hints_manager()->SetHintsFetcherFactoryForTesting(
@@ -3125,9 +3089,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3161,9 +3124,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   // Attempt to fetch a hint but call CanApplyOptimization right away to
   // simulate being mid-fetch.
@@ -3196,9 +3158,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   // Attempt to fetch a hint but initiate the next navigation right away to
   // simulate being mid-fetch.
@@ -3263,9 +3224,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithNoHints}));
@@ -3314,9 +3274,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithURLHints}));
@@ -3362,9 +3321,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       {optimization_guide::proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3401,9 +3359,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       {optimization_guide::proto::COMPRESS_PUBLIC_IMAGES});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3451,9 +3408,8 @@ TEST_F(
       {optimization_guide::proto::RESOURCE_LOADING});
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3490,9 +3446,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory({HintsFetcherEndState::kFetchFailed}));
@@ -3528,9 +3483,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3570,9 +3524,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3611,9 +3564,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3650,9 +3602,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is NOT activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
+  // Set to offline so fetch is NOT activated.
+  SetConnectionOffline();
 
   GURL url_that_redirected("https://urlthatredirected.com");
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_redirect =
@@ -3687,9 +3638,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is NOT activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
+  // Set to offline so fetch is NOT activated.
+  SetConnectionOffline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3803,9 +3753,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   InitializeWithDefaultConfig("1.0.0.0");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3858,9 +3807,8 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   GURL url("https://host.com/fetched_hint_host");
 
-  // Set ECT estimate so fetch is activated.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
 
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
@@ -3891,10 +3839,11 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
 
   base::RunLoop run_loop;
 
-  // Set ECT estimate to 4g so the fetch does not happen so
-  // the cache state is known and empty.
-  hints_manager()->OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
+  // Set to offline so fetch is NOT activated, so the cache state is known and
+  // empty.
+  SetConnectionOffline();
+
+  base::HistogramTester histogram_tester;
 
   navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(url);
@@ -3907,10 +3856,13 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       navigation_handle->GetURL(), /*navigation_id=*/absl::nullopt,
       optimization_guide::proto::DEFER_ALL_SCRIPT, &optimization_metadata);
 
-  // The fetched hints should not be available after registering a new
-  // optimization type.
-  EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kNoHintAvailable,
-            optimization_type_decision);
+  // The previously fetched hints for the host should not be available after
+  // registering a new optimization type.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
+      optimization_guide::RaceNavigationFetchAttemptStatus::
+          kRaceNavigationFetchHost,
+      1);
 }
 
 class OptimizationGuideHintsManagerFetchingNoBatchUpdateTest
