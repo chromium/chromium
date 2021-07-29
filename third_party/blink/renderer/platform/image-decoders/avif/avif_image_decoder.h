@@ -97,6 +97,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   bool decode_to_half_float_ = false;
   uint8_t chroma_shift_x_ = 0;
   uint8_t chroma_shift_y_ = 0;
+  bool progressive_ = false;
   // The YUV format from the container.
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   size_t decoded_frame_count_ = 0;

@@ -84,4 +84,8 @@ avifenc -r f -d  8 -y 420 -s 0 --irot 2 --imir 0 red.png red-full-range-angle-2-
 avifenc -r f -d  8 -y 420 -s 0 --irot 3 --imir 1 red.png red-full-range-angle-3-mode-1-420-8bpc.avif
 ```
 
+### tiger_3layer_1res.avif and tiger_3layer_3res.avif
+These are copied from https://github.com/AOMediaCodec/av1-avif/tree/master/testFiles/Xiph
+under the CC BY-SA 3.0 license.
+
 ### TODO(crbug.com/960620): Figure out how the rest of files were generated.

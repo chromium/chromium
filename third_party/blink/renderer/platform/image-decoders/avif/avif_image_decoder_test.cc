@@ -812,6 +812,12 @@ TEST(StaticAVIFTests, ValidImages) {
       "/images/resources/avif/red-at-12-oclock-with-color-profile-12bpc.avif",
       1, kAnimationNone);
 #endif
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/tiger_3layer_1res.avif", 1,
+                       kAnimationNone);
+  TestByteByByteDecode(&CreateAVIFDecoder,
+                       "/images/resources/avif/tiger_3layer_3res.avif", 1,
+                       kAnimationNone);
 }
 
 TEST(StaticAVIFTests, YUV) {
@@ -881,6 +887,46 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
 
   decoder->SetData(stream_buffer, /*all_data_received=*/true);
   EXPECT_TRUE(decoder->IsSizeAvailable());
+}
+
+TEST(StaticAVIFTests, ProgressiveDecoding) {
+  scoped_refptr<SharedBuffer> stream_buffer = WTF::SharedBuffer::Create();
+  scoped_refptr<SegmentReader> segment_reader =
+      SegmentReader::CreateFromSharedBuffer(stream_buffer);
+  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
+      "image/avif", segment_reader, /*data_complete=*/false,
+      ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::Tag(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
+
+  scoped_refptr<SharedBuffer> data =
+      ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
+  ASSERT_TRUE(data.get());
+  ASSERT_EQ(data->size(), 70944u);
+
+  // This image has three layers. The first layer is 8299 bytes. Because of
+  // image headers and other overhead, if we pass exactly 8299 bytes to the
+  // decoder, the decoder does not have enough data to decode the first layer.
+  stream_buffer->Append(data->Data(), 8299u);
+  decoder->SetData(stream_buffer, /*all_data_received=*/false);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->FrameCount(), 1u);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameEmpty);
+  EXPECT_FALSE(decoder->Failed());
+
+  // An additional 301 bytes are enough data for the decoder to decode the first
+  // layer. With progressive decoding, the frame buffer status will transition
+  // to ImageFrame::kFramePartial.
+  stream_buffer->Append(data->Data() + 8299u, 301u);
+  decoder->SetData(stream_buffer, /*all_data_received=*/false);
+  EXPECT_FALSE(decoder->Failed());
+  frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFramePartial);
+  EXPECT_FALSE(decoder->Failed());
 }
 
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;

@@ -354,10 +354,15 @@ void AVIFImageDecoder::DecodeToYUV() {
   DCHECK(decoder_);
   DCHECK_EQ(decoded_frame_count_, 1u);  // Not animation.
 
+  // If the image is decoded progressively, just render the highest progressive
+  // frame in image_planes_ because the callers of DecodeToYUV() assume that a
+  // complete scan will not be updated.
+  const int frame_index = progressive_ ? (decoder_->imageCount - 1) : 0;
+
   // libavif cannot decode to an external buffer. So we need to copy from
   // libavif's internal buffer to |image_planes_|.
   // TODO(crbug.com/1099825): Enhance libavif to decode to an external buffer.
-  auto ret = DecodeImage(0);
+  auto ret = DecodeImage(frame_index);
   if (ret != AVIF_RESULT_OK) {
     if (ret != AVIF_RESULT_WAITING_ON_IO)
       SetFailed();
@@ -538,7 +543,36 @@ void AVIFImageDecoder::Decode(size_t index) {
 
   UpdateAggressivePurging(index);
 
-  auto ret = DecodeImage(index);
+  int frame_index = index;
+  // If the image is decoded progressively, find the highest progressive
+  // frame that we have received and decode from that frame index. Internally
+  // decoder_ still decodes the lower progressive frames, but they are only used
+  // as reference frames and not rendered.
+  if (progressive_) {
+    DCHECK_EQ(index, 0u);
+    // decoder_->imageIndex is the current image index. decoder_->imageIndex is
+    // initialized to -1. decoder_->imageIndex + 1 is the next image index.
+    DCHECK_LT(decoder_->imageIndex + 1, decoder_->imageCount);
+    for (frame_index = decoder_->imageIndex + 1;
+         frame_index + 1 < decoder_->imageCount; ++frame_index) {
+      avifExtent data_extent;
+      auto rv = avifDecoderNthImageMaxExtent(decoder_.get(), frame_index + 1,
+                                             &data_extent);
+      if (rv != AVIF_RESULT_OK) {
+        DVLOG(1) << "avifDecoderNthImageMaxExtent(" << frame_index + 1
+                 << ") failed: " << avifResultToString(rv) << ": "
+                 << AvifDecoderErrorMessage(decoder_.get());
+        SetFailed();
+        return;
+      }
+      if (data_extent.size != 0 &&
+          data_extent.offset + data_extent.size > data_->size()) {
+        break;
+      }
+    }
+  }
+
+  auto ret = DecodeImage(frame_index);
   if (ret != AVIF_RESULT_OK) {
     if (ret != AVIF_RESULT_WAITING_ON_IO)
       SetFailed();
@@ -548,25 +582,29 @@ void AVIFImageDecoder::Decode(size_t index) {
   const auto* image = decoder_->image;
 
   ImageFrame& buffer = frame_buffer_cache_[index];
-  DCHECK_EQ(buffer.GetStatus(), ImageFrame::kFrameEmpty);
+  DCHECK_NE(buffer.GetStatus(), ImageFrame::kFrameComplete);
 
-  if (!InitFrameBuffer(index)) {
-    DVLOG(1) << "Failed to create frame buffer...";
-    SetFailed();
-    return;
+  if (buffer.GetStatus() == ImageFrame::kFrameEmpty) {
+    if (!InitFrameBuffer(index)) {
+      DVLOG(1) << "Failed to create frame buffer...";
+      SetFailed();
+      return;
+    }
+    DCHECK_EQ(buffer.GetStatus(), ImageFrame::kFramePartial);
   }
 
   if (!RenderImage(image, &buffer)) {
     SetFailed();
     return;
   }
-
   ColorCorrectImage(&buffer);
-
   buffer.SetPixelsChanged(true);
-  buffer.SetHasAlpha(!!image->alphaPlane);
-  buffer.SetStatus(ImageFrame::kFrameComplete);
-  PostDecodeProcessing(index);
+
+  if (!progressive_ || frame_index + 1 == decoder_->imageCount) {
+    buffer.SetHasAlpha(!!image->alphaPlane);
+    buffer.SetStatus(ImageFrame::kFrameComplete);
+    PostDecodeProcessing(index);
+  }
 }
 
 bool AVIFImageDecoder::CanReusePreviousFrameBuffer(size_t index) const {
@@ -683,6 +721,9 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     avifDecoderSetIO(decoder_.get(), &avif_io_);
   }
 
+  // If all data is received, there is no point in decoding progressively.
+  decoder_->allowProgressive = !IsAllDataReceived();
+
   auto ret = avifDecoderParse(decoder_.get());
   if (ret == AVIF_RESULT_WAITING_ON_IO)
     return true;
@@ -714,7 +755,10 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   }
 
   DCHECK_GT(decoder_->imageCount, 0);
-  decoded_frame_count_ = decoder_->imageCount;
+  progressive_ = decoder_->progressiveState == AVIF_PROGRESSIVE_STATE_ACTIVE;
+  // If the image is progressive, decoder_->imageCount is the number of
+  // progressive frames, but there is only one still image.
+  decoded_frame_count_ = progressive_ ? 1 : decoder_->imageCount;
   bit_depth_ = container->depth;
   decode_to_half_float_ =
       ImageIsHighBitDepth() &&
