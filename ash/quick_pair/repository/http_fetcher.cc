@@ -47,7 +47,8 @@ void HttpFetcher::ExecuteGetRequest(const GURL& url,
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation_);
-  loader->DownloadToString(
+  auto* loader_ptr = loader.get();
+  loader_ptr->DownloadToString(
       /*url_loader_factory=*/nullptr,
       base::BindOnce(&HttpFetcher::OnComplete, weak_ptr_factory_.GetWeakPtr(),
                      std::move(loader), std::move(callback)),
