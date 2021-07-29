@@ -22,7 +22,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Sync.BackendInitializeFirstTime" units="ms"
-    expires_after="2021-09-01">
+    expires_after="M93">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -32,7 +35,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BackendInitializeFirstTimeSuccess" enum="BooleanSuccess"
-    expires_after="2021-09-01">
+    expires_after="M93">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -42,7 +48,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BackendInitializeRestoreSuccess" enum="BooleanSuccess"
-    expires_after="2021-09-01">
+    expires_after="M93">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -53,7 +62,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BackendInitializeRestoreTime" units="ms"
-    expires_after="2021-09-01">
+    expires_after="M93">
+  <obsolete>
+    Removed in M94.
+  </obsolete>
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>

@@ -752,23 +752,6 @@ void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
   data_type_manager_->DataTypePreconditionChanged(type);
 }
 
-void SyncServiceImpl::UpdateEngineInitUMA(bool success) const {
-  if (is_first_time_sync_configure_) {
-    UMA_HISTOGRAM_BOOLEAN("Sync.BackendInitializeFirstTimeSuccess", success);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN("Sync.BackendInitializeRestoreSuccess", success);
-  }
-
-  base::Time on_engine_initialized_time = base::Time::Now();
-  base::TimeDelta delta =
-      on_engine_initialized_time - startup_controller_->start_engine_time();
-  if (is_first_time_sync_configure_) {
-    UMA_HISTOGRAM_LONG_TIMES("Sync.BackendInitializeFirstTime", delta);
-  } else {
-    UMA_HISTOGRAM_LONG_TIMES("Sync.BackendInitializeRestoreTime", delta);
-  }
-}
-
 void SyncServiceImpl::OnEngineInitialized(
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     bool success,
@@ -783,8 +766,6 @@ void SyncServiceImpl::OnEngineInitialized(
   // The very first time the backend initializes is effectively the first time
   // we can say we successfully "synced".
   is_first_time_sync_configure_ = is_first_time_sync_configure;
-
-  UpdateEngineInitUMA(success);
 
   if (!success) {
     // Something went unexpectedly wrong.  Play it safe: stop syncing at once

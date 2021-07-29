@@ -321,9 +321,6 @@ class SyncServiceImpl : public SyncService,
   // Kicks off asynchronous initialization of the SyncEngine.
   void StartUpSlowEngineComponents();
 
-  // Update UMA for syncing engine.
-  void UpdateEngineInitUMA(bool success) const;
-
   // Whether sync has been authenticated with an account ID.
   bool IsSignedIn() const;
 
