@@ -21,6 +21,7 @@
 #include "base/test/test_waitable_event.h"
 #include "base/threading/scoped_blocking_call_internal.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,7 +165,10 @@ TEST(ScopedBlockingCallDestructionOrderTest, InvalidDestructionOrder) {
 
 class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
  public:
-  ScopedBlockingCallIOJankMonitoringTest() = default;
+  explicit ScopedBlockingCallIOJankMonitoringTest(
+      test::TaskEnvironment::TimeSource time_source =
+          test::TaskEnvironment::TimeSource::MOCK_TIME)
+      : task_environment_(time_source) {}
 
   void SetUp() override {
     // Note 1: While EnableIOJankMonitoringForProcess() is documented as being
@@ -208,9 +212,33 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
   // TaskEnvironment+MOCK_TIME advances the test in lock steps.
   std::vector<std::pair<int, int>> reports_;
 
-  test::TaskEnvironment task_environment_{
-      test::TaskEnvironment::TimeSource::MOCK_TIME};
+  test::TaskEnvironment task_environment_;
 };
+
+// Manually mocks time to be able to move it backwards. Uses inheritance to
+// ensure the clock override outlives the entire lifetime of the main test
+// fixture (or weird things happen on destruction).
+class ScopedBlockingCallIOJankMonitoringManualMockTimeTest
+    : public subtle::ScopedTimeClockOverrides,
+      public ScopedBlockingCallIOJankMonitoringTest {
+ public:
+  // Initialized to Now() when the test starts and manually controlled from
+  // there.
+  static TimeTicks reported_ticks_;
+
+  ScopedBlockingCallIOJankMonitoringManualMockTimeTest()
+      : subtle::ScopedTimeClockOverrides(
+            nullptr,
+            []() { return reported_ticks_; },
+            nullptr),
+        ScopedBlockingCallIOJankMonitoringTest(
+            test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
+    reported_ticks_ = TimeTicks::Now();
+  }
+};
+
+// static
+TimeTicks ScopedBlockingCallIOJankMonitoringManualMockTimeTest::reported_ticks_;
 
 TEST_F(ScopedBlockingCallIOJankMonitoringTest, Basic) {
   constexpr auto kJankTiming =
@@ -844,6 +872,24 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   task_environment_.FastForwardBy(
       internal::IOJankMonitoringWindow::kMonitoringWindow);
 
+  EXPECT_THAT(reports_, ElementsAre(std::make_pair(0, 0)));
+}
+
+// Regression test for crbug.com/1209622
+TEST_F(ScopedBlockingCallIOJankMonitoringManualMockTimeTest,
+       IgnoreIfTickClockMovesBackwards) {
+  // Stomping 4 intervals in the past and 3 janky intervals from there is known
+  // to cause havoc (negatively indexing into |intervals_lock_|), per the
+  // original repro. Going back only 1 also causes negative indexing but not
+  // enough havoc to make this test crash without the fix.
+  {
+    reported_ticks_ -= internal::IOJankMonitoringWindow::kIOJankInterval * 4;
+    ScopedBlockingCall jank_in_past(FROM_HERE, BlockingType::MAY_BLOCK);
+    reported_ticks_ += internal::IOJankMonitoringWindow::kIOJankInterval * 3;
+  }
+
+  // Force a report immediately, it should have ignored the jank in the past.
+  internal::IOJankMonitoringWindow::CancelMonitoringForTesting();
   EXPECT_THAT(reports_, ElementsAre(std::make_pair(0, 0)));
 }
 
