@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 
 class Profile;
@@ -170,7 +169,6 @@ class ProfileMetrics {
   static void LogProfileSwitchGaia(ProfileGaia metric);
   static void LogProfileSyncInfo(ProfileSync metric);
   static void LogProfileDelete(bool profile_was_signed_in);
-  static void LogTimeToOpenUserManager(const base::TimeDelta& time_to_open);
 
 #if defined(OS_ANDROID)
   static void LogProfileAndroidAccountManagementMenu(

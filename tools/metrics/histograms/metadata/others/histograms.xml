@@ -11077,26 +11077,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestore" enum="GaiaSessionRestoreOutcome"
-    expires_after="2021-08-29">
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+    expires_after="2022-08-01">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>sinhak@chromium.org</owner>
   <summary>Outcome of Chrome OS GAIA cookie session restore process.</summary>
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestoreTimeToFailure" units="ms"
-    expires_after="2021-06-17">
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+    expires_after="2022-08-01">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>sinhak@chromium.org</owner>
   <summary>How long it takes for the session restore to fail.</summary>
 </histogram>
 
 <histogram name="OAuth2Login.SessionRestoreTimeToSuccess" units="ms"
-    expires_after="2021-06-17">
-  <owner>droger@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+    expires_after="2022-08-01">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>sinhak@chromium.org</owner>
   <summary>
     How long it takes for the session restore to finish succeessfully.
   </summary>

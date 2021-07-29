@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -429,14 +430,6 @@ void ProfileMetrics::LogProfileSyncInfo(ProfileSync metric) {
 
 void ProfileMetrics::LogProfileDelete(bool profile_was_signed_in) {
   base::UmaHistogramBoolean("Profile.Delete", profile_was_signed_in);
-}
-
-void ProfileMetrics::LogTimeToOpenUserManager(
-    const base::TimeDelta& time_to_open) {
-  base::UmaHistogramCustomTimes("Profile.TimeToOpenUserManagerUpTo1min",
-                                time_to_open,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(1), 50);
 }
 
 #if defined(OS_ANDROID)

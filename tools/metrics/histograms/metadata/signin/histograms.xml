@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Signin.AccountEquality" enum="SigninAccountEquality"
-    expires_after="2021-09-06">
+    expires_after="2022-09-06">
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -351,6 +351,8 @@ prefs when the profile is loaded.  -->
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
+<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
+
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -364,6 +366,8 @@ prefs when the profile is loaded.  -->
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
+<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
+
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>The number of signed in accounts in the cookie jar.</summary>
@@ -373,6 +377,8 @@ prefs when the profile is loaded.  -->
     units="accounts" expires_after="2022-01-09">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+<!-- Name completed by histogram_suffixes name="UnconsentedPrimaryAccountType" -->
+
   <summary>
     The number of signed in accounts in the cookie jar for users that have a
     (possibly unconsented) primary account. Reported at most every 24 hours
@@ -386,6 +392,8 @@ prefs when the profile is loaded.  -->
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
+<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
+
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>The number of signed out accounts in the cookie jar.</summary>
@@ -396,6 +404,8 @@ prefs when the profile is loaded.  -->
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
+<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
+
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>The amount of time since the cookie jar last changed.</summary>
@@ -405,6 +415,8 @@ prefs when the profile is loaded.  -->
     expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
+
+<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
 
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
@@ -736,7 +748,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.IsShared" enum="BooleanIsShared"
-    expires_after="2021-09-06">
+    expires_after="2022-09-06">
+<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
+
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
