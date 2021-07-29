@@ -162,7 +162,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
 #if !defined(OS_MAC)
   if (metrics.fAvgCharWidth) {
-    avg_char_width_ = SkScalarRoundToInt(metrics.fAvgCharWidth);
+    avg_char_width_ = SkScalarToFloat(metrics.fAvgCharWidth);
   } else {
 #endif
     avg_char_width_ = x_height;

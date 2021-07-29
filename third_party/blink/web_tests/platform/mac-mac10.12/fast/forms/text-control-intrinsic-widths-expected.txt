@@ -4,16 +4,16 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 Lucida Grande
 input
-size=1 clientWidth=12
+size=1 clientWidth=13
 size=2 clientWidth=21
-size=3 clientWidth=29
+size=3 clientWidth=30
 size=4 clientWidth=38
-size=5 clientWidth=46
-size=10 clientWidth=88
+size=5 clientWidth=47
+size=10 clientWidth=89
 size=20 clientWidth=173
-size=50 clientWidth=425
+size=50 clientWidth=426
 size=100 clientWidth=847
-size=500 clientWidth=4218
+size=500 clientWidth=4219
 size=1000 clientWidth=8433
 
 
@@ -43,7 +43,7 @@ size=20 clientWidth=164
 size=50 clientWidth=404
 size=100 clientWidth=804
 size=500 clientWidth=4004
-size=1000 clientWidth=8003
+size=1000 clientWidth=8004
 
 
 textarea
@@ -62,15 +62,15 @@ cols=1000 clientWidth=8017
 
 Helvetica
 input
-size=1 clientWidth=11
+size=1 clientWidth=12
 size=2 clientWidth=19
-size=3 clientWidth=26
+size=3 clientWidth=27
 size=4 clientWidth=34
-size=5 clientWidth=41
-size=10 clientWidth=78
-size=20 clientWidth=152
+size=5 clientWidth=42
+size=10 clientWidth=79
+size=20 clientWidth=153
 size=50 clientWidth=375
-size=100 clientWidth=745
+size=100 clientWidth=746
 size=500 clientWidth=3711
 size=1000 clientWidth=7418
 
@@ -101,7 +101,7 @@ size=20 clientWidth=164
 size=50 clientWidth=404
 size=100 clientWidth=804
 size=500 clientWidth=4004
-size=1000 clientWidth=8003
+size=1000 clientWidth=8004
 
 
 textarea
@@ -121,13 +121,13 @@ cols=1000 clientWidth=8017
 Times
 input
 size=1 clientWidth=11
-size=2 clientWidth=17
+size=2 clientWidth=18
 size=3 clientWidth=24
 size=4 clientWidth=31
-size=5 clientWidth=37
+size=5 clientWidth=38
 size=10 clientWidth=71
-size=20 clientWidth=137
-size=50 clientWidth=337
+size=20 clientWidth=138
+size=50 clientWidth=338
 size=100 clientWidth=671
 size=500 clientWidth=3337
 size=1000 clientWidth=6669
@@ -382,13 +382,13 @@ cols=1000 clientWidth=8017
 Webdings
 input
 size=1 clientWidth=15
-size=2 clientWidth=22
-size=3 clientWidth=29
-size=4 clientWidth=36
-size=5 clientWidth=43
+size=2 clientWidth=23
+size=3 clientWidth=30
+size=4 clientWidth=37
+size=5 clientWidth=44
 size=10 clientWidth=79
-size=20 clientWidth=150
-size=50 clientWidth=363
+size=20 clientWidth=151
+size=50 clientWidth=364
 size=100 clientWidth=719
 size=500 clientWidth=3562
 size=1000 clientWidth=7116

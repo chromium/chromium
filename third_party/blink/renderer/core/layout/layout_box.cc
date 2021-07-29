@@ -162,17 +162,18 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
     factor = 20;
 
   const float char_width = LayoutTextControl::GetAvgCharWidth(box.StyleRef());
-  LayoutUnit result = LayoutUnit::FromFloatCeil(char_width * factor);
+  float float_result = char_width * factor;
 
   float max_char_width = 0.f;
   const Font& font = box.StyleRef().GetFont();
   if (LayoutTextControl::HasValidAvgCharWidth(font))
-    max_char_width = roundf(font.PrimaryFont()->MaxCharWidth());
+    max_char_width = font.PrimaryFont()->MaxCharWidth();
 
   // For text inputs, IE adds some extra width.
   if (max_char_width > 0.f)
-    result += max_char_width - char_width;
+    float_result += max_char_width - char_width;
 
+  LayoutUnit result(ceilf(float_result));
   if (includes_decoration) {
     const auto* spin_button =
         To<HTMLElement>(input.UserAgentShadowRoot()->getElementById(
