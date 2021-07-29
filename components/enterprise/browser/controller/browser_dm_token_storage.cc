@@ -15,7 +15,9 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -167,6 +169,25 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   DVLOG(1) << "Client ID = " << client_id_;
   if (client_id_.empty())
     return;
+
+  // checks if client ID is greater than 64 characters
+  if (client_id_.length() > 64) {
+    SYSLOG(ERROR) << "Chrome browser cloud management client ID should"
+                     "not be greater than 64 characters long.";
+    client_id_.clear();
+    return;
+  }
+
+  // checks if client ID includes an illegal character
+  if (std::find_if(client_id_.begin(), client_id_.end(), [](char ch) {
+    return ch == ' ' || !base::IsAsciiPrintable(ch);
+  }) != client_id_.end()) {
+    SYSLOG(ERROR)
+        << "Chrome browser cloud management client ID should not"
+           " contain a space, new line, or any nonprintable character.";
+    client_id_.clear();
+    return;
+  }
 
   enrollment_token_ = delegate_->InitEnrollmentToken();
   DVLOG(1) << "Enrollment token = " << enrollment_token_;

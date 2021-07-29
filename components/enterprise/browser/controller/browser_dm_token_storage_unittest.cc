@@ -21,6 +21,10 @@ namespace {
 
 constexpr char kClientId1[] = "fake-client-id-1";
 constexpr char kClientId2[] = "fake-client-id-2";
+// client id with more than 64 characters (this has 65)
+constexpr char kClientIdTooLong[] =
+    "r9ilXvBi0pXagvaAAGFexok99FJ0Kjkzz4Yu6YmkxyIJDn6uxDgTGTNSdBfpjJZPI";
+
 constexpr char kEnrollmentToken1[] = "fake-enrollment-token-1";
 constexpr char kEnrollmentToken2[] = "fake-enrollment-token-2";
 constexpr char kDMToken1[] = "fake-dm-token-1";
@@ -182,6 +186,21 @@ TEST_F(BrowserDMTokenStorageTest, SetDelegate) {
   EXPECT_EQ(storage_.RetrieveEnrollmentToken(), kEnrollmentToken1);
   EXPECT_EQ(storage_.RetrieveDMToken().value(), kDMToken1);
   EXPECT_EQ(storage_.ShouldDisplayErrorMessageOnFailure(), false);
+}
+
+TEST_F(BrowserDMTokenStorageTest, InvalidClientId) {
+  FakeBrowserDMTokenStorage newStorage;
+  newStorage.SetClientId("id with spaces");
+  EXPECT_EQ(newStorage.RetrieveClientId(), "");
+
+  newStorage.SetClientId("id-invalid\n");
+  EXPECT_EQ(newStorage.RetrieveClientId(), "");
+}
+
+TEST_F(BrowserDMTokenStorageTest, ClientIdTooLong) {
+  FakeBrowserDMTokenStorage newStorage;
+  newStorage.SetClientId(kClientIdTooLong);
+  EXPECT_EQ(newStorage.RetrieveClientId(), "");
 }
 
 }  // namespace policy
