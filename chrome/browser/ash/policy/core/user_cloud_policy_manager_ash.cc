@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 
 #include <memory>
 #include <set>
@@ -88,7 +88,7 @@ const char kUMAReregistrationResult[] =
     "Enterprise.UserPolicyChromeOS.ReregistrationResult";
 
 // The oauth token consumer name.
-const char kOAuthConsumerName[] = "user_cloud_policy_manager_chromeos";
+const char kOAuthConsumerName[] = "user_cloud_policy_manager_ash";
 
 // This enum is used in UMA, items should not be reordered/deleted. New values
 // should also be added to enums.xml.
@@ -113,32 +113,31 @@ bool IsChildUser(const AccountId& account_id) {
 
 // This class is used to subscribe for notifications that the current profile is
 // being shut down.
-class UserCloudPolicyManagerChromeOSNotifierFactory
+class UserCloudPolicyManagerAshNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
-  static UserCloudPolicyManagerChromeOSNotifierFactory* GetInstance() {
-    return base::Singleton<
-        UserCloudPolicyManagerChromeOSNotifierFactory>::get();
+  static UserCloudPolicyManagerAshNotifierFactory* GetInstance() {
+    return base::Singleton<UserCloudPolicyManagerAshNotifierFactory>::get();
   }
 
  private:
   friend struct base::DefaultSingletonTraits<
-      UserCloudPolicyManagerChromeOSNotifierFactory>;
+      UserCloudPolicyManagerAshNotifierFactory>;
 
-  UserCloudPolicyManagerChromeOSNotifierFactory()
+  UserCloudPolicyManagerAshNotifierFactory()
       : BrowserContextKeyedServiceShutdownNotifierFactory(
             "UserRemoteCommandsInvalidator") {
     DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
   }
 
-  ~UserCloudPolicyManagerChromeOSNotifierFactory() override = default;
+  ~UserCloudPolicyManagerAshNotifierFactory() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerChromeOSNotifierFactory);
+  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerAshNotifierFactory);
 };
 
 }  // namespace
 
-UserCloudPolicyManagerChromeOS::UserCloudPolicyManagerChromeOS(
+UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     Profile* profile,
     std::unique_ptr<CloudPolicyStore> store,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
@@ -181,7 +180,7 @@ UserCloudPolicyManagerChromeOS::UserCloudPolicyManagerChromeOS(
     DCHECK_EQ(enforcement_type_, PolicyEnforcement::kPolicyRequired);
     policy_refresh_timeout_.Start(
         FROM_HERE, policy_refresh_timeout,
-        base::BindOnce(&UserCloudPolicyManagerChromeOS::OnPolicyRefreshTimeout,
+        base::BindOnce(&UserCloudPolicyManagerAsh::OnPolicyRefreshTimeout,
                        base::Unretained(this)));
   }
 
@@ -193,7 +192,7 @@ UserCloudPolicyManagerChromeOS::UserCloudPolicyManagerChromeOS(
   observed_profile_manager_.Observe(g_browser_process->profile_manager());
 }
 
-void UserCloudPolicyManagerChromeOS::ForceTimeoutForTest() {
+void UserCloudPolicyManagerAsh::ForceTimeoutForTest() {
   DCHECK(policy_refresh_timeout_.IsRunning());
   // Stop the timer to mimic what happens when a real timer fires, then invoke
   // the timer callback directly.
@@ -201,19 +200,19 @@ void UserCloudPolicyManagerChromeOS::ForceTimeoutForTest() {
   OnPolicyRefreshTimeout();
 }
 
-void UserCloudPolicyManagerChromeOS::SetSignInURLLoaderFactoryForTests(
+void UserCloudPolicyManagerAsh::SetSignInURLLoaderFactoryForTests(
     scoped_refptr<network::SharedURLLoaderFactory> signin_url_loader_factory) {
   signin_url_loader_factory_for_tests_ = signin_url_loader_factory;
 }
 
-void UserCloudPolicyManagerChromeOS::SetSystemURLLoaderFactoryForTests(
+void UserCloudPolicyManagerAsh::SetSystemURLLoaderFactoryForTests(
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   system_url_loader_factory_for_tests_ = system_url_loader_factory;
 }
 
-UserCloudPolicyManagerChromeOS::~UserCloudPolicyManagerChromeOS() = default;
+UserCloudPolicyManagerAsh::~UserCloudPolicyManagerAsh() = default;
 
-void UserCloudPolicyManagerChromeOS::Connect(
+void UserCloudPolicyManagerAsh::Connect(
     PrefService* local_state,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
@@ -277,7 +276,7 @@ void UserCloudPolicyManagerChromeOS::Connect(
       std::make_unique<ExtensionInstallEventLogUploader>(profile_);
 }
 
-void UserCloudPolicyManagerChromeOS::OnAccessTokenAvailable(
+void UserCloudPolicyManagerAsh::OnAccessTokenAvailable(
     const std::string& access_token) {
   // This method should be called only once (at the beginning of the session)
   // for regular user.
@@ -292,9 +291,8 @@ void UserCloudPolicyManagerChromeOS::OnAccessTokenAvailable(
     // callback after we destroy it.
     wildcard_login_checker_->StartWithAccessToken(
         access_token,
-        base::BindOnce(
-            &UserCloudPolicyManagerChromeOS::OnWildcardCheckCompleted,
-            base::Unretained(this), wildcard_username_));
+        base::BindOnce(&UserCloudPolicyManagerAsh::OnWildcardCheckCompleted,
+                       base::Unretained(this), wildcard_username_));
   }
 
   if (service() && service()->IsInitializationComplete() && client()) {
@@ -308,12 +306,12 @@ void UserCloudPolicyManagerChromeOS::OnAccessTokenAvailable(
   }
 }
 
-bool UserCloudPolicyManagerChromeOS::RequiresOAuthTokenForChildUser() const {
+bool UserCloudPolicyManagerAsh::RequiresOAuthTokenForChildUser() const {
   return IsChildUser(account_id_) &&
          base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
 }
 
-void UserCloudPolicyManagerChromeOS::OnWildcardCheckCompleted(
+void UserCloudPolicyManagerAsh::OnWildcardCheckCompleted(
     const std::string& username,
     WildcardLoginChecker::Result result) {
   if (result == WildcardLoginChecker::RESULT_BLOCKED) {
@@ -331,23 +329,23 @@ void UserCloudPolicyManagerChromeOS::OnWildcardCheckCompleted(
   }
 }
 
-void UserCloudPolicyManagerChromeOS::EnableWildcardLoginCheck(
+void UserCloudPolicyManagerAsh::EnableWildcardLoginCheck(
     const std::string& username) {
   DCHECK(access_token_.empty());
   wildcard_username_ = username;
 }
 
 ArcAppInstallEventLogUploader*
-UserCloudPolicyManagerChromeOS::GetAppInstallEventLogUploader() {
+UserCloudPolicyManagerAsh::GetAppInstallEventLogUploader() {
   return app_install_event_log_uploader_.get();
 }
 
 ExtensionInstallEventLogUploader*
-UserCloudPolicyManagerChromeOS::GetExtensionInstallEventLogUploader() {
+UserCloudPolicyManagerAsh::GetExtensionInstallEventLogUploader() {
   return extension_install_event_log_uploader_.get();
 }
 
-void UserCloudPolicyManagerChromeOS::Shutdown() {
+void UserCloudPolicyManagerAsh::Shutdown() {
   observed_profile_manager_.Reset();
   app_install_event_log_uploader_.reset();
   extension_install_event_log_uploader_.reset();
@@ -361,7 +359,7 @@ void UserCloudPolicyManagerChromeOS::Shutdown() {
   CloudPolicyManager::Shutdown();
 }
 
-bool UserCloudPolicyManagerChromeOS::IsInitializationComplete(
+bool UserCloudPolicyManagerAsh::IsInitializationComplete(
     PolicyDomain domain) const {
   if (!CloudPolicyManager::IsInitializationComplete(domain))
     return false;
@@ -370,8 +368,7 @@ bool UserCloudPolicyManagerChromeOS::IsInitializationComplete(
   return true;
 }
 
-void UserCloudPolicyManagerChromeOS::
-    OnCloudPolicyServiceInitializationCompleted() {
+void UserCloudPolicyManagerAsh::OnCloudPolicyServiceInitializationCompleted() {
   service()->RemoveObserver(this);
 
   time_init_completed_ = base::Time::Now();
@@ -415,13 +412,12 @@ void UserCloudPolicyManagerChromeOS::
   StartReportSchedulerIfReady(true /* enable_delayed_creation */);
 }
 
-void UserCloudPolicyManagerChromeOS::OnPolicyFetched(
-    CloudPolicyClient* client) {
+void UserCloudPolicyManagerAsh::OnPolicyFetched(CloudPolicyClient* client) {
   // No action required. If we're blocked on a policy fetch, we'll learn about
   // completion of it through OnInitialPolicyFetchComplete().
 }
 
-void UserCloudPolicyManagerChromeOS::OnRegistrationStateChanged(
+void UserCloudPolicyManagerAsh::OnRegistrationStateChanged(
     CloudPolicyClient* cloud_policy_client) {
   DCHECK_EQ(client(), cloud_policy_client);
 
@@ -455,7 +451,7 @@ void UserCloudPolicyManagerChromeOS::OnRegistrationStateChanged(
     // If we're blocked on the policy fetch, now is a good time to issue it.
     if (client()->is_registered()) {
       service()->RefreshPolicy(base::BindOnce(
-          &UserCloudPolicyManagerChromeOS::OnInitialPolicyFetchComplete,
+          &UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete,
           base::Unretained(this)));
     } else {
       // If the client has switched to not registered, we bail out as this
@@ -465,7 +461,7 @@ void UserCloudPolicyManagerChromeOS::OnRegistrationStateChanged(
   }
 }
 
-void UserCloudPolicyManagerChromeOS::OnClientError(
+void UserCloudPolicyManagerAsh::OnClientError(
     CloudPolicyClient* cloud_policy_client) {
   DCHECK_EQ(client(), cloud_policy_client);
   if (waiting_for_policy_fetch_) {
@@ -500,12 +496,12 @@ void UserCloudPolicyManagerChromeOS::OnClientError(
   }
 }
 
-void UserCloudPolicyManagerChromeOS::OnComponentCloudPolicyUpdated() {
+void UserCloudPolicyManagerAsh::OnComponentCloudPolicyUpdated() {
   CloudPolicyManager::OnComponentCloudPolicyUpdated();
   StartRefreshSchedulerIfReady();
 }
 
-void UserCloudPolicyManagerChromeOS::OnUserProfileLoaded(
+void UserCloudPolicyManagerAsh::OnUserProfileLoaded(
     const AccountId& account_id) {
   if (!user_manager::UserManager::Get())
     return;
@@ -521,7 +517,7 @@ void UserCloudPolicyManagerChromeOS::OnUserProfileLoaded(
   StartReportSchedulerIfReady(false /* enable_delayed_creation */);
 }
 
-void UserCloudPolicyManagerChromeOS::OnStoreLoaded(
+void UserCloudPolicyManagerAsh::OnStoreLoaded(
     CloudPolicyStore* cloud_policy_store) {
   CloudPolicyManager::OnStoreLoaded(cloud_policy_store);
 
@@ -546,7 +542,7 @@ void UserCloudPolicyManagerChromeOS::OnStoreLoaded(
   }
 }
 
-void UserCloudPolicyManagerChromeOS::SetPolicyRequired(bool policy_required) {
+void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
   auto* user_manager = ash::ChromeUserManager::Get();
   user_manager::known_user::SetProfileRequiresPolicy(
       account_id_,
@@ -572,7 +568,7 @@ void UserCloudPolicyManagerChromeOS::SetPolicyRequired(bool policy_required) {
   }
 }
 
-void UserCloudPolicyManagerChromeOS::GetChromePolicy(PolicyMap* policy_map) {
+void UserCloudPolicyManagerAsh::GetChromePolicy(PolicyMap* policy_map) {
   CloudPolicyManager::GetChromePolicy(policy_map);
 
   // If the store has a verified policy blob received from the server then apply
@@ -588,7 +584,7 @@ void UserCloudPolicyManagerChromeOS::GetChromePolicy(PolicyMap* policy_map) {
   SetEnterpriseUsersDefaults(policy_map);
 }
 
-void UserCloudPolicyManagerChromeOS::FetchPolicyOAuthToken() {
+void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
   // By-pass token fetching for test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kDisableGaiaServices)) {
@@ -618,9 +614,8 @@ void UserCloudPolicyManagerChromeOS::FetchPolicyOAuthToken() {
         PolicyOAuth2TokenFetcher::CreateInstance(kOAuthConsumerName);
     token_fetcher_->StartWithRefreshToken(
         refresh_token, system_url_loader_factory,
-        base::BindOnce(
-            &UserCloudPolicyManagerChromeOS::OnOAuth2PolicyTokenFetched,
-            base::Unretained(this)));
+        base::BindOnce(&UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched,
+                       base::Unretained(this)));
     return;
   }
 
@@ -637,7 +632,7 @@ void UserCloudPolicyManagerChromeOS::FetchPolicyOAuthToken() {
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 }
 
-void UserCloudPolicyManagerChromeOS::OnOAuth2PolicyTokenFetched(
+void UserCloudPolicyManagerAsh::OnOAuth2PolicyTokenFetched(
     const std::string& policy_token,
     const GoogleServiceAuthError& error) {
   DCHECK(!client()->is_registered());
@@ -681,8 +676,7 @@ void UserCloudPolicyManagerChromeOS::OnOAuth2PolicyTokenFetched(
   token_fetcher_.reset();
 }
 
-void UserCloudPolicyManagerChromeOS::OnInitialPolicyFetchComplete(
-    bool success) {
+void UserCloudPolicyManagerAsh::OnInitialPolicyFetchComplete(bool success) {
   const base::Time now = base::Time::Now();
   UMA_HISTOGRAM_MEDIUM_TIMES(kUMAInitialFetchDelayPolicyFetch,
                              now - time_client_registered_);
@@ -696,14 +690,14 @@ void UserCloudPolicyManagerChromeOS::OnInitialPolicyFetchComplete(
           ", store status: " + base::NumberToString(store()->status()));
 }
 
-void UserCloudPolicyManagerChromeOS::OnPolicyRefreshTimeout() {
+void UserCloudPolicyManagerAsh::OnPolicyRefreshTimeout() {
   DCHECK(waiting_for_policy_fetch_);
   LOG(WARNING) << "Timed out while waiting for the policy refresh. "
                << "The session will start with the cached policy.";
   CancelWaitForPolicyFetch(false, "policy refresh timeout");
 }
 
-void UserCloudPolicyManagerChromeOS::CancelWaitForPolicyFetch(
+void UserCloudPolicyManagerAsh::CancelWaitForPolicyFetch(
     bool success,
     const std::string& failure_reason) {
   if (!waiting_for_policy_fetch_)
@@ -735,7 +729,7 @@ void UserCloudPolicyManagerChromeOS::CancelWaitForPolicyFetch(
   StartRefreshSchedulerIfReady();
 }
 
-void UserCloudPolicyManagerChromeOS::StartRefreshSchedulerIfReady() {
+void UserCloudPolicyManagerAsh::StartRefreshSchedulerIfReady() {
   if (core()->refresh_scheduler())
     return;  // Already started.
 
@@ -763,7 +757,7 @@ void UserCloudPolicyManagerChromeOS::StartRefreshSchedulerIfReady() {
                                 policy_prefs::kUserPolicyRefreshRate);
 }
 
-void UserCloudPolicyManagerChromeOS::StartReportSchedulerIfReady(
+void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
     bool enable_delayed_creation) {
   if (!client() || !client()->is_registered())
     return;
@@ -801,7 +795,7 @@ void UserCloudPolicyManagerChromeOS::StartReportSchedulerIfReady(
   report_scheduler_->OnDMTokenUpdated();
 }
 
-void UserCloudPolicyManagerChromeOS::OnProfileAdded(Profile* profile) {
+void UserCloudPolicyManagerAsh::OnProfileAdded(Profile* profile) {
   if (profile != profile_)
     return;
 
@@ -825,21 +819,21 @@ void UserCloudPolicyManagerChromeOS::OnProfileAdded(Profile* profile) {
           policy::kPolicyFCMInvalidationSenderID));
 
   shutdown_subscription_ =
-      UserCloudPolicyManagerChromeOSNotifierFactory::GetInstance()
+      UserCloudPolicyManagerAshNotifierFactory::GetInstance()
           ->Get(profile_)
-          ->Subscribe(base::BindRepeating(
-              &UserCloudPolicyManagerChromeOS::ProfileShutdown,
-              base::Unretained(this)));
+          ->Subscribe(
+              base::BindRepeating(&UserCloudPolicyManagerAsh::ProfileShutdown,
+                                  base::Unretained(this)));
 }
 
-void UserCloudPolicyManagerChromeOS::ProfileShutdown() {
+void UserCloudPolicyManagerAsh::ProfileShutdown() {
   // Unregister the RemoteCommandsInvalidatorImpl from the InvalidatorRegistrar.
   invalidator_->Shutdown();
   invalidator_.reset();
   shutdown_subscription_ = {};
 }
 
-void UserCloudPolicyManagerChromeOS::SetUserContextRefreshTokenForTests(
+void UserCloudPolicyManagerAsh::SetUserContextRefreshTokenForTests(
     const std::string& refresh_token) {
   DCHECK(!refresh_token.empty());
   DCHECK(!user_context_refresh_token_for_tests_);
@@ -847,7 +841,7 @@ void UserCloudPolicyManagerChromeOS::SetUserContextRefreshTokenForTests(
 }
 
 enterprise_reporting::ReportScheduler*
-UserCloudPolicyManagerChromeOS::GetReportSchedulerForTesting() {
+UserCloudPolicyManagerAsh::GetReportSchedulerForTesting() {
   return report_scheduler_.get();
 }
 

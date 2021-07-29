@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_handler.h"
@@ -46,8 +46,8 @@ std::string GetPasswordChangeUrl(Profile* profile) {
         switches::kSamlPasswordChangeUrl);
   }
 
-  const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  const policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (user_cloud_policy_manager) {
     const enterprise_management::PolicyData* policy =
         user_cloud_policy_manager->core()->store()->policy();

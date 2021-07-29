@@ -178,7 +178,7 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_policy_manager_builder_chromeos.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -596,10 +596,10 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
 
   policy::CreateConfigurationPolicyProvider(
       this, force_immediate_policy_load, io_task_runner_,
-      &user_cloud_policy_manager_chromeos_, &active_directory_policy_manager_);
+      &user_cloud_policy_manager_ash_, &active_directory_policy_manager_);
 
   user_cloud_policy_manager = nullptr;
-  policy_provider = GetUserCloudPolicyManagerChromeOS();
+  policy_provider = GetUserCloudPolicyManagerAsh();
   if (!policy_provider) {
     policy_provider = GetActiveDirectoryPolicyManager();
   }
@@ -1197,9 +1197,8 @@ policy::SchemaRegistryService* ProfileImpl::GetPolicySchemaRegistryService() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-policy::UserCloudPolicyManagerChromeOS*
-ProfileImpl::GetUserCloudPolicyManagerChromeOS() {
-  return user_cloud_policy_manager_chromeos_.get();
+policy::UserCloudPolicyManagerAsh* ProfileImpl::GetUserCloudPolicyManagerAsh() {
+  return user_cloud_policy_manager_ash_.get();
 }
 
 policy::ActiveDirectoryPolicyManager*
@@ -1215,8 +1214,8 @@ policy::UserCloudPolicyManager* ProfileImpl::GetUserCloudPolicyManager() {
 policy::ConfigurationPolicyProvider*
 ProfileImpl::configuration_policy_provider() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (user_cloud_policy_manager_chromeos_)
-    return user_cloud_policy_manager_chromeos_.get();
+  if (user_cloud_policy_manager_ash_)
+    return user_cloud_policy_manager_ash_.get();
   if (active_directory_policy_manager_)
     return active_directory_policy_manager_.get();
   return nullptr;

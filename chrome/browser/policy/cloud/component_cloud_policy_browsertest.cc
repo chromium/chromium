@@ -42,7 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -178,8 +178,8 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     connector->ScheduleServiceInitialization(0);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    UserCloudPolicyManagerChromeOS* policy_manager =
-        browser()->profile()->GetUserCloudPolicyManagerChromeOS();
+    UserCloudPolicyManagerAsh* policy_manager =
+        browser()->profile()->GetUserCloudPolicyManagerAsh();
     ASSERT_TRUE(policy_manager);
 #else
     // Mock a signed-in user. This is used by the UserCloudPolicyStore to pass

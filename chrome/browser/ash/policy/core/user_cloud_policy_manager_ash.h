@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_ASH_H_
 
 #include <memory>
 #include <string>
@@ -54,8 +54,8 @@ class ExtensionInstallEventLogUploader;
 class PolicyOAuth2TokenFetcher;
 class RemoteCommandsInvalidator;
 
-// Implements logic for initializing user policy on Chrome OS.
-class UserCloudPolicyManagerChromeOS
+// Implements logic for initializing user policy on Ash.
+class UserCloudPolicyManagerAsh
     : public CloudPolicyManager,
       public CloudPolicyClient::Observer,
       public CloudPolicyService::Observer,
@@ -101,7 +101,7 @@ class UserCloudPolicyManagerChromeOS
   //
   // |account_id| is the AccountId associated with the user's session.
   // |task_runner| is the runner for policy refresh tasks.
-  UserCloudPolicyManagerChromeOS(
+  UserCloudPolicyManagerAsh(
       Profile* profile,
       std::unique_ptr<CloudPolicyStore> store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
@@ -111,7 +111,7 @@ class UserCloudPolicyManagerChromeOS
       base::OnceClosure fatal_error_callback,
       const AccountId& account_id,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
-  ~UserCloudPolicyManagerChromeOS() override;
+  ~UserCloudPolicyManagerAsh() override;
 
   // Initializes the cloud connection. |local_state| and
   // |device_management_service| must stay valid until this object is deleted.
@@ -343,9 +343,9 @@ class UserCloudPolicyManagerChromeOS
   // to load policy with error |DM_STATUS_SERVICE_DEVICE_NOT_FOUND|.
   bool is_in_reregistration_state_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerAsh);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_CORE_USER_CLOUD_POLICY_MANAGER_ASH_H_

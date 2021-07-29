@@ -12,7 +12,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -39,7 +39,7 @@ const net::BackoffEntry::Policy
 constexpr char UserCloudPolicyTokenForwarder::kUMAChildUserOAuthTokenError[];
 
 UserCloudPolicyTokenForwarder::UserCloudPolicyTokenForwarder(
-    UserCloudPolicyManagerChromeOS* manager,
+    UserCloudPolicyManagerAsh* manager,
     signin::IdentityManager* identity_manager)
     : manager_(manager),
       identity_manager_(identity_manager),
@@ -150,7 +150,7 @@ void UserCloudPolicyTokenForwarder::OnAccessTokenFetchCompleted(
                             GoogleServiceAuthError::NUM_STATES);
 
   // Schedule fetching fresh OAuth token after current token expiration, if
-  // UserCloudPolicyManagerChromeOS needs valid OAuth token all the time.
+  // UserCloudPolicyManagerAsh needs valid OAuth token all the time.
   access_token_fetcher_.reset();
   // Retry after delay, if token request fails or the new token is expired.
   const base::Time now = clock_->Now();

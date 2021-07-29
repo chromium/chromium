@@ -22,7 +22,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -261,8 +261,8 @@ void PowerPolicyBrowserTestBase::RunClosureAndWaitForUserPolicyUpdate(
 }
 
 void PowerPolicyBrowserTestBase::ReloadUserPolicy(Profile* profile) {
-  UserCloudPolicyManagerChromeOS* policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  UserCloudPolicyManagerAsh* policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   ASSERT_TRUE(policy_manager);
   policy_manager->core()->store()->Load();
 }

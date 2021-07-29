@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -45,8 +45,8 @@ void UserPolicyTestHelper::WaitForInitialPolicy(Profile* profile) {
       g_browser_process->browser_policy_connector();
   connector->ScheduleServiceInitialization(0);
 
-  UserCloudPolicyManagerChromeOS* const policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  UserCloudPolicyManagerAsh* const policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   DCHECK(!policy_manager->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
   // Give a bogus OAuth token to the |policy_manager|. This should make its

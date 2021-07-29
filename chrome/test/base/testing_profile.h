@@ -61,7 +61,7 @@ class PolicyService;
 class ProfilePolicyConnector;
 class SchemaRegistryService;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 #else
 class UserCloudPolicyManager;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -151,8 +151,8 @@ class TestingProfile : public Profile {
     void SetSupervisedUserId(const std::string& supervised_user_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    void SetUserCloudPolicyManagerChromeOS(
-        std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+    void SetUserCloudPolicyManagerAsh(
+        std::unique_ptr<policy::UserCloudPolicyManagerAsh>
             user_cloud_policy_manager);
 #else
     void SetUserCloudPolicyManager(
@@ -196,7 +196,7 @@ class TestingProfile : public Profile {
     bool is_new_profile_ = false;
     std::string supervised_user_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager_;
 #else
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
@@ -235,7 +235,7 @@ class TestingProfile : public Profile {
       bool is_new_profile,
       const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
+      std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
       std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -348,8 +348,7 @@ class TestingProfile : public Profile {
   ProfileKey* GetProfileKey() const override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManagerChromeOS* GetUserCloudPolicyManagerChromeOS()
-      override;
+  policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
   policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
       override;
 #else
@@ -484,8 +483,7 @@ class TestingProfile : public Profile {
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
-      user_cloud_policy_manager_;
+  std::unique_ptr<policy::UserCloudPolicyManagerAsh> user_cloud_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

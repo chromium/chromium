@@ -19,7 +19,7 @@ class BrowserContext;
 namespace policy {
 class CloudPolicyClient;
 class StatusUploader;
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 }  // namespace policy
 
 namespace ash {
@@ -64,7 +64,7 @@ class ChildStatusReportingService : public KeyedService {
 
   content::BrowserContext* const context_;
 
-  policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager_;
+  policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager_;
 };
 
 }  // namespace ash

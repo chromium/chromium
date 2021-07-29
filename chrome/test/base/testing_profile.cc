@@ -130,7 +130,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/net/delay_network_call.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -224,7 +224,7 @@ TestingProfile::TestingProfile(
     bool is_new_profile,
     const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS> policy_manager,
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
     std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -868,8 +868,8 @@ TestingProfile::GetPolicySchemaRegistryService() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-policy::UserCloudPolicyManagerChromeOS*
-TestingProfile::GetUserCloudPolicyManagerChromeOS() {
+policy::UserCloudPolicyManagerAsh*
+TestingProfile::GetUserCloudPolicyManagerAsh() {
   return user_cloud_policy_manager_.get();
 }
 
@@ -1038,8 +1038,8 @@ void TestingProfile::Builder::SetSupervisedUserId(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void TestingProfile::Builder::SetUserCloudPolicyManagerChromeOS(
-    std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
+void TestingProfile::Builder::SetUserCloudPolicyManagerAsh(
+    std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager) {
   user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
 }

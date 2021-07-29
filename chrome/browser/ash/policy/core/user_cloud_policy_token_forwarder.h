@@ -31,13 +31,13 @@ class PrimaryAccountAccessTokenFetcher;
 
 namespace policy {
 
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 
 // A PKS that observes an IdentityManager and mints the policy access
-// token for the UserCloudPolicyManagerChromeOS. First token is fetched when the
+// token for the UserCloudPolicyManagerAsh. First token is fetched when the
 // token service becomes ready. After that if needed a new token is fetched when
 // the previous one is expected to expire. This service decouples the
-// UserCloudPolicyManagerChromeOS from depending directly on the
+// UserCloudPolicyManagerAsh from depending directly on the
 // IdentityManager, since it is initialized much earlier.
 class UserCloudPolicyTokenForwarder : public KeyedService,
                                       public CloudPolicyService::Observer {
@@ -53,7 +53,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   // The factory of this PKS depends on the factories of these two arguments,
   // so this object will be Shutdown() first and these pointers can be used
   // until that point.
-  UserCloudPolicyTokenForwarder(UserCloudPolicyManagerChromeOS* manager,
+  UserCloudPolicyTokenForwarder(UserCloudPolicyManagerAsh* manager,
                                 signin::IdentityManager* identity_manager);
   ~UserCloudPolicyTokenForwarder() override;
 
@@ -84,7 +84,7 @@ class UserCloudPolicyTokenForwarder : public KeyedService,
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo token_info);
 
-  UserCloudPolicyManagerChromeOS* manager_;
+  UserCloudPolicyManagerAsh* manager_;
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;

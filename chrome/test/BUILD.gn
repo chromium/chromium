@@ -3292,7 +3292,7 @@ if (!is_android) {
         "../browser/ash/policy/core/device_local_account_browsertest.cc",
         "../browser/ash/policy/core/device_policy_cros_browser_test.cc",
         "../browser/ash/policy/core/device_policy_cros_browser_test.h",
-        "../browser/ash/policy/core/user_cloud_policy_manager_chromeos_browsertest.cc",
+        "../browser/ash/policy/core/user_cloud_policy_manager_ash_browsertest.cc",
         "../browser/ash/policy/display/device_display_cros_browser_test.cc",
         "../browser/ash/policy/display/device_display_cros_browser_test.h",
         "../browser/ash/policy/display/display_resolution_handler_browsertest.cc",

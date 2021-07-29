@@ -140,8 +140,7 @@ class ProfileImpl : public Profile {
   PrefService* GetReadOnlyOffTheRecordPrefs() override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManagerChromeOS* GetUserCloudPolicyManagerChromeOS()
-      override;
+  policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
   policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
       override;
 #else
@@ -255,7 +254,7 @@ class ProfileImpl : public Profile {
   // - |profile_policy_connector_| depends on configuration_policy_provider(),
   //   which can be:
   //     - |user_cloud_policy_manager_|;
-  //     - |user_cloud_policy_manager_chromeos_|;
+  //     - |user_cloud_policy_manager_ash_|;
   //     - or |active_directory_policy_manager_|.
   // - configuration_policy_provider() depends on |schema_registry_service_|
 
@@ -264,8 +263,8 @@ class ProfileImpl : public Profile {
   // configuration_policy_provider() is either of these, or nullptr in some
   // tests.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
-      user_cloud_policy_manager_chromeos_;
+  std::unique_ptr<policy::UserCloudPolicyManagerAsh>
+      user_cloud_policy_manager_ash_;
   std::unique_ptr<policy::ActiveDirectoryPolicyManager>
       active_directory_policy_manager_;
 #else

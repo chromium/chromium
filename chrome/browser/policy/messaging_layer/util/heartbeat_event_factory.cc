@@ -9,7 +9,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
@@ -32,8 +32,8 @@ KeyedService* HeartbeatEventFactory::BuildServiceInstanceFor(
   Profile* profile = static_cast<Profile*>(context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManagerChromeOS* manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  policy::UserCloudPolicyManagerAsh* manager =
+      profile->GetUserCloudPolicyManagerAsh();
 #else
   policy::UserCloudPolicyManager* manager =
       profile->GetUserCloudPolicyManager();

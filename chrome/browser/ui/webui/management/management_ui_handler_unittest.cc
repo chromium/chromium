@@ -46,7 +46,7 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ash/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
@@ -537,8 +537,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFatalError() { DCHECK(false); }
 
-  std::unique_ptr<policy::UserCloudPolicyManagerChromeOS>
-  BuildCloudPolicyManager() {
+  std::unique_ptr<policy::UserCloudPolicyManagerAsh> BuildCloudPolicyManager() {
     auto store = std::make_unique<policy::MockCloudPolicyStore>();
     EXPECT_CALL(*store, Load()).Times(AnyNumber());
 
@@ -553,11 +552,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         std::make_unique<policy::MockCloudExternalDataManager>();
     EXPECT_CALL(*data_manager, Disconnect());
 
-    return std::make_unique<policy::UserCloudPolicyManagerChromeOS>(
+    return std::make_unique<policy::UserCloudPolicyManagerAsh>(
         managed_user.get(), std::move(store), std::move(data_manager),
         base::FilePath() /* component_policy_cache_path */,
-        policy::UserCloudPolicyManagerChromeOS::PolicyEnforcement::
-            kPolicyRequired,
+        policy::UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,
         base::TimeDelta::FromMinutes(1) /* policy_refresh_timeout */,
         base::BindOnce(&ManagementUIHandlerTests::OnFatalError,
                        base::Unretained(this)),
@@ -1397,16 +1395,15 @@ TEST_F(ManagementUIHandlerTests, GetAccountManager) {
       std::make_unique<TestingProfileManager>(
           TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager->SetUp());
-  builder_managed_user.SetUserCloudPolicyManagerChromeOS(
-      BuildCloudPolicyManager());
+  builder_managed_user.SetUserCloudPolicyManagerAsh(BuildCloudPolicyManager());
 #else
   builder_managed_user.SetUserCloudPolicyManager(BuildCloudPolicyManager());
 #endif
   auto managed_user = builder_managed_user.Build();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManagerChromeOS* policy_manager =
-      managed_user->GetUserCloudPolicyManagerChromeOS();
+  policy::UserCloudPolicyManagerAsh* policy_manager =
+      managed_user->GetUserCloudPolicyManagerAsh();
   policy::MockCloudPolicyStore* mock_store =
       static_cast<policy::MockCloudPolicyStore*>(
           policy_manager->core()->store());

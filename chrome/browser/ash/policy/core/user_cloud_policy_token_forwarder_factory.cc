@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/user_cloud_policy_token_forwarder_factory.h"
 
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_token_forwarder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -31,8 +31,7 @@ UserCloudPolicyTokenForwarderFactory::~UserCloudPolicyTokenForwarderFactory() {}
 KeyedService* UserCloudPolicyTokenForwarderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  UserCloudPolicyManagerChromeOS* manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  UserCloudPolicyManagerAsh* manager = profile->GetUserCloudPolicyManagerAsh();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!manager || !identity_manager)

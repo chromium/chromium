@@ -23,7 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -48,7 +48,7 @@ std::string GetManagedBy(const policy::CloudPolicyManager* manager) {
 
 const policy::CloudPolicyManager* GetUserCloudPolicyManager(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return profile->GetUserCloudPolicyManagerChromeOS();
+  return profile->GetUserCloudPolicyManagerAsh();
 #else
   return profile->GetUserCloudPolicyManager();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

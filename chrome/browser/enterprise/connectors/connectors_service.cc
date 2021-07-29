@@ -45,7 +45,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #endif
 
 namespace enterprise_connectors {
@@ -57,7 +57,7 @@ const enterprise_management::PolicyData* GetProfilePolicyData(
   DCHECK(profile);
   auto* manager =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      profile->GetUserCloudPolicyManagerChromeOS();
+      profile->GetUserCloudPolicyManagerAsh();
 #else
       profile->GetUserCloudPolicyManager();
 #endif
@@ -86,7 +86,7 @@ void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
     device_proto->set_dm_token(reporting_settings.dm_token);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string client_id;
-  auto* manager = profile->GetUserCloudPolicyManagerChromeOS();
+  auto* manager = profile->GetUserCloudPolicyManagerAsh();
   if (manager && manager->core() && manager->core()->client())
     client_id = manager->core()->client()->client_id();
 #else

@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -53,8 +53,8 @@ const base::TimeDelta kInconsistentDataErrorRetryDelay =
     base::TimeDelta::FromSeconds(30);
 
 policy::CloudPolicyClient* GetCloudPolicyClientForUser(Profile* profile) {
-  policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  policy::UserCloudPolicyManagerAsh* user_cloud_policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   if (!user_cloud_policy_manager) {
     return nullptr;
   }

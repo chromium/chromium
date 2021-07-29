@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
   user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
                                          profile);
 
-  UserCloudPolicyManagerChromeOS* policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
+  UserCloudPolicyManagerAsh* policy_manager =
+      profile->GetUserCloudPolicyManagerAsh();
   ASSERT_TRUE(policy_manager);
   ProfilePolicyConnector* policy_connector =
       profile->GetProfilePolicyConnector();

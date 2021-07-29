@@ -12,7 +12,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/user_manager/user.h"
@@ -56,7 +56,7 @@ DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
     policy_manager = connector->GetDeviceCloudPolicyManager();
   } else {
     // Policy Manager for User DM Token.
-    policy_manager = profile->GetUserCloudPolicyManagerChromeOS();
+    policy_manager = profile->GetUserCloudPolicyManagerAsh();
   }
 
   if (dm_token.is_empty() && (user->IsAffiliated() || !only_affiliated) &&

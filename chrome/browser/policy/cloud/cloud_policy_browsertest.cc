@@ -60,7 +60,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"  // nogncheck
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
@@ -218,9 +218,8 @@ class CloudPolicyTest : public PlatformBrowserTest,
     connector->ScheduleServiceInitialization(0);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    UserCloudPolicyManagerChromeOS* policy_manager =
-        chrome_test_utils::GetProfile(this)
-            ->GetUserCloudPolicyManagerChromeOS();
+    UserCloudPolicyManagerAsh* policy_manager =
+        chrome_test_utils::GetProfile(this)->GetUserCloudPolicyManagerAsh();
     ASSERT_TRUE(policy_manager);
 #else
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

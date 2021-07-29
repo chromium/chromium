@@ -51,7 +51,7 @@ class UserCloudPolicyManager;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class ActiveDirectoryPolicyManager;
-class UserCloudPolicyManagerChromeOS;
+class UserCloudPolicyManagerAsh;
 #endif
 }  // namespace policy
 
@@ -353,9 +353,8 @@ class Profile : public content::BrowserContext {
   virtual policy::SchemaRegistryService* GetPolicySchemaRegistryService() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Returns the UserCloudPolicyManagerChromeOS.
-  virtual policy::UserCloudPolicyManagerChromeOS*
-  GetUserCloudPolicyManagerChromeOS() = 0;
+  // Returns the UserCloudPolicyManagerAsh.
+  virtual policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() = 0;
 
   // Returns the ActiveDirectoryPolicyManager.
   virtual policy::ActiveDirectoryPolicyManager*

@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -196,8 +196,8 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
 
     profile_ = profile;
     if (profile_) {
-      policy::UserCloudPolicyManagerChromeOS* manager =
-          profile_->GetUserCloudPolicyManagerChromeOS();
+      policy::UserCloudPolicyManagerAsh* manager =
+          profile_->GetUserCloudPolicyManagerAsh();
       if (manager)
         policy_observation_.Observe(manager->core()->store());
     }

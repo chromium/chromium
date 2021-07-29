@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/external_data/user_cloud_external_data_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -49,7 +49,7 @@
 using user_manager::ProfileRequiresPolicy;
 namespace policy {
 
-using PolicyEnforcement = UserCloudPolicyManagerChromeOS::PolicyEnforcement;
+using PolicyEnforcement = UserCloudPolicyManagerAsh::PolicyEnforcement;
 namespace {
 
 // Directory under the profile directory where policy-related resources are
@@ -84,12 +84,12 @@ void CreateConfigurationPolicyProvider(
     Profile* profile,
     bool force_immediate_load,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    std::unique_ptr<UserCloudPolicyManagerChromeOS>*
-        user_cloud_policy_manager_chromeos_out,
+    std::unique_ptr<UserCloudPolicyManagerAsh>*
+        user_cloud_policy_manager_ash_out,
     std::unique_ptr<ActiveDirectoryPolicyManager>*
         active_directory_policy_manager_out) {
   // Clear the two out parameters. Default return will be nullptr for both.
-  *user_cloud_policy_manager_chromeos_out = nullptr;
+  *user_cloud_policy_manager_ash_out = nullptr;
   *active_directory_policy_manager_out = nullptr;
 
   // Don't initialize cloud policy for the signin and the lock screen profile.
@@ -107,13 +107,13 @@ void CreateConfigurationPolicyProvider(
 
   // User policy exists for enterprise accounts:
   // - For regular cloud-managed users (those who have a GAIA account), a
-  //   |UserCloudPolicyManagerChromeOS| is created here.
+  //   |UserCloudPolicyManagerAsh| is created here.
   // - For Active Directory managed users, an |ActiveDirectoryPolicyManager|
   //   is created.
   // - For device-local accounts, policy is provided by
   //   |DeviceLocalAccountPolicyService|.
   // For non-enterprise accounts only for users with type USER_TYPE_CHILD
-  //   |UserCloudPolicyManagerChromeOS| is created here.
+  //   |UserCloudPolicyManagerAsh| is created here.
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
   if (user->GetType() != user_manager::USER_TYPE_CHILD &&
@@ -211,7 +211,7 @@ void CreateConfigurationPolicyProvider(
   //
   // The only exception is if |force_immediate_load| is true, then we can't
   // block at all (loading from network is not allowed - only from cache). In
-  // this case, logic in UserCloudPolicyManagerChromeOS will exit the session
+  // this case, logic in UserCloudPolicyManagerAsh will exit the session
   // if we fail to load policy from our cache.
   const bool block_profile_init_on_policy_refresh =
       (enforcement_type != PolicyEnforcement::kPolicyOptional) &&
@@ -274,8 +274,8 @@ void CreateConfigurationPolicyProvider(
     manager->Init(profile->GetPolicySchemaRegistryService()->registry());
     *active_directory_policy_manager_out = std::move(manager);
   } else {
-    std::unique_ptr<UserCloudPolicyManagerChromeOS> manager =
-        std::make_unique<UserCloudPolicyManagerChromeOS>(
+    std::unique_ptr<UserCloudPolicyManagerAsh> manager =
+        std::make_unique<UserCloudPolicyManagerAsh>(
             profile, std::move(store), std::move(external_data_manager),
             component_policy_cache_dir, enforcement_type,
             policy_refresh_timeout,
@@ -295,7 +295,7 @@ void CreateConfigurationPolicyProvider(
     manager->Connect(g_browser_process->local_state(),
                      device_management_service,
                      g_browser_process->shared_url_loader_factory());
-    *user_cloud_policy_manager_chromeos_out = std::move(manager);
+    *user_cloud_policy_manager_ash_out = std::move(manager);
   }
 }
 

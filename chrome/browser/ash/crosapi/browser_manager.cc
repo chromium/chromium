@@ -48,7 +48,7 @@
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -813,7 +813,7 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
       Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
       DCHECK(profile);
       policy::CloudPolicyManager* user_cloud_policy_manager =
-          profile->GetUserCloudPolicyManagerChromeOS();
+          profile->GetUserCloudPolicyManagerAsh();
       if (!user_cloud_policy_manager)
         return nullptr;
       return user_cloud_policy_manager->core()->store();
