@@ -18,7 +18,8 @@ AddToReadingListInfobarInteractionHandler::
           InfobarType::kInfobarTypeAddToReadingList,
           std::make_unique<AddToReadingListInfobarBannerInteractionHandler>(
               browser),
-          std::make_unique<ReadingListInfobarModalInteractionHandler>()) {}
+          std::make_unique<ReadingListInfobarModalInteractionHandler>(
+              browser)) {}
 
 AddToReadingListInfobarInteractionHandler::
     ~AddToReadingListInfobarInteractionHandler() = default;

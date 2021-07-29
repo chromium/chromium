@@ -24,6 +24,8 @@ class AddToReadingListInfobarBannerInteractionHandler
 
  private:
   IOSAddToReadingListInfobarDelegate* GetInfobarDelegate(InfoBarIOS* infobar);
+
+  Browser* browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_READING_LIST_ADD_TO_READING_LIST_INFOBAR_BANNER_INTERACTION_HANDLER_H_

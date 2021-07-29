@@ -195,6 +195,8 @@ const base::Feature kIPHNewIncognitoTabTipFeature{
     "IPH_NewIncognitoTabTip", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHBadgedReadingListFeature{
     "IPH_BadgedReadingList", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadingListMessagesFeature{
+    "IPH_ReadingListMessages", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHBadgedTranslateManualTriggerFeature{
     "IPH_BadgedTranslateManualTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDiscoverFeedHeaderFeature{

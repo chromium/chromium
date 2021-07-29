@@ -59,6 +59,8 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* discoverFeedHeaderMenuTipBubblePresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* readingListTipBubblePresenter;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 @property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
@@ -133,6 +135,7 @@ const CGFloat kBubblePresentationDelay = 1;
   [self.bottomToolbarTipBubblePresenter dismissAnimated:NO];
   [self.longPressToolbarTipBubblePresenter dismissAnimated:NO];
   [self.discoverFeedHeaderMenuTipBubblePresenter dismissAnimated:NO];
+  [self.readingListTipBubblePresenter dismissAnimated:NO];
 }
 
 - (void)userEnteredTabSwitcher {
@@ -181,6 +184,32 @@ const CGFloat kBubblePresentationDelay = 1;
     return;
 
   self.discoverFeedHeaderMenuTipBubblePresenter = presenter;
+}
+
+- (void)presentReadingListBottomToolbarTipBubble {
+  if (![self canPresentBubble])
+    return;
+
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_IPH);
+  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
+                                           direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the tip, then end early to prevent the potential reassignment of the
+  // existing |bottomToolbarTipBubblePresenter| to nil.
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHReadingListMessagesFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTrailing
+                         text:text
+        voiceOverAnnouncement:l10n_util::GetNSString(
+                                  IDS_IOS_READING_LIST_MESSAGES_IPH)
+                  anchorPoint:toolsMenuAnchor];
+  if (!presenter)
+    return;
+
+  self.readingListTipBubblePresenter = presenter;
 }
 
 #pragma mark - Private

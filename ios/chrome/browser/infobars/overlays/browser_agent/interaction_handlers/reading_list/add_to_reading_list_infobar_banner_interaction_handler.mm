@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,7 +24,8 @@ using reading_list_infobar_overlay::ReadingListBannerRequestConfig;
 AddToReadingListInfobarBannerInteractionHandler::
     AddToReadingListInfobarBannerInteractionHandler(Browser* browser)
     : InfobarBannerInteractionHandler(
-          ReadingListBannerRequestConfig::RequestSupport()) {}
+          ReadingListBannerRequestConfig::RequestSupport()),
+      browser_(browser) {}
 
 AddToReadingListInfobarBannerInteractionHandler::
     ~AddToReadingListInfobarBannerInteractionHandler() = default;
@@ -31,6 +34,8 @@ void AddToReadingListInfobarBannerInteractionHandler::MainButtonTapped(
     InfoBarIOS* infobar) {
   IOSAddToReadingListInfobarDelegate* delegate = GetInfobarDelegate(infobar);
   infobar->set_accepted(delegate->Accept());
+  [static_cast<id<BrowserCommands>>(browser_->GetCommandDispatcher())
+      showReadingListIPH];
 }
 
 #pragma mark - Private

@@ -41,6 +41,9 @@ class ChromeBrowserState;
 // Presents a bubble associated with the Discover feed header's menu button.
 - (void)presentDiscoverFeedHeaderTipBubble;
 
+// Shows a relevant Reading List help bubble, if applicable.
+- (void)presentReadingListBottomToolbarTipBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

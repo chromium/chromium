@@ -4605,6 +4605,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self addURLsToReadingList:command.URLs];
 }
 
+- (void)showReadingListIPH {
+  [self.bubblePresenter presentReadingListBottomToolbarTipBubble];
+}
+
 - (void)preloadVoiceSearch {
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
