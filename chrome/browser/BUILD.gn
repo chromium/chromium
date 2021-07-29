@@ -2012,6 +2012,8 @@ static_library("browser") {
     "//components/contextual_search/content:browser",
     "//components/contextual_search/content/common/mojom",
     "//components/contextual_search/core:browser",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common/public/mojom",
     "//components/cookie_config",
     "//components/country_codes",
     "//components/crash/core/browser",

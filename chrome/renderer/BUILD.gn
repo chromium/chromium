@@ -164,11 +164,13 @@ static_library("renderer") {
     "//components/content_settings/common:mojom",
     "//components/content_settings/renderer",
     "//components/contextual_search/content:renderer",
+    "//components/continuous_search/renderer",
     "//components/data_reduction_proxy/core/common",
     "//components/dom_distiller/content/renderer",
     "//components/feed:buildflags",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
+    "//components/history_clusters/core",
     "//components/network_hints/renderer",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/renderer",
@@ -432,7 +434,6 @@ static_library("renderer") {
       "sandbox_status_extension_android.cc",
       "sandbox_status_extension_android.h",
     ]
-    deps += [ "//components/continuous_search/renderer" ]
   }
 
   if (is_chromeos_ash) {
