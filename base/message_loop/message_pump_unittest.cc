@@ -144,13 +144,7 @@ TEST_P(MessagePumpTest, QuitStopsWorkWithNestedRunLoop) {
   // PostDoWorkExpectations for the first DoWork.
   AddPostDoWorkExpectations(delegate);
 
-  // The outer pump may or may not trigger idle work at this point.
-  // TODO(scheduler-dev): This is unexpected, attempt to remove this legacy
-  // allowance.
-  EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
-
   AddPreDoWorkExpectations(delegate);
-
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
