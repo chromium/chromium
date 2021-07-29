@@ -5311,11 +5311,6 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     SetRendererAndCreateInkRenderer(VizPixelTestWithParam::renderer_.get());
   }
 
-  void EnablePrediction() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDrawPredictedInkPoint, switches::kDraw1Point12Ms);
-  }
-
   std::unique_ptr<AggregatedRenderPass> CreateTestRootRenderPass(
       AggregatedRenderPassId id,
       const gfx::Rect& output_rect,
@@ -5356,14 +5351,58 @@ INSTANTIATE_TEST_SUITE_P(,
                          DelegatedInkTest,
                          testing::ValuesIn(GetRendererTypesSkiaOnly()),
                          testing::PrintToStringParamName());
-
 // GetRendererTypesSkiaOnly() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkTest);
 
+// Test to confirm that predicted points are not drawn if prediction is not
+// enabled, since it is disabled by default.
+TEST_P(DelegatedInkTest, DrawTrailWithPredictionDisabled) {
+  // Send some DelegatedInkPoints, numbers arbitrary. Sending 4 points will
+  // cause prediction to be available.
+  const gfx::PointF kFirstPoint(20, 35);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
+  CreateAndSendPointFromLastPoint(gfx::PointF(56, 92));
+  CreateAndSendPointFromLastPoint(gfx::PointF(101, 145));
+  CreateAndSendPointFromLastPoint(gfx::PointF(106, 170));
+
+  // Provide the metadata required to draw the trail, matching the first
+  // DelegatedInkPoint sent.
+  CreateAndSendMetadata(kFirstPoint, 3.5f, SK_ColorCYAN, kFirstTimestamp,
+                        gfx::RectF(0, 0, 200, 200));
+
+  // Confirm that the trail was drawn without prediction.
+  EXPECT_TRUE(DrawAndTestTrail(
+      FILE_PATH_LITERAL("delegated_ink_trail_no_prediction.png")));
+
+  // The metadata should have been cleared after drawing, so confirm that there
+  // is no trail after another draw.
+  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+}
+
+class DelegatedInkWithPredictionTest : public DelegatedInkTest {
+  void SetUp() override {
+    EnablePrediction();
+    DelegatedInkTest::SetUp();
+  }
+
+  virtual void EnablePrediction() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kDrawPredictedInkPoint, switches::kDraw1Point12Ms);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DelegatedInkWithPredictionTest,
+                         testing::ValuesIn(GetRendererTypesSkiaOnly()),
+                         testing::PrintToStringParamName());
+
+// GetRendererTypesSkiaOnly() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DelegatedInkWithPredictionTest);
+
 // Draw a single trail and erase it, making sure that no bits of trail are left
 // behind.
-TEST_P(DelegatedInkTest, DrawOneTrailAndErase) {
-  EnablePrediction();
+TEST_P(DelegatedInkWithPredictionTest, DrawOneTrailAndErase) {
   // Send some DelegatedInkPoints, numbers arbitrary. This will predict no
   // points, so a trail made of 3 points will be drawn.
   const gfx::PointF kFirstPoint(10, 10);
@@ -5387,8 +5426,7 @@ TEST_P(DelegatedInkTest, DrawOneTrailAndErase) {
 }
 
 // Confirm that drawing a second trail completely removes the first trail.
-TEST_P(DelegatedInkTest, DrawTwoTrailsAndErase) {
-  EnablePrediction();
+TEST_P(DelegatedInkWithPredictionTest, DrawTwoTrailsAndErase) {
   // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
   if (renderer_type() == RendererType::kSkiaDawn)
     return;
@@ -5425,8 +5463,7 @@ TEST_P(DelegatedInkTest, DrawTwoTrailsAndErase) {
 }
 
 // Confirm that the trail can't be drawn beyond the presentation area.
-TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
-  EnablePrediction();
+TEST_P(DelegatedInkWithPredictionTest, TrailExtendsBeyondPresentationArea) {
   // TODO(crbug.com/1021566): Enable this test for SkiaRenderer Dawn.
   if (renderer_type() == RendererType::kSkiaDawn)
     return;
@@ -5456,8 +5493,7 @@ TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
 
 // Confirm that the trail appears on top of everything, including batched quads
 // that are drawn as part of the call to FinishDrawingQuadList.
-TEST_P(DelegatedInkTest, DelegatedInkTrailAfterBatchedQuads) {
-  EnablePrediction();
+TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
   gfx::Rect rect(this->device_viewport_size_);
 
   AggregatedRenderPassId id{1};
@@ -5499,8 +5535,7 @@ TEST_P(DelegatedInkTest, DelegatedInkTrailAfterBatchedQuads) {
 }
 
 // Confirm that delegated ink trails are not drawn on non-root render passes.
-TEST_P(DelegatedInkTest, SimpleTrailNonRootRenderPass) {
-  EnablePrediction();
+TEST_P(DelegatedInkWithPredictionTest, SimpleTrailNonRootRenderPass) {
   gfx::Rect rect(this->device_viewport_size_);
 
   AggregatedRenderPassId child_id{2};
@@ -5548,8 +5583,7 @@ TEST_P(DelegatedInkTest, SimpleTrailNonRootRenderPass) {
 
 // Draw two different trails that are made up of sets of DelegatedInkPoints with
 // different pointer IDs. All numbers arbitrarily chosen.
-TEST_P(DelegatedInkTest, DrawTrailsWithDifferentPointerIds) {
-  EnablePrediction();
+TEST_P(DelegatedInkWithPredictionTest, DrawTrailsWithDifferentPointerIds) {
   const int32_t kPointerId1 = 2;
   const int32_t kPointerId2 = 100;
 
@@ -5597,32 +5631,6 @@ TEST_P(DelegatedInkTest, DrawTrailsWithDifferentPointerIds) {
                         kPointerId2StartTime, kPresentationArea);
   EXPECT_TRUE(
       DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_pointer_id_2.png")));
-
-  // The metadata should have been cleared after drawing, so confirm that there
-  // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
-}
-
-// Test to confirm that predicted points are not drawn if prediction is not
-// enabled, since it is disabled by default.
-TEST_P(DelegatedInkTest, DrawTrailWithPredictionDisabled) {
-  // Send some DelegatedInkPoints, numbers arbitrary. Sending 4 points will
-  // cause prediction to be available.
-  const gfx::PointF kFirstPoint(20, 35);
-  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
-  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
-  CreateAndSendPointFromLastPoint(gfx::PointF(56, 92));
-  CreateAndSendPointFromLastPoint(gfx::PointF(101, 145));
-  CreateAndSendPointFromLastPoint(gfx::PointF(106, 170));
-
-  // Provide the metadata required to draw the trail, matching the first
-  // DelegatedInkPoint sent.
-  CreateAndSendMetadata(kFirstPoint, 3.5f, SK_ColorCYAN, kFirstTimestamp,
-                        gfx::RectF(0, 0, 200, 200));
-
-  // Confirm that the trail was drawn without prediction.
-  EXPECT_TRUE(DrawAndTestTrail(
-      FILE_PATH_LITERAL("delegated_ink_trail_no_prediction.png")));
 
   // The metadata should have been cleared after drawing, so confirm that there
   // is no trail after another draw.
