@@ -5,7 +5,6 @@
 #include "components/history/core/browser/domain_mixing_metrics.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
