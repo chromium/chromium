@@ -11,6 +11,8 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -82,6 +84,29 @@ class FrameReference {
  private:
   blink::WebView* view_;
   blink::WebLocalFrame* frame_;
+};
+
+// Helper to ensure that quit closures for Mojo response are called.
+class ClosuresForMojoResponse
+    : public base::RefCounted<ClosuresForMojoResponse> {
+ public:
+  ClosuresForMojoResponse();
+  ClosuresForMojoResponse(const ClosuresForMojoResponse&) = delete;
+  ClosuresForMojoResponse& operator=(const ClosuresForMojoResponse&) = delete;
+
+  void SetScriptedPrintPreviewQuitClosure(base::OnceClosure quit_print_preview);
+  bool HasScriptedPrintPreviewQuitClosure() const;
+  void RunScriptedPrintPreviewQuitClosure();
+  void SetPrintSettingFromUserQuitClosure(base::OnceClosure quit_print_setting);
+  void RunPrintSettingFromUserQuitClosure();
+
+ private:
+  friend class base::RefCounted<ClosuresForMojoResponse>;
+  ~ClosuresForMojoResponse();
+
+  // Stores quit closures for the runloops that are waiting for Mojo replies.
+  base::OnceClosure scripted_print_preview_quit_closure_;
+  base::OnceClosure get_print_settings_from_user_quit_closure_;
 };
 
 // PrintRenderFrameHelper handles most of the printing grunt work for
@@ -662,9 +687,8 @@ class PrintRenderFrameHelper
   // parameters so that it can be invoked after DidStopLoading.
   base::OnceClosure on_stop_loading_closure_;
 
-  // Stores quit closures for the runloops that are waiting for Mojo replies.
-  base::OnceClosure scripted_print_preview_quit_closure_;
-  base::OnceClosure get_print_settings_from_user_quit_closure_;
+  // Stores the quit closures of Mojo responses.
+  scoped_refptr<ClosuresForMojoResponse> closures_for_mojo_responses_;
 
   bool do_deferred_print_for_system_dialog_ = false;
 

@@ -114,6 +114,8 @@ const char kPageLoadScriptFormat[] =
 
 const char kPageSetupScriptFormat[] = "setupHeaderFooterTemplate(%s);";
 
+constexpr int kAllowedIpcDepthForPrint = 1;
+
 void ExecuteScript(blink::WebLocalFrame* frame,
                    const char* script_format,
                    const base::Value& parameters) {
@@ -637,6 +639,43 @@ blink::WebView* FrameReference::view() {
   return view_;
 }
 
+ClosuresForMojoResponse::ClosuresForMojoResponse() = default;
+
+ClosuresForMojoResponse::~ClosuresForMojoResponse() {
+  RunScriptedPrintPreviewQuitClosure();
+  RunPrintSettingFromUserQuitClosure();
+}
+
+void ClosuresForMojoResponse::SetScriptedPrintPreviewQuitClosure(
+    base::OnceClosure quit_print_preview) {
+  DCHECK(!scripted_print_preview_quit_closure_);
+  scripted_print_preview_quit_closure_ = std::move(quit_print_preview);
+}
+
+bool ClosuresForMojoResponse::HasScriptedPrintPreviewQuitClosure() const {
+  return !scripted_print_preview_quit_closure_.is_null();
+}
+
+void ClosuresForMojoResponse::RunScriptedPrintPreviewQuitClosure() {
+  if (!scripted_print_preview_quit_closure_)
+    return;
+
+  std::move(scripted_print_preview_quit_closure_).Run();
+}
+
+void ClosuresForMojoResponse::SetPrintSettingFromUserQuitClosure(
+    base::OnceClosure quit_print_setting) {
+  DCHECK(!get_print_settings_from_user_quit_closure_);
+  get_print_settings_from_user_quit_closure_ = std::move(quit_print_setting);
+}
+
+void ClosuresForMojoResponse::RunPrintSettingFromUserQuitClosure() {
+  if (!get_print_settings_from_user_quit_closure_)
+    return;
+
+  std::move(get_print_settings_from_user_quit_closure_).Run();
+}
+
 // static
 double PrintRenderFrameHelper::GetScaleFactor(double input_scale_factor,
                                               bool is_pdf) {
@@ -1091,7 +1130,9 @@ PrintRenderFrameHelper::PrintRenderFrameHelper(
     std::unique_ptr<Delegate> delegate)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<PrintRenderFrameHelper>(render_frame),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      closures_for_mojo_responses_(
+          base::MakeRefCounted<ClosuresForMojoResponse>()) {
   if (!delegate_->IsPrintPreviewEnabled())
     DisablePreview();
 
@@ -1211,7 +1252,7 @@ void PrintRenderFrameHelper::BindPrintRenderFrameReceiver(
 
 void PrintRenderFrameHelper::PrintRequestedPages() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > 1)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
@@ -1235,16 +1276,16 @@ void PrintRenderFrameHelper::PrintRequestedPages() {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::PrintForSystemDialog() {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > 1)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
-  if (scripted_print_preview_quit_closure_) {
+  if (closures_for_mojo_responses_->HasScriptedPrintPreviewQuitClosure()) {
     // If an in-progress print preview already created a nested loop, avoid
     // creating yet another nested loop. Instead, quit the current nested loop,
     // and call this method again.
     DCHECK(!do_deferred_print_for_system_dialog_);
     do_deferred_print_for_system_dialog_ = true;
-    std::move(scripted_print_preview_quit_closure_).Run();
+    closures_for_mojo_responses_->RunScriptedPrintPreviewQuitClosure();
     return;
   }
 
@@ -1274,7 +1315,7 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
     mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
     bool has_selection) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > 1)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
   if (print_renderer) {
@@ -1299,7 +1340,7 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
 
 void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > 1)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
   print_preview_context_.OnPrintPreview();
@@ -1359,7 +1400,7 @@ void PrintRenderFrameHelper::PrintFrameContent(
     mojom::PrintFrameContentParamsPtr params,
     PrintFrameContentCallback callback) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > 1)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
 
   // If the last request is not finished yet, do not proceed.
@@ -1432,7 +1473,7 @@ void PrintRenderFrameHelper::PrintFrameContent(
 
 void PrintRenderFrameHelper::PrintingDone(bool success) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  if (ipc_nesting_level_ > 1)
+  if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
   notify_browser_of_print_failure_ = false;
   DidFinishPrinting(success ? OK : FAIL_PRINT);
@@ -2294,7 +2335,8 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
 
   mojom::PrintPagesParamsPtr print_settings;
   base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-  get_print_settings_from_user_quit_closure_ = loop.QuitClosure();
+  closures_for_mojo_responses_->SetPrintSettingFromUserQuitClosure(
+      loop.QuitClosure());
   GetPrintManagerHost()->ScriptedPrint(
       std::move(params),
       base::BindOnce(
@@ -2464,10 +2506,11 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
                            weak_ptr_factory_.GetWeakPtr()));
       }
       base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
-      scripted_print_preview_quit_closure_ = loop.QuitClosure();
+      closures_for_mojo_responses_->SetScriptedPrintPreviewQuitClosure(
+          loop.QuitClosure());
       GetPrintManagerHost()->SetupScriptedPrintPreview(base::BindOnce(
-          &PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop,
-          weak_ptr_factory_.GetWeakPtr()));
+          &ClosuresForMojoResponse::RunScriptedPrintPreviewQuitClosure,
+          closures_for_mojo_responses_));
       loop.Run();
 
       // Check if |this| is still valid.
@@ -2892,13 +2935,11 @@ void PrintRenderFrameHelper::QuitActiveRunLoops() {
 }
 
 void PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop() {
-  if (scripted_print_preview_quit_closure_)
-    std::move(scripted_print_preview_quit_closure_).Run();
+  closures_for_mojo_responses_->RunScriptedPrintPreviewQuitClosure();
 }
 
 void PrintRenderFrameHelper::QuitGetPrintSettingsFromUserRunLoop() {
-  if (get_print_settings_from_user_quit_closure_)
-    std::move(get_print_settings_from_user_quit_closure_).Run();
+  closures_for_mojo_responses_->RunPrintSettingFromUserQuitClosure();
 }
 
 PrintRenderFrameHelper::ScopedIPC::ScopedIPC(
