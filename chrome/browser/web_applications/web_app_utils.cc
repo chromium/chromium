@@ -69,8 +69,11 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 content::BrowserContext* GetBrowserContextForWebApps(
     content::BrowserContext* context) {
   // Use original profile to create only one KeyedService instance.
-  Profile* original_profile =
-      Profile::FromBrowserContext(context)->GetOriginalProfile();
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return nullptr;
+  }
+  Profile* original_profile = profile->GetOriginalProfile();
   return AreWebAppsEnabled(original_profile) ? original_profile : nullptr;
 }
 

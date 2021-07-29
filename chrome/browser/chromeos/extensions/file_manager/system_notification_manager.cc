@@ -13,6 +13,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -26,7 +27,8 @@ SystemNotificationManager::SystemNotificationManager(Profile* profile)
 SystemNotificationManager::~SystemNotificationManager() = default;
 
 bool SystemNotificationManager::DoFilesSwaWindowsExist() {
-  return false;
+  return FindSystemWebAppBrowser(profile_, web_app::SystemAppType::FILE_MANAGER,
+                                 Browser::TYPE_APP) != nullptr;
 }
 
 std::unique_ptr<message_center::Notification>
@@ -318,6 +320,13 @@ void SystemNotificationManager::HandleCopyEvent(
   int progress = 0;
   std::string id =
       base::StrCat({kSwaFileOperationPrefix, base::NumberToString(copy_id)});
+  // Check if we need to remove any progress notification when there
+  // are active SWA windows.
+  if (DoFilesSwaWindowsExist()) {
+    GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                           id);
+    return;
+  }
   // TODO(b/187656842) In legacy Files App this comes from
   // chrome.runtime.getManifest().name FIX.
   std::u16string title =
