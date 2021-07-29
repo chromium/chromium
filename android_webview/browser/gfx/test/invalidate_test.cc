@@ -583,7 +583,8 @@ TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame1) {
 }
 
 // Currently we can't reach 60fps with max pending frames 1.
-TEST_P(InvalidateTest, HighFpsWithMaxFrame2) {
+// Test is failing on Lollipop Phone Tester (crbug.com/1234442).
+TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame2) {
   const bool always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
