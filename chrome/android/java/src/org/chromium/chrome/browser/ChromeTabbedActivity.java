@@ -202,6 +202,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -243,6 +244,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
 
     public static final SettingsLauncher SETTINGS_LAUNCHER = new SettingsLauncherImpl();
+
+    public static final HashSet<String> TABBED_MODE_COMPONENT_NAMES = new HashSet<String>() {
+        {
+            add(ChromeTabbedActivity.class.getName());
+            add(MultiInstanceChromeTabbedActivity.class.getName());
+            add(ChromeTabbedActivity2.class.getName());
+            add(MAIN_LAUNCHER_ACTIVITY_NAME);
+        }
+    };
 
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
@@ -402,18 +412,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             return mLifecycleRegistry;
         }
-    }
-
-    /**
-     * Return whether the passed in component name matches any of the supported tabbed mode
-     * activities.
-     */
-    public static boolean isTabbedModeComponentName(String componentName) {
-        return TextUtils.equals(componentName, ChromeTabbedActivity.class.getName())
-                || TextUtils.equals(
-                        componentName, MultiInstanceChromeTabbedActivity.class.getName())
-                || TextUtils.equals(componentName, ChromeTabbedActivity2.class.getName())
-                || TextUtils.equals(componentName, MAIN_LAUNCHER_ACTIVITY_NAME);
     }
 
     /**
@@ -911,7 +909,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         super.onResumeWithNative();
 
         if (IncognitoUtils.shouldDestroyIncognitoProfileOnStartup(
-                    getTabModelSelector().getCurrentModel().isIncognito())) {
+                    getTabModelSelector().getCurrentModel().isIncognito(),
+                    TABBED_MODE_COMPONENT_NAMES)) {
             Profile.getLastUsedRegularProfile()
                     .getPrimaryOTRProfile(/*createIfNeeded=*/true)
                     .destroyWhenAppropriate();

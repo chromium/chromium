@@ -6,10 +6,9 @@ package org.chromium.chrome.browser;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
+import android.app.ActivityManager.RecentTaskInfo;
 import android.app.Notification;
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,6 +47,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.media.MediaNotificationUma;
@@ -57,7 +57,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
@@ -71,12 +71,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             "com.google.android.apps.chrome.EXTRA_LAUNCH_MODE";
 
     private static final String TAG = "ActivitiyDispatcher";
-
-    // Typically the number of tasks returned by getRecentTasks will be around 3 or less - the
-    // Chrome Launcher Activity, a Tabbed Activity task, and the home screen on older Android
-    // versions. However, theoretically this task list could be unbounded, so limit it to a number
-    // that won't cause Chrome to blow up in degenerate cases.
-    private static final int MAX_NUM_TASKS = 100;
 
     private final Activity mActivity;
     private Intent mIntent;
@@ -486,35 +480,16 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
             if (activity instanceof ChromeTabbedActivity) return true;
         }
         // Slightly slower check for an existing task (One IPC, usually ~2ms).
-        final ActivityManager activityManager =
-                (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
         try {
-            boolean chromeTaskExists = false;
-            // getRecentTasks is deprecated, but still returns your app's tasks, and does so
-            // without needing an extra IPC for each task you want to get the info for. It also
-            // includes some known-safe tasks like the home screen on older Android versions, but
-            // that's fine for this purpose.
-            List<ActivityManager.RecentTaskInfo> tasks =
-                    activityManager.getRecentTasks(MAX_NUM_TASKS, 0);
-            if (tasks != null) {
-                for (ActivityManager.RecentTaskInfo task : tasks) {
-                    // Note that Android documentation lies, and TaskInfo#origActivity does not
-                    // actually return the target of an alias, so we have to explicitly check
-                    // for the target component of the base intent, which will have been set to
-                    // the Activity that launched, in order to make this check more robust.
-                    ComponentName component = task.baseIntent.getComponent();
-                    if (component == null) continue;
-                    if (ChromeTabbedActivity.isTabbedModeComponentName(component.getClassName())) {
-                        return true;
-                    }
-                }
-            }
+            Set<RecentTaskInfo> recentTaskInfos =
+                    AndroidTaskUtils.getRecentTaskInfosMatchingComponentNames(
+                            mActivity, ChromeTabbedActivity.TABBED_MODE_COMPONENT_NAMES);
+            return !recentTaskInfos.isEmpty();
         } catch (SecurityException ex) {
             // If we can't query task status, assume a Chrome task exists so this doesn't
             // mistakenly lead to a Chrome task being removed.
             return true;
         }
-        return false;
     }
 
     /**

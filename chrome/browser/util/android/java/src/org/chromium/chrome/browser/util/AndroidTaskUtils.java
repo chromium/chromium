@@ -7,24 +7,34 @@ package org.chromium.chrome.browser.util;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Deals with Document-related API calls.
  */
 public class AndroidTaskUtils {
     public static final String TAG = "DocumentUtilities";
+
+    // Typically the number of tasks returned by getRecentTasks will be around 3 or less - the
+    // Chrome Launcher Activity, a Tabbed Activity task, and the home screen on older Android
+    // versions. However, theoretically this task list could be unbounded, so limit it to a number
+    // that won't cause Chrome to blow up in degenerate cases.
+    private static final int MAX_NUM_TASKS = 100;
 
     /**
      * Finishes tasks other than the one with the given ID that were started with the given data
@@ -113,5 +123,66 @@ public class AndroidTaskUtils {
             if (resolveInfo == null) return null;
             return resolveInfo.activityInfo.name;
         }
+    }
+
+    /**
+     * Get all recent tasks with component name matching any of the given names.
+     * @param context the Android Context
+     * @param componentsAccepted the set of names accepted
+     * @return all matching recent {@link AppTask} and their respective {@link RecentTaskInfo}
+     */
+    public static Set<Pair<AppTask, RecentTaskInfo>> getRecentAppTasksMatchingComponentNames(
+            Context context, Set<String> componentsAccepted) {
+        HashSet<Pair<AppTask, RecentTaskInfo>> matchingTasks = new HashSet<>();
+
+        ActivityManager manager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (AppTask task : manager.getAppTasks()) {
+            RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+            if (info == null) continue;
+            String componentName = AndroidTaskUtils.getTaskComponentName(task);
+
+            if (componentsAccepted.contains(componentName)) {
+                matchingTasks.add(Pair.create(task, info));
+            }
+        }
+        return matchingTasks;
+    }
+
+    /**
+     * Get all recent tasks infos with component name matching any of the given names.
+     * @param context the Android Context
+     * @param componentsAccepted the set of names accepted
+     * @return all matching {@link RecentTaskInfo}s
+     */
+    public static Set<RecentTaskInfo> getRecentTaskInfosMatchingComponentNames(
+            Context context, Set<String> componentsAccepted) throws SecurityException {
+        HashSet<RecentTaskInfo> matchingInfos = new HashSet<>();
+
+        final ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+
+        // getRecentTasks is deprecated, but still returns your app's tasks, and does so
+        // without needing an extra IPC for each task you want to get the info for. It also
+        // includes some known-safe tasks like the home screen on older Android versions, but
+        // that's fine for this purpose.
+        List<ActivityManager.RecentTaskInfo> tasks =
+                activityManager.getRecentTasks(MAX_NUM_TASKS, 0);
+        if (tasks != null) {
+            for (ActivityManager.RecentTaskInfo task : tasks) {
+                // Note that Android documentation lies, and TaskInfo#origActivity does not
+                // actually return the target of an alias, so we have to explicitly check
+                // for the target component of the base intent, which will have been set to
+                // the Activity that launched, in order to make this check more robust.
+                ComponentName component = task.baseIntent.getComponent();
+                if (component == null) continue;
+                if (componentsAccepted.contains(component.getClassName())
+                        && component.getPackageName().equals(context.getPackageName())) {
+                    matchingInfos.add(task);
+                }
+            }
+        }
+        return matchingInfos;
     }
 }

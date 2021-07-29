@@ -5,13 +5,12 @@
 package org.chromium.chrome.browser.incognito;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -81,22 +80,20 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
 
     private void removeNonVisibleChromeTabbedRecentEntries() {
         Set<Integer> visibleTaskIds = getTaskIdsForVisibleActivities();
+        HashSet<String> componentNames =
+                new HashSet<>(ChromeTabbedActivity.TABBED_MODE_COMPONENT_NAMES);
+        // It is not easily possible to distinguish between tasks sitting on top of
+        // ChromeLauncherActivity, so we treat them all as likely ChromeTabbedActivities and
+        // close them to be on the cautious side of things.
+        componentNames.add(ChromeLauncherActivity.class.getName());
+        Set<Pair<AppTask, RecentTaskInfo>> matchingTasks =
+                AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
+                        ContextUtils.getApplicationContext(), componentNames);
 
-        Context context = ContextUtils.getApplicationContext();
-        ActivityManager manager =
-                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-
-        for (AppTask task : manager.getAppTasks()) {
-            RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
-            if (info == null) continue;
-            String componentName = AndroidTaskUtils.getTaskComponentName(task);
-
-            // It is not easily possible to distinguish between tasks sitting on top of
-            // ChromeLauncherActivity, so we treat them all as likely ChromeTabbedActivities and
-            // close them to be on the cautious side of things.
-            if ((ChromeTabbedActivity.isTabbedModeComponentName(componentName)
-                        || TextUtils.equals(componentName, ChromeLauncherActivity.class.getName()))
-                    && !visibleTaskIds.contains(info.id)) {
+        for (Pair<AppTask, RecentTaskInfo> pair : matchingTasks) {
+            RecentTaskInfo info = pair.second;
+            if (!visibleTaskIds.contains(info.id)) {
+                AppTask task = pair.first;
                 task.finishAndRemoveTask();
             }
         }

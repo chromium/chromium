@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.incognito;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
+import android.app.ActivityManager.RecentTaskInfo;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -15,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,24 +41,17 @@ public class IncognitoUtils {
      */
     @SuppressLint("NewApi")
     public static boolean shouldDestroyIncognitoProfileOnStartup(
-            boolean selectedTabModelIsIncognito) {
+            boolean selectedTabModelIsIncognito, Set<String> componentNames) {
         if (!Profile.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
             return false;
         }
 
-        Context context = ContextUtils.getApplicationContext();
-        ActivityManager manager =
-                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-
+        Set<RecentTaskInfo> matchingTaskInfos =
+                AndroidTaskUtils.getRecentTaskInfosMatchingComponentNames(
+                        ContextUtils.getApplicationContext(), componentNames);
         Set<Integer> tabbedModeTaskIds = new HashSet<>();
-        for (ActivityManager.AppTask task : manager.getAppTasks()) {
-            ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
-            if (info == null) continue;
-            String componentName = AndroidTaskUtils.getTaskComponentName(task);
-
-            if (ChromeTabbedActivity.isTabbedModeComponentName(componentName)) {
-                tabbedModeTaskIds.add(info.id);
-            }
+        for (RecentTaskInfo info : matchingTaskInfos) {
+            tabbedModeTaskIds.add(info.id);
         }
 
         if (tabbedModeTaskIds.size() == 0) {
