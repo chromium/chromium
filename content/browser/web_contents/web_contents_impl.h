@@ -792,6 +792,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHost::LifecycleState old_state,
       RenderFrameHost::LifecycleState new_state) override;
   void SetWindowRect(const gfx::Rect& new_bounds) override;
+  void UpdateWindowPreferredSize(const gfx::Size& pref_size) override;
   std::vector<RenderFrameHostImpl*>
   GetActiveTopLevelDocumentsInBrowsingContextGroup(
       RenderFrameHostImpl* render_frame_host) override;
@@ -838,7 +839,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldIgnoreInputEvents() override;
   void OnIgnoredUIEvent() override;
   void Activate() override;
-  void UpdatePreferredSize(const gfx::Size& pref_size) override;
   void ShowCreatedWidget(int process_id,
                          int widget_route_id,
                          const gfx::Rect& initial_rect) override;

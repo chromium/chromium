@@ -4602,7 +4602,16 @@ void RenderFrameHostImpl::ScaleFactorChanged(float scale) {
 
 void RenderFrameHostImpl::ContentsPreferredSizeChanged(
     const gfx::Size& pref_size) {
-  render_view_host_->OnDidContentsPreferredSizeChange(pref_size);
+  // Do not try to handle the message in inactive frames for simplicitly.
+  // If a BackForwardCache or Prerendering page owns this frame, the page will
+  // be deleted. We predict that it will not significantly impact coverage
+  // because renderers only send this message when running in
+  // `PreferredSizeChanged` mode.
+  if (IsInactiveAndDisallowActivation()) {
+    return;
+  }
+
+  delegate_->UpdateWindowPreferredSize(pref_size);
 }
 
 void RenderFrameHostImpl::TextAutosizerPageInfoChanged(

@@ -1524,6 +1524,33 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TabVisibleURL) {
   EXPECT_EQ(shell()->web_contents()->GetVisibleURL(), kPrerenderingUrl);
 }
 
+// Tests that prerendering will be cancelled if a prerendering page wants to set
+// a WebContents-level preferred size.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnPreferredSizeChanged) {
+  base::HistogramTester histogram_tester;
+
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  int host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
+
+  // Enable PreferredSize mode in the prerendering page. Usually this mode is
+  // enabled by extentsions; here we enable it manually. Enabling this mode
+  // makes renderers ask the browser to update WebContents-level preferred size,
+  // which leads to the cancellation of prerendering.
+  RenderFrameHostImpl* prerender_main_frame =
+      GetPrerenderedMainFrameHost(host_id);
+  prerender_main_frame->GetRenderViewHost()->EnablePreferredSizeMode();
+
+  host_observer.WaitForDestroyed();
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDestroyed, 1);
+}
+
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,

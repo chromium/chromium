@@ -785,11 +785,6 @@ bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
   return false;
 }
 
-void RenderViewHostImpl::OnDidContentsPreferredSizeChange(
-    const gfx::Size& new_size) {
-  delegate_->UpdatePreferredSize(new_size);
-}
-
 void RenderViewHostImpl::OnTakeFocus(bool reverse) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view)

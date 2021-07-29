@@ -23,10 +23,6 @@ struct WebPreferences;
 struct RendererPreferences;
 }  // namespace blink
 
-namespace gfx {
-class Size;
-}
-
 namespace content {
 
 class RenderViewHost;
@@ -84,9 +80,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // The page wants the hosting window to activate itself (it called the
   // JavaScript window.focus() method).
   virtual void Activate() {}
-
-  // The contents' preferred size changed.
-  virtual void UpdatePreferredSize(const gfx::Size& pref_size) {}
 
   // Returns a copy of the map of all session storage namespaces related
   // to this view.

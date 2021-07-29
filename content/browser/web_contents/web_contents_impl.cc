@@ -4367,13 +4367,6 @@ void WebContentsImpl::AdjustSelectionByCharacterOffset(
                           : SelectionMenuBehavior::kHide);
 }
 
-void WebContentsImpl::UpdatePreferredSize(const gfx::Size& pref_size) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdatePreferredSize");
-  const gfx::Size old_size = GetPreferredSize();
-  preferred_size_ = pref_size;
-  OnPreferredSizeChanged(old_size);
-}
-
 void WebContentsImpl::ResizeDueToAutoResize(
     RenderWidgetHostImpl* render_widget_host,
     const gfx::Size& new_size) {
@@ -7125,6 +7118,13 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   ForSecurityDropFullscreen(display_id).RunAndReset();
 
   delegate_->SetContentsBounds(this, bounds);
+}
+
+void WebContentsImpl::UpdateWindowPreferredSize(const gfx::Size& pref_size) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::UpdatePreferredSize");
+  const gfx::Size old_size = GetPreferredSize();
+  preferred_size_ = pref_size;
+  OnPreferredSizeChanged(old_size);
 }
 
 std::vector<RenderFrameHostImpl*>
