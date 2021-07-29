@@ -168,7 +168,10 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
         std::make_unique<chromeos::quick_answers::QuickAnswerText>(title_));
     quick_answer_with_no_result.first_answer_row.push_back(
         std::make_unique<chromeos::quick_answers::QuickAnswerResultText>(
-            l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT)));
+            l10n_util::GetStringUTF8(
+                chromeos::features::IsQuickAnswersV2Enabled()
+                    ? IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT_V2
+                    : IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT)));
     quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
         anchor_bounds_, quick_answer_with_no_result);
     // Fallback query to title if no result is available.
