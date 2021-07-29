@@ -1176,7 +1176,7 @@
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win10_chromium_x64_rel_ng_rts': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10_chromium_x64_20h2_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
-      'win10-rel-orchestrator': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
+      'win10-rel-orchestrator': 'gpu_tests_release_trybot_no_resource_allowlisting_no_symbols',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
       'win-celab-try-rel': 'release_bot_minimal_symbols',
@@ -2244,6 +2244,11 @@
       'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       # TODO(svenzheng): Move this to 'release_trybot' if there are no objections.
+      'no_symbols',
+    ],
+
+    'gpu_tests_release_trybot_no_resource_allowlisting_no_symbols': [
+      'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
       'no_symbols',
     ],
 
