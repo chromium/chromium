@@ -146,7 +146,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   chrome_pdf::AccessibilityPageInfo page_info_;
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs_;
   std::vector<chrome_pdf::AccessibilityCharInfo> chars_;
-  ppapi::PdfAccessibilityPageObjects page_objects_;
+  chrome_pdf::AccessibilityPageObjects page_objects_;
 };
 
 TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {
@@ -230,26 +230,26 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
     link.url = kChromiumTestUrl;
-    link.text_run_index = 0;
-    link.text_run_count = 1;
+    link.text_range.index = 0;
+    link.text_range.count = 1;
     link.index_in_page = 0;
     page_objects_.links.push_back(std::move(link));
   }
 
   {
-    ppapi::PdfAccessibilityImageInfo image;
-    image.bounds = PP_MakeFloatRectFromXYWH(8.0f, 9.0f, 2.0f, 1.0f);
+    chrome_pdf::AccessibilityImageInfo image;
+    image.bounds = gfx::RectF(8.0f, 9.0f, 2.0f, 1.0f);
     image.alt_text = kTestAltText;
     image.text_run_index = 2;
     page_objects_.images.push_back(std::move(image));
   }
 
   {
-    ppapi::PdfAccessibilityImageInfo image;
-    image.bounds = PP_MakeFloatRectFromXYWH(11.0f, 14.0f, 5.0f, 8.0f);
+    chrome_pdf::AccessibilityImageInfo image;
+    image.bounds = gfx::RectF(11.0f, 14.0f, 5.0f, 8.0f);
     image.text_run_index = 2;
     page_objects_.images.push_back(std::move(image));
   }
@@ -345,21 +345,21 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
     link.url = kChromiumTestUrl;
-    link.text_run_index = 0;
-    link.text_run_count = 3;
+    link.text_range.index = 0;
+    link.text_range.count = 3;
     link.index_in_page = 0;
     page_objects_.links.push_back(std::move(link));
   }
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(1.0f, 2.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(1.0f, 2.0f, 5.0f, 6.0f);
     link.url = kChromiumTestUrl;
-    link.text_run_index = 1;
-    link.text_run_count = 2;
+    link.text_range.index = 1;
+    link.text_range.count = 2;
     link.index_in_page = 1;
     page_objects_.links.push_back(std::move(link));
   }
@@ -440,10 +440,10 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityHighlightInfo highlight;
-    highlight.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
-    highlight.text_run_index = 0;
-    highlight.text_run_count = 2;
+    chrome_pdf::AccessibilityHighlightInfo highlight;
+    highlight.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
+    highlight.text_range.index = 0;
+    highlight.text_range.count = 2;
     highlight.index_in_page = 0;
     highlight.color = kHighlightWhiteColor;
     highlight.note_text = kPopupNoteText;
@@ -545,8 +545,8 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityTextFieldInfo text_field;
-    text_field.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityTextFieldInfo text_field;
+    text_field.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
     text_field.index_in_page = 0;
     text_field.text_run_index = 2;
     text_field.name = "Text Box";
@@ -558,8 +558,8 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
   }
 
   {
-    ppapi::PdfAccessibilityTextFieldInfo text_field;
-    text_field.bounds = PP_MakeFloatRectFromXYWH(1.0f, 10.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityTextFieldInfo text_field;
+    text_field.bounds = gfx::RectF(1.0f, 10.0f, 5.0f, 6.0f);
     text_field.index_in_page = 1;
     text_field.text_run_index = 2;
     text_field.name = "Text Box 2";
@@ -671,8 +671,8 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityButtonInfo check_box;
-    check_box.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityButtonInfo check_box;
+    check_box.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
     check_box.index_in_page = 0;
     check_box.text_run_index = 2;
     check_box.name = "Read Only Checkbox";
@@ -681,13 +681,13 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
     check_box.is_checked = true;
     check_box.control_count = 1;
     check_box.control_index = 0;
-    check_box.type = PP_PrivateButtonType::PP_PRIVATEBUTTON_CHECKBOX;
+    check_box.type = chrome_pdf::ButtonType::kCheckBox;
     page_objects_.form_fields.buttons.push_back(std::move(check_box));
   }
 
   {
-    ppapi::PdfAccessibilityButtonInfo radio_button;
-    radio_button.bounds = PP_MakeFloatRectFromXYWH(1.0f, 2.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityButtonInfo radio_button;
+    radio_button.bounds = gfx::RectF(1.0f, 2.0f, 5.0f, 6.0f);
     radio_button.index_in_page = 1;
     radio_button.text_run_index = 2;
     radio_button.name = "Radio Button";
@@ -696,13 +696,13 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
     radio_button.is_checked = false;
     radio_button.control_count = 2;
     radio_button.control_index = 0;
-    radio_button.type = PP_PrivateButtonType::PP_PRIVATEBUTTON_RADIOBUTTON;
+    radio_button.type = chrome_pdf::ButtonType::kRadioButton;
     page_objects_.form_fields.buttons.push_back(std::move(radio_button));
   }
 
   {
-    ppapi::PdfAccessibilityButtonInfo radio_button;
-    radio_button.bounds = PP_MakeFloatRectFromXYWH(1.0f, 3.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityButtonInfo radio_button;
+    radio_button.bounds = gfx::RectF(1.0f, 3.0f, 5.0f, 6.0f);
     radio_button.index_in_page = 2;
     radio_button.text_run_index = 2;
     radio_button.name = "Radio Button";
@@ -711,18 +711,18 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
     radio_button.is_checked = true;
     radio_button.control_count = 2;
     radio_button.control_index = 1;
-    radio_button.type = PP_PrivateButtonType::PP_PRIVATEBUTTON_RADIOBUTTON;
+    radio_button.type = chrome_pdf::ButtonType::kRadioButton;
     page_objects_.form_fields.buttons.push_back(std::move(radio_button));
   }
 
   {
-    ppapi::PdfAccessibilityButtonInfo push_button;
-    push_button.bounds = PP_MakeFloatRectFromXYWH(1.0f, 4.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityButtonInfo push_button;
+    push_button.bounds = gfx::RectF(1.0f, 4.0f, 5.0f, 6.0f);
     push_button.index_in_page = 3;
     push_button.text_run_index = 2;
     push_button.name = "Push Button";
     push_button.is_read_only = false;
-    push_button.type = PP_PrivateButtonType::PP_PRIVATEBUTTON_PUSHBUTTON;
+    push_button.type = chrome_pdf::ButtonType::kPushButton;
     page_objects_.form_fields.buttons.push_back(std::move(push_button));
   }
 
@@ -877,17 +877,17 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
                                         {1.0f, 10.0f, 5.0f, 6.0f}};
 
   {
-    ppapi::PdfAccessibilityChoiceFieldInfo choice_field;
-    choice_field.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityChoiceFieldInfo choice_field;
+    choice_field.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
     choice_field.index_in_page = 0;
     choice_field.text_run_index = 2;
-    choice_field.type = PP_PRIVATECHOICEFIELD_LISTBOX;
+    choice_field.type = chrome_pdf::ChoiceFieldType::kListBox;
     choice_field.name = "List Box";
     choice_field.is_read_only = false;
     choice_field.is_multi_select = true;
     choice_field.has_editable_text_box = false;
     for (const ListboxOptionInfo& expected_option : kExpectedOptions[0]) {
-      ppapi::PdfAccessibilityChoiceFieldOptionInfo choice_field_option;
+      chrome_pdf::AccessibilityChoiceFieldOptionInfo choice_field_option;
       choice_field_option.name = expected_option.name;
       choice_field_option.is_selected = expected_option.is_selected;
       choice_field.options.push_back(std::move(choice_field_option));
@@ -896,17 +896,17 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
   }
 
   {
-    ppapi::PdfAccessibilityChoiceFieldInfo choice_field;
-    choice_field.bounds = PP_MakeFloatRectFromXYWH(1.0f, 10.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityChoiceFieldInfo choice_field;
+    choice_field.bounds = gfx::RectF(1.0f, 10.0f, 5.0f, 6.0f);
     choice_field.index_in_page = 1;
     choice_field.text_run_index = 2;
-    choice_field.type = PP_PRIVATECHOICEFIELD_LISTBOX;
+    choice_field.type = chrome_pdf::ChoiceFieldType::kListBox;
     choice_field.name = "Read Only List Box";
     choice_field.is_read_only = true;
     choice_field.is_multi_select = false;
     choice_field.has_editable_text_box = false;
     for (const ListboxOptionInfo& expected_option : kExpectedOptions[1]) {
-      ppapi::PdfAccessibilityChoiceFieldOptionInfo choice_field_option;
+      chrome_pdf::AccessibilityChoiceFieldOptionInfo choice_field_option;
       choice_field_option.name = expected_option.name;
       choice_field_option.is_selected = expected_option.is_selected;
       choice_field.options.push_back(std::move(choice_field_option));
@@ -1069,17 +1069,17 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
                                         {1.0f, 10.0f, 5.0f, 6.0f}};
 
   {
-    ppapi::PdfAccessibilityChoiceFieldInfo choice_field;
-    choice_field.bounds = PP_MakeFloatRectFromXYWH(1.0f, 1.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityChoiceFieldInfo choice_field;
+    choice_field.bounds = gfx::RectF(1.0f, 1.0f, 5.0f, 6.0f);
     choice_field.index_in_page = 0;
     choice_field.text_run_index = 2;
-    choice_field.type = PP_PRIVATECHOICEFIELD_COMBOBOX;
+    choice_field.type = chrome_pdf::ChoiceFieldType::kComboBox;
     choice_field.name = "Editable Combo Box";
     choice_field.is_read_only = false;
     choice_field.is_multi_select = true;
     choice_field.has_editable_text_box = true;
     for (const ComboboxOptionInfo& expected_option : kExpectedOptions[0]) {
-      ppapi::PdfAccessibilityChoiceFieldOptionInfo choice_field_option;
+      chrome_pdf::AccessibilityChoiceFieldOptionInfo choice_field_option;
       choice_field_option.name = expected_option.name;
       choice_field_option.is_selected = expected_option.is_selected;
       choice_field.options.push_back(std::move(choice_field_option));
@@ -1088,17 +1088,17 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
   }
 
   {
-    ppapi::PdfAccessibilityChoiceFieldInfo choice_field;
-    choice_field.bounds = PP_MakeFloatRectFromXYWH(1.0f, 10.0f, 5.0f, 6.0f);
+    chrome_pdf::AccessibilityChoiceFieldInfo choice_field;
+    choice_field.bounds = gfx::RectF(1.0f, 10.0f, 5.0f, 6.0f);
     choice_field.index_in_page = 1;
     choice_field.text_run_index = 2;
-    choice_field.type = PP_PRIVATECHOICEFIELD_COMBOBOX;
+    choice_field.type = chrome_pdf::ChoiceFieldType::kComboBox;
     choice_field.name = "Read Only Combo Box";
     choice_field.is_read_only = true;
     choice_field.is_multi_select = false;
     choice_field.has_editable_text_box = false;
     for (const ComboboxOptionInfo& expected_option : kExpectedOptions[1]) {
-      ppapi::PdfAccessibilityChoiceFieldOptionInfo choice_field_option;
+      chrome_pdf::AccessibilityChoiceFieldOptionInfo choice_field_option;
       choice_field_option.name = expected_option.name;
       choice_field_option.is_selected = expected_option.is_selected;
       choice_field.options.push_back(std::move(choice_field_option));
@@ -1308,11 +1308,11 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
     link.url = kChromiumTestUrl;
-    link.text_run_index = 2;
-    link.text_run_count = 2;
+    link.text_range.index = 2;
+    link.text_range.count = 2;
     link.index_in_page = 0;
     page_objects_.links.push_back(std::move(link));
   }
@@ -1436,8 +1436,8 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
-  // |chars_| and |text_runs_| span over the same page text. They should denote
-  // the same page text size, but |text_runs_| is incorrect and only denotes 1
+  // `chars_` and `text_runs_` span over the same page text. They should denote
+  // the same page text size, but `text_runs_` is incorrect and only denotes 1
   // of 2 text runs.
   text_runs_.emplace_back(kFirstTextRun);
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
@@ -1471,19 +1471,19 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
 
   {
     // Add first link in the vector.
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
-    link.text_run_index = 2;
-    link.text_run_count = 0;
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
+    link.text_range.index = 2;
+    link.text_range.count = 0;
     page_objects_.links.push_back(std::move(link));
   }
 
   {
     // Add second link in the vector.
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
-    link.text_run_index = 0;
-    link.text_run_count = 1;
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
+    link.text_range.index = 0;
+    link.text_range.count = 1;
     page_objects_.links.push_back(std::move(link));
   }
 
@@ -1514,11 +1514,11 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
-    link.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
-    link.text_run_index = 3;
+    chrome_pdf::AccessibilityLinkInfo link;
+    link.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
+    link.text_range.index = 3;
     link.index_in_page = 0;
-    link.text_run_count = 0;
+    link.text_range.count = 0;
     page_objects_.links.push_back(std::move(link));
   }
 
@@ -1550,16 +1550,16 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
 
   {
     // Add first image to the vector.
-    ppapi::PdfAccessibilityImageInfo image;
-    image.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
+    chrome_pdf::AccessibilityImageInfo image;
+    image.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
     image.text_run_index = 1;
     page_objects_.images.push_back(std::move(image));
   }
 
   {
     // Add second image to the vector.
-    ppapi::PdfAccessibilityImageInfo image;
-    image.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
+    chrome_pdf::AccessibilityImageInfo image;
+    image.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
     image.text_run_index = 0;
     page_objects_.images.push_back(std::move(image));
   }
@@ -1591,8 +1591,8 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityImageInfo image;
-    image.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 0.0f, 0.0f);
+    chrome_pdf::AccessibilityImageInfo image;
+    image.bounds = gfx::RectF(0.0f, 0.0f, 0.0f, 0.0f);
     image.text_run_index = 3;
     page_objects_.images.push_back(std::move(image));
   }
@@ -1625,20 +1625,20 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
 
   {
     // Add first highlight in the vector.
-    ppapi::PdfAccessibilityHighlightInfo highlight;
-    highlight.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 1.0f, 1.0f);
-    highlight.text_run_index = 2;
-    highlight.text_run_count = 0;
+    chrome_pdf::AccessibilityHighlightInfo highlight;
+    highlight.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
+    highlight.text_range.index = 2;
+    highlight.text_range.count = 0;
     highlight.index_in_page = 0;
     page_objects_.highlights.push_back(std::move(highlight));
   }
 
   {
     // Add second highlight in the vector.
-    ppapi::PdfAccessibilityHighlightInfo highlight;
-    highlight.bounds = PP_MakeFloatRectFromXYWH(2.0f, 2.0f, 1.0f, 1.0f);
-    highlight.text_run_index = 0;
-    highlight.text_run_count = 1;
+    chrome_pdf::AccessibilityHighlightInfo highlight;
+    highlight.bounds = gfx::RectF(2.0f, 2.0f, 1.0f, 1.0f);
+    highlight.text_range.index = 0;
+    highlight.text_range.count = 1;
     highlight.index_in_page = 1;
     page_objects_.highlights.push_back(std::move(highlight));
   }
@@ -1671,10 +1671,10 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityHighlightInfo highlight;
-    highlight.bounds = PP_MakeFloatRectFromXYWH(0.0f, 0.0f, 1.0f, 1.0f);
-    highlight.text_run_index = 3;
-    highlight.text_run_count = 0;
+    chrome_pdf::AccessibilityHighlightInfo highlight;
+    highlight.bounds = gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f);
+    highlight.text_range.index = 3;
+    highlight.text_range.count = 0;
     highlight.index_in_page = 0;
     page_objects_.highlights.push_back(std::move(highlight));
   }
@@ -1806,20 +1806,20 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
                 std::end(kDummyCharsData));
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
+    chrome_pdf::AccessibilityLinkInfo link;
     link.url = kChromiumTestUrl;
-    link.text_run_index = 0;
-    link.text_run_count = 1;
+    link.text_range.index = 0;
+    link.text_range.count = 1;
     link.bounds = {{0, 0}, {10, 10}};
     link.index_in_page = 0;
     page_objects_.links.push_back(std::move(link));
   }
 
   {
-    ppapi::PdfAccessibilityLinkInfo link;
+    chrome_pdf::AccessibilityLinkInfo link;
     link.url = kChromiumTestUrl;
-    link.text_run_index = 1;
-    link.text_run_count = 1;
+    link.text_range.index = 1;
+    link.text_range.count = 1;
     link.bounds = {{10, 10}, {10, 10}};
     link.index_in_page = 1;
     page_objects_.links.push_back(std::move(link));
