@@ -449,9 +449,6 @@ const char kLocalSearchServiceSyncMetricsCrosSettingsCount[] =
 const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
     "local_search_service_sync.metrics.help_app_count";
 
-// Deprecated 4/2020
-const char kSupervisedUsersNextId[] = "LocallyManagedUsersNextId";
-
 // Deprecated 11/2020
 const char kRegisteredSupervisedUserAllowlists[] =
     "supervised_users.whitelists";
@@ -469,16 +466,6 @@ const char kLocalDiscoveryEnabled[] = "local_discovery.enabled";
 const char kLocalDiscoveryNotificationsEnabled[] =
     "local_discovery.notifications_enabled";
 #endif
-
-// Deprecated 6/2020
-const char kStricterMixedContentTreatmentEnabled[] =
-    "security_state.stricter_mixed_content_treatment_enabled";
-
-// Deprecated 7/2020
-const char kHashedAvailablePages[] = "previews.offline_helper.available_pages";
-
-// Deprecated 7/2020
-const char kObservedSessionTime[] = "profile.observed_session_time";
 
 // Deprecated 9/2020
 const char kBlockThirdPartyCookies[] = "profile.block_third_party_cookies";
@@ -662,7 +649,6 @@ const char kAccountStorageExists[] = "profile.password_account_storage_exists";
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
-  registry->RegisterIntegerPref(kSupervisedUsersNextId, 0);
   registry->RegisterStringPref(kFirstRunTrialGroup, std::string());
 
   registry->RegisterInt64Pref(kLocalSearchServiceSyncMetricsDailySample, 0);
@@ -707,12 +693,6 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-  registry->RegisterBooleanPref(kStricterMixedContentTreatmentEnabled, true);
-
-  registry->RegisterDictionaryPref(kHashedAvailablePages);
-
-  registry->RegisterDictionaryPref(kObservedSessionTime);
 
   registry->RegisterBooleanPref(kBlockThirdPartyCookies, false);
 
@@ -1403,8 +1383,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 4/2020.
-  local_state->ClearPref(kSupervisedUsersNextId);
 
   // Added 11/2020.
   local_state->ClearPref(kRegisteredSupervisedUserAllowlists);
@@ -1470,15 +1448,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-  // Added 6/2020
-  profile_prefs->ClearPref(kStricterMixedContentTreatmentEnabled);
-
-  // Added 7/2020.
-  profile_prefs->ClearPref(kHashedAvailablePages);
-
-  // Added 7/2020
-  profile_prefs->ClearPref(kObservedSessionTime);
 
   // Added 9/2020
   profile_prefs->ClearPref(kBlockThirdPartyCookies);
