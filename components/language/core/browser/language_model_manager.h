@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/language/core/browser/language_model.h"
