@@ -93,12 +93,19 @@ int AdjustJoint(int outline_width,
   }
 }
 
+// A negative outline-offset should not cause the rendered outline shape to
+// become smaller than twice the computed value of the outline-width, in each
+// direction separately. See: https://drafts.csswg.org/css-ui/#outline-offset
+int AdjustedOutlineOffsetX(const IntRect& rect, int offset) {
+  return std::max(offset, -rect.Width() / 2);
+}
+int AdjustedOutlineOffsetY(const IntRect& rect, int offset) {
+  return std::max(offset, -rect.Height() / 2);
+}
+
 void ApplyOutlineOffset(IntRect& rect, int offset) {
-  // A negative outline-offset should not cause the rendered outline shape to
-  // become smaller than twice the computed value of the outline-width, in each
-  // direction separately. See: https://drafts.csswg.org/css-ui/#outline-offset
-  rect.InflateX(std::max(offset, -rect.Width() / 2));
-  rect.InflateY(std::max(offset, -rect.Height() / 2));
+  rect.InflateX(AdjustedOutlineOffsetX(rect, offset));
+  rect.InflateY(AdjustedOutlineOffsetY(rect, offset));
 }
 
 void PaintComplexOutline(GraphicsContext& graphics_context,
@@ -210,22 +217,6 @@ void PaintComplexOutline(GraphicsContext& graphics_context,
     graphics_context.EndLayer();
 }
 
-void PaintSingleRectangleOutline(GraphicsContext& context,
-                                 const IntRect& rect,
-                                 const ComputedStyle& style,
-                                 const Color& color) {
-  DCHECK(!style.OutlineStyleIsAuto());
-
-  IntRect offset_rect = rect;
-  ApplyOutlineOffset(offset_rect, style.OutlineOffsetInt());
-
-  PhysicalRect inner(offset_rect);
-  PhysicalRect outer(inner);
-  outer.Inflate(LayoutUnit(style.OutlineWidthInt()));
-  const BorderEdge edge(style.OutlineWidthInt(), color, style.OutlineStyle());
-  BoxBorderPainter::PaintSingleRectOutline(context, style, outer, inner, edge);
-}
-
 float GetFocusRingBorderRadius(const ComputedStyle& style,
                                const PhysicalRect& reference_border_rect) {
   // Default style is border-radius equal to outline width.
@@ -319,7 +310,10 @@ void OutlinePainter::PaintOutlineRects(
 
   IntRect united_outline_rect = UnionRect(pixel_snapped_outline_rects);
   if (united_outline_rect == pixel_snapped_outline_rects[0]) {
-    PaintSingleRectangleOutline(context, united_outline_rect, style, color);
+    BoxBorderPainter::PaintSingleRectOutline(
+        context, style, outline_rects[0],
+        AdjustedOutlineOffsetX(united_outline_rect, style.OutlineOffsetInt()),
+        AdjustedOutlineOffsetY(united_outline_rect, style.OutlineOffsetInt()));
     return;
   }
   PaintComplexOutline(context, pixel_snapped_outline_rects, style, color);

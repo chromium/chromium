@@ -36,10 +36,12 @@ class BoxBorderPainter {
 
   static void PaintSingleRectOutline(GraphicsContext& context,
                                      const ComputedStyle& style,
-                                     const PhysicalRect& outer,
-                                     const PhysicalRect& inner,
-                                     const BorderEdge& edge) {
-    BoxBorderPainter(context, style, outer, inner, edge).Paint();
+                                     const PhysicalRect& border_rect,
+                                     int inner_outset_x,
+                                     int inner_outset_y) {
+    BoxBorderPainter(context, style, border_rect, inner_outset_x,
+                     inner_outset_y)
+        .Paint();
   }
 
   static void DrawBoxSide(GraphicsContext& context,
@@ -78,9 +80,9 @@ class BoxBorderPainter {
   // For PaintSingleRectOutline().
   BoxBorderPainter(GraphicsContext&,
                    const ComputedStyle&,
-                   const PhysicalRect& outer,
-                   const PhysicalRect& inner,
-                   const BorderEdge&);
+                   const PhysicalRect& border_rect,
+                   int inner_outset_x,
+                   int inner_outset_y);
 
   void Paint() const;
 
@@ -146,9 +148,9 @@ class BoxBorderPainter {
                                     EBorderStyle,
                                     bool antialias);
 
-  LayoutRectOutsets DoubleStripeInsets(
+  LayoutRectOutsets DoubleStripeOutsets(
       BorderEdge::DoubleBorderStripe stripe) const;
-  LayoutRectOutsets CenterInsets() const;
+  LayoutRectOutsets CenterOutsets() const;
 
   bool ColorsMatchAtCorner(BoxSide side, BoxSide adjacent_side) const;
 
@@ -166,6 +168,8 @@ class BoxBorderPainter {
 
   // const inputs
   const PhysicalRect border_rect_;
+  const LayoutUnit outer_outset_x_;
+  const LayoutUnit outer_outset_y_;
   const ComputedStyle& style_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;
