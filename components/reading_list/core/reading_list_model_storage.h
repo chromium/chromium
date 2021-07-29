@@ -6,7 +6,6 @@
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_MODEL_STORAGE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "components/reading_list/core/reading_list_entry.h"
