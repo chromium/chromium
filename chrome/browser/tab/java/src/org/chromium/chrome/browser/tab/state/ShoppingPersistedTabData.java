@@ -35,6 +35,7 @@ import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -283,23 +284,51 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         // (after a successful endpoint repsonse)
         disableSaving();
         registerIsTabSaveEnabledSupplier(mIsTabSaveEnabledSupplier);
+        // In the below, resetting price data is decoupled from prefetching because
+        // when we couple the two together, we sometimes delete too aggressively. The example is -
+        // after a restart the active Tab is reloaded. If the page had a price drop which was
+        // persisted across restarts, the reload of the active Tab results in resetting the price
+        // data but at that point, OptimizationGuide is not returning results yet - so we
+        // essentially can't persisted any price drops of the active Tab across restarts.
         mUrlUpdatedObserver = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+                    return;
+                }
+                // User is navigating to a different page - as detected by a change in URL
+                if (!tab.getUrl().equals(navigationHandle.getUrl())) {
+                    resetPriceData();
+                }
+            }
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
                     return;
                 }
-                // When the URL is updated, the pricing data is stale, no longer
-                // relevant and should be cleaned up.
-                delete();
-                mPriceDropData = new PriceDropData();
-                mPriceDropMetricsLogger = null;
+
+                // User navigating to a different page, as detected by a search or typing something
+                // into the address bar.
+                if (navigationHandle.isValidSearchFormUrl()
+                        || navigationHandle.pageTransition() != null
+                                && (navigationHandle.pageTransition()
+                                           & PageTransition.FROM_ADDRESS_BAR)
+                                        != 0) {
+                    resetPriceData();
+                }
+
                 if (isPriceTrackingWithOptimizationGuideEnabled()) {
                     prefetchOnNewNavigation(tab, navigationHandle);
                 }
             }
         };
         tab.addObserver(mUrlUpdatedObserver);
+    }
+
+    private void resetPriceData() {
+        delete();
+        mPriceDropData = new PriceDropData();
+        mPriceDropMetricsLogger = null;
     }
 
     @VisibleForTesting
@@ -327,7 +356,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
         // Shopping related data is not available for incognito or Custom Tabs. For example,
         // for incognito Tabs it is not possible to call a backend service with the user's URL.
-        if (tab.isIncognito() || tab.isCustomTab() || !tab.isInitialized()) {
+        if (tab.isIncognito() || tab.isCustomTab()) {
             PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
             return;
         }
