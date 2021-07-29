@@ -131,7 +131,10 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state) {
       break;
     case EContentVisibility::kHidden:
       UseCounter::Count(document_, WebFeature::kContentVisibilityHidden);
-      RequestLock(0u);
+      RequestLock(
+          for_details_element_
+              ? static_cast<uint16_t>(DisplayLockActivationReason::kFindInPage)
+              : 0u);
       break;
     case EContentVisibility::kHiddenMatchable:
       UseCounter::Count(document_,

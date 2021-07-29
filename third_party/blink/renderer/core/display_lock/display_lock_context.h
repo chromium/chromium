@@ -220,6 +220,10 @@ class CORE_EXPORT DisplayLockContext final
   // We unlock auto locks for printing, which is set here.
   void SetShouldUnlockAutoForPrint(bool);
 
+  void SetForDetailsElement(bool for_details_element) {
+    for_details_element_ = for_details_element;
+  }
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -431,6 +435,10 @@ class CORE_EXPORT DisplayLockContext final
   bool set_requested_state_scope_ = false;
 
   absl::optional<ScrollOffset> stashed_scroll_offset_;
+
+  // When we use content-visibility:hidden for a <details> element, it should be
+  // activatable by find-in-page, element fragments, and text fragments.
+  bool for_details_element_ = false;
 };
 
 }  // namespace blink

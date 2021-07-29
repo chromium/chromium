@@ -267,11 +267,8 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
 
   // 2. If the node is display locked, then we should not process it or its
   // children, since they are not visible or accessible via innerText.
-  if (auto* element = DynamicTo<Element>(node)) {
-    auto* context = element->GetDisplayLockContext();
-    if (context && context->IsLocked())
-      return;
-  }
+  if (DisplayLockUtilities::NearestLockedInclusiveAncestor(node))
+    return;
 
   // 3. If node's computed value of 'visibility' is not 'visible', then return
   // items.

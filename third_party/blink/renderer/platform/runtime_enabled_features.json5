@@ -215,6 +215,9 @@
       status: "experimental",
     },
     {
+      name: "AutoExpandDetailsElement",
+    },
+    {
       name: "AutofillShadowDOM",
       status: "experimental",
     },
