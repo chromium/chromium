@@ -413,10 +413,30 @@ export class PrefsManager {
 }
 
 /**
+ * Constant used as the value for a menu option representing the current device
+ * language.
+ * @type {string}
+ */
+PrefsManager.USE_DEVICE_LANGUAGE = 'select_to_speak_device_language';
+
+/**
  * Constant representing the system TTS voice.
  * @type {string}
  */
 PrefsManager.SYSTEM_VOICE = 'select_to_speak_system_voice';
+
+/**
+ * Constant representing the voice name for the default (server-selected)
+ * network TTS voice.
+ * @type {string}
+ */
+PrefsManager.DEFAULT_NETWORK_VOICE = 'default-wavenet';
+
+/**
+ * Extension ID of the enhanced network TTS voices extension.
+ * @const {string}
+ */
+PrefsManager.ENHANCED_TTS_EXTENSION_ID = 'jacnkoglebceckolkoapelihnglgaicd';
 
 /**
  * Default speech rate for both Select-to-Speak and global prefs.
