@@ -3,7 +3,6 @@
 <translationbundle lang="fr-CA">
 <translation id="1006017844123154345">Ouvrir en ligne</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
-<translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1124090076051167250">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites ou des applications sur votre écran d'accueil.</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Désactiver le son de la vidéo</translation>
 <translation id="3596414637720633074">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="3600792891314830896">Désactiver le son sur les sites qui en font jouer</translation>
-<translation id="365089839707261811">Examiner les mises à jour du nom</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Touchez deux fois à gauche ou à droite de la vidéo pour sauter 10 secondes</translation>
 <translation id="381841723434055211">Numéros de téléphone</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Un site lit du contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4336434711095810371">Effacer toutes les données</translation>
-<translation id="4339203724549370495">Désinstaller l'application</translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir quand vous êtes en train d'utiliser cet appareil</translation>
 <translation id="4434045419905280838">Fenêt. context. et redirections</translation>
 <translation id="445467742685312942">Autoriser les sites à lire du contenu protégé</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4708011789095599544">Voulez-vous vraiment supprimer les témoins et les autres données de ce site Web?</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
-<translation id="4800839971935185386">Examiner les mises à jour du nom et de l'icône</translation>
 <translation id="4836046166855586901">Demander une autorisation lorsqu'un site veut savoir si vous êtes en train d'utiliser cet appareil</translation>
 <translation id="4883854917563148705">Les paramètres gérés ne peuvent pas être réinitialisés</translation>
 <translation id="4887024562049524730">Demander avant d'autoriser les sites à utiliser votre appareil et vos données de réalité virtuelle (recommandé)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Bloquer les annonces sur les sites qui diffusent des annonces intrusives ou trompeuses</translation>
-<translation id="549957179819296104">Nouvelle icône</translation>
 <translation id="5502860503640766021">Autorisation <ph name="PERMISSION_1" /> autorisée, autorisation <ph name="PERMISSION_2" /> bloquée</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
@@ -183,7 +178,7 @@
 <translation id="5804241973901381774">Autorisations</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5876056640971328065">Suspendre la vidéo</translation>
-<translation id="5887687176710214216">Dernière vérification : hier.</translation>
+<translation id="5887687176710214216">Dernière visite : hier.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5922853908706496913">Partage de votre écran en cours…</translation>
 <translation id="5939518447894949180">Recommencer</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Bloquer pour le moteur de recherche actuel</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
-<translation id="7734541938181328224">Examiner les mises à jours de l'icône</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Offert en ligne</translation>
 <translation id="851751545965956758">Empêcher les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
-<translation id="857074314439694500">Cette application Web essaie de se faire passer une application différente, désinstallez-la.</translation>
 <translation id="857943718398505171">Autorisée (recommandé)</translation>
 <translation id="8609465669617005112">Déplacer vers le haut</translation>
 <translation id="8676374126336081632">Effacer l'entrée</translation>

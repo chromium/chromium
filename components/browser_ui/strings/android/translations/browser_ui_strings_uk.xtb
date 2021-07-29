@@ -3,7 +3,6 @@
 <translationbundle lang="uk">
 <translation id="1006017844123154345">Відкрити в режимі онлайн</translation>
 <translation id="1044891598689252897">Сайти працюватимуть у звичному режимі</translation>
-<translation id="1100504063505580045">Поточний значок</translation>
 <translation id="1124090076051167250">Буде видалено <ph name="DATASIZE" /> даних і файлів cookie сайтів або додатків на головному екрані.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Видалити</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Вимкнути звук у відео</translation>
 <translation id="3596414637720633074">Блокувати файли cookie третіх сторін в анонімному режимі</translation>
 <translation id="3600792891314830896">Вимкнути звук на сайтах, які відтворюють його</translation>
-<translation id="365089839707261811">Перевірити змінену назву</translation>
 <translation id="3744111561329211289">Фонова синхронізація</translation>
 <translation id="3763247130972274048">Двічі торкніться відео ліворуч або праворуч, щоб пропустити 10 с</translation>
 <translation id="381841723434055211">Номери телефонів</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Сайт відтворює медіа-вміст</translation>
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4336434711095810371">Видалити всі дані</translation>
-<translation id="4339203724549370495">Видалити додаток</translation>
 <translation id="4402755511846832236">Блокувати сайтам інформацію про те, чи ви активно використовуєте цей пристрій</translation>
 <translation id="4434045419905280838">Спливаючі вікна й переадресація</translation>
 <translation id="445467742685312942">Дозволити сайтам відтворювати захищений вміст</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Віртуальна реальність</translation>
 <translation id="4708011789095599544">Очистити файли cookie й інші дані для цього веб-сайту?</translation>
 <translation id="4751476147751820511">Датчики руху та світла</translation>
-<translation id="4800839971935185386">Перевірити змінені назву й значок</translation>
 <translation id="4836046166855586901">Запитувати, коли сайт хоче дізнатися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="4883854917563148705">Налаштування, якими керує адміністратор, не можна скинути</translation>
 <translation id="4887024562049524730">Запитувати, перш ніж давати сайтам доступ до даних і пристрою віртуальної реальності (рекомендовано)</translation>
@@ -152,7 +148,7 @@
 <translation id="5123685120097942451">Анонімна вкладка</translation>
 <translation id="5186036860380548585">Для цього натисніть відповідну кнопку вгорі екрана</translation>
 <translation id="5197729504361054390">Веб-сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> отримає доступ до вибраних контактів.</translation>
-<translation id="5216942107514965959">Востаннє відвідано вчора</translation>
+<translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
 <translation id="528192093759286357">Щоб вийти з повноекранного режиму, проведіть пальцем по екрану згори вниз і торкніться кнопки "Назад".</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Імена</translation>
 <translation id="5489227211564503167">Минуло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Блокувати рекламу на сайтах, які показують нав’язливі чи оманливі оголошення</translation>
-<translation id="549957179819296104">Новий значок</translation>
 <translation id="5502860503640766021">Дозволено: "<ph name="PERMISSION_1" />". Заблоковано: "<ph name="PERMISSION_2" />".</translation>
 <translation id="5505264765875738116">Сайти не можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="5516455585884385570">Відкрити налаштування сповіщень</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Заблокувати для поточної пошукової системи</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
-<translation id="7734541938181328224">Перевірити змінений значок</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
 <translation id="851751545965956758">Заборонити сайтам підключатися до пристроїв</translation>
 <translation id="8525306231823319788">На весь екран</translation>
-<translation id="857074314439694500">Якщо цей веб-додаток намагається видати себе за інший, видаліть його.</translation>
 <translation id="857943718398505171">Дозволено (рекомендується)</translation>
 <translation id="8609465669617005112">Угору</translation>
 <translation id="8676374126336081632">Видалити введений текст</translation>

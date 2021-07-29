@@ -3,7 +3,6 @@
 <translationbundle lang="sr-Latn">
 <translation id="1006017844123154345">Otvori onlajn</translation>
 <translation id="1044891598689252897">Sajtovi će normalno raditi</translation>
-<translation id="1100504063505580045">Aktuelna ikona</translation>
 <translation id="1124090076051167250">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi ili aplikacije na početnom ekranu.</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
 <translation id="1181037720776840403">Ukloni</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Isključite zvuk videa</translation>
 <translation id="3596414637720633074">Blokira kolačiće trećih strana u režimu bez arhiviranja</translation>
 <translation id="3600792891314830896">Isključi zvuk sajtova koji puštaju zvuk</translation>
-<translation id="365089839707261811">Pregledajte ažuriranja imena</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite video levo ili desno da biste preskočili 10 sek</translation>
 <translation id="381841723434055211">Brojevi telefona</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Sajt pušta medijski sadržaj</translation>
 <translation id="42981349822642051">Proširite</translation>
 <translation id="4336434711095810371">Obriši sve podatke</translation>
-<translation id="4339203724549370495">Deinstaliraj aplikaciju</translation>
 <translation id="4402755511846832236">Ne dozvolite sajtovima da znaju kada aktivno koristite ovaj uređaj</translation>
 <translation id="4434045419905280838">Iskačući prozori i preusmeravanja</translation>
 <translation id="445467742685312942">Dozvolite sajtovima da puštaju zaštićeni sadržaj</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtuelna realnost</translation>
 <translation id="4708011789095599544">Želite li stvarno da obrišete kolačiće i druge podatke o sajtu za ovaj veb-sajt?</translation>
 <translation id="4751476147751820511">Senzori za pokret ili svetlo</translation>
-<translation id="4800839971935185386">Pregledajte ažuriranja imena i ikona</translation>
 <translation id="4836046166855586901">Pitaj kada sajt želi da zna kada aktivno koristim ovaj uređaj</translation>
 <translation id="4883854917563148705">Podešavanja kojima se upravlja ne mogu da se resetuju</translation>
 <translation id="4887024562049524730">Pre nego što dozvolite sajtovima da koriste uređaj i podatke virtuelne realnosti prikazuje se upit (preporučeno)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Imena</translation>
 <translation id="5489227211564503167">Proteklo vreme: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiraj oglase na sajtovima koji prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
-<translation id="549957179819296104">Nova ikona</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />: dozvoljeno. <ph name="PERMISSION_2" />: blokirano</translation>
 <translation id="5505264765875738116">Sajtovi ne mogu da traže da šalju obaveštenja</translation>
 <translation id="5516455585884385570">Otvorite podešavanja obaveštenja</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokiraj za aktuelni pretraživač</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7658239707568436148">Otkaži</translation>
-<translation id="7734541938181328224">Pregledajte ažuriranja ikone</translation>
 <translation id="7781829728241885113">Juče</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Dostupno van mreže</translation>
 <translation id="851751545965956758">Onemogući sajtovima da se povezuju sa uređajima</translation>
 <translation id="8525306231823319788">Ceo ekran</translation>
-<translation id="857074314439694500">Ako ova veb-aplikacija pokušava da vas prevari da je neka druga aplikacija, deinstalirajte je.</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8676374126336081632">Obriši unos</translation>

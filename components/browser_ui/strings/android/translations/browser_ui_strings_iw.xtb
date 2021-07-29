@@ -3,7 +3,6 @@
 <translationbundle lang="iw">
 <translation id="1006017844123154345">פתיחת גרסה אונליין</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
-<translation id="1100504063505580045">הסמל הנוכחי</translation>
 <translation id="1124090076051167250">‏הפעולה הזאת תמחק <ph name="DATASIZE" /> של נתונים וקובצי cookie שאתרים ואפליקציות שמרו במסך הבית.</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">השתקת הסרטון</translation>
 <translation id="3596414637720633074">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
-<translation id="365089839707261811">בדיקת עדכוני השם</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4336434711095810371">ניקוי כל הנתונים</translation>
-<translation id="4339203724549370495">הסרת אפליקציה</translation>
 <translation id="4402755511846832236">אתרים לא יוכלו לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="445467742685312942">מתן הרשאה לאתרים להציג תוכן מוגן</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">מציאות מדומה</translation>
 <translation id="4708011789095599544">‏האם למחוק את קובצי ה-cookie ונתוני אתר נוספים של אתר זה?</translation>
 <translation id="4751476147751820511">חיישני תנועה או אור</translation>
-<translation id="4800839971935185386">בדיקה של עדכוני הסמל והשם</translation>
 <translation id="4836046166855586901">תוצג שאלה כשאתר יבקש לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="4883854917563148705">לא ניתן לאפס הגדרות מנוהלות</translation>
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">שמות</translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">חסימת מודעות באתרים שמוצגות בהם מודעות מפריעות או מטעות</translation>
-<translation id="549957179819296104">הסמל החדש</translation>
 <translation id="5502860503640766021">פועלת: <ph name="PERMISSION_1" />, חסומה: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">אתרים לא יכולים לבקש לשלוח התראות</translation>
 <translation id="5516455585884385570">פתיחה של הגדרות ההתראות</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">חסימה במנוע החיפוש הנוכחי</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
-<translation id="7734541938181328224">בדיקת עדכוני הסמל</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="851751545965956758">חסימת התחברות של אתרים אל התקנים</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
-<translation id="857074314439694500">אם אפליקציית האינטרנט הזו מנסה להטעות אותך ולגרום לך לחשוב שזו אפליקציה אחרת, יש להסיר אותה.</translation>
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8676374126336081632">ניקוי קלט</translation>

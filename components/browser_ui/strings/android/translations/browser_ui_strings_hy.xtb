@@ -3,7 +3,6 @@
 <translationbundle lang="hy">
 <translation id="1006017844123154345">Բացել առցանց</translation>
 <translation id="1044891598689252897">Կայքերը կաշխատեն սովորական ռեժիմով</translation>
-<translation id="1100504063505580045">Ընթացիկ պատկերակ</translation>
 <translation id="1124090076051167250">Կջնջվեն բոլոր տվյալներն ու քուքիները (<ph name="DATASIZE" />), որոնք հիմնական էկրանին են պահվել կայքերի և հավելվածի կողմից։</translation>
 <translation id="1178581264944972037">Դադար</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Անջատել տեսանյութի ձայնը</translation>
 <translation id="3596414637720633074">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում</translation>
 <translation id="3600792891314830896">Անջատել կայքերի ձայնը</translation>
-<translation id="365089839707261811">Դիտեք անվան փոփոխությունները</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3763247130972274048">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք տեսանյութի աջ/ձախ մասում</translation>
 <translation id="381841723434055211">Հեռախոսահամարներ</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Կայքում մեդիա ֆայլ է նվագարկվում</translation>
 <translation id="42981349822642051">Ընդարձակել</translation>
 <translation id="4336434711095810371">Մաքրել բոլոր տվյալները</translation>
-<translation id="4339203724549370495">Ապատեղադրել հավելվածը</translation>
 <translation id="4402755511846832236">Արգելել կայքերին տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4434045419905280838">Ելնող պատուհաններ և վերահղում</translation>
 <translation id="445467742685312942">Թույլատրել կայքերին նվագարկել պաշտպանված բովանդակություն</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
 <translation id="4708011789095599544">Մաքրե՞լ այս կայքի քուքիներն ու մյուս տվյալները։</translation>
 <translation id="4751476147751820511">Շարժման և լուսավորության տվիչներ</translation>
-<translation id="4800839971935185386">Դիտեք անվան և պատկերակի փոփոխությունները</translation>
 <translation id="4836046166855586901">Հարցնել, երբ որևէ կայք ուզում է տեղեկանալ, երբ դուք ակտիվորեն օգտագործում եք այս սարքը</translation>
 <translation id="4883854917563148705">Կառավարվող կարգավորումները հնարավոր չէ վերակայել</translation>
 <translation id="4887024562049524730">Կայքերի համար թույլտվություն խնդրել՝ օգտագործելու վիրտուալ իրականության ձեր սարքերն ու տվյալները (խորհուրդ է տրվում)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Անուններ</translation>
 <translation id="5489227211564503167">Անցած ժամանակը՝ <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />։</translation>
 <translation id="5494752089476963479">Արգելափակել գովազդը կայքերում, որոնք հոգնեցնող կամ մոլորեցնող գովազդ են ցուցադրում</translation>
-<translation id="549957179819296104">Նոր պատկերակ</translation>
 <translation id="5502860503640766021">Թույլատրված է՝ «<ph name="PERMISSION_1" />», արգելափակված է՝ «<ph name="PERMISSION_2" />»</translation>
 <translation id="5505264765875738116">Կայքերը չեն կարող խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="5516455585884385570">Բացել ծանուցումների կարգավորումները</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Արգելել ընթացիկ որոնիչին</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
-<translation id="7734541938181328224">Դիտեք պատկերակի փոփոխությունները</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="780301667611848630">Ոչ</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
-<translation id="857074314439694500">Եթե այս վեբ հավելվածը փորձում է խաբեությամբ համոզել, որ այն մեկ այլ հավելված է, անմիջապես ապատեղադրեք այն։</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>
 <translation id="8609465669617005112">Տեղափոխել վեր</translation>
 <translation id="8676374126336081632">Մաքրել ներածումը</translation>

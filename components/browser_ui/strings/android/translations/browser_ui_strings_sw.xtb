@@ -3,7 +3,6 @@
 <translationbundle lang="sw">
 <translation id="1006017844123154345">Fungua Mtandaoni</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
-<translation id="1100504063505580045">Aikoni ya sasa</translation>
 <translation id="1124090076051167250">Hatua hii itafuta <ph name="DATASIZE" /> ya data na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini ya kwanza.</translation>
 <translation id="1178581264944972037">Sitisha</translation>
 <translation id="1181037720776840403">Ondoa</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Zima video</translation>
 <translation id="3596414637720633074">Zuia vidakuzi vya watu au kampuni nyingine katika Hali Fiche</translation>
 <translation id="3600792891314830896">Zima sauti katika tovuti</translation>
-<translation id="365089839707261811">Kagua mabadiliko ya jina</translation>
 <translation id="3744111561329211289">Usawazishaji wa chini chini</translation>
 <translation id="3763247130972274048">Gusa mara mbili kushoto au kulia kwenye video ili uruke kwa sekunde 10</translation>
 <translation id="381841723434055211">Nambari za simu</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Tovuti inacheza maudhui</translation>
 <translation id="42981349822642051">Panua</translation>
 <translation id="4336434711095810371">Futa data yote</translation>
-<translation id="4339203724549370495">Ondoa programu</translation>
 <translation id="4402755511846832236">Zuia tovuti zisijue wakati unatumia kifaa hiki</translation>
 <translation id="4434045419905280838">Madirisha ibukizi/kuelekeza kwingine</translation>
 <translation id="445467742685312942">Ruhusu tovuti icheze maudhui yanayolindwa</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Uhalisia pepe</translation>
 <translation id="4708011789095599544">Je, una uhakika unataka kufuta vidakuzi na data nyingine ya tovuti hii?</translation>
 <translation id="4751476147751820511">Vitambuzi vya mwendo au mwangaza</translation>
-<translation id="4800839971935185386">Kagua mabadiliko ya jina na aikoni</translation>
 <translation id="4836046166855586901">Tovuti ikuombe ruhusa inapotaka kujua wakati unatumia kifaa hiki</translation>
 <translation id="4883854917563148705">Huwezi kubadilisha mipangilio inayodhibitiwa</translation>
 <translation id="4887024562049524730">Uliza kabla ya kuruhusu tovuti zitumie data na kifaa chako cha uhalisia pepe (inapendekezwa)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Majina</translation>
 <translation id="5489227211564503167">Muda uliopita ni <ph name="ELAPSED_TIME" /> kati ya <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Zuia matangazo kwenye tovuti zinazoonyesha matangazo yanayopotosha au yanayokatiza huduma</translation>
-<translation id="549957179819296104">Aikoni mpya</translation>
 <translation id="5502860503640766021">Umeruhusu <ph name="PERMISSION_1" />, umezuia <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Tovuti haziwezi kukuuliza kutuma arifa</translation>
 <translation id="5516455585884385570">Fungua mipangilio ya arifa</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Zuia kwa mtambo wa sasa wa kutafuta</translation>
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7658239707568436148">Ghairi</translation>
-<translation id="7734541938181328224">Kagua mabadiliko ya aikoni</translation>
 <translation id="7781829728241885113">Jana</translation>
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="780301667611848630">Hapana</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>
 <translation id="851751545965956758">Zuia tovuti zisiunganishe kwenye vifaa</translation>
 <translation id="8525306231823319788">Skrini nzima</translation>
-<translation id="857074314439694500">Iwapo programu hii ya wavuti inajaribu kukuhadaa ili ufikirie kwamba ni programu tofauti, iondoe.</translation>
 <translation id="857943718398505171">Imeruhusiwa (inapendekezwa)</translation>
 <translation id="8609465669617005112">Songa juu</translation>
 <translation id="8676374126336081632">Futa uingizaji wa maandishi</translation>

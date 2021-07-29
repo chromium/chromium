@@ -159,6 +159,7 @@
 <translation id="1164891049599601209">Inserida em fraudulento</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1166212789817575481">Fechar guias à direita</translation>
+<translation id="1166583374608765787">Revisar a atualização do nome</translation>
 <translation id="1168020859489941584">Abrindo em <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Perguntar quando um site quiser usar fontes instaladas no seu dispositivo</translation>
 <translation id="1171135284592304528">Destacar o objeto com o foco do teclado quando ele mudar</translation>
@@ -326,6 +327,7 @@
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
 <translation id="1355088139103479645">Excluir todos os dados?</translation>
 <translation id="1355466263109342573">O <ph name="PLUGIN_NAME" /> está bloqueado</translation>
+<translation id="1356178530321889280">Clique com o botão direito do mouse e selecione "Pesquisar parte da página com o Google Lens" para pesquisar qualquer região do site e saber mais sobre o conteúdo visual exibido enquanto você navega e faz compras na Internet.</translation>
 <translation id="1358741672408003399">Ortografia e gramática</translation>
 <translation id="1359923111303110318">Seu dispositivo pode ser desbloqueado com o Smart Lock. Pressione "Enter" para desbloquear.</translation>
 <translation id="1361164813881551742">Adicionar manualmente</translation>
@@ -428,6 +430,7 @@
 <translation id="146000042969587795">Este frame foi bloqueado porque contém algum conteúdo não seguro.</translation>
 <translation id="146219525117638703">Estado ONC</translation>
 <translation id="146220085323579959">Desconectado da Internet. Verifique sua conexão com a Internet e tente novamente.</translation>
+<translation id="1462850958694534228">Revisar a atualização do ícone</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> foi bloqueado pelo Proteção Avançada.</translation>
 <translation id="1464044141348608623">Não permitir que sites saibam quando você está usando o dispositivo ativamente</translation>
 <translation id="1464258312790801189">Suas contas</translation>
@@ -530,6 +533,7 @@
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já foi atribuída à ação "<ph name="ACTION" />". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Abrir configurações de exibição do dispositivo</translation>
+<translation id="1571738973904005196">Ver guia: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (visitante)</translation>
 <translation id="1572266655485775982">Ativar Wi-Fi</translation>
 <translation id="1572876035008611720">Digite seu e-mail</translation>
@@ -681,7 +685,6 @@
 <translation id="1706625117072057435">Níveis de zoom</translation>
 <translation id="1708338024780164500">(Inativa)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (código: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">Este é um navegador experimental. Pode causar perda de dados ou comprometer a privacidade ou a segurança. Informe um problema em "Ajuda &gt; Informar um problema…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativo)</translation>
 <translation id="1709217939274742847">Selecione um tíquete para usar na autenticação. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">Não foi possível compartilhar</translation>
@@ -2502,7 +2505,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3649505501900178324">Atualização atrasada</translation>
 <translation id="3650753875413052677">Erro na inscrição</translation>
 <translation id="3650845953328929506">Upload de registro pendente.</translation>
-<translation id="365089839707261811">Revisar atualizações de nome</translation>
 <translation id="3650952250015018111">Permitir que o app "<ph name="APP_NAME" />" acesse:</translation>
 <translation id="3651488188562686558">Desconectar do Wi-Fi</translation>
 <translation id="3652817283076144888">Inicializando</translation>
@@ -5996,6 +5998,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7507930499305566459">Certificado do respondente de status</translation>
 <translation id="7509097596023256288">Configurando o gerenciamento</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>
+<translation id="7509539379068593709">Desinstalar app</translation>
 <translation id="7511415964832680006">Quando esse recurso estiver ativado, os sites poderão usar as técnicas de preservação de privacidade mostradas aqui para exibir conteúdo e serviços. Isso inclui alternativas ao rastreamento entre sites. Ao longo do tempo, é possível que outros testes sejam adicionados.</translation>
 <translation id="7513029293694390567">Faça login automaticamente nos sites que usam credenciais armazenadas. Quando o recurso estiver desativado, será necessário fornecer uma confirmação todas as vezes que fizer login em um site.</translation>
 <translation id="7514239104543605883">Copiar para o dispositivo</translation>
@@ -6221,7 +6224,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7730449930968088409">Capturar o conteúdo da sua tela</translation>
 <translation id="7730683939467795481">Esta página foi mudada pela extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="7734486794139738745">Eu uso apenas um interruptor</translation>
-<translation id="7734541938181328224">Revisar atualizações de ícone</translation>
 <translation id="7737115349420013392">Pareando com "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Você pode mudar essa opção a qualquer momento em Configurações &gt; Google Assistente &gt; Contexto da tela.</translation>
 <translation id="7737948071472253612">Bloquear o uso da câmera</translation>
@@ -6285,7 +6287,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7792388396321542707">Interromper compartilhamento</translation>
 <translation id="779308894558717334">Verde-claro</translation>
 <translation id="7793098747275782155">Azul-escuro</translation>
-<translation id="7797246427375693110">Ativado / Será desativado automaticamente <ph name="TIME" /></translation>
+<translation id="7797246427375693110">Ativado / Será desativado automaticamente às <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Desativado</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> bloqueada automaticamente</translation>
 <translation id="7799299114731150374">Plano de fundo definido</translation>
@@ -6845,6 +6847,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8373652277231415614">Diretórios compartilhados do Crostini</translation>
 <translation id="8376137163494131156">Conte o que está acontecendo com o Google Cast</translation>
 <translation id="8376384591331888629">Incluir também os cookies de terceiros desse site</translation>
+<translation id="8376451933628734023">Se este app da Web estiver tentando se passar por outro app, desinstale-o.</translation>
 <translation id="8378714024927312812">Gerenciado pela sua organização</translation>
 <translation id="8379878387931047019">Este dispositivo não é compatível com o tipo de chave de segurança solicitado por este site</translation>
 <translation id="8379991678458444070">Para voltar a esta guia rapidamente, adicione-a aos favoritos</translation>
@@ -6992,7 +6995,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Tentativa de downgrade de aplicativo.</translation>
 <translation id="8569682776816196752">Nenhum destino encontrado</translation>
-<translation id="857074314439694500">Se este app da Web estiver tentando se passar por outro app, desinstale-o.</translation>
 <translation id="8571213806525832805">Últimas quatro semanas</translation>
 <translation id="8571687764447439720">Adicionar tíquete do Kerberos</translation>
 <translation id="8574990355410201600">Sempre permitir som em <ph name="HOST" /></translation>
@@ -7690,7 +7692,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="98515147261107953">Paisagem</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Geral</translation>
-<translation id="987363316774788151">Desativado / Será ativado automaticamente <ph name="TIME" /></translation>
+<translation id="987363316774788151">Desativado / Será ativado automaticamente às <ph name="TIME" /></translation>
 <translation id="987897973846887088">Não há imagens disponíveis</translation>
 <translation id="988320949174893488">Tem falhas intermitentes</translation>
 <translation id="988978206646512040">A senha longa não pode ficar em branco</translation>

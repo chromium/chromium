@@ -3,7 +3,6 @@
 <translationbundle lang="pt-BR">
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
-<translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1124090076051167250">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Desativar som do vídeo</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="3600792891314830896">Silenciar sites com áudio</translation>
-<translation id="365089839707261811">Revisar atualizações de nome</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
 <translation id="381841723434055211">Números de telefone</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Um site está com mídia aberta</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336434711095810371">Limpar todos os dados</translation>
-<translation id="4339203724549370495">Desinstalar app</translation>
 <translation id="4402755511846832236">Impedir que sites saibam quando você está usando este dispositivo</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="445467742685312942">Permitir que sites mostrem conteúdo protegido</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4708011789095599544">Tem certeza de que quer limpar os cookies e outros dados deste site?</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
-<translation id="4800839971935185386">Revisar atualizações de nome e ícone</translation>
 <translation id="4836046166855586901">Perguntar quando um site quiser saber os momentos em que você está usando este dispositivo</translation>
 <translation id="4883854917563148705">Não é possível redefinir as configurações gerenciadas</translation>
 <translation id="4887024562049524730">Perguntar antes de permitir que sites usem seus dispositivos e dados de realidade virtual (recomendado)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5489227211564503167">Tempo decorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquear anúncios em sites com publicidade invasiva ou enganosa</translation>
-<translation id="549957179819296104">Novo ícone</translation>
 <translation id="5502860503640766021">Permissão autorizada: <ph name="PERMISSION_1" />. Permissão bloqueada: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Os sites não podem pedir para enviar notificações</translation>
 <translation id="5516455585884385570">Abrir configurações de notificação</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Bloquear o mecanismo de pesquisa atual</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7734541938181328224">Revisar atualizações de ícone</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="780301667611848630">Não</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="851751545965956758">Impedir que sites se conectem a dispositivos</translation>
 <translation id="8525306231823319788">Tela cheia</translation>
-<translation id="857074314439694500">Se este app da Web estiver tentando se passar por outro app, desinstale-o.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8676374126336081632">Limpar entrada</translation>

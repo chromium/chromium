@@ -3,7 +3,6 @@
 <translationbundle lang="ms">
 <translation id="1006017844123154345">Buka Dalam Talian</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
-<translation id="1100504063505580045">Ikon semasa</translation>
 <translation id="1124090076051167250">Tindakan ini akan mengosongkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh tapak atau apl pada Skrin utama anda.</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Redam video</translation>
 <translation id="3596414637720633074">Sekat kuki pihak ketiga dalam Inkognito</translation>
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
-<translation id="365089839707261811">Semak kemaskinian nama</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
 <translation id="381841723434055211">Nombor telefon</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Tapak sedang memainkan media</translation>
 <translation id="42981349822642051">Kembangkan</translation>
 <translation id="4336434711095810371">Kosongkan semua data</translation>
-<translation id="4339203724549370495">Nyahpasang apl</translation>
 <translation id="4402755511846832236">Sekat tapak daripada mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4434045419905280838">Tetingkap timbul dan ubah hala</translation>
 <translation id="445467742685312942">Benarkan tapak memainkan kandungan yang dilindungi</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Realiti maya</translation>
 <translation id="4708011789095599544">Adakah anda pasti anda ingin mengosongkan kuki dan data tapak lain bagi tapak web ini?</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
-<translation id="4800839971935185386">Semak kemaskinian nama &amp; ikon</translation>
 <translation id="4836046166855586901">Tanya apabila laman ingin mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4883854917563148705">Tetapan yang diurus tidak dapat ditetapkan semula</translation>
 <translation id="4887024562049524730">Tanya sebelum membenarkan tapak menggunakan peranti dan data realiti maya anda (disyorkan)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nama</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> masa berlalu daripada <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Sekat iklan di tapak yang menyiarkan iklan yang mengganggu atau mengelirukan</translation>
-<translation id="549957179819296104">Ikon baharu</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> dibenarkan, <ph name="PERMISSION_2" /> disekat</translation>
 <translation id="5505264765875738116">Tapak tidak boleh membuat permintaan untuk menghantar pemberitahuan</translation>
 <translation id="5516455585884385570">Buka tetapan pemberitahuan</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Sekat untuk enjin carian semasa</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
-<translation id="7734541938181328224">Semak kemaskinian ikon</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
-<translation id="857074314439694500">Jika apl web ini cuba memperdaya anda agar menganggapnya apl lain, nyahpasang apl ini.</translation>
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>

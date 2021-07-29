@@ -5892,9 +5892,9 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se define esta política, HTTP/0.9 se inhabilitará en los puertos no utilizados de forma predeterminada.</translation>
 <translation id="8503018573167958506">Determina si un usuario puede configurar el nombre de host del dispositivo.
 
-      Si <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> se establece, el administrador definirá el nombre de host y el usuario no podrá elegirlo, independientemente del valor que se haya asignado a esta política.
-      Si se le asigna el valor true a esta política y <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> no se establece, el administrador no definirá el nombre de host y el usuario podrá elegir uno.
-      Si se le asigna el valor false a esta política y <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> no se establece, el administrador no definirá el nombre de host y el usuario no podrá elegirlo. Por ello, se usará el nombre predeterminado.</translation>
+      Si se establece <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador definirá el nombre de host y el usuario no podrá elegirlo, independientemente del valor que se haya asignado a esta política.
+      Si se le asigna el valor true a esta política y no se establece <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador no definirá el nombre de host y el usuario podrá elegir uno.
+      Si se le asigna el valor false a esta política y no se establece <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, el administrador no definirá el nombre de host y el usuario no podrá elegirlo. Por ello, se usará el nombre predeterminado.</translation>
 <translation id="8504243661032323176">Si se establece esta política, se aplica la longitud mínima definida del PIN. Los valores inferiores a 1 se redondean al mínimo de 1.
 
       Si no se establece esta política, se aplica la longitud mínima del PIN de 6 dígitos, que es el mínimo recomendado.</translation>

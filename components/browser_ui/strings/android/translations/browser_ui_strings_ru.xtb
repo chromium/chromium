@@ -3,7 +3,6 @@
 <translationbundle lang="ru">
 <translation id="1006017844123154345">Открыть в Интернете</translation>
 <translation id="1044891598689252897">Сайты будут работать в нормальном режиме</translation>
-<translation id="1100504063505580045">Текущий значок</translation>
 <translation id="1124090076051167250">Будут удалены данные и файлы cookie, сохраненные сайтами или приложениями, добавленными на главный экран. Всего: <ph name="DATASIZE" />.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Выключить звук для видео</translation>
 <translation id="3596414637720633074">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="3600792891314830896">Отключить звуки на сайтах</translation>
-<translation id="365089839707261811">Проверьте новое название</translation>
 <translation id="3744111561329211289">Фоновая синхронизация</translation>
 <translation id="3763247130972274048">Чтобы пропустить 10 секунд, дважды нажмите слева или справа.</translation>
 <translation id="381841723434055211">Номера телефонов</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">На сайте воспроизводятся медиафайлы</translation>
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4336434711095810371">Удалить все данные</translation>
-<translation id="4339203724549370495">Удалить приложение</translation>
 <translation id="4402755511846832236">Блокировать передачу на сайты информации об использовании устройства</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
 <translation id="445467742685312942">Разрешить сайтам воспроизводить защищенный контент</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Виртуальная реальность</translation>
 <translation id="4708011789095599544">Вы действительно хотите удалить файлы cookie и другие данные для этого сайта?</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
-<translation id="4800839971935185386">Проверьте новое название и значок</translation>
 <translation id="4836046166855586901">Спрашивать перед передачей на сайт информации об использовании устройства</translation>
 <translation id="4883854917563148705">Управляемые настройки сбросить нельзя</translation>
 <translation id="4887024562049524730">Запрашивать для сайтов разрешение на использование устройства и данных виртуальной реальности (рекомендуется)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Просмотрено <ph name="ELAPSED_TIME" /> из <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокировать объявления на сайтах, которые показывают навязчивую или вводящую в заблуждение рекламу</translation>
-<translation id="549957179819296104">Новый значок</translation>
 <translation id="5502860503640766021">Разрешено: <ph name="PERMISSION_1" />. Заблокировано: <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">Сайты не могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="5516455585884385570">Перейти в настройки уведомлений</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Закрыть доступ текущей поисковой системе</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
-<translation id="7734541938181328224">Проверьте новый значок</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
-<translation id="857074314439694500">Если разработчики пытаются выдать это веб-приложение за другое, удалите его.</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>
 <translation id="8609465669617005112">Переместить вверх</translation>
 <translation id="8676374126336081632">Очистить</translation>

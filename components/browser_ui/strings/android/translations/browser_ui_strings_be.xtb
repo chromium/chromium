@@ -3,7 +3,6 @@
 <translationbundle lang="be">
 <translation id="1006017844123154345">Адкрыць у інтэрнэце</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
-<translation id="1100504063505580045">Бягучы значок</translation>
 <translation id="1124090076051167250">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі або размешчанымі на галоўным экране праграмамі.</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Выключыць гук відэа</translation>
 <translation id="3596414637720633074">Блакіраваць староннія файлы cookie у рэжыме інкогніта</translation>
 <translation id="3600792891314830896">Выключыць гук на сайтах, якія прайграюць гукі</translation>
-<translation id="365089839707261811">Праверце новае імя</translation>
 <translation id="3744111561329211289">Фонавая сінхранізацыя</translation>
 <translation id="3763247130972274048">Каб пераматаць відэа на 10 с назад або наперад, двойчы націсніце на яго з правага або левага боку</translation>
 <translation id="381841723434055211">Нумары тэлефонаў</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Сайт прайграе мультымедыя</translation>
 <translation id="42981349822642051">Разгарнуць</translation>
 <translation id="4336434711095810371">Выдаліць усе даныя</translation>
-<translation id="4339203724549370495">Выдаліць праграму</translation>
 <translation id="4402755511846832236">Не даваць сайтам знаць, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4434045419905280838">Усплыв. вокны і перанакіраванні</translation>
 <translation id="445467742685312942">Дазволіць сайтам прайграваць абароненае змесціва</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
 <translation id="4708011789095599544">Вы ўпэўненыя, што хочаце выдаліць файлы cookie і іншыя даныя сайта для гэтага вэб-сайта?</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
-<translation id="4800839971935185386">Праверце новы значок і імя</translation>
 <translation id="4836046166855586901">Дазволіць сайтам запытваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
 <translation id="4883854917563148705">Налады, якія знаходзяцца пад кіраваннем, скінуць нельга</translation>
 <translation id="4887024562049524730">Пытацца, перш чым дазваляць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці (рэкамендуецца)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Імёны</translation>
 <translation id="5489227211564503167">Прайшло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блакіраваць рэкламу на сайтах, якія паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>
-<translation id="549957179819296104">Новы значок</translation>
 <translation id="5502860503640766021">Дазволена: <ph name="PERMISSION_1" />. Заблакіравана: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Сайтам забаронена запытваць дазвол на паказ апавяшчэнняў</translation>
 <translation id="5516455585884385570">Адкрыць налады апавяшчэнняў</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Блакіраваць для бягучай пошукавай сістэмы</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
-<translation id="7734541938181328224">Праверце новы значок</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="851751545965956758">Блакіраваць сайтам падключэнне да прылад</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
-<translation id="857074314439694500">Калі гэта вэб-праграма спрабуе выдаць сябе за іншую, выдаліце яе.</translation>
 <translation id="857943718398505171">Дазволена (рэкамендуецца)</translation>
 <translation id="8609465669617005112">Перамясціць уверх</translation>
 <translation id="8676374126336081632">Ачысціць поле ўводу</translation>

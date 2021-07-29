@@ -3,7 +3,6 @@
 <translationbundle lang="mr">
 <translation id="1006017844123154345">ऑनलाइन उघडा</translation>
 <translation id="1044891598689252897">साइट सामान्यपणे काम करतील</translation>
-<translation id="1100504063505580045">सध्याचा आयकन</translation>
 <translation id="1124090076051167250">हे साइट किंवा तुमच्या होम स्क्रीनवरील अ‍ॅप्सनी स्टोअर केलेला <ph name="DATASIZE" /> डेटा आणि कुकी साफ करेल.</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">व्हिडिओ म्‍यूट करा</translation>
 <translation id="3596414637720633074">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="3600792891314830896">ध्वनी प्ले करणाऱ्या साइट म्यूट करा</translation>
-<translation id="365089839707261811">नावामधील अपडेटचे पुनरावलोकन करा</translation>
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
 <translation id="3763247130972274048">१० सेकंद पुढे जाण्यासाठी व्हिडिओवर डावीकडे किंवा उजवीकडे दोनदा टॅप करा</translation>
 <translation id="381841723434055211">फोन नंबर</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
 <translation id="4336434711095810371">सर्व डेटा साफ करा</translation>
-<translation id="4339203724549370495">अ‍ॅप अनइंस्टॉल करा</translation>
 <translation id="4402755511846832236">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटना जाणून घेण्यापासून ब्लॉक करा</translation>
 <translation id="4434045419905280838">पॉप-अप आणि रीडिरेक्ट</translation>
 <translation id="445467742685312942">साइटना संरक्षित आशय प्ले करू द्या</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">आभासी वास्तविकता</translation>
 <translation id="4708011789095599544">तुम्हाला या वेबसाइटच्या कुकी आणि इतर साइट डेटा नक्की साफ करायचा आहे का?</translation>
 <translation id="4751476147751820511">मोशन किंवा प्रकाश सेन्सर</translation>
-<translation id="4800839971935185386">नाव आणि आयकनमधील अपडेटचे पुनरावलोकन करा</translation>
 <translation id="4836046166855586901">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटला जाणून घ्यायचे असते तेव्हा विचारा</translation>
 <translation id="4883854917563148705">व्यवस्थापित केलेल्या सेटिंग्ज रीसेट करता येत नाहीत</translation>
 <translation id="4887024562049524730">साइटना तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरू देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">नावे</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> पैकी <ph name="ELAPSED_TIME" /> गेलेला वेळ.</translation>
 <translation id="5494752089476963479">अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवणाऱ्या साइटवरील जाहिराती ब्लॉक करा</translation>
-<translation id="549957179819296104">नवीन आयकन</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> ची अनुमती दिली, <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
 <translation id="5505264765875738116">साइट सूचना पाठवण्यास सांगू शकत नाहीत</translation>
 <translation id="5516455585884385570">सूचना सेटिंग्ज उघडा</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">वर्तमान शोध इंजिनसाठी अवरोधित करा</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
-<translation id="7734541938181328224">आयकनमधील अपडेटचे पुनरावलोकन करा</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="780301667611848630">नाही, नको</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="851751545965956758">डिव्हाइसेसशी कनेक्ट करण्यापासून साइटना ब्लॉक करा</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
-<translation id="857074314439694500">हे वेब ॲप तुम्हाला ते वेगळे ॲप असल्याचे भासवून फसवण्याचा प्रयत्न करत असल्यास, ते अनइंस्टॉल करा.</translation>
 <translation id="857943718398505171">अनुमती दिली (शिफारस केलेले)</translation>
 <translation id="8609465669617005112">वर हलवा</translation>
 <translation id="8676374126336081632">इनपुट साफ करा</translation>

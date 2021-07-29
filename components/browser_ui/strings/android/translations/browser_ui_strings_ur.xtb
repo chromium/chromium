@@ -3,7 +3,6 @@
 <translationbundle lang="ur">
 <translation id="1006017844123154345">آن لائن کھولیں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
-<translation id="1100504063505580045">موجودہ آئیکن</translation>
 <translation id="1124090076051167250">اس سے آپ کی ہوم اسکرین پر موجود سائٹس یا ایپس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">ویڈیو خاموش کریں</translation>
 <translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
 <translation id="3600792891314830896">آواز چلانے والی سائٹس کی آواز بند کریں</translation>
-<translation id="365089839707261811">نام کے اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="3744111561329211289">پس منظر کی مطابقت پذیری</translation>
 <translation id="3763247130972274048">10 سیکنڈ کو نظر انداز کرنے کے لیے، دائیں یا بائیں ویڈیو پر دوبار تھپتھپائیں</translation>
 <translation id="381841723434055211">فون نمبرز</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
 <translation id="4336434711095810371">سبھی ڈیٹا صاف کریں</translation>
-<translation id="4339203724549370495">ایپ کو اَن انسٹال کریں</translation>
 <translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو مسدود کریں</translation>
 <translation id="4434045419905280838">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="445467742685312942">سائٹس کو محفوظ مواد چلانے کی اجازت دیں</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">ورچوئل رئیلٹی</translation>
 <translation id="4708011789095599544">کیا آپ واقعی اس ویب سائٹ کے لیے کوکیز اور دیگر سائٹ کا ڈیٹا صاف کرنا چاہتے ہیں؟</translation>
 <translation id="4751476147751820511">موشن یا لائٹ سینسرز</translation>
-<translation id="4800839971935185386">نام اور آئیکن کے اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="4836046166855586901">پوچھیں کہ کب کوئی سائٹ یہ جاننا چاہتی ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
 <translation id="4883854917563148705">نظم کردہ ترتیبات کو دوبارہ سیٹ نہیں کیا جا سکتا</translation>
 <translation id="4887024562049524730">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">نام</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> میں سے <ph name="ELAPSED_TIME" /> وقت گزر گیا۔</translation>
 <translation id="5494752089476963479">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر اشتہارات کو مسدود کریں</translation>
-<translation id="549957179819296104">نیا آئیکن</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> کی اجازت دی گئی، <ph name="PERMISSION_2" /> کو مسدود کر دیا گیا</translation>
 <translation id="5505264765875738116">سائٹس اطلاعات بھیجنے کے لیے نہیں کہہ سکتی ہیں</translation>
 <translation id="5516455585884385570">اطلاع کی ترتیبات کھولیں</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">موجودہ سرچ انجن کو مسدود کریں</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
-<translation id="7734541938181328224">آئیکن کے اپ ڈیٹس کا جائزہ لیں</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
 <translation id="851751545965956758">سائٹس کو آلات سے منسلک ہونے سے مسدود کریں</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
-<translation id="857074314439694500">اگر یہ ویب ایپ آپ کو دھوکے سے دخل انداز کرنے کی سوچنے کی کوشش کر رہی ہے تو یہ ایک مختلف ایپ ہے اسے ان انسٹال کریں۔</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
 <translation id="8609465669617005112">اوپر منتقل کریں</translation>
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>

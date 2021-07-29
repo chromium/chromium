@@ -52,7 +52,7 @@
 <translation id="2094919256425865063">છતાં પણ Chrome બંધ કરવું છે?</translation>
 <translation id="2120620239521071941">આ, <ph name="ITEMS_COUNT" /> આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
-<translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ્સ<ph name="END_LINK" />ની જાણ કરીને Chrome ને બહેતર બનાવવામાં સહાય કરો</translation>
+<translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="2151406531797534936">કૃપા કરીને હવે Chrome ફરી શરૂ કરો</translation>
 <translation id="2246246234298806438">જ્યારે બિલ્ટ-ઇન PDF વ્યૂઅર ગૂમ હોય ત્યારે Google Chrome પ્રિન્ટ પ્રીવ્યૂ બતાવી શકતું નથી.</translation>
 <translation id="2290014774651636340">Google API કીઝ ખૂટે છે. Google Chrome ની કેટલીક કાર્યક્ષમતા અક્ષમ થશે.</translation>
@@ -154,7 +154,7 @@
 <translation id="4480040274068703980">સાઇન ઇનમાં ભૂલ આવવાને કારણે Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="4521185804071812304">વૈકલ્પિક: Googleને નિદાન અને વપરાશ ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome OSની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો.</translation>
 <translation id="4561051373932531560">Google Chrome થી તમે વેબ પર એક ફોન નંબર પર ક્લિક કરી શકો છો અને તેને Skype થી કૉલ કરી શકો છો!</translation>
-<translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ઉપકરણો પર તમારા બુકમાર્ક્સ, ઇતિહાસ અને અન્ય સેટિંગ્સને ઍક્સેસ કરી શકો છો.</translation>
+<translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને અન્ય સેટિંગને ઍક્સેસ કરી શકો છો.</translation>
 <translation id="4571503333518166079">Chromeની નોટિફિકેશનની સેટિંગ પર જાઓ</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
@@ -184,7 +184,7 @@
 <translation id="5394833366792865639">Chrome ટૅબ શેર કરો</translation>
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
-Google Chrome તમારી સેટિંગ્સને પુનઃપ્રાપ્ત કરવામાં અક્ષમ છે.</translation>
+Google Chrome તમારા સેટિંગને રિકવર કરી શકતું નથી.</translation>
 <translation id="5434383153637353914">આ પેજ તમને તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરવાની મંજૂરી આપે છે. આ એકાઉન્ટ Chrome બ્રાઉઝર અને Play સ્ટોર ઍપમાં તેમજ Gmail, Drive અને YouTube જેવી સેવાઓમાં ઉપલબ્ધ રહેશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />અમે શરૂ કરીએ તે પહેલાં, કૃપા કરીને ખાતરી કરો કે તમારી પાસે તમારા ડેટાનો અપ ટૂ ડેટ બૅકઅપ ઉપલબ્ધ છે. Chrome OSને ઇન્સ્ટૉલ કરવાથી, બધો ડેટા તમારી હાર્ડ ડ્રાઇવ પર ઓવરરાઇટ થઈ જશે.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />કોઈપણ પ્રકારના ડેટાના નુકસાન બદલ Google જવાબદાર નથી તેમજ તે ગૅરંટી પણ આપતું નથી કે Chrome OS એવા કોઈ મૉડલ પર કામ કરશે કે જે અપ્રમાણિત છે. પ્રમાણિત મૉડલ વિશે વધુ જાણવા માટે, કૃપા કરીને [TBD]ની મુલાકાત લો.<ph name="END_PARAGRAPH2" />

@@ -3,7 +3,6 @@
 <translationbundle lang="ko">
 <translation id="1006017844123154345">온라인 열기</translation>
 <translation id="1044891598689252897">사이트가 정상적으로 작동합니다.</translation>
-<translation id="1100504063505580045">현재 아이콘</translation>
 <translation id="1124090076051167250">이렇게 하면 사이트 또는 홈 화면의 앱에서 저장한 <ph name="DATASIZE" />의 데이터 및 쿠키가 삭제됩니다.</translation>
 <translation id="1178581264944972037">일시중지</translation>
 <translation id="1181037720776840403">삭제</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">동영상 음소거</translation>
 <translation id="3596414637720633074">시크릿 모드에서 타사 쿠키 차단</translation>
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
-<translation id="365089839707261811">이름 업데이트 검토</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
 <translation id="3763247130972274048">10초를 건너뛰려면 동영상 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
 <translation id="381841723434055211">전화번호</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
-<translation id="4339203724549370495">앱 제거</translation>
 <translation id="4402755511846832236">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 차단합니다.</translation>
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
 <translation id="445467742685312942">사이트에서 보호된 콘텐츠를 재생하도록 허용</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">가상 현실</translation>
 <translation id="4708011789095599544">이 웹사이트의 쿠키 및 기타 사이트 데이터를 삭제하시겠습니까?</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
-<translation id="4800839971935185386">이름 및 아이콘 업데이트 검토</translation>
 <translation id="4836046166855586901">사용자가 현재 기기를 사용 중인지 사이트에서 알고자 할 때 확인</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
 <translation id="4887024562049524730">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하기 전에 확인(권장)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">이름</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>
 <translation id="5494752089476963479">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트의 광고 차단</translation>
-<translation id="549957179819296104">새로운 아이콘</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> 허용됨, <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="5505264765875738116">사이트에서 알림 전송 허용을 요청할 수 없음</translation>
 <translation id="5516455585884385570">알림 설정 열기</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">현재 검색엔진에 허용 안함</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
-<translation id="7734541938181328224">아이콘 업데이트 검토</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="780301667611848630">취소</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
-<translation id="857074314439694500">웹 앱이 다른 앱인 것처럼 사용자를 속이려 한다면 앱을 제거하시기 바랍니다.</translation>
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>

@@ -409,7 +409,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{In less than a day}=1{In a day}other{In {NUM_DAYS} days}}</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2359961752320758691">Your virtual card number is applied.</translation>
 <translation id="236340516568226369">Resize toggle menu</translation>
 <translation id="2367567093518048410">Level</translation>
 <translation id="2372464001869762664">Once you confirm, card details from your Google Account will be shared with this site. Find the CVC in your Plex account details.</translation>
@@ -867,6 +866,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4067947977115446013">Add Valid Address</translation>
 <translation id="4072193657607981494">Loading policies</translation>
 <translation id="4072486802667267160">There was an error processing your order. Please try again.</translation>
+<translation id="4073797364926776829">View card</translation>
 <translation id="4075732493274867456">The client and server don't support a common SSL protocol version or cipher suite.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">Proxy configuration is set to use a .pac script URL, not fixed proxy servers.</translation>
@@ -997,6 +997,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> didn’t accept your login certificate, or one may not have been provided.</translation>
 <translation id="4432792777822557199">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on</translation>
+<translation id="4433642172056592619">Ignored because user is not affiliated to the machine management or the machine is not managed.</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
@@ -1367,6 +1368,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5759751709240058861">Use and move your camera</translation>
 <translation id="5763042198335101085">Enter a valid email address</translation>
 <translation id="5765072501007116331">To see delivery methods and requirements, select an address</translation>
+<translation id="57689295674415555">Virtual card number not filled in?</translation>
 <translation id="5776313857861697733">Priority</translation>
 <translation id="5778550464785688721">MIDI devices full control</translation>
 <translation id="5781136890105823427">Experiment enabled</translation>
@@ -1468,7 +1470,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6113594885686374546">Resume journey button; press enter to resume your journey and see relevant activity in your Chrome history</translation>
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
 <translation id="6120179357481664955">Remember your UPI ID?</translation>
-<translation id="6123290840358279103">View virtual card</translation>
 <translation id="6124432979022149706">Chrome Enterprise connectors</translation>
 <translation id="6146055958333702838">Check any cables and reboot any routers, modems or other network
     devices you may be using.</translation>

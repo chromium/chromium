@@ -3,7 +3,6 @@
 <translationbundle lang="as">
 <translation id="1006017844123154345">অনলাইনত খোলক</translation>
 <translation id="1044891598689252897">ছাইটসমূহে স্বাভাৱিকভাৱে কাম কৰিব</translation>
-<translation id="1100504063505580045">বৰ্তমানৰ চিহ্ন</translation>
 <translation id="1124090076051167250">এইটোৱে আপোনাৰ গৃহ স্ক্রীনত ছাইট অথবা এপ্‌সমূহে ষ্ট’ৰ কৰা <ph name="DATASIZE" /> ডেটা আৰু কুকি মচিব।</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">ভিডিঅ' মিউট কৰক</translation>
 <translation id="3596414637720633074">ইনক'গনিট'ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="3600792891314830896">ধ্বনি প্লে’ কৰা ছাটসমূহ মিউট কৰক</translation>
-<translation id="365089839707261811">নামৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="3744111561329211289">নেপথ্যত ছিংক কৰা</translation>
 <translation id="3763247130972274048">১০ ছেকেণ্ড এৰি যাবলৈ ভিডিঅ’টোত সোঁ অথবা বাওঁফালে দুবাৰ টিপক</translation>
 <translation id="381841723434055211">ফ’ন নম্বৰসমূহ</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">ছাইটটোৱে মিডিয়া প্লে’ কৰি আছে</translation>
 <translation id="42981349822642051">বিস্তাৰ কৰক</translation>
 <translation id="4336434711095810371">সকলো ডেটা মচক</translation>
-<translation id="4339203724549370495">এপ্ আনইনষ্টল কৰক</translation>
 <translation id="4402755511846832236">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে ছাইটসমূহে জনাটো অৱৰোধ কৰক</translation>
 <translation id="4434045419905280838">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="445467742685312942">ছাইটসমূহক সুৰক্ষিত সমল প্লে' কৰিবলৈ অনুমতি দিয়ক</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">ভাৰ্চুৱেল ৰিয়েলিটি</translation>
 <translation id="4708011789095599544">আপুনি এই ৱেবছাইটটোৰ বাবে কুকি আৰু ছাইটৰ অন্য ডেটা মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="4751476147751820511">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
-<translation id="4800839971935185386">নাম আৰু চিহ্নৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="4836046166855586901">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে কোনো ছাইটে সেয়া জানিব বিচাৰিলে সোধক</translation>
 <translation id="4883854917563148705">পৰিচালিত ছেটিংসমূহ ৰিছেট কৰিব নোৱাৰি</translation>
 <translation id="4887024562049524730">ছাইটসমূহক আপোনাৰ ভাৰ্চুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা এক্সেছ কৰিবলৈ অনুমতি দিয়াৰ পূর্বে সোধক (চুপাৰিছ কৰা)</translation>
 <translation id="4962975101802056554">ডিভাইচৰ বাবে সকলো অনুমতি প্ৰত্যাহাৰ কৰক</translation>
 <translation id="497421865427891073">আগুৱাই যাওক</translation>
+<translation id="4976702386844183910">শেষবাৰে <ph name="DATE" /> তাৰিখে চাইছে</translation>
 <translation id="4994033804516042629">কোনো সম্পৰ্ক বিচাৰি পোৱা নগ’ল</translation>
 <translation id="4996978546172906250">ইয়াৰ জৰিয়তে শ্বেয়াৰ কৰক</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
+<translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
 <translation id="528192093759286357">সম্পূৰ্ণ স্ক্ৰীণৰ পৰা প্ৰস্থান কৰিবলৈ ওপৰৰ পৰা টানি আনক আৰু বেক বুটামটো টিপক।</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
 <translation id="5301954838959518834">ঠিক আছে, বুজি পালোঁ</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">নামসমূহ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />ৰ ভিতৰত <ph name="ELAPSED_TIME" /> সময় পাৰ হৈছে।</translation>
 <translation id="5494752089476963479">অননুমোদিত বা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুওৱা ছাইটসমূহত বিজ্ঞাপন অৱৰোধ কৰক</translation>
-<translation id="549957179819296104">নতুন চিহ্ন</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />ৰ অনুমতি দিয়া আছে, <ph name="PERMISSION_2" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="5505264765875738116">ছাইটসমূহে জাননী পঠিয়াবলৈ ক’ব নোৱাৰে</translation>
 <translation id="5516455585884385570">জাননীৰ ছেটিংসমূহ খোলক</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">অনুমতি</translation>
 <translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5876056640971328065">ভিডিঅ’ পজ কৰক</translation>
+<translation id="5887687176710214216">শেষবাৰ কালি চাইছিল</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5922853908706496913">আপোনাৰ স্ক্ৰীন শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="5939518447894949180">ৰিছেট কৰক</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্কেনিং</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা অৱৰোধ কৰা আছে}}</translation>
+<translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিনৰ পূৰ্বে শেষবাৰ চাইছিল</translation>
 <translation id="6561560012278703671">নীৰৱ বাৰ্তা আদান-প্ৰদানৰ সুবিধা ব্যৱহাৰ কৰক (জাননীৰ প্ৰম্প্‌টসমূহে আপোনাৰ বাবে ব্যাঘাত সৃষ্টি কৰিব নোৱৰাকৈ সেইবোৰ অৱৰোধ কৰে)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> জিবি</translation>
 <translation id="6612358246767739896">সুৰক্ষিত সমল</translation>
@@ -250,7 +249,6 @@
 <translation id="7589445247086920869">বৰ্তমানৰ সন্ধান ইঞ্জিনটোৰ বাবে অৱৰোধ কৰক</translation>
 <translation id="7649070708921625228">সহায়</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
-<translation id="7734541938181328224">চিহ্নৰ আপডে’ট পৰ্যালোচনা কৰক</translation>
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
@@ -292,7 +290,6 @@
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
 <translation id="851751545965956758">ডিভাইচৰ সৈতে সংযোগ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
-<translation id="857074314439694500">যদি এই ৱেব এপ্‌টোৱে আপোনাক অন্য এটা এপ্ বুলি জালত পেলাবলৈ চেষ্টা কৰি আছে, এইটোক আনইনষ্টল কৰক।</translation>
 <translation id="857943718398505171">অনুমোদিত (চুপাৰিছ কৰা)</translation>
 <translation id="8609465669617005112">ওপৰলৈ নিয়ক</translation>
 <translation id="8676374126336081632">ইনপুট মচক</translation>

@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">沒有網路</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">請更換電池或進行充電</translation>
-<translation id="1077253978657569125">我們想改善這項服務！</translation>
 <translation id="108486256082349153">行動裝置：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">午安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="109942774857561566">我好無聊</translation>
@@ -485,6 +484,7 @@
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
 <translation id="4702647871202761252">已停用隱私保護畫面</translation>
 <translation id="4705716602320768426">提供意見回饋</translation>
+<translation id="4730258224256997107">協助改善這項功能！</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" /> 鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" /> 鍵 + 最上排的任一按鍵。</translation>

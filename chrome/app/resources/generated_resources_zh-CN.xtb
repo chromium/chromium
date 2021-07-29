@@ -157,6 +157,7 @@
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
 <translation id="1165039591588034296">错误</translation>
 <translation id="1166212789817575481">关闭右侧标签页</translation>
+<translation id="1166583374608765787">查看名称更新</translation>
 <translation id="1168020859489941584">即将在 <ph name="TIME_REMAINING" />后打开...</translation>
 <translation id="1170288591054440704">在网站想使用您设备上安装的字体时询问您</translation>
 <translation id="1171135284592304528">键盘焦点所在对象有变更时突出显示</translation>
@@ -424,6 +425,7 @@
 <translation id="146000042969587795">此框架因含某些不安全内容而被拦截。</translation>
 <translation id="146219525117638703">ONC 状态</translation>
 <translation id="146220085323579959">互联网连接已断开。请检查您的互联网连接并重试。</translation>
+<translation id="1462850958694534228">查看图标更新</translation>
 <translation id="1463112138205428654"><ph name="FILE_NAME" /> 已被高级保护功能屏蔽。</translation>
 <translation id="1464044141348608623">不允许网站了解您何时在主动使用自己的设备</translation>
 <translation id="1464258312790801189">您的帐号</translation>
@@ -523,6 +525,7 @@
 <translation id="156793199942386351">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1568323446248056064">打开显示设备设置</translation>
+<translation id="1571738973904005196">查看标签页：<ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />（访客）</translation>
 <translation id="1572266655485775982">Wi-Fi 开关</translation>
 <translation id="1572876035008611720">输入您的电子邮件地址</translation>
@@ -666,7 +669,6 @@
 <translation id="1706625117072057435">缩放级别</translation>
 <translation id="1708338024780164500">（无效）</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />（ID：<ph name="ID_PH" />）</translation>
-<translation id="1708860176443612387">实验性浏览器！可能会丢失数据或有损私密性/安全性。若要报告问题，请使用“帮助”&gt;“报告问题…”。</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1709217939274742847">选择用于进行身份验证的票据。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">无法分享</translation>
@@ -2481,7 +2483,6 @@
 <translation id="3649505501900178324">更新逾期</translation>
 <translation id="3650753875413052677">注册时出错</translation>
 <translation id="3650845953328929506">正在等待上传日志。</translation>
-<translation id="365089839707261811">查看名称的新变化</translation>
 <translation id="3650952250015018111">允许“<ph name="APP_NAME" />”访问：</translation>
 <translation id="3651488188562686558">断开 Wi-Fi 连接</translation>
 <translation id="3652817283076144888">正在初始化</translation>
@@ -2972,7 +2973,7 @@
 <translation id="4154664944169082762">指纹</translation>
 <translation id="4157869833395312646">Microsoft 服务器网关加密</translation>
 <translation id="4158364720893025815">通过</translation>
-<translation id="4159163871835771155">如果想在<ph name="SUPERVISED_USER_NAME" />提问后获得为他/她量身定制的回复，您不妨允许 Google 助理使用<ph name="SUPERVISED_USER_NAME" />的屏幕中的信息，其中可能包括正在播放的歌曲或视频的相关信息。</translation>
+<translation id="4159163871835771155">如果想在<ph name="SUPERVISED_USER_NAME" />提问后获得为该用户量身定制的回复，您不妨允许 Google 助理使用<ph name="SUPERVISED_USER_NAME" />的屏幕中的信息，其中可能包括正在播放的歌曲或视频的相关信息。</translation>
 <translation id="4159681666905192102">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
 <translation id="4163560723127662357">未知键盘</translation>
 <translation id="4167686856635546851">网站通常会使用 JavaScript 来显示互动功能（例如视频游戏或网络表单）</translation>
@@ -4163,7 +4164,7 @@
 <translation id="5502500733115278303">从 Firefox 导入</translation>
 <translation id="5502915260472117187">孩子</translation>
 <translation id="5503982651688210506">继续允许 <ph name="HOST" /> 使用和移动您的摄像头，并允许其使用您的麦克风</translation>
-<translation id="5504909642107847870">查看隐私设置和安全性控件</translation>
+<translation id="5504909642107847870">检查隐私和安全设置</translation>
 <translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
 <translation id="5505307013568720083">墨水已耗尽</translation>
 <translation id="5505794066310932198">开启/关闭 Commander</translation>
@@ -4243,7 +4244,7 @@
 <translation id="5585912436068747822">格式化失败</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在加载应用…</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上设置了 Google 助理。<ph name="SUPERVISED_USER_NAME" />只需开启屏幕上下文功能，即可更充分地利用 Google 助理。</translation>
+<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上设置了 Google 助理。<ph name="SUPERVISED_USER_NAME" />可以在开启屏幕上下文功能后更充分地利用 Google 助理。</translation>
 <translation id="5592595402373377407">尚无足够的数据。</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -4324,7 +4325,7 @@
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5687326903064479980">时区</translation>
 <translation id="5689516760719285838">位置信息</translation>
-<translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音皆被用来在此设备上创建语音模型。</translation>
+<translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音被用来在此设备上创建语音模型。</translation>
 <translation id="56907980372820799">关联数据</translation>
 <translation id="5691581861107245578">根据您输入的内容，获取表情符号建议</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
@@ -5000,7 +5001,7 @@
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 正在搜寻蓝牙设备</translation>
 <translation id="6445450263907939268">如果您不想保留这些更改，可以还原之前的设置。</translation>
 <translation id="6446213738085045933">创建桌面快捷方式</translation>
-<translation id="6447210166804596538">在一处集中查看最重要的隐私设置和安全性控件</translation>
+<translation id="6447210166804596538">在一处集中检查最重要的隐私和安全控件的设置</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6450876761651513209">更改您的隐私相关设置</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
@@ -5220,9 +5221,9 @@
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语，以创建他/她的语音模型。
+<translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语以创建其语音模型。
     <ph name="BR" />
-    如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让他/她跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
+    如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让孩子跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
 <translation id="6690659332373509948">无法解析文件：<ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
 <translation id="6691541770654083180">地球</translation>
@@ -5689,9 +5690,9 @@
 <translation id="7207631048330366454">搜索应用</translation>
 <translation id="7210488993538120146">借助 Voice Match，Google 助理可在 <ph name="DEVICE_TYPE" /> 上识别出<ph name="SUPERVISED_USER_NAME" />的语音，从而将其与他人区分开。
     <ph name="BR" />
-    Google 助理会录制您孩子的语音剪辑以创建专属语音模型，这个语音模型只会存储在您孩子的设备上。系统可能会暂时将您孩子的语音模型发送给 Google，以便更准确地识别他/她的语音。
+    Google 助理会录制您孩子的语音剪辑以创建专属语音模型，这个语音模型只会存储在您孩子的设备上。系统可能会暂时将您孩子的语音模型发送给 Google，以便更准确地识别孩子的语音。
     <ph name="BR" />
-    如果您日后又改变了看法，觉得 Voice Match 功能不适合您的孩子，只需在他/她的 Google 助理设置中关闭该功能即可。如需查看或删除您孩子在设置 Voice Match 时录制的音频剪辑，请使用他/她的帐号访问 g.co/assistant/match。
+    如果您日后又改变了想法，觉得 Voice Match 功能不适合您的孩子，只需在孩子的 Google 助理设置中关闭该功能即可。如需查看或删除您孩子在设置 Voice Match 时录制的音频剪辑，请使用孩子的帐号访问 g.co/assistant/match。
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="7210499381659830293">扩展打印机</translation>
@@ -5972,6 +5973,7 @@
 <translation id="7507930499305566459">状态响应程序证书</translation>
 <translation id="7509097596023256288">正在设置为受管理</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
+<translation id="7509539379068593709">卸载应用</translation>
 <translation id="7511415964832680006">如果此控件已开启，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。</translation>
 <translation id="7513029293694390567">使用存储的凭据自动登录网站。停用该功能后，系统会在您每次登录网站时要求您进行确认。</translation>
 <translation id="7514239104543605883">复制到您的设备</translation>
@@ -6197,7 +6199,6 @@
 <translation id="7730449930968088409">截取您屏幕上的内容</translation>
 <translation id="7730683939467795481">此网页被扩展程序“<ph name="EXTENSION_NAME" />”更改了</translation>
 <translation id="7734486794139738745">我只使用 1 个开关</translation>
-<translation id="7734541938181328224">查看图标的新变化</translation>
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7737846262459425222">您随时可在“设置”&gt;“Google 助理”&gt;“屏幕上下文”下更改此设置。</translation>
 <translation id="7737948071472253612">不允许使用您的摄像头</translation>
@@ -6820,6 +6821,7 @@
 <translation id="8373652277231415614">Crostini 共享目录</translation>
 <translation id="8376137163494131156">请将 Google Cast 发生的情况告诉我们。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
+<translation id="8376451933628734023">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
 <translation id="8378714024927312812">由贵单位管理</translation>
 <translation id="8379878387931047019">此设备不支持该网站要求使用的安全密钥的类型</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
@@ -6967,7 +6969,6 @@
 <translation id="8561853412914299728">“<ph name="TAB_TITLE" />”<ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">已尝试降低应用版本。</translation>
 <translation id="8569682776816196752">未找到任何目标</translation>
-<translation id="857074314439694500">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
 <translation id="8571687764447439720">添加 Kerberos 票据</translation>
 <translation id="8574990355410201600">始终允许 <ph name="HOST" /> 播放声音</translation>

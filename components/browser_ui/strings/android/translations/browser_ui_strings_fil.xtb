@@ -3,7 +3,6 @@
 <translationbundle lang="fil">
 <translation id="1006017844123154345">Buksan Online</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
-<translation id="1100504063505580045">Kasalukuyang icon</translation>
 <translation id="1124090076051167250">Iki-clear nito ang <ph name="DATASIZE" /> ng data at cookies na na-store ng mga site o ng mga app sa iyong Home screen.</translation>
 <translation id="1178581264944972037">I-pause</translation>
 <translation id="1181037720776840403">Alisin</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">I-mute ang video</translation>
 <translation id="3596414637720633074">I-block ang third-party na cookies sa Incognito</translation>
 <translation id="3600792891314830896">I-mute ang mga site na nagpe-play ng tunog</translation>
-<translation id="365089839707261811">Suriin ang mga update sa pangalan</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
 <translation id="381841723434055211">Mga numero ng telepono</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">May site na nagpe-play ng media</translation>
 <translation id="42981349822642051">Palawakin</translation>
 <translation id="4336434711095810371">I-clear ang lahat ng data</translation>
-<translation id="4339203724549370495">I-uninstall ang app</translation>
 <translation id="4402755511846832236">Pigilan ang mga site na malaman kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
 <translation id="445467742685312942">Pahintulutan ang mga site na mag-play ng pinoprotektahang content</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4708011789095599544">Sigurado ka bang gusto mong i-clear ang cookies at iba pang data ng site para sa website na ito?</translation>
 <translation id="4751476147751820511">Mga motion o light sensor</translation>
-<translation id="4800839971935185386">Suriin ang mga update sa pangalan at icon</translation>
 <translation id="4836046166855586901">Magtanong kapag gusto ng site na alamin kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="4883854917563148705">Hindi puwedeng i-reset ang mga pinapamahalaang setting</translation>
 <translation id="4887024562049524730">Magtanong bago payagan ang mga site na gamitin ang iyong virtual reality device at data (inirerekomenda)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Mga Pangalan</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> ang lumipas mula sa <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">I-block ang mga ad sa mga site na nagpapakita ng mga nakakasagabal o nakakapanlinlang na ad</translation>
-<translation id="549957179819296104">Bagong icon</translation>
 <translation id="5502860503640766021">Pinapayagan ang <ph name="PERMISSION_1" />, naka-block ang <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Hindi puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="5516455585884385570">Buksan ang mga setting ng notification</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">I-block para sa kasalukuyang search engine</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
-<translation id="7734541938181328224">Suriin ang mga update sa icon</translation>
 <translation id="7781829728241885113">Kahapon</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Available sa offline</translation>
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
-<translation id="857074314439694500">Kung sinusubukan kang linlangin ng web app na ito para maisip mong ibang app ito, i-uninstall ito.</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Lumipat</translation>
 <translation id="8676374126336081632">I-clear ang input</translation>

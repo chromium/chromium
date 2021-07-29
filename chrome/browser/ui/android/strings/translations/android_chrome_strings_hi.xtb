@@ -337,7 +337,7 @@
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208584281581115441">अभी देखें</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> मिटाया गया</translation>
-<translation id="3214996641768123781">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधि<ph name="END_LINK2" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="3214996641768123781">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधियां<ph name="END_LINK2" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="321773570071367578">अगर आप अपना 'पासफ़्रेज़' भूल गए हैं या यह सेटिंग बदलना चाहते हैं, तो <ph name="BEGIN_LINK" /> सिंक रीसेट करें<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">पासवर्ड सिंक करने के लिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="3227557059438308877">Google Chrome, सुरक्षा कुंजी के रूप में</translation>
@@ -515,7 +515,7 @@
 <translation id="4405224443901389797">इसमें ले जाएं…</translation>
 <translation id="4409271659088619928">आपका सर्च इंजन <ph name="DSE" /> है. अगर लागू होता है, तो अपना खोज इतिहास मिटाने के लिए निर्देश देखें.</translation>
 <translation id="4411535500181276704">लाइट मोड</translation>
-<translation id="4415276339145661267">अपना Google खाता प्रबंधित करें</translation>
+<translation id="4415276339145661267">अपना Google खाता मैनेज करें</translation>
 <translation id="4427306783828095590">बेहतर सुरक्षा की मदद से फ़िशिंग और मैलवेयर को बेहतर तरीके से ब्लॉक किया जाता है</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
@@ -599,6 +599,7 @@
 <translation id="4881695831933465202">खोलें</translation>
 <translation id="488187801263602086">फ़ाइल का नाम बदलें</translation>
 <translation id="4885273946141277891">Chrome इंस्टेंस की असमर्थित संख्या.</translation>
+<translation id="4905269543817054577">गुप्त मोड में इतिहास सेव नहीं होता</translation>
 <translation id="4908869848243824489">Google का 'डिस्कवर'</translation>
 <translation id="4910889077668685004">भुगतान ऐप्लिकेशन</translation>
 <translation id="4913161338056004800">आंकड़े रीसेट करें</translation>
@@ -624,7 +625,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
-<translation id="5054455334322721892">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />दूसरी तरह की गतिविधि<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाए. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="5054455334322721892">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />अन्य तरह की गतिविधियां<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="5061533557687621530">मौसम की जानकारी के लिए, माइक पर टैप करें और “आज मौसम कैसा है?” कहें</translation>
 <translation id="5087580092889165836">कार्ड जोड़ें</translation>
 <translation id="5091249083535528968">इस्तेमाल के बारे में ज़्यादा डेटा</translation>
@@ -634,6 +635,7 @@
 <translation id="5123685120097942451">गुप्त टैब</translation>
 <translation id="5132942445612118989">सभी डिवाइस पर अपने पासवर्ड, इतिहास और दूसरी कई चीज़ें सिंक करें</translation>
 <translation id="5139940364318403933">Google डिस्क के इस्तेमाल का तरीका जानें</translation>
+<translation id="5142281402488957685">फ़ीड का कॉन्टेंट रीफ़्रेश करने के लिए, पेज को नीचे खींचें, ताकि नई स्टोरी दिखें</translation>
 <translation id="5152843274749979095">भुगतान करने के लिए कोई ऐप्लिकेशन इंस्‍टॉल नहीं है</translation>
 <translation id="5161254044473106830">शीर्षक आवश्‍यक</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 डाउनलोड नहीं हो सका.}one{# डाउनलोड नहीं हो सके.}other{# डाउनलोड नहीं हो सके.}}</translation>
@@ -654,6 +656,7 @@
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5227554086496586518">खोज नतीजे देखने के लिए टैप करें</translation>
 <translation id="5233638681132016545">नया टैब</translation>
+<translation id="5246093389635966745">टूलबार शॉर्टकट में बदलाव करें</translation>
 <translation id="5250483651202458397">स्क्रीनशॉट. बंद करने के लिए इस पर टैप करें.</translation>
 <translation id="5262378156578470238">जब यह डाउनलोड <ph name="DATE" /> को शुरू होगा, तब आपको एक सूचना दिखेगी.</translation>
 <translation id="526421993248218238">यह पेज लोड नहीं हो पा रहा है</translation>
@@ -1008,12 +1011,12 @@
 <translation id="7454641608352164238">जगह काफ़ी नहीं है</translation>
 <translation id="7475192538862203634">अगर आपको यह बार-बार दिखाई दे रहा हो, तो इन <ph name="BEGIN_LINK" />सुझावों<ph name="END_LINK" /> को आज़माएं.</translation>
 <translation id="7475688122056506577">SD कार्ड नहीं मिला. हो सकता है कि आपकी कुछ फ़ाइलें उपलब्ध न हों.</translation>
-<translation id="7476384249953022816">अपने डिवाइस से गुप्त ब्राउज़िंग इतिहास हटाने के लिए, सभी टैब बंद कर दें</translation>
 <translation id="7479104141328977413">टैब प्रबंधन</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7481864133709957613">इस पेज पर मौजूद किसी शब्द को खोजने के लिए, उस पर टैप करने के बजाय, दबाकर रखें</translation>
 <translation id="7482656565088326534">झलक टैब</translation>
 <translation id="7484997419527351112">डिस्कवर - बंद है</translation>
+<translation id="7485033510383818941">फ़ीड का कॉन्टेंट रीफ़्रेश करने के लिए, पेज को नीचे खींचें</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7494974237137038751">डेटा बचाया गया</translation>
 <translation id="7498271377022651285">कृपया प्रतीक्षा करें...</translation>
@@ -1043,6 +1046,7 @@
 <translation id="7630202231528827509">सेवा देने वाली कंपनी का यूआरएल</translation>
 <translation id="7638584964844754484">गलत 'पासफ़्रेज़'</translation>
 <translation id="7641339528570811325">ब्राउज़िंग डेटा साफ़ करें…</translation>
+<translation id="764170292089748542">जब आप निजी तौर पर ब्राउज़ करने का विकल्प चुनते हैं, तो Chrome आपका ब्राउज़िंग इतिहास सेव नहीं करता है. आप अब भी अपनी पसंदीदा साइटों को ऐक्सेस करने के लिए, बुकमार्क का इस्तेमाल कर सकते हैं.</translation>
 <translation id="7646772052135772216">पासवर्ड को सिंक करने की सुविधा काम नहीं कर रही है</translation>
 <translation id="7655900163790317559">ब्लूटूथ चालू हो रहा है…</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
@@ -1278,7 +1282,6 @@
 <translation id="9070377983101773829">बोलकर खोज चालू करें</translation>
 <translation id="9074336505530349563">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, साइन इन करें और 'सिंक करें' को चालू करें</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
-<translation id="9081543426177426948">जिन साइटों पर आप जाते हैं उनकी जानकारी गुप्त मोड में सेव नहीं होती</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>
 <translation id="9086455579313502267">नेटवर्क की एक्सेस नहीं की जा सकती है.</translation>
 <translation id="9100505651305367705">अगर सुविधा उपलब्ध है, तो लेख को सरल बनाए गए व्यू में दिखाना ऑफ़र करें</translation>

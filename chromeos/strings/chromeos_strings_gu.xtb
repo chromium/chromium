@@ -54,7 +54,7 @@
 <translation id="1999615961760456652">કૅપ્ટિવ પોર્ટલ</translation>
 <translation id="2006864819935886708">કનેક્ટિવિટી</translation>
 <translation id="2008685064673031089">મુખ્ય શોધ</translation>
-<translation id="2080070583977670716">વધુ સેટિંગ્સ</translation>
+<translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -132,6 +132,7 @@
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
 <translation id="3941014780699102620">હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="3942420633017001071">ડાયગ્નોસ્ટિક્સ</translation>
+<translation id="3966286471246132217">વધુ ચોક્કસ પરિણામો માટે, પરીક્ષણ પૂરું થાય ત્યાં સુધી બધી ઍપ બંધ રાખો.</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
@@ -144,6 +145,7 @@
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
 <translation id="4238516577297848345">કોઈ પ્રિન્ટ કામ ચાલુ નથી</translation>
+<translation id="4244962993387259361">મેમરીનું પરીક્ષણ કરવા માટે તમારી પાસે ઓછામાં ઓછી 500 MB સ્પેસ હોવી જરૂરી છે. સ્પેસ ખાલી કરવા માટે, સેટિંગ &gt; સ્ટોરેજ મેનેજમેન્ટ પર જાઓ.</translation>
 <translation id="4289540628985791613">ઓવરવ્યૂ</translation>
 <translation id="4297501883039923494">બંધ - અજાણી ભૂલ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> છબીઓ</translation>
@@ -384,6 +386,7 @@
 <translation id="8498220429738806196">ટ્રાફિક કાઉન્ટર</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8503836310948963452">બસ થોડો વધુ સમય...</translation>
+<translation id="8521021929829989041">વ્યક્તિગત ડિવાઇસ તરીકે ઉપયોગ કરો</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">તમારા મોબાઇલ ઑપરેટરને તેમના નેટવર્ક સાથે કનેક્ટ કરવા માટે, આ વિકલ્પની જરૂર પડી શકે છે. વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="8576249514688522074">શરૂ કરી નથી</translation>

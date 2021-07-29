@@ -3,7 +3,6 @@
 <translationbundle lang="lt">
 <translation id="1006017844123154345">Atidaryti prisijungus</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
-<translation id="1100504063505580045">Dabartinė piktograma</translation>
 <translation id="1124090076051167250">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių ar programų jūsų pagrindiniame ekrane saugomų duomenų ir slapukų.</translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Nutildyti vaizdo įrašą</translation>
 <translation id="3596414637720633074">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
 <translation id="3600792891314830896">Nutildyti svetaines, kurios leidžia garsą</translation>
-<translation id="365089839707261811">Pavadinimų atnaujinimų peržiūra</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3763247130972274048">Dukart palieskite vaizdo įrašą, kad praleistumėte 10 sek.</translation>
 <translation id="381841723434055211">Telefono numeriai</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Svetainėje leidžiama medija</translation>
 <translation id="42981349822642051">Išskleisti</translation>
 <translation id="4336434711095810371">Išvalyti visus duomenis</translation>
-<translation id="4339203724549370495">Pašalinti programą</translation>
 <translation id="4402755511846832236">Neleisti svetainėms žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
 <translation id="445467742685312942">Leisti svetainėms leisti saugomą turinį</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtualioji realybė</translation>
 <translation id="4708011789095599544">Ar tikrai norite išvalyti šios svetainės slapukus ir kitus svetainės duomenis?</translation>
 <translation id="4751476147751820511">Judesio arba šviesos jutikliai</translation>
-<translation id="4800839971935185386">Vardo ir piktogramos atnaujinimų peržiūra</translation>
 <translation id="4836046166855586901">Klausti, kai svetainė nori žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="4883854917563148705">Tvarkomų nustatymų negalima nustatyti iš naujo</translation>
 <translation id="4887024562049524730">Klausti prieš leidžiant svetainėms naudoti virtualiosios realybės įrenginį ir duomenis (rekomenduojama)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Pavadinimai</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokuoti skelbimus svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
-<translation id="549957179819296104">Nauja piktograma</translation>
 <translation id="5502860503640766021">Leidžiama: <ph name="PERMISSION_1" />, užblokuota: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Svetainės negali prašyti siųsti pranešimus</translation>
 <translation id="5516455585884385570">Atidaryti pranešimų nustatymus</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokuoti dabartiniam paieškos varikliui</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
-<translation id="7734541938181328224">Piktogramų atnaujinimų peržiūra</translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
 <translation id="851751545965956758">Blokuoti svetaines, kad nebūtų galima prisijungti prie įrenginių</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
-<translation id="857074314439694500">Jei ši žiniatinklio programa bando apsimesti kita programa, ją pašalinkite.</translation>
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>

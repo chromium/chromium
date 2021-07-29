@@ -3,7 +3,6 @@
 <translationbundle lang="zh-TW">
 <translation id="1006017844123154345">在網路上開啟</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
-<translation id="1100504063505580045">目前圖示</translation>
 <translation id="1124090076051167250">這會清除網站或主畫面上的應用程式所儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="1178581264944972037">暫停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">將影片設為靜音</translation>
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3600792891314830896">將播放音訊的網站設為靜音</translation>
-<translation id="365089839707261811">查看名稱異動</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕觸兩下影片的左側或右側可跳過 10 秒</translation>
 <translation id="381841723434055211">電話號碼</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4336434711095810371">清除所有資料</translation>
-<translation id="4339203724549370495">解除安裝應用程式</translation>
 <translation id="4402755511846832236">禁止網站取得這部裝置的使用狀態</translation>
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="445467742685312942">允許網站播放受保護的內容</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4708011789095599544">確定要清除這個網站的 Cookie 和其他網站資料嗎？</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
-<translation id="4800839971935185386">查看名稱和圖示的異動</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">名稱</translation>
 <translation id="5489227211564503167">經過時間：<ph name="ELAPSED_TIME" />，影片總長：<ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">封鎖干擾性或誤導性的網站廣告</translation>
-<translation id="549957179819296104">新圖示</translation>
 <translation id="5502860503640766021">已允許「<ph name="PERMISSION_1" />」，已封鎖「<ph name="PERMISSION_2" />」</translation>
 <translation id="5505264765875738116">網站無法要求傳送通知給你</translation>
 <translation id="5516455585884385570">開啟通知設定</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">禁止目前的搜尋引擎使用此權限</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7734541938181328224">查看圖示異動</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
-<translation id="857074314439694500">如果這個網頁應用程企圖讓你誤認為其他應用程式，請解除安裝。</translation>
 <translation id="857943718398505171">已允許 (建議)</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8676374126336081632">清除輸入</translation>

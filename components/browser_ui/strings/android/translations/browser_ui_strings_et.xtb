@@ -3,7 +3,6 @@
 <translationbundle lang="et">
 <translation id="1006017844123154345">Ava veebis</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
-<translation id="1100504063505580045">Praegune ikoon</translation>
 <translation id="1124090076051167250">See kustutab <ph name="DATASIZE" /> andmeid ja küpsisefaile, mille saidid või rakendused on teie avakuvale salvestanud.</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1181037720776840403">Eemalda</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Video vaigistamine</translation>
 <translation id="3596414637720633074">Blokeerige kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="3600792891314830896">Heli esitavad saidid vaigistatakse</translation>
-<translation id="365089839707261811">Vaadake nime värskendused üle</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3763247130972274048">10 sekundi võrra kerimiseks topeltpuudutage videos vasakul või paremal</translation>
 <translation id="381841723434055211">Telefoninumbrid</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Sait esitab meediasisu</translation>
 <translation id="42981349822642051">Laienda</translation>
 <translation id="4336434711095810371">Kustuta kõik andmed</translation>
-<translation id="4339203724549370495">Desinstalli rakendus</translation>
 <translation id="4402755511846832236">Keelake saitidel selle tuvastamine, millal seda seadet aktiivselt kasutate</translation>
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
 <translation id="445467742685312942">Saitidel on lubatud esitada kaitstud sisu</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
 <translation id="4708011789095599544">Kas soovite selle veebisaidi puhul kindlasti küpsisefailid ja muud saidi andmed kustutada?</translation>
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
-<translation id="4800839971935185386">Vaadake nime ja ikooni värskendused üle</translation>
 <translation id="4836046166855586901">Küsi, kui sait soovib teada, millal kasutate aktiivselt seda seadet</translation>
 <translation id="4883854917563148705">Hallatud seadeid ei saa lähtestada</translation>
 <translation id="4887024562049524730">Küsi enne saitidele loa andmist virtuaalreaalsuse seadme ja andmete kasutamiseks (soovitatav)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nimed</translation>
 <translation id="5489227211564503167">Kulunud aeg: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokeeri reklaamid saitidel, mis kuvavad sekkuvaid või eksitavaid reklaame</translation>
-<translation id="549957179819296104">Uus ikoon</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> on lubatud, <ph name="PERMISSION_2" /> on keelatud</translation>
 <translation id="5505264765875738116">Saidid ei saa küsida luba märguannete saatmiseks</translation>
 <translation id="5516455585884385570">Ava märguandeseaded</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokeerib praeguse otsingumootori puhul</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
-<translation id="7734541938181328224">Vaadake ikooni värskendused üle</translation>
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7791543448312431591">Lisa</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
-<translation id="857074314439694500">Kui see veebirakendus üritab jätta muljet, et tegemist on teise rakendusega, desinstallige see.</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
 <translation id="8609465669617005112">Liiguta üles</translation>
 <translation id="8676374126336081632">Tühjenda sisestus</translation>

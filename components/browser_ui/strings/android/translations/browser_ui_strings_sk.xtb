@@ -3,7 +3,6 @@
 <translationbundle lang="sk">
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
-<translation id="1100504063505580045">Aktuálna ikona</translation>
 <translation id="1124090076051167250">Týmto vymažete <ph name="DATASIZE" /> dát a súbory cookie uložené webmi alebo aplikáciami na ploche.</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Vypnúť zvuk videa</translation>
 <translation id="3596414637720633074">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
-<translation id="365089839707261811">Pozrite si aktualizácie názvu</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
 <translation id="381841723434055211">Telefónne čísla</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Web prehráva médiá</translation>
 <translation id="42981349822642051">Rozbaliť</translation>
 <translation id="4336434711095810371">Vymazať všetky dáta</translation>
-<translation id="4339203724549370495">Odinštalovať aplikáciu</translation>
 <translation id="4402755511846832236">Neumožniť webom zistiť, či aktívne používate toto zariadenie</translation>
 <translation id="4434045419905280838">Vyskakovacie okná a presmerovania</translation>
 <translation id="445467742685312942">Povoliť webom prehrávať chránený obsah</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtuálna realita</translation>
 <translation id="4708011789095599544">Naozaj chcete vymazať súbory cookie a ďalšie údaje tohto webu?</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
-<translation id="4800839971935185386">Pozrite si aktualizácie názvu a ikony</translation>
 <translation id="4836046166855586901">Opýtať sa, keď chce web zistiť, či aktívne používate toto zariadenie</translation>
 <translation id="4883854917563148705">Spravované nastavenia sa nedajú resetovať</translation>
 <translation id="4887024562049524730">Pýtať sa, či chcete povoliť webu používať zariadenie a dáta pre virtuálnu realitu (odporúčané)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovať reklamy na weboch, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
-<translation id="549957179819296104">Nová ikona</translation>
 <translation id="5502860503640766021">Povolené: <ph name="PERMISSION_1" />, blokované: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
 <translation id="5516455585884385570">Otvoriť nastavenia upozornení</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokovať pre aktuálny vyhľadávač</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
-<translation id="7734541938181328224">Pozrite si aktualizácie ikony</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">K dispozícii offline</translation>
 <translation id="851751545965956758">Brániť webom pripájať sa k zariadeniam</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
-<translation id="857074314439694500">Ak sa vás táto webová aplikácia snaží presvedčiť, že nie je tá, za ktorú ju pokladáte, odinštalujte ju.</translation>
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
 <translation id="8609465669617005112">Presunúť nahor</translation>
 <translation id="8676374126336081632">Vymazať vstup</translation>

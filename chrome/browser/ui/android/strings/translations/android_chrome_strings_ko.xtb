@@ -599,6 +599,7 @@
 <translation id="4881695831933465202">열기</translation>
 <translation id="488187801263602086">파일 이름 변경</translation>
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
+<translation id="4905269543817054577">시크릿 모드에서는 기록이 저장되지 않음</translation>
 <translation id="4908869848243824489">Google 디스커버</translation>
 <translation id="4910889077668685004">결제 앱</translation>
 <translation id="4913161338056004800">통계 재설정</translation>
@@ -634,6 +635,7 @@
 <translation id="5123685120097942451">시크릿 탭</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
 <translation id="5139940364318403933">Google Drive 사용 방법 알아보기</translation>
+<translation id="5142281402488957685">새로운 스토리를 보려면 아래로 당겨 새로고침하세요.</translation>
 <translation id="5152843274749979095">지원되는 앱이 설치되어 있지 않음</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
@@ -654,6 +656,7 @@
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5227554086496586518">검색결과를 보려면 탭하세요.</translation>
 <translation id="5233638681132016545">새 탭</translation>
+<translation id="5246093389635966745">툴바 바로가기 수정</translation>
 <translation id="5250483651202458397">스크린샷입니다. 닫으려면 탭하세요.</translation>
 <translation id="5262378156578470238"><ph name="DATE" />에 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="526421993248218238">이 페이지를 로드할 수 없습니다.</translation>
@@ -1008,12 +1011,12 @@
 <translation id="7454641608352164238">저장공간 부족</translation>
 <translation id="7475192538862203634">이 메시지가 자주 표시된다면 다음 <ph name="BEGIN_LINK" />권장사항<ph name="END_LINK" />을 시도해 보세요.</translation>
 <translation id="7475688122056506577">SD 카드가 없습니다. 일부 파일이 누락되었을 수 있습니다.</translation>
-<translation id="7476384249953022816">기기에서 시크릿 모드 방문 기록을 삭제하려면 모든 탭을 닫으세요.</translation>
 <translation id="7479104141328977413">탭 관리</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481864133709957613">페이지에서 검색하려면 단어를 탭하는 대신 길게 터치하세요.</translation>
 <translation id="7482656565088326534">미리보기 탭</translation>
 <translation id="7484997419527351112">디스커버 - 사용 안함</translation>
+<translation id="7485033510383818941">피드 콘텐츠를 새로고침하려면 페이지를 아래로 당기세요</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />(<ph name="TIME_SINCE_UPDATE" />에 업데이트됨)</translation>
 <translation id="7494974237137038751">데이터 절약됨</translation>
 <translation id="7498271377022651285">잠시 기다려 주세요…</translation>
@@ -1043,6 +1046,7 @@
 <translation id="7630202231528827509">제공업체 URL</translation>
 <translation id="7638584964844754484">암호가 잘못되었습니다.</translation>
 <translation id="7641339528570811325">인터넷 사용 기록 삭제...</translation>
+<translation id="764170292089748542">비공개 탐색을 선택하면 Chrome에서 방문 기록을 저장하지 않습니다. 이때도 북마크를 사용해 자주 찾는 사이트에 액세스할 수 있습니다.</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="7655900163790317559">블루투스 켜는 중…</translation>
 <translation id="7658239707568436148">취소</translation>
@@ -1278,7 +1282,6 @@
 <translation id="9070377983101773829">음성 검색 시작</translation>
 <translation id="9074336505530349563">Google에서 추천하는 맞춤 콘텐츠를 보려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="9074739597929991885">블루투스</translation>
-<translation id="9081543426177426948">시크릿 모드에서는 방문한 사이트가 저장되지 않음</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9086455579313502267">네트워크에 액세스할 수 없습니다.</translation>
 <translation id="9100505651305367705">지원되는 경우 간단히 보기로 기사를 표시하는 기능 제공</translation>

@@ -159,6 +159,7 @@
 <translation id="1164891049599601209">사기성 사이트에서 입력됨</translation>
 <translation id="1165039591588034296">오류</translation>
 <translation id="1166212789817575481">오른쪽 탭 닫기</translation>
+<translation id="1166583374608765787">이름 업데이트 검토</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> 후에 파일이 열립니다...</translation>
 <translation id="1170288591054440704">사이트에서 기기에 설치된 글꼴을 사용하려고 할 때 확인</translation>
 <translation id="1171135284592304528">키보드 포커스가 이동할 때 키보드 포커스가 있는 객체를 강조표시합니다.</translation>
@@ -325,6 +326,7 @@
 <translation id="1354045473509304750"><ph name="HOST" />의 카메라 사용 및 이동을 계속 허용</translation>
 <translation id="1355088139103479645">모든 데이터를 삭제하시겠습니까?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" />이(가) 차단되었습니다.</translation>
+<translation id="1356178530321889280">마우스 오른쪽 버튼으로 클릭한 다음 'Google 렌즈로 페이지 일부 검색'을 선택하여 사이트의 원하는 부분을 검색하세요. 웹 탐색 및 쇼핑 중에 보게 되는 시각 콘텐츠에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="1358741672408003399">영문 철자 및 문법</translation>
 <translation id="1359923111303110318">Smart Lock으로 기기를 잠금 해제할 수 있습니다. 잠금 해제하려면 Enter 키를 누르세요.</translation>
 <translation id="1361164813881551742">직접 추가</translation>
@@ -427,6 +429,7 @@
 <translation id="146000042969587795">안전하지 않은 콘텐츠가 포함되어 이 프레임을 차단했습니다.</translation>
 <translation id="146219525117638703">ONC 상태</translation>
 <translation id="146220085323579959">인터넷 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.</translation>
+<translation id="1462850958694534228">아이콘 업데이트 검토</translation>
 <translation id="1463112138205428654">고급 보호 기능이 <ph name="FILE_NAME" />을(를) 차단했습니다.</translation>
 <translation id="1464044141348608623">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 함</translation>
 <translation id="1464258312790801189">내 계정</translation>
@@ -529,6 +532,7 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1568323446248056064">디스플레이 기기 설정 열기</translation>
+<translation id="1571738973904005196">탭 보기: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" />(게스트)</translation>
 <translation id="1572266655485775982">Wi-Fi 사용</translation>
 <translation id="1572876035008611720">이메일을 입력하세요.</translation>
@@ -680,7 +684,6 @@
 <translation id="1706625117072057435">확대/축소 수준</translation>
 <translation id="1708338024780164500">(비활성)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" />(ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">실험용 브라우저입니다. 데이터가 손실되거나 개인 정보 보호 또는 보안 문제가 발생할 수 있습니다. 문제가 발생하면 도움말 &gt; '문제 신고...'에서 신고해 주세요.</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)</translation>
 <translation id="1709217939274742847">인증에 사용할 티켓을 선택하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">공유할 수 없음</translation>
@@ -2500,7 +2503,6 @@
 <translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="3650753875413052677">등록 오류</translation>
 <translation id="3650845953328929506">로그 업데이트가 대기 중입니다.</translation>
-<translation id="365089839707261811">이름 업데이트 검토</translation>
 <translation id="3650952250015018111">'<ph name="APP_NAME" />'이(가) 다음 기기에 액세스하도록 허용합니다.</translation>
 <translation id="3651488188562686558">Wi-Fi 연결 해제</translation>
 <translation id="3652817283076144888">초기화 중</translation>
@@ -5990,6 +5992,7 @@
 <translation id="7507930499305566459">상태 응답자 인증서</translation>
 <translation id="7509097596023256288">관리 설정 중</translation>
 <translation id="7509246181739783082">본인 확인</translation>
+<translation id="7509539379068593709">앱 제거</translation>
 <translation id="7511415964832680006">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 크로스 사이트 추적의 대안이 되는 기술 등이 있습니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.</translation>
 <translation id="7513029293694390567">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 확인 요청 메시지가 표시됩니다.</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
@@ -6215,7 +6218,6 @@
 <translation id="7730449930968088409">화면의 콘텐츠 캡쳐</translation>
 <translation id="7730683939467795481">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 이 페이지를 변경했습니다.</translation>
 <translation id="7734486794139738745">스위치 1개만 사용</translation>
-<translation id="7734541938181328224">아이콘 업데이트 검토</translation>
 <translation id="7737115349420013392">‘<ph name="DEVICE_NAME" />’ 페어링 중...</translation>
 <translation id="7737846262459425222">언제든지 설정 &gt; Google 어시스턴트 &gt; 화면 컨텍스트에서 변경할 수 있습니다.</translation>
 <translation id="7737948071472253612">카메라 사용이 허용되지 않음</translation>
@@ -6839,6 +6841,7 @@
 <translation id="8373652277231415614">Crostini 공유 디렉터리</translation>
 <translation id="8376137163494131156">Google Cast에 대한 의견을 들려주세요</translation>
 <translation id="8376384591331888629">이 사이트의 타사 쿠키 포함</translation>
+<translation id="8376451933628734023">웹 앱이 다른 앱인 것처럼 사용자를 속이려 한다면 앱을 제거하시기 바랍니다.</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8379878387931047019">이 기기는 이 웹사이트에서 요청하는 유형의 보안 키를 지원하지 않습니다.</translation>
 <translation id="8379991678458444070">이 탭을 북마크에 추가하여 간편하게 다시 방문하세요.</translation>
@@ -6986,7 +6989,6 @@
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">앱을 다운그레이드하려 했습니다.</translation>
 <translation id="8569682776816196752">목적지를 찾을 수 없음</translation>
-<translation id="857074314439694500">웹 앱이 다른 앱인 것처럼 사용자를 속이려 한다면 앱을 제거하시기 바랍니다.</translation>
 <translation id="8571213806525832805">지난 4주</translation>
 <translation id="8571687764447439720">Kerberos 티켓 추가</translation>
 <translation id="8574990355410201600"><ph name="HOST" />에서 소리 항상 허용</translation>

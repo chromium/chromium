@@ -3,7 +3,6 @@
 <translationbundle lang="uz">
 <translation id="1006017844123154345">Onlayn versiyasini ochish</translation>
 <translation id="1044891598689252897">Saytlar xatosiz ishlaydi</translation>
-<translation id="1100504063505580045">Joriy belgi</translation>
 <translation id="1124090076051167250">Bunda saytlar maʼlumotlari, cookie fayllar va Bosh ekrandagi ilovalar egallagan <ph name="DATASIZE" /> joy tozalanadi.</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Video ovozini oʻchirish</translation>
 <translation id="3596414637720633074">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="3600792891314830896">Saytlardagi ovozni o‘chirib qo‘yish</translation>
-<translation id="365089839707261811">Nom oʻzgarishlari tekshiruvi</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
 <translation id="3763247130972274048">10 soniya oʻtkazish uchun chap yoki oʻng tomoniga ikki marta bosing</translation>
 <translation id="381841723434055211">Telefon raqamlari</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4336434711095810371">Barcha maʼlumotlarni tozalash</translation>
-<translation id="4339203724549370495">Ilovani oʻchirish</translation>
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4434045419905280838">Qalquvchi oyna va yo‘naltirishlar</translation>
 <translation id="445467742685312942">Saytlarga himoyalangan kontentni ijro qilish uchun ruxsat berish</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtual reallik</translation>
 <translation id="4708011789095599544">Bu sayt uchun cookie fayllar va boshqa sayt maʼlumotlari tozalansinmi?</translation>
 <translation id="4751476147751820511">Harakat va yorug‘lik sensorlari</translation>
-<translation id="4800839971935185386">Nom va belgi oʻzgarishlari tekshiruvi</translation>
 <translation id="4836046166855586901">Sayt bu qurilmadan faol foydalanishingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishi oldidan ruxsat olsin (tavsiya etiladi)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Ismlar</translation>
 <translation id="5489227211564503167">Ijro etilgan vaqt: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Saytlarda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin</translation>
-<translation id="549957179819296104">Yangi belgi</translation>
 <translation id="5502860503640766021">Ruxsat berildi: <ph name="PERMISSION_1" />, bloklandi:<ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Saytlar bildirishnoma chiqarishga ruxsat soʻray olmaydi</translation>
 <translation id="5516455585884385570">Bildirishnoma sozlamalarini ochish</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Joriy qidiruv tizimiga taqiqlash</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
-<translation id="7734541938181328224">Belgi oʻzgarishlari tekshiruvi</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="780301667611848630">Kerak emas</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="851751545965956758">Saytlarga qurilmalarga ulanishni taqiqlash</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
-<translation id="857074314439694500">Agar bu veb shubhali ishlsa, uni oʻchirib tashlang.</translation>
 <translation id="857943718398505171">Ruxsat berilgan (tavsiya etiladi)</translation>
 <translation id="8609465669617005112">Tepaga o‘tish</translation>
 <translation id="8676374126336081632">Tozalash</translation>

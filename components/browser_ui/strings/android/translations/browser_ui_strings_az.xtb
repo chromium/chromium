@@ -3,7 +3,6 @@
 <translationbundle lang="az">
 <translation id="1006017844123154345">Onlayn açın</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
-<translation id="1100504063505580045">Cari işarə</translation>
 <translation id="1124090076051167250">Bununla Əsas ekranda saytlar və ya tətbiqlər tərəfindən saxlanılan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
 <translation id="1178581264944972037">Durdurun</translation>
 <translation id="1181037720776840403">Silin</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Videonu səssiz rejimə keçirin</translation>
 <translation id="3596414637720633074">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="3600792891314830896">Səs oxudan saytları səssiz rejimə keçirin</translation>
-<translation id="365089839707261811">Ad güncəlləmələrini nəzərdən keçirin</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
 <translation id="381841723434055211">Telefon nömrələri</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Sayt media oxudur</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
 <translation id="4336434711095810371">Bütün datanı silin</translation>
-<translation id="4339203724549370495">Tətbiqi ləğv edin</translation>
 <translation id="4402755511846832236">Saytların bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməsini bloklayın</translation>
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
 <translation id="445467742685312942">Saytlara qorunan kontenti oxutmağa icazə verin</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtual reallıq</translation>
 <translation id="4708011789095599544">Bu vebsayt üçün kukiləri və digər sayt datasını silmək istədiyinizə əminsiniz?</translation>
 <translation id="4751476147751820511">Hərəkət və ışıq sensorları</translation>
-<translation id="4800839971935185386">Ad və işarə güncəlləmələrini nəzərdən keçirin</translation>
 <translation id="4836046166855586901">Sayt bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək istədikdə icazə istəsin</translation>
 <translation id="4883854917563148705">İdarə edilən ayarlar sıfırlana bilməz</translation>
 <translation id="4887024562049524730">Saytlar virtual reallıq cihazınız və datanızı istifadə etməzdən əvvəl icazə istəsin (tövsiyə edilir)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Adlar</translation>
 <translation id="5489227211564503167">Keçən vaxt: <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">İntruziv və aldadıcı reklamlar göstərən saytlardakı reklamları bloklayın</translation>
-<translation id="549957179819296104">Yeni işarə</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> üçün icazə verilib, <ph name="PERMISSION_2" /> bloklanın</translation>
 <translation id="5505264765875738116">Saytlar bildiriş göndərilməsini tələb edə bilməz</translation>
 <translation id="5516455585884385570">Bildiriş ayarlarını açın</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Cari axtarış sistemi üçün blok edin</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
-<translation id="7734541938181328224">İşarə güncəlləmələrini nəzərdən keçirin</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
-<translation id="857074314439694500">Bu veb tətbiq fərqli bir tətbiq olduğunu düşünmənizə çalışırsa, onu ləğv edin.</translation>
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
 <translation id="8609465669617005112">Yuxarı köçürün</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>

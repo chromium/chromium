@@ -3,7 +3,6 @@
 <translationbundle lang="ro">
 <translation id="1006017844123154345">Deschide online</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
-<translation id="1100504063505580045">Pictograma actuală</translation>
 <translation id="1124090076051167250">Astfel, se vor șterge <ph name="DATASIZE" /> din datele și cookie-urile stocate de site-uri sau aplicații de pe ecranul de pornire.</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
 <translation id="1181037720776840403">Elimină</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Dezactivează sunetul videoclipului</translation>
 <translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3600792891314830896">Dezactivează sunetul pentru site-urile care îl redau</translation>
-<translation id="365089839707261811">Examinează actualizările numelui</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
 <translation id="381841723434055211">Numere de telefon</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Un site redă fișiere media</translation>
 <translation id="42981349822642051">Extinde</translation>
 <translation id="4336434711095810371">Șterge toate datele</translation>
-<translation id="4339203724549370495">Dezinstalează aplicația</translation>
 <translation id="4402755511846832236">Împiedică site-urile să detecteze când folosești activ dispozitivul</translation>
 <translation id="4434045419905280838">Ferestre pop-up și redirecționări</translation>
 <translation id="445467742685312942">Permite site-urilor să redea conținut protejat</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Realitate virtuală</translation>
 <translation id="4708011789095599544">Sigur vrei să ștergi cookie-urile și alte date privind site-ul pentru acest site?</translation>
 <translation id="4751476147751820511">Senzori de mișcare sau de lumină</translation>
-<translation id="4800839971935185386">Examinează actualizările numelui și ale pictogramei</translation>
 <translation id="4836046166855586901">Anunță-mă dacă un site vrea să afle când folosesc activ dispozitivul</translation>
 <translation id="4883854917563148705">Setările gestionate nu pot fi resetate</translation>
 <translation id="4887024562049524730">Întreabă înainte de a permite site-urilor să folosească dispozitivul de realitate virtuală și datele conexe (recomandat)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nume</translation>
 <translation id="5489227211564503167">Timp scurs: <ph name="ELAPSED_TIME" /> din <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blochează anunțurile pe site-urile care afișează anunțuri deranjante sau înșelătoare</translation>
-<translation id="549957179819296104">Pictogramă nouă</translation>
 <translation id="5502860503640766021">S-a blocat <ph name="PERMISSION_1" />, se permite <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Site-urile nu îți pot solicita să îți trimită notificări</translation>
 <translation id="5516455585884385570">Deschide setările pentru notificări</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blochează pentru motorul de căutare actual</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
-<translation id="7734541938181328224">Examinează actualizările pictogramei</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
-<translation id="857074314439694500">Dacă aplicația web încearcă să te facă să crezi că este o altă aplicație, dezinstaleaz-o.</translation>
 <translation id="857943718398505171">Acordată (recomandat)</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8676374126336081632">Șterge textul introdus</translation>

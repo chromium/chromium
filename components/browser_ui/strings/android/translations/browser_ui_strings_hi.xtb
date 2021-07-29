@@ -3,7 +3,6 @@
 <translationbundle lang="hi">
 <translation id="1006017844123154345">ऑनलाइन खोलें</translation>
 <translation id="1044891598689252897">साइटें सामान्य रूप से काम करेंगी</translation>
-<translation id="1100504063505580045">मौजूदा आइकॉन</translation>
 <translation id="1124090076051167250">इससे वे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगे जिन्हें साइटों या ऐप्लिकेशन ने आपकी होम स्क्रीन पर सेव किया है.</translation>
 <translation id="1178581264944972037">रोकें</translation>
 <translation id="1181037720776840403">हटाएं</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">वीडियो म्यूट करें</translation>
 <translation id="3596414637720633074">गुप्त मोड के दौरान तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
 <translation id="3600792891314830896">आवाज़ चलाने वाली साइटों की आवाज़ बंद करें</translation>
-<translation id="365089839707261811">नाम में हुए बदलाव देखें</translation>
 <translation id="3744111561329211289">बैकग्राउंड सिंक</translation>
 <translation id="3763247130972274048">वीडियो को 10 सेकंड आगे या पीछे करने के लिए, बाएं या दाएं दो बार टैप करें</translation>
 <translation id="381841723434055211">फ़ोन नंबर</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">किसी साइट पर मीडिया चल रहा है</translation>
 <translation id="42981349822642051">विस्तृत करें</translation>
 <translation id="4336434711095810371">सारा डेटा मिटाएं</translation>
-<translation id="4339203724549370495">ऐप्लिकेशन अनइंस्टॉल करें</translation>
 <translation id="4402755511846832236">साइटों को यह जानने से रोकें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="445467742685312942">साइटों को सभी सुरक्षित सामग्री चलाने दें</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">वर्चुअल रिएलिटी</translation>
 <translation id="4708011789095599544">क्या आप वाकई इस वेबसाइट के लिए, कुकी और साइट का अन्य डेटा मिटाना चाहते हैं?</translation>
 <translation id="4751476147751820511">गति या लाइट सेंसर</translation>
-<translation id="4800839971935185386">नाम और आइकॉन में हुए बदलाव देखें</translation>
 <translation id="4836046166855586901">साइटों को यह पूछने दें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="4883854917563148705">प्रबंधित सेटिंग रीसेट नहीं की जा सकती हैं</translation>
 <translation id="4887024562049524730">साइटों को अपने वर्चुअल रिएलिटी वाले डिवाइस और डेटा का इस्तेमाल करने की अनुमति देने से पहले पूछें (हम इसका सुझाव देते हैं)</translation>
@@ -152,7 +148,7 @@
 <translation id="5123685120097942451">गुप्त टैब</translation>
 <translation id="5186036860380548585">यह विकल्प, स्क्रीन के सबसे ऊपरी हिस्से में उपलब्ध है</translation>
 <translation id="5197729504361054390">आप जो संपर्क चुनेंगे उन्हें <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> के साथ शेयर किया जाएगा.</translation>
-<translation id="5216942107514965959">साइट पर आखिरी बार आज गए</translation>
+<translation id="5216942107514965959">साइट पर पिछली बार आज गए</translation>
 <translation id="528192093759286357">फ़ुल स्क्रीन से बाहर निकलने के लिए ऊपर से खींचें और वापस जाएं स्पर्श करें.</translation>
 <translation id="5300589172476337783">दिखाएं</translation>
 <translation id="5301954838959518834">ठीक है, समझ लिया</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">नाम</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> में से <ph name="ELAPSED_TIME" /> का समय बीत चुका है.</translation>
 <translation id="5494752089476963479">तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाने वाली साइटों पर विज्ञापन ब्लॉक करें</translation>
-<translation id="549957179819296104">नया आइकॉन</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> इस्तेमाल करने की अनुमति दी गई और <ph name="PERMISSION_2" /> को ब्लॉक किया गया</translation>
 <translation id="5505264765875738116">साइटें आपको सूचनाएं भेजने के लिए नहीं पूछ सकती हैं</translation>
 <translation id="5516455585884385570">सूचना सेटिंग खोलें</translation>
@@ -183,7 +178,7 @@
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5876056640971328065">वीडियो रोकें</translation>
-<translation id="5887687176710214216">साइट पर आखिरी बार कल गए</translation>
+<translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5922853908706496913">आपकी स्क्रीन शेयर की जा रही है</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
@@ -213,7 +208,7 @@
 <translation id="6527303717912515753">शेयर करें</translation>
 <translation id="6545864417968258051">ब्लूटूथ स्कैन करना</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
-<translation id="6554732001434021288">साइट पर आखिरी बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
+<translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
 <translation id="6561560012278703671">बिना आवाज़ के मैसेज पाएं (सूचनाओं में आवाज़ को रोकता है, ताकि आपके काम में रुकावट न आए)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> जीबी</translation>
 <translation id="6612358246767739896">सुरक्षित सामग्री</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">मौजूदा सर्च इंजन के लिए ब्लॉक करें</translation>
 <translation id="7649070708921625228">सहायता</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
-<translation id="7734541938181328224">आइकॉन में हुए बदलाव देखें</translation>
 <translation id="7781829728241885113">बीता कल</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">ऑफ़लाइन उपलब्ध है</translation>
 <translation id="851751545965956758">साइटों को डिवाइस से कनेक्ट होने से रोकें</translation>
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
-<translation id="857074314439694500">अगर यह वेब ऐप्लिकेशन आपको धोखा देने की कोशिश कर रहा है कि यह एक अलग ऐप्लिकेशन है, तो इसे अनइंस्टॉल करें.</translation>
 <translation id="857943718398505171">अनुमति दी गई (सुझाया गया)</translation>
 <translation id="8609465669617005112">ऊपर जाएं</translation>
 <translation id="8676374126336081632">इनपुट साफ़ करें</translation>

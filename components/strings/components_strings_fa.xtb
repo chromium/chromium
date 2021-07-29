@@ -410,7 +410,6 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{کمتر از یک روز}=1{تا یک روز دیگر}one{تا {NUM_DAYS} روز دیگر}other{تا {NUM_DAYS} روز دیگر}}</translation>
 <translation id="2359629602545592467">چند ارز</translation>
 <translation id="2359808026110333948">ادامه</translation>
-<translation id="2359961752320758691">شماره کارت مجازی اعمال شد.</translation>
 <translation id="236340516568226369">منوی فعال/غیرفعال کردن دکمه‌های تغییر اندازه</translation>
 <translation id="2367567093518048410">سطح</translation>
 <translation id="2372464001869762664">‏بعداز تأیید کردن، جزئیات کارت از «حساب Google » شما با این سایت هم‌رسانی می‌شود. CVC را در جزئیات حساب Plex پیدا کنید.</translation>
@@ -497,7 +496,7 @@
 <translation id="2684561033061424857">11x12</translation>
 <translation id="2686059030904417278">‏دکمه بازی Chrome Dino؛ برای بازی کردن Chrome Dino، کلید «ورود» را فشار دهید</translation>
 <translation id="2687555958734450033">بهترین اندازه</translation>
-<translation id="2688969097326701645">بله، ادامه</translation>
+<translation id="2688969097326701645">بله، ادامه می‌دهم</translation>
 <translation id="2691924980723297736">هشدار ایمنی</translation>
 <translation id="2699302886720511147">کارت‌های قابل‌‌قبول</translation>
 <translation id="2701514975700770343">روبه‌پایین</translation>
@@ -868,6 +867,7 @@
 <translation id="4067947977115446013">افزودن نشانی معتبر</translation>
 <translation id="4072193657607981494">درحال بار کردن خط‌مشی‌ها</translation>
 <translation id="4072486802667267160">هنگام پردازش سفارش شما خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
+<translation id="4073797364926776829">مشاهده کارت</translation>
 <translation id="4075732493274867456">‏کلاینت و سرور از مجموعه رمزگذاری یا نسخه پروتکل SSL مشترکی استفاده نمی‌کنند.</translation>
 <translation id="4075941231477579656">شناسه لمسی</translation>
 <translation id="4079302484614802869">‏تنظیمات پروکسی، برای استفاده از آدرس اسکریپت pac. تنظیم شده است و از سرورهای ثابت نمی‌تواند استفاده کند.</translation>
@@ -998,6 +998,7 @@
 <translation id="443121186588148776">درگاه سریالی</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> گواهی ورود به سیستمتان را نپذیرفت یا ممکن است گواهی‌ای ارائه نشده باشد.</translation>
 <translation id="4432792777822557199">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد</translation>
+<translation id="4433642172056592619">نادیده گرفته شد زیرا کاربر تابع مدیریت ماشین نیست یا ماشین مدیریت نمی‌شود.</translation>
 <translation id="4434045419905280838">پنجره‌های بازشو و هدایت‌ها</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">استفاده از پروکسی غیرفعال است اما یک پیکربندی خاص برای پروکسی تعیین شده است.</translation>
@@ -1368,6 +1369,7 @@
 <translation id="5759751709240058861">استفاده از دوربین و حرکت دادن آن</translation>
 <translation id="5763042198335101085">نشانی ایمیل معتبری وارد کنید</translation>
 <translation id="5765072501007116331">برای دیدن روش‌های تحویل و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
+<translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
 <translation id="5776313857861697733">اولویت</translation>
 <translation id="5778550464785688721">‏کنترل کامل دستگاه‌های MIDI</translation>
 <translation id="5781136890105823427">آزمایش فعال شد</translation>
@@ -1469,7 +1471,6 @@
 <translation id="6113594885686374546">‏دکمه «ازسرگیری کاوش»، کلید «ورود» را فشار دهید تا کاوش را ازسر بگیرید و فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="6116338172782435947">به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
 <translation id="6120179357481664955">‏شناسه «رابط پرداخت‌های یکپارچه» (UPI) شما به‌خاطر سپرده شود؟</translation>
-<translation id="6123290840358279103">مشاهده کارت مجازی</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6146055958333702838">همه کابل‌ها را بررسی کنید و همه ره‌یاب‌ها، مودم‌ها، یا دیگر دستگاه‌های
    شبکه‌ای را که ممکن است درحال استفاده از آن‌ها باشید مجدداً راه‌اندازی کنید.</translation>

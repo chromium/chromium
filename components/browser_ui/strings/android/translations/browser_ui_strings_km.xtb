@@ -3,7 +3,6 @@
 <translationbundle lang="km">
 <translation id="1006017844123154345">បើកលើអ៊ីនធឺណិត</translation>
 <translation id="1044891598689252897">គេហទំព័រនឹងដំណើរការធម្មតា</translation>
-<translation id="1100504063505580045">រូបតំណាង​បច្ចុប្បន្ន</translation>
 <translation id="1124090076051167250">សកម្មភាពនេះនឹង​សម្អាតទិន្នន័យ និងខូគីទំហំ <ph name="DATASIZE" /> ដែលគេហទំព័រ ឬកម្មវិធី​បានរក្សាទុក​នៅលើ​អេក្រង់ដើម​របស់អ្នក។</translation>
 <translation id="1178581264944972037">ផ្អាក</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">បិទ​សំឡេង​វីដេអូ</translation>
 <translation id="3596414637720633074">ទប់ស្កាត់​ខូគីភាគីទីបីក្នុងមុខងារឯកជន</translation>
 <translation id="3600792891314830896">បិទសំឡេងទំព័រដែលចាក់សំឡេង</translation>
-<translation id="365089839707261811">ពិនិត្យមើលការប្ដូរឈ្មោះ</translation>
 <translation id="3744111561329211289">សមកាលកម្មផ្ទៃខាងក្រោយ</translation>
 <translation id="3763247130972274048">ចុច​ខាងឆ្វេង ឬ​ខាងស្ដាំពីរដង​​លើវីដេអូ ដើម្បី​រំលង 10 វិ</translation>
 <translation id="381841723434055211">លេខទូរសព្ទ</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">គេហទំព័រ​កំពុង​ចាក់មេឌៀ</translation>
 <translation id="42981349822642051">ពង្រីក</translation>
 <translation id="4336434711095810371">សម្អាត​ទិន្នន័យ​ទាំងអស់</translation>
-<translation id="4339203724549370495">លុប​កម្មវិធី</translation>
 <translation id="4402755511846832236">ទប់ស្កាត់​គេហទំព័រមិនឱ្យដឹង​អំពីពេលវេលាដែលអ្នក​កំពុងប្រើឧបករណ៍នេះ​យ៉ាងសកម្ម</translation>
 <translation id="4434045419905280838">ផ្ទាំងផុស​ និង​ការ​បញ្ជូន​បន្ត</translation>
 <translation id="445467742685312942">អនុញ្ញាតឱ្យ​គេហទំព័រ​ចាក់ខ្លឹមសារដែលមាន​ការការពារ</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">VR</translation>
 <translation id="4708011789095599544">តើអ្នក​ពិតជាចង់​សម្អាតខូគី និងទិន្នន័យគេហទំព័រផ្សេងទៀតសម្រាប់គេហទំព័រនេះមែនឬ?</translation>
 <translation id="4751476147751820511">ឧបករណ៍​ចាប់​សញ្ញាពន្លឺ ឬ​ចលនា</translation>
-<translation id="4800839971935185386">ពិនិត្យមើលការប្ដូរឈ្មោះ និងរូបតំណាង</translation>
 <translation id="4836046166855586901">សួរ​នៅពេល​គេហទំព័រ​ចង់ដឹងអំពីពេលវេលាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះយ៉ាងសកម្ម</translation>
 <translation id="4883854917563148705">មិនអាច​កំណត់​ការកំណត់​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង​ឡើងវិញ​បានទេ</translation>
 <translation id="4887024562049524730">សួរ​មុនពេល​អនុញ្ញាតឱ្យ​គេហទំព័រ​ប្រើទិន្នន័យ និង​ឧបករណ៍ VR របស់អ្នក (បានណែនាំ)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">ឈ្មោះ</translation>
 <translation id="5489227211564503167">រយៈពេល​ដែលកន្លងផុត <ph name="ELAPSED_TIME" /> នៃ <ph name="TOTAL_TIME" />។</translation>
 <translation id="5494752089476963479">ទប់ស្កាត់​ការផ្សាយពាណិជ្ជកម្ម​នៅលើគេហទំព័រ​ដែលបង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​នាំឱ្យយល់ច្រឡំ ឬរំខាន</translation>
-<translation id="549957179819296104">រូបតំណាង​ថ្មី</translation>
 <translation id="5502860503640766021">បានអនុញ្ញាត <ph name="PERMISSION_1" />, បានទប់ស្កាត់ <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">គេហទំព័រ​មិនអាច​ស្នើសុំ​ការអនុញ្ញាត​ដើម្បី​ផ្ញើ​ការជូន​ដំណឹង​បានទេ</translation>
 <translation id="5516455585884385570">បើកការកំណត់ការជូនដំណឹង</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">រារាំង​ម៉ាស៊ីន​ស្វែងរក​​បច្ចុប្បន្ន</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
-<translation id="7734541938181328224">ពិនិត្យមើលការប្ដូររូបតំណាង</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
 <translation id="851751545965956758">ទប់​ស្កាត់​ទំព័រ​មិន​ឱ្យ​ភ្ជាប់​ជាមួយ​ឧបករណ៍</translation>
 <translation id="8525306231823319788">ពេញអេក្រង់</translation>
-<translation id="857074314439694500">ប្រសិនបើកម្មវិធីលើអ៊ីនធឺណិតនេះកំពុងព្យាយាមបោកបញ្ឆោតអ្នកឱ្យគិតថា វាគឺជាកម្មវិធីផ្សេង សូមលុបវាចេញ។</translation>
 <translation id="857943718398505171">បានអនុញ្ញាត (បានណែនាំ)</translation>
 <translation id="8609465669617005112">រំកិលទៅលើ</translation>
 <translation id="8676374126336081632">ជម្រះការបញ្ចូល</translation>

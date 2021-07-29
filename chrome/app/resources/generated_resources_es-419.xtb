@@ -157,6 +157,7 @@
 <translation id="1164891049599601209">Se ingresó en un sitio engañoso</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1166212789817575481">Cerrar pestañas a la derecha</translation>
+<translation id="1166583374608765787">Revisar actualización del nombre</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1170288591054440704">Preguntar cuando un sitio quiera usar fuentes que estén instaladas en tu dispositivo</translation>
 <translation id="1171135284592304528">Destacar el objeto con el enfoque del teclado cuando cambia</translation>
@@ -323,6 +324,7 @@
 <translation id="1354045473509304750">Seguir permitiendo que <ph name="HOST" /> use y mueva la cámara</translation>
 <translation id="1355088139103479645">¿Quieres borrar todos los datos?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> está bloqueado</translation>
+<translation id="1356178530321889280">Haz clic con el botón derecho y selecciona "Busca parte de la página con Google Lens" para buscar cualquier parte del sitio y obtener más información sobre el contenido visual que ves mientras navegas y realizas compras en la Web.</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Puedes desbloquear tu dispositivo mediante Smart Lock. Presiona Intro para permitir el acceso.</translation>
 <translation id="1361164813881551742">Agregar manualmente</translation>
@@ -424,6 +426,7 @@
 <translation id="146000042969587795">Este marco se ha bloqueado porque incluye contenido no seguro.</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Internet está desconectada. Verifica tu conexión a Internet y vuelve a intentarlo.</translation>
+<translation id="1462850958694534228">Revisar actualización del ícono</translation>
 <translation id="1463112138205428654">La "Protección avanzada" bloqueó el archivo <ph name="FILE_NAME" />.</translation>
 <translation id="1464044141348608623">No permitir que los sitios sepan en qué momento estás usando activamente el dispositivo</translation>
 <translation id="1464258312790801189">Tus cuentas</translation>
@@ -523,6 +526,7 @@
 <translation id="156793199942386351">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir configuración de pantalla</translation>
+<translation id="1571738973904005196">Ver la pestaña: <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (invitado)</translation>
 <translation id="1572266655485775982">Habilitar Wi-Fi</translation>
 <translation id="1572876035008611720">Ingresa tu correo electrónico.</translation>
@@ -666,7 +670,6 @@
 <translation id="1706625117072057435">Niveles de zoom</translation>
 <translation id="1708338024780164500">(Inactiva)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
-<translation id="1708860176443612387">¡Navegador experimental! Es posible que se pierdan datos o se ponga en riesgo la seguridad o la privacidad. Para informar problemas, usa la opción Ayuda &gt; "Informar un problema…".</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Elige un ticket para usar en la autenticación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
@@ -2482,7 +2485,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
 <translation id="3650753875413052677">Error de inscripción</translation>
 <translation id="3650845953328929506">La carga del registro está pendiente.</translation>
-<translation id="365089839707261811">Revisar la actualización de nombres</translation>
 <translation id="3650952250015018111">Permitir que "<ph name="APP_NAME" />" acceda a:</translation>
 <translation id="3651488188562686558">Se desconecta de Wi-Fi.</translation>
 <translation id="3652817283076144888">Inicializando</translation>
@@ -2974,7 +2976,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
 <translation id="4157869833395312646">Criptografía controlada por servidor de Microsoft</translation>
 <translation id="4158364720893025815">Se completó la acción</translation>
-<translation id="4159163871835771155">Si quieres obtener respuestas relevantes cuando <ph name="SUPERVISED_USER_NAME" /> hace preguntas, permite que Asistente use la información que aparecen en la pantalla de <ph name="SUPERVISED_USER_NAME" />. Puede ser información sobre las canciones o videos que se estén reproduciendo.</translation>
+<translation id="4159163871835771155">Para que <ph name="SUPERVISED_USER_NAME" /> obtenga respuestas relevantes cuando haga preguntas, permite que Asistente use la información que aparece en la pantalla de <ph name="SUPERVISED_USER_NAME" />. Puede ser información sobre las canciones o videos que se estén reproduciendo.</translation>
 <translation id="4159681666905192102">Esta es una cuenta para niños administrada por <ph name="CUSTODIAN_EMAIL" /> y <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconocido</translation>
 <translation id="4167686856635546851">Por lo general los sitios utilizan JavaScript para mostrar funciones interactivas, como videojuegos o formularios web.</translation>
@@ -4901,7 +4903,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6318944945640833942">No se detectó ninguna impresora. Vuelve a ingresar la dirección de una impresora.</translation>
 <translation id="6319081871916332821"><ph name="LANGUAGE" /> se procesa de manera local y funciona sin conexión.</translation>
 <translation id="6321407676395378991">Activar el protector de pantalla</translation>
-<translation id="6322370287306604163">Desbloquea más rápido con tu huella digital</translation>
+<translation id="6322370287306604163">Desbloquea más rápido con tu huella dactilar</translation>
 <translation id="6322653941595359182">Envía y recibe mensajes de texto en tu Chromebook.</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6325191661371220117">Inhabilitar inicio automático</translation>
@@ -4990,7 +4992,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6429384232893414837">Error en la actualización</translation>
 <translation id="6430814529589430811">Certificado único ASCII con codificación Base64</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizaciones automáticas para todos los usuarios de esta computadora.</translation>
-<translation id="6434104957329207050">Velocidad de la búsqueda de puntos</translation>
+<translation id="6434104957329207050">Velocidad de la búsqueda puntual</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">Para usar <ph name="APP_NAME" />, actualiza el dispositivo.</translation>
 <translation id="6436164536244065364">Ver en Web Store</translation>
@@ -5222,7 +5224,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6686665106869989887">Se movió la pestaña hacia la derecha</translation>
 <translation id="6686817083349815241">Guardar la contraseña</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
-<translation id="6689714331348768690">Pídele a <ph name="SUPERVISED_USER_NAME" /> que se acerque a la computadora. Tu hijo deberá leer algunas frases de esta pantalla para crear su modelo del voz.
+<translation id="6689714331348768690">Pídele a <ph name="SUPERVISED_USER_NAME" /> que se acerque a la computadora. Tu hijo deberá leer algunas frases de esta pantalla para crear su modelo de voz.
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necesita ayuda para leer, dile a tu hijo que repita después de ti. Susúrrale lejos del micrófono para que Asistente aprenda la voz de tu hijo en lugar de la tuya.</translation>
 <translation id="6690659332373509948">Error al analizar el archivo: <ph name="FILE_NAME" /></translation>
@@ -5689,11 +5691,11 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar apps</translation>
-<translation id="7210488993538120146">Voice Match ayuda Asistente de Google a identificar la voz de <ph name="SUPERVISED_USER_NAME" /> en tu <ph name="DEVICE_TYPE" /> y distinguirla de otras personas.
+<translation id="7210488993538120146">Voice Match ayuda a Asistente de Google a identificar la voz de <ph name="SUPERVISED_USER_NAME" /> en tu <ph name="DEVICE_TYPE" /> y distinguirla de otras personas.
     <ph name="BR" />
     Para ello, Asistente toma fragmentos de la voz de tu hijo a fin de crear un modelo de voz único que solo se almacenará en sus dispositivos. Es posible que ese modelo se envíe a Google temporalmente para que pueda identificar mejor la voz de tu hijo.
     <ph name="BR" />
-    Si en algún momento a tu hijo deja de interesarle la función Voice Match, solo debes quitarla de la Configuración de Asistente. Puedes ver o borrar los fragmentos de audio que grabó tu hijo durante la configuración de Voice Match en g.co/assistant/match desde la cuenta de tu hijo.
+    Si en algún momento a tu hijo deja de interesarle la función Voice Match, solo debes quitarla de la Configuración de Asistente. Puedes ver o borrar los fragmentos de audio que grabó tu hijo durante la configuración de Voice Match en g.co/assistant/match desde su cuenta.
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Una voz o grabación similares también podrían acceder a los resultados personalizados de <ph name="SUPERVISED_USER_NAME" />. Para ahorrar batería, "Hey Google" solo se activa cuando este dispositivo está conectado a una fuente de alimentación.</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
@@ -5974,6 +5976,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7507930499305566459">Certificado del respondedor de estado</translation>
 <translation id="7509097596023256288">Se está configurando la administración</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
+<translation id="7509539379068593709">Desinstalar app</translation>
 <translation id="7511415964832680006">Si habilitas esta opción, los sitios podrán utilizar las técnicas de protección de la privacidad que se muestran aquí para ofrecer su contenido y sus servicios. Entre estas técnicas, se incluyen alternativas al seguimiento entre sitios web. Es posible que se agreguen más pruebas a lo largo del tiempo.</translation>
 <translation id="7513029293694390567">Accede automáticamente a los sitios web con las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio web.</translation>
 <translation id="7514239104543605883">Copiar a tu dispositivo</translation>
@@ -6199,7 +6202,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7730449930968088409">Capturar contenido de la pantalla</translation>
 <translation id="7730683939467795481">La extensión "<ph name="EXTENSION_NAME" />" modificó esta página</translation>
 <translation id="7734486794139738745">Solo uso un interruptor</translation>
-<translation id="7734541938181328224">Revisar la actualización de íconos</translation>
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Puedes cambiar esta opción cuando quieras en Configuración &gt; Asistente de Google &gt; Contexto de pantalla.</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
@@ -6823,6 +6825,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
 <translation id="8376137163494131156">Infórmanos lo que sucede con Google Cast</translation>
 <translation id="8376384591331888629">Habilitar también cookies de terceros en este sitio</translation>
+<translation id="8376451933628734023">Si esta aplicación web intenta hacerse pasar por otra app, desinstálala.</translation>
 <translation id="8378714024927312812">Administrado por tu organización</translation>
 <translation id="8379878387931047019">Este dispositivo no es compatible con el tipo de llave de seguridad que se solicita en este sitio web</translation>
 <translation id="8379991678458444070">Para regresar aquí rápidamente, agrega esta pestaña a favoritos</translation>
@@ -6970,7 +6973,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Se ha intentado instalar una versión anterior de la aplicación.</translation>
 <translation id="8569682776816196752">No se encontró ningún destino.</translation>
-<translation id="857074314439694500">Si esta aplicación web intenta hacerse pasar por otra app, desinstálala.</translation>
 <translation id="8571213806525832805">Últimas cuatro semanas</translation>
 <translation id="8571687764447439720">Agregar un ticket de Kerberos</translation>
 <translation id="8574990355410201600">Permitir siempre el sonido en <ph name="HOST" /></translation>

@@ -3,7 +3,6 @@
 <translationbundle lang="gl">
 <translation id="1006017844123154345">Abrir en liña</translation>
 <translation id="1044891598689252897">Os sitios funcionarán con normalidade</translation>
-<translation id="1100504063505580045">Icona actual</translation>
 <translation id="1124090076051167250">Ao realizar esta acción, borraranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios ou as aplicacións da túa pantalla de inicio.</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Silenciar o vídeo</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
 <translation id="3600792891314830896">Silencia sitios que reproducen son</translation>
-<translation id="365089839707261811">Revisa as modificacións do nome</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
 <translation id="381841723434055211">Números de teléfono</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
 <translation id="4336434711095810371">Borrar todos os datos</translation>
-<translation id="4339203724549370495">Desinstalar aplicación</translation>
 <translation id="4402755511846832236">Impide que os sitios saiban se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
 <translation id="445467742685312942">Permitir que os sitios reproduzan contido protexido</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4708011789095599544">Seguro que queres borrar as cookies e outros datos deste sitio web?</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
-<translation id="4800839971935185386">Revisa as modificacións do nome e da icona</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4883854917563148705">Non se pode restablecer a configuración xestionada</translation>
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nomes</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquear anuncios en sitios que mostran anuncios enganosos ou intrusivos</translation>
-<translation id="549957179819296104">Icona nova</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> (permitido), <ph name="PERMISSION_2" /> (bloqueado)</translation>
 <translation id="5505264765875738116">Os sitios non poden pedir permiso para enviar notificacións</translation>
 <translation id="5516455585884385570">Abrir a configuración de notificacións</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Bloquea o acceso para o motor de busca actual</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7734541938181328224">Revisa as modificacións da icona</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="780301667611848630">Non, grazas</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="851751545965956758">Non permitir que os sitios se conecten aos dispositivos</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
-<translation id="857074314439694500">Se esta aplicación web está tentando enganarte para que penses que se trata dunha distinta, desinstálaa.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8676374126336081632">Borrar texto</translation>

@@ -16,7 +16,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1056775291175587022">Võrke ei ole</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Vahetage patareid või laadige seda</translation>
-<translation id="1077253978657569125">Soovime seda täiustada!</translation>
 <translation id="108486256082349153">Mobiilseade: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Tere päevast, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Mul on igav</translation>
@@ -486,6 +485,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
 <translation id="4705716602320768426">Tagasiside esitamine</translation>
+<translation id="4730258224256997107">Aidake meil seda paremaks muuta.</translation>
 <translation id="4731797938093519117">Vanema juurdepääs</translation>
 <translation id="4734965478015604180">Horisontaalne</translation>
 <translation id="4735498845456076464">Klaviatuuri otseteed <ph name="LAUNCHER_KEY_NAME" /> + numbriklahv on muudetud. Funktsiooniklahvide kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülemise rea klahvi.</translation>

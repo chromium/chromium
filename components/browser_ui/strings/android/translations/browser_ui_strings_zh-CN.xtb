@@ -3,7 +3,6 @@
 <translationbundle lang="zh-CN">
 <translation id="1006017844123154345">在线打开</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
-<translation id="1100504063505580045">当前图标</translation>
 <translation id="1124090076051167250">此操作会清除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">将视频静音</translation>
 <translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="3600792891314830896">将播放声音的网站静音</translation>
-<translation id="365089839707261811">查看名称的新变化</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="381841723434055211">电话号码</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="42981349822642051">展开</translation>
 <translation id="4336434711095810371">清除所有数据</translation>
-<translation id="4339203724549370495">卸载应用</translation>
 <translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="445467742685312942">允许网站播放受保护内容。</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">虚拟实境</translation>
 <translation id="4708011789095599544">确定要清除此网站的 Cookie 和其他网站数据吗？</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
-<translation id="4800839971935185386">查看名称和图标的新变化</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
 <translation id="4883854917563148705">无法重置托管设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟实境设备和数据（推荐）</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">名称</translation>
 <translation id="5489227211564503167">已播时长为 <ph name="ELAPSED_TIME" />，总时长为 <ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">禁止会展示侵扰性或误导性广告的网站显示广告</translation>
-<translation id="549957179819296104">新图标</translation>
 <translation id="5502860503640766021">已授予“<ph name="PERMISSION_1" />”权限，已禁用“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
 <translation id="5516455585884385570">打开通知设置</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">不允许当前搜索引擎使用</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7734541938181328224">查看图标的新变化</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
-<translation id="857074314439694500">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
 <translation id="857943718398505171">允许（推荐）</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8676374126336081632">清除输入的内容</translation>

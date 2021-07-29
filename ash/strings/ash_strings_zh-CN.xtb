@@ -16,7 +16,6 @@
 <translation id="1056775291175587022">没有网络</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">更换电池或为电池充电</translation>
-<translation id="1077253978657569125">我们想改进此功能！</translation>
 <translation id="108486256082349153">移动网络设备：<ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426"><ph name="GIVEN_NAME" />，下午好！</translation>
 <translation id="109942774857561566">我好无聊</translation>
@@ -485,6 +484,7 @@
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4705716602320768426">提交反馈</translation>
+<translation id="4730258224256997107">欢迎协助我们改进这条查询！</translation>
 <translation id="4731797938093519117">家长访问</translation>
 <translation id="4734965478015604180">横向</translation>
 <translation id="4735498845456076464">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 数字键”已更改。若要使用功能键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 顶排的某个键。</translation>

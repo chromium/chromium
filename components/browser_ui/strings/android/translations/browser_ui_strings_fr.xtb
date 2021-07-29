@@ -3,7 +3,6 @@
 <translationbundle lang="fr">
 <translation id="1006017844123154345">Ouvrir la version en ligne</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
-<translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1124090076051167250">Cette action entraînera la suppression de <ph name="DATASIZE" /> de données et de cookies stockés par des sites ou des applications installées sur votre écran d'accueil.</translation>
 <translation id="1178581264944972037">Suspendre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Couper le son de la vidéo</translation>
 <translation id="3596414637720633074">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="3600792891314830896">Couper le son des sites</translation>
-<translation id="365089839707261811">Examiner les modifications apportées au nom</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Appuyez deux fois à gauche/droite de la vidéo pour reculer/avancer de 10 s</translation>
 <translation id="381841723434055211">Numéros de téléphone</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Un site est en train de lire un contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
 <translation id="4336434711095810371">Effacer toutes les données</translation>
-<translation id="4339203724549370495">Désinstaller l'appli</translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4434045419905280838">Pop-up et redirections</translation>
 <translation id="445467742685312942">Autoriser les sites à lire les contenus protégés</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4708011789095599544">Voulez-vous vraiment supprimer les cookies et autres données de ce site Web ?</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de lumière</translation>
-<translation id="4800839971935185386">Examiner les modifications apportées au nom et à l'icône</translation>
 <translation id="4836046166855586901">Demander lorsqu'un site souhaite savoir si vous utilisez activement cet appareil</translation>
 <translation id="4883854917563148705">Impossible de réinitialiser les paramètres gérés</translation>
 <translation id="4887024562049524730">Demander avant d'autoriser les sites à utiliser vos données et votre appareil de réalité virtuelle (recommandé)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Noms</translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquer les annonces sur les sites qui affichent des annonces intrusives ou trompeuses</translation>
-<translation id="549957179819296104">Nouvelle icône</translation>
 <translation id="5502860503640766021">Autorisation accordée : <ph name="PERMISSION_1" />, autorisation refusée : <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Bloquer l'accès pour le moteur de recherche actuel</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
-<translation id="7734541938181328224">Examiner les modifications apportées à l'icône</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Disponible hors connexion</translation>
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
-<translation id="857074314439694500">Si cette appli Web essaie de se faire passer pour une autre, désinstallez-la.</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8676374126336081632">Effacer la saisie</translation>

@@ -3,7 +3,6 @@
 <translationbundle lang="ne">
 <translation id="1006017844123154345">अनलाइन खोल्नुहोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
-<translation id="1100504063505580045">हालको आइकन</translation>
 <translation id="1124090076051167250">यस कार्यले साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> बराबरका डेटा र कुकीहरू मेटाउने छ।</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">भिडियो म्युट गर्नुहोस्</translation>
 <translation id="3596414637720633074">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="3600792891314830896">आवाज प्ले गर्ने साइटहरूलाई म्युट गर्नुहोस्‌</translation>
-<translation id="365089839707261811">परिवर्तन गरिएको नाम हेर्नुहोस्</translation>
 <translation id="3744111561329211289">पृष्ठभूमिमा सिंक गर्ने सुविधा</translation>
 <translation id="3763247130972274048">१० सेकेन्ड छाडेर अगाडि पछाडि जान भिडियोको बायाँ वा दायाँतिर डबल ट्याप गर्नुहोस्</translation>
 <translation id="381841723434055211">फोन नम्बरहरू</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">कुनै साइटले मिडियो प्ले गरिरहेको छ</translation>
 <translation id="42981349822642051">विस्तृत गर्नुहोस्</translation>
 <translation id="4336434711095810371">सबै डेटा मेटाउनुहोस्</translation>
-<translation id="4339203724549370495">एप अनइन्स्टल गर्नुहोस्</translation>
 <translation id="4402755511846832236">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुरा साइटहरूलाई थाहा पाउन नदिनुहोस्</translation>
 <translation id="4434045419905280838">पपअप तथा रिडिरेक्टहरू</translation>
 <translation id="445467742685312942">साइटहरूलाई संरक्षित सामग्री प्ले गर्ने अनुमति दिनुहोस्</translation>
@@ -135,12 +132,12 @@
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
 <translation id="4708011789095599544">तपाईं साँच्चिकै यो वेबसाइटका कुकी र अन्य डेटा हटाउन चाहनुहुन्छ?</translation>
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
-<translation id="4800839971935185386">परिवर्तन गरिएका नाम तथा आइकन हेर्नुहोस्</translation>
 <translation id="4836046166855586901">कुनै साइटले मैले यो डिभाइस चलाइरहेको छु कि छुइनँ भन्ने कुराको जानकारी माग्दा मलाई सोधियोस्</translation>
 <translation id="4883854917563148705">व्यवस्थित सेटिङ रिसेट गर्न सकिँदैन</translation>
 <translation id="4887024562049524730">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंको यन्त्र र त्यसमा भएको डेटा प्रयोग गर्न अनुमति दिनुअघि सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="4962975101802056554">डिभाइसका सबै अनुमतिहरू फिर्ता लिनुहोस्</translation>
 <translation id="497421865427891073">अगाडि जानुहोस्</translation>
+<translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">कुनै पनि सम्पर्क ठेगाना भेटिएन</translation>
 <translation id="4996978546172906250">मार्फत साझा गर्नुहोस्</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
@@ -151,6 +148,7 @@
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5186036860380548585">यो विकल्प स्क्रिनको सिरान छेउमा उपलब्ध छ</translation>
 <translation id="5197729504361054390">तपाईंले चयन गर्ने सम्पर्कहरू <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> सँग आदान प्रदान गरिने छन्।</translation>
+<translation id="5216942107514965959">पछिल्लो पटक आज खोलिएको</translation>
 <translation id="528192093759286357">पूर्ण स्क्रिनबाट बाहिर निस्कनका लागि शीर्षबाट तानेर पछाडि बटनलाई छुनुहोस्।</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
 <translation id="5301954838959518834">ठिक छ, बुझेँ</translation>
@@ -164,7 +162,6 @@
 <translation id="5403592356182871684">नामहरू</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> मध्ये <ph name="ELAPSED_TIME" /> समय बित्यो।</translation>
 <translation id="5494752089476963479">हस्तक्षेपकारी वा भ्रामक विज्ञापन देखाउने साइटका विज्ञापनहरूलाई रोक लगाउनुहोस्</translation>
-<translation id="549957179819296104">नयाँ आइकन</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ, <ph name="PERMISSION_2" /> ब्लक गरिएको छ</translation>
 <translation id="5505264765875738116">साइटहरूले सूचनाहरू पठाउनका निम्ति अनुमति माग्न सक्दैनन्।</translation>
 <translation id="5516455585884385570">सूचनाका सेटिङहरू खोल्नुहोस्</translation>
@@ -181,6 +178,7 @@
 <translation id="5804241973901381774">अनुमतिहरू</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5876056640971328065">भिडियो पज गर्नुहोस्</translation>
+<translation id="5887687176710214216">पछिल्लो पटक हिजो खोलिएको</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5922853908706496913">तपाईंको स्क्रिन सेयर गर्दै</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
@@ -210,6 +208,7 @@
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="6545864417968258051">ब्लुटुथ स्क्यान गर्दै</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" /> सुविधासम्बन्धी अनुमति दिइएको छैन}}</translation>
+<translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
 <translation id="6561560012278703671">सुटुक्क सन्देश पठाउने सुविधा प्रयोग गर्नुहोस् (यसले सूचनाका प्रम्प्टलाई आफूलाई बाधा पुर्‍याउनबाट रोक लगाउँछ)</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> जि.बि.</translation>
 <translation id="6612358246767739896">संरक्षित सामग्री</translation>
@@ -251,7 +250,6 @@
 <translation id="7589445247086920869">हालको खोज इन्जिनका लागि रोक लगाउनुहोस्</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
-<translation id="7734541938181328224">परिवर्तन गरिएको आइकन हेर्नुहोस्</translation>
 <translation id="7781829728241885113">हिजो</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
@@ -293,7 +291,6 @@
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
 <translation id="851751545965956758">साइटहरूलाई यन्त्रमा जडान गर्नबाट रोक लगाउनुहोस्</translation>
 <translation id="8525306231823319788">पूर्ण स्क्रीन</translation>
-<translation id="857074314439694500">यो वेब एपले अर्कै एप जस्तो बनेर तपाईंलाई झुक्याउन खोज्दै छ भने यसलाई अनइन्स्टल गरिहाल्नुहोस्।</translation>
 <translation id="857943718398505171">(सिफारिस गरिएको) अनुमति दिएको</translation>
 <translation id="8609465669617005112">माथि सार्नुहोस्</translation>
 <translation id="8676374126336081632">आगत मेटाउनुहोस्</translation>

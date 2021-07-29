@@ -3,7 +3,6 @@
 <translationbundle lang="nl">
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
-<translation id="1100504063505580045">Huidig icoon</translation>
 <translation id="1124090076051167250">Hiermee wis je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Geluid van video uitzetten</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
 <translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
-<translation id="365089839707261811">Updates voor namen bekijken</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="381841723434055211">Telefoonnummers</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Een site speelt media af</translation>
 <translation id="42981349822642051">Uitvouwen</translation>
 <translation id="4336434711095810371">Alle gegevens wissen</translation>
-<translation id="4339203724549370495">App verwijderen</translation>
 <translation id="4402755511846832236">Voorkomen dat sites weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="4434045419905280838">Pop-ups en omleidingen</translation>
 <translation id="445467742685312942">Sites toestaan om beschermde content af te spelen</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4708011789095599544">Weet je zeker dat je de cookies en andere sitegegevens wilt wissen voor deze website?</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
-<translation id="4800839971935185386">Updates voor namen en iconen bekijken</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="4883854917563148705">Beheerde instellingen kunnen niet worden gereset</translation>
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties tonen</translation>
-<translation id="549957179819296104">Nieuw icoon</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> toegestaan, <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
 <translation id="5516455585884385570">Instellingen voor meldingen openen</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokkeren voor huidige zoekmachine</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Annuleren</translation>
-<translation id="7734541938181328224">Updates voor iconen bekijken</translation>
 <translation id="7781829728241885113">Gisteren</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="851751545965956758">Voorkomen dat sites verbinding maken met apparaten</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
-<translation id="857074314439694500">Als deze web-app zich voordoet als een andere app, verwijder je deze.</translation>
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>

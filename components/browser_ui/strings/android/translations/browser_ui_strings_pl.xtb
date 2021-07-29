@@ -3,7 +3,6 @@
 <translationbundle lang="pl">
 <translation id="1006017844123154345">Otwórz online</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
-<translation id="1100504063505580045">Aktualna ikona</translation>
 <translation id="1124090076051167250">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez stronę lub aplikacje na ekranie głównym.</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Wycisz film</translation>
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
-<translation id="365089839707261811">Sprawdź zmienione nazwy</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
 <translation id="381841723434055211">Numery telefonów</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
 <translation id="42981349822642051">Rozwiń</translation>
 <translation id="4336434711095810371">Wyczyść wszystkie dane</translation>
-<translation id="4339203724549370495">Odinstaluj aplikację</translation>
 <translation id="4402755511846832236">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="445467742685312942">Zezwalaj stronom na odtwarzanie treści chronionych</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4708011789095599544">Czy na pewno chcesz wyczyścić pliki cookie i inne dane tej witryny?</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
-<translation id="4800839971935185386">Sprawdź zmienione nazwy i ikony</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nazwy</translation>
 <translation id="5489227211564503167">Upłynęło: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Blokuj reklamy na stronach, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
-<translation id="549957179819296104">Nowa ikona</translation>
 <translation id="5502860503640766021">Dozwolone: <ph name="PERMISSION_1" />, zablokowane: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokuj dostęp obecnej wyszukiwarce</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7658239707568436148">Anuluj</translation>
-<translation id="7734541938181328224">Sprawdź zmienione ikony</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
-<translation id="857074314439694500">Jeśli ta aplikacja podszywa się pod inną, odinstaluj ją.</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>

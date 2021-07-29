@@ -3,7 +3,6 @@
 <translationbundle lang="id">
 <translation id="1006017844123154345">Buka versi Online</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
-<translation id="1100504063505580045">Ikon saat ini</translation>
 <translation id="1124090076051167250">Ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs atau aplikasi di Layar utama Anda.</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Bisukan video</translation>
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3600792891314830896">Nonaktifkan suara situs yang memutar suara</translation>
-<translation id="365089839707261811">Tinjau pembaruan nama</translation>
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3763247130972274048">Ketuk video dua kali di kiri atau kanan untuk melewati 10 detik</translation>
 <translation id="381841723434055211">Nomor telepon</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Sebuah situs sedang memutar media</translation>
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4336434711095810371">Hapus semua data</translation>
-<translation id="4339203724549370495">Uninstal aplikasi</translation>
 <translation id="4402755511846832236">Blokir situs agar tidak mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="445467742685312942">Izinkan situs memutar konten yang dilindungi</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4708011789095599544">Yakin ingin menghapus cookie dan data situs lainnya untuk situs ini?</translation>
 <translation id="4751476147751820511">Sensor gerakan atau cahaya</translation>
-<translation id="4800839971935185386">Tinjau pembaruan nama &amp; ikon</translation>
 <translation id="4836046166855586901">Tanyakan saat situs ingin mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="4883854917563148705">Setelan yang dikelola tidak dapat direset</translation>
 <translation id="4887024562049524730">Tanyakan sebelum mengizinkan situs untuk menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Nama</translation>
 <translation id="5489227211564503167">Waktu berlalu <ph name="ELAPSED_TIME" /> dari <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokir iklan di situs yang menampilkan iklan yang mengganggu atau menyesatkan</translation>
-<translation id="549957179819296104">Ikon baru</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> diizinkan, <ph name="PERMISSION_2" /> diblokir</translation>
 <translation id="5505264765875738116">Situs tidak dapat meminta izin mengirimkan notifikasi</translation>
 <translation id="5516455585884385570">Buka setelan notifikasi</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokir mesin telusur saat ini</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
-<translation id="7734541938181328224">Tinjau pembaruan ikon</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="780301667611848630">Lain kali</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Tersedia secara offline</translation>
 <translation id="851751545965956758">Blokir situs agar tidak terhubung ke perangkat</translation>
 <translation id="8525306231823319788">Layar penuh</translation>
-<translation id="857074314439694500">Uninstal aplikasi web ini jika mencoba mengelabui Anda agar berpikir bahwa ini adalah aplikasi yang berbeda.</translation>
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>

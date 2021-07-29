@@ -3,7 +3,6 @@
 <translationbundle lang="mk">
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
-<translation id="1100504063505580045">Моментална икона</translation>
 <translation id="1124090076051167250">Овa ќе ги избрише податоците и колачињата (<ph name="DATASIZE" />) складирани од сајтови или апликации на почетниот екран.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Исклучете звук на видео</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
 <translation id="3600792891314830896">Исклучи го звукот на сајтовите што пуштаат звук</translation>
-<translation id="365089839707261811">Прегледајте ги ажурирањата на имињата</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
 <translation id="381841723434055211">Телефонски броеви</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Сајтот репродуцира аудиовизуелни содржини</translation>
 <translation id="42981349822642051">Прошири</translation>
 <translation id="4336434711095810371">Избриши ги сите податоци</translation>
-<translation id="4339203724549370495">Деинсталирај ја апликацијата</translation>
 <translation id="4402755511846832236">Не дозволувај сајтовите да знаат кога активно го користам уредов</translation>
 <translation id="4434045419905280838">Скокачки прозорци/пренасочувања</translation>
 <translation id="445467742685312942">Дозволи сајтовите да пуштаат заштитени содржини</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Виртуелна реалност</translation>
 <translation id="4708011789095599544">Дали сте сигурни дека сакате да ги исчистите колачињата и другите податоците од сајтот за овој веб-сајт?</translation>
 <translation id="4751476147751820511">Сензори за движење или светлина</translation>
-<translation id="4800839971935185386">Прегледајте ги ажурирањата на имињата и иконите</translation>
 <translation id="4836046166855586901">Прашувај кога некој сајт ќе сака да знае дали активно го користам уредов</translation>
 <translation id="4883854917563148705">Управуваните поставки не може да се ресетираат</translation>
 <translation id="4887024562049524730">Прашувај пред да им дозволиш на сајтовите да ги користат уредот и податоците за виртуелна реалност (препорачано)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Имиња</translation>
 <translation id="5489227211564503167">Изминато време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај ги рекламите на сајтови што прикажуваат нападни или лажни реклами</translation>
-<translation id="549957179819296104">Нова икона</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> е одобрена, <ph name="PERMISSION_2" /> е блокирана</translation>
 <translation id="5505264765875738116">Сајтовите не можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="5516455585884385570">Отвори ги поставките за известувања</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Блокирај за тековниот пребарувач</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7658239707568436148">Откажи</translation>
-<translation id="7734541938181328224">Прегледајте ги ажурирањата на иконите</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, фала</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
-<translation id="857074314439694500">Доколку веб-апликацијава се обидува да ве измами да мислите дека е друга апликација, деинсталирајте ја.</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8676374126336081632">Јасно внесување</translation>

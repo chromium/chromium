@@ -16,7 +16,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Substitueix o recarrega la bateria</translation>
-<translation id="1077253978657569125">Volem millorar!</translation>
 <translation id="108486256082349153">Mòbil: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Bona tarda, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">M'avorreixo</translation>
@@ -485,6 +484,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4705716602320768426">Envia suggeriments</translation>
+<translation id="4730258224256997107">Ajuda'ns a millorar-ho!</translation>
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4735498845456076464">La tecla de drecera <ph name="LAUNCHER_KEY_NAME" />+número ha canviat. Per fer servir les tecles de funció, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+una tecla de la fila superior.</translation>

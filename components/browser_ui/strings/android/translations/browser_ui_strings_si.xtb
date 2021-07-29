@@ -3,7 +3,6 @@
 <translationbundle lang="si">
 <translation id="1006017844123154345">සබැඳිව විවෘත කරන්න</translation>
 <translation id="1044891598689252897">වෙබ් අඩවි සාමාන්‍යයෙන් ක්‍රියා කරයි</translation>
-<translation id="1100504063505580045">වත්මන් නිරූපකය</translation>
 <translation id="1124090076051167250">මෙය වෙබ් අඩවි හෝ යෙදුම් මඟින් ඔබේ මුල් තිරය මත ගබඩා කර ඇති දත්ත සහ කුකී <ph name="DATASIZE" /> ක් ඉවත් කරයි.</translation>
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">වීඩියෝව නිහඬ කරන්න</translation>
 <translation id="3596414637720633074">අප්‍රසිද්ධය තුළ තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="3600792891314830896">ශබ්දය වාදනය කරන අඩවි නිහඬ කරන්න</translation>
-<translation id="365089839707261811">නම යාවත්කාලීන කිරීම් සමාලෝචනය කරන්න</translation>
 <translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
 <translation id="3763247130972274048">ත. 10 ක් මඟ හැරීමට වීඩියෝවේ වමට හෝ දකුණට දෙවරක් තට්ටු කරන්න</translation>
 <translation id="381841723434055211">දුරකථන අංක</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">වෙබ් අඩවියක් මාධ්‍ය ධාවන කරයි</translation>
 <translation id="42981349822642051">දිගහරින්න</translation>
 <translation id="4336434711095810371">සියලු දත්ත හිස් කරන්න</translation>
-<translation id="4339203724549370495">යෙදුම අස්ථාපනය කරන්න</translation>
 <translation id="4402755511846832236">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන විට දැන ගැනීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="4434045419905280838">උත්පතන සහ හරවා යැවීම්</translation>
 <translation id="445467742685312942">මෙම වෙබ් අඩවියට ආරක්‍ෂිත අන්තර්ගතය ධාවන කිරීමට ඉඩ දෙන්න.</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">අතත්‍ය යථාර්ථය</translation>
 <translation id="4708011789095599544">මෙම වෙබ් අඩවිය සඳහා කුකි සහ වෙනත් අඩවි දත්ත ඉවත් කිරීමට ඔබට අවශ්‍ය බව ඔබට විශ්වාසද?</translation>
 <translation id="4751476147751820511">චලිත හෝ ආලෝක සංවේදක</translation>
-<translation id="4800839971935185386">නම සහ නිරූපක යාවත්කාලීන කිරීම් සමාලෝචනය කරන්න</translation>
 <translation id="4836046166855586901">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව අඩවියකට දැන ගැනීමට අවශ්‍ය විට විමසන්න</translation>
 <translation id="4883854917563148705">කළමනා කෙරෙන සැකසීම් යළි සැකසිය නොහැක</translation>
 <translation id="4887024562049524730">වෙබ් අඩවිවලට ඔබේ අතත්‍ය යථාර්ථ උපාංගය සහ දත්ත භාවිත කිරීමට ඉඩ දීමට පෙර අසන්න (නිර්දේශිතයි)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">නම්</translation>
 <translation id="5489227211564503167">ගත වූ කාලය <ph name="TOTAL_TIME" /> න් <ph name="ELAPSED_TIME" />.</translation>
 <translation id="5494752089476963479">ආක්‍රමණශීලී හෝ නොමඟ යවන දැන්වීම් පෙන්වන වෙබ් අඩවි මත දැන්වීම් අවහිර කරන්න</translation>
-<translation id="549957179819296104">නව නිරූපකය</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> ඉඩ දෙන ලදි, <ph name="PERMISSION_2" /> අවහිර කරන ලදි</translation>
 <translation id="5505264765875738116">වෙබ් අඩවිවලට දැනුම්දීම් යැවීමට ඉල්ලිය නොහැක</translation>
 <translation id="5516455585884385570">දැනුම්දීම් සැකසීම් විවෘත කරන්න</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">වත්මන් සෙවුම් යන්ත්‍රය සඳහා අවහිර කරන්න</translation>
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
-<translation id="7734541938181328224">නිරූපක යාවත්කාලීන කිරීම් සමාලෝචනය කරන්න</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">නොබැඳිව ලද  හැක</translation>
 <translation id="851751545965956758">අඩවි උපාංගවලට සම්බන්ධ වීම අවහිර කරන්න</translation>
 <translation id="8525306231823319788">සම්පුර්ණ තිරය</translation>
-<translation id="857074314439694500">මෙම වෙබ් යෙදුම එය වෙනත් යෙදුමක් යැයි සිතීමට ඔබව රැවටීමට උත්සාහ කරන්නේ නම්, එය අස්ථාපනය කරන්න.</translation>
 <translation id="857943718398505171">ඉඩ දේ (නිර්දේශිතයි)</translation>
 <translation id="8609465669617005112">ඉහළට යන්න</translation>
 <translation id="8676374126336081632">ආදානය හිස් කරන්න</translation>

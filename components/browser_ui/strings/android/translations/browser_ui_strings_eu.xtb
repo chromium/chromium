@@ -3,7 +3,6 @@
 <translationbundle lang="eu">
 <translation id="1006017844123154345">Ireki sarean</translation>
 <translation id="1044891598689252897">Webguneek ohiko moduan funtzionatuko dute</translation>
-<translation id="1100504063505580045">Une honetako ikonoa</translation>
 <translation id="1124090076051167250">Webguneek edo hasierako pantailako aplikazioek gorde dituzten datu eta cookieen <ph name="DATASIZE" /> garbituko dira.</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="1181037720776840403">Kendu</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Desaktibatu bideoaren audioa</translation>
 <translation id="3596414637720633074">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
-<translation id="365089839707261811">Berrikusi izenaren berritasunak</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3763247130972274048">Sakatu birritan bideoaren ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
 <translation id="381841723434055211">Telefono-zenbakiak</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Webgune bat multimedia-edukia erreproduzitzen ari da</translation>
 <translation id="42981349822642051">Zabaldu</translation>
 <translation id="4336434711095810371">Garbitu datu guztiak</translation>
-<translation id="4339203724549370495">Desinstalatu aplikazioa</translation>
 <translation id="4402755511846832236">Ez utzi jakiten webguneei gailua noiz erabiltzen ari zaren</translation>
 <translation id="4434045419905280838">Leiho gainerak. / Birbideratzeak</translation>
 <translation id="445467742685312942">Baimendu webguneei eduki babestua erreproduzitzea</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Errealitate birtuala</translation>
 <translation id="4708011789095599544">Ziur cookieak eta webgune honetako bestelako datuak garbitu nahi dituzula?</translation>
 <translation id="4751476147751820511">Mugimenduaren eta argiaren sentsoreak</translation>
-<translation id="4800839971935185386">Berrikusi izenaren eta ikonoaren berritasunak</translation>
 <translation id="4836046166855586901">Eman gailua erabiltzen ari zaren galdetzeko baimena webguneei</translation>
 <translation id="4883854917563148705">Kudeatutako ezarpenak ezin dira berrezarri</translation>
 <translation id="4887024562049524730">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean (gomendatua)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Izenak</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
 <translation id="5494752089476963479">Blokeatu iragarki oztopatzaileak edo iruzurrezkoak erakusten dituzten webguneetako iragarkiak</translation>
-<translation id="549957179819296104">Ikono berria</translation>
 <translation id="5502860503640766021">Baimena eman zaio honi: <ph name="PERMISSION_1" />; <ph name="PERMISSION_2" /> blokeatu egin da</translation>
 <translation id="5505264765875738116">Webguneek ezin dute eskatu jakinarazpenak bidaltzea</translation>
 <translation id="5516455585884385570">Ireki jakinarazpen-ezarpenak</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Blokeatu bilatzaile honetan</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
-<translation id="7734541938181328224">Berrikusi ikonoaren berritasunak</translation>
 <translation id="7781829728241885113">Atzo</translation>
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
-<translation id="857074314439694500">Sareko aplikazio honek zu iruzurtu eta beste aplikazio bat dela pentsarazi nahi badizu, desinstala ezazu.</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>

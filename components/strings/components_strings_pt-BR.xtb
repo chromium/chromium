@@ -406,7 +406,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{Em menos de um dia}=1{Em um dia}one{Em {NUM_DAYS} dia}other{Em {NUM_DAYS} dias}}</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2359961752320758691">O número do seu cartão virtual foi aplicado.</translation>
 <translation id="236340516568226369">Menu de redimensionamento</translation>
 <translation id="2367567093518048410">Nível</translation>
 <translation id="2372464001869762664">Depois da confirmação, os detalhes do cartão da sua Conta do Google serão compartilhados com este site. Veja o CVC nos detalhes da sua Conta do Plex.</translation>
@@ -863,6 +862,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4067947977115446013">Adicione um Endereço Válido</translation>
 <translation id="4072193657607981494">Carregando políticas</translation>
 <translation id="4072486802667267160">Ocorreu um erro ao processar seu pedido. Tente novamente.</translation>
+<translation id="4073797364926776829">Ver cartão</translation>
 <translation id="4075732493274867456">O cliente e o servidor não são compatíveis com uma versão do protocolo SSL comum ou com o pacote de criptografia.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuração do proxy definida utiliza um URL de script .pac, e não servidores proxy fixos.</translation>
@@ -989,6 +989,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="443121186588148776">Porta serial</translation>
 <translation id="4432688616882109544">O certificado de login não foi aceito por <ph name="HOST_NAME" /> ou não foi fornecido.</translation>
 <translation id="4432792777822557199">Páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> de agora em diante</translation>
+<translation id="4433642172056592619">Ignorada porque o usuário não está afiliado ao gerenciamento da máquina ou a máquina não é gerenciada.</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="4435702339979719576">Postal</translation>
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
@@ -1359,6 +1360,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5759751709240058861">Usar e mover sua câmera</translation>
 <translation id="5763042198335101085">Informe um endereço de e-mail válido.</translation>
 <translation id="5765072501007116331">Para ver métodos e requisitos de entrega, selecione um endereço</translation>
+<translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5778550464785688721">Controle total de dispositivos MIDI</translation>
 <translation id="5781136890105823427">Experimento ativado</translation>
@@ -1460,7 +1462,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6113594885686374546">Botão "Retomar jornada". Pressione Enter para retomar a jornada e ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="6116338172782435947">Ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="6120179357481664955">Lembrar código da UPI?</translation>
-<translation id="6123290840358279103">Ver cartão virtual</translation>
 <translation id="6124432979022149706">Conectores do Chrome Enterprise</translation>
 <translation id="6146055958333702838">Verifique todos os cabos e reinicie todos os roteadores, modens ou outros
     dispositivos de rede que você estiver usando.</translation>

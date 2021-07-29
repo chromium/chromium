@@ -16,7 +16,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Palitan o i-recharge ang baterya</translation>
-<translation id="1077253978657569125">Gusto namin itong pahusayin!</translation>
 <translation id="108486256082349153">Cellular: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Magandang hapon <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Naiinip ako</translation>
@@ -485,6 +484,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4696813013609194136">I-unlock ang device gamit ang parent code</translation>
 <translation id="4702647871202761252">Naka-off ang privacy screen</translation>
 <translation id="4705716602320768426">Magbigay ng feedback</translation>
+<translation id="4730258224256997107">Tulungan kaming pahusayin ito!</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Nagbago ang keyboard shortcut na <ph name="LAUNCHER_KEY_NAME" /> + Numero. Para magamit ang mga function key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + isang key sa itaas na row.</translation>

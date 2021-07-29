@@ -3,7 +3,6 @@
 <translationbundle lang="ja">
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
-<translation id="1100504063505580045">現在のアイコン</translation>
 <translation id="1124090076051167250">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータおよび Cookie が削除されます。</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">動画をミュート</translation>
 <translation id="3596414637720633074">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
-<translation id="365089839707261811">新しい名前を確認</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
 <translation id="381841723434055211">電話番号</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4336434711095810371">データをすべて消去</translation>
-<translation id="4339203724549370495">アプリをアンインストール</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="445467742685312942">保護されたコンテンツの再生をサイトに許可する</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
 <translation id="4708011789095599544">このウェブサイトの Cookie とその他のサイトデータを削除してもよろしいですか？</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
-<translation id="4800839971935185386">新しい名前とアイコンを確認</translation>
 <translation id="4836046166855586901">サイトからこのデバイスのアクティブ状態の検出を求められたときに確認する</translation>
 <translation id="4883854917563148705">管理者による設定はリセットできません</translation>
 <translation id="4887024562049524730">サイトにバーチャル リアリティ デバイスとデータの使用を許可する前に確認する（推奨）</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">名前</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>
 <translation id="5494752089476963479">煩わしい広告や誤解を招く広告が表示されるサイトで広告をブロックする</translation>
-<translation id="549957179819296104">アイコンが新しくなりました</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />を許可、<ph name="PERMISSION_2" />をブロック</translation>
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
 <translation id="5516455585884385570">通知設定を開く</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">現在の検索エンジンに対してブロック</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7658239707568436148">キャンセル</translation>
-<translation id="7734541938181328224">新しいアイコンを確認</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">いいえ</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
-<translation id="857074314439694500">このウェブアプリがユーザーをだまして別のアプリになりすまそうとしている場合は、アンインストールしてください。</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>

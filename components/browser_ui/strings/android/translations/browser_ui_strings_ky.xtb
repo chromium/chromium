@@ -3,7 +3,6 @@
 <translationbundle lang="ky">
 <translation id="1006017844123154345">Онлайнда ачуу</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
-<translation id="1100504063505580045">Учурдагы сүрөтчө</translation>
 <translation id="1124090076051167250">Ушуну менен сайттар жана колдонмолор Башкы экраныңызда сактаган маалымат менен cookie файлдар ээлеп турган <ph name="DATASIZE" /> орун бошотулат.</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
@@ -100,7 +99,6 @@
 <translation id="3594780231884063836">Видеонун үнүн басуу</translation>
 <translation id="3596414637720633074">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="3600792891314830896">Добуш чыгарган сайттардын үнү өчүрүлөт</translation>
-<translation id="365089839707261811">Аталышка киргизилген өзгөртүүлөрдү карап көрүү</translation>
 <translation id="3744111561329211289">Фонду шайкештирүү</translation>
 <translation id="3763247130972274048">10 сек. өткөрүп жиберүү үчүн видеонун сол же оң жагын эки жолу таптаңыз</translation>
 <translation id="381841723434055211">Телефон номерлери</translation>
@@ -122,7 +120,6 @@
 <translation id="429312253194641664">Сайтта медиа файл ойнотулууда</translation>
 <translation id="42981349822642051">Жайып көрсөтүү</translation>
 <translation id="4336434711095810371">Бардык маалыматты өчүрүү</translation>
-<translation id="4339203724549370495">Колдонмону чыгарып салуу</translation>
 <translation id="4402755511846832236">Түзмөгүңүз активдүү колдонулуп жаткан учур сайттардан жашырылсын</translation>
 <translation id="4434045419905280838">Калкыма терезелер жана багыттоолор</translation>
 <translation id="445467742685312942">Сайттарга корголгон мазмунду ойнотууга уруксат берүү</translation>
@@ -135,7 +132,6 @@
 <translation id="4670064810192446073">Виртуалдык дүйнө</translation>
 <translation id="4708011789095599544">Бул вебсайттын cookie файлдары жана башка маалыматы чын эле тазалансынбы?</translation>
 <translation id="4751476147751820511">Кыймыл же жарык сенсорлору</translation>
-<translation id="4800839971935185386">Аталышка жана сүрөтчөгө киргизилген өзгөртүүлөрдү карап көрүү</translation>
 <translation id="4836046166855586901">Сайт түзмөктү активдүү колдонуп жаткан учур тууралуу билгиси келгенде уруксат суралсын</translation>
 <translation id="4883854917563148705">Башкарылган жөндөөлөрдү баштапкы абалга келтирүүгө болбойт</translation>
 <translation id="4887024562049524730">Сайттар виртуалдык чындык түзмөктөрүңүздү жана маалыматыңызды колдонгону жатканда уруксат суралсын (сунушталат)</translation>
@@ -166,7 +162,6 @@
 <translation id="5403592356182871684">Ысымдар</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ичинен <ph name="ELAPSED_TIME" /> өттү.</translation>
 <translation id="5494752089476963479">Тажатма же адаштыруучу жарнамаларды көрсөткөн сайттан келген жарнамалар бөгөттөлсүн</translation>
-<translation id="549957179819296104">Жаңы сүрөтчө</translation>
 <translation id="5502860503640766021">Уруксат берилген: <ph name="PERMISSION_1" />. Бөгөттөлгөн: <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">Сайттар билдирмелерди жөнөтүүнү сурана алышпайт</translation>
 <translation id="5516455585884385570">Билдирменин жөндөөлөрүн ачуу</translation>
@@ -255,7 +250,6 @@
 <translation id="7589445247086920869">Учурдагы издөө каражатын бөгөттөө</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
-<translation id="7734541938181328224">Cүрөтчөгө киргизилген өзгөртүүлөрдү карап көрүү</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
@@ -297,7 +291,6 @@
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="851751545965956758">Сайттардын түзмөктөргө туташуусун бөгөттөө</translation>
 <translation id="8525306231823319788">Толук экран</translation>
-<translation id="857074314439694500">Эгер бул веб колдонмо шектүү иштеп жатса, аны чыгарып салыңыз.</translation>
 <translation id="857943718398505171">Уруксат берилген (сунушталат)</translation>
 <translation id="8609465669617005112">Өйдө жылуу</translation>
 <translation id="8676374126336081632">Киргизилген нерсени тазалоо</translation>
