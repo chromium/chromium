@@ -1085,6 +1085,10 @@ OptimizationGuideHintsManager::CanApplyOptimization(
   if (optimization_metadata)
     *optimization_metadata = {};
 
+  // Ensure that developers register their opt types before asking the
+  // optimization guide for data for that type.
+  DCHECK(registered_optimization_types_.find(optimization_type) !=
+         registered_optimization_types_.end());
   // If the type is not registered, we probably don't have a hint for it, so
   // just return.
   if (registered_optimization_types_.find(optimization_type) ==
