@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
-#define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
+#ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_
+#define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_
 
 #include <unordered_map>
 
@@ -23,14 +23,17 @@ class TrayInfoLabel;
 
 namespace tray {
 
-class BluetoothDetailedView : public TrayDetailedView {
+// TODO(crbug.com/1234138): Remove this class when the
+// |ash::features::kBluetoothRevamp| feature flag is fully launched.
+class BluetoothDetailedViewLegacy : public TrayDetailedView {
  public:
   // ID for scroll content view. Used in testing.
   static const int kScrollContentID = 1;
 
-  BluetoothDetailedView(DetailedViewDelegate* delegate, LoginStatus login);
+  BluetoothDetailedViewLegacy(DetailedViewDelegate* delegate,
+                              LoginStatus login);
 
-  ~BluetoothDetailedView() override;
+  ~BluetoothDetailedViewLegacy() override;
 
   // Shows/hides the loading indicator below the header.
   void ShowLoadingIndicator();
@@ -117,10 +120,10 @@ class BluetoothDetailedView : public TrayDetailedView {
   // be shown instead of Bluetooth device list when Bluetooth is disabled.
   views::View* disabled_panel_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDetailedView);
+  DISALLOW_COPY_AND_ASSIGN(BluetoothDetailedViewLegacy);
 };
 
 }  // namespace tray
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
+#endif  // ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_LEGACY_H_

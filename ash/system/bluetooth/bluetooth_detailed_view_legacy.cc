@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 
 #include <memory>
 #include <string>
@@ -132,26 +132,27 @@ HoverHighlightView* GetScrollListItemForDevice(
 
 }  // namespace
 
-BluetoothDetailedView::BluetoothDetailedView(DetailedViewDelegate* delegate,
-                                             LoginStatus login)
+BluetoothDetailedViewLegacy::BluetoothDetailedViewLegacy(
+    DetailedViewDelegate* delegate,
+    LoginStatus login)
     : TrayDetailedView(delegate), login_(login) {
   CreateItems();
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kBluetoothQuickSettings);
 }
 
-BluetoothDetailedView::~BluetoothDetailedView() = default;
+BluetoothDetailedViewLegacy::~BluetoothDetailedViewLegacy() = default;
 
-void BluetoothDetailedView::ShowLoadingIndicator() {
+void BluetoothDetailedViewLegacy::ShowLoadingIndicator() {
   // Setting a value of -1 gives progress_bar an infinite-loading behavior.
   ShowProgress(-1, true);
 }
 
-void BluetoothDetailedView::HideLoadingIndicator() {
+void BluetoothDetailedViewLegacy::HideLoadingIndicator() {
   ShowProgress(0, false);
 }
 
-void BluetoothDetailedView::ShowBluetoothDisabledPanel() {
+void BluetoothDetailedViewLegacy::ShowBluetoothDisabledPanel() {
   device_map_.clear();
   paired_devices_heading_ = nullptr;
   unpaired_devices_heading_ = nullptr;
@@ -175,7 +176,7 @@ void BluetoothDetailedView::ShowBluetoothDisabledPanel() {
   Layout();
 }
 
-void BluetoothDetailedView::HideBluetoothDisabledPanel() {
+void BluetoothDetailedViewLegacy::HideBluetoothDisabledPanel() {
   DCHECK(scroller());
   if (disabled_panel_)
     disabled_panel_->SetVisible(false);
@@ -184,11 +185,11 @@ void BluetoothDetailedView::HideBluetoothDisabledPanel() {
   Layout();
 }
 
-bool BluetoothDetailedView::IsDeviceScrollListEmpty() const {
+bool BluetoothDetailedViewLegacy::IsDeviceScrollListEmpty() const {
   return device_map_.empty();
 }
 
-void BluetoothDetailedView::UpdateDeviceScrollList(
+void BluetoothDetailedViewLegacy::UpdateDeviceScrollList(
     const BluetoothDeviceList& connected_devices,
     const BluetoothDeviceList& connecting_devices,
     const BluetoothDeviceList& paired_not_connected_devices,
@@ -273,24 +274,24 @@ void BluetoothDetailedView::UpdateDeviceScrollList(
   Layout();
 }
 
-void BluetoothDetailedView::SetToggleIsOn(bool is_on) {
+void BluetoothDetailedViewLegacy::SetToggleIsOn(bool is_on) {
   if (toggle_)
     toggle_->AnimateIsOn(is_on);
 }
 
-const char* BluetoothDetailedView::GetClassName() const {
-  return "BluetoothDetailedView";
+const char* BluetoothDetailedViewLegacy::GetClassName() const {
+  return "BluetoothDetailedViewLegacy";
 }
 
-void BluetoothDetailedView::CreateItems() {
+void BluetoothDetailedViewLegacy::CreateItems() {
   CreateScrollableList();
   scroll_content()->SetID(kScrollContentID);
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
 }
 
-TriView* BluetoothDetailedView::AddSubHeading(int text_id,
-                                              TriView* sub_heading_view,
-                                              int child_index) {
+TriView* BluetoothDetailedViewLegacy::AddSubHeading(int text_id,
+                                                    TriView* sub_heading_view,
+                                                    int child_index) {
   if (!sub_heading_view) {
     sub_heading_view = AddScrollListSubHeader(text_id);
   }
@@ -298,7 +299,7 @@ TriView* BluetoothDetailedView::AddSubHeading(int text_id,
   return sub_heading_view;
 }
 
-int BluetoothDetailedView::AddSameTypeDevicesToScrollList(
+int BluetoothDetailedViewLegacy::AddSameTypeDevicesToScrollList(
     const BluetoothDeviceList& list,
     const std::unordered_map<HoverHighlightView*, BluetoothAddress>&
         old_device_list,
@@ -357,7 +358,7 @@ int BluetoothDetailedView::AddSameTypeDevicesToScrollList(
   return child_index;
 }
 
-bool BluetoothDetailedView::FoundDevice(
+bool BluetoothDetailedViewLegacy::FoundDevice(
     const BluetoothAddress& device_address,
     const BluetoothDeviceList& device_list) const {
   for (const auto& device : device_list) {
@@ -367,7 +368,7 @@ bool BluetoothDetailedView::FoundDevice(
   return false;
 }
 
-void BluetoothDetailedView::UpdateClickedDevice(
+void BluetoothDetailedViewLegacy::UpdateClickedDevice(
     const BluetoothAddress& device_address,
     HoverHighlightView* item_container) {
   if (FoundDevice(device_address, paired_not_connected_devices_)) {
@@ -377,12 +378,12 @@ void BluetoothDetailedView::UpdateClickedDevice(
   }
 }
 
-void BluetoothDetailedView::ToggleButtonPressed() {
+void BluetoothDetailedViewLegacy::ToggleButtonPressed() {
   Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(
       toggle_->GetIsOn());
 }
 
-void BluetoothDetailedView::ShowSettings() {
+void BluetoothDetailedViewLegacy::ShowSettings() {
   if (TrayPopupUtils::CanOpenWebUISettings()) {
     CloseBubble();  // Deletes |this|.
     Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
@@ -390,7 +391,7 @@ void BluetoothDetailedView::ShowSettings() {
 }
 
 absl::optional<BluetoothAddress>
-BluetoothDetailedView::GetFocusedDeviceAddress() const {
+BluetoothDetailedViewLegacy::GetFocusedDeviceAddress() const {
   for (const auto& view_and_address : device_map_) {
     if (view_and_address.first->HasFocus())
       return view_and_address.second;
@@ -398,7 +399,7 @@ BluetoothDetailedView::GetFocusedDeviceAddress() const {
   return absl::nullopt;
 }
 
-void BluetoothDetailedView::FocusDeviceByAddress(
+void BluetoothDetailedViewLegacy::FocusDeviceByAddress(
     const BluetoothAddress& address) const {
   for (auto& view_and_address : device_map_) {
     if (view_and_address.second == address) {
@@ -408,7 +409,7 @@ void BluetoothDetailedView::FocusDeviceByAddress(
   }
 }
 
-void BluetoothDetailedView::HandleViewClicked(views::View* view) {
+void BluetoothDetailedViewLegacy::HandleViewClicked(views::View* view) {
   TrayBluetoothHelper* helper = Shell::Get()->tray_bluetooth_helper();
   if (helper->GetBluetoothState() != BluetoothSystem::State::kPoweredOn)
     return;
@@ -428,7 +429,7 @@ void BluetoothDetailedView::HandleViewClicked(views::View* view) {
   helper->ConnectToBluetoothDevice(device_address);
 }
 
-void BluetoothDetailedView::CreateExtraTitleRowButtons() {
+void BluetoothDetailedViewLegacy::CreateExtraTitleRowButtons() {
   if (login_ == LoginStatus::LOCKED)
     return;
 
@@ -438,7 +439,7 @@ void BluetoothDetailedView::CreateExtraTitleRowButtons() {
   tri_view()->SetContainerVisible(TriView::Container::END, true);
 
   toggle_ = new TrayToggleButton(
-      base::BindRepeating(&BluetoothDetailedView::ToggleButtonPressed,
+      base::BindRepeating(&BluetoothDetailedViewLegacy::ToggleButtonPressed,
                           base::Unretained(this)),
       IDS_ASH_STATUS_TRAY_BLUETOOTH);
   toggle_->SetIsOn(Shell::Get()->tray_bluetooth_helper()->GetBluetoothState() ==
@@ -446,7 +447,7 @@ void BluetoothDetailedView::CreateExtraTitleRowButtons() {
   tri_view()->AddView(TriView::Container::END, toggle_);
 
   settings_ = CreateSettingsButton(
-      base::BindRepeating(&BluetoothDetailedView::ShowSettings,
+      base::BindRepeating(&BluetoothDetailedViewLegacy::ShowSettings,
                           base::Unretained(this)),
       IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS);
   tri_view()->AddView(TriView::Container::END, settings_);
