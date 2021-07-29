@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 
 /**
  * Helper class for Tabs created from the Start surface.
@@ -41,6 +42,8 @@ public class StartSurfaceUserData implements UserData {
      * {@link org.chromium.chrome.browser.tab.TabLaunchType.FROM_START_SURFACE}.
      */
     public static void setKeepTab(Tab tab, boolean keepTab) {
+        if (tab == null || tab.getLaunchType() != TabLaunchType.FROM_START_SURFACE) return;
+
         StartSurfaceUserData startSurfaceUserData = get(tab);
         if (startSurfaceUserData == null) {
             startSurfaceUserData = new StartSurfaceUserData();
