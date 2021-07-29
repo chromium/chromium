@@ -39,6 +39,9 @@ namespace android_webview {
 
 namespace {
 
+// Persisted to logs, should never change.
+constexpr char kAppsPackageNamesAllowlistMetricsSuffix[] =
+    "WebViewAppsPackageNamesAllowlist";
 constexpr int kBitsPerByte = 8;
 
 using AllowlistPraseStatus =
@@ -219,7 +222,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
 }
 
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed(
-    component_updater::ComponentLoadError /*error*/) {
+    component_updater::ComponentLoadResult /*error*/) {
   DCHECK(lookup_callback_);
   // TODO(crbug.com/1216200): Record the error in a histogram in the
   // ComponentLoader for each component.
@@ -229,6 +232,11 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed(
 void AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   GetWebViewAppsPackageNamesAllowlistPublicKeyHash(hash);
+}
+
+std::string AwAppsPackageNamesAllowlistComponentLoaderPolicy::GetMetricsSuffix()
+    const {
+  return kAppsPackageNamesAllowlistMetricsSuffix;
 }
 
 void LoadPackageNamesAllowlistComponent(

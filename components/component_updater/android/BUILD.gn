@@ -58,7 +58,14 @@ android_library("embedded_component_loader_java") {
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  srcjar_deps = [ ":component_loader_policy_enum_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+java_cpp_enum("component_loader_policy_enum_srcjar") {
+  # External code should depend on ":embedded_component_loader_java" instead.
+  visibility = [ ":*" ]
+  sources = [ "component_loader_policy.h" ]
 }
 
 generate_jni("embedded_component_loader_jni_headers") {

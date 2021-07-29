@@ -2219,6 +2219,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="CloudPrint.UrlFetcherUploadSize"/>
 </histogram_suffixes>
 
+<histogram_suffixes
+    name="ComponentUpdater.AndroidComponentLoader.ComponentName" separator=".">
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/components/component_updater/android/OWNERS</owner>
+  <suffix name="OriginTrials" label=""/>
+  <suffix name="TrustTokenKeyCommitments" label=""/>
+  <suffix name="WebViewAppsPackageNamesAllowlist" label=""/>
+  <affected-histogram
+      name="ComponentUpdater.AndroidComponentLoader.LoadStatus"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="CompositingLCDTextDisabledCountSuffixes"
     separator=".">
   <obsolete>
