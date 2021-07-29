@@ -78,7 +78,8 @@
     text-decoration: none;
   }
 </style>
-<button class="row" on-click="onFolderClick_" tabindex="0">
+<button class="row" on-click="onFolderClick_" tabindex="0"
+    on-contextmenu="onFolderContextMenu_">
   <div id="arrow" hidden$="[[!folder.children.length]]">
     <cr-icon-button
         id="arrowIcon"

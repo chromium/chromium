@@ -84,6 +84,12 @@ export class BookmarkFolderElement extends PolymerElement {
         event.model.item.id, event.clientX, event.clientY);
   }
 
+  private onFolderContextMenu_(event: MouseEvent) {
+    event.preventDefault();
+    this.bookmarksApi_.showContextMenu(
+        this.folder.id, event.clientX, event.clientY);
+  }
+
   private getBookmarkIcon_(url: string): string {
     return getFaviconForPageURL(url, false);
   }

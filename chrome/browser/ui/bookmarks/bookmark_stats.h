@@ -53,6 +53,8 @@ enum BookmarkLaunchLocation {
   BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_READING_LIST = 10,
   // Reading list bubble in the bookmarks bar.
   BOOKMARK_LAUNCH_LOCATION_READING_LIST_DIALOG = 11,
+  // Context menu for a bookmark node in the side panel.
+  BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU = 12,
 
   BOOKMARK_LAUNCH_LOCATION_LIMIT  // Keep this last.
 };
