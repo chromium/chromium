@@ -43,6 +43,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -390,9 +391,20 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::OnURLLoadComplete(
 
   // Only up to the first 16 characters of the response are important to GAIA.
   // Truncate if needed to keep amount data sent back to GAIA down.
-  if (data.size() > 16)
-    data.resize(16);
-  results_[it->second] = data;
+  constexpr int kTruncatedLength = 16;
+  if (data.size() > kTruncatedLength)
+    data.resize(kTruncatedLength);
+
+  // Encode the response to avoid cases where a proxy could pass a
+  // comma-separated string which would break the server-side parsing
+  // (see crbug.com/1086916#c4).
+
+  // A character may be encoded into a maximum of 4 characters.
+  constexpr int kEncodedLength = kTruncatedLength * 4;
+  url::RawCanonOutputT<char, kEncodedLength> encoded_data;
+  url::EncodeURIComponent(data.c_str(), data.size(), &encoded_data);
+  results_[it->second] =
+      std::string(encoded_data.data(), encoded_data.length());
 
   // Clean up tracking of this fetcher.  The rest will be cleaned up after
   // the timer expires in CleanupTransientState().

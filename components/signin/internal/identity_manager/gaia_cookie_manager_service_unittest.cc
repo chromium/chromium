@@ -992,7 +992,7 @@ TEST_F(GaiaCookieManagerServiceTest, ExternalCcResultFetcher) {
       &InstrumentedGaiaCookieManagerService::StartFetchingMergeSession,
       base::Unretained(&helper)));
 
-  // Simulate a successful completion of GetCheckConnctionInfo.
+  // Simulate a successful completion of GetCheckConnectionInfo.
   SimulateGetCheckConnectionInfoSuccess(
       "[{\"carryBackToken\": \"yt\", \"url\": \"http://www.yt.com\"},"
       " {\"carryBackToken\": \"bl\", \"url\": \"http://www.bl.com\"}]");
@@ -1019,7 +1019,7 @@ TEST_F(GaiaCookieManagerServiceTest, ExternalCcResultFetcherTimeout) {
       &InstrumentedGaiaCookieManagerService::StartFetchingMergeSession,
       base::Unretained(&helper)));
 
-  // Simulate a successful completion of GetCheckConnctionInfo.
+  // Simulate a successful completion of GetCheckConnectionInfo.
   SimulateGetCheckConnectionInfoSuccess(
       "[{\"carryBackToken\": \"yt\", \"url\": \"http://www.yt.com\"},"
       " {\"carryBackToken\": \"bl\", \"url\": \"http://www.bl.com\"}]");
@@ -1050,7 +1050,7 @@ TEST_F(GaiaCookieManagerServiceTest, ExternalCcResultFetcherTruncate) {
       &InstrumentedGaiaCookieManagerService::StartFetchingMergeSession,
       base::Unretained(&helper)));
 
-  // Simulate a successful completion of GetCheckConnctionInfo.
+  // Simulate a successful completion of GetCheckConnectionInfo.
   SimulateGetCheckConnectionInfoSuccess(
       "[{\"carryBackToken\": \"yt\", \"url\": \"http://www.yt.com\"}]");
 
@@ -1063,6 +1063,29 @@ TEST_F(GaiaCookieManagerServiceTest, ExternalCcResultFetcherTruncate) {
   SimulateGetCheckConnectionInfoResult("http://www.yt.com",
                                        "1234567890123456trunc");
   ASSERT_EQ("yt:1234567890123456", result_fetcher.GetExternalCcResult());
+}
+
+TEST_F(GaiaCookieManagerServiceTest, ExternalCcResultFetcherWithCommas) {
+  InstrumentedGaiaCookieManagerService helper(token_service(), signin_client());
+  GaiaCookieManagerService::ExternalCcResultFetcher result_fetcher(&helper);
+  EXPECT_CALL(helper, StartFetchingMergeSession());
+  result_fetcher.Start(base::BindOnce(
+      &InstrumentedGaiaCookieManagerService::StartFetchingMergeSession,
+      base::Unretained(&helper)));
+
+  // Simulate a successful completion of GetCheckConnectionInfo.
+  SimulateGetCheckConnectionInfoSuccess(
+      "[{\"carryBackToken\": \"yt\", \"url\": \"http://www.yt.com\"}]");
+
+  GaiaCookieManagerService::ExternalCcResultFetcher::LoaderToToken loaders =
+      result_fetcher.get_loader_map_for_testing();
+  ASSERT_EQ(1u, loaders.size());
+  ASSERT_TRUE(IsLoadPending("http://www.yt.com"));
+
+  // Simulate response for "yt" with a string that contains a comma-separated
+  // string that could trick the server that a connection to "bl" is ok.
+  SimulateGetCheckConnectionInfoResult("http://www.yt.com", "ok,bl:ok");
+  ASSERT_EQ("yt:ok%2Cbl%3Aok", result_fetcher.GetExternalCcResult());
 }
 
 TEST_F(GaiaCookieManagerServiceTest, UbertokenSuccessFetchesExternalCC) {
