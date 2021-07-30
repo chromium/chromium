@@ -15,11 +15,21 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash {
 namespace quick_pair {
 
-PairerBrokerImpl::PairerBrokerImpl() = default;
+PairerBrokerImpl::PairerBrokerImpl() {
+  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+      &PairerBrokerImpl::OnGetAdapter, weak_pointer_factory_.GetWeakPtr()));
+}
+
+void PairerBrokerImpl::OnGetAdapter(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  adapter_ = adapter;
+}
 
 PairerBrokerImpl::~PairerBrokerImpl() = default;
 
@@ -47,8 +57,9 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
 
   QP_LOG(INFO) << __func__ << ": " << device;
 
+  DCHECK(adapter_);
   fast_pair_pairers_[device->address] = std::make_unique<FastPairPairer>(
-      device,
+      adapter_, device,
       base::BindOnce(&PairerBrokerImpl::OnFastPairDevicePaired,
                      weak_pointer_factory_.GetWeakPtr()),
       base::BindOnce(&PairerBrokerImpl::OnFastPairPairingFailure,

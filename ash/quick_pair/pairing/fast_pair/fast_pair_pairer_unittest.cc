@@ -12,6 +12,7 @@
 #include "ash/quick_pair/common/protocol.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -29,16 +30,19 @@ class FastPairPairerTest : public testing::Test {
   void SetUp() override {
     device_ = base::MakeRefCounted<Device>(kMetadataId, kAddress,
                                            Protocol::kFastPair);
+    adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
   }
 
  protected:
   // This is done on-demand to enable setting up mock expectations first.
   void CreatePairer() {
     pairer_ = std::make_unique<FastPairPairer>(
-        device_, paired_callback_.Get(), pair_failed_callback_.Get(),
+        adapter_, device_, paired_callback_.Get(), pair_failed_callback_.Get(),
         account_key_failure_callback_.Get(), pairing_procedure_complete_.Get());
   }
 
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   scoped_refptr<Device> device_;
   base::MockCallback<base::OnceCallback<void(scoped_refptr<Device>)>>
       paired_callback_;

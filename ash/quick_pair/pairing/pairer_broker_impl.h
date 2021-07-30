@@ -19,6 +19,12 @@
 #include "base/observer_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace device {
+
+class BluetoothAdapter;
+
+}  // namespace device
+
 namespace ash {
 namespace quick_pair {
 
@@ -46,8 +52,13 @@ class PairerBrokerImpl final : public PairerBroker {
                            AccountKeyFailure failure);
   void OnFastPairProcedureComplete(scoped_refptr<Device> device);
 
+  // Internal method called by BluetoothAdapterFactory to provide the adapter
+  // object.
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<PairerBrokerImpl> weak_pointer_factory_{this};
 };

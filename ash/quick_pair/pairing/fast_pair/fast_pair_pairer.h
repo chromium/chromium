@@ -8,6 +8,12 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 
+namespace device {
+
+class BluetoothAdapter;
+
+}  // namespace device
+
 namespace ash {
 namespace quick_pair {
 
@@ -20,6 +26,7 @@ enum class PairFailure;
 class FastPairPairer {
  public:
   FastPairPairer(
+      scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<Device> device,
       base::OnceCallback<void(scoped_refptr<Device>)> paired_callback,
       base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
@@ -37,6 +44,7 @@ class FastPairPairer {
  private:
   void StartPairing();
 
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
   base::OnceCallback<void(scoped_refptr<Device>)> paired_callback_;
   base::OnceCallback<void(scoped_refptr<Device>, PairFailure)>
