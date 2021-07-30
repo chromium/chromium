@@ -12,7 +12,6 @@
 #include "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ui/base/device_form_factor.h"
 #include "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,10 +26,6 @@ namespace {
 const CGFloat kSmallDeviceThreshold = 22.0;
 
 }  // namespace
-
-bool IsIPadIdiom() {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-}
 
 CGFloat CurrentScreenHeight() {
   return [UIScreen mainScreen].bounds.size.height;
