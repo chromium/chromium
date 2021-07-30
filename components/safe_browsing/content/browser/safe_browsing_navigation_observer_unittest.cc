@@ -522,8 +522,9 @@ TEST_F(SBNavigationObserverTest, TimestampIsDecreasing) {
             referrer_chain[2].navigation_time_msec());
 }
 
+// Disabled flake: crbug.com/1234659:
 TEST_F(SBNavigationObserverTest,
-       RemoveMiddleNonUserGestureEntriesForRecentNavigation) {
+       DISABLED_RemoveMiddleNonUserGestureEntriesForRecentNavigation) {
   CreateNonUserGestureReferrerChain();
 
   ReferrerChain referrer_chain;
