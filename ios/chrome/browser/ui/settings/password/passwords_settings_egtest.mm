@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/ios/ios_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -79,12 +80,33 @@ GREYElementInteraction* GetInteractionForListItem(id<GREYMatcher> matcher,
       onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
 }
 
+// Returns the GREYElementInteraction* for the item on the password issues list
+// with the given |matcher|. It scrolls in |direction| if necessary to ensure
+// that the matched item is interactable.
+GREYElementInteraction* GetInteractionForIssuesListItem(
+    id<GREYMatcher> matcher,
+    GREYDirection direction) {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
+         usingSearchAction:grey_scrollInDirection(direction, kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordIssuesTableViewId)];
+}
+
 // Returns the GREYElementInteraction* for the cell on the password list with
 // the given |username|. It scrolls down if necessary to ensure that the matched
 // cell is interactable.
 GREYElementInteraction* GetInteractionForPasswordEntry(NSString* username) {
   return GetInteractionForListItem(ButtonWithAccessibilityLabel(username),
                                    kGREYDirectionDown);
+}
+
+// Returns the GREYElementInteraction* for the cell on the password list with
+// the given |username|. It scrolls down if necessary to ensure that the matched
+// cell is interactable.
+GREYElementInteraction* GetInteractionForPasswordIssueEntry(
+    NSString* username) {
+  return GetInteractionForIssuesListItem(ButtonWithAccessibilityLabel(username),
+                                         kGREYDirectionDown);
 }
 
 // Returns the GREYElementInteraction* for the item on the detail view
@@ -1642,6 +1664,56 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Checks that deleting a compromised password from password issues goes back
+// to the list-of-issues which doesn't display that password anymore.
+- (void)testDeletePasswordIssue {
+  GREYAssert([PasswordSettingsAppInterface
+                 saveInsecurePassword:@"concrete password"
+                             userName:@"concrete username"
+                               origin:@"https://example.com"],
+             @"Stored form was not found in the PasswordStore results.");
+
+  OpenPasswordSettings();
+
+  NSString* text = l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
+  NSString* detailText =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1));
+
+  [GetInteractionForPasswordEntry([NSString
+      stringWithFormat:@"%@, %@", text, detailText]) performAction:grey_tap()];
+
+  [GetInteractionForPasswordIssueEntry(@"example.com, concrete username")
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Wait until the alert and the detail view are dismissed.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Check that the current view is now the list view, by locating
+  // PasswordIssuesTableView.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordIssuesTableViewId)]
+      assertWithMatcher:grey_notNil()];
+
+  [GetInteractionForPasswordIssueEntry(@"example.com, concrete username")
+      assertWithMatcher:grey_nil()];
+
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }

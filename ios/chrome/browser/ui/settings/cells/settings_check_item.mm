@@ -48,6 +48,14 @@
     cell.textLabel.textColor = UIColor.cr_secondaryLabelColor;
     cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
+  cell.isAccessibilityElement = YES;
+
+  if (self.detailText) {
+    cell.accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", self.text, self.detailText];
+  } else {
+    cell.accessibilityLabel = self.text;
+  }
 }
 
 @end

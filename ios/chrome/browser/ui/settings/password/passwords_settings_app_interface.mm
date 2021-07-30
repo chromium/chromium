@@ -107,9 +107,11 @@ bool SaveToPasswordStore(const PasswordForm& form) {
   // TODO(crbug.com/1223022): Once all places that operate changes on forms
   // via UpdateLogin properly set |password_issues|, setting them to an empty
   // map should be part of the default constructor.
-  expected_form.password_issues =
-      base::flat_map<password_manager::InsecureType,
-                     password_manager::InsecurityMetadata>();
+  if (!expected_form.password_issues) {
+    expected_form.password_issues =
+        base::flat_map<password_manager::InsecureType,
+                       password_manager::InsecurityMetadata>();
+  }
   // Check the result and ensure PasswordStore processed this.
   FakeStoreConsumer consumer;
   if (!consumer.FetchStoreResults()) {
@@ -188,6 +190,25 @@ static MockReauthenticationModule* _mockReauthenticationModule;
   example.password_value = base::SysNSStringToUTF16(password);
   example.url = GURL(base::SysNSStringToUTF16(origin));
   example.signon_realm = example.url.spec();
+  return SaveToPasswordStore(example);
+}
+
++ (BOOL)saveInsecurePassword:(NSString*)password
+                    userName:(NSString*)userName
+                      origin:(NSString*)origin {
+  PasswordForm example;
+  example.username_value = base::SysNSStringToUTF16(userName);
+  example.password_value = base::SysNSStringToUTF16(password);
+  example.url = GURL(base::SysNSStringToUTF16(origin));
+  example.signon_realm = example.url.spec();
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  example.password_issues =
+      base::flat_map<password_manager::InsecureType,
+                     password_manager::InsecurityMetadata>();
+  example.password_issues->insert({password_manager::InsecureType::kLeaked,
+                                   password_manager::InsecurityMetadata()});
   return SaveToPasswordStore(example);
 }
 
