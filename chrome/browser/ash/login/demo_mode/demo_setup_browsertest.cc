@@ -623,7 +623,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OfflineDemoModeUnavailable DISABLED_OfflineDemoModeUnavailable
+#else
+#define MAYBE_OfflineDemoModeUnavailable OfflineDemoModeUnavailable
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_OfflineDemoModeUnavailable) {
   SimulateNetworkDisconnected();
 
   TriggerDemoModeOnWelcomeScreen();
@@ -639,7 +646,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
   EXPECT_FALSE(IsOfflineNetworkListElementShown());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OfflineSetupFlowSuccess DISABLED_OfflineSetupFlowSuccess
+#else
+#define MAYBE_OfflineSetupFlowSuccess OfflineSetupFlowSuccess
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_OfflineSetupFlowSuccess) {
   // Simulate offline setup success.
   enrollment_helper_.ExpectOfflineEnrollmentSuccess();
   SimulateNetworkDisconnected();
@@ -778,7 +792,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::WaitForNetworkSelectionScreen();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ClickNetworkOnNetworkScreen DISABLED_ClickNetworkOnNetworkScreen
+#else
+#define MAYBE_ClickNetworkOnNetworkScreen ClickNetworkOnNetworkScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_ClickNetworkOnNetworkScreen) {
   TriggerDemoModeOnWelcomeScreen();
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
   test::WaitForNetworkSelectionScreen();
@@ -1094,7 +1115,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, NonEnterpriseDevice) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, LegacyDemoModeDevice) {
+// Flake on ASAN: crbug.com/1234593
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_LegacyDemoModeDevice DISABLED_LegacyDemoModeDevice
+#else
+#define MAYBE_LegacyDemoModeDevice LegacyDemoModeDevice
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, MAYBE_LegacyDemoModeDevice) {
   // Simulating device enrolled into legacy demo mode:
   // * "active_date" and "check_enrollment" are set
   // * "block_devmode" is set to false, because legacy demo mode does not have
