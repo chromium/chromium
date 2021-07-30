@@ -39,8 +39,10 @@ void BindToInProcessInstance(
 }
 
 void OverrideInProcessInstanceForTesting(Initializer* initializer) {
-  if (g_instance)
+  if (g_instance) {
     delete g_instance;
+    g_instance = nullptr;
+  }
 
   if (!initializer)
     return;
