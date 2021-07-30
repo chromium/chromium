@@ -157,7 +157,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
 
     // Returns the short-form name of the signing algorithm that this Signer
     // uses.
-    virtual std::string GetAlgorithmIdentifier() = 0;
+    virtual std::string GetAlgorithmIdentifier() const = 0;
   };
 
   // Creates a request signing helper with behavior determined by |params|,
