@@ -27,6 +27,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -42,6 +44,9 @@ namespace net {
 namespace internal {
 
 namespace {
+
+// Interval between retries to parse config. Used only until parsing succeeds.
+const int kRetryIntervalSeconds = 5;
 
 // Registry key paths.
 const wchar_t kTcpipPath[] =
@@ -687,8 +692,7 @@ class DnsConfigServiceWin::Watcher
 // Reads config from registry and IpHelper. All work performed in ThreadPool.
 class DnsConfigServiceWin::ConfigReader : public SerialWorker {
  public:
-  explicit ConfigReader(DnsConfigServiceWin& service)
-      : SerialWorker(/*max_number_of_retries=*/3), service_(&service) {}
+  explicit ConfigReader(DnsConfigServiceWin& service) : service_(&service) {}
 
  private:
   ~ConfigReader() override {}
@@ -699,15 +703,17 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
       dns_config_ = ConvertSettingsToDnsConfig(settings.value());
   }
 
-  bool OnWorkFinished() override {
+  void OnWorkFinished() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!IsCancelled());
     if (dns_config_.has_value()) {
       service_->OnConfigRead(std::move(dns_config_).value());
-      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
-      return false;
+      // Try again in a while in case DnsConfigWatcher missed the signal.
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(&ConfigReader::WorkNow, this),
+          base::TimeDelta::FromSeconds(kRetryIntervalSeconds));
     }
   }
 

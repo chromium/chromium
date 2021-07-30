@@ -145,14 +145,12 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
     }
   }
 
-  bool OnWorkFinished() override {
+  void OnWorkFinished() override {
     DCHECK(!IsCancelled());
     if (dns_config_.has_value()) {
       service_->OnConfigRead(std::move(dns_config_).value());
-      return true;
     } else {
       LOG(WARNING) << "Failed to read DnsConfig.";
-      return false;
     }
   }
 

@@ -11,8 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
-#include "base/timer/timer.h"
-#include "net/base/backoff_entry.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -23,10 +21,6 @@ namespace net {
 // called (1 or more times) while |DoWork| is already under way, |DoWork| will
 // be called once: after current |DoWork| completes, before a call to
 // |OnWorkFinished|.
-//
-// If |OnWorkFinished| returns a failure and |max_number_of_retries|
-// is non-zero, retries will be scheduled according to the |backoff_policy|.
-// A default backoff policy is used if one is not provided.
 //
 // This behavior is designed for updating a result after some trigger, for
 // example reading a file once FilePathWatcher indicates it changed.
@@ -40,9 +34,7 @@ namespace net {
 class NET_EXPORT_PRIVATE SerialWorker
     : public base::RefCountedDeleteOnSequence<SerialWorker> {
  public:
-  explicit SerialWorker(
-      int max_number_of_retries = 0,
-      const net::BackoffEntry::Policy* backoff_policy = nullptr);
+  SerialWorker();
 
   // Unless already scheduled, post |DoWork| to ThreadPool.
   // Made virtual to allow mocking.
@@ -52,10 +44,6 @@ class NET_EXPORT_PRIVATE SerialWorker
   void Cancel();
 
   bool IsCancelled() const { return state_ == CANCELLED; }
-
-  // Allows tests to inspect the current backoff/retry state.
-  const BackoffEntry& GetBackoffEntryForTesting() const;
-  const base::OneShotTimer& GetRetryTimerForTesting() const;
 
  protected:
   friend class base::DeleteHelper<SerialWorker>;
@@ -67,8 +55,7 @@ class NET_EXPORT_PRIVATE SerialWorker
   virtual void DoWork() = 0;
 
   // Executed on origin thread after |DoRead| completes.
-  // Must return true on success.
-  virtual bool OnWorkFinished() = 0;
+  virtual void OnWorkFinished() = 0;
 
   // Used to verify that the constructor, WorkNow(), Cancel() and
   // OnWorkJobFinished() are called on the same sequence.
@@ -82,17 +69,10 @@ class NET_EXPORT_PRIVATE SerialWorker
     PENDING,  // |WorkNow| while WORKING, must re-do work
   };
 
-  void WorkNowInternal();
-
   // Called on the the origin thread after |DoWork| completes.
   void OnWorkJobFinished();
 
   State state_;
-
-  // Max retries and backoff entry to control timing.
-  const int max_number_of_retries_;
-  BackoffEntry backoff_entry_;
-  base::OneShotTimer retry_timer_;
 
   base::WeakPtrFactory<SerialWorker> weak_factory_{this};
 
