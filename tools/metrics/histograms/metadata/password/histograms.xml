@@ -2752,8 +2752,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordProtection.PageInfoAction"
-    enum="PasswordProtectionWarningAction" expires_after="2021-08-15">
-  <owner>vakh@chromium.org</owner>
+    enum="PasswordProtectionWarningAction" expires_after="2022-08-15">
+  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records how a user interacts with page info bubble that displays the
