@@ -1328,26 +1328,6 @@ bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
                                  const_cast<const ListValue**>(out_value));
 }
 
-bool DictionaryValue::GetStringWithoutPathExpansion(
-    StringPiece key,
-    std::string* out_value) const {
-  const Value* value = FindKey(key);
-  if (!value)
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
-bool DictionaryValue::GetStringWithoutPathExpansion(
-    StringPiece key,
-    std::u16string* out_value) const {
-  const Value* value = FindKey(key);
-  if (!value)
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
 bool DictionaryValue::GetDictionaryWithoutPathExpansion(
     StringPiece key,
     const DictionaryValue** out_value) const {

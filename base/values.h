@@ -736,12 +736,6 @@ class BASE_EXPORT DictionaryValue : public Value {
 
   // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.
-  // DEPRECATED, use `Value::FindStringKey(key)` instead.
-  bool GetStringWithoutPathExpansion(StringPiece key,
-                                     std::string* out_value) const;
-  // DEPRECATED, use `Value::FindStringKey(key)` and UTF8ToUTF16() instead.
-  bool GetStringWithoutPathExpansion(StringPiece key,
-                                     std::u16string* out_value) const;
   // DEPRECATED, use `Value::FindDictKey(key)` instead.
   bool GetDictionaryWithoutPathExpansion(
       StringPiece key,

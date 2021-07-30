@@ -2327,40 +2327,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_dict.GetList("list", nullptr));
   EXPECT_FALSE(main_dict.GetList("DNE", nullptr));
 
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "bool", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "int", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "double", static_cast<std::string*>(nullptr)));
-  EXPECT_TRUE(main_dict.GetStringWithoutPathExpansion(
-      "string", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "binary", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "dict", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "list", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "DNE", static_cast<std::string*>(nullptr)));
-
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "bool", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "int", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "double", static_cast<std::u16string*>(nullptr)));
-  EXPECT_TRUE(main_dict.GetStringWithoutPathExpansion(
-      "string", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "binary", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "dict", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "list", static_cast<std::u16string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetStringWithoutPathExpansion(
-      "DNE", static_cast<std::u16string*>(nullptr)));
-
   // There is no GetBinaryWithoutPathExpansion for some reason, but if there
   // were it should be tested here...
 
