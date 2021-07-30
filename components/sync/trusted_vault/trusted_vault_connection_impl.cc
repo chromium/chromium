@@ -9,6 +9,7 @@
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
+#include "base/files/important_file_writer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
 #include "components/sync/trusted_vault/download_keys_response_handler.h"
@@ -23,6 +24,33 @@
 namespace syncer {
 
 namespace {
+
+// Returns security domain epoch if valid (>0) and nullopt otherwise.
+absl::optional<int> GetLastKeyVersionFromJoinSecurityDomainsResponse(
+    const sync_pb::JoinSecurityDomainsResponse response) {
+  if (response.security_domain().current_epoch() > 0) {
+    return response.security_domain().current_epoch();
+  }
+  return absl::nullopt;
+}
+
+// Returns security domain epoch if input is a valid response for already exists
+// error case and nullopt otherwise.
+absl::optional<int> GetLastKeyVersionFromAlreadyExistsResponse(
+    const std::string& response_body) {
+  sync_pb::RPCStatus rpc_status;
+  rpc_status.ParseFromString(response_body);
+  for (const sync_pb::Proto3Any& status_detail : rpc_status.details()) {
+    if (status_detail.type_url() != kJoinSecurityDomainsErrorDetailTypeURL) {
+      continue;
+    }
+    sync_pb::JoinSecurityDomainsErrorDetail error_detail;
+    error_detail.ParseFromString(status_detail.value());
+    return GetLastKeyVersionFromJoinSecurityDomainsResponse(
+        error_detail.already_exists_response());
+  }
+  return absl::nullopt;
+}
 
 std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
     const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
@@ -145,24 +173,18 @@ void ProcessJoinSecurityDomainsResponse(
       return;
   }
 
-  sync_pb::JoinSecurityDomainsResponse response;
+  absl::optional<int> last_key_version;
   if (http_status == TrustedVaultRequest::HttpStatus::kConflict) {
-    sync_pb::JoinSecurityDomainsErrorDetail error_detail;
-    if (!error_detail.ParseFromString(response_body)) {
-      std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
-                              /*last_key_version=*/0);
-      return;
-    }
-    response = error_detail.already_exists_response();
-  } else if (!response.ParseFromString(response_body)) {
-    std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
-                            /*last_key_version=*/0);
-    return;
+    last_key_version =
+        GetLastKeyVersionFromAlreadyExistsResponse(response_body);
+  } else {
+    sync_pb::JoinSecurityDomainsResponse response;
+    response.ParseFromString(response_body);
+    last_key_version =
+        GetLastKeyVersionFromJoinSecurityDomainsResponse(response);
   }
-  const int last_key_version = response.security_domain().current_epoch();
-  if (last_key_version == kUnknownConstantKeyVersion) {
-    // kUnknownConstantKeyVersion should be never returned by the server, likely
-    // response is corrupted or empty.
+
+  if (!last_key_version.has_value()) {
     std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
                             /*last_key_version=*/0);
     return;
@@ -171,7 +193,7 @@ void ProcessJoinSecurityDomainsResponse(
       http_status == TrustedVaultRequest::HttpStatus::kConflict
           ? TrustedVaultRegistrationStatus::kAlreadyRegistered
           : TrustedVaultRegistrationStatus::kSuccess,
-      last_key_version);
+      *last_key_version);
 }
 
 void ProcessDownloadKeysResponse(
