@@ -226,7 +226,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     ScopedLightModeAsDefault scoped_light_mode_as_default;
 
     ContentsView::OnThemeChanged();
-    border_container_view_->border()->set_color(
+    border_container_view_->GetBorder()->set_color(
         AshColorProvider::Get()->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::kHairlineBorderColor));
   }

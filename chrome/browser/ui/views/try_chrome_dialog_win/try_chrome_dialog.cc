@@ -744,8 +744,8 @@ void TryChromeDialog::Context::TaskbarCalculator::OnWidgetBoundsChanged(
   // the border without the arrow).
   const gfx::Insets border_insets_in_pixels = gfx::ToFlooredInsets(
       gfx::ConvertInsetsToPixels(gfx::Insets(kTryChromeBorderThickness), dsf));
-  gfx::Insets scaled_insets = gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
-      popup->GetContentsView()->border()->GetInsets(), dsf));
+  gfx::Insets scaled_insets = gfx::ToFlooredInsets(
+      gfx::ConvertInsetsToPixels(popup->GetContentsView()->GetInsets(), dsf));
   scaled_insets -= border_insets_in_pixels;
   gfx::Rect dialog_bounds(window_size);
   dialog_bounds.Inset(scaled_insets);

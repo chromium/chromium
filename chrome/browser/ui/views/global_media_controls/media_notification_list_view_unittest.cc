@@ -78,7 +78,7 @@ TEST_F(MediaNotificationListViewTest, NoSeparatorForOneNotification) {
   EXPECT_EQ(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId1)
-                         ->border());
+                         ->GetBorder());
 }
 
 TEST_F(MediaNotificationListViewTest, SeparatorBetweenNotifications) {
@@ -94,11 +94,11 @@ TEST_F(MediaNotificationListViewTest, SeparatorBetweenNotifications) {
   EXPECT_EQ(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId1)
-                         ->border());
+                         ->GetBorder());
   EXPECT_NE(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId2)
-                         ->border());
+                         ->GetBorder());
 }
 
 TEST_F(MediaNotificationListViewTest, SeparatorRemovedWhenNotificationRemoved) {
@@ -114,15 +114,15 @@ TEST_F(MediaNotificationListViewTest, SeparatorRemovedWhenNotificationRemoved) {
   EXPECT_EQ(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId1)
-                         ->border());
+                         ->GetBorder());
   EXPECT_NE(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId2)
-                         ->border());
+                         ->GetBorder());
   EXPECT_NE(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId3)
-                         ->border());
+                         ->GetBorder());
 
   // Remove the topmost notification.
   HideNotification(kTestNotificationId1);
@@ -134,9 +134,9 @@ TEST_F(MediaNotificationListViewTest, SeparatorRemovedWhenNotificationRemoved) {
   EXPECT_EQ(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId2)
-                         ->border());
+                         ->GetBorder());
   EXPECT_NE(nullptr, list_view()
                          ->notifications_for_testing()
                          .at(kTestNotificationId3)
-                         ->border());
+                         ->GetBorder());
 }

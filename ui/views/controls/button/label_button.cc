@@ -551,8 +551,8 @@ gfx::Size LabelButton::GetUnclampedSizeWithoutLabel() const {
     size.Enlarge(GetImageLabelSpacing(), 0);
 
   // Make the size at least as large as the minimum size needed by the border.
-  if (border())
-    size.SetToMax(border()->GetMinimumSize());
+  if (GetBorder())
+    size.SetToMax(GetBorder()->GetMinimumSize());
 
   return size;
 }

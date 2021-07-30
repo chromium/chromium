@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "ui/display/display.h"
@@ -15,7 +16,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/border.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -181,9 +181,8 @@ TEST_F(ConstrainedWindowViewsTest, MaximumWebContentsDialogSize) {
   // specified by the dialog host, so add it to the size the dialog is expected
   // to occupy.
   gfx::Size expected_size = max_dialog_size;
-  views::Border* border = dialog()->non_client_view()->frame_view()->border();
-  if (border)
-    expected_size.Enlarge(0, border->GetInsets().top());
+  expected_size.Enlarge(
+      0, dialog()->non_client_view()->frame_view()->GetInsets().top());
   EXPECT_EQ(expected_size.ToString(), GetDialogSize().ToString());
 
   // Increasing the maximum dialog size should bring the dialog back to its

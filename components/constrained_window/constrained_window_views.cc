@@ -17,7 +17,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/border.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -106,13 +105,10 @@ void UpdateModalDialogPosition(views::Widget* widget,
   }
 
   gfx::Point position = dialog_host->GetDialogPosition(size);
-  views::Border* border = widget->non_client_view()->frame_view()->border();
-  // Border may be null during widget initialization.
-  if (border) {
-    // Align the first row of pixels inside the border. This is the apparent
-    // top of the dialog.
-    position.set_y(position.y() - border->GetInsets().top());
-  }
+  // Align the first row of pixels inside the border. This is the apparent top
+  // of the dialog.
+  position.set_y(position.y() -
+                 widget->non_client_view()->frame_view()->GetInsets().top());
 
   if (widget->is_top_level()) {
     position += host_widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
@@ -147,11 +143,8 @@ void UpdateWebContentsModalDialogPosition(
   gfx::Size max_size = dialog_host->GetMaximumDialogSize();
   // Enlarge the max size by the top border, as the dialog will be shifted
   // outside the area specified by the dialog host by this amount later.
-  views::Border* border =
-      widget->non_client_view()->frame_view()->border();
-  // Border may be null during widget initialization.
-  if (border)
-    max_size.Enlarge(0, border->GetInsets().top());
+  max_size.Enlarge(0,
+                   widget->non_client_view()->frame_view()->GetInsets().top());
   size.SetToMin(max_size);
   UpdateModalDialogPosition(widget, dialog_host, size);
 }

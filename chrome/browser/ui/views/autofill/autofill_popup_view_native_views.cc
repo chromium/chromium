@@ -1433,7 +1433,7 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
 
   SetSize(preferred_size);
 
-  popup_bounds.Inset(-GetWidget()->GetRootView()->border()->GetInsets());
+  popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);
   UpdateClipPath();
 

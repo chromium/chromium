@@ -440,9 +440,8 @@ void BubbleFrameView::Layout() {
   // TODO(tapted): Layout() should skip more surrounding code when !HasTitle().
   // Currently DCHECKs fail since title_insets is 0 when there is no title.
   if (DCHECK_IS_ON() && HasTitle()) {
-    gfx::Insets title_insets = GetTitleLabelInsetsFromFrame();
-    if (border())
-      title_insets += border()->GetInsets();
+    const gfx::Insets title_insets =
+        GetTitleLabelInsetsFromFrame() + GetInsets();
     DCHECK_EQ(title_insets.left(), title_label_x);
     DCHECK_EQ(title_insets.right(), width() - title_label_right);
   }

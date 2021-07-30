@@ -303,7 +303,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
 
   absl::optional<SkColor> border_color =
       highlight_color_animation_.GetBorderColor();
-  if (!border() || target_insets != current_insets ||
+  if (!GetBorder() || target_insets != current_insets ||
       last_border_color_ != border_color ||
       last_paint_insets_ != paint_insets) {
     if (border_color) {
@@ -406,7 +406,8 @@ void ToolbarButton::SetLabelSideSpacing(int spacing) {
             ? gfx::Insets(0, spacing, 0, 0)
             : gfx::Insets(0, 0, 0, spacing);
   }
-  if (!label()->border() || label_insets != label()->border()->GetInsets()) {
+  if (!label()->GetBorder() ||
+      label_insets != label()->GetBorder()->GetInsets()) {
     label()->SetBorder(views::CreateEmptyBorder(label_insets));
     // Forces LabelButton to dump the cached preferred size and recompute it.
     PreferredSizeChanged();

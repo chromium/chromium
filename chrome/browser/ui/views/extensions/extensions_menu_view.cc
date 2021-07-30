@@ -165,7 +165,7 @@ void ExtensionsMenuView::Populate() {
       (ExtensionsMenuItemView::kIconSize.width() - kSettingsIconSize) / 2;
 
   footer->SetBorder(views::CreateEmptyBorder(
-      footer->border()->GetInsets() +
+      footer->GetInsets() +
       gfx::Insets(0, kSettingsIconHorizontalPadding, 0, 0)));
   footer->SetImageLabelSpacing(footer->GetImageLabelSpacing() +
                                kSettingsIconHorizontalPadding);

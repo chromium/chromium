@@ -93,7 +93,7 @@ void LegendEntry::OnPaint(gfx::Canvas* canvas) {
   // Draw 10x10 sold color rectangle in the middle of the left border.
   // (We used border to allocate space for the colorpicker above.)
   constexpr int kBoxSize = 10;
-  const gfx::Rect bounds(border()->GetInsets().left(), height());
+  const gfx::Rect bounds(GetInsets().left(), height());
 
   constexpr int kBoxBorderWidth = 1;
 

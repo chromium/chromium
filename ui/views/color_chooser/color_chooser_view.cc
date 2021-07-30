@@ -296,7 +296,7 @@ SaturationValueView::SaturationValueView(
 
 void SaturationValueView::OnThemeChanged() {
   LocatedEventHandlerView::OnThemeChanged();
-  border()->set_color(GetNativeTheme()->GetSystemColor(
+  GetBorder()->set_color(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_UnfocusedBorderColor));
   SchedulePaint();
 }
@@ -398,7 +398,7 @@ SelectedColorPatchView::SelectedColorPatchView() {
 
 void SelectedColorPatchView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  border()->set_color(GetNativeTheme()->GetSystemColor(
+  GetBorder()->set_color(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_UnfocusedBorderColor));
   SchedulePaint();
 }

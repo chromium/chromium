@@ -73,7 +73,6 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -1391,8 +1390,7 @@ void ShelfView::AnimateToIdealBounds() {
     bounds_animator_->AnimateViewTo(view, view_model_->ideal_bounds(i));
     // Now that the item animation starts, we have to make sure that the
     // padding of the first gets properly transferred to the new first item.
-    if (view->border())
-      view->SetBorder(views::NullBorder());
+    view->SetBorder(nullptr);
   }
   UpdateVisibleShelfItemBoundsUnion();
 }

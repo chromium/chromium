@@ -374,10 +374,8 @@ class FullscreenButton : public ImageButton {
   // Overridden from ImageButton.
   gfx::Size CalculatePreferredSize() const override {
     gfx::Size pref = ImageButton::CalculatePreferredSize();
-    if (border()) {
-      gfx::Insets insets = border()->GetInsets();
-      pref.Enlarge(insets.width(), insets.height());
-    }
+    const gfx::Insets insets = GetInsets();
+    pref.Enlarge(insets.width(), insets.height());
     return pref;
   }
 
@@ -637,9 +635,7 @@ class AppMenu::ZoomView : public AppMenuView {
   int GetZoomLabelMaxWidth() const {
     if (!zoom_label_max_width_valid_) {
       const gfx::FontList& font_list = zoom_label_->font_list();
-      int border_width = zoom_label_->border()
-                             ? zoom_label_->border()->GetInsets().width()
-                             : 0;
+      const int border_width = zoom_label_->GetInsets().width();
 
       int max_w = 0;
 

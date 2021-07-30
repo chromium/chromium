@@ -895,8 +895,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // The border object may be null.
   virtual void SetBorder(std::unique_ptr<Border> b);
   Border* GetBorder() const;
-  const Border* border() const { return border_.get(); }
-  Border* border() { return border_.get(); }
 
   // Get the theme provider from the parent widget.
   const ui::ThemeProvider* GetThemeProvider() const;

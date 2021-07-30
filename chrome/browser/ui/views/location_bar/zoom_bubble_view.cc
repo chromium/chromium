@@ -113,7 +113,7 @@ class ZoomValue : public views::Label {
 
  private:
   int GetLabelMaxWidth(const content::WebContents* web_contents) const {
-    const int border_width = border() ? border()->GetInsets().width() : 0;
+    const int border_width = GetInsets().width();
     int max_w = 0;
     auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
     DCHECK(zoom_controller);

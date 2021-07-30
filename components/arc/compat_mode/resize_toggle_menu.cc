@@ -135,7 +135,7 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
       is_selected_
           ? SK_ColorTRANSPARENT
           : theme->GetSystemColor(ui::NativeTheme::kColorId_MenuBorderColor);
-  border()->set_color(border_color);
+  GetBorder()->set_color(border_color);
 }
 
 ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,

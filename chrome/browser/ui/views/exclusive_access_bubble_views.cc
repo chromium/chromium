@@ -29,7 +29,6 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -274,8 +273,8 @@ gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect(
         bubble_view_context_->GetTopContainerBoundsInScreen().bottom();
   }
   // |desired_top| is the top of the bubble area including the shadow.
-  int desired_top = kSimplifiedPopupTopPx - view_->border()->GetInsets().top();
-  int y = top_container_bottom + desired_top;
+  const int desired_top = kSimplifiedPopupTopPx - view_->GetInsets().top();
+  const int y = top_container_bottom + desired_top;
 
   return gfx::Rect(gfx::Point(x, y), size);
 }

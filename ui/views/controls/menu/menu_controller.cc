@@ -2319,7 +2319,7 @@ gfx::Rect MenuController::CalculateMenuBounds(MenuItemView* item,
 
     MenuScrollViewContainer* container =
         item->GetParentMenuItem()->GetSubmenu()->GetScrollViewContainer();
-    menu_bounds.set_y(item_loc.y() - container->border()->GetInsets().top());
+    menu_bounds.set_y(item_loc.y() - container->GetInsets().top());
 
     // Assume the menu can be placed in the preferred location.
     menu_bounds.set_x(create_on_right ? right_of_parent : left_of_parent);

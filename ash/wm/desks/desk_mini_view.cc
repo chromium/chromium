@@ -154,7 +154,7 @@ void DeskMiniView::UpdateBorderColor() {
 }
 
 gfx::Insets DeskMiniView::GetPreviewBorderInsets() const {
-  return desk_preview_->border()->GetInsets();
+  return desk_preview_->GetInsets();
 }
 
 const char* DeskMiniView::GetClassName() const {

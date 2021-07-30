@@ -77,7 +77,7 @@ class TooltipView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override {
     OnPaintBackground(canvas);
     gfx::Size text_size = size();
-    gfx::Insets insets = border()->GetInsets();
+    gfx::Insets insets = GetInsets();
     text_size.Enlarge(-insets.width(), -insets.height());
     render_text_->SetDisplayRect(gfx::Rect(text_size));
     canvas->Save();
@@ -89,7 +89,7 @@ class TooltipView : public views::View {
 
   gfx::Size CalculatePreferredSize() const override {
     gfx::Size view_size = render_text_->GetStringSize();
-    gfx::Insets insets = border()->GetInsets();
+    gfx::Insets insets = GetInsets();
     view_size.Enlarge(insets.width(), insets.height());
     return view_size;
   }
