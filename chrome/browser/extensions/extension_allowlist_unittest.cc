@@ -97,8 +97,7 @@ class ExtensionAllowlistUnitTest : public ExtensionAllowlistUnitTestBase {
   ExtensionAllowlistUnitTest() {
     feature_list_.InitWithFeatures(
         {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings,
-         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable,
-         extensions_features::kDisableMalwareExtensionsRemotely},
+         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable},
         {});
   }
 };

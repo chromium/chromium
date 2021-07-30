@@ -7,10 +7,6 @@
 
 namespace extensions_features {
 
-// Controls whether we disable extensions for malware.
-const base::Feature kDisableMalwareExtensionsRemotely{
-    "DisableMalwareExtensionsRemotely", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether we disable extensions that are marked as policy violation
 // by the Omaha attribute.
 const base::Feature kDisablePolicyViolationExtensionsRemotely{

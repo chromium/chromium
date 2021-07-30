@@ -864,9 +864,7 @@ void ExtensionService::HandleMalwareOmahaAttribute(
   bool has_malware_value =
       OmahaAttributesHandler::HasOmahaBlocklistStateInAttributes(
           attributes, BitMapBlocklistState::BLOCKLISTED_MALWARE);
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kDisableMalwareExtensionsRemotely) ||
-      !has_malware_value) {
+  if (!has_malware_value) {
     OmahaAttributesHandler::ReportNoUpdateCheckKeys();
     // Omaha attributes may have previously have the "_malware" key.
     MaybeEnableRemotelyDisabledExtension(extension_id);

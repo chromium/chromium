@@ -3442,10 +3442,6 @@ TEST_F(ExtensionServiceTest, SetUnsetBlocklistInPrefs) {
 // re-enabled if it's not present in the Safe Browsing blocklist.
 // Regression test for https://crbug.com/1107040.
 TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kDisableMalwareExtensionsRemotely);
-
   TestBlocklist test_blocklist;
   // A profile with 3 extensions installed: good0, good1, and good2.
   // We really only care about good0 for this test since the other
@@ -4673,10 +4669,6 @@ TEST_F(ExtensionServiceTest, DisableExtension) {
 // Tests the malware Omaha attributes to remotely disable an extension for
 // malware.
 TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kDisableMalwareExtensionsRemotely);
-
   InitializeEmptyExtensionService();
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
@@ -4702,10 +4694,6 @@ TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
 // Tests not re-enabling previously remotely disabled extension if it's not the
 // only reason but the disable reasons should be gone.
 TEST_F(ExtensionServiceTest, NoEnableRemotelyDisabledExtension) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      extensions_features::kDisableMalwareExtensionsRemotely);
-
   InitializeEmptyExtensionService();
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
