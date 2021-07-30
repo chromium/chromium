@@ -334,6 +334,46 @@ void BrowsingHistoryService::QueryHistoryInternal(
   }
 }
 
+void BrowsingHistoryService::GetLastVisitToHostBeforeRecentNavigations(
+    const std::string& host_name,
+    base::OnceCallback<void(base::Time)> callback) {
+  base::Time now = base::Time::Now();
+  local_history_->GetLastVisitToHost(
+      host_name, base::Time() /* before_time */, now /* end_time */,
+      base::BindOnce(
+          &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete,
+          weak_factory_.GetWeakPtr(), host_name, now, std::move(callback)),
+      &query_task_tracker_);
+}
+
+void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete(
+    const std::string& host_name,
+    base::Time query_start_time,
+    base::OnceCallback<void(base::Time)> callback,
+    HistoryLastVisitResult result) {
+  if (!result.success || result.last_visit.is_null()) {
+    std::move(callback).Run(base::Time());
+    return;
+  }
+
+  base::Time end_time =
+      result.last_visit < (query_start_time - base::TimeDelta::FromMinutes(1))
+          ? result.last_visit
+          : query_start_time - base::TimeDelta::FromMinutes(1);
+  local_history_->GetLastVisitToHost(
+      host_name, base::Time() /* before_time */, end_time /* end_time */,
+      base::BindOnce(
+          &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete2,
+          weak_factory_.GetWeakPtr(), std::move(callback)),
+      &query_task_tracker_);
+}
+
+void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete2(
+    base::OnceCallback<void(base::Time)> callback,
+    HistoryLastVisitResult result) {
+  std::move(callback).Run(result.last_visit);
+}
+
 void BrowsingHistoryService::RemoveVisits(
     const std::vector<BrowsingHistoryService::HistoryEntry>& items) {
   if (delete_task_tracker_.HasTrackedTasks() || has_pending_delete_request_ ||

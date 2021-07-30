@@ -644,7 +644,7 @@ bool VisitDatabase::GetLastVisitToHost(const std::string& host,
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "SELECT "
-      "  v.visit_time "
+      "  v.visit_time, v.transition "
       "FROM visits v INNER JOIN urls u ON v.url = u.id "
       "WHERE "
       "  ( (u.url >= ? AND u.url < ?) OR "
@@ -653,8 +653,7 @@ bool VisitDatabase::GetLastVisitToHost(const std::string& host,
       "    (u.url >= ? AND u.url < ?) ) AND "
       "  v.visit_time >= ? AND "
       "  v.visit_time < ? "
-      "ORDER BY v.visit_time DESC "
-      "LIMIT 1"));
+      "ORDER BY v.visit_time DESC "));
   statement.BindString(0, bounds.at(0).first);
   statement.BindString(1, bounds.at(0).second);
   statement.BindString(2, bounds.at(1).first);
@@ -666,16 +665,18 @@ bool VisitDatabase::GetLastVisitToHost(const std::string& host,
   statement.BindInt64(8, begin_time.ToInternalValue());
   statement.BindInt64(9, end_time.ToInternalValue());
 
-  if (!statement.Step()) {
-    // If there are no entries from the statement, the host may not have been
-    // visited in the given time range. Zero the time result and report the
-    // success of the statement.
-    *last_visit = base::Time();
-    return statement.Succeeded();
+  while (statement.Step()) {
+    if (ui::PageTransitionIsMainFrame(
+            ui::PageTransitionFromInt(statement.ColumnInt(1)))) {
+      *last_visit = base::Time::FromInternalValue(statement.ColumnInt64(0));
+      return true;
+    }
   }
-
-  *last_visit = base::Time::FromInternalValue(statement.ColumnInt64(0));
-  return true;
+  // If there are no entries from the statement, the host may not have been
+  // visited in the given time range. Zero the time result and report the
+  // success of the statement.
+  *last_visit = base::Time();
+  return statement.Succeeded();
 }
 
 bool VisitDatabase::GetLastVisitToOrigin(const url::Origin& origin,

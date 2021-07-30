@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -73,6 +74,17 @@ void BrowsingHistoryBridge::QueryHistoryContinuation(
   DCHECK(query_history_continuation_);
   j_query_result_obj_.Reset(env, j_result_obj);
   std::move(query_history_continuation_).Run();
+}
+
+void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jstring j_host_name,
+    const JavaParamRef<jobject>& jcallback) {
+  browsing_history_service_->GetLastVisitToHostBeforeRecentNavigations(
+      base::android::ConvertJavaStringToUTF8(env, j_host_name),
+      base::BindOnce(&base::android::RunTimeCallbackAndroid,
+                     base::android::ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void BrowsingHistoryBridge::OnQueryComplete(

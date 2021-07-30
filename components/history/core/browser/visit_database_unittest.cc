@@ -716,7 +716,9 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentScheme) {
   VisitRow row1{AddURL(URLRow(GURL("https://www.chromium.org"))),
                 begin_time,
                 0,
-                ui::PageTransitionFromInt(0),
+                ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                          ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END),
                 0,
                 false,
                 false};
@@ -724,13 +726,16 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentScheme) {
   VisitRow row2{AddURL(URLRow(GURL("http://www.chromium.org"))),
                 begin_time + base::TimeDelta::FromMinutes(1),
                 0,
-                ui::PageTransitionFromInt(0),
+                ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                          ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END),
                 0,
                 false,
                 false};
   AddVisit(&row2, SOURCE_BROWSED);
 
   base::Time last_visit;
+  VisitRow row;
   EXPECT_TRUE(GetLastVisitToHost(GURL("https://www.chromium.org").host(),
                                  begin_time, end_time, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::TimeDelta::FromMinutes(1));
@@ -743,7 +748,9 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_IncludePort) {
   VisitRow row1{AddURL(URLRow(GURL("https://www.chromium.org"))),
                 begin_time,
                 0,
-                ui::PageTransitionFromInt(0),
+                ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                          ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END),
                 0,
                 false,
                 false};
@@ -751,7 +758,9 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_IncludePort) {
   VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org:8080"))),
                 begin_time + base::TimeDelta::FromMinutes(1),
                 0,
-                ui::PageTransitionFromInt(0),
+                ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                          ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END),
                 0,
                 false,
                 false};
@@ -770,7 +779,9 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentPorts) {
   VisitRow row1{AddURL(URLRow(GURL("https://www.chromium.org:8080"))),
                 begin_time,
                 0,
-                ui::PageTransitionFromInt(0),
+                ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                          ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END),
                 0,
                 false,
                 false};
@@ -778,7 +789,9 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentPorts) {
   VisitRow row2{AddURL(URLRow(GURL("https://www.chromium.org:32256"))),
                 begin_time + base::TimeDelta::FromMinutes(1),
                 0,
-                ui::PageTransitionFromInt(0),
+                ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                          ui::PAGE_TRANSITION_CHAIN_START |
+                                          ui::PAGE_TRANSITION_CHAIN_END),
                 0,
                 false,
                 false};
