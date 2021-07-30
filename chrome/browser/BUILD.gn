@@ -5429,6 +5429,8 @@ static_library("browser") {
     sources += [
       "chrome_browser_main_parts_fuchsia.cc",
       "chrome_browser_main_parts_fuchsia.h",
+      "crash_upload_list/crash_upload_list_fuchsia.cc",
+      "crash_upload_list/crash_upload_list_fuchsia.h",
       "download/download_status_updater_fuchsia.cc",
       "icon_loader_fuchsia.cc",
       "memory_details_fuchsia.cc",
