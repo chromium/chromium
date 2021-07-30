@@ -9,7 +9,9 @@ import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -411,6 +413,9 @@ public class FeedStream implements Stream {
     private int mHeaderCount;
     private boolean mIsPlaceholderShown;
 
+    // Placeholder view that simply takes up space.
+    private NtpListContentManager.NativeViewContent mSpacerViewContent;
+
     // Bottomsheet.
     private final BottomSheetController mBottomSheetController;
     private BottomSheetContent mBottomSheetContent;
@@ -498,7 +503,8 @@ public class FeedStream implements Stream {
     @Override
     public void bind(RecyclerView rootView, NtpListContentManager manager,
             FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
-            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger) {
+            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
+            int headerCount) {
         launchReliabilityLogger.sendPendingEvents(
                 mIsInterestFeed ? StreamType.FOR_YOU : StreamType.WEB_FEED,
                 FeedStreamJni.get().getSurfaceId(mNativeFeedStream, FeedStream.this));
@@ -517,7 +523,7 @@ public class FeedStream implements Stream {
         mContentManager = manager;
         mSurfaceScope = surfaceScope;
         mRenderer = renderer;
-        mHeaderCount = manager.getItemCount();
+        mHeaderCount = headerCount;
         if (mWindowAndroid.getDisplay() != null) {
             mWindowAndroid.getDisplay().addObserver(mRotationObserver);
         }
@@ -539,24 +545,31 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void unbind() {
+    public void unbind(boolean shouldPlaceSpacer) {
         mSliceViewTracker.destroy();
         mSliceViewTracker = null;
         mSurfaceScope = null;
         mAccumulatedDySinceLastLoadMore = 0;
         mScrollReporter.onUnbind();
 
-        // Clear handlers and all feed views.
-        // Remove Feed content from the content manager.
-        int feedCount = mContentManager.getItemCount() - mHeaderCount;
-        if (feedCount > 0) {
-            mContentManager.removeContents(mHeaderCount, feedCount);
-            notifyContentChange();
+        // Remove Feed content from the content manager. Add spacer if needed.
+        ArrayList<NtpListContentManager.FeedContent> list = new ArrayList<>();
+        if (shouldPlaceSpacer) {
+            if (mSpacerViewContent == null) {
+                FrameLayout spacerView = new FrameLayout(mActivity);
+                mSpacerViewContent =
+                        new NtpListContentManager.NativeViewContent("Spacer", spacerView);
+                spacerView.setLayoutParams(new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            }
+            list.add(mSpacerViewContent);
         }
+        updateContentsInPlace(list);
 
         // Dismiss bottomsheet if any is shown.
         dismissBottomSheet();
 
+        // Clear handlers.
         mContentManager.setHandlers(new HashMap<>());
         mContentManager = null;
 
@@ -757,9 +770,6 @@ public class FeedStream implements Stream {
         // * existing headers
         // * both new and existing contents
         ArrayList<NtpListContentManager.FeedContent> newContentList = new ArrayList<>();
-        for (int i = 0; i < mHeaderCount; ++i) {
-            newContentList.add(mContentManager.getContent(i));
-        }
         for (FeedUiProto.StreamUpdate.SliceUpdate sliceUpdate :
                 streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
@@ -819,22 +829,21 @@ public class FeedStream implements Stream {
         boolean hasContentChange = false;
 
         // 1) Builds the hash set based on keys of new contents.
-        HashSet<String> newContentKeySet = new HashSet<String>();
+        HashSet<String> newContentKeySet = new HashSet<>();
         for (int i = 0; i < newContentList.size(); ++i) {
             hasContentChange = true;
             newContentKeySet.add(newContentList.get(i).getKey());
         }
 
-        // 2) Builds the hash map of existing content list for fast look up by key.
-        HashMap<String, NtpListContentManager.FeedContent> existingContentMap =
-                new HashMap<String, NtpListContentManager.FeedContent>();
-        for (int i = 0; i < mContentManager.getItemCount(); ++i) {
+        // 2) Builds the hash map of existing content list for fast look up by key. Ignores headers.
+        HashMap<String, NtpListContentManager.FeedContent> existingContentMap = new HashMap<>();
+        for (int i = mHeaderCount; i < mContentManager.getItemCount(); ++i) {
             NtpListContentManager.FeedContent content = mContentManager.getContent(i);
             existingContentMap.put(content.getKey(), content);
         }
 
-        // 3) Removes those existing contents that do not appear in the new list.
-        for (int i = mContentManager.getItemCount() - 1; i >= 0; --i) {
+        // 3) Removes those existing contents that do not appear in the new list. Ignores headers.
+        for (int i = mContentManager.getItemCount() - 1; i >= mHeaderCount; --i) {
             String key = mContentManager.getContent(i).getKey();
             if (!newContentKeySet.contains(key)) {
                 hasContentChange = true;
@@ -865,7 +874,9 @@ public class FeedStream implements Stream {
                 ++i;
             }
             hasContentChange = true;
-            mContentManager.addContents(startIndex, newContentList.subList(startIndex, i));
+            // Account for headers when inserting contents.
+            mContentManager.addContents(
+                    startIndex + mHeaderCount, newContentList.subList(startIndex, i));
         }
 
         if (hasContentChange) {

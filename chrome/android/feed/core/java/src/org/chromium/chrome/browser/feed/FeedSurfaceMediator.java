@@ -220,8 +220,7 @@ public class FeedSurfaceMediator
     private final NativePageNavigationDelegate mPageNavigationDelegate;
 
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
-    private final ObserverList<ScrollListener> mScrollListeners =
-            new ObserverList<ScrollListener>();
+    private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
     private ContentChangedListener mStreamContentChangedListener;
     private MemoryPressureCallback mMemoryPressureCallback;
     private @Nullable SignInPromo mSignInPromo;
@@ -236,6 +235,7 @@ public class FeedSurfaceMediator
     private int mThumbnailHeight;
     private int mThumbnailScrollY;
     private int mRestoreTabId;
+    private int mHeaderCount;
 
     /** The model representing feed-related cog menu items. */
     private ModelList mFeedMenuModel;
@@ -536,7 +536,7 @@ public class FeedSurfaceMediator
     void bindStream(Stream stream) {
         if (mCurrentStream == stream) return;
         if (mCurrentStream != null) {
-            unbindStream();
+            unbindStream(/* shouldPlaceSpacer = */ true);
         }
         mCurrentStream = stream;
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
@@ -547,7 +547,8 @@ public class FeedSurfaceMediator
 
         mCurrentStream.bind(mCoordinator.getRecyclerView(), mCoordinator.getContentManager(),
                 mRestoreScrollState, mCoordinator.getSurfaceScope(),
-                mCoordinator.getHybridListRenderer(), mCoordinator.getLaunchReliabilityLogger());
+                mCoordinator.getHybridListRenderer(), mCoordinator.getLaunchReliabilityLogger(),
+                mHeaderCount);
         mRestoreScrollState = null;
         mCoordinator.getHybridListRenderer().onSurfaceOpened();
     }
@@ -566,10 +567,16 @@ public class FeedSurfaceMediator
         mStreamContentChanged = true;
     }
 
+    /** Unbinds the stream and clear all the stream's contents. */
     private void unbindStream() {
+        unbindStream(false);
+    }
+
+    /** Unbinds the stream with option for stream to put a placeholder for its contents. */
+    private void unbindStream(boolean shouldPlaceSpacer) {
         if (mCurrentStream == null) return;
         mCoordinator.getHybridListRenderer().onSurfaceClosed();
-        mCurrentStream.unbind();
+        mCurrentStream.unbind(shouldPlaceSpacer);
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         mCurrentStream = null;
 
@@ -616,6 +623,7 @@ public class FeedSurfaceMediator
      * @param newHeaderCount Number of headers in the {@link RecyclerView}.
      */
     void notifyHeadersChanged(int newHeaderCount) {
+        mHeaderCount = newHeaderCount;
         if (mCurrentStream != null) {
             mCurrentStream.notifyNewHeaderCount(newHeaderCount);
         }

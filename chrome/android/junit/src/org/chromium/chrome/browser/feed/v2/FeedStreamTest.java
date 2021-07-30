@@ -180,7 +180,7 @@ public class FeedStreamTest {
                         .build();
         mFeedStream.onStreamUpdated(update.toByteArray());
 
-        mFeedStream.unbind();
+        mFeedStream.unbind(false);
         assertEquals(3, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
         assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(1).getKey());
@@ -206,7 +206,7 @@ public class FeedStreamTest {
         createHeaderContent(2);
         mFeedStream.notifyNewHeaderCount(5);
 
-        mFeedStream.unbind();
+        mFeedStream.unbind(false);
 
         assertEquals(5, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
@@ -214,6 +214,58 @@ public class FeedStreamTest {
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(2).getKey());
         assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(3).getKey());
         assertEquals(HEADER_PREFIX + "2", mContentManager.getContent(4).getKey());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindUnbind_shouldPlaceSpacerTrue() {
+        createHeaderContent(1);
+        bindToView();
+
+        // Add feed content.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+
+        mFeedStream.unbind(true);
+
+        assertEquals(2, mContentManager.getItemCount());
+        assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
+        assertEquals(1, mContentManager.findContentPositionByKey("Spacer"));
+    }
+
+    @Test
+    @SmallTest
+    public void testUnbindBind_shouldPlaceSpacerTrue() {
+        createHeaderContent(2);
+        bindToView();
+
+        // Add feed content.
+        FeedUiProto.StreamUpdate update =
+                FeedUiProto.StreamUpdate.newBuilder()
+                        .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                        .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+        mFeedStream.unbind(true);
+
+        // Bind again with correct headercount.
+        mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
+                mLaunchReliabilityLogger, 2);
+
+        // Add different feed content.
+        update = FeedUiProto.StreamUpdate.newBuilder()
+                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("b"))
+                         .build();
+        mFeedStream.onStreamUpdated(update.toByteArray());
+
+        assertEquals(3, mContentManager.getItemCount());
+        assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
+        assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(1).getKey());
+        assertEquals(2, mContentManager.findContentPositionByKey("b"));
+        // 'a' should've been replaced.
+        assertEquals(-1, mContentManager.findContentPositionByKey("a"));
     }
 
     @Test
@@ -229,7 +281,7 @@ public class FeedStreamTest {
     @Test
     public void testUnbind() {
         bindToView();
-        mFeedStream.unbind();
+        mFeedStream.unbind(false);
         verify(mFeedStreamJniMock).surfaceClosed(anyLong(), any(FeedStream.class));
         // Unset handlers in contentmanager.
         assertEquals(0, mContentManager.getContextValues(0).size());
@@ -460,7 +512,7 @@ public class FeedStreamTest {
 
         // loadMore triggered again after hide&show.
         mFeedStream.checkScrollingForLoadMore(-triggerDistance);
-        mFeedStream.unbind();
+        mFeedStream.unbind(false);
         bindToView();
 
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
@@ -644,7 +696,7 @@ public class FeedStreamTest {
         // RecyclerView prevents scrolling if there's no content to scroll. We hack
         // the scroll listener directly.
         mFeedStream.getScrollListenerForTest().onScrolled(mRecyclerView, 0, 100);
-        mFeedStream.unbind();
+        mFeedStream.unbind(false);
 
         verify(mFeedStreamJniMock).reportStreamScrollStart(anyLong(), any(FeedStream.class));
         verify(mFeedStreamJniMock).reportStreamScrolled(anyLong(), any(FeedStream.class), eq(100));
@@ -687,6 +739,6 @@ public class FeedStreamTest {
 
     void bindToView() {
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
-                mLaunchReliabilityLogger);
+                mLaunchReliabilityLogger, mContentManager.getItemCount());
     }
 }

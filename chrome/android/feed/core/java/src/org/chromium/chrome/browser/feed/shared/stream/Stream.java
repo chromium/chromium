@@ -110,25 +110,27 @@ public interface Stream {
      * Binds the feed to a particular view, manager, and scope.
      * When bound, the feed actively updates views and content. Assumes that whatever
      * views currently shown by manager are headers.
-     *
-     * @param view The {@link RecyclerView} to which the feed is bound.
+     *  @param view The {@link RecyclerView} to which the feed is bound.
      * @param manager The {@link NtpListContentManager} to which we should make updates to.
      * @param savedInstanceState A previously saved instance state to restore to after loading
      *         content.
      * @param surfaceScope The {@link SurfaceScope} that is hosting the renderer.
      * @param renderer The {@link HybridListRenderer} that is rendering the feed.
      * @param launchReliabilityLogger Logger for timestamps and status codes related to launching
-     *         the feed.
+     * @param headerCount The number of headers in the RecyclerView that the feed shouldn't touch.
      */
     void bind(RecyclerView view, NtpListContentManager manager,
             FeedSurfaceMediator.ScrollState savedInstanceState, SurfaceScope surfaceScope,
-            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger);
+            HybridListRenderer renderer, FeedLaunchReliabilityLogger launchReliabilityLogger,
+            int headerCount);
 
     /**
-     * Unbinds the feed. Removes all views this feed has added to the previously bound
-     * content manager.
+     * Unbinds the feed. Stops this feed from updating the RecyclerView.
+     *
+     * @param shouldPlaceSpacer Whether this feed should place a spacer at the end to
+     *     prevent abrupt scroll jumps.
      */
-    void unbind();
+    void unbind(boolean shouldPlaceSpacer);
 
     /**
      * Interface users can implement to know when content in the Stream has changed content on
