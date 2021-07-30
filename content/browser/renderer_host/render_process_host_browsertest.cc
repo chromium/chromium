@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_KeepAliveRendererProcess_Hung \
   DISABLED_KeepAliveRendererProcess_Hung
 #else
@@ -1184,7 +1184,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_WIN)
 #define MAYBE_FetchKeepAliveRendererProcess_Hung \
   DISABLED_FetchKeepAliveRendererProcess_Hung
 #else
