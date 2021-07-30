@@ -5251,6 +5251,10 @@ const char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "
     "present";
 
+const char kVirtualKeyboardApiName[] = "Virtual Keyboard API";
+const char kVirtualKeyboardApiDescription[] =
+    "Enable the JS Virtual keyboard API, allowing manual control of the VK.";
+
 const char kVirtualKeyboardBorderedKeyName[] = "Virtual Keyboard Bordered Key";
 const char kVirtualKeyboardBorderedKeyDescription[] =
     "Show virtual keyboard with bordered key";

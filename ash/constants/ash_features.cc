@@ -1092,6 +1092,10 @@ const base::Feature kUserActivityPrediction{"UserActivityPrediction",
 const base::Feature kVerticalSplitScreen{"VerticalSplitScreen",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the Virtual Keyboard API.
+const base::Feature kVirtualKeyboardApi{"VirtualKeyboardApi",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable using the floating virtual keyboard as the default option
 // on Chrome OS.
 const base::Feature kVirtualKeyboardFloatingDefault{

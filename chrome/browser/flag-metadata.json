@@ -1655,6 +1655,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-cros-virtual-keyboard-api",
+    "owners": [ "keithlee", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "enable-cros-virtual-keyboard-bordered-key",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 95
