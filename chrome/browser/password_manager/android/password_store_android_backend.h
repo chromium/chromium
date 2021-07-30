@@ -6,10 +6,17 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_H_
 
 #include <memory>
+#include <unordered_map>
 
+#include "base/containers/small_map.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/sync/model/model_type_controller_delegate.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace syncer {
+class ModelTypeControllerDelegate;
+}  // namespace syncer
 
 namespace password_manager {
 
@@ -62,6 +69,13 @@ class PasswordStoreAndroidBackend
         this};
   };
 
+  using TaskId = PasswordStoreAndroidBackendBridge::TaskId;
+  using ReplyVariant = absl::variant<LoginsReply, PasswordStoreChangeListReply>;
+  // Using a small_map should ensure that we handle rare cases with many tasks
+  // like a bulk deletion just as well as the normal, rather small task load.
+  using TaskMap =
+      base::small_map<std::unordered_map<TaskId, ReplyVariant, TaskId::Hasher>>;
+
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
@@ -102,11 +116,20 @@ class PasswordStoreAndroidBackend
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
 
+  ReplyVariant GetAndEraseTask(TaskId task_id);
+
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;
 
   // Delegate to handle sync events.
   SyncModelTypeControllerDelegate sync_controller_delegate_;
+
+  // TaskRunner for all the background operations.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
+  // Used to store callbacks for each invoked tasks since callbacks can't be
+  // called via JNI directly.
+  TaskMap request_for_task_;
 
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;

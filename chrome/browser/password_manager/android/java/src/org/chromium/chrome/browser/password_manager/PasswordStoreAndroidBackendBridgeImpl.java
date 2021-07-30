@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
 import java.lang.annotation.ElementType;
@@ -39,11 +41,12 @@ class PasswordStoreAndroidBackendBridgeImpl {
 
     @CalledByNative
     private void getAllLogins(@TaskId int taskId) {
-        // TODO(crbug.com/1229654):Implement.
-        if (mNativeBackendBridge != 0) {
+        PostTask.postTask(TaskTraits.USER_VISIBLE, () -> {
+            if (mNativeBackendBridge == 0) return;
+            // TODO(crbug.com/1229654):Implement.
             PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
                     mNativeBackendBridge, taskId, new PasswordSpecificsData[0]);
-        }
+        });
     }
 
     @CalledByNative

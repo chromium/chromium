@@ -34,12 +34,17 @@ class PasswordStoreAndroidBackendBridgeImpl
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
+  void SetConsumer(Consumer* consumer) override;
   TaskId GetAllLogins() override WARN_UNUSED_RESULT;
 
   TaskId GetNextTaskId() WARN_UNUSED_RESULT;
 
   // This member stores the unique ID last used for an API request.
   TaskId last_task_id_{0};
+
+  // Weak reference to the `Consumer` that is notified when a task completes. It
+  // is required to outlive this bridge.
+  Consumer* consumer_ = nullptr;
 
   // This object is an instance of PasswordStoreAndroidBackendBridgeImpl, i.e.
   // the Java counterpart to this class.

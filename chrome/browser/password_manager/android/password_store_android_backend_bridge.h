@@ -41,6 +41,9 @@ class PasswordStoreAndroidBackendBridge {
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;
 
+  // Sets the `consumer` that is notified on task completion.
+  virtual void SetConsumer(Consumer* consumer) = 0;
+
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
   // task with the returned TaskId succeeds.

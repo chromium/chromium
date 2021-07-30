@@ -31,12 +31,17 @@ PasswordStoreAndroidBackendBridgeImpl::
   Java_PasswordStoreAndroidBackendBridgeImpl_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
+void PasswordStoreAndroidBackendBridgeImpl::SetConsumer(Consumer* consumer) {
+  consumer_ = consumer;
+}
 
 void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
     jint task_id,
     jobjectArray passwords) {
-  // TODO(crbug.com/1229650): Implement.
+  DCHECK(consumer_);
+  // TODO(crbug.com/1229650): Convert passwords to forms.
+  consumer_->OnCompleteWithLogins(TaskId(task_id), {});
 }
 
 TaskId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
