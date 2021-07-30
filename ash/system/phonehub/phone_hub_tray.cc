@@ -54,10 +54,6 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
-  icon->SetImage(CreateVectorIcon(
-      kPhoneHubPhoneIcon,
-      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
-
   tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
   icon_ = tray_container()->AddChildView(std::move(icon));
 }
@@ -209,6 +205,13 @@ views::Widget* PhoneHubTray::GetBubbleWidget() const {
 
 const char* PhoneHubTray::GetClassName() const {
   return "PhoneHubTray";
+}
+
+void PhoneHubTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(CreateVectorIcon(
+      kPhoneHubPhoneIcon,
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState())));
 }
 
 bool PhoneHubTray::CanOpenConnectedDeviceSettings() {
