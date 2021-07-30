@@ -3422,6 +3422,21 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "linux-lacros-dbg-fyi",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+    ),
+)
+
+ci.fyi_builder(
+    name = "linux-lacros-dbg-tests-fyi",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+    ),
+    triggered_by = ["linux-lacros-dbg-fyi"],
+)
+
+ci.fyi_builder(
     name = "linux-backuprefptr-x64-fyi-rel",
     builderless = True,
     console_view_entry = consoles.console_view_entry(

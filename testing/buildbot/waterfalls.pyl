@@ -3213,6 +3213,27 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
+      'linux-lacros-dbg-tests-fyi': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_sandbox',
+          'linux_symbols',
+          'symupload'
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'ssd': '0',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'linux_lacros_gtests',
+        },
+      },
       'linux-lacros-tester-fyi-rel': {
         'additional_compile_targets': [
           'chrome',

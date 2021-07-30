@@ -1038,6 +1038,36 @@
       "use_ozone": true
     }
   },
+  "linux-lacros-dbg-fyi": {
+    "gn_args": {
+      "also_build_ash_chrome": true,
+      "chromeos_is_browser_only": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "ozone_platform": "wayland",
+      "ozone_platform_wayland": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_gtk": false,
+      "use_ozone": true
+    }
+  },
+  "linux-lacros-dbg-tests-fyi": {
+    "gn_args": {
+      "also_build_ash_chrome": true,
+      "chromeos_is_browser_only": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "ozone_platform": "wayland",
+      "ozone_platform_wayland": true,
+      "symbol_level": 1,
+      "target_os": "chromeos",
+      "use_goma": true,
+      "use_gtk": false,
+      "use_ozone": true
+    }
+  },
   "linux-lacros-tester-fyi-rel": {
     "gn_args": {
       "also_build_ash_chrome": true,
