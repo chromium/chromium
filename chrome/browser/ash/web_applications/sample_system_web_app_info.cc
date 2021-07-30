@@ -32,6 +32,20 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->open_as_window = true;
 
+  {
+    WebApplicationShortcutsMenuItemInfo shortcut;
+    shortcut.name = u"Untrusted Sandbox Demo";
+    shortcut.url = GURL("chrome://sample-system-web-app/sandbox.html");
+    info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
+  }
+  {
+    WebApplicationShortcutsMenuItemInfo shortcut;
+    shortcut.name = u"Component Playground";
+    shortcut.url =
+        GURL("chrome://sample-system-web-app/component_playground.html");
+    info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
+  }
+
   return info;
 }
 
