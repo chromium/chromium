@@ -2,6 +2,9 @@
 
 This is a list of changes to [First Contentful Paint](https://web.dev/fcp).
 
+* Chrome 94
+  * Metric definition improvement: [Paint timing is only reported when the painted content
+  is not under opacity:0](2021_07_fcp.md)
 * Chrome 89
   * Metric definition improvement: [First Contentful Paint reported for quick tab switches](2020_11_fcp.md)
 * Chrome 86
