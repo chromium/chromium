@@ -3675,15 +3675,11 @@ void NavigationRequest::OnStartChecksComplete(
         GetPrerenderHostRegistry()
             .GetRenderFrameHostForReservedHost(*prerender_frame_tree_node_id_)
             ->last_response_head();
-    // TODO(https://crbug.com/1216997): Support the case the initial navigation
-    // haven't received the response head at this point.
-    if (last_response_head) {
-      cached_response_head = last_response_head->Clone();
-    } else {
-      cached_response_head = network::mojom::URLResponseHead::New();
-      cached_response_head->parsed_headers =
-          network::mojom::ParsedHeaders::New();
-    }
+    // As PrerenderCommitDeferringCondition makes sure to finish the prerender
+    // initial navigation before activation, a valid last_response_head should
+    // be always stored before reaching here.
+    DCHECK(last_response_head);
+    cached_response_head = last_response_head->Clone();
   }
 
   loader_ = NavigationURLLoader::Create(
