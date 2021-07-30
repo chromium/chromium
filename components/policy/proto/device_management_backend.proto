@@ -3810,6 +3810,39 @@ message ClientCertificateProvisioningResponse {
   }
 }
 
+// Request from browser to server to upload public key.
+// GoogleDMToken MUST be in HTTP Authorization header.
+message BrowserPublicKeyUploadRequest {
+  enum KeyTrustLevel {
+    // UNSPECIFIED.
+    KEY_TRUST_LEVEL_UNSPECIFIED = 0;
+    // Chrome Browser with the key stored in TPM.
+    CHROME_BROWSER_TPM_KEY = 1;
+    // Chrome Browser with the key stored at OS level.
+    CHROME_BROWSER_OS_KEY = 2;
+  }
+
+  // Public key in EC_NID_X9_62_PRIME256V1_PUBLIC_DER format.
+  optional bytes public_key = 1;
+  // Signature of the new public key signed using the existing key, empty for
+  // initial upload.
+  optional bytes signature = 2;
+  // Trust Level of the key.
+  optional KeyTrustLevel key_trust_level = 3;
+}
+
+// Response from server to device for cert upload request.
+message BrowserPublicKeyUploadResponse {
+  enum ResponseCode {
+    UNDEFINED = 0;
+    // The new key is uploaded successfully.
+    SUCCESS = 1;
+    // The signature could not be verified.
+    INVALID_SIGNATURE = 2;
+  }
+  optional ResponseCode response_code = 1;
+}
+
 // Request from the DMAgent on the device to the DMServer.  This is
 // container for all requests from device to server.  The overall HTTP
 // request MUST be in the following format:
@@ -3847,6 +3880,7 @@ message ClientCertificateProvisioningResponse {
 //     * device_initial_enrollment_state
 //     * refresh_account
 //     * client_cert_provisioning
+//     * browser_public_key_upload
 //   * devicetype: MUST BE "1" for Android, "2" for Chrome OS or "3" for Chrome
 //     browser.
 //   * apptype: MUST BE Android or Chrome.
@@ -4022,7 +4056,10 @@ message DeviceManagementRequest {
   // for ZTE/LP device initial enrollment state check.
   optional PrivateSetMembershipRequest private_set_membership_request = 37;
 
-  // Next id: 38.
+  // Request from browser to upload public key.
+  optional BrowserPublicKeyUploadRequest browser_public_key_upload_request = 38;
+
+  // Next id: 39.
 }
 
 // Response from server to device.
@@ -4158,7 +4195,11 @@ message DeviceManagementResponse {
   // Response to a client private set membership request.
   optional PrivateSetMembershipResponse private_set_membership_response = 35;
 
-  // Next id: 36.
+  // Response to browser public key upload request.
+  optional BrowserPublicKeyUploadResponse browser_public_key_upload_response =
+      36;
+
+  // Next id: 37.
 }
 
 // Device State Information stored in the server is retrieval at
