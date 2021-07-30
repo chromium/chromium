@@ -31,6 +31,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -896,11 +897,10 @@ void TabletModeController::HandleHingeRotation(
   // accuracy.
   float largest_hinge_acceleration =
       std::max(std::abs(base_reading.x()), std::abs(lid_reading.x()));
-  float smoothing_ratio =
-      std::max(0.0f, std::min(1.0f, (largest_hinge_acceleration -
-                                     kHingeVerticalSmoothingStart) /
-                                        (kHingeVerticalSmoothingMaximum -
-                                         kHingeVerticalSmoothingStart)));
+  float smoothing_ratio = base::clamp(
+      (largest_hinge_acceleration - kHingeVerticalSmoothingStart) /
+          (kHingeVerticalSmoothingMaximum - kHingeVerticalSmoothingStart),
+      0.0f, 1.0f);
 
   // We cannot trust the computed lid angle when the device is held vertically.
   bool is_angle_reliable =

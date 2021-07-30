@@ -29,6 +29,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -775,11 +776,10 @@ void AppsContainerView::UpdateContentsOpacity(float progress,
   // transition progress changes between |kSuggestionChipOpacityStartProgress|
   // and |kSuggestionChipOpacityEndProgress|.
   float chips_opacity =
-      std::min(std::max((progress - kSuggestionChipOpacityStartProgress) /
-                            (kSuggestionChipOpacityEndProgress -
-                             kSuggestionChipOpacityStartProgress),
-                        0.f),
-               1.0f);
+      base::clamp((progress - kSuggestionChipOpacityStartProgress) /
+                      (kSuggestionChipOpacityEndProgress -
+                       kSuggestionChipOpacityStartProgress),
+                  0.0f, 1.0f);
   suggestion_chip_container_view_->layer()->SetOpacity(
       restore_opacity ? 1.0 : chips_opacity);
 }
