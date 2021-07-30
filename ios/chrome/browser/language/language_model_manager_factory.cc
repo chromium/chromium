@@ -13,7 +13,6 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/language_model/baseline_language_model.h"
 #include "components/language/core/language_model/fluent_language_model.h"
-#include "components/language/core/language_model/heuristic_language_model.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -33,16 +32,6 @@ void PrepareLanguageModels(ChromeBrowserState* const chrome_state,
                             chrome_state->GetPrefs()));
       manager->SetPrimaryModel(
           language::LanguageModelManager::ModelType::FLUENT);
-      break;
-    case language::OverrideLanguageModel::HEURISTIC:
-      manager->AddModel(language::LanguageModelManager::ModelType::HEURISTIC,
-                        std::make_unique<language::HeuristicLanguageModel>(
-                            chrome_state->GetPrefs(),
-                            GetApplicationContext()->GetApplicationLocale(),
-                            language::prefs::kAcceptLanguages,
-                            language::prefs::kUserLanguageProfile));
-      manager->SetPrimaryModel(
-          language::LanguageModelManager::ModelType::HEURISTIC);
       break;
     case language::OverrideLanguageModel::DEFAULT:
     default:
@@ -96,13 +85,4 @@ web::BrowserState* LanguageModelManagerFactory::GetBrowserStateToUse(
     web::BrowserState* const state) const {
   // Use the original profile's language model even in Incognito mode.
   return GetBrowserStateRedirectedInIncognito(state);
-}
-
-void LanguageModelManagerFactory::RegisterBrowserStatePrefs(
-    user_prefs::PrefRegistrySyncable* const registry) {
-  if (base::FeatureList::IsEnabled(language::kUseHeuristicLanguageModel)) {
-    registry->RegisterDictionaryPref(
-        language::prefs::kUserLanguageProfile,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
-  }
 }

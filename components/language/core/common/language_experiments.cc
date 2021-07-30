@@ -14,8 +14,6 @@
 
 namespace language {
 // Features:
-const base::Feature kUseHeuristicLanguageModel{
-    "UseHeuristicLanguageModel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOverrideTranslateTriggerInIndia{
     "OverrideTranslateTriggerInIndia", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kExplicitLanguageAsk{"ExplicitLanguageAsk",
@@ -53,7 +51,6 @@ const base::Feature kContentLanguagesInLanguagePicker{
 const char kBackoffThresholdKey[] = "backoff_threshold";
 const char kOverrideModelKey[] = "override_model";
 const char kEnforceRankerKey[] = "enforce_ranker";
-const char kOverrideModelHeuristicValue[] = "heuristic";
 const char kOverrideModelGeoValue[] = "geo";
 const char kOverrideModelDefaultValue[] = "default";
 
@@ -66,12 +63,6 @@ OverrideLanguageModel GetOverrideLanguageModel() {
   // have concurrent overrides in experiment without having to partition them
   // explicitly. For example, we may have a FLUENT experiment globally and a
   // GEO experiment in India only.
-
-  if (base::FeatureList::IsEnabled(kUseHeuristicLanguageModel) ||
-      (should_override_model &&
-       params[kOverrideModelKey] == kOverrideModelHeuristicValue)) {
-    return OverrideLanguageModel::HEURISTIC;
-  }
 
   if (should_override_model &&
       params[kOverrideModelKey] == kOverrideModelGeoValue) {

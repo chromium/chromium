@@ -17,10 +17,6 @@ namespace language {
 class LanguageModelManager;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 // Manages the language model for each profile. The particular language model
 // provided depends on feature flags.
 class LanguageModelManagerFactory : public BrowserContextKeyedServiceFactory {
@@ -40,8 +36,6 @@ class LanguageModelManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
 
   DISALLOW_COPY_AND_ASSIGN(LanguageModelManagerFactory);
 };

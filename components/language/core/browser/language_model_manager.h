@@ -22,7 +22,6 @@ class LanguageModelManager : public KeyedService {
     BASELINE,
     FLUENT,
     GEO,
-    HEURISTIC,
   };
 
   LanguageModelManager(PrefService* prefs, const std::string& ui_lang);
