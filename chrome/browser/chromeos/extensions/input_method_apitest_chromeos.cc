@@ -14,13 +14,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,7 +34,6 @@ namespace {
 
 const char kLoginScreenUILanguage[] = "fr";
 const char kInitialInputMethodOnLoginScreen[] = "xkb:us::eng";
-const char kBackgroundReady[] = "ready";
 const char kTestIMEID[] = "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest";
 const char kTestIMEID2[] = "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest2";
 
@@ -51,58 +46,6 @@ const InputMethodDescriptor CreateInputMethodDescriptor(
                                indicator, {layout}, language_codes, true,
                                GURL(), GURL());
 }
-
-// Class that listens for the JS message.
-class TestListener : public content::NotificationObserver {
- public:
-  TestListener() {
-    registrar_.Add(this,
-                   extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
-                   content::NotificationService::AllSources());
-
-    xkb_input_method_descriptors_ = {
-        CreateInputMethodDescriptor("xkb:us::eng", "US", "us",
-                                    {"en", "en-US", "en-AU", "en-NZ"}),
-        CreateInputMethodDescriptor("xkb:fr::fra", "FR", "fr(oss)",
-                                    {"fr", "fr-FR"}),
-        CreateInputMethodDescriptor("xkb:fr:bepo:fra", "FR", "fr(bepo)",
-                                    {"fr", "fr-FR"}),
-        CreateInputMethodDescriptor("xkb:be::fra", "BE", "fr(be)", {"fr"}),
-        CreateInputMethodDescriptor("xkb:ca::fra", "CA", "ca", {"fr", "fr-CA"}),
-        CreateInputMethodDescriptor("xkb:ch:fr::fra", "CH", "ch(fr)",
-                                    {"fr", "fr-CH"}),
-        CreateInputMethodDescriptor("xkb:ca:multix:fra", "CA", "ca(multix)",
-                                    {"fr", "fr-CA"}),
-    };
-  }
-
-  ~TestListener() override {}
-
-  // Implements the content::NotificationObserver interface.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    const std::string& message =
-        content::Details<std::pair<std::string, bool*>>(details).ptr()->first;
-    if (message == kBackgroundReady) {
-      // Initializes IMF for testing when receives ready message from
-      // background.
-      InputMethodManager* manager = InputMethodManager::Get();
-      manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
-          xkb_input_method_descriptors_);
-
-      std::vector<std::string> keyboard_layouts;
-      keyboard_layouts.push_back(
-          GetInputMethodIDByEngineID(kInitialInputMethodOnLoginScreen));
-      manager->GetActiveIMEState()->EnableLoginLayouts(kLoginScreenUILanguage,
-                                                       keyboard_layouts);
-    }
-  }
-
- private:
-  content::NotificationRegistrar registrar_;
-  std::vector<InputMethodDescriptor> xkb_input_method_descriptors_;
-};
 
 class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
  public:
@@ -125,8 +68,31 @@ class ExtensionInputMethodApiTest : public extensions::ExtensionApiTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, Basic) {
-  // Listener for extension's background ready.
-  TestListener listener;
+  const std::vector<InputMethodDescriptor> xkb_input_method_descriptors = {
+      CreateInputMethodDescriptor("xkb:us::eng", "US", "us",
+                                  {"en", "en-US", "en-AU", "en-NZ"}),
+      CreateInputMethodDescriptor("xkb:fr::fra", "FR", "fr(oss)",
+                                  {"fr", "fr-FR"}),
+      CreateInputMethodDescriptor("xkb:fr:bepo:fra", "FR", "fr(bepo)",
+                                  {"fr", "fr-FR"}),
+      CreateInputMethodDescriptor("xkb:be::fra", "BE", "fr(be)", {"fr"}),
+      CreateInputMethodDescriptor("xkb:ca::fra", "CA", "ca", {"fr", "fr-CA"}),
+      CreateInputMethodDescriptor("xkb:ch:fr::fra", "CH", "ch(fr)",
+                                  {"fr", "fr-CH"}),
+      CreateInputMethodDescriptor("xkb:ca:multix:fra", "CA", "ca(multix)",
+                                  {"fr", "fr-CA"}),
+  };
+
+  // Initializes IMF for testing.
+  InputMethodManager* manager = InputMethodManager::Get();
+  manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
+      xkb_input_method_descriptors);
+
+  std::vector<std::string> keyboard_layouts;
+  keyboard_layouts.push_back(
+      GetInputMethodIDByEngineID(kInitialInputMethodOnLoginScreen));
+  manager->GetActiveIMEState()->EnableLoginLayouts(kLoginScreenUILanguage,
+                                                   keyboard_layouts);
 
   ASSERT_TRUE(RunExtensionTest("input_method/basic")) << message_;
 }

@@ -36,8 +36,6 @@ const asyncInputMethodPrivate = {
       wrapAsync(chrome.inputMethodPrivate.addWordToDictionary)
 };
 
-chrome.test.sendMessage('ready');
-
 chrome.test.runTests([
   // Queries the system for basic information needed for tests.
   // Needs to run first.
