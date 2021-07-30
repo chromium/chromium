@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreIndividualTabFromWindow) {
       timestamp = tab.navigations[0].timestamp();
       http_status_code = tab.navigations[0].http_status_code();
       std::vector<sessions::LiveTab*> content = service->RestoreEntryById(
-          NULL, tab.id, WindowOpenDisposition::UNKNOWN);
+          nullptr, tab.id, WindowOpenDisposition::UNKNOWN);
       ASSERT_EQ(1U, content.size());
       sessions::ContentLiveTab* live_tab =
           static_cast<sessions::ContentLiveTab*>(content[0]);
@@ -696,8 +696,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, MAYBE_WindowWithOneTab) {
       service->entries().front().get());
 
   // Restore the tab.
-  std::vector<sessions::LiveTab*> content =
-      service->RestoreEntryById(NULL, tab->id, WindowOpenDisposition::UNKNOWN);
+  std::vector<sessions::LiveTab*> content = service->RestoreEntryById(
+      nullptr, tab->id, WindowOpenDisposition::UNKNOWN);
   ASSERT_EQ(1U, content.size());
   ASSERT_TRUE(content[0]);
   EXPECT_EQ(url, static_cast<sessions::ContentLiveTab*>(content[0])
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
   // Restore in the current tab.
-  content::WebContents* tab_content = NULL;
+  content::WebContents* tab_content = nullptr;
   {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   ASSERT_EQ(url2, tab_content->GetURL());
 
   // Restore in a new tab.
-  tab_content = NULL;
+  tab_content = nullptr;
   {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
@@ -819,8 +819,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreForeignTab) {
   ASSERT_EQ(url2, tab_content->GetURL());
 
   // Restore in a new window.
-  Browser* new_browser = NULL;
-  tab_content = NULL;
+  Browser* new_browser = nullptr;
+  tab_content = nullptr;
   {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
@@ -1132,6 +1132,60 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest,
     SCOPED_TRACE(i);
     EXPECT_NE(orig_groups[i], new_groups[i]);
   }
+}
+
+IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, RecentlyClosedGroup) {
+  constexpr int kNumTabs = 2;
+  const std::array<absl::optional<int>, kNumTabs> group_spec = {0, 0};
+
+  // Open |kNumTabs| tabs.
+  ui_test_utils::NavigateToURL(browser(), GetUrl1());
+  for (int i = 1; i < kNumTabs; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GetUrl1(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+
+  CreateTabGroups(browser()->tab_strip_model(), group_spec);
+  ASSERT_NO_FATAL_FAILURE(
+      CheckTabGrouping(browser()->tab_strip_model(), group_spec));
+
+  // Close the tab group.
+  const auto group = GetTabGroups(browser()->tab_strip_model()).front();
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  int first_tab_in_group = tab_strip_model->group_model()
+                               ->GetTabGroup(group.value())
+                               ->ListTabs()
+                               .start();
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      tab_strip_model->GetWebContentsAt(first_tab_in_group));
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group.value());
+  destroyed_watcher.Wait();
+
+  // We should have a restore entry for the group.
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  const sessions::TabRestoreService::Entries& entries = service->entries();
+  ASSERT_GE(entries.size(), 1u);
+  ASSERT_EQ(entries.front()->type, sessions::TabRestoreService::GROUP);
+  const auto* const group_entry =
+      static_cast<sessions::TabRestoreService::Group*>(entries.front().get());
+  ASSERT_EQ(group_entry->tabs.size(), 2u);
+
+  Browser* new_browser = QuitBrowserAndRestore(browser());
+
+  // We should still have a restore entry for the group.
+  sessions::TabRestoreService* new_service =
+      TabRestoreServiceFactory::GetForProfile(new_browser->profile());
+  const sessions::TabRestoreService::Entries& new_entries =
+      new_service->entries();
+  ASSERT_GE(new_entries.size(), 1u);
+  ASSERT_EQ(new_entries.front()->type, sessions::TabRestoreService::GROUP);
+  const auto* const new_group_entry =
+      static_cast<sessions::TabRestoreService::Group*>(
+          new_entries.front().get());
+  ASSERT_EQ(new_group_entry->tabs.size(), 2u);
 }
 
 INSTANTIATE_TEST_SUITE_P(WithAndWithoutReset,

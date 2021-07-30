@@ -407,6 +407,7 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "sync/0x?/model_type/WIFI_CONFIGURATION",
     "sync/0x?/model_type/WORKSPACE_DESK",
     "tab_restore/service_helper_0x?/entries",
+    "tab_restore/service_helper_0x?/entries/group_0x?",
     "tab_restore/service_helper_0x?/entries/tab_0x?",
     "tab_restore/service_helper_0x?/entries/window_0x?",
     "tracing/heap_profiler_blink_gc/AllocationRegister",
