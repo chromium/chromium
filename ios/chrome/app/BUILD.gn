@@ -544,16 +544,22 @@ ios_app_bundle("chrome") {
 if (current_toolchain == default_toolchain) {
   if (ios_enable_content_widget_extension) {
     bundle_data("content_widget_extension_bundle") {
-      public_deps = [ "//ios/chrome/content_widget_extension" ]
-      sources = [ "$root_out_dir/content_widget_extension.appex" ]
+      _content_extension_target =
+          "//ios/chrome/content_widget_extension(${current_toolchain}_13_0)"
+      public_deps = [ _content_extension_target ]
+      sources = [ get_label_info(_content_extension_target, "root_out_dir") +
+                  "/content_widget_extension.appex" ]
       outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
     }
   }
 
   if (ios_enable_search_widget_extension) {
     bundle_data("search_widget_extension_bundle") {
-      public_deps = [ "//ios/chrome/search_widget_extension" ]
-      sources = [ "$root_out_dir/search_widget_extension.appex" ]
+      _search_extension_target =
+          "//ios/chrome/search_widget_extension(${current_toolchain}_13_0)"
+      public_deps = [ _search_extension_target ]
+      sources = [ get_label_info(_search_extension_target, "root_out_dir") +
+                  "/search_widget_extension.appex" ]
       outputs = [ "{{bundle_contents_dir}}/PlugIns/{{source_file_part}}" ]
     }
   }
