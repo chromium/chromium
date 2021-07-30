@@ -140,11 +140,18 @@ class Parser(object):
     p[0].Append(p[3])
 
   def p_attribute_1(self, p):
+    """attribute : NAME EQUALS identifier_wrapped"""
+    p[0] = ast.Attribute(p[1],
+                         p[3][1],
+                         filename=self.filename,
+                         lineno=p.lineno(1))
+
+  def p_attribute_2(self, p):
     """attribute : NAME EQUALS evaled_literal
                  | NAME EQUALS NAME"""
     p[0] = ast.Attribute(p[1], p[3], filename=self.filename, lineno=p.lineno(1))
 
-  def p_attribute_2(self, p):
+  def p_attribute_3(self, p):
     """attribute : NAME"""
     p[0] = ast.Attribute(p[1], True, filename=self.filename, lineno=p.lineno(1))
 

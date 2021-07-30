@@ -18,17 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// Provides sandbox for echo::mojom::EchoService.
-namespace echo {
-namespace mojom {
-class EchoService;
-}
-}  // namespace echo
-template <>
-inline sandbox::policy::SandboxType
-content::GetServiceSandboxType<echo::mojom::EchoService>() {
-  return sandbox::policy::SandboxType::kUtility;
-}
 
 namespace content {
 

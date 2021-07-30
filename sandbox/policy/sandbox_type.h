@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/assistant/buildflags.h"
@@ -118,6 +119,14 @@ enum class SandboxType {
 
   kMaxValue = kVideoCapture
 };
+
+inline constexpr sandbox::policy::SandboxType MapToSandboxType(
+    sandbox::mojom::Sandbox mojo_sandbox) {
+  switch (mojo_sandbox) {
+    case sandbox::mojom::Sandbox::kService:
+      return sandbox::policy::SandboxType::kService;
+  }
+}
 
 SANDBOX_POLICY_EXPORT bool IsUnsandboxedSandboxType(SandboxType sandbox_type);
 

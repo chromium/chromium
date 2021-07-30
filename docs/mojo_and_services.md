@@ -421,19 +421,37 @@ NOTE: To ensure the execution of the response callback, the
 and [this note from an earlier section](#sending-a-message)).
 ***
 
-### Using a non-standard sandbox
+### Specifying a sandbox
 
-Ideally services will run inside the service process sandbox unless
-they need access to operating system resources. For services that need
-a custom sandbox, a new sandbox type must be defined in consultation
-with security-dev@chromium.org.
+All services must specify a sandbox. Ideally services will run inside the
+`kService` process sandbox unless they need access to operating system
+resources. For services that need a custom sandbox, a new sandbox type must be
+defined in consultation with security-dev@chromium.org.
 
-All services must specify their sandbox by specialization of
-`GetServiceSandboxType()` in an appropriate `service_sandbox_type.h` such as
+The preferred way to define the sandbox for your interface is by specifying a
+`[ServiceSandbox=type]` attribute on your `interface {}` in its `.mojom` file:
+
+```
+import "sandbox/policy/mojom/sandbox.mojom"
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface FakeService {
+  ...
+};
+```
+
+Valid values are those in
+[`//sandbox/policy/mojom/sandbox.mojom`](https://cs.chromium.org/chromium/src/sandbox/policy/mojom/sandbox.mojom). Note
+that the sandbox is only applied if the interface is launched
+out-of-process using `content::ServiceProcessHost::Launch()`.
+
+Dynamic or feature based mapping to an underlying platform sandbox can be
+achieved using `sandbox::policy::MapToSandboxType()`. As a last resort, specify
+a service's sandbox by specialization of `GetServiceSandboxType()` in an
+appropriate `service_sandbox_type.h` such as
 [`//chrome/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/chrome/browser/service_sandbox_type.h)
 or
-[`//content/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/content/browser/service_sandbox_type.h)
-and included where `ServiceProcessHost::Launch()` is called.
+[`//content/browser/service_sandbox_type.h`](https://cs.chromium.org/chromium/src/content/browser/service_sandbox_type.h).
+This must be included where `ServiceProcessHost::Launch()` is called.
 
 ## Content-Layer Services Overview
 

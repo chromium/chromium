@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sandbox.mojom;
+
+// Sandbox type that can be specified as an attribute of mojo interfaces.
+// To specify the sandbox a service should be launched in, use the
+// [ServiceSandbox=type] attribute.
+// If your service does not need access to OS resources it should be
+// possible to host it in |kService|. These values are mapped to
+// //sandbox/policy/sandbox_type.h values.
+enum Sandbox {
+  // |kService| hosts 'computation only' services such as decoders that
+  // use limited operating system services. Prefer to use this sandbox
+  // if possible.
+  kService,
+};

@@ -10,6 +10,7 @@ import("//chromeos/assistant/assistant.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+# Most consumers of sandbox::policy should depend on this target.
 component("policy") {
   sources = [
     "export.h",
@@ -30,6 +31,7 @@ component("policy") {
     "//build:chromeos_buildflags",
     "//printing/buildflags",
     "//sandbox:common",
+    "//sandbox/policy/mojom",
   ]
   public_deps = []
   if (is_linux || is_chromeos) {
