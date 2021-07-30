@@ -773,12 +773,11 @@ TEST_P(TextFragmentHandlerTest,
   feature_list_.InitAndEnableFeature(
       shared_highlighting::kSharedHighlightingAmp);
   SimRequest main_request("https://example.com/test.html", "text/html");
-  SimRequest child_request("https://example.com/child.html#:~:text=test",
-                           "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
   LoadURL("https://example.com/test.html");
   main_request.Complete(R"HTML(
     <!DOCTYPE html>
-    <iframe id="iframe" src="child.html#:~:text=test"></iframe>
+    <iframe id="iframe" src="child.html"></iframe>
   )HTML");
 
   child_request.Complete(R"HTML(
@@ -791,6 +790,9 @@ TEST_P(TextFragmentHandlerTest,
     <p>
       test
     </p>
+    <script>
+      window.location.hash = ':~:text=test';
+    </script>
   )HTML");
   RunAsyncMatchingTasks();
 
