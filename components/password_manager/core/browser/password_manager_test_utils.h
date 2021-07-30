@@ -34,13 +34,6 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
   return store;
 }
 
-template <class Context, class Store>
-scoped_refptr<RefcountedKeyedService> BuildPasswordStoreInterface(
-    Context* context) {
-  scoped_refptr<password_manager::PasswordStoreInterface> store(new Store);
-  return store;
-}
-
 // As above, but allows passing parameters to the to-be-created store. The
 // parameters are specified *before* context so that they can be bound (as in
 // base::BindRepeating(&BuildPasswordStoreWithArgs<...>, my_arg)), leaving
