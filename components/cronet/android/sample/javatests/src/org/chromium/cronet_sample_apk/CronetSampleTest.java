@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(AndroidJUnit4.class)
 public class CronetSampleTest {
-    private final String mUrl = "http://localhost";
+    private final String mUrl = "https://localhost";
 
     @Rule
     public ActivityTestRule<CronetSampleActivity> mActivityTestRule =
