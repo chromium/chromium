@@ -191,7 +191,11 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 
   bool requires_sync_token =
 #if defined(OS_FUCHSIA)
-      params->buffer_handle.type == gfx::NATIVE_PIXMAP ||
+      // Synchronization is not required if the image is being created by
+      // FuchsiaVideoDecoder. |gpu_memory_buffer_manager| is nullptr in that
+      // case.
+      (gpu_memory_buffer_manager &&
+       params->buffer_handle.type == gfx::NATIVE_PIXMAP) ||
 #endif
       params->buffer_handle.type == gfx::IO_SURFACE_BUFFER;
   {
@@ -206,8 +210,9 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     host_->EnsureFlush(last_flush_id_);
   }
   if (requires_sync_token) {
-    gpu::SyncToken sync_token = GenVerifiedSyncToken();
+    DCHECK(gpu_memory_buffer_manager);
 
+    gpu::SyncToken sync_token = GenVerifiedSyncToken();
     gpu_memory_buffer_manager->SetDestructionSyncToken(gpu_memory_buffer,
                                                        sync_token);
   }
