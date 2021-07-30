@@ -369,11 +369,13 @@ FloatSize SVGImage::ConcreteObjectSize(
 
 SVGImage::DrawInfo::DrawInfo(const FloatSize& container_size,
                              float zoom,
-                             const KURL& url)
+                             const KURL& url,
+                             bool is_dark_mode_enabled)
     : container_size_(container_size),
       rounded_container_size_(RoundedIntSize(container_size)),
       zoom_(zoom),
-      url_(url) {}
+      url_(url),
+      is_dark_mode_enabled_(is_dark_mode_enabled) {}
 
 FloatSize SVGImage::DrawInfo::CalculateResidualScale() const {
   return FloatSize(rounded_container_size_.Width() / container_size_.Width(),
@@ -397,7 +399,7 @@ void SVGImage::DrawForContainer(const DrawInfo& draw_info,
 }
 
 PaintImage SVGImage::PaintImageForCurrentFrame() {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
+  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(), false);
   auto builder = CreatePaintImageBuilder();
   PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();
@@ -489,7 +491,7 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
 }
 
 bool SVGImage::ApplyShader(PaintFlags& flags, const SkMatrix& local_matrix) {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
+  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(), false);
   return ApplyShaderInternal(draw_info, flags, local_matrix);
 }
 
@@ -509,11 +511,11 @@ void SVGImage::Draw(cc::PaintCanvas* canvas,
                     const PaintFlags& flags,
                     const FloatRect& dst_rect,
                     const FloatRect& src_rect,
-                    const SkSamplingOptions&,
-                    RespectImageOrientationEnum,
+                    const ImageDrawOptions& draw_options,
                     ImageClampingMode,
                     ImageDecodingMode) {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL());
+  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
+                           draw_options.apply_dark_mode);
   DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
@@ -544,6 +546,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   FlushPendingTimelineRewind();
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    page_->GetSettings().SetForceDarkModeEnabled(draw_info.IsDarkModeEnabled());
     view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
     return view->GetPaintRecord();
   }
@@ -555,6 +558,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
 
   view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
   PaintRecordBuilder builder(*paint_controller_);
+  builder.Context().SetDarkModeEnabled(draw_info.IsDarkModeEnabled());
   view->PaintOutsideOfLifecycle(builder.Context(), kGlobalPaintNormalPhase);
   return builder.EndRecording();
 }

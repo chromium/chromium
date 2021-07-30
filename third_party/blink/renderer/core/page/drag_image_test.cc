@@ -69,8 +69,7 @@ class TestImage : public Image {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
+            const ImageDrawOptions& draw_options,
             ImageClampingMode,
             ImageDecodingMode) override {
     // Image pure virtual stub.

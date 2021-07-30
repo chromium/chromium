@@ -53,7 +53,7 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
                    const cc::PaintFlags&,
                    const FloatRect& dest_rect,
                    const ImageTilingInfo&,
-                   RespectImageOrientationEnum) final;
+                   const ImageDrawOptions& draw_options) final;
   virtual sk_sp<cc::PaintShader> CreateShader(const FloatRect& tile_rect,
                                               const SkMatrix* pattern_matrix,
                                               const FloatRect& src_rect,

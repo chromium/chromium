@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -943,13 +944,14 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
     canvas->translate(0, draw_dst_rect.Height());
     canvas->scale(1, -1);
   }
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
   SVGImageForContainer::Create(To<SVGImage>(input.get()),
                                FloatSize(input_rect.Size()), 1, NullURL())
       ->Draw(canvas, cc::PaintFlags(), FloatRect(draw_dst_rect),
-             FloatRect(draw_src_rect), SkSamplingOptions(),
+             FloatRect(draw_src_rect), draw_options,
              // The following will all be ignored.
-             kRespectImageOrientation, Image::kDoNotClampImageToSourceRect,
-             Image::kSyncDecode);
+             Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
   sk_sp<PaintRecord> paint_record = recorder.finishRecordingAsPicture();
 
   std::unique_ptr<ParsedOptions> passed_parsed_options =

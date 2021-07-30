@@ -80,13 +80,14 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
             const cc::PaintFlags&,
             const FloatRect&,
             const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
+            const ImageDrawOptions& draw_options,
             ImageClampingMode,
             ImageDecodingMode) override;
 
   // FIXME: Implement this to be less conservative.
   bool CurrentFrameKnownToBeOpaque() override { return false; }
+
+  bool IsSVGImageForContainer() const override { return true; }
 
   PaintImage PaintImageForCurrentFrame() override;
 
@@ -95,7 +96,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
                    const cc::PaintFlags&,
                    const FloatRect& dest_rect,
                    const ImageTilingInfo&,
-                   RespectImageOrientationEnum) override;
+                   const ImageDrawOptions& draw_options) override;
 
  private:
   SVGImageForContainer(SVGImage* image,

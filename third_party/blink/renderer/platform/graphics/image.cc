@@ -222,7 +222,7 @@ void Image::DrawPattern(GraphicsContext& context,
                         const cc::PaintFlags& base_flags,
                         const FloatRect& dest_rect,
                         const ImageTilingInfo& tiling_info,
-                        RespectImageOrientationEnum respect_orientation) {
+                        const ImageDrawOptions& draw_options) {
   TRACE_EVENT0("skia", "Image::drawPattern");
 
   if (dest_rect.IsEmpty())
@@ -234,7 +234,7 @@ void Image::DrawPattern(GraphicsContext& context,
 
   // Fetch orientation data if needed.
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
-  if (respect_orientation)
+  if (draw_options.respect_image_orientation)
     orientation = CurrentFrameOrientation();
 
   // |tiling_info.image_rect| is in source image space, unscaled but oriented.

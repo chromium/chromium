@@ -38,12 +38,11 @@
 
 namespace blink {
 
-void GeneratedImage::DrawPattern(
-    GraphicsContext& dest_context,
-    const cc::PaintFlags& base_flags,
-    const FloatRect& dest_rect,
-    const ImageTilingInfo& tiling_info,
-    RespectImageOrientationEnum respect_orientation) {
+void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
+                                 const cc::PaintFlags& base_flags,
+                                 const FloatRect& dest_rect,
+                                 const ImageTilingInfo& tiling_info,
+                                 const ImageDrawOptions& draw_options) {
   FloatRect tile_rect(tiling_info.image_rect);
   tile_rect.Expand(tiling_info.spacing);
 
@@ -53,8 +52,9 @@ void GeneratedImage::DrawPattern(
                           tiling_info.scale.Height());
   pattern_matrix.preTranslate(tile_rect.X(), tile_rect.Y());
 
-  sk_sp<PaintShader> tile_shader = CreateShader(
-      tile_rect, &pattern_matrix, tiling_info.image_rect, respect_orientation);
+  sk_sp<PaintShader> tile_shader =
+      CreateShader(tile_rect, &pattern_matrix, tiling_info.image_rect,
+                   draw_options.respect_image_orientation);
 
   PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));

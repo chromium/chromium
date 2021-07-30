@@ -801,11 +801,13 @@ void GraphicsContext::DrawImage(
     DarkModeFilterHelper::ApplyToImageIfNeeded(this, image, &image_flags, src,
                                                dest);
   }
-
-  image->Draw(canvas_, image_flags, dest, src,
-              ComputeSamplingOptions(image, dest, src),
-              should_respect_image_orientation, Image::kClampImageToSourceRect,
-              decode_mode);
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = ComputeSamplingOptions(image, dest, src);
+  draw_options.respect_image_orientation = should_respect_image_orientation;
+  draw_options.apply_dark_mode =
+      !has_disable_dark_mode_style && IsDarkModeEnabled();
+  image->Draw(canvas_, image_flags, dest, src, draw_options,
+              Image::kClampImageToSourceRect, decode_mode);
   paint_controller_.SetImagePainted();
 }
 
@@ -863,9 +865,12 @@ void GraphicsContext::DrawImageRRect(
     // Clip-based fallback.
     PaintCanvasAutoRestore auto_restore(canvas_, true);
     canvas_->clipRRect(dest, image_flags.isAntiAlias());
-    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, sampling,
-                respect_orientation, Image::kClampImageToSourceRect,
-                decode_mode);
+    ImageDrawOptions draw_options;
+    draw_options.sampling_options = sampling;
+    draw_options.respect_image_orientation = respect_orientation;
+    draw_options.apply_dark_mode = IsDarkModeEnabled();
+    image->Draw(canvas_, image_flags, dest.Rect(), src_rect, draw_options,
+                Image::kClampImageToSourceRect, decode_mode);
   }
 
   paint_controller_.SetImagePainted();
@@ -915,8 +920,12 @@ void GraphicsContext::DrawImageTiled(
         this, image, &image_flags, tiling_info.image_rect, dest_rect);
   }
 
-  image->DrawPattern(*this, image_flags, dest_rect, tiling_info,
-                     respect_orientation);
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = ImageSamplingOptions();
+  draw_options.respect_image_orientation = respect_orientation;
+  draw_options.apply_dark_mode =
+      !has_disable_dark_mode_style && IsDarkModeEnabled();
+  image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
   paint_controller_.SetImagePainted();
 }
 

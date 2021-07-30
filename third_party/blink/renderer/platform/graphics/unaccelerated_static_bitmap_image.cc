@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -78,18 +79,17 @@ bool UnacceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
   return paint_image_.IsOpaque();
 }
 
-void UnacceleratedStaticBitmapImage::Draw(
-    cc::PaintCanvas* canvas,
-    const cc::PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
-    const SkSamplingOptions& sampling,
-    RespectImageOrientationEnum should_respect_image_orientation,
-    ImageClampingMode clamp_mode,
-    ImageDecodingMode) {
+void UnacceleratedStaticBitmapImage::Draw(cc::PaintCanvas* canvas,
+                                          const cc::PaintFlags& flags,
+                                          const FloatRect& dst_rect,
+                                          const FloatRect& src_rect,
+                                          const ImageDrawOptions& draw_options,
+                                          ImageClampingMode clamp_mode,
+                                          ImageDecodingMode) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, sampling,
-                                clamp_mode, should_respect_image_orientation,
+  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect,
+                                draw_options.sampling_options, clamp_mode,
+                                draw_options.respect_image_orientation,
                                 PaintImageForCurrentFrame());
 }
 

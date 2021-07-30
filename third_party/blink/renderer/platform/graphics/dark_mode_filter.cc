@@ -173,6 +173,7 @@ absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
 
 bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
   switch (role) {
+    case ElementRole::kSVG:
     case ElementRole::kText:
       DCHECK(immutable_.text_classifier);
       return immutable_.text_classifier->ShouldInvertColor(color) ==
@@ -188,16 +189,6 @@ bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
       DCHECK(immutable_.background_classifier);
       return immutable_.background_classifier->ShouldInvertColor(color) ==
              DarkModeResult::kApplyFilter;
-    case ElementRole::kSVG:
-      // 1) Inline SVG images are considered as individual shapes and do not
-      // have an Image object associated with them. So they do not go through
-      // the regular image classification pipeline. Do not apply any filter to
-      // the SVG shapes until there is a way to get the classification for the
-      // entire image to which these shapes belong.
-
-      // 2) Non-inline SVG images are already classified at this point and have
-      // a filter applied if necessary.
-      return false;
     default:
       return false;
   }

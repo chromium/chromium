@@ -21,8 +21,7 @@ class StubImage : public Image {
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
+            const ImageDrawOptions& draw_options,
             ImageClampingMode,
             ImageDecodingMode) override {}
 };

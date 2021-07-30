@@ -52,8 +52,7 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
             const PaintFlags&,
             const FloatRect&,
             const FloatRect&,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
+            const ImageDrawOptions& draw_options,
             ImageClampingMode,
             ImageDecodingMode) override;
   void DrawTile(GraphicsContext&,

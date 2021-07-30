@@ -31,12 +31,11 @@ void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
                                      const PaintFlags& flags,
                                      const FloatRect& dest_rect,
                                      const FloatRect& src_rect,
-                                     const SkSamplingOptions& sampling,
-                                     RespectImageOrientationEnum,
+                                     const ImageDrawOptions& draw_options,
                                      ImageClampingMode clamping_mode,
                                      ImageDecodingMode) {
-  DrawInternal(canvas, dest_rect, src_rect, sampling, flags, clamping_mode,
-               image_);
+  DrawInternal(canvas, dest_rect, src_rect, draw_options.sampling_options,
+               flags, clamping_mode, image_);
 }
 
 void PaintWorkletDeferredImage::DrawTile(GraphicsContext& context,

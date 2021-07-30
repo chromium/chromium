@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
@@ -276,9 +277,12 @@ static bool ExtractImageData(Image* image,
   IntRect image_dest_rect(IntPoint(), image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());
   canvas.clear(SK_ColorTRANSPARENT);
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
+  draw_options.respect_image_orientation = respect_orientation;
   image->Draw(&canvas, flags, FloatRect(image_dest_rect), image_source_rect,
-              SkSamplingOptions(), respect_orientation,
-              Image::kDoNotClampImageToSourceRect, Image::kSyncDecode);
+              draw_options, Image::kDoNotClampImageToSourceRect,
+              Image::kSyncDecode);
   return true;
 }
 

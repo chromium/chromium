@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
@@ -249,15 +250,13 @@ String BitmapImage::FilenameExtension() const {
   return decoder_ ? decoder_->FilenameExtension() : String();
 }
 
-void BitmapImage::Draw(
-    cc::PaintCanvas* canvas,
-    const PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
-    const SkSamplingOptions& sampling,
-    RespectImageOrientationEnum should_respect_image_orientation,
-    ImageClampingMode clamp_mode,
-    ImageDecodingMode decode_mode) {
+void BitmapImage::Draw(cc::PaintCanvas* canvas,
+                       const PaintFlags& flags,
+                       const FloatRect& dst_rect,
+                       const FloatRect& src_rect,
+                       const ImageDrawOptions& draw_options,
+                       ImageClampingMode clamp_mode,
+                       ImageDecodingMode decode_mode) {
   TRACE_EVENT0("skia", "BitmapImage::draw");
 
   PaintImage image = PaintImageForCurrentFrame();
@@ -285,7 +284,7 @@ void BitmapImage::Draw(
     return;  // Nothing to draw.
 
   ImageOrientation orientation = ImageOrientationEnum::kDefault;
-  if (should_respect_image_orientation == kRespectImageOrientation)
+  if (draw_options.respect_image_orientation == kRespectImageOrientation)
     orientation = CurrentFrameOrientation();
 
   PaintCanvasAutoRestore auto_restore(canvas, false);
@@ -313,7 +312,7 @@ void BitmapImage::Draw(
   uint32_t stable_id = image.stable_id();
   bool is_lazy_generated = image.IsLazyGenerated();
   canvas->drawImageRect(std::move(image), adjusted_src_rect, adjusted_dst_rect,
-                        sampling, &flags,
+                        draw_options.sampling_options, &flags,
                         WebCoreClampingModeToSkiaRectConstraint(clamp_mode));
 
   if (is_lazy_generated) {

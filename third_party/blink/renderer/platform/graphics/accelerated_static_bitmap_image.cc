@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_texture_backing.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -205,15 +206,13 @@ PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
       .TakePaintImage();
 }
 
-void AcceleratedStaticBitmapImage::Draw(
-    cc::PaintCanvas* canvas,
-    const cc::PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
-    const SkSamplingOptions& sampling,
-    RespectImageOrientationEnum should_respect_image_orientation,
-    ImageClampingMode image_clamping_mode,
-    ImageDecodingMode decode_mode) {
+void AcceleratedStaticBitmapImage::Draw(cc::PaintCanvas* canvas,
+                                        const cc::PaintFlags& flags,
+                                        const FloatRect& dst_rect,
+                                        const FloatRect& src_rect,
+                                        const ImageDrawOptions& draw_options,
+                                        ImageClampingMode image_clamping_mode,
+                                        ImageDecodingMode decode_mode) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto paint_image = PaintImageForCurrentFrame();
   if (!paint_image)
@@ -224,9 +223,9 @@ void AcceleratedStaticBitmapImage::Draw(
                       .set_decoding_mode(paint_image_decoding_mode)
                       .TakePaintImage();
   }
-  StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, sampling,
-                                image_clamping_mode,
-                                should_respect_image_orientation, paint_image);
+  StaticBitmapImage::DrawHelper(
+      canvas, flags, dst_rect, src_rect, draw_options.sampling_options,
+      image_clamping_mode, draw_options.respect_image_orientation, paint_image);
 }
 
 bool AcceleratedStaticBitmapImage::IsValid() const {

@@ -84,6 +84,13 @@ struct ImageTilingInfo {
   FloatSize spacing;
 };
 
+struct ImageDrawOptions {
+  SkSamplingOptions sampling_options;
+  RespectImageOrientationEnum respect_image_orientation =
+      kRespectImageOrientation;
+  bool apply_dark_mode = false;
+};
+
 class PLATFORM_EXPORT GraphicsContext {
   USING_FAST_MALLOC(GraphicsContext);
 

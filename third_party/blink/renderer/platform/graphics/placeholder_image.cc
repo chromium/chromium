@@ -249,9 +249,11 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   }
 
   PaintRecorder paint_recorder;
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
   Draw(paint_recorder.beginRecording(FloatRect(dest_rect)), PaintFlags(),
-       FloatRect(dest_rect), FloatRect(dest_rect), SkSamplingOptions(),
-       kRespectImageOrientation, kClampImageToSourceRect, kSyncDecode);
+       FloatRect(dest_rect), FloatRect(dest_rect), draw_options,
+       kClampImageToSourceRect, kSyncDecode);
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();
@@ -274,8 +276,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
                             const PaintFlags& base_flags,
                             const FloatRect& dest_rect,
                             const FloatRect& src_rect,
-                            const SkSamplingOptions& sampling,
-                            RespectImageOrientationEnum respect_orientation,
+                            const ImageDrawOptions& draw_options,
                             ImageClampingMode image_clamping_mode,
                             ImageDecodingMode decode_mode) {
   if (!src_rect.Intersects(FloatRect(0.0f, 0.0f,
@@ -297,7 +298,8 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   }
 
   if (text_.IsEmpty()) {
-    DrawCenteredIcon(canvas, base_flags, dest_rect, sampling,
+    DrawCenteredIcon(canvas, base_flags, dest_rect,
+                     draw_options.sampling_options,
                      icon_and_text_scale_factor_);
     return;
   }
@@ -316,7 +318,8 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
           (kIconWidth + 2 * kFeaturePaddingX + kPaddingBetweenIconAndText);
 
   if (dest_rect.Width() < icon_and_text_width) {
-    DrawCenteredIcon(canvas, base_flags, dest_rect, sampling,
+    DrawCenteredIcon(canvas, base_flags, dest_rect,
+                     draw_options.sampling_options,
                      icon_and_text_scale_factor_);
     return;
   }
@@ -343,8 +346,8 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   }
 
   DrawIcon(canvas, base_flags, icon_x,
-           feature_y + icon_and_text_scale_factor_ * kIconPaddingY, sampling,
-           icon_and_text_scale_factor_);
+           feature_y + icon_and_text_scale_factor_ * kIconPaddingY,
+           draw_options.sampling_options, icon_and_text_scale_factor_);
 
   flags.setColor(SkColorSetARGB(0xAB, 0, 0, 0));
   shared_font_->font().DrawBidiText(
@@ -354,19 +357,17 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
       Font::kUseFallbackIfFontNotReady, 1.0f, flags);
 }
 
-void PlaceholderImage::DrawPattern(
-    GraphicsContext& context,
-    const PaintFlags& base_flags,
-    const FloatRect& dest_rect,
-    const ImageTilingInfo& tiling_info,
-    RespectImageOrientationEnum respect_orientation) {
+void PlaceholderImage::DrawPattern(GraphicsContext& context,
+                                   const PaintFlags& base_flags,
+                                   const FloatRect& dest_rect,
+                                   const ImageTilingInfo& tiling_info,
+                                   const ImageDrawOptions& draw_options) {
   DCHECK(context.Canvas());
   // Ignore the pattern specifications and just draw a single placeholder image
   // over the whole |dest_rect|. This is done in order to prevent repeated icons
   // from cluttering tiled background images.
   Draw(context.Canvas(), base_flags, dest_rect, tiling_info.image_rect,
-       context.ImageSamplingOptions(), respect_orientation,
-       kClampImageToSourceRect, kUnspecifiedDecode);
+       draw_options, kClampImageToSourceRect, kUnspecifiedDecode);
 }
 
 void PlaceholderImage::DestroyDecodedData() {

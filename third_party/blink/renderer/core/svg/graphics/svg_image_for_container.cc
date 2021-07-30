@@ -18,6 +18,7 @@
  */
 
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
 
@@ -33,11 +34,11 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
                                 const cc::PaintFlags& flags,
                                 const FloatRect& dst_rect,
                                 const FloatRect& src_rect,
-                                const SkSamplingOptions&,
-                                RespectImageOrientationEnum,
+                                const ImageDrawOptions& draw_options,
                                 ImageClampingMode,
                                 ImageDecodingMode) {
-  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
+                                     draw_options.apply_dark_mode);
   image_->DrawForContainer(draw_info, canvas, flags, dst_rect, src_rect);
 }
 
@@ -45,20 +46,21 @@ void SVGImageForContainer::DrawPattern(GraphicsContext& context,
                                        const cc::PaintFlags& flags,
                                        const FloatRect& dst_rect,
                                        const ImageTilingInfo& tiling_info,
-                                       RespectImageOrientationEnum) {
-  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+                                       const ImageDrawOptions& draw_options) {
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
+                                     draw_options.apply_dark_mode);
   image_->DrawPatternForContainer(draw_info, context, flags, dst_rect,
                                   tiling_info);
 }
 
 bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
-  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_, false);
   return image_->ApplyShaderForContainer(draw_info, flags, local_matrix);
 }
 
 PaintImage SVGImageForContainer::PaintImageForCurrentFrame() {
-  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_);
+  const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_, false);
   auto builder = CreatePaintImageBuilder();
   image_->PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();

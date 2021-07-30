@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -75,10 +76,11 @@ void DrawImageExpectingGrayBoxOnly(PlaceholderImage& image,
   EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
-             kRespectImageOrientation, Image::kClampImageToSourceRect,
-             Image::kUnspecifiedDecode);
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
+             Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
 }
 
 void DrawImageExpectingIconOnly(PlaceholderImage& image,
@@ -108,10 +110,12 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
 
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
+  draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
-             kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
-             Image::kUnspecifiedDecode);
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
+             Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
 }
 
 float GetExpectedPlaceholderTextWidth(const StringView& text,
@@ -198,10 +202,12 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
             0.01);
       }));
 
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
+  draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
-             kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
-             Image::kUnspecifiedDecode);
+             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
+             Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
 }
 
 class TestingUnitsPlatform : public TestingPlatformSupport {
@@ -289,13 +295,15 @@ TEST_F(PlaceholderImageTest, DrawNonIntersectingSrcRect) {
   EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
+  draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   PlaceholderImage::Create(nullptr, IntSize(800, 600), 0)
       ->Draw(&canvas, PaintFlags(), FloatRect(0.0f, 0.0f, 800.0f, 600.0f),
              // The source rectangle is outside the 800x600 bounds of the image,
              // so nothing should be drawn.
-             FloatRect(1000.0f, 0.0f, 800.0f, 600.0f), SkSamplingOptions(),
-             kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
-             Image::kUnspecifiedDecode);
+             FloatRect(1000.0f, 0.0f, 800.0f, 600.0f), draw_options,
+             Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
 }
 
 TEST_F(PlaceholderImageTest, DrawWithoutOriginalResourceSize) {
@@ -451,10 +459,12 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
             0.01);
       }));
 
+  ImageDrawOptions draw_options;
+  draw_options.sampling_options = SkSamplingOptions();
+  draw_options.respect_image_orientation = kDoNotRespectImageOrientation;
   image->Draw(&canvas, PaintFlags(), dest_rect,
-              FloatRect(0.0f, 0.0f, 100.0f, 100.0f), SkSamplingOptions(),
-              kDoNotRespectImageOrientation, Image::kClampImageToSourceRect,
-              Image::kUnspecifiedDecode);
+              FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options,
+              Image::kClampImageToSourceRect, Image::kUnspecifiedDecode);
 }
 
 TEST_F(PlaceholderImageTest, DrawSeparateImageWithDifferentScaleFactor) {

@@ -63,6 +63,7 @@ class WebGraphicsContext3DProviderWrapper;
 class DarkModeImageCache;
 
 struct ImageTilingInfo;
+struct ImageDrawOptions;
 
 class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   friend class GeneratedImage;
@@ -89,6 +90,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
       InterpolationQuality = kInterpolationNone);
 
   virtual bool IsSVGImage() const { return false; }
+  virtual bool IsSVGImageForContainer() const { return false; }
   virtual bool IsBitmapImage() const { return false; }
   virtual bool IsStaticBitmapImage() const { return false; }
   virtual bool IsPlaceholderImage() const { return false; }
@@ -294,8 +296,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                     const cc::PaintFlags&,
                     const FloatRect& dst_rect,
                     const FloatRect& src_rect,
-                    const SkSamplingOptions&,
-                    RespectImageOrientationEnum,
+                    const ImageDrawOptions& draw_options,
                     ImageClampingMode,
                     ImageDecodingMode) = 0;
 
@@ -329,7 +330,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
                            const cc::PaintFlags&,
                            const FloatRect& dest_rect,
                            const ImageTilingInfo& tiling_info,
-                           RespectImageOrientationEnum);
+                           const ImageDrawOptions& draw_options);
 
   // Creates and initializes a PaintImageBuilder with the metadata flags for the
   // PaintImage.

@@ -103,6 +103,11 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(GraphicsContext* context,
     return;
   }
 
+  // SVGImageForContainer invert the content automatically and do not need to
+  // use the image filter on the result.
+  if (image->IsSVGImageForContainer())
+    return;
+
   SkIRect rounded_src = src.roundOut();
   SkIRect rounded_dst = dst.roundOut();
 

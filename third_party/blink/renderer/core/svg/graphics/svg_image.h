@@ -141,7 +141,10 @@ class CORE_EXPORT SVGImage final : public Image {
     STACK_ALLOCATED();
 
    public:
-    DrawInfo(const FloatSize& container_size, float zoom, const KURL& url);
+    DrawInfo(const FloatSize& container_size,
+             float zoom,
+             const KURL& url,
+             bool is_dark_mode_enabled);
 
     FloatSize CalculateResidualScale() const;
     float Zoom() const { return zoom_; }
@@ -150,20 +153,21 @@ class CORE_EXPORT SVGImage final : public Image {
       return rounded_container_size_;
     }
     const KURL& Url() const { return url_; }
+    bool IsDarkModeEnabled() const { return is_dark_mode_enabled_; }
 
    private:
     const FloatSize container_size_;
     const IntSize rounded_container_size_;
     const float zoom_;
     const KURL& url_;
+    const bool is_dark_mode_enabled_;
   };
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
-            const SkSamplingOptions&,
-            RespectImageOrientationEnum,
+            const ImageDrawOptions& draw_options,
             ImageClampingMode,
             ImageDecodingMode) override;
   void DrawForContainer(const DrawInfo&,

@@ -15,8 +15,7 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                const PaintFlags& flags,
                                const FloatRect& dest_rect,
                                const FloatRect& src_rect,
-                               const SkSamplingOptions&,
-                               RespectImageOrientationEnum,
+                               const ImageDrawOptions& draw_options,
                                ImageClampingMode,
                                ImageDecodingMode) {
   PaintCanvasAutoRestore ar(canvas, true);
