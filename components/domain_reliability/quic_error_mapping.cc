@@ -420,6 +420,7 @@ const struct QuicErrorMapping {
     {quic::QUIC_HTTP_RECEIVE_SPDY_SETTING, "quic.http_receive_spdy_setting"},
     {quic::QUIC_MISSING_WRITE_KEYS, "quic.missing_write_keys"},
     {quic::QUIC_HTTP_RECEIVE_SPDY_FRAME, "quic.http_receive_spdy_frame"},
+    {quic::QUIC_HTTP_RECEIVE_SERVER_PUSH, "quic.http_receive_server_push"},
 
     {quic::QUIC_KEY_UPDATE_ERROR, "quic.quic_key_update_error"},
     {quic::QUIC_AEAD_LIMIT_REACHED, "quic.quic_aead_limit_reached"},
