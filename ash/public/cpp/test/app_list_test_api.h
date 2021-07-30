@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 
 namespace ash {
+class PaginationModel;
 
 // Accesses ash data for app list view testing.
 class ASH_EXPORT AppListTestApi {
@@ -41,6 +42,18 @@ class ASH_EXPORT AppListTestApi {
   // Moves an item to position |to_index| within the item's item list. The item
   // can be a folder.
   void MoveItemToPosition(const std::string& item_id, const size_t to_index);
+
+  // Adds one page break item after the item specified by `item_id`.
+  void AddPageBreakItemAfterId(const std::string& item_id);
+
+  // Returns the item count of the top list.
+  int GetTopListItemCount();
+
+  // Returns the pagination model.
+  PaginationModel* GetPaginationModel();
+
+  // Updates the paged view structure.
+  void UpdatePagedViewStructure();
 };
 
 }  // namespace ash

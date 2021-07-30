@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "ui/views/view_model.h"
 
@@ -105,7 +106,12 @@ void PagedViewStructure::SaveToMetadata() {
       ++item_index;
     }
 
-    if (item_index < item_list->item_count() &&
+    // When removing launcher spaces is enabled, all launcher pages expect for
+    // the last one should be full (i.e. no empty spaces). Therefore page break
+    // items are useless. It is why we should only create page break items when
+    // the feature flag is disabled.
+    if (!features::IsLauncherRemoveEmptySpaceEnabled() &&
+        item_index < item_list->item_count() &&
         !item_list->item_at(item_index)->is_page_break()) {
       // Remove AppListItemListObserver temporarily to avoid |pages_| being
       // reloaded.

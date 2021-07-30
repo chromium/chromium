@@ -133,9 +133,11 @@ class AppListControllerImplTest : public AshTestBase {
 
   void PopulateItem(int num) {
     for (int i = 0; i < num; i++) {
-      std::unique_ptr<AppListItem> item(
-          new AppListItem("app_id" + base::UTF16ToUTF8(base::FormatNumber(i))));
+      std::unique_ptr<AppListItem> item(new AppListItem(
+          "app_id" +
+          base::UTF16ToUTF8(base::FormatNumber(populated_item_count_))));
       Shell::Get()->app_list_controller()->GetModel()->AddItem(std::move(item));
+      ++populated_item_count_;
     }
   }
 
@@ -147,6 +149,9 @@ class AppListControllerImplTest : public AshTestBase {
   }
 
  private:
+  // The count of the items created by `PopulateItem()`.
+  int populated_item_count_ = 0;
+
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImplTest);
 };
 
@@ -1307,7 +1312,7 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
 }
 
-class AppListSortTest : public AshTestBase {
+class AppListSortTest : public AppListControllerImplTest {
  public:
   AppListSortTest() {
     feature_list_.InitWithFeatures({ash::features::kLauncherAppSort,
@@ -1326,6 +1331,17 @@ class AppListSortTest : public AshTestBase {
     return GetAppsContainerView()
         ->sort_button_container_for_test()
         ->children()[1];
+  }
+
+  int CountPageBreakItems() {
+    auto* top_list =
+        Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+    int count = 0;
+    for (size_t index = 0; index < top_list->item_count(); ++index) {
+      if (top_list->item_at(index)->is_page_break())
+        ++count;
+    }
+    return count;
   }
 
  private:
@@ -1347,6 +1363,21 @@ TEST_F(AppListSortTest, BasicUI) {
             GetAppListView()->app_list_state());
   EXPECT_TRUE(GetLeftSortButton()->GetVisible());
   EXPECT_TRUE(GetRightSortButton()->GetVisible());
+}
+
+TEST_F(AppListSortTest, CreatePage) {
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+  AppsGridView* apps_grid_view = GetAppsGridView();
+  test::AppsGridViewTestApi test_api(apps_grid_view);
+  PopulateItem(test_api.TilesPerPage());
+  EXPECT_EQ(1, apps_grid_view->pagination_model()->total_pages());
+
+  // Add an extra item and verify that the page count is 2 now.
+  PopulateItem(1);
+  EXPECT_EQ(2, apps_grid_view->pagination_model()->total_pages());
+
+  // Verify that there is no page break items.
+  EXPECT_EQ(0, CountPageBreakItems());
 }
 
 }  // namespace ash
