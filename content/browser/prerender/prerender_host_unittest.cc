@@ -59,7 +59,6 @@ void CommitPrerenderNavigation(PrerenderHost& host) {
   FrameTreeNode* ftn = FrameTreeNode::From(host.GetPrerenderedMainFrameHost());
   std::unique_ptr<NavigationSimulator> sim =
       NavigationSimulatorImpl::CreateFromPendingInFrame(ftn);
-  sim->ReadyToCommit();
   sim->Commit();
   EXPECT_TRUE(host.is_ready_for_activation());
 }
@@ -238,7 +237,6 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   ExpectFinalStatus(PrerenderHost::FinalStatus::kMainFrameNavigation);
 
   // The activation falls back to regular navigation.
-  navigation->ReadyToCommit();
   navigation->Commit();
   EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(),
             kPrerenderingUrl);
