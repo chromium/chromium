@@ -55,7 +55,7 @@
     var blob = new Blob([input], {type: 'text/pain'});
     var loader = Timeline.TimelineLoader.loadFromFile(blob, client);
     var model = await client.modelPromise();
-    TestRunner.addResult('Model is empty: ' + (!model || (model.minimumRecordTime() === Infinity && model.maximumRecordTime() === -Infinity)));
+    TestRunner.addResult('Model is empty: ' + (!model || (model.minimumRecordTime() === Infinity && (model.maximumRecordTime() === -Infinity || model.maximumRecordTime() === 0))));
     callback();
   }
 
