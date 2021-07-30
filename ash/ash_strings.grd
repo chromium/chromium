@@ -3234,6 +3234,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT" desc="Display text when the Quick Answers view receives no result.">
         See result in Assistant
       </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT_V2" desc="Display text when the Quick Answers view receives no result (V2 version).">
+        See result in Google Search
+      </message>
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT" desc="A11y alert text for the Quick Answers view.">
         Info related to your selection available. Use Up arrow key to access.
       </message>
