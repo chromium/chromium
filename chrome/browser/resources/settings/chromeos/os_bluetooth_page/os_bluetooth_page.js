@@ -17,6 +17,7 @@ import './os_bluetooth_summary.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
@@ -35,6 +36,44 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * @private {?chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+       */
+      systemProperties_: Object,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * @private {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver}
+     */
+    this.systemPropertiesObserverReceiver_ =
+        new chromeos.bluetoothConfig.mojom.SystemPropertiesObserverReceiver(
+            /**
+             * @type {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+             */
+            (this));
+  }
+
+  ready() {
+    super.ready();
+    getBluetoothConfig().observeSystemProperties(
+        this.systemPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * SystemPropertiesObserverInterface override
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+   *     properties
+   */
+  onPropertiesUpdated(properties) {
+    this.systemProperties_ = properties;
   }
 }
 

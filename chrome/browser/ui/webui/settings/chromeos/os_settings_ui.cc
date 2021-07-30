@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/metrics/histogram_functions.h"
@@ -171,6 +172,13 @@ void OSSettingsUI::BindInterface(
       NearbySharingServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   service->GetContactManager()->Bind(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
+        receiver) {
+  DCHECK(features::IsBluetoothRevampEnabled());
+  ash::GetBluetoothConfigService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

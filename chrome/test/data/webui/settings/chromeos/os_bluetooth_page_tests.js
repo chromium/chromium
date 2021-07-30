@@ -9,6 +9,7 @@
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // clang-format on
 
 suite('OsBluetoothPageTest', function() {
@@ -16,6 +17,9 @@ suite('OsBluetoothPageTest', function() {
   let bluetoothPage;
 
   setup(function() {
+    // TODO(crbug.com/1010321): Replace this with fake_cros_bluetooth_config
+    // when it is created.
+    setBluetoothConfigForTesting({observeSystemProperties: (observer) => {}});
     bluetoothPage = document.createElement('os-settings-bluetooth-page');
     document.body.appendChild(bluetoothPage);
     Polymer.dom.flush();

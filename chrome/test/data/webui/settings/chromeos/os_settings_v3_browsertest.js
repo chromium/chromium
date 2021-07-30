@@ -266,6 +266,24 @@ TEST_F(
       mocha.run();
     });
 
+// TODO(crbug.com/1234871) Move this test back into the list of tests below once
+// Bluetooth revamp is launched.
+// eslint-disable-next-line no-var
+var OSSettingsOsSettingsPageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_settings_page_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled:
+          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
+    };
+  }
+};
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AccountsPage', 'add_users_tests.m.js'],
@@ -364,7 +382,6 @@ TEST_F(
  ['OsSearchPage', 'os_search_page_test.m.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],
  ['OSSettingsMenu', 'os_settings_menu_test.m.js'],
- ['OsSettingsPage', 'os_settings_page_test.m.js'],
  ['NearbyShareConfirmPage', 'nearby_share_confirm_page_test.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],

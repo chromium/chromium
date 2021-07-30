@@ -4713,6 +4713,8 @@ static_library("browser") {
       "//chromeos/memory/userspace_swap:mojom",
       "//chromeos/network",
       "//chromeos/services/assistant/public/cpp",
+      "//chromeos/services/bluetooth_config",
+      "//chromeos/services/bluetooth_config/public/mojom",
       "//chromeos/services/cellular_setup",
       "//chromeos/services/cros_healthd/public/cpp",
       "//chromeos/services/cros_healthd/public/mojom",

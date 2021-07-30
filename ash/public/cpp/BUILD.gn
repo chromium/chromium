@@ -382,6 +382,7 @@ component("cpp") {
     "//chromeos/components/security_token_pin",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/assistant/public/mojom",
+    "//chromeos/services/bluetooth_config/public/mojom",
     "//chromeos/services/cellular_setup/public/mojom",
     "//chromeos/services/network_config/public/mojom",
     "//components/arc/mojom:notifications",

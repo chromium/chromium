@@ -224,6 +224,7 @@
 #include "chromeos/components/personalization_app/personalization_app_ui.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "chromeos/components/print_management/print_management_ui.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
@@ -911,6 +912,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       enterprise_casting::mojom::PageHandlerFactory,
       chromeos::EnterpriseCastingUI>(map);
+
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        chromeos::bluetooth_config::mojom::CrosBluetoothConfig,
+        chromeos::settings::OSSettingsUI>(map);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
