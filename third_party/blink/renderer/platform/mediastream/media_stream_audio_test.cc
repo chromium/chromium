@@ -36,8 +36,8 @@ constexpr int kMaxValueSafelyConvertableToFloat = 1 << 24;
 // emits audio samples with monotonically-increasing sample values. Includes
 // hooks for the unit tests to confirm lifecycle status and to change audio
 // format.
-class FakeMediaStreamAudioSource : public MediaStreamAudioSource,
-                                   public base::PlatformThread::Delegate {
+class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
+                                         public base::PlatformThread::Delegate {
  public:
   FakeMediaStreamAudioSource()
       : MediaStreamAudioSource(scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -51,7 +51,7 @@ class FakeMediaStreamAudioSource : public MediaStreamAudioSource,
   FakeMediaStreamAudioSource& operator=(const FakeMediaStreamAudioSource&) =
       delete;
 
-  ~FakeMediaStreamAudioSource() final {
+  ~FakeMediaStreamAudioSource() override {
     DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
     EnsureSourceIsStopped();
   }
@@ -133,7 +133,7 @@ class FakeMediaStreamAudioSource : public MediaStreamAudioSource,
 // sample values. Includes hooks for the unit tests to monitor the format and
 // flow of audio, whether the audio is silent, and the propagation of the
 // "enabled" state.
-class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
+class FakeMediaStreamAudioSink final : public WebMediaStreamAudioSink {
  public:
   enum EnableState { NO_ENABLE_NOTIFICATION, WAS_ENABLED, WAS_DISABLED };
 
@@ -148,7 +148,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   FakeMediaStreamAudioSink(const FakeMediaStreamAudioSink&) = delete;
   FakeMediaStreamAudioSink& operator=(const FakeMediaStreamAudioSink&) = delete;
 
-  ~FakeMediaStreamAudioSink() final {
+  ~FakeMediaStreamAudioSink() override {
     DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   }
 

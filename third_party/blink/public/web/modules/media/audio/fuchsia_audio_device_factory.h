@@ -12,32 +12,32 @@
 namespace blink {
 
 // TODO(https://crbug.com/787252): Move this class out of the Blink API layer.
-class BLINK_MODULES_EXPORT FuchsiaAudioDeviceFactory
+class BLINK_MODULES_EXPORT FuchsiaAudioDeviceFactory final
     : public WebAudioDeviceFactory {
  public:
   FuchsiaAudioDeviceFactory();
-  ~FuchsiaAudioDeviceFactory() final;
+  ~FuchsiaAudioDeviceFactory() override;
 
  protected:
   scoped_refptr<media::AudioRendererSink> CreateFinalAudioRendererSink(
       const LocalFrameToken& frame_token,
       const media::AudioSinkParameters& params,
-      base::TimeDelta auth_timeout) final;
+      base::TimeDelta auth_timeout) override;
 
   scoped_refptr<media::AudioRendererSink> CreateAudioRendererSink(
       WebAudioDeviceSourceType source_type,
       const LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params) final;
+      const media::AudioSinkParameters& params) override;
 
   scoped_refptr<media::SwitchableAudioRendererSink>
   CreateSwitchableAudioRendererSink(
       WebAudioDeviceSourceType source_type,
       const LocalFrameToken& frame_token,
-      const media::AudioSinkParameters& params) final;
+      const media::AudioSinkParameters& params) override;
 
   scoped_refptr<media::AudioCapturerSource> CreateAudioCapturerSource(
       const LocalFrameToken& frame_token,
-      const media::AudioSourceParameters& params) final;
+      const media::AudioSourceParameters& params) override;
 };
 
 }  // namespace blink

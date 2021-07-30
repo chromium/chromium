@@ -31,11 +31,11 @@ namespace incremental_marking_test {
 
 // Visitor that expects every directly reachable object from a given backing
 // store to be in the set of provided objects.
-class BackingVisitor : public Visitor {
+class BackingVisitor final : public Visitor {
  public:
   BackingVisitor(ThreadState* state, Vector<void*>* objects)
       : Visitor(state), objects_(objects) {}
-  ~BackingVisitor() final = default;
+  ~BackingVisitor() override = default;
 
   void ProcessBackingStore(HeapObjectHeader* header) {
     EXPECT_TRUE(header->IsMarked());
@@ -44,7 +44,7 @@ class BackingVisitor : public Visitor {
     GCInfo::From(header->GcInfoIndex()).trace(this, header->Payload());
   }
 
-  void Visit(const void* obj, TraceDescriptor desc) final {
+  void Visit(const void* obj, TraceDescriptor desc) override {
     EXPECT_TRUE(obj);
     auto** pos = std::find(objects_->begin(), objects_->end(), obj);
     if (objects_->end() != pos)
@@ -56,7 +56,7 @@ class BackingVisitor : public Visitor {
       EXPECT_TRUE(header->TryMark());
   }
 
-  void VisitEphemeron(const void* key, TraceDescriptor value_desc) final {
+  void VisitEphemeron(const void* key, TraceDescriptor value_desc) override {
     if (!HeapObjectHeader::FromPayload(key)->IsMarked())
       return;
     value_desc.callback(this, value_desc.base_object_payload);

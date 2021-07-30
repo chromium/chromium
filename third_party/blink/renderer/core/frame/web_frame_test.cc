@@ -6494,11 +6494,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool(),
                          CompositedSelectionBoundsTestPassToString());
 
-class TestWillInsertBodyWebFrameClient
+class TestWillInsertBodyWebFrameClient final
     : public frame_test_helpers::TestWebFrameClient {
  public:
   TestWillInsertBodyWebFrameClient() = default;
-  ~TestWillInsertBodyWebFrameClient() final = default;
+  ~TestWillInsertBodyWebFrameClient() override = default;
 
   bool did_load() const { return did_load_; }
 
@@ -9898,10 +9898,11 @@ TEST_F(WebFrameTest, SwapWithOpenerCycle) {
   EXPECT_EQ(local_frame, local_frame->Opener());
 }
 
-class CommitTypeWebFrameClient : public frame_test_helpers::TestWebFrameClient {
+class CommitTypeWebFrameClient final
+    : public frame_test_helpers::TestWebFrameClient {
  public:
   CommitTypeWebFrameClient() = default;
-  ~CommitTypeWebFrameClient() final = default;
+  ~CommitTypeWebFrameClient() override = default;
 
   WebHistoryCommitType HistoryCommitType() const {
     return history_commit_type_;

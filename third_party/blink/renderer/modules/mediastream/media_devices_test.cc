@@ -49,12 +49,12 @@ String MaxLengthCaptureHandle() {
   return maxHandle;
 }
 
-class MockMediaDevicesDispatcherHost
+class MockMediaDevicesDispatcherHost final
     : public mojom::blink::MediaDevicesDispatcherHost {
  public:
   MockMediaDevicesDispatcherHost() {}
 
-  ~MockMediaDevicesDispatcherHost() final {
+  ~MockMediaDevicesDispatcherHost() override {
     EXPECT_FALSE(expected_capture_handle_config_);
   }
 

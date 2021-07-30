@@ -16,9 +16,9 @@ namespace blink {
 
 namespace {
 
-class TestNonInterpolableValue : public NonInterpolableValue {
+class TestNonInterpolableValue final : public NonInterpolableValue {
  public:
-  ~TestNonInterpolableValue() final = default;
+  ~TestNonInterpolableValue() override = default;
 
   static scoped_refptr<TestNonInterpolableValue> Create(int value) {
     DCHECK_GE(value, 1);
