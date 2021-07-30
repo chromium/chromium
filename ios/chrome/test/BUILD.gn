@@ -235,6 +235,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ntp:unit_tests",
     "//ios/chrome/browser/omaha:unit_tests",
     "//ios/chrome/browser/open_in:unit_tests",
+    "//ios/chrome/browser/optimization_guide:unit_tests",
     "//ios/chrome/browser/overlays:unit_tests",
     "//ios/chrome/browser/overlays/public/common/confirmation:unit_tests",
     "//ios/chrome/browser/overlays/public/web_content_area:unit_tests",
