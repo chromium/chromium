@@ -141,3 +141,11 @@ interface Window {
     getStringF(id: string, ...args: (number|string)[]): string;
   }
 }
+
+// v8 specific stack information
+interface CallSite {
+  getFileName(): string|undefined;
+  getFunctionName(): string|undefined;
+  getLineNumber(): number|undefined;
+  getColumnNumber(): number|undefined;
+}
