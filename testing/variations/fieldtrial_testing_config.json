@@ -2264,6 +2264,25 @@
             ]
         }
     ],
+    "CommercePriceTracking": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "PriceDropIndicators_20210729",
+                    "params": {
+                        "enable_price_tracking": "true",
+                        "price_tracking_with_optimization_guide": "true"
+                    },
+                    "enable_features": [
+                        "CommercePriceTracking"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompositeAfterPaint": [
         {
             "platforms": [
