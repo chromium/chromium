@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 // TODO(crbug.com/1227712): Migrate syntax and remove this.
-deprecated_syntax;
-
 library chromium.cast;
 
 using fuchsia.web;
 
 /// Provides a list of header names that should be exempted from CORS preflight
 /// security checks for all Cast apps.
-[Discoverable]
+@discoverable
 protocol CorsExemptHeaderProvider {
-    GetCorsExemptHeaderNames() -> (vector<bytes:fuchsia.web.MAX_HEADERS_COUNT>:MAX header_names);
+    GetCorsExemptHeaderNames() -> (struct {
+        header_names vector<bytes:fuchsia.web.MAX_HEADERS_COUNT>:MAX;
+    });
 };

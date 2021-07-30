@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 // TODO(crbug.com/1227712): Migrate syntax and remove this.
-deprecated_syntax;
 library base.testfidl;
 
-[Discoverable]
+@discoverable
 protocol TestInterface {
-  Add(int32 a, int32 b) -> (int32 sum);
+    Add(struct {
+        a int32;
+        b int32;
+    }) -> (struct {
+        sum int32;
+    });
 };
