@@ -2617,6 +2617,9 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
+crbug.com/626703 [ Mac11.0 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html [ Failure ]
@@ -3190,7 +3193,7 @@ crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collap
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=ContentEditable [ Failure Timeout ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable&parent=b&child=i [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
-crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Pass Failure ]
+crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Timeout ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Timeout ]
@@ -3229,12 +3232,12 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-co
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Delete [ Failure Timeout ]
 crbug.com/626703 external/wpt/screen-capture/feature-policy.https.html [ Timeout ]
 crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure ]
-crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Pass Failure ]
+crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure Pass ]
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Timeout ]
 crbug.com/626703 [ Win10 ] virtual/plz-dedicated-worker/external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Pass Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Timeout ]
-crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Pass Failure ]
+crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Failure Pass ]
 crbug.com/626703 [ Win7 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-backspace.tentative.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Failure Timeout ]
@@ -7239,7 +7242,7 @@ crbug.com/1234057 [ Mac ] external/wpt/css/css-paint-api/no-op-animation.https.h
 crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-image.https.html [ Failure Pass ]
 
 # Temporary disabling to allow landing https://webrtc-review.googlesource.com/c/src/+/227120
-crbug.com/webrtc/12906 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Timeout Pass Failure ]
+crbug.com/webrtc/12906 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-29
 crbug.com/626703 [ Mac ] external/wpt/webrtc/simulcast/setParameters-active.https.html [ Failure Pass ]
