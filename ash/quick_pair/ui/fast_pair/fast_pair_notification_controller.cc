@@ -136,7 +136,7 @@ void FastPairNotificationController::ShowDiscoveryNotification(
   discovery_notification->set_title(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE, device_name));
   discovery_notification->set_message(l10n_util::GetStringFUTF16(
-      IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_MESSAGE, std::u16string()));
+      IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_MESSAGE, device_name));
 
   message_center::ButtonInfo connect_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_CONNECT_BUTTON));
