@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace {
+
 crosapi::mojom::DownloadState ConvertDownloadState(
     download::DownloadItem::DownloadState value) {
   switch (value) {
@@ -53,6 +54,7 @@ crosapi::mojom::DownloadEventPtr BuildDownloadEvent(
   dle->has_total_bytes = true;
   return dle;
 }
+
 }  // namespace
 
 // A wrapper for `base::ScopedObservation` and `DownloadManageObserver` that
@@ -73,6 +75,40 @@ class DownloadControllerClientLacros::ObservableDownloadManager
   }
 
   ~ObservableDownloadManager() override = default;
+
+  // Pauses the download associated with the specified `download_guid`.
+  void Pause(const std::string& download_guid) {
+    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    if (download)
+      download->Pause();
+  }
+
+  // Resumes the download associated with the specified `download_guid`. If
+  // `user_resume` is `true`, it signifies that this invocation was triggered by
+  // an explicit user action.
+  void Resume(const std::string& download_guid, bool user_resume) {
+    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    if (download)
+      download->Resume(user_resume);
+  }
+
+  // Cancels the download associated with the specified `download_guid`. If
+  // `user_cancel` is `true`, it signifies that this invocation was triggered by
+  // an explicit user action.
+  void Cancel(const std::string& download_guid, bool user_cancel) {
+    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    if (download)
+      download->Cancel(user_cancel);
+  }
+
+  // Marks the download associated with the specified `download_guid` to be
+  // `open_when_complete`.
+  void SetOpenWhenComplete(const std::string& download_guid,
+                           bool open_when_complete) {
+    download::DownloadItem* download = GetDownloadByGuid(download_guid);
+    if (download)
+      download->SetOpenWhenComplete(open_when_complete);
+  }
 
  private:
   // content::DownloadManager::Observer:
@@ -118,6 +154,16 @@ class DownloadControllerClientLacros::ObservableDownloadManager
     controller_client_->OnDownloadDestroyed(item);
   }
 
+  download::DownloadItem* GetDownloadByGuid(const std::string& guid) {
+    download::SimpleDownloadManager::DownloadVector downloads;
+    manager_->GetAllDownloads(&downloads);
+    for (auto* download : downloads) {
+      if (download->GetGuid() == guid)
+        return download;
+    }
+    return nullptr;
+  }
+
   DownloadControllerClientLacros* const controller_client_;
 
   content::DownloadManager* const manager_;
@@ -136,11 +182,52 @@ DownloadControllerClientLacros::DownloadControllerClientLacros() {
   auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
   for (auto* profile : profiles)
     OnProfileAdded(profile);
+
+  auto* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::DownloadController>())
+    return;
+
+  int remote_version =
+      service->GetInterfaceVersion(crosapi::mojom::DownloadController::Uuid_);
+  if (remote_version < 0 ||
+      static_cast<uint32_t>(remote_version) <
+          crosapi::mojom::DownloadController::kBindClientMinVersion) {
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::DownloadController>()->BindClient(
+      client_receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 DownloadControllerClientLacros::~DownloadControllerClientLacros() {
   if (g_browser_process && g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
+}
+
+void DownloadControllerClientLacros::Pause(const std::string& download_guid) {
+  for (auto& observable_download_manager : observable_download_managers_)
+    observable_download_manager->Pause(download_guid);
+}
+
+void DownloadControllerClientLacros::Resume(const std::string& download_guid,
+                                            bool user_resume) {
+  for (auto& observable_download_manager : observable_download_managers_)
+    observable_download_manager->Resume(download_guid, user_resume);
+}
+
+void DownloadControllerClientLacros::Cancel(const std::string& download_guid,
+                                            bool user_cancel) {
+  for (auto& observable_download_manager : observable_download_managers_)
+    observable_download_manager->Cancel(download_guid, user_cancel);
+}
+
+void DownloadControllerClientLacros::SetOpenWhenComplete(
+    const std::string& download_guid,
+    bool open_when_complete) {
+  for (auto& observable_download_manager : observable_download_managers_) {
+    observable_download_manager->SetOpenWhenComplete(download_guid,
+                                                     open_when_complete);
+  }
 }
 
 void DownloadControllerClientLacros::OnProfileAdded(Profile* profile) {

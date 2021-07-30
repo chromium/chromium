@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/scoped_multi_source_observation.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chromeos/crosapi/mojom/download_controller.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace download {
 class DownloadItem;
@@ -23,8 +26,10 @@ class DownloadItem;
 // This class receives and forwards download events to Ash. It can only be
 // used on the main thread. In the near future, it will also be the receiver for
 // calls to pause, cancel, and resume downloads from ash-chrome, hence the name.
-class DownloadControllerClientLacros : public ProfileManagerObserver,
-                                       public ProfileObserver {
+class DownloadControllerClientLacros
+    : public crosapi::mojom::DownloadControllerClient,
+      public ProfileManagerObserver,
+      public ProfileObserver {
  public:
   DownloadControllerClientLacros();
   DownloadControllerClientLacros(const DownloadControllerClientLacros&) =
@@ -35,6 +40,13 @@ class DownloadControllerClientLacros : public ProfileManagerObserver,
 
  private:
   class ObservableDownloadManager;
+
+  // crosapi::mojom::DownloadControllerClient:
+  void Pause(const std::string& download_guid) override;
+  void Resume(const std::string& download_guid, bool user_resume) override;
+  void Cancel(const std::string& download_guid, bool user_cancel) override;
+  void SetOpenWhenComplete(const std::string& download_guid,
+                           bool open_when_complete) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -54,6 +66,9 @@ class DownloadControllerClientLacros : public ProfileManagerObserver,
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observer_{this};
+
+  mojo::Receiver<crosapi::mojom::DownloadControllerClient> client_receiver_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_DOWNLOAD_CONTROLLER_CLIENT_LACROS_H_

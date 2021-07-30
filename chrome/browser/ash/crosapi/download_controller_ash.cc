@@ -14,6 +14,11 @@ void DownloadControllerAsh::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
+void DownloadControllerAsh::BindClient(
+    mojo::PendingRemote<mojom::DownloadControllerClient> client) {
+  clients_.Add(std::move(client));
+}
+
 void DownloadControllerAsh::OnDownloadCreated(
     crosapi::mojom::DownloadEventPtr event) {
   for (auto& observer : observers_)
@@ -39,6 +44,30 @@ void DownloadControllerAsh::AddObserver(DownloadControllerObserver* observer) {
 void DownloadControllerAsh::RemoveObserver(
     DownloadControllerObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void DownloadControllerAsh::Pause(const std::string& download_guid) {
+  for (auto& client : clients_)
+    client->Pause(download_guid);
+}
+
+void DownloadControllerAsh::Resume(const std::string& download_guid,
+                                   bool user_resume) {
+  for (auto& client : clients_)
+    client->Resume(download_guid, user_resume);
+}
+
+void DownloadControllerAsh::Cancel(const std::string& download_guid,
+                                   bool user_cancel) {
+  for (auto& client : clients_)
+    client->Cancel(download_guid, user_cancel);
+}
+
+void DownloadControllerAsh::SetOpenWhenComplete(
+    const std::string& download_guid,
+    bool open_when_complete) {
+  for (auto& client : clients_)
+    client->SetOpenWhenComplete(download_guid, open_when_complete);
 }
 
 }  // namespace crosapi
