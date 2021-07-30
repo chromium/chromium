@@ -85,6 +85,8 @@ public class Starter extends EmptyTabObserver implements UserData {
         StarterJni.get().start(mNativeStarter, Starter.this, triggerContext.getExperimentIds(),
                 triggerContext.getParameters().keySet().toArray(new String[0]),
                 triggerContext.getParameters().values().toArray(new String[0]),
+                triggerContext.getDeviceOnlyParameters().keySet().toArray(new String[0]),
+                triggerContext.getDeviceOnlyParameters().values().toArray(new String[0]),
                 triggerContext.getInitialUrl());
     }
 
@@ -297,6 +299,8 @@ public class Starter extends EmptyTabObserver implements UserData {
                 long nativeStarterAndroid, Starter caller, boolean isInteractable);
         void onActivityAttachmentChanged(long nativeStarterAndroid, Starter caller);
         void start(long nativeStarterAndroid, Starter caller, String experimentIds,
-                String[] parameterNames, String[] parameterValues, String initialUrl);
+                String[] parameterNames, String[] parameterValues,
+                String[] deviceOnlyParameterNames, String[] deviceOnlyParameterValues,
+                String initialUrl);
     }
 }

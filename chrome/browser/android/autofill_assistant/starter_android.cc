@@ -244,10 +244,13 @@ void StarterAndroid::Start(
     const base::android::JavaRef<jstring>& jexperiment_ids,
     const base::android::JavaRef<jobjectArray>& jparameter_names,
     const base::android::JavaRef<jobjectArray>& jparameter_values,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
+    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
     const base::android::JavaRef<jstring>& jinitial_url) {
   DCHECK(starter_);
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
       env, web_contents_, jexperiment_ids, jparameter_names, jparameter_values,
+      jdevice_only_parameter_names, jdevice_only_parameter_values,
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url);
 

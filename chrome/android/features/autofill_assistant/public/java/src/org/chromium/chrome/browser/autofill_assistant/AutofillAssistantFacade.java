@@ -107,7 +107,7 @@ public class AutofillAssistantFacade {
             }
         }
 
-        String intent = triggerContext.getParameters().get("INTENT");
+        String intent = triggerContext.getIntent();
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
         waitForTab((ChromeActivity) activity,

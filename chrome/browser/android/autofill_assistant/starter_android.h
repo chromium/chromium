@@ -76,21 +76,15 @@ class StarterAndroid : public StarterPlatformDelegate,
   bool GetIsCustomTab() const override;
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
-  void Start(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& jcaller,
-             const base::android::JavaRef<jstring>& jexperiment_ids,
-             const base::android::JavaRef<jobjectArray>& jparameter_names,
-             const base::android::JavaRef<jobjectArray>& jparameter_values,
-             const base::android::JavaRef<jstring>& jinitial_url);
-
-  // Called by Java to start an autofill-assistant flow for an incoming intent.
-  void Start(JNIEnv* env,
-             const base::android::JavaParamRef<jobject>& jcaller,
-             const base::android::JavaRef<jstring>& jexperiment_ids,
-             const base::android::JavaRef<jobjectArray>& jparameter_names,
-             const base::android::JavaRef<jobjectArray>& jparameter_values,
-             jboolean is_cct,
-             const base::android::JavaRef<jstring>& jinitial_url);
+  void Start(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaRef<jstring>& jexperiment_ids,
+      const base::android::JavaRef<jobjectArray>& jparameter_names,
+      const base::android::JavaRef<jobjectArray>& jparameter_values,
+      const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
+      const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
+      const base::android::JavaRef<jstring>& jinitial_url);
 
   // Called by Java when the feature module installation has finished.
   void OnFeatureModuleInstalled(

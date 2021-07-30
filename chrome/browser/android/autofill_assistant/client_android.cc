@@ -213,7 +213,10 @@ void ClientAndroid::FetchWebsiteActions(
   controller_->Track(
       ui_controller_android_utils::CreateTriggerContext(
           env, web_contents_, jexperiment_ids, jparameter_names,
-          jparameter_values,
+          jparameter_values, /* jdevice_only_parameter_names= */
+          base::android::JavaParamRef<jobjectArray>(nullptr),
+          /* jdevice_only_parameter_values= */
+          base::android::JavaParamRef<jobjectArray>(nullptr),
           /* onboarding_shown = */ false,
           /* is_direct_action = */ true,
           /* jinitial_url = */ nullptr),
@@ -333,7 +336,11 @@ bool ClientAndroid::PerformDirectAction(
       base::android::ConvertJavaStringToUTF8(env, jaction_name);
 
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, web_contents_, jexperiment_ids, jparameter_names, jparameter_values,
+      env, web_contents_, jexperiment_ids, jparameter_names,
+      jparameter_values, /* jdevice_only_parameter_names= */
+      base::android::JavaParamRef<jobjectArray>(nullptr),
+      /* jdevice_only_parameter_values= */
+      base::android::JavaParamRef<jobjectArray>(nullptr),
       /* onboarding_shown = */ false,
       /* is_direct_action = */ true,
       /* jinitial_url = */ nullptr);

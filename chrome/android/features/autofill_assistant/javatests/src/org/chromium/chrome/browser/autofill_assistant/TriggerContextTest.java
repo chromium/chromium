@@ -99,4 +99,17 @@ public class TriggerContextTest {
                         .getParameters()
                         .get("FAKE_PARAM"));
     }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void deviceOnlyParameters() {
+        Bundle testBundle = new Bundle();
+        testBundle.putString("org.chromium.chrome.browser.autofill_assistant.PARAM_A", "public");
+        testBundle.putString(
+                "org.chromium.chrome.browser.autofill_assistant.device_only.PARAM_B", "secret");
+        TriggerContext triggerContext = TriggerContext.newBuilder().fromBundle(testBundle).build();
+        Assert.assertEquals("public", triggerContext.getParameters().get("PARAM_A"));
+        Assert.assertEquals("secret", triggerContext.getDeviceOnlyParameters().get("PARAM_B"));
+    }
 }

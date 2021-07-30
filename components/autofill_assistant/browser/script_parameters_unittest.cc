@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/script_parameters.h"
 
 #include "components/autofill_assistant/browser/test_util.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -183,6 +184,58 @@ TEST(ScriptParametersTest, ToProtoRemovesEnabled) {
 
   EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
               IsEmpty());
+}
+
+TEST(ScriptParametersTest, ToProtoDoesNotAddDeviceOnlyParameters) {
+  ScriptParameters parameters = {};
+
+  parameters.UpdateDeviceOnlyParameters(
+      std::map<std::string, std::string>({{"device_only", "secret"}}));
+
+  EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
+              IsEmpty());
+}
+
+TEST(ScriptParametersTest, WriteToUserDataAddsAllParameters) {
+  UserData user_data;
+  ScriptParameters parameters = {{{"key_a", "a"}}};
+  parameters.UpdateDeviceOnlyParameters(
+      std::map<std::string, std::string>({{"key_b", "b"}}));
+
+  parameters.WriteToUserData(&user_data);
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_a")->strings().values(0),
+            "a");
+  EXPECT_FALSE(
+      user_data.GetAdditionalValue("param:key_a")->is_client_side_only());
+
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_b")->strings().values(0),
+            "b");
+  EXPECT_TRUE(
+      user_data.GetAdditionalValue("param:key_b")->is_client_side_only());
+}
+
+TEST(ScriptParametersTest,
+     UpdateDeviceOnlyParametersOverwritesExistingEntries) {
+  UserData user_data;
+  ScriptParameters parameters;
+
+  parameters.UpdateDeviceOnlyParameters(
+      std::map<std::string, std::string>({{"key_a", "a"}, {"key_b", "b"}}));
+  parameters.WriteToUserData(&user_data);
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_a")->strings().values(0),
+            "a");
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_b")->strings().values(0),
+            "b");
+
+  parameters.UpdateDeviceOnlyParameters(
+      std::map<std::string, std::string>({{"key_a", "new"}, {"key_c", "c"}}));
+  parameters.WriteToUserData(&user_data);
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_a")->strings().values(0),
+            "new");
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_b")->strings().values(0),
+            "b");
+  EXPECT_EQ(user_data.GetAdditionalValue("param:key_c")->strings().values(0),
+            "c");
 }
 
 }  // namespace autofill_assistant

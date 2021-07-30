@@ -1198,6 +1198,10 @@ void Controller::InitFromParameters() {
   if (details->UpdateFromParameters(trigger_context_->GetScriptParameters()))
     SetDetails(std::move(details), base::TimeDelta());
 
+  if (user_data_ != nullptr) {
+    trigger_context_->GetScriptParameters().WriteToUserData(user_data_.get());
+  }
+
   const absl::optional<std::string> overlay_color =
       trigger_context_->GetScriptParameters().GetOverlayColors();
   if (overlay_color) {

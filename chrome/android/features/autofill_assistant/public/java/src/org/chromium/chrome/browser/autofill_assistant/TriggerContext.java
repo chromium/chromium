@@ -37,7 +37,10 @@ public class TriggerContext {
                     if (value == null) {
                         continue;
                     }
-                    if (key.startsWith(INTENT_EXTRA_PREFIX)) {
+                    if (key.startsWith(INTENT_EXTRA_DEVICE_ONLY_PREFIX)) {
+                        mTriggerContext.mDeviceOnlyScriptParameters.put(
+                                key.substring(INTENT_EXTRA_DEVICE_ONLY_PREFIX.length()), value);
+                    } else if (key.startsWith(INTENT_EXTRA_PREFIX)) {
                         if (key.equals(INTENT_EXTRA_PREFIX + PARAMETER_EXPERIMENT_IDS)) {
                             mTriggerContext.addExperimentIds(decode(value.toString()));
                         }
@@ -86,8 +89,17 @@ public class TriggerContext {
     private static final String INTENT_EXTRA_PREFIX =
             "org.chromium.chrome.browser.autofill_assistant.";
 
+    /**
+     * Prefix for Intent extras that should remain on the device and not be sent to the backend.
+     */
+    private static final String INTENT_EXTRA_DEVICE_ONLY_PREFIX =
+            INTENT_EXTRA_PREFIX + "device_only.";
+
     /** Special parameter that enables the feature. */
     public static final String PARAMETER_ENABLED = "ENABLED";
+
+    /** Special parameter that contains the intent of the flow. */
+    public static final String PARAMETER_INTENT = "INTENT";
 
     /**
      * Special bool parameter that MUST be present in all intents. It allows the caller to either
@@ -139,12 +151,14 @@ public class TriggerContext {
     private static final String PARAMETER_ALLOW_APP = "ALLOW_APP";
 
     private final Map<String, Object> mScriptParameters;
+    private final Map<String, Object> mDeviceOnlyScriptParameters;
     private final StringBuilder mExperimentIds;
     private String mInitialUrl;
     private boolean mOnboardingShown;
 
     private TriggerContext() {
         mScriptParameters = new HashMap<>();
+        mDeviceOnlyScriptParameters = new HashMap<>();
         mExperimentIds = new StringBuilder();
     }
 
@@ -196,6 +210,16 @@ public class TriggerContext {
 
         for (String key : mScriptParameters.keySet()) {
             map.put(key, decode(mScriptParameters.get(key).toString()));
+        }
+
+        return map;
+    }
+
+    public Map<String, String> getDeviceOnlyParameters() {
+        Map<String, String> map = new HashMap<>();
+
+        for (String key : mDeviceOnlyScriptParameters.keySet()) {
+            map.put(key, decode(mDeviceOnlyScriptParameters.get(key).toString()));
         }
 
         return map;
@@ -277,5 +301,10 @@ public class TriggerContext {
      */
     public boolean allowAppOverride() {
         return Boolean.parseBoolean(getStringParameter(PARAMETER_ALLOW_APP));
+    }
+
+    /** Returns the intent of the flow. */
+    public String getIntent() {
+        return getStringParameter(PARAMETER_INTENT);
     }
 }

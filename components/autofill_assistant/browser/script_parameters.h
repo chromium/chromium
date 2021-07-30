@@ -12,6 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
+class UserData;
 
 // Stores script parameters and provides access to the subset of client-relevant
 // parameters.
@@ -35,6 +36,14 @@ class ScriptParameters {
   // list of trigger-script-approved script parameters.
   google::protobuf::RepeatedPtrField<ScriptParameterProto> ToProto(
       bool only_trigger_script_allowlisted = false) const;
+
+  // Update the device only parameters. New parameters always take precedence.
+  void UpdateDeviceOnlyParameters(
+      const std::map<std::string, std::string>& parameters);
+
+  // Write parameters and device only parameters to |UserData|, by adding them
+  // to the additional values with a "param:" prefix.
+  void WriteToUserData(UserData* user_data) const;
 
   // Getters for specific parameters.
   absl::optional<std::string> GetOverlayColors() const;
@@ -63,7 +72,7 @@ class ScriptParameters {
  private:
   absl::optional<std::string> GetParameter(const std::string& name) const;
 
-  std::map<std::string, std::string> parameters_;
+  std::map<std::string, ValueProto> parameters_;
 };
 
 }  // namespace autofill_assistant
