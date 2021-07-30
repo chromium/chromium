@@ -10,7 +10,9 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/printing/ppd_cache.h"
-#include "chromeos/printing/ppd_provider_v3.h"
+#include "chromeos/printing/ppd_metadata_manager.h"
+#include "chromeos/printing/ppd_provider.h"
+#include "chromeos/printing/printer_config_cache.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/google_api_keys.h"
@@ -41,7 +43,7 @@ scoped_refptr<PpdProvider> CreatePpdProvider(Profile* profile) {
       g_browser_process->GetApplicationLocale(),
       base::DefaultClock::GetInstance(), std::move(manager_config_cache));
 
-  return CreateV3Provider(
+  return PpdProvider::Create(
       version_info::GetVersion(), PpdCache::Create(ppd_cache_path),
       std::move(metadata_manager), std::move(provider_config_cache));
 }

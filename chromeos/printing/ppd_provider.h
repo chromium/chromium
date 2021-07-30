@@ -27,6 +27,8 @@ class URLLoaderFactory;
 namespace chromeos {
 
 class PpdCache;
+class PrinterConfigCache;
+class PpdMetadataManager;
 
 // Everything we might know about a printer when looking for a
 // driver for it.  All of the default values for fields in this struct
@@ -189,11 +191,10 @@ class CHROMEOS_EXPORT PpdProvider : public base::RefCounted<PpdProvider> {
   // Create and return a new PpdProvider with the given cache and options.
   // A references to |url_context_getter| is taken.
   static scoped_refptr<PpdProvider> Create(
-      const std::string& browser_locale,
-      LoaderFactoryGetter loader_factory_getter,
-      scoped_refptr<PpdCache> cache,
       const base::Version& current_version,
-      const Options& options = Options());
+      scoped_refptr<PpdCache> cache,
+      std::unique_ptr<PpdMetadataManager> metadata_manager,
+      std::unique_ptr<PrinterConfigCache> config_cache);
 
   // Get all manufacturers for which we have drivers.  Keys of the map will be
   // localized in the default browser locale or the closest available fallback.
@@ -251,6 +252,10 @@ class CHROMEOS_EXPORT PpdProvider : public base::RefCounted<PpdProvider> {
   // testing, and should not be used by other code.
   static std::string PpdReferenceToCacheKey(
       const Printer::PpdReference& reference);
+
+  // Used to "dereference" the PPD previously named by the cache key from
+  // Printer::PpdReference::effective_make_and_model.
+  static std::string PpdBasenameToCacheKey(base::StringPiece ppd_basename);
 
  protected:
   friend class base::RefCounted<PpdProvider>;
