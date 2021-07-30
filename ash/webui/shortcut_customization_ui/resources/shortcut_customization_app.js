@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shortcut_input.js';
-import './browser_shortcuts_page.js'
-import './chromeos_shortcuts_page.js'
-import './android_shortcuts_page.js'
-import './accessibility_shortcuts_page.js'
-import './shortcut_customization_fonts_css.js'
 import './accelerator_edit_dialog.js'
+import './shortcut_input.js';
+import './shortcuts_page.js'
+import './shortcut_customization_fonts_css.js'
+import 'chrome://resources/ash/common/navigation_view_panel.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import 'chrome://resources/ash/common/navigation_view_panel.js';
 
 /**
  * @fileoverview
@@ -54,16 +51,18 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
 
   ready() {
     super.ready();
-    this.$.navigationPanel.addSelector('Chrome OS',
-                                       'chromeos-shortcuts-page',
-                                       'navigation-selector:laptop-chromebook');
-    this.$.navigationPanel.addSelector('Browser', 'browser-shortcuts-page',
-                                       'navigation-selector:laptop-chromebook');
-    this.$.navigationPanel.addSelector('Android', 'android-shortcuts-page',
-                                       'navigation-selector:laptop-chromebook');
-    this.$.navigationPanel.addSelector('Accessibility',
-                                       'accessibility-shortcuts-page',
-                                       'navigation-selector:laptop-chromebook');
+    this.$.navigationPanel.addSelector(
+        'Chrome OS', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+        'chromeos-page-id');
+    this.$.navigationPanel.addSelector(
+        'Browser', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+        'browser-page-id');
+    this.$.navigationPanel.addSelector(
+        'Android', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+        'android-page-id');
+    this.$.navigationPanel.addSelector(
+        'Accessibility', 'shortcuts-page',
+        'navigation-selector:laptop-chromebook', 'a11y-page-id');
   }
 
   /** @override */
@@ -101,5 +100,5 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
   }
 }
 
-customElements.define(ShortcutCustomizationAppElement.is,
-                      ShortcutCustomizationAppElement);
+customElements.define(
+    ShortcutCustomizationAppElement.is, ShortcutCustomizationAppElement);

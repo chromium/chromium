@@ -17,16 +17,13 @@ polymer_element_files = [
   "accelerator_row.js",
   "accelerator_subsection.js",
   "accelerator_view.js",
-  "accessibility_shortcuts_page.js",
-  "android_shortcuts_page.js",
-  "browser_shortcuts_page.js",
-  "chromeos_shortcuts_page.js",
   "icons.js",
   "input_key.js",
   "shortcut_customization_fonts_css.js",
   "shortcut_customization_shared_css.js",
   "shortcut_customization_app.js",
   "shortcut_input.js",
+  "shortcuts_page.js",
 ]
 
 generate_grd("build_grd") {
@@ -53,10 +50,6 @@ js_type_check("closure_compile") {
     ":accelerator_edit_view",
     ":accelerator_row",
     ":accelerator_view",
-    ":accessibility_shortcuts_page",
-    ":android_shortcuts_page",
-    ":browser_shortcuts_page",
-    ":chromeos_shortcuts_page",
     ":fake_shortcut_provider",
     ":icons",
     ":input_key",
@@ -65,6 +58,7 @@ js_type_check("closure_compile") {
     ":shortcut_customization_fonts_css",
     ":shortcut_input",
     ":shortcut_types",
+    ":shortcuts_page",
   ]
 }
 
@@ -100,38 +94,9 @@ js_library("accelerator_view") {
   ]
 }
 
-js_library("accessibility_shortcuts_page") {
-  deps = [
-    ":shortcut_input",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("android_shortcuts_page") {
-  deps = [
-    ":accelerator_edit_dialog",
-    ":shortcut_input",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 js_library("accelerator_subsection") {
   deps = [
     ":accelerator_row",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("browser_shortcuts_page") {
-  deps = [
-    ":shortcut_input",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("chromeos_shortcuts_page") {
-  deps = [
-    ":shortcut_input",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -199,6 +164,13 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_gen_manifest"
   in_files = polymer_element_files
+}
+
+js_library("shortcuts_page") {
+  deps = [
+    ":shortcut_input",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 html_to_js("web_components") {

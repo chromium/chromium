@@ -8,13 +8,14 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 /**
  * @fileoverview
- * 'chromeos-shortcuts-page' is responsible for containing all shortcuts related
- * to ChromeOS.
+ * 'shortcuts-page' is a generic page that is capable of rendering the
+ * shortcuts for a specific category.
+ *
  * TODO(jimmyxgong): Implement this skeleton element.
  */
-export class ChromeOSShortcutsPageElement extends PolymerElement {
+export class ShortcutsPageElement extends PolymerElement {
   static get is() {
-    return 'chromeos-shortcuts-page';
+    return 'shortcuts-page';
   }
 
   static get template() {
@@ -22,5 +23,4 @@ export class ChromeOSShortcutsPageElement extends PolymerElement {
   }
 }
 
-customElements.define(ChromeOSShortcutsPageElement.is,
-                      ChromeOSShortcutsPageElement);
+customElements.define(ShortcutsPageElement.is, ShortcutsPageElement);
