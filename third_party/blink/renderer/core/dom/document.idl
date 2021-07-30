@@ -48,7 +48,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute DOMString contentType;
 
     readonly attribute DocumentType? doctype;
-    [Affects=Nothing] readonly attribute Element? documentElement;
+    readonly attribute Element? documentElement;
     [Affects=Nothing] HTMLCollection getElementsByTagName(DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByClassName(DOMString classNames);
@@ -85,10 +85,10 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // resource metadata management
 
-    [Affects=Nothing, PutForwards=href, LegacyUnforgeable] readonly attribute Location? location;
-    [Affects=Nothing, RaisesException=Setter] attribute USVString domain;
-    [Affects=Nothing] readonly attribute USVString referrer;
-    [Affects=Nothing, RaisesException, RuntimeCallStatsCounter=DocumentCookie] attribute DOMString cookie;
+    [PutForwards=href, LegacyUnforgeable] readonly attribute Location? location;
+    [RaisesException=Setter] attribute USVString domain;
+    readonly attribute USVString referrer;
+    [RaisesException, RuntimeCallStatsCounter=DocumentCookie] attribute DOMString cookie;
     readonly attribute DOMString lastModified;
     readonly attribute DocumentReadyState readyState;
 
@@ -96,10 +96,10 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Named getter is implemented without IDL code generation for better
     // performance. See local_window_proxy.cc.
     // getter object (DOMString name);
-    [Affects=Nothing, CEReactions] attribute DOMString title;
+    [CEReactions] attribute DOMString title;
     [CEReactions] attribute DOMString dir;
-    [Affects=Nothing, CEReactions, RaisesException=Setter, PerWorldBindings] attribute HTMLElement? body;
-    [Affects=Nothing] readonly attribute HTMLHeadElement? head;
+    [CEReactions, RaisesException=Setter, PerWorldBindings] attribute HTMLElement? body;
+    readonly attribute HTMLHeadElement? head;
     [SameObject, Measure] readonly attribute HTMLCollection images;
     [SameObject, Measure] readonly attribute HTMLCollection embeds;
     [SameObject, ImplementedAs=embeds, Measure] readonly attribute HTMLCollection plugins;
@@ -124,7 +124,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [CallWith=Isolate, CEReactions, RaisesException] void writeln(TrustedHTML text);
 
     // user interaction
-    [Affects=Nothing] readonly attribute Window? defaultView;
+    readonly attribute Window? defaultView;
     [Affects=Nothing] boolean hasFocus();
     [CEReactions, MeasureAs=DocumentDesignMode] attribute DOMString designMode;
     [CEReactions, RaisesException] boolean execCommand(DOMString commandId, optional boolean showUI = false, optional DOMString value = "");
@@ -154,7 +154,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     [SameObject, MeasureAs=DocumentAll] readonly attribute HTMLAllCollection all;
 
-    [Affects=Nothing] readonly attribute Element? scrollingElement;
+    readonly attribute Element? scrollingElement;
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-document-interface

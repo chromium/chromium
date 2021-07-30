@@ -221,7 +221,7 @@ Currently `[Constructor(...)]` does not yet support optional arguments w/o defau
 
 Standard: [CrossOriginIsolated](https://heycam.github.io/webidl/#CrossOriginIsolated)
 
-Summary: Interfaces and interface members with a `CrossOriginIsolated` attribute are exposed only inside contexts whose [cross-origin isolated capability](https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-cross-origin-isolated-capability) is enabled. 
+Summary: Interfaces and interface members with a `CrossOriginIsolated` attribute are exposed only inside contexts whose [cross-origin isolated capability](https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-cross-origin-isolated-capability) is enabled.
 
 Usage: The `[CrossOriginIsolated]` attribute may be specified on interfaces, attributes, and members:
 
@@ -1585,23 +1585,23 @@ V8PrivateProperty::GetHTMLFooBarCachedAccessor().Set(context, object, new_value)
 
 ### [Affects] _(m, a)_
 
-Summary: `[Affects=Nothing]` indicates that a function must not produce JS-observable side effects. Functions without this attribute are never invoked by V8 with throwOnSideEffect.
+Summary: `[Affects=Nothing]` indicates that a function must not produce JS-observable side effects, while `[Affects=Everything]` indicates that a function may produce JS-observable side effects. Functions which are not considered free of JS-observable side effects will never be invoked by V8 with throwOnSideEffect.
 
-Marked functions are allowed to be nondeterministic, throw exceptions, force layout, and recalculate style, but must not set values, cache objects, or schedule execution that will be observable after the function completes. If a marked function calls into V8, it must properly handle cases when the V8 call returns an MaybeHandle.
-
-All DOM constructors are assumed to have side effects. However, an exception can be explicitly indicated when calling constructors using the V8 API method Function::NewInstanceWithSideEffectType().
-
-There is not yet support for marking SymbolKeyedMethodConfigurations as side-effect free. This requires additional support in V8 to allow Intrinsics.
-
-Usage for attributes and operations: `[Affects=Nothing]` can be specified on an operation, or on an attribute to indicate that its getter callback is side effect free:
+Usage for attributes and operations: `[Affects=Nothing]` and `[Affects=Everything]` can be specified on an operation, or on an attribute to indicate that its getter callback is side effect free or side effecting:
 
 ```webidl
 interface HTMLFoo {
-    [Affects=Nothing] attribute Bar bar;
+    [Affects=Everything] attribute Bar bar;
     [Affects=Nothing] Bar baz();
     void removeItems();
 };
 ```
+
+When neither `[Affects=Nothing]` nor `[Affects=Everything]` is specified, the default for operations is `[Affects=Everything]`, while for attributes it's `[Affects=Nothing]`. Functions marked as side effect free are allowed to be nondeterministic, throw exceptions, force layout, and recalculate style, but must not set values, cache objects, or schedule execution that will be observable after the function completes. If a marked function calls into V8, it must properly handle cases when the V8 call returns an MaybeHandle.
+
+All DOM constructors are assumed to side effects. However, an exception can be explicitly indicated when calling constructors using the V8 API method Function::NewInstanceWithSideEffectType().
+
+There is not yet support for marking SymbolKeyedMethodConfigurations as side-effect free. This requires additional support in V8 to allow Intrinsics.
 
 
 ### [DefaultValue] _(p)_

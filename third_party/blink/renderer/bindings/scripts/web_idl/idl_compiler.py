@@ -542,6 +542,10 @@ class IdlCompiler(object):
                         group.extended_attributes.append(
                             ExtendedAttribute(key=key))
                 if all((overload.extended_attributes.value_of('Affects') ==
+                        'Everything') for overload in group):
+                    group.extended_attributes.append(
+                        ExtendedAttribute(key='Affects', values='Everything'))
+                if all((overload.extended_attributes.value_of('Affects') ==
                         'Nothing') for overload in group):
                     group.extended_attributes.append(
                         ExtendedAttribute(key='Affects', values='Nothing'))

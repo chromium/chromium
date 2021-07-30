@@ -35,13 +35,13 @@
 ] interface Window : EventTarget {
     // the current browsing context
     // FIXME: The spec uses the WindowProxy type for this and many other attributes.
-    [Affects=Nothing, LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window window;
+    [LegacyUnforgeable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window window;
     [Replaceable, CrossOrigin, CachedAccessor=kWindowProxy] readonly attribute Window self;
-    [Affects=Nothing, LegacyUnforgeable, CachedAccessor=kWindowDocument] readonly attribute Document document;
+    [LegacyUnforgeable, CachedAccessor=kWindowDocument] readonly attribute Document document;
     attribute DOMString name;
-    [Affects=Nothing, PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter), Custom=Getter] readonly attribute Location location;
+    [PutForwards=href, LegacyUnforgeable, CrossOrigin=(Getter,Setter), Custom=Getter] readonly attribute Location location;
     [CallWith=ScriptState] readonly attribute CustomElementRegistry customElements;
-    [Affects=Nothing] readonly attribute History history;
+    readonly attribute History history;
     [Replaceable, MeasureAs=BarPropLocationbar] readonly attribute BarProp locationbar;
     [Replaceable, MeasureAs=BarPropMenubar] readonly attribute BarProp menubar;
     [Replaceable, MeasureAs=BarPropPersonalbar] readonly attribute BarProp personalbar;
@@ -74,7 +74,7 @@
     [Custom, NotEnumerable, CrossOrigin] getter object (DOMString name);
 
     // the user agent
-    [Affects=Nothing, LogActivity=GetterOnly] readonly attribute Navigator navigator;
+    [LogActivity=GetterOnly] readonly attribute Navigator navigator;
     [LogActivity=GetterOnly, SecureContext, RuntimeEnabled=AppCache] readonly attribute ApplicationCache applicationCache;
 
     [RuntimeEnabled=OriginIsolationHeader] readonly attribute boolean originAgentCluster;
@@ -130,8 +130,8 @@
     [MeasureAs=WindowResize] void resizeBy(long x, long y);
 
     // viewport
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowInnerWidth, Replaceable] readonly attribute long innerWidth;
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowInnerHeight, Replaceable] readonly attribute long innerHeight;
+    [HighEntropy=Direct, MeasureAs=WindowInnerWidth, Replaceable] readonly attribute long innerWidth;
+    [HighEntropy=Direct, MeasureAs=WindowInnerHeight, Replaceable] readonly attribute long innerHeight;
 
     // viewport scrolling
     [HighEntropy=Direct, MeasureAs=WindowScrollX, Replaceable] readonly attribute double scrollX;
@@ -150,11 +150,11 @@
     [Replaceable, SameObject] readonly attribute VisualViewport visualViewport;
 
     // client
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowScreenX, Replaceable] readonly attribute long screenX;
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowScreenY, Replaceable] readonly attribute long screenY;
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowOuterWidth, Replaceable] readonly attribute long outerWidth;
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowOuterHeight, Replaceable] readonly attribute long outerHeight;
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=WindowDevicePixelRatio, Replaceable] readonly attribute double devicePixelRatio;
+    [HighEntropy=Direct, MeasureAs=WindowScreenX, Replaceable] readonly attribute long screenX;
+    [HighEntropy=Direct, MeasureAs=WindowScreenY, Replaceable] readonly attribute long screenY;
+    [HighEntropy=Direct, MeasureAs=WindowOuterWidth, Replaceable] readonly attribute long outerWidth;
+    [HighEntropy=Direct, MeasureAs=WindowOuterHeight, Replaceable] readonly attribute long outerHeight;
+    [HighEntropy=Direct, MeasureAs=WindowDevicePixelRatio, Replaceable] readonly attribute double devicePixelRatio;
 
     // Window Segments API
     // https://github.com/webscreens/window-segments

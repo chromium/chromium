@@ -9,5 +9,5 @@
 [
     ImplementedAs=DOMWindowPerformance
 ] partial interface Window {
-    [Affects=Nothing, Replaceable] readonly attribute Performance performance;
+    [Replaceable] readonly attribute Performance performance;
 };

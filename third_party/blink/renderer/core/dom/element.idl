@@ -32,15 +32,15 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     readonly attribute DOMString? namespaceURI;
     readonly attribute DOMString? prefix;
     readonly attribute DOMString localName;
-    [Affects=Nothing] readonly attribute DOMString tagName;
+    readonly attribute DOMString tagName;
 
-    [Affects=Nothing, CEReactions, Reflect] attribute DOMString id;
-    [Affects=Nothing, CEReactions, Reflect=class] attribute DOMString className;
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
+    [CEReactions, Reflect] attribute DOMString id;
+    [CEReactions, Reflect=class] attribute DOMString className;
+    [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
     [Unscopable, CEReactions, Reflect] attribute DOMString slot;
 
     [Affects=Nothing] boolean hasAttributes();
-    [Affects=Nothing, SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
+    [SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
     [Affects=Nothing] sequence<DOMString> getAttributeNames();
     [Affects=Nothing] DOMString? getAttribute(DOMString name);
     [Affects=Nothing] DOMString? getAttributeNS(DOMString? namespaceURI, DOMString localName);
@@ -61,7 +61,7 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [RuntimeEnabled=EditContext] attribute EditContext? editContext;
 
     [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
-    [Affects=Nothing, PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+    [PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
     [RaisesException] Element? closest(DOMString selectors);
     [RaisesException] boolean matches(DOMString selectors);
@@ -76,7 +76,7 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
     // CSS Shadow Parts
     // https://drafts.csswg.org/css-shadow-parts/#idl
-    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
+    [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
 
     // Pointer Events
     // https://w3c.github.io/pointerevents/#extensions-to-the-element-interface
@@ -94,8 +94,8 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     // TODO(mkwst): Write a spec for the `TrustedHTML` variants.
     // TODO(lyf): Change the type to `[TreatNullAs=xxx] HTMLString` after
     // https://crbug.com/1058762 has been fixed.
-    [Affects=Nothing, CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
-    [Affects=Nothing, CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
+    [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
+    [CEReactions, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
 
     // Declarative Shadow DOM getInnerHTML() function.
@@ -120,14 +120,14 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     void scrollTo(unrestricted double x, unrestricted double y);
     void scrollBy(optional ScrollToOptions options = {});
     void scrollBy(unrestricted double x, unrestricted double y);
-    [Affects=Nothing] attribute unrestricted double scrollTop;
-    [Affects=Nothing] attribute unrestricted double scrollLeft;
-    [Affects=Nothing] readonly attribute long scrollWidth;
-    [Affects=Nothing] readonly attribute long scrollHeight;
-    [Affects=Nothing] readonly attribute long clientTop;
-    [Affects=Nothing] readonly attribute long clientLeft;
-    [Affects=Nothing] readonly attribute long clientWidth;
-    [Affects=Nothing] readonly attribute long clientHeight;
+    attribute unrestricted double scrollTop;
+    attribute unrestricted double scrollLeft;
+    readonly attribute long scrollWidth;
+    readonly attribute long scrollHeight;
+    readonly attribute long clientTop;
+    readonly attribute long clientLeft;
+    readonly attribute long clientWidth;
+    readonly attribute long clientHeight;
 
     // Typed OM
     // https://drafts.css-houdini.org/css-typed-om/#inline-stylepropertymap-objects
@@ -151,7 +151,7 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
 
     // Element Timing
-    [Affects=Nothing, CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
+    [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
 };
 
 Element includes ParentNode;

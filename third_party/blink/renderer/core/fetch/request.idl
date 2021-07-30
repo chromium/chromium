@@ -51,7 +51,7 @@ enum ReferrerPolicy {
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
     [RaisesException, CallWith=ScriptState, DoNotTestNewObject, NewObject] Request clone();
 
-    [RuntimeEnabled=FetchUploadStreaming] readonly attribute ReadableStream? body;
+    [Affects=Everything, RuntimeEnabled=FetchUploadStreaming] readonly attribute ReadableStream? body;
 };
 
 Request includes Body;

@@ -4756,11 +4756,18 @@ def _make_property_entry_v8_property_attribute(property_):
         return "unsigned({})".format(" | ".join(values))
 
 
-def _make_property_entry_v8_side_effect(property_):
+def _make_property_entry_v8_side_effect(property_,
+                                        is_attribute=False,
+                                        is_operation=False):
+    if property_.extended_attributes.value_of("Affects") == "Everything":
+        return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
     if property_.extended_attributes.value_of("Affects") == "Nothing":
         return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
-    else:
+    if is_attribute:
+        return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
+    if is_operation:
         return "unsigned(v8::SideEffectType::kHasSideEffect)"
+    assert False
 
 
 def _make_property_entry_world(world):
@@ -4814,7 +4821,7 @@ def _make_attribute_registration_table(table_name, attribute_entries):
                 _make_property_entry_cross_origin_check(entry.property_,
                                                         is_set=True)),
             v8_side_effect=_make_property_entry_v8_side_effect(
-                entry.property_),
+                entry.property_, is_attribute=True),
             v8_cached_accessor=_make_property_entry_v8_cached_accessor(
                 entry.property_))
         entry_nodes.append(T(text))
@@ -4983,7 +4990,7 @@ def _make_operation_registration_table(table_name, operation_entries):
             cross_origin_check=_make_property_entry_cross_origin_check(
                 entry.property_),
             v8_side_effect=_make_property_entry_v8_side_effect(
-                entry.property_),
+                entry.property_, is_operation=True),
             v8_cfunction_table=nadc_overload_table_name)
         entry_nodes.append(T(text))
 
@@ -6112,8 +6119,8 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
         flags = ["v8::PropertyHandlerFlags::kOnlyInterceptStrings"]
         if "LegacyOverrideBuiltIns" not in interface.extended_attributes:
             flags.append("v8::PropertyHandlerFlags::kNonMasking")
-        if (props.named_getter.extended_attributes.value_of("Affects") ==
-                "Nothing"):
+        if (props.named_getter.extended_attributes.value_of("Affects") !=
+                "Everything"):
             flags.append("v8::PropertyHandlerFlags::kHasNoSideEffect")
         property_handler_flags = (
             "static_cast<v8::PropertyHandlerFlags>({})".format(" | ".join(
@@ -6171,8 +6178,9 @@ interface.indexed_and_named_properties.named_getter.extended_attributes:
                 props.named_setter and props.named_setter.owner,
                 props.named_deleter and props.named_deleter.owner))
         flags = []
-        if (props.indexed_getter and props.indexed_getter.extended_attributes.
-                value_of("Affects") == "Nothing"):
+        if (props.indexed_getter and
+                props.indexed_getter.extended_attributes.value_of("Affects") !=
+                "Everything"):
             flags.append("v8::PropertyHandlerFlags::kHasNoSideEffect")
         else:
             flags.append("v8::PropertyHandlerFlags::kNone")

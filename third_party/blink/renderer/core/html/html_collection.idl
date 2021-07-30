@@ -25,7 +25,7 @@
     Exposed=Window,
     LegacyUnenumerableNamedProperties
 ] interface HTMLCollection {
-    [Affects=Nothing] readonly attribute unsigned long length;
+    readonly attribute unsigned long length;
     [Affects=Nothing] getter Element? item(unsigned long index);
     getter Element? namedItem(DOMString name);
 };

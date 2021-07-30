@@ -32,7 +32,7 @@
 #
 
 ActiveScriptWrappable
-Affects=Nothing
+Affects=Everything|Nothing
 AllowShared
 CEReactions
 CSSProperty
