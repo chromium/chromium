@@ -7,8 +7,6 @@ source_set("public") {
   sources = [
     "translate_constants.h",
     "translate_constants.mm",
-    "translate_infobar_delegate_observer_bridge.h",
-    "translate_infobar_delegate_observer_bridge.mm",
     "translate_infobar_metrics_recorder.h",
     "translate_infobar_metrics_recorder.mm",
   ]
@@ -25,13 +23,9 @@ source_set("translate") {
     "chrome_ios_translate_client.mm",
     "language_selection_context.h",
     "language_selection_context.mm",
-    "language_selection_delegate.h",
-    "language_selection_handler.h",
     "translate_accept_languages_factory.cc",
     "translate_accept_languages_factory.h",
     "translate_infobar_tags.h",
-    "translate_option_selection_delegate.h",
-    "translate_option_selection_handler.h",
     "translate_ranker_factory.cc",
     "translate_ranker_factory.h",
     "translate_ranker_metrics_provider.cc",
@@ -61,7 +55,6 @@ source_set("translate") {
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/language",
     "//ios/chrome/browser/ui/infobars:feature_flags",
-    "//ios/chrome/browser/ui/translate:translate_ui",
     "//ios/chrome/browser/ui/util",
     "//ios/components/webui:url_constants",
     "//third_party/metrics_proto",
@@ -78,7 +71,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "language_detection_javascript_unittest.mm",
-    "translate_infobar_delegate_observer_bridge_unittest.mm",
     "translate_service_ios_unittest.cc",
   ]
   deps = [

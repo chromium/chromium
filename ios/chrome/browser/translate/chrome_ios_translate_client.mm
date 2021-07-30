@@ -25,12 +25,9 @@
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/language/language_model_manager_factory.h"
-#import "ios/chrome/browser/translate/language_selection_handler.h"
 #include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
-#import "ios/chrome/browser/translate/translate_option_selection_handler.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
-#import "ios/chrome/browser/ui/translate/translate_notification_handler.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/navigation/navigation_item.h"
@@ -154,20 +151,10 @@ bool ChromeIOSTranslateClient::IsAutofillAssistantRunning() const {
   return false;
 }
 
-void ChromeIOSTranslateClient::DidStartLoading(web::WebState* web_state) {
-  [language_selection_handler_ dismissLanguageSelector];
-  [translate_option_selection_handler_ dismissTranslateOptionSelector];
-  [translate_notification_handler_ dismissNotification];
-}
-
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
-
-  [language_selection_handler_ dismissLanguageSelector];
-  [translate_option_selection_handler_ dismissTranslateOptionSelector];
-  [translate_notification_handler_ dismissNotification];
 
   // Translation process can be interrupted.
   // Destroying the TranslateManager now guarantees that it never has to deal
