@@ -3448,6 +3448,7 @@ bool AXObject::SupportsARIAExpanded() const {
     case ax::mojom::blink::Role::kSwitch:
     case ax::mojom::blink::Role::kTab:
     case ax::mojom::blink::Role::kTextFieldWithComboBox:
+    case ax::mojom::blink::Role::kToggleButton:
     case ax::mojom::blink::Role::kTreeItem:
       return true;
     case ax::mojom::blink::Role::kCell:

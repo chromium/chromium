@@ -2823,6 +2823,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("textarea-with-selection.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityToggleButtonExpandCollapse) {
+  RunAriaTest(FILE_PATH_LITERAL("toggle-button-expand-collapse.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTime) {
   RunHtmlTest(FILE_PATH_LITERAL("time.html"));
 }
