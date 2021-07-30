@@ -585,7 +585,6 @@ void VideoEncoderClient::ForceKeyFrameTask() {
 
 void VideoEncoderClient::EncodeDoneTask(base::TimeDelta timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_client_sequence_checker_);
-  DCHECK_NE(VideoEncoderClientState::kIdle, encoder_client_state_);
   DVLOGF(4);
 
   FireEvent(VideoEncoder::EncoderEvent::kFrameReleased);
