@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
   deps = [
     ":bluetooth_dialog.m",
     ":bluetooth_metrics_utils",
+    ":cros_bluetooth_config",
   ]
 }
 
@@ -43,6 +44,10 @@ js_library("bluetooth_dialog.m") {
     "$interfaces_path/bluetooth_private_interface.js",
   ]
   extra_deps = [ ":bluetooth_dialog_module" ]
+}
+
+js_library("cros_bluetooth_config") {
+  deps = [ "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile" ]
 }
 
 polymer_modulizer("bluetooth_dialog") {
