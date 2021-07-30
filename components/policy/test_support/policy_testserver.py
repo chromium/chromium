@@ -48,10 +48,6 @@ Example:
   ],
   "current_key_index": 0,
   "robot_api_auth_code": "",
-   "token_enrollment": {
-      "token": "abcd-ef01-123123123",
-      "username": "admin@example.com"
-   },
    "expected_errors": {
      "register": 500,
    }
@@ -464,18 +460,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     return None
 
-  def CheckEnrollmentToken(self):
-    """Extracts the enrollment token from the request and returns it. The token
-    is GoogleEnrollmentToken token from an Authorization header. Returns None
-    if no token is present.
-    """
-    match = re.match('GoogleEnrollmentToken token=(\\S+)',
-                     self.headers.get('Authorization', ''))
-    if match:
-      return match.group(1)
-
-    return None
-
   def ProcessRegister(self, msg):
     """Handles a register request.
 
@@ -527,25 +511,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         ENTERPRISE_ENROLLMENT_CERTIFICATE:
       return(403, 'Invalid certificate type for registration')
 
-    register_req = req.device_register_request
-    username = None
-
-    if (register_req.flavor == dm.DeviceRegisterRequest.
-        FLAVOR_ENROLLMENT_ATTESTATION_USB_ENROLLMENT):
-      enrollment_token = self.CheckEnrollmentToken()
-      policy = self.server.GetPolicies()
-      if not enrollment_token:
-        return (401, 'Missing enrollment token.')
-
-      if ((not policy['token_enrollment']) or
-              (not policy['token_enrollment']['token']) or
-              (not policy['token_enrollment']['username'])):
-        return (500, 'Error in config - no token-based enrollment')
-      if policy['token_enrollment']['token'] != enrollment_token:
-        return (403, 'Invalid enrollment token')
-      username = policy['token_enrollment']['username']
-
-    return self.RegisterDeviceAndSendResponse(register_req, username)
+    return self.RegisterDeviceAndSendResponse(req.device_register_request, None)
 
   def RegisterDeviceAndSendResponse(self, msg, username):
     """Registers a device and send a response to the client.
