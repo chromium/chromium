@@ -9,7 +9,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -27,17 +26,6 @@ void PCScanScheduler::SetNewSchedulingBackend(
   backend_ = &backend;
 }
 
-void PCScanSchedulingBackend::DisableScheduling() {
-  scheduling_enabled_.store(false, std::memory_order_relaxed);
-}
-
-void PCScanSchedulingBackend::EnableScheduling() {
-  scheduling_enabled_.store(true, std::memory_order_relaxed);
-  // Check if *Scan needs to be run immediately.
-  if (NeedsToImmediatelyScan())
-    PCScan::PerformScan(PCScan::InvocationMode::kNonBlocking);
-}
-
 size_t PCScanSchedulingBackend::ScanStarted() {
   auto& data = GetQuarantineData();
   data.epoch.fetch_add(1, std::memory_order_relaxed);
@@ -52,7 +40,7 @@ TimeDelta PCScanSchedulingBackend::UpdateDelayedSchedule() {
 constexpr double LimitBackend::kQuarantineSizeFraction;
 
 bool LimitBackend::LimitReached() {
-  return is_scheduling_enabled();
+  return true;
 }
 
 void LimitBackend::UpdateScheduleAfterScan(size_t survived_bytes,
@@ -66,10 +54,6 @@ void LimitBackend::UpdateScheduleAfterScan(size_t survived_bytes,
       std::max(QuarantineData::kQuarantineSizeMinLimit,
                static_cast<size_t>(kQuarantineSizeFraction * heap_size)),
       std::memory_order_relaxed);
-}
-
-bool LimitBackend::NeedsToImmediatelyScan() {
-  return false;
 }
 
 // static
@@ -101,21 +85,26 @@ bool MUAwareTaskBasedBackend::LimitReached() {
     data.size_limit.store(hard_limit_, std::memory_order_relaxed);
     hard_limit_ = 0;
 
-    // 2. Unlikely case: If also above hard limit, start scan right away. This
-    // ignores explicit PCScan disabling.
+    // 2. Unlikely case: If also above hard limit, start scan right away.
     if (UNLIKELY(data.current_size.load(std::memory_order_relaxed) >
                  data.size_limit.load(std::memory_order_relaxed))) {
       return true;
     }
 
-    // 3. Check if PCScan was explicitly disabled.
-    if (UNLIKELY(!is_scheduling_enabled())) {
-      return false;
+    // 3. Otherwise, the soft limit would trigger a scan immediately if the
+    // mutator utilization requirement is satisfied.
+    const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
+    if (delay <= TimeDelta()) {
+      // May invoke scan immediately.
+      return true;
     }
 
-    // 4. Finally, check if the mutator utilization requirement is satisfied.
-    // Otherwise, reschedule scan.
-    return CheckIfScanIsNeededOrReschedule();
+    VLOG(3) << "Rescheduling scan with delay: " << delay.InMillisecondsF()
+            << " ms";
+    // 4. If the MU requirement is not satisfied, schedule a delayed scan to the
+    // time instance when MU is satisfied.
+    schedule_delayed_scan_.Run(delay);
+    return false;
   }
   return true;
 }
@@ -153,32 +142,6 @@ void MUAwareTaskBasedBackend::UpdateScheduleAfterScan(
       time_spent_in_scan * kTargetMutatorUtilizationPercent /
       (1.0 - kTargetMutatorUtilizationPercent);
   earliest_next_scan_time_ = base::TimeTicks::Now() + time_required_on_mutator;
-}
-
-bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
-  base::AutoLock guard(scheduler_lock_);
-  // If |hard_limit_| was set to zero, the soft limit was reached. Bail out if
-  // it's not.
-  if (hard_limit_)
-    return false;
-  return CheckIfScanIsNeededOrReschedule();
-}
-
-bool MUAwareTaskBasedBackend::CheckIfScanIsNeededOrReschedule() {
-  // Check if the mutator utilization requirement is satisfied and scan can be
-  // triggered immediately.
-  const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-  if (delay <= TimeDelta()) {
-    // May invoke scan immediately.
-    return true;
-  }
-
-  VLOG(3) << "Rescheduling scan with delay: " << delay.InMillisecondsF()
-          << " ms";
-  // If the MU requirement is not satisfied, schedule a delayed scan to the time
-  // instance when MU is satisfied.
-  schedule_delayed_scan_.Run(delay);
-  return false;
 }
 
 TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {

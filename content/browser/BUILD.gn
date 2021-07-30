@@ -1827,8 +1827,6 @@ source_set("browser") {
     "ssl/ssl_manager.h",
     "ssl_private_key_impl.cc",
     "ssl_private_key_impl.h",
-    "starscan_load_observer.cc",
-    "starscan_load_observer.h",
     "startup_data_impl.cc",
     "startup_data_impl.h",
     "startup_helper.cc",

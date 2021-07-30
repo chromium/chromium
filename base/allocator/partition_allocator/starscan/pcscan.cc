@@ -13,21 +13,6 @@ void PCScan::Initialize(WantedWriteProtectionMode wpmode) {
   PCScanInternal::Instance().Initialize(wpmode);
 }
 
-void PCScan::Disable() {
-  auto& instance = PCScan::Instance();
-  instance.scheduler().scheduling_backend().DisableScheduling();
-}
-
-bool PCScan::IsEnabled() {
-  auto& instance = PCScan::Instance();
-  return instance.scheduler().scheduling_backend().is_scheduling_enabled();
-}
-
-void PCScan::Reenable() {
-  auto& instance = PCScan::Instance();
-  instance.scheduler().scheduling_backend().EnableScheduling();
-}
-
 void PCScan::RegisterScannableRoot(Root* root) {
   PCScanInternal::Instance().RegisterScannableRoot(root);
 }
