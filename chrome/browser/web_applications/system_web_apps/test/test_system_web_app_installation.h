@@ -152,6 +152,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithNewWindowMenuItem();
 
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithShortcuts();
+
   // This creates 4 system web app types for testing context menu with
   // different windowing options:
   //

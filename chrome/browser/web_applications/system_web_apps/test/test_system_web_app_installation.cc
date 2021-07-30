@@ -539,6 +539,36 @@ TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
       new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
+      std::make_unique<UnittestingSystemAppDelegate>(
+          SystemAppType::SHORTCUT_CUSTOMIZATION, "Shortcuts",
+          GURL("chrome://test-system-app/pwa.html"),
+          base::BindLambdaForTesting([]() {
+            std::unique_ptr<WebApplicationInfo> info =
+                GenerateWebApplicationInfoForTestApp();
+            info->title = u"Shortcuts";
+            {
+              WebApplicationShortcutsMenuItemInfo menu_item;
+              menu_item.name = u"One";
+              menu_item.url = GURL("chrome://test-system-app/pwa.html#one");
+              info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
+            }
+            {
+              WebApplicationShortcutsMenuItemInfo menu_item;
+              menu_item.name = u"Two";
+              menu_item.url = GURL("chrome://test-system-app/pwa.html#two");
+              info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
+            }
+            return info;
+          }));
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
+}
+
 namespace {
 enum SystemWebAppWindowConfig {
   SINGLE_WINDOW,

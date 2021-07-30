@@ -43,6 +43,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -61,9 +62,12 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
@@ -1442,6 +1446,66 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAppSuspensionBrowserTest);
 
+class SystemWebAppManagerShortcutTest : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerShortcutTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ = TestSystemWebAppInstallation::SetUpAppWithShortcuts();
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
+  WaitForTestSystemAppInstall();
+  AppId app_id =
+      GetManager()
+          .GetAppIdForSystemApp(SystemAppType::SHORTCUT_CUSTOMIZATION)
+          .value();
+  Browser* browser;
+  EXPECT_TRUE(LaunchApp(SystemAppType::SHORTCUT_CUSTOMIZATION, &browser));
+
+  // Wait for app service to see the newly installed apps.
+  apps::AppServiceProxyFactory::GetForProfile(browser->profile())
+      ->FlushMojoCallsForTesting();
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model;
+  {
+    ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
+    shelf_model->PinAppWithID(app_id);
+    ash::ShelfItemDelegate* const delegate =
+        shelf_model->GetShelfItemDelegate(ash::ShelfID(app_id));
+    base::RunLoop run_loop;
+    delegate->GetContextMenu(
+        display::Display::GetDefaultDisplay().id(),
+        base::BindLambdaForTesting(
+            [&run_loop,
+             &menu_model](std::unique_ptr<ui::SimpleMenuModel> model) {
+              menu_model = std::move(model);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
+  auto check_shortcut = [&menu_model](int index, int shortcut_index,
+                                      const std::u16string& label) {
+    EXPECT_EQ(menu_model->GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
+    EXPECT_EQ(menu_model->GetCommandIdAt(index),
+              ash::LAUNCH_APP_SHORTCUT_FIRST + shortcut_index);
+    EXPECT_EQ(menu_model->GetLabelAt(index), label);
+  };
+
+  // Shortcuts appear last in the context menu.
+  check_shortcut(menu_model->GetItemCount() - 3, 0, u"One");
+  // menu_model->GetItemCount() - 2 is used by a separator
+  check_shortcut(menu_model->GetItemCount() - 1, 1, u"Two");
+
+  const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + 1;
+  ui_test_utils::UrlLoadObserver url_observer(
+      GURL("chrome://test-system-app/pwa.html#two"),
+      content::NotificationService::AllSources());
+  menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id),
+                          ui::EF_LEFT_MOUSE_BUTTON);
+  url_observer.Wait();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SystemWebAppManagerBackgroundTaskTest
@@ -1683,6 +1747,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerInstallAllAppsBrowserTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerShortcutTest);
 #endif
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
