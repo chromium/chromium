@@ -25,18 +25,15 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
   return result;
 }
 
-void ClipToVisibilityLimit(const PropertyTreeState& state, FloatRect& rect) {
-  // Clip the bounds to remove the parts that will be never visible.
-  if (&state.Clip().LocalTransformSpace() == &state.Transform()) {
-    // Limit the layer bounds to hide the areas that will be never visible
-    // because of the clip.
-    rect.Intersect(state.Clip().PixelSnappedClipRect().Rect());
-  } else if (const auto* scroll = state.Transform().ScrollNode()) {
-    // Limit the bounds to the scroll range to hide the areas that will never be
-    // scrolled into the visible area.
-    rect.Intersect(FloatRect(
-        IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize())));
+// When possible, provides a clip rect that limits the visibility.
+absl::optional<FloatRect> VisibilityLimit(const PropertyTreeState& state) {
+  if (&state.Clip().LocalTransformSpace() == &state.Transform())
+    return state.Clip().PixelSnappedClipRect().Rect();
+  if (const auto* scroll = state.Transform().ScrollNode()) {
+    return FloatRect(
+        IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize()));
   }
+  return absl::nullopt;
 }
 
 bool IsCompositedScrollHitTest(const PaintChunk& chunk) {
@@ -79,7 +76,10 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
-  ClipToVisibilityLimit(property_tree_state_, bounds_);
+  if (const absl::optional<FloatRect>& visibility_limit =
+          VisibilityLimit(property_tree_state_)) {
+    bounds_.Intersect(*visibility_limit);
+  }
 
   if (IsCompositedScrollHitTest(first_chunk)) {
     compositing_type_ = kScrollHitTestLayer;
@@ -217,14 +217,39 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (!merged_state)
     return false;
 
+  const absl::optional<FloatRect>& merged_visibility_limit =
+      VisibilityLimit(*merged_state);
+
+  // If the current bounds and known-to-be-opaque area already cover the entire
+  // visible area of the merged state, and the current state is already equal
+  // to the merged state, we can merge the guest immediately without needing to
+  // update any bounds at all. This simple merge fast-path avoids the cost of
+  // mapping the visual rects, below.
+  if (merged_visibility_limit && *merged_visibility_limit == bounds_ &&
+      merged_state == property_tree_state_ &&
+      rect_known_to_be_opaque_.Contains(bounds_)) {
+    if (!dry_run) {
+      chunks_.Merge(guest.Chunks());
+      text_known_to_be_on_opaque_background_ = true;
+      has_text_ |= guest.has_text_;
+      change_of_decomposited_transforms_ =
+          std::max(ChangeOfDecompositedTransforms(),
+                   guest.ChangeOfDecompositedTransforms());
+    }
+    return true;
+  }
+
   FloatClipRect new_home_bounds(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
                                             *merged_state, new_home_bounds);
-  ClipToVisibilityLimit(*merged_state, new_home_bounds.Rect());
+  if (merged_visibility_limit)
+    new_home_bounds.Rect().Intersect(*merged_visibility_limit);
+
   FloatClipRect new_guest_bounds(guest.bounds_);
   GeometryMapper::LocalToAncestorVisualRect(guest_state, *merged_state,
                                             new_guest_bounds);
-  ClipToVisibilityLimit(*merged_state, new_guest_bounds.Rect());
+  if (merged_visibility_limit)
+    new_guest_bounds.Rect().Intersect(*merged_visibility_limit);
 
   FloatRect merged_bounds =
       UnionRect(new_home_bounds.Rect(), new_guest_bounds.Rect());
