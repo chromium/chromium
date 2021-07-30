@@ -15,9 +15,14 @@
 // Protocol for commands arounds Bookmarks manipulation.
 @protocol BookmarksCommands <NSObject>
 
-// Bookmarks the page detailed in |command|'s data unless it's already
-// bookmarked, in that case the "edit bookmark" flow will be triggered.
-- (void)bookmarkPage:(BookmarkAddCommand*)command;
+// Adds bookmarks for the given list of URLs in |command|.
+// If there are multiple URLs provided:
+// - the user will be prompted to choose a location to store the bookmarks.
+// If a single URL is provided:
+// - and it is already bookmarked, the "edit bookmark" flow will begin.
+// - which is not already bookmarked, it will be bookmarked automatically and an
+//   "Edit" button will be provided in the displayed snackbar message.
+- (void)bookmark:(BookmarkAddCommand*)command;
 
 @end
 

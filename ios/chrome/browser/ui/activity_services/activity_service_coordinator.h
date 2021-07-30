@@ -39,9 +39,7 @@ class Browser;
     presentationProvider;
 
 // Handler for activities that need to be executed within a certain scope.
-@property(nonatomic, readwrite, weak)
-    id<BookmarksCommands, QRGenerationCommands>
-        scopedHandler;
+@property(nonatomic, readwrite, weak) id<QRGenerationCommands> scopedHandler;
 
 @end
 

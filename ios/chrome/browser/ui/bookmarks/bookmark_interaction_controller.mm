@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_edit_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller_delegate.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
@@ -64,13 +66,15 @@ enum class PresentedState {
   BOOKMARK_BROWSER,
   BOOKMARK_EDITOR,
   FOLDER_EDITOR,
+  FOLDER_SELECTION,
 };
 
 }  // namespace
 
-@interface BookmarkInteractionController ()<
+@interface BookmarkInteractionController () <
     BookmarkEditViewControllerDelegate,
     BookmarkFolderEditorViewControllerDelegate,
+    BookmarkFolderViewControllerDelegate,
     BookmarkHomeViewControllerDelegate,
     TableViewPresentationControllerDelegate> {
   // The browser bookmarks are presented in.
@@ -117,6 +121,13 @@ enum class PresentedState {
 // A reference to the potentially presented folder editor. This will be non-nil
 // when |currentPresentedState| is FOLDER_EDITOR.
 @property(nonatomic, strong) BookmarkFolderEditorViewController* folderEditor;
+
+// A reference to the potentially presented folder selector. This will be
+// non-nil when |currentPresentedState| is FOLDER_SELECTION.
+@property(nonatomic, strong) BookmarkFolderViewController* folderSelector;
+
+@property(nonatomic, copy) void (^folderSelectionCompletionBlock)
+    (const bookmarks::BookmarkNode*);
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
@@ -246,6 +257,30 @@ enum class PresentedState {
   [self presentTableViewController:self.bookmarkBrowser
       withReplacementViewControllers:replacementViewControllers];
   self.currentPresentedState = PresentedState::BOOKMARK_BROWSER;
+}
+
+- (void)presentFolderPickerWithCompletion:
+    (void (^)(const bookmarks::BookmarkNode*))block {
+  DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
+  DCHECK(block);
+
+  [self dismissSnackbar];
+
+  self.currentPresentedState = PresentedState::FOLDER_SELECTION;
+  self.folderSelectionCompletionBlock = [block copy];
+
+  std::set<const BookmarkNode*> editedNodes;
+  self.folderSelector = [[BookmarkFolderViewController alloc]
+      initWithBookmarkModel:self.bookmarkModel
+           allowsNewFolders:YES
+                editedNodes:editedNodes
+               allowsCancel:YES
+             selectedFolder:nil
+                    browser:_browser];
+  self.folderSelector.delegate = self;
+
+  [self presentTableViewController:self.folderSelector
+      withReplacementViewControllers:nil];
 }
 
 - (void)presentEditorForNode:(const bookmarks::BookmarkNode*)node {
@@ -381,6 +416,22 @@ enum class PresentedState {
   self.currentPresentedState = PresentedState::NONE;
 }
 
+- (void)dismissFolderSelectionAnimated:(BOOL)animated {
+  if (self.currentPresentedState != PresentedState::FOLDER_SELECTION)
+    return;
+  DCHECK(self.bookmarkNavigationController);
+
+  [self.bookmarkNavigationController
+      dismissViewControllerAnimated:animated
+                         completion:^{
+                           self.folderSelector.delegate = nil;
+                           self.folderSelector = nil;
+                           self.bookmarkNavigationController = nil;
+                           self.bookmarkTransitioningDelegate = nil;
+                         }];
+  self.currentPresentedState = PresentedState::NONE;
+}
+
 - (void)dismissBookmarkModalControllerAnimated:(BOOL)animated {
   // No urls to open.  So it does not care about inIncognito and newTab.
   [self dismissBookmarkBrowserAnimated:animated
@@ -434,6 +485,25 @@ enum class PresentedState {
 - (void)bookmarkFolderEditorWillCommitTitleChange:
     (BookmarkFolderEditorViewController*)controller {
   [self.delegate bookmarkInteractionControllerWillCommitTitleOrUrlChange:self];
+}
+
+#pragma mark - BookmarkFolderViewControllerDelegate
+
+- (void)folderPicker:(BookmarkFolderViewController*)folderPicker
+    didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
+  [self dismissFolderSelectionAnimated:YES];
+
+  if (self.folderSelectionCompletionBlock) {
+    self.folderSelectionCompletionBlock(folder);
+  }
+}
+
+- (void)folderPickerDidCancel:(BookmarkFolderViewController*)folderPicker {
+  [self dismissFolderSelectionAnimated:YES];
+}
+
+- (void)folderPickerDidDismiss:(BookmarkFolderViewController*)folderPicker {
+  [self dismissFolderSelectionAnimated:YES];
 }
 
 #pragma mark - BookmarkHomeViewControllerDelegate
@@ -516,6 +586,31 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
 - (void)presentationControllerWillDismiss:
     (TableViewPresentationController*)controller {
   [self dismissBookmarkModalControllerAnimated:YES];
+}
+
+#pragma mark - BookmarksCommands
+
+- (void)bookmark:(BookmarkAddCommand*)command {
+  if (!self.bookmarkModel->loaded())
+    return;
+
+  if (command.URLs.count == 1) {
+    URLWithTitle* URLWithTitle = command.URLs.firstObject;
+    DCHECK(URLWithTitle);
+    [self bookmarkURL:URLWithTitle.URL title:URLWithTitle.title];
+    return;
+  }
+
+  __weak BookmarkInteractionController* weakSelf = self;
+  [self presentFolderPickerWithCompletion:^(
+            const bookmarks::BookmarkNode* folder) {
+    BookmarkInteractionController* strongSelf = weakSelf;
+    if (folder && strongSelf) {
+      [strongSelf.handler
+          showSnackbarMessage:[strongSelf.mediator addBookmarks:command.URLs
+                                                       toFolder:folder]];
+    }
+  }];
 }
 
 #pragma mark - Private

@@ -32,7 +32,10 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
@@ -736,13 +739,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     return;
   }
 
-  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
-  for (NSString* itemIdentifier in items) {
-    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
-    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
-                                                    title:item.title];
-    [URLs addObject:URL];
-  }
+  NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
 
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURLs:URLs];
@@ -750,7 +747,28 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)addItemsToBookmarks:(NSArray<NSString*>*)items {
-  // TODO(crbug.com/1196906): Implement add items to bookmarks.
+  id<BookmarksCommands> bookmarkHandler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), BookmarksCommands);
+
+  if (!bookmarkHandler) {
+    return;
+  }
+
+  NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
+
+  BookmarkAddCommand* command = [[BookmarkAddCommand alloc] initWithURLs:URLs];
+  [bookmarkHandler bookmark:command];
+}
+
+- (NSArray<URLWithTitle*>*)urlsWithTitleFromItemIDs:(NSArray<NSString*>*)items {
+  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
+  for (NSString* itemIdentifier in items) {
+    GridItem* item = [self gridItemForCellIdentifier:itemIdentifier];
+    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
+                                                    title:item.title];
+    [URLs addObject:URL];
+  }
+  return URLs;
 }
 
 @end

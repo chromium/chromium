@@ -10,6 +10,9 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_clock_override.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
@@ -94,6 +97,11 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_->CreateBookmarkModel(true);
+
+    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
+        chrome_browser_state_.get());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
@@ -139,6 +147,10 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+
+  // Model for bookmarks.
+  bookmarks::BookmarkModel* bookmark_model_;
+
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;
 

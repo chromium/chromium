@@ -38,7 +38,7 @@ class GURL;
 - (void)closeCurrentTab;
 
 // Bookmarks the current page.
-// TODO(crbug.com/1134586): Reuse BookmarksCommands' bookmarkPage instead.
+// TODO(crbug.com/1134586): Reuse BookmarksCommands' bookmark instead.
 - (void)bookmarkCurrentPage;
 
 // Adds a page to the reading list using data in |command|.

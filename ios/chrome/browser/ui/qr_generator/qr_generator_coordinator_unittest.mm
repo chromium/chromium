@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -38,6 +39,11 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
   void SetUp() override {
     mock_qr_generation_commands_handler_ =
         OCMStrictProtocolMock(@protocol(QRGenerationCommands));
+
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(
+                                     @protocol(BookmarksCommands))
+                     forProtocol:@protocol(BookmarksCommands)];
 
     test_title_ = @"Does not matter";
 

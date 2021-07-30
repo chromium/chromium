@@ -19,7 +19,7 @@ class GURL;
                       title:(NSString*)title NS_DESIGNATED_INITIALIZER;
 
 // Initializes a command object with multiple pages |UrlWithTitle|.
-- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URL
+- (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
