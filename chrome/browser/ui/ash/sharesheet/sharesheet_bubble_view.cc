@@ -445,10 +445,9 @@ void SharesheetBubbleView::ResizeBubble(const int& width, const int& height) {
 }
 
 // CloseBubble is called from a ShareAction or after an app launches.
-void SharesheetBubbleView::CloseBubble() {
+void SharesheetBubbleView::CloseBubble(views::Widget::ClosedReason reason) {
   if (!is_bubble_closing_) {
-    CloseWidgetWithAnimateFadeOut(
-        views::Widget::ClosedReason::kAcceptButtonClicked);
+    CloseWidgetWithAnimateFadeOut(reason);
   }
 }
 
@@ -702,7 +701,7 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
 
   is_bubble_closing_ = true;
   if (close_callback_) {
-    std::move(close_callback_).Run();
+    std::move(close_callback_).Run(closed_reason);
   }
   ui::Layer* layer = View::GetWidget()->GetLayer();
 

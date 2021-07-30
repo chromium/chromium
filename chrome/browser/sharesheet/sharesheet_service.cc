@@ -79,11 +79,12 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
       std::move(delivered_callback), std::move(close_callback));
 }
 
-void SharesheetService::CloseBubble(gfx::NativeWindow native_window) {
+void SharesheetService::CloseBubble(gfx::NativeWindow native_window,
+                                    SharesheetResult result) {
   SharesheetServiceDelegate* delegate = GetDelegate(native_window);
   if (delegate == nullptr)
     return;
-  delegate->CloseSharesheet();
+  delegate->CloseSharesheet(result);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -149,7 +150,7 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
     share_action->LaunchAction(delegate, share_action_view, std::move(intent));
   } else if (type == TargetType::kArcApp || type == TargetType::kWebApp) {
     LaunchApp(target_name, std::move(intent));
-    delegate->CloseSharesheet();
+    delegate->CloseSharesheet(SharesheetResult::kSuccess);
   }
 }
 
@@ -311,9 +312,6 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
     }
 
     std::move(delivered_callback).Run(result);
-    // Can be null in tests.
-    if (close_callback)
-      std::move(close_callback).Run();
     delegate->OnBubbleClosed(/*active_action=*/std::u16string());
     return;
   }

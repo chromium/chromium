@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace sharesheet {
@@ -30,7 +31,7 @@ void CrosSharesheetServiceDelegate::ShowBubble(
           .Run(::sharesheet::SharesheetResult::kErrorAlreadyOpen);
     }
     if (close_callback) {
-      std::move(close_callback).Run();
+      std::move(close_callback).Run(views::Widget::ClosedReason::kUnspecified);
     }
     return;
   }
@@ -49,7 +50,7 @@ void CrosSharesheetServiceDelegate::ShowNearbyShareBubble(
           .Run(::sharesheet::SharesheetResult::kErrorAlreadyOpen);
     }
     if (close_callback) {
-      std::move(close_callback).Run();
+      std::move(close_callback).Run(views::Widget::ClosedReason::kUnspecified);
     }
     return;
   }
@@ -68,8 +69,18 @@ void CrosSharesheetServiceDelegate::SetSharesheetSize(int width, int height) {
   sharesheet_bubble_view_->ResizeBubble(width, height);
 }
 
-void CrosSharesheetServiceDelegate::CloseSharesheet() {
-  sharesheet_bubble_view_->CloseBubble();
+void CrosSharesheetServiceDelegate::CloseSharesheet(
+    ::sharesheet::SharesheetResult result) {
+  views::Widget::ClosedReason reason =
+      views::Widget::ClosedReason::kUnspecified;
+
+  if (result == ::sharesheet::SharesheetResult::kSuccess) {
+    reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+  } else if (result == ::sharesheet::SharesheetResult::kCancel) {
+    reason = views::Widget::ClosedReason::kCancelButtonClicked;
+  }
+
+  sharesheet_bubble_view_->CloseBubble(reason);
 }
 
 bool CrosSharesheetServiceDelegate::IsBubbleVisible() const {

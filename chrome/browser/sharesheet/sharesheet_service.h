@@ -73,10 +73,10 @@ class SharesheetService : public KeyedService {
                   SharesheetMetrics::LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
-  // Closes the sharesheet dialog (aka bubble) for the given |native_window|. If
-  // the |native_window| is null or if it's not showing the sharesheet dialog,
-  // this function is a no-op.
-  void CloseBubble(gfx::NativeWindow native_window);
+  // Closes the sharesheet dialog (aka bubble) for the given |native_window|
+  // with result. If the |native_window| is null or if it's not showing the
+  // sharesheet dialog, this function is a no-op.
+  void CloseBubble(gfx::NativeWindow native_window, SharesheetResult result);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
   // NearbyShare bubble dialog.

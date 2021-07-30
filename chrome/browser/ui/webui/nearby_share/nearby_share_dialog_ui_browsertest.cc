@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -22,7 +23,10 @@ class TestSharesheetController : public sharesheet::SharesheetController {
   // sharesheet::SharesheetController
   Profile* GetProfile() override { return nullptr; }
   void SetSharesheetSize(int width, int height) override {}
-  void CloseSharesheet() override { close_called = true; }
+  void CloseSharesheet(::sharesheet::SharesheetResult result) override {
+    if (result == ::sharesheet::SharesheetResult::kCancel)
+      close_called = true;
+  }
 
   bool close_called = false;
 };

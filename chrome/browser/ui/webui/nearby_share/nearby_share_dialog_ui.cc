@@ -63,6 +63,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   RegisterNearbySharedStrings(html_source);
   html_source->UseStringsJs();
 
+  // Register callback to handle "cancel-button-event" from nearby_*.html files.
   web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&NearbyShareDialogUI::HandleClose,
                                    base::Unretained(this)));
@@ -114,10 +115,11 @@ void NearbyShareDialogUI::BindInterface(
 
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
   if (sharesheet_controller_) {
-    sharesheet_controller_->CloseSharesheet();
+    sharesheet_controller_->CloseSharesheet(
+        sharesheet::SharesheetResult::kCancel);
 
     // We need to clear out the controller here to protect against calling
-    // CloseShareSheet() more than once, which will cause a crash.
+    // CloseSharesheet() more than once, which will cause a crash.
     sharesheet_controller_ = nullptr;
   }
 }

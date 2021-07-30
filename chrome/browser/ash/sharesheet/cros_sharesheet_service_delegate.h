@@ -44,7 +44,7 @@ class CrosSharesheetServiceDelegate
 
   // ::sharesheet::SharesheetController overrides:
   void SetSharesheetSize(int width, int height) override;
-  void CloseSharesheet() override;
+  void CloseSharesheet(::sharesheet::SharesheetResult result) override;
 
  private:
   bool IsBubbleVisible() const;

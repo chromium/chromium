@@ -213,7 +213,8 @@ void SharingHubBubbleController::OnShareDelivered(
   LogCrOSSharesheetResult(result);
 }
 
-void SharingHubBubbleController::OnSharesheetClosed() {
+void SharingHubBubbleController::OnSharesheetClosed(
+    views::Widget::ClosedReason reason) {
   // Deselect the omnibox icon now that the sharesheet is closed.
   views::Button* button =
       views::Button::AsButton(highlighted_button_tracker_.view());
