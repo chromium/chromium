@@ -378,6 +378,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
 
+  _inFullScreenTransition = NO;
   if (oldWindow) {
     NSArray* notificationsToRemove = @[
       NSWindowDidChangeOcclusionStateNotification,
