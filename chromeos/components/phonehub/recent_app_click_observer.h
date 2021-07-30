@@ -6,7 +6,6 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_RECENT_APP_CLICK_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "chromeos/components/phonehub/notification.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -18,7 +17,7 @@ class RecentAppClickObserver : public base::CheckedObserver {
   // Called when the user clicks the recent app which has an open
   // action in the PhoneHub.
   virtual void OnRecentAppClicked(
-      const Notification::AppMetadata& app_metadata) = 0;
+      const std::string& recent_app_package_name) = 0;
 };
 
 }  // namespace phonehub

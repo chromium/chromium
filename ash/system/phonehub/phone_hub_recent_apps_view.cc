@@ -14,6 +14,7 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/cxx17_backports.h"
+#include "chromeos/components/phonehub/notification.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -60,7 +61,10 @@ class HeaderView : public views::Label {
 
 }  // namespace
 
-PhoneHubRecentAppsView::PhoneHubRecentAppsView() {
+PhoneHubRecentAppsView::PhoneHubRecentAppsView(
+    chromeos::phonehub::RecentAppsInteractionHandler*
+        recent_apps_interaction_handler)
+    : recent_apps_interaction_handler_(recent_apps_interaction_handler) {
   SetID(PhoneHubViewID::kPhoneHubRecentAppsView);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
@@ -69,10 +73,6 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView() {
   AddChildView(std::make_unique<HeaderView>());
   recent_app_buttons_view_ =
       AddChildView(std::make_unique<RecentAppButtonsView>());
-
-  // TODO(paulzchen): Add recent apps button using real data from phone.
-  recent_app_button_list_.push_back(
-      std::make_unique<PhoneHubRecentAppButton>());
 
   Update();
 }
@@ -146,15 +146,26 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
 
 void PhoneHubRecentAppsView::Update() {
   recent_app_buttons_view_->Reset();
+  recent_app_button_list_.clear();
 
-  if (recent_app_button_list_.empty()) {
+  std::vector<chromeos::phonehub::Notification::AppMetadata> recent_apps_list =
+      recent_apps_interaction_handler_->FetchRecentAppMetadataList();
+  if (recent_apps_list.empty()) {
     SetVisible(false);
     return;
   }
 
-  // TODO(paulzchen): Add recent apps button using real data from phone.
-  for (auto& recent_app_button : recent_app_button_list_)
-    recent_app_buttons_view_->AddRecentAppButton(recent_app_button.get());
+  for (const auto& recent_app : recent_apps_list) {
+    auto pressed_callback =
+        base::BindRepeating(&chromeos::phonehub::RecentAppsInteractionHandler::
+                                NotifyRecentAppClicked,
+                            base::Unretained(recent_apps_interaction_handler_),
+                            recent_app.package_name);
+    recent_app_button_list_.push_back(std::make_unique<PhoneHubRecentAppButton>(
+        recent_app.icon, pressed_callback));
+    recent_app_buttons_view_->AddRecentAppButton(
+        recent_app_button_list_.back().get());
+  }
 
   PreferredSizeChanged();
   SetVisible(true);

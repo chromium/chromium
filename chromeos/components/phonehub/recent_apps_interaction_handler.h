@@ -25,16 +25,21 @@ class RecentAppsInteractionHandler {
       delete;
   virtual ~RecentAppsInteractionHandler();
 
-  // Called by RecentAppButton to notify the click event.
-  // TODO(paulzchen): The |PhoneHubRecentAppButton| notify the button be clicked
-  // and the other SWA can interaction with this event.
-  virtual void NotifyRecentAppClicked(
-      const Notification::AppMetadata& app_metadata);
+  virtual void NotifyRecentAppClicked(const std::string& package_name);
   virtual void AddRecentAppClickObserver(RecentAppClickObserver* observer);
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
 
+  virtual void NotifyRecentAppAddedOrUpdated(
+      const Notification::AppMetadata& app_metadata,
+      base::Time last_accessed_timestamp);
+  virtual std::vector<Notification::AppMetadata> FetchRecentAppMetadataList();
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(RecentAppsInteractionHandlerTest, RecentAppsUpdated);
+
   base::ObserverList<RecentAppClickObserver> observer_list_;
+  std::vector<std::pair<Notification::AppMetadata, base::Time>>
+      recent_app_metadata_list_;
 };
 
 }  // namespace phonehub

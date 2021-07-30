@@ -6,6 +6,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -19,10 +20,13 @@ constexpr int kRecentAppButtonSize = 32;
 
 }  // namespace
 
-PhoneHubRecentAppButton::PhoneHubRecentAppButton()
-    : views::ImageButton(
-          base::BindRepeating(&PhoneHubRecentAppButton::ButtonPressed,
-                              base::Unretained(this))) {
+PhoneHubRecentAppButton::PhoneHubRecentAppButton(const gfx::Image& icon,
+                                                 PressedCallback callback)
+    : views::ImageButton(callback) {
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::ImageSkiaOperations::CreateResizedImage(
+               icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+               gfx::Size(kRecentAppButtonSize, kRecentAppButtonSize)));
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   TrayPopupUtils::ConfigureTrayPopupButton(this);
@@ -55,10 +59,6 @@ void PhoneHubRecentAppButton::OnThemeChanged() {
 
 const char* PhoneHubRecentAppButton::GetClassName() const {
   return "PhoneHubRecentAppButton";
-}
-
-void PhoneHubRecentAppButton::ButtonPressed() {
-  // TODO(paulzchen): Launch the recent apps with package name.
 }
 
 }  // namespace ash

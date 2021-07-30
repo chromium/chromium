@@ -6,15 +6,19 @@
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_RECENT_APP_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "chromeos/components/phonehub/recent_apps_interaction_handler.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
-// A recent app button containing an |AppMetadata|.
+// A recent app button containing a application |icon|. The |callback| provided
+// to build PhoneHubRecentAppButton implicitly contains the package name of the
+// same application.
 class ASH_EXPORT PhoneHubRecentAppButton : public views::ImageButton {
  public:
-  PhoneHubRecentAppButton();
+  PhoneHubRecentAppButton(const gfx::Image& icon, PressedCallback callback);
   ~PhoneHubRecentAppButton() override;
   PhoneHubRecentAppButton(PhoneHubRecentAppButton&) = delete;
   PhoneHubRecentAppButton operator=(PhoneHubRecentAppButton&) = delete;
@@ -26,9 +30,6 @@ class ASH_EXPORT PhoneHubRecentAppButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
-
- private:
-  void ButtonPressed();
 };
 
 }  // namespace ash

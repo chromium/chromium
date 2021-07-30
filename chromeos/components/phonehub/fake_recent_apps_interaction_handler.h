@@ -22,8 +22,8 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
       const FakeRecentAppsInteractionHandler&) = delete;
   ~FakeRecentAppsInteractionHandler() override;
 
-  size_t handled_recent_apps_count() const {
-    return handled_recent_apps_count_;
+  size_t HandledRecentAppsCount(const std::string& package_name) const {
+    return package_name_to_click_count_.at(package_name);
   }
 
   size_t recent_app_click_observer_count() const {
@@ -31,13 +31,20 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   }
 
   void NotifyRecentAppClicked(
-      const Notification::AppMetadata& app_metadata) override;
+      const std::string& recent_app_package_name) override;
   void AddRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void RemoveRecentAppClickObserver(RecentAppClickObserver* observer) override;
+  void NotifyRecentAppAddedOrUpdated(
+      const Notification::AppMetadata& app_metadata,
+      base::Time last_accessed_timestamp) override;
+  std::vector<Notification::AppMetadata> FetchRecentAppMetadataList() override;
 
  private:
-  size_t handled_recent_apps_count_ = 0;
   size_t recent_app_click_observer_count_ = 0;
+
+  std::vector<std::pair<Notification::AppMetadata, base::Time>>
+      recent_apps_metadata_;
+  std::map<std::string, size_t> package_name_to_click_count_;
 };
 
 }  // namespace phonehub
