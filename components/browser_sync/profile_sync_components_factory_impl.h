@@ -27,7 +27,7 @@ class AutofillWebDataService;
 }
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }
 
 namespace sync_bookmarks {
@@ -50,9 +50,9 @@ class ProfileSyncComponentsFactoryImpl
           web_data_service_on_disk,
       const scoped_refptr<autofill::AutofillWebDataService>&
           web_data_service_in_memory,
-      const scoped_refptr<password_manager::PasswordStore>&
+      const scoped_refptr<password_manager::PasswordStoreInterface>&
           profile_password_store,
-      const scoped_refptr<password_manager::PasswordStore>&
+      const scoped_refptr<password_manager::PasswordStoreInterface>&
           account_password_store,
       sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
   ProfileSyncComponentsFactoryImpl(const ProfileSyncComponentsFactoryImpl&) =
@@ -123,8 +123,10 @@ class ProfileSyncComponentsFactoryImpl
       web_data_service_on_disk_;
   const scoped_refptr<autofill::AutofillWebDataService>
       web_data_service_in_memory_;
-  const scoped_refptr<password_manager::PasswordStore> profile_password_store_;
-  const scoped_refptr<password_manager::PasswordStore> account_password_store_;
+  const scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
   sync_bookmarks::BookmarkSyncService* const bookmark_sync_service_;
 };
 
