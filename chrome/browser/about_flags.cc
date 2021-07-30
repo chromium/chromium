@@ -7715,6 +7715,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kMultiProfileAccountConsistency)},
 #endif
 
+    {"enable-drdc", flag_descriptions::kEnableDrDcName,
+     flag_descriptions::kEnableDrDcDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kEnableDrDc)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
