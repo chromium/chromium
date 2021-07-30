@@ -175,6 +175,11 @@ SearchPermissionsService::SearchPermissionsService(Profile* profile)
 bool SearchPermissionsService::IsPermissionControlledByDSE(
     ContentSettingsType type,
     const url::Origin& requesting_origin) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kRevertDSEAutomaticPermissions)) {
+    return false;
+  }
+
   if (type != ContentSettingsType::GEOLOCATION &&
       type != ContentSettingsType::NOTIFICATIONS) {
     return false;
