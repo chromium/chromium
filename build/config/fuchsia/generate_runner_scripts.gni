@@ -218,9 +218,9 @@ template("fuchsia_package_runner") {
   }
 
   # Produces a script which installs a package and its dependencies into the
-  # Amber repository of a pre-existing Fuchsia build directory.
+  # package repository of a pre-existing Fuchsia build directory.
   generate_wrapper(_generate_installer_target) {
-    executable = rebase_path("//build/fuchsia/deploy_to_amber_repo.py")
+    executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
     wrapper_script = generated_install_pkg_script_path
 
     data_deps = [ invoker.package ]

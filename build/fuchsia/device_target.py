@@ -4,10 +4,10 @@
 
 """Implements commands for running and interacting with Fuchsia on devices."""
 
-import amber_repo
 import boot_data
 import logging
 import os
+import pkg_repo
 import re
 import subprocess
 import target
@@ -85,7 +85,7 @@ class DeviceTarget(target.Target):
     self._fuchsia_out_dir = None
     self._node_name = node_name
     self._os_check = os_check
-    self._amber_repo = None
+    self._pkg_repo = None
 
     if self._host and self._node_name:
       raise Exception('Only one of "--host" or "--name" can be specified.')
@@ -201,18 +201,18 @@ class DeviceTarget(target.Target):
     else:
       self._ProvisionDeviceIfNecessary()
 
-  def GetAmberRepo(self):
-    if not self._amber_repo:
+  def GetPkgRepo(self):
+    if not self._pkg_repo:
       if self._fuchsia_out_dir:
         # Deploy to an already-booted device running a local Fuchsia build.
-        self._amber_repo = amber_repo.ExternalAmberRepo(
+        self._pkg_repo = pkg_repo.ExternalPkgRepo(
             os.path.join(self._fuchsia_out_dir, 'amber-files'))
       else:
-        # Create an ephemeral Amber repo, then start both "pm serve" as well as
+        # Create an ephemeral package repository, then start both "pm serve" as well as
         # the bootserver.
-        self._amber_repo = amber_repo.ManagedAmberRepo(self)
+        self._pkg_repo = pkg_repo.ManagedPkgRepo(self)
 
-    return self._amber_repo
+    return self._pkg_repo
 
   def _ParseNodename(self, output):
     # Parse the nodename from bootserver stdout.

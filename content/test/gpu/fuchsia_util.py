@@ -77,8 +77,8 @@ def RunTestOnFuchsiaDevice(script_cmd):
           listener_process.stdout, open(runner_script_args.system_log_file,
                                         'w'), build_ids_paths)
 
-      # Keep the Amber repository live while the test runs.
-      with target.GetAmberRepo():
+      # Keep the package repository live while the test runs.
+      with target.GetPkgRepo():
         # Install necessary packages on the device.
         far_files = map(
             lambda package_name: os.path.join(web_engine_dir, package_name,

@@ -4,7 +4,7 @@
 
 """Implements commands for running/interacting with Fuchsia on an emulator."""
 
-import amber_repo
+import pkg_repo
 import boot_data
 import logging
 import os
@@ -25,7 +25,7 @@ class EmuTarget(target.Target):
     super(EmuTarget, self).__init__(out_dir, target_cpu)
     self._emu_process = None
     self._system_log_file = system_log_file
-    self._amber_repo = None
+    self._pkg_repo = None
 
   def __enter__(self):
     return self
@@ -83,11 +83,11 @@ class EmuTarget(target.Target):
                      open(temporary_log_file.name, 'r').read())
       raise
 
-  def GetAmberRepo(self):
-    if not self._amber_repo:
-      self._amber_repo = amber_repo.ManagedAmberRepo(self)
+  def GetPkgRepo(self):
+    if not self._pkg_repo:
+      self._pkg_repo = pkg_repo.ManagedPkgRepo(self)
 
-    return self._amber_repo
+    return self._pkg_repo
 
   def Shutdown(self):
     if not self._emu_process:

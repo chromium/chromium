@@ -18,8 +18,8 @@ _SHUTDOWN_CMD = ['dm', 'poweroff']
 _ATTACH_RETRY_INTERVAL = 1
 _ATTACH_RETRY_SECONDS = 120
 
-# Amount of time to wait for Amber to complete package installation, as a
-# mitigation against hangs due to amber/network-related failures.
+# Amount of time to wait for a complete package installation, as a
+# mitigation against hangs due to pkg/network-related failures.
 _INSTALL_TIMEOUT_SECS = 10 * 60
 
 
@@ -271,11 +271,11 @@ class Target(object):
   def _GetSshConfigPath(self, path):
     raise NotImplementedError()
 
-  def GetAmberRepo(self):
-    """Returns an AmberRepo instance which serves packages for this Target.
-    Callers should typically call GetAmberRepo() in a |with| statement, and
+  def GetPkgRepo(self):
+    """Returns an PkgRepo instance which serves packages for this Target.
+    Callers should typically call GetPkgRepo() in a |with| statement, and
     install and execute commands inside the |with| block, so that the returned
-    AmberRepo can teardown correctly, if necessary.
+    PkgRepo can teardown correctly, if necessary.
     """
     raise NotImplementedError()
 
@@ -285,10 +285,10 @@ class Target(object):
 
     package_paths: Paths to the .far files to install.
     """
-    with self.GetAmberRepo() as amber_repo:
+    with self.GetPkgRepo() as pkg_repo:
       # Publish all packages to the serving TUF repository under |tuf_root|.
       for package_path in package_paths:
-        amber_repo.PublishPackage(package_path)
+        pkg_repo.PublishPackage(package_path)
 
       # Resolve all packages, to have them pulled into the device/VM cache.
       for package_path in package_paths:

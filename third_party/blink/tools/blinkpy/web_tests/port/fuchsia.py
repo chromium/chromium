@@ -133,7 +133,7 @@ class _TargetHost(object):
     def __init__(self, build_path, build_ids_path, ports_to_forward, target,
                  results_directory):
         try:
-            self._amber_repo = None
+            self._pkg_repo = None
             self._target = target
             self._target.Start()
             self._setup_target(build_path, build_ids_path, ports_to_forward,
@@ -168,8 +168,8 @@ class _TargetHost(object):
         self.symbolizer = symbolizer.RunSymbolizer(
             self._listener.stdout, listener_log, [build_ids_path])
 
-        self._amber_repo = self._target.GetAmberRepo()
-        self._amber_repo.__enter__()
+        self._pkg_repo = self._target.GetPkgRepo()
+        self._pkg_repo.__enter__()
 
         package_path = os.path.join(build_path, CONTENT_SHELL_PACKAGE_PATH)
         self._target.InstallPackage([package_path])
@@ -188,8 +188,8 @@ class _TargetHost(object):
             stderr=subprocess.PIPE)
 
     def cleanup(self):
-        if self._amber_repo:
-            self._amber_repo.__exit__(None, None, None)
+        if self._pkg_repo:
+            self._pkg_repo.__exit__(None, None, None)
         if self._target:
             # Emulator targets will be shutdown during cleanup.
             # TODO(sergeyu): Currently __init__() always starts Qemu, so we can

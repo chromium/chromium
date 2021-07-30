@@ -212,7 +212,7 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
       log_output_thread.daemon = True
       log_output_thread.start()
 
-    with target.GetAmberRepo():
+    with target.GetPkgRepo():
       target.InstallPackage(package_paths)
 
       if system_logger:
