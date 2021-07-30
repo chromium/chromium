@@ -43,8 +43,24 @@ class ForceInstalledTrackerTest : public ForceInstalledTestBase,
 
 TEST_F(ForceInstalledTrackerTest, EmptyForcelist) {
   SetupEmptyForceList();
+  EXPECT_FALSE(loaded_called_);
+  EXPECT_FALSE(ready_called_);
+}
+
+TEST_F(ForceInstalledTrackerTest, EmptyForcelistAndThenUpdated) {
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kPending);
+  scoped_refptr<const Extension> ext2 = CreateNewExtension(
+      kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
+
+  SetupEmptyForceList();
+  EXPECT_FALSE(loaded_called_);
+  EXPECT_FALSE(ready_called_);
+
+  SetupForceList(ExtensionOrigin::kWebStore);
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext1.get());
+  force_installed_tracker()->OnExtensionLoaded(profile(), ext2.get());
   EXPECT_TRUE(loaded_called_);
-  EXPECT_TRUE(ready_called_);
 }
 
 TEST_F(ForceInstalledTrackerTest, BeforeForceInstallPolicy) {

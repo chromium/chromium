@@ -234,7 +234,8 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
 TEST_F(ForceInstalledMetricsTest, EmptyForcelist) {
   SetupEmptyForceList();
-  EXPECT_FALSE(fake_timer_->IsRunning());
+  // ForceInstalledMetrics is notified only when Forcelist is not empty.
+  EXPECT_TRUE(fake_timer_->IsRunning());
   // Don't report metrics when the Forcelist is empty.
   histogram_tester_.ExpectTotalCount(kLoadTimeStats, 0);
   histogram_tester_.ExpectTotalCount(kReadyTimeStats, 0);

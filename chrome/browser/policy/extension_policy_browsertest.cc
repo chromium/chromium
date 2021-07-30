@@ -1736,8 +1736,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
 // Verifies that the extension is installed when the manifest is not fetched in
 // case the remote update server is down.
-// TODO(http://crbug.com/1086148): Add a check whether the cache entry is
-// recorded in ForceInstalledMetrics after the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallForcelistServerShutDown) {
   base::HistogramTester histogram_tester;
@@ -1771,14 +1769,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   observer.WaitForExtensionInstalled();
 
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kGoodCrxId));
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.ForceInstalledCacheStatus",
+      extensions::ExtensionDownloaderDelegate::CacheStatus::
+          CACHE_HIT_ON_MANIFEST_FETCH_FAILURE,
+      1);
 }
 
 // Verifies that the extension is installed when the manifest is not fetched in
 // case the device is offline. This test mimics a server providing
 // ERR_INTERNET_DISCONNECTED response instead of actually having the device
 // offline.
-// TODO(http://crbug.com/1086148): Add a check whether the cache entry is
-// recorded in ForceInstalledMetrics after the bug is fixed.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelistOffline) {
   base::HistogramTester histogram_tester;
   ExtensionRequestInterceptor interceptor;
@@ -1820,6 +1822,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelistOffline) {
   observer.WaitForExtensionInstalled();
 
   EXPECT_TRUE(registry->enabled_extensions().GetByID(kGoodCrxId));
+
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.ForceInstalledCacheStatus",
+      extensions::ExtensionDownloaderDelegate::CacheStatus::
+          CACHE_HIT_ON_MANIFEST_FETCH_FAILURE,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
