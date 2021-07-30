@@ -38,7 +38,7 @@ export class NavigationViewPanelElement extends PolymerElement {
        */
       selectedItem: {
         type: Object,
-        observer: "onSwitchPage_",
+        observer: "selectedItemChanged_",
         value: null,
       },
 
@@ -85,8 +85,8 @@ export class NavigationViewPanelElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onSwitchPage_() {
+  /** @protected */
+  selectedItemChanged_() {
     if (!this.selectedItem)
       return;
     const pageComponent = this.getPage_(this.selectedItem);
