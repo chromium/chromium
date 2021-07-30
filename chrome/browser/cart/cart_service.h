@@ -39,6 +39,11 @@ class CartService : public history::HistoryServiceObserver,
   ~CartService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  // Appends utm_source to the end of |base_url|. It will append only for
+  // partner merchants and the RBD fast path flag is on, will append
+  // "chrome_cart_no_rbd" when is_discount_enabled is false, and
+  // "chrome_cart_rbd" when is_discount_enabled is true.
+  static GURL AppendUTM(const GURL& base_url, bool is_discount_enabled);
   // Gets called when cart module is temporarily hidden.
   void Hide();
   // Gets called when restoring the temporarily hidden cart module.

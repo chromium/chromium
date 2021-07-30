@@ -111,6 +111,8 @@ const char kNtpStatefulTasksModuleDataParam[] =
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";
+const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[] =
+    "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam";
 const char kNtpChromeCartModuleHeuristicsImprovementParam[] =
     "NtpChromeCartModuleHeuristicsImprovementParam";
 const char kNtpDriveModuleDataParam[] = "NtpDriveModuleDataParam";

@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,6 +36,8 @@
 namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
 const int kDelayStartMs = 10;
+constexpr char kNoRbdUtmTag[] = "chrome_cart_no_rbd";
+constexpr char kRbdUtmTag[] = "chrome_cart_rbd";
 
 constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
     &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
@@ -45,6 +48,10 @@ constexpr base::FeatureParam<std::string> kSkipCartExtractionPattern{
     &ntp_features::kNtpChromeCartModule, "skip-cart-extraction-pattern",
     // This regex does not match anything.
     "\\b\\B"};
+
+constexpr base::FeatureParam<bool> kRbdUtmParam{
+    &ntp_features::kNtpChromeCartModule,
+    ntp_features::NtpChromeCartModuleAbandonedCartDiscountUseUtmParam, false};
 
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -147,6 +154,18 @@ void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kCartDiscountAcknowledged, false);
   registry->RegisterBooleanPref(prefs::kCartDiscountEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCartUsedDiscounts);
+}
+
+GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
+  DCHECK(base_url.is_valid() && IsPartnerMerchant(base_url));
+
+  if (kRbdUtmParam.Get()) {
+    return net::AppendQueryParameter(
+        base_url, "utm_source",
+        is_discount_enabled ? kRbdUtmTag : kNoRbdUtmTag);
+  } else {
+    return base_url;
+  }
 }
 
 void CartService::Hide() {
@@ -330,15 +349,19 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
 void CartService::GetDiscountURL(
     const GURL& cart_url,
     base::OnceCallback<void(const ::GURL&)> callback) {
+  auto url = cart_url;
+  if (IsPartnerMerchant(cart_url)) {
+    url = AppendUTM(cart_url, IsCartDiscountEnabled());
+  }
+
   if (!IsPartnerMerchant(cart_url) || !IsCartDiscountEnabled()) {
-    std::move(callback).Run(cart_url);
+    std::move(callback).Run(url);
     CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     return;
   }
-  LoadCart(eTLDPlusOne(cart_url),
-           base::BindOnce(&CartService::OnGetDiscountURL,
-                          weak_ptr_factory_.GetWeakPtr(), cart_url,
-                          std::move(callback)));
+  LoadCart(eTLDPlusOne(cart_url), base::BindOnce(&CartService::OnGetDiscountURL,
+                                                 weak_ptr_factory_.GetWeakPtr(),
+                                                 url, std::move(callback)));
 }
 
 void CartService::OnGetDiscountURL(
@@ -377,8 +400,9 @@ void CartService::OnDiscountURLFetched(
     base::OnceCallback<void(const ::GURL&)> callback,
     const cart_db::ChromeCartContentProto& cart_proto,
     const GURL& discount_url) {
-  std::move(callback).Run(discount_url.is_valid() ? discount_url
-                                                  : default_cart_url);
+  std::move(callback).Run(discount_url.is_valid()
+                              ? AppendUTM(discount_url, IsCartDiscountEnabled())
+                              : default_cart_url);
   if (discount_url.is_valid()) {
     CacheUsedDiscounts(cart_proto);
     CleanUpDiscounts(cart_proto);

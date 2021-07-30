@@ -68,6 +68,9 @@ extern const char kNtpStatefulTasksModuleDataParam[];
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.
 extern const char kNtpChromeCartModuleAbandonedCartDiscountParam[];
+// Parameter for enabling the abandoned cart discount with utm_source tag to
+// indicate the feature state.
+extern const char NtpChromeCartModuleAbandonedCartDiscountUseUtmParam[];
 // Parameter for enabling the cart heuristics improvement.
 extern const char kNtpChromeCartModuleHeuristicsImprovementParam[];
 // Parameter determining the type of Drive data to render.
