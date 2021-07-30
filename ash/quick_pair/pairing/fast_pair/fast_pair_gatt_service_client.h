@@ -32,19 +32,41 @@ namespace quick_pair {
 // during initialization.
 class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
  public:
+  class Factory {
+   public:
+    static std::unique_ptr<FastPairGattServiceClient> Create(
+        device::BluetoothDevice* device,
+        scoped_refptr<device::BluetoothAdapter> adapter,
+        base::OnceCallback<void(absl::optional<PairFailure>)>
+            on_initialized_callback);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<FastPairGattServiceClient> CreateInstance(
+        device::BluetoothDevice* device,
+        scoped_refptr<device::BluetoothAdapter> adapter,
+        base::OnceCallback<void(absl::optional<PairFailure>)>
+            on_initialized_callback) = 0;
+
+   private:
+    static Factory* g_test_factory_;
+  };
+
+  device::BluetoothRemoteGattService* gatt_service() { return gatt_service_; }
+
+  ~FastPairGattServiceClient() override;
+
+ private:
   FastPairGattServiceClient(
       device::BluetoothDevice* device,
       scoped_refptr<device::BluetoothAdapter> adapter,
       base::OnceCallback<void(absl::optional<PairFailure>)>
           on_initialized_callback);
-  ~FastPairGattServiceClient() override;
   FastPairGattServiceClient(const FastPairGattServiceClient&) = delete;
   FastPairGattServiceClient& operator=(const FastPairGattServiceClient&) =
       delete;
 
-  device::BluetoothRemoteGattService* gatt_service() { return gatt_service_; }
-
- private:
   // Callback from the adapter's call to create GATT connection.
   void OnGattConnection(
       std::unique_ptr<device::BluetoothGattConnection> gatt_connection,

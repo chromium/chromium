@@ -34,6 +34,33 @@ constexpr base::TimeDelta kConnectingTimeout = base::TimeDelta::FromSeconds(5);
 namespace ash {
 namespace quick_pair {
 
+// static
+FastPairGattServiceClient::Factory*
+    FastPairGattServiceClient::Factory::g_test_factory_ = nullptr;
+
+// static
+std::unique_ptr<FastPairGattServiceClient>
+FastPairGattServiceClient::Factory::Create(
+    device::BluetoothDevice* device,
+    scoped_refptr<device::BluetoothAdapter> adapter,
+    base::OnceCallback<void(absl::optional<PairFailure>)>
+        on_initialized_callback) {
+  if (g_test_factory_) {
+    return g_test_factory_->CreateInstance(device, adapter,
+                                           std::move(on_initialized_callback));
+  }
+  return absl::WrapUnique(new FastPairGattServiceClient(
+      device, adapter, std::move(on_initialized_callback)));
+}
+
+// static
+void FastPairGattServiceClient::Factory::SetFactoryForTesting(
+    Factory* g_test_factory) {
+  g_test_factory_ = g_test_factory;
+}
+
+FastPairGattServiceClient::Factory::~Factory() = default;
+
 FastPairGattServiceClient::FastPairGattServiceClient(
     device::BluetoothDevice* device,
     scoped_refptr<device::BluetoothAdapter> adapter,
