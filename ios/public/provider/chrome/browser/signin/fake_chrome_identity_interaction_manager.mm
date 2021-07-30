@@ -165,29 +165,26 @@ static ChromeIdentity* _identity = nil;
 
 - (void)dismissAndRunCompletionCallbackWithError:(NSError*)error
                                         animated:(BOOL)animated
-                                      completion:(void (^)(void))completion {
+                                      completion:(ProceduralBlock)completion {
   DCHECK(error || FakeChromeIdentityInteractionManager.identity)
       << "An identity should be set to close the dialog successfully, error: "
       << error << ", identity "
       << FakeChromeIdentityInteractionManager.identity;
-  if (!self.addAccountViewController) {
-    [self runCompletionCallbackWithError:error];
-    return;
-  }
+  DCHECK(self.addAccountViewController);
+  DCHECK(self.viewControllerPresented);
   __weak __typeof(self) weakSelf = self;
   [self.addAccountViewController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:^{
                            __strong __typeof(self) strongSelf = weakSelf;
-                           [strongSelf runCompletionCallbackWithError:error];
-                           if (completion) {
-                             completion();
-                           }
-                           strongSelf.viewControllerPresented = NO;
+                           [strongSelf
+                               runCompletionCallbackWithError:error
+                                                   completion:completion];
                          }];
 }
 
-- (void)runCompletionCallbackWithError:(NSError*)error {
+- (void)runCompletionCallbackWithError:(NSError*)error
+                            completion:(ProceduralBlock)completion {
   self.addAccountViewController = nil;
   ChromeIdentity* identity =
       error ? nil : FakeChromeIdentityInteractionManager.identity;
@@ -198,6 +195,10 @@ static ChromeIdentity* _identity = nil;
     self.completionCallback = nil;
     completionCallback(identity, error);
   }
+  if (completion) {
+    completion();
+  }
+  self.viewControllerPresented = NO;
 }
 
 - (NSError*)canceledError {
