@@ -264137,6 +264137,12 @@
      "1a2996928163f16a8dd496ef98e71bf7b523db45",
      []
     ],
+    "resources": {
+     "iframe.html": [
+      "25cf3d92f3942738686a267c22d95d4a6464af7e",
+      []
+     ]
+    },
     "support.js": [
      "960b5721c376973d8721cdd4e602c43f08897679",
      []
@@ -388939,6 +388945,15 @@
          "/resources/idlharness.js"
         ]
        ]
+      }
+     ]
+    ],
+    "non-fully-active.https.html": [
+     "fe70f04154a036acda676269b463c67f3e15c56c",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],
