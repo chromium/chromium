@@ -5,6 +5,7 @@
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MenuSelectorItem, SelectorItem, SelectorProperties} from './navigation_selector.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 const navigationPageChanged = 'onNavigationPageChanged';
 
@@ -126,12 +127,11 @@ export class NavigationViewPanelElement extends PolymerElement {
 
     if (pageComponent === null) {
       pageComponent = document.createElement(pageName);
+      assert(pageComponent);
       pageComponent.setAttribute('id', pageName);
       pageComponent.setAttribute('class', 'view-content');
       pageComponent.hidden = true;
-      if (!pageComponent) {
-        console.error('Failed to create ' + pageName);
-      }
+
       this.$.navigationBody.appendChild(pageComponent);
     }
     return pageComponent;
