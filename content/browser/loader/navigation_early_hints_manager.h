@@ -13,6 +13,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -90,9 +91,21 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
  private:
   class PreloadURLLoaderClient;
 
+  bool IsPreloadForNavigationEnabledByOriginTrial(
+      const std::vector<std::string>& raw_tokens);
+
   void MaybePreloadHintedResource(
       const network::mojom::LinkHeaderPtr& link,
-      const network::ResourceRequest& navigation_request);
+      const network::ResourceRequest& navigation_request,
+      bool enabled_by_origin_trial);
+
+  // Determines whether the linked resource should be preloaded.
+  // Currently we are running two trials: The field trial and the origin trial.
+  // When the field trial forcibly disables preloads, always returns false.
+  // Otherwise, returns true when either of trials is enabled and there is
+  // no inflight preload for the resource, with additional checks.
+  bool ShouldPreload(const network::mojom::LinkHeaderPtr& link,
+                     bool enabled_by_origin_trial);
 
   void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
 
@@ -124,6 +137,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   std::vector<GURL> preloaded_urls_;
 
   bool was_preload_link_header_received_ = false;
+  bool was_preload_triggered_by_origin_trial_ = false;
+
+  blink::TrialTokenValidator const trial_token_validator_;
 
   base::OnceCallback<void(PreloadedResources)>
       preloads_completion_callback_for_testing_;
