@@ -5,6 +5,7 @@
 #include "ash/quick_pair/repository/http_fetcher.h"
 
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -38,7 +39,7 @@ HttpFetcher::~HttpFetcher() = default;
 
 void HttpFetcher::ExecuteGetRequest(const GURL& url,
                                     FetchCompleteCallback callback) {
-  QP_LOG(VERBOSE) << __func__ << " executing request to: " << url;
+  QP_LOG(VERBOSE) << __func__ << ": executing request to: " << url;
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
@@ -47,9 +48,17 @@ void HttpFetcher::ExecuteGetRequest(const GURL& url,
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      QuickPairBrowserDelegate::Get()->GetURLLoaderFactory();
+  if (!url_loader_factory) {
+    QP_LOG(WARNING) << __func__ << ": No SharedURLLoaderFactory is available.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   auto* loader_ptr = loader.get();
   loader_ptr->DownloadToString(
-      /*url_loader_factory=*/nullptr,
+      url_loader_factory.get(),
       base::BindOnce(&HttpFetcher::OnComplete, weak_ptr_factory_.GetWeakPtr(),
                      std::move(loader), std::move(callback)),
       kMaxDownloadBytes);
