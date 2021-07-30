@@ -105,6 +105,10 @@ void RecordWidgetUsage() {
         @"IOS.CredentialExtension.FetchPasswordFailure",
     app_group::kCredentialExtensionFetchPasswordNilArgumentCount :
         @"IOS.CredentialExtension.FetchPasswordNilArgument",
+    app_group::kCredentialExtensionKeychainSavePasswordFailureCount :
+        @"IOS.CredentialExtension.KeychainSavePasswordFailureCount",
+    app_group::kCredentialExtensionSaveCredentialFailureCount :
+        @"IOS.CredentialExtension.SaveCredentialFailureCount",
   };
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();

@@ -173,7 +173,8 @@
 - (void)showCreateNewPasswordUI {
   self.createPasswordCoordinator = [[NewPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         context:self.context];
+                         context:self.context
+              serviceIdentifiers:self.serviceIdentifiers];
   [self.createPasswordCoordinator start];
 }
 

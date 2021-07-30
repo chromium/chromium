@@ -5,7 +5,10 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 
 #include "base/notreached.h"
+#include "ios/chrome/common/app_group/app_group_metrics.h"
+#import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_table_cell.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -141,6 +144,45 @@
       navigationCancelButtonWasPressedInNewPasswordViewController:self];
 }
 
+// Action for save button.
+- (void)saveButtonWasPressed {
+  NSIndexPath* usernameIndexPath =
+      [NSIndexPath indexPathForRow:NewPasswordTableCellTypeUsername
+                         inSection:0];
+  NewPasswordTableCell* usernameCell =
+      [self.tableView cellForRowAtIndexPath:usernameIndexPath];
+  NSString* username = usernameCell.textField.text;
+
+  NSIndexPath* passwordIndexPath =
+      [NSIndexPath indexPathForRow:NewPasswordTableCellTypePassword
+                         inSection:0];
+  NewPasswordTableCell* passwordCell =
+      [self.tableView cellForRowAtIndexPath:passwordIndexPath];
+  NSString* password = passwordCell.textField.text;
+
+  ArchivableCredential* credential =
+      [self.credentialHandler createNewCredentialWithUsername:username
+                                                     password:password];
+
+  if (!credential) {
+    // TODO (crbug.com/1223966): Show UI to alert the user to the problem.
+    return;
+  }
+
+  [self.credentialHandler
+      saveNewCredential:credential
+             completion:^(NSError* error) {
+               if (error) {
+                 UpdateUMACountForKey(
+                     app_group::kCredentialExtensionSaveCredentialFailureCount);
+                 // TODO (crbug.com/1223966): Show UI to alert the user to the
+                 // problem.
+                 return;
+               }
+               [self.delegate userSelectedCredential:credential];
+             }];
+}
+
 // Returns a new cancel button for the navigation bar.
 - (UIBarButtonItem*)navigationCancelButton {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
@@ -155,8 +197,8 @@
 - (UIBarButtonItem*)navigationSaveButton {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemSave
-                           target:nil
-                           action:nil];
+                           target:self
+                           action:@selector(saveButtonWasPressed)];
   cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
   return cancelButton;
 }

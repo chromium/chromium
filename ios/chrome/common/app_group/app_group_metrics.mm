@@ -53,6 +53,12 @@ NSString* const kCredentialExtensionFetchPasswordFailureCount =
 NSString* const kCredentialExtensionFetchPasswordNilArgumentCount =
     @"CredentialExtensionFetchPasswordNilArgumentCount";
 
+NSString* const kCredentialExtensionKeychainSavePasswordFailureCount =
+    @"CredentialExtensionKeychainSavePasswordFailureCount";
+
+NSString* const kCredentialExtensionSaveCredentialFailureCount =
+    @"CredentialExtensionSaveCredentialFailureCount";
+
 // To avoid collision between session_ids from chrome or external
 // components, the session ID is offset depending on the application.
 int AppGroupSessionID(int session_id, AppGroupApplications application) {
