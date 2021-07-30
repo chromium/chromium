@@ -8,6 +8,7 @@
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
 
 namespace base {
+class GURL;
 class Value;
 }  // namespace base
 
@@ -21,7 +22,8 @@ class DefinitionResultParser : public ResultParser {
 
  private:
   const std::string* ExtractDefinition(const base::Value* definition_entry);
-  const std::string* ExtractPhonetics(const base::Value* definition_entry);
+  const std::string* ExtractPhoneticsText(const base::Value* definition_entry);
+  GURL ExtractPhoneticsAudio(const base::Value* definition_entry);
 };
 
 }  // namespace quick_answers

@@ -6,15 +6,19 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 namespace quick_answers {
 namespace {
 
 using base::Value;
+
+constexpr char kHttpsPrefix[] = "https:";
 
 constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
 constexpr char kDictionaryEntriesPath[] = "dictionaryResult.entries";
@@ -23,6 +27,7 @@ constexpr char kSensesKey[] = "senses";
 constexpr char kDefinitionPathUnderSense[] = "definition.text";
 constexpr char kPhoneticsKey[] = "phonetics";
 constexpr char kPhoneticsTextKey[] = "text";
+constexpr char kPhoneticsAudioKey[] = "oxfordAudio";
 
 }  // namespace
 
@@ -41,7 +46,7 @@ bool DefinitionResultParser::Parse(const Value* result,
     LOG(ERROR) << "Fail in extracting definition";
     return false;
   }
-  const std::string* phonetics = ExtractPhonetics(first_entry);
+  const std::string* phonetics = ExtractPhoneticsText(first_entry);
 
   const std::string* query_term = result->FindStringPath(kQueryTermPath);
   if (!query_term) {
@@ -58,6 +63,9 @@ bool DefinitionResultParser::Parse(const Value* result,
       std::make_unique<QuickAnswerText>(secondary_answer));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(*definition));
+  if (features::IsQuickAnswersV2Enabled()) {
+    quick_answer->phonetics_audio = ExtractPhoneticsAudio(first_entry);
+  }
   return true;
 }
 
@@ -80,7 +88,7 @@ const std::string* DefinitionResultParser::ExtractDefinition(
   return first_sense->FindStringPath(kDefinitionPathUnderSense);
 }
 
-const std::string* DefinitionResultParser::ExtractPhonetics(
+const std::string* DefinitionResultParser::ExtractPhoneticsText(
     const base::Value* definition_entry) {
   const Value* first_phonetics =
       GetFirstListElement(*definition_entry, kPhoneticsKey);
@@ -90,6 +98,19 @@ const std::string* DefinitionResultParser::ExtractPhonetics(
   }
 
   return first_phonetics->FindStringPath(kPhoneticsTextKey);
+}
+
+GURL DefinitionResultParser::ExtractPhoneticsAudio(
+    const base::Value* definition_entry) {
+  const Value* first_phonetics =
+      GetFirstListElement(*definition_entry, kPhoneticsKey);
+  if (!first_phonetics) {
+    LOG(WARNING) << "Can't find a phonetics.";
+    return GURL();
+  }
+
+  return GURL(kHttpsPrefix +
+              *first_phonetics->FindStringPath(kPhoneticsAudioKey));
 }
 
 }  // namespace quick_answers
