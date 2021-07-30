@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordHistogram;
@@ -202,60 +203,65 @@ public class StartSurfaceLayout extends Layout {
 
     @Override
     public void show(long time, boolean animate) {
-        super.show(time, animate);
+        try (TraceEvent e = TraceEvent.scoped("StartSurfaceLayout.Show")) {
+            super.show(time, animate);
 
-        // When shown on StartSurface jank is tracked under JankScenario.START_SURFACE_TAB_SWITCHER
-        // and it's started/stopped on StartSurfaceMediator.
-        if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) {
-            mJankTracker.startTrackingScenario(JankScenario.TAB_SWITCHER);
+            // When shown on StartSurface jank is tracked under
+            // JankScenario.START_SURFACE_TAB_SWITCHER and it's started/stopped on
+            // StartSurfaceMediator.
+            if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+                mJankTracker.startTrackingScenario(JankScenario.TAB_SWITCHER);
+            }
+
+            // Lazy initialization if needed.
+            mStartSurface.initialize();
+
+            // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
+            // animation so that thumbnail taking is not blocked.
+            LayoutTab sourceLayoutTab = createLayoutTab(mTabModelSelector.getCurrentTabId(),
+                    mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
+            sourceLayoutTab.setDecorationAlpha(0);
+
+            mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
+
+            boolean quick;
+            boolean isShowingStartSurface = isShowingStartSurface();
+            // If start surface is showing, carousel or grid tab switcher is used.
+            if (isShowingStartSurface) {
+                quick = getCarouselOrSingleTabListDelegate().prepareOverview();
+            } else {
+                quick = getGridTabListDelegate().prepareOverview();
+            }
+
+            // Skip shrinking animation when there is no tab in current tab model. If it's showing
+            // start surface, we don't show the shrink tab animation.
+            boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
+            boolean showShrinkingAnimation = animate
+                    && TabUiFeatureUtilities.isTabToGtsAnimationEnabled() && !isCurrentTabModelEmpty
+                    && !isShowingStartSurface;
+
+            boolean skipSlowZooming = TabUiFeatureUtilities.SKIP_SLOW_ZOOMING.getValue();
+            Log.d(TAG, "SkipSlowZooming = " + skipSlowZooming);
+            if (skipSlowZooming) {
+                showShrinkingAnimation &= quick;
+            }
+            if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+                // Intentionally disable the shrinking animation when accessibility is enabled.
+                // During the shrinking animation, since the ComponsitorViewHolder is not focusable,
+                // I think we are in a temporary no "valid" focus target state, so the focus shifts
+                // to the omnibox and triggers an accessibility announcement of the URL and a
+                // keyboard hiding event. Disable the animation to avoid this temporary state.
+                showShrinkingAnimation &= !ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+            }
+
+            if (!showShrinkingAnimation) {
+                mController.showOverview(animate);
+                return;
+            }
+
+            shrinkTab(animate,
+                    () -> getGridTabListDelegate().getThumbnailLocationOfCurrentTab(false));
         }
-
-        // Lazy initialization if needed.
-        mStartSurface.initialize();
-
-        // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
-        // animation so that thumbnail taking is not blocked.
-        LayoutTab sourceLayoutTab = createLayoutTab(mTabModelSelector.getCurrentTabId(),
-                mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
-        sourceLayoutTab.setDecorationAlpha(0);
-
-        mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
-
-        boolean quick;
-        // If start surface is showing, carousel or grid tab switcher is used.
-        if (isShowingStartSurface()) {
-            quick = getCarouselOrSingleTabListDelegate().prepareOverview();
-        } else {
-            quick = getGridTabListDelegate().prepareOverview();
-        }
-
-        // Skip shrinking animation when there is no tab in current tab model. If it's showing start
-        // surface, we don't show the shrink tab animation.
-        boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
-        boolean showShrinkingAnimation = animate
-                && TabUiFeatureUtilities.isTabToGtsAnimationEnabled() && !isCurrentTabModelEmpty
-                && !isShowingStartSurface();
-
-        boolean skipSlowZooming = TabUiFeatureUtilities.SKIP_SLOW_ZOOMING.getValue();
-        Log.d(TAG, "SkipSlowZooming = " + skipSlowZooming);
-        if (skipSlowZooming) {
-            showShrinkingAnimation &= quick;
-        }
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
-            // Intentionally disable the shrinking animation when accessibility is enabled. During
-            // the shrinking animation, since the ComponsitorViewHolder is not focusable, I think
-            // we are in a temporary no "valid" focus target state, so the focus shifts to the
-            // omnibox and triggers an accessibility announcement of the URL and a keyboard hiding
-            // event. Disable the animation to avoid this temporary state.
-            showShrinkingAnimation &= !ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-        }
-
-        if (!showShrinkingAnimation) {
-            mController.showOverview(animate);
-            return;
-        }
-
-        shrinkTab(animate, () -> getGridTabListDelegate().getThumbnailLocationOfCurrentTab(false));
     }
 
     @Override
@@ -271,51 +277,60 @@ public class StartSurfaceLayout extends Layout {
 
     @Override
     public void startHiding(int nextId, boolean hintAtTabSelection) {
-        super.startHiding(nextId, hintAtTabSelection);
+        try (TraceEvent e = TraceEvent.scoped("StartSurfaceLayout.StartHiding")) {
+            super.startHiding(nextId, hintAtTabSelection);
 
-        int sourceTabId = nextId;
-        if (sourceTabId == Tab.INVALID_TAB_ID) sourceTabId = mTabModelSelector.getCurrentTabId();
+            int sourceTabId = nextId;
+            if (sourceTabId == Tab.INVALID_TAB_ID) {
+                sourceTabId = mTabModelSelector.getCurrentTabId();
+            }
 
-        LayoutTab sourceLayoutTab = createLayoutTab(
-                sourceTabId, mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
-        sourceLayoutTab.setDecorationAlpha(0);
-
-        List<LayoutTab> layoutTabs = new ArrayList<>();
-        layoutTabs.add(sourceLayoutTab);
-
-        if (sourceTabId != mTabModelSelector.getCurrentTabId()) {
-            // Keep the original tab in mLayoutTabs to unblock thumbnail taking at the end of the
-            // animation.
-            LayoutTab originalTab = createLayoutTab(mTabModelSelector.getCurrentTabId(),
+            LayoutTab sourceLayoutTab = createLayoutTab(sourceTabId,
                     mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
-            originalTab.setScale(0);
-            originalTab.setDecorationAlpha(0);
-            layoutTabs.add(originalTab);
+            sourceLayoutTab.setDecorationAlpha(0);
+
+            List<LayoutTab> layoutTabs = new ArrayList<>();
+            layoutTabs.add(sourceLayoutTab);
+
+            if (sourceTabId != mTabModelSelector.getCurrentTabId()) {
+                // Keep the original tab in mLayoutTabs to unblock thumbnail taking at the end of
+                // the animation.
+                LayoutTab originalTab = createLayoutTab(mTabModelSelector.getCurrentTabId(),
+                        mTabModelSelector.isIncognitoSelected(), NO_CLOSE_BUTTON, NO_TITLE);
+                originalTab.setScale(0);
+                originalTab.setDecorationAlpha(0);
+                layoutTabs.add(originalTab);
+            }
+            mLayoutTabs = layoutTabs.toArray(new LayoutTab[0]);
+
+            updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
+
+            mIsAnimating = true;
+            mController.hideOverview(!TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
         }
-        mLayoutTabs = layoutTabs.toArray(new LayoutTab[0]);
-
-        updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
-
-        mIsAnimating = true;
-        mController.hideOverview(!TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
     }
 
     @Override
     public void doneHiding() {
-        super.doneHiding();
-        mStartSurface.onHide();
-        RecordUserAction.record("MobileExitStackView");
-        // When shown on StartSurface jank is tracked under JankScenario.START_SURFACE_TAB_SWITCHER
-        // and it's started/stopped on StartSurfaceMediator.
-        if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) {
-            mJankTracker.finishTrackingScenario(JankScenario.TAB_SWITCHER);
+        try (TraceEvent e = TraceEvent.scoped("StartSurfaceLayout.DoneHiding")) {
+            super.doneHiding();
+            mStartSurface.onHide();
+            RecordUserAction.record("MobileExitStackView");
+            // When shown on StartSurface jank is tracked under
+            // JankScenario.START_SURFACE_TAB_SWITCHER and it's started/stopped on
+            // StartSurfaceMediator.
+            if (!StartSurfaceConfiguration.isStartSurfaceEnabled()) {
+                mJankTracker.finishTrackingScenario(JankScenario.TAB_SWITCHER);
+            }
         }
     }
 
     @Override
     public void doneShowing() {
-        if (!mAndroidViewFinishedShowing) return;
-        super.doneShowing();
+        try (TraceEvent e = TraceEvent.scoped("StartSurfaceLayout.DoneShowing")) {
+            if (!mAndroidViewFinishedShowing) return;
+            super.doneShowing();
+        }
     }
 
     @Override
