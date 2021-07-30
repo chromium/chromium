@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {convertFrequencyToChannel, convertKibToGibDecimalString, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
-import {assertEquals} from '../../chai_assert.js';
+import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
+import {convertFrequencyToChannel, convertKibToGibDecimalString, getRoutinesByNetworkType, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
+
+import {assertArrayEquals, assertEquals} from '../../chai_assert.js';
 
 export function diagnosticsUtilsTestSuite() {
   test('ProperlyConvertsKibToGib', () => {
@@ -76,5 +78,46 @@ export function diagnosticsUtilsTestSuite() {
     assertEquals(convertFrequencyToChannel(2495), 14);
     // TODO(ashleydp): Fix expectation when 5GHz algorithm is ready.
     assertEquals(convertFrequencyToChannel(2496), null);
+  });
+
+  test('GetRoutinesByNetworkType', () => {
+    /** @type {!Array<!RoutineType>} */
+    const expectedRoutinesWifi = [
+      RoutineType.kCaptivePortal,
+      RoutineType.kDnsLatency,
+      RoutineType.kDnsResolution,
+      RoutineType.kDnsResolverPresent,
+      RoutineType.kGatewayCanBePinged,
+      RoutineType.kHttpFirewall,
+      RoutineType.kHttpsFirewall,
+      RoutineType.kHttpsLatency,
+      RoutineType.kLanConnectivity,
+      // assertArrayEquals wants values in order, code appends values to end
+      // of array.
+      RoutineType.kHasSecureWiFiConnection,
+      RoutineType.kSignalStrength,
+    ];
+
+    /** @type {!Array<!RoutineType>} */
+    const expectedRoutinesNotWifi = [
+      RoutineType.kCaptivePortal,
+      RoutineType.kDnsLatency,
+      RoutineType.kDnsResolution,
+      RoutineType.kDnsResolverPresent,
+      RoutineType.kGatewayCanBePinged,
+      RoutineType.kHttpFirewall,
+      RoutineType.kHttpsFirewall,
+      RoutineType.kHttpsLatency,
+      RoutineType.kLanConnectivity,
+    ];
+
+    assertArrayEquals(
+        expectedRoutinesWifi, getRoutinesByNetworkType(NetworkType.kWiFi));
+    assertArrayEquals(
+        expectedRoutinesNotWifi,
+        getRoutinesByNetworkType(NetworkType.kEthernet));
+    assertArrayEquals(
+        expectedRoutinesNotWifi,
+        getRoutinesByNetworkType(NetworkType.kCellular));
   });
 }

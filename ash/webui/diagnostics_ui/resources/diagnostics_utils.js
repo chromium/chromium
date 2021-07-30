@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {NetworkState, NetworkType} from './diagnostics_types.js';
+import {NetworkState, NetworkType, RoutineType} from './diagnostics_types.js';
 
 /**
  * Converts a KiB storage value to GiB and returns a fixed-point string
@@ -94,6 +94,34 @@ export function getNetworkState(state) {
       assertNotReached();
       return '';
   }
+}
+
+/**
+ * @param {!NetworkType} type
+ * @return {!Array<!RoutineType>}
+ */
+export function getRoutinesByNetworkType(type) {
+  // TODO(ashleydp): Update function to support routine groups.
+  /** @type {!Array<!RoutineType>} */
+  let networkRoutines = [
+    RoutineType.kCaptivePortal,
+    RoutineType.kDnsLatency,
+    RoutineType.kDnsResolution,
+    RoutineType.kDnsResolverPresent,
+    RoutineType.kGatewayCanBePinged,
+    RoutineType.kHttpFirewall,
+    RoutineType.kHttpsFirewall,
+    RoutineType.kHttpsLatency,
+    RoutineType.kLanConnectivity,
+  ];
+
+  // Add wifi-only routines to common networking routine array.
+  if (type === NetworkType.kWiFi) {
+    networkRoutines.push(RoutineType.kHasSecureWiFiConnection);
+    networkRoutines.push(RoutineType.kSignalStrength);
+  }
+
+  return networkRoutines;
 }
 
 /**

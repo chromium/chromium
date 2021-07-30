@@ -12,7 +12,7 @@ import './routine_section.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, RoutineType} from './diagnostics_types.js';
-import {getNetworkState, getNetworkType} from './diagnostics_utils.js';
+import {getNetworkState, getNetworkType, getRoutinesByNetworkType} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 
@@ -47,19 +47,7 @@ Polymer({
     /** @private {!Array<!RoutineType>} */
     routines_: {
       type: Array,
-      value: [
-        RoutineType.kCaptivePortal,
-        RoutineType.kDnsLatency,
-        RoutineType.kDnsResolution,
-        RoutineType.kDnsResolverPresent,
-        RoutineType.kGatewayCanBePinged,
-        RoutineType.kHasSecureWiFiConnection,
-        RoutineType.kHttpFirewall,
-        RoutineType.kHttpsFirewall,
-        RoutineType.kHttpsLatency,
-        RoutineType.kLanConnectivity,
-        RoutineType.kSignalStrength,
-      ],
+      value: () => getRoutinesByNetworkType(NetworkType.kWiFi),
     },
 
     /** @type {string} */
