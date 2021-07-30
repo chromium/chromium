@@ -35,11 +35,8 @@ std::string GetUserAgent() {
     LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
-    return content::GetReducedUserAgent(
-        command_line->HasSwitch(switches::kUseMobileUserAgent),
-        version_info::GetMajorVersionNumber());
-  }
+  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
+    return GetReducedUserAgent();
 
   std::string product = GetProduct();
 #if defined(OS_ANDROID)
@@ -47,6 +44,13 @@ std::string GetUserAgent() {
     product += " Mobile";
 #endif
   return content::BuildUserAgentFromProduct(product);
+}
+
+std::string GetReducedUserAgent() {
+  return content::GetReducedUserAgent(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseMobileUserAgent),
+      version_info::GetMajorVersionNumber());
 }
 
 // Generate a pseudo-random permutation of the following brand/version pairs:

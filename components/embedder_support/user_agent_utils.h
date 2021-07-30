@@ -23,8 +23,12 @@ namespace embedder_support {
 // Returns the product used in building the user-agent.
 std::string GetProduct();
 
-// Returns the user agent string for Chrome.
+// Returns the user agent string for Chrome. If the ReduceUserAgent
+// feature is enabled, this will return |GetReducedUserAgent|
 std::string GetUserAgent();
+
+// Returns the reduced user agent string for Chrome.
+std::string GetReducedUserAgent();
 
 blink::UserAgentMetadata GetUserAgentMetadata();
 

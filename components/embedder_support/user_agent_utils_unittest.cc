@@ -210,7 +210,7 @@ TEST(UserAgentUtilsTest, UserAgentStringOrdering) {
 #endif
 }
 
-TEST(UserAgentUtilsTest, UserAgentStringFrozen) {
+TEST(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
@@ -257,6 +257,8 @@ TEST(UserAgentUtilsTest, UserAgentStringFrozen) {
                           version_info::GetMajorVersionNumber().c_str()));
   }
 #endif
+
+  EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
 }
 
 TEST(UserAgentUtilsTest, UserAgentMetadata) {

@@ -430,6 +430,10 @@ std::string ContentBrowserClientImpl::GetUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
+std::string ContentBrowserClientImpl::GetReducedUserAgent() {
+  return embedder_support::GetReducedUserAgent();
+}
+
 blink::UserAgentMetadata ContentBrowserClientImpl::GetUserAgentMetadata() {
   return embedder_support::GetUserAgentMetadata();
 }

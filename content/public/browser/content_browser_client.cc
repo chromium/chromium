@@ -1056,6 +1056,10 @@ std::string ContentBrowserClient::GetUserAgent() {
   return std::string();
 }
 
+std::string ContentBrowserClient::GetReducedUserAgent() {
+  return GetUserAgent();
+}
+
 blink::UserAgentMetadata ContentBrowserClient::GetUserAgentMetadata() {
   return blink::UserAgentMetadata();
 }

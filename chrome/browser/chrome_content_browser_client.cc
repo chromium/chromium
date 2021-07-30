@@ -5497,6 +5497,10 @@ std::string ChromeContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
+std::string ChromeContentBrowserClient::GetReducedUserAgent() {
+  return embedder_support::GetReducedUserAgent();
+}
+
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
   return embedder_support::GetUserAgentMetadata();
 }

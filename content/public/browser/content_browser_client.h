@@ -1839,8 +1839,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Used as part of the user agent string.
   virtual std::string GetProduct();
 
-  // Returns the user agent.  Content may cache this value.
+  // Returns the user agent.Content may cache this value.
   virtual std::string GetUserAgent();
+
+  // Returns the reduced user agent string. Defaults to |GetUserAgent| Content
+  // may cache this value.
+  virtual std::string GetReducedUserAgent();
 
   // Returns user agent metadata. Content may cache this value.
   virtual blink::UserAgentMetadata GetUserAgentMetadata();

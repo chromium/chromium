@@ -623,6 +623,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::string GetProduct() override;
   std::string GetUserAgent() override;
+  std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
   absl::optional<gfx::ImageSkia> GetProductLogo() override;
