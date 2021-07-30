@@ -9,6 +9,7 @@
 #import "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
@@ -21,7 +22,12 @@
 #error "This file requires ARC support."
 #endif
 
-@interface GridContextMenuHelper () <GridContextMenuProvider>
+@interface GridContextMenuHelper () <BrowserObserving,
+                                     GridContextMenuProvider> {
+  // Observe BrowserObserver to prevent any access to Browser before its
+  // destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
+}
 
 @property(nonatomic, assign) Browser* browser;
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
@@ -40,11 +46,19 @@
   self = [super init];
   if (self) {
     _browser = browser;
+    _browserObserver = std::make_unique<BrowserObserverBridge>(_browser, self);
     _contextMenuDelegate = tabContextMenuDelegate;
     _actionsDataSource = actionsDataSource;
     _incognito = _browser->GetBrowserState()->IsOffTheRecord();
   }
   return self;
+}
+
+- (void)dealloc {
+  if (self.browser) {
+    _browserObserver.reset();
+    self.browser = nullptr;
+  }
 }
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
@@ -53,12 +67,11 @@
 
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
-        if (!weakSelf) {
+        GridContextMenuHelper* strongSelf = weakSelf;
+        if (!strongSelf) {
           // Return an empty menu.
           return [UIMenu menuWithTitle:@"" children:@[]];
         }
-
-        GridContextMenuHelper* strongSelf = weakSelf;
 
         // Record that this context menu was shown to the user.
         RecordMenuShown(MenuScenario::kTabGridEntry);
@@ -116,13 +129,15 @@
           }
           // Bookmarking can be disabled from prefs (from an enterprise policy),
           // if that's the case grey out the option in the menu.
-          BOOL isEditBookmarksEnabled =
-              strongSelf.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-                  bookmarks::prefs::kEditBookmarksEnabled);
-          if (!isEditBookmarksEnabled && bookmarkAction)
-            bookmarkAction.attributes = UIMenuElementAttributesDisabled;
-          if (bookmarkAction)
-            [menuElements addObject:bookmarkAction];
+          if (strongSelf.browser) {
+            BOOL isEditBookmarksEnabled =
+                strongSelf.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+                    bookmarks::prefs::kEditBookmarksEnabled);
+            if (!isEditBookmarksEnabled && bookmarkAction)
+              bookmarkAction.attributes = UIMenuElementAttributesDisabled;
+            if (bookmarkAction)
+              [menuElements addObject:bookmarkAction];
+          }
         }
 
         if ([weakSelf.contextMenuDelegate
@@ -141,6 +156,13 @@
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  DCHECK_EQ(browser, self.browser);
+  self.browser = nullptr;
 }
 
 @end
