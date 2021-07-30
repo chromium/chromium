@@ -79,7 +79,7 @@ class InheritedCustomPropertyChecker
     return DataEquivalent(inherited_value_.Get(), inherited_value);
   }
 
-  const AtomicString& name_;
+  AtomicString name_;
   const bool is_inherited_property_;
   Persistent<const CSSValue> inherited_value_;
   Persistent<const CSSValue> initial_value_;
