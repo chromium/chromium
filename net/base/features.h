@@ -236,22 +236,6 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // Changes the timeout after which unused sockets idle sockets are cleaned up.
 NET_EXPORT extern const base::Feature kNetUnusedIdleSocketTimeout;
 
-// When enabled, makes cookies without a SameSite attribute behave like
-// SameSite=Lax cookies by default, and requires SameSite=None to be specified
-// in order to make cookies available in a third-party context. When disabled,
-// the default behavior for cookies without a SameSite attribute specified is no
-// restriction, i.e., available in a third-party context.
-// The "Lax-allow-unsafe" mitigation allows these cookies to be sent on
-// top-level cross-site requests with an unsafe (e.g. POST) HTTP method, if the
-// cookie is no more than 2 minutes old.
-NET_EXPORT extern const base::Feature kSameSiteByDefaultCookies;
-
-// When enabled, cookies without SameSite restrictions that don't specify the
-// Secure attribute will be rejected if set from an insecure context, or treated
-// as secure if set from a secure context. This ONLY has an effect if
-// SameSiteByDefaultCookies is also enabled.
-NET_EXPORT extern const base::Feature kCookiesWithoutSameSiteMustBeSecure;
-
 // When enabled, the time threshold for Lax-allow-unsafe cookies will be lowered
 // from 2 minutes to 10 seconds. This time threshold refers to the age cutoff
 // for which cookies that default into SameSite=Lax, which are newer than the

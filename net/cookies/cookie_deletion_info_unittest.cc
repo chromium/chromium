@@ -511,11 +511,6 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
       CanonicalCookie::Create(GURL("https://www.example.com"), "cookie=1",
                               base::Time::Now(), absl::nullopt);
 
-  {
-    // With SameSite features off.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(features::kSameSiteByDefaultCookies);
-
     CookieDeletionInfo delete_info;
     delete_info.url = GURL("https://www.example.com/path");
     EXPECT_TRUE(delete_info.Matches(
@@ -533,30 +528,6 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
         CookieAccessParams{CookieAccessSemantics::NONLEGACY,
                            /*delegate_treats_url_as_trustworthy=*/false,
                            CookieSamePartyStatus::kNoSamePartyEnforcement}));
-  }
-  {
-    // With SameSite features on.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kSameSiteByDefaultCookies);
-
-    CookieDeletionInfo delete_info;
-    delete_info.url = GURL("https://www.example.com/path");
-    EXPECT_TRUE(delete_info.Matches(
-        *cookie,
-        CookieAccessParams{CookieAccessSemantics::UNKNOWN,
-                           /*delegate_treats_url_as_trustworthy=*/false,
-                           CookieSamePartyStatus::kNoSamePartyEnforcement}));
-    EXPECT_TRUE(delete_info.Matches(
-        *cookie,
-        CookieAccessParams{CookieAccessSemantics::LEGACY,
-                           /*delegate_treats_url_as_trustworthy=*/false,
-                           CookieSamePartyStatus::kNoSamePartyEnforcement}));
-    EXPECT_TRUE(delete_info.Matches(
-        *cookie,
-        CookieAccessParams{CookieAccessSemantics::NONLEGACY,
-                           /*delegate_treats_url_as_trustworthy=*/false,
-                           CookieSamePartyStatus::kNoSamePartyEnforcement}));
-  }
 }
 
 }  // namespace net

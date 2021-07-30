@@ -345,13 +345,9 @@ const char kEnableCaretBrowsing[] = "enable-caret-browsing";
 // them off individually to identify the problematic feature anyway.
 //
 // At present this turns on:
-//   net::features::kCookiesWithoutSameSiteMustBeSecure
-//   net::features::kSameSiteByDefaultCookies
 //   net::features::kSameSiteDefaultChecksMethodRigorously
-// It will soon also turn on:
-//   content_settings::kImprovedCookieControls
-//   content_settings::kImprovedCookieControlsForThirdPartyCookieBlocking
 //   net::features::kSchemefulSameSite
+//   net::features::kCookieSameSiteConsidersRedirectChain
 const char kEnableExperimentalCookieFeatures[] =
     "enable-experimental-cookie-features";
 

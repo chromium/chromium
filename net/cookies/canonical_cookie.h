@@ -430,9 +430,8 @@ class NET_EXPORT CanonicalCookie {
                                   const std::string& path);
 
   // Returns the effective SameSite mode to apply to this cookie. Depends on the
-  // value of the given SameSite attribute and whether the
-  // SameSiteByDefaultCookies feature is enabled, as well as the access
-  // semantics of the cookie.
+  // value of the given SameSite attribute and the access semantics of the
+  // cookie.
   // Note: If you are converting to a different representation of a cookie, you
   // probably want to use SameSite() instead of this method. Otherwise, if you
   // are considering using this method, consider whether you should use

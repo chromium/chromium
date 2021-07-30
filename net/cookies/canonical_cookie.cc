@@ -936,13 +936,11 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       break;
   }
 
-  // If both SameSiteByDefaultCookies and CookiesWithoutSameSiteMustBeSecure
-  // are enabled, non-SameSite cookies without the Secure attribute should be
-  // ignored. This can apply to cookies which were created before the
-  // experimental options were enabled (as non-SameSite, insecure cookies cannot
-  // be set while the options are on).
+  // Unless legacy access semantics are in effect, SameSite=None cookies without
+  // the Secure attribute should be ignored. This can apply to cookies which
+  // were created before "SameSite=None requires Secure" was enabled (as
+  // SameSite=None insecure cookies cannot be set while the options are on).
   if (params.access_semantics != CookieAccessSemantics::LEGACY &&
-      cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled() &&
       SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
     status.AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE);
@@ -1117,11 +1115,9 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
         CookieInclusionStatus::EXCLUDE_HTTP_ONLY);
   }
 
-  // If both SameSiteByDefaultCookies and CookiesWithoutSameSiteMustBeSecure
-  // are enabled, non-SameSite cookies without the Secure attribute will be
-  // rejected.
+  // Unless legacy access semantics are in effect, SameSite=None cookies without
+  // the Secure attribute will be rejected.
   if (params.access_semantics != CookieAccessSemantics::LEGACY &&
-      cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled() &&
       SameSite() == CookieSameSite::NO_RESTRICTION && !IsSecure()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() rejecting insecure cookie with SameSite=None.";
@@ -1446,24 +1442,16 @@ CookieEffectiveSameSite CanonicalCookie::GetEffectiveSameSite(
                  ? kShortLaxAllowUnsafeMaxAge
                  : kLaxAllowUnsafeMaxAge);
 
-  bool should_apply_same_site_lax_by_default =
-      cookie_util::IsSameSiteByDefaultCookiesEnabled();
-  if (access_semantics == CookieAccessSemantics::LEGACY) {
-    should_apply_same_site_lax_by_default = false;
-  } else if (access_semantics == CookieAccessSemantics::NONLEGACY) {
-    should_apply_same_site_lax_by_default = true;
-  }
-
   switch (SameSite()) {
     // If a cookie does not have a SameSite attribute, the effective SameSite
-    // mode depends on the SameSiteByDefaultCookies setting and whether the
-    // cookie is recently-created.
+    // mode depends on the access semantics and whether the cookie is
+    // recently-created.
     case CookieSameSite::UNSPECIFIED:
-      return should_apply_same_site_lax_by_default
-                 ? (IsRecentlyCreated(lax_allow_unsafe_threshold_age)
+      return (access_semantics == CookieAccessSemantics::LEGACY)
+                 ? CookieEffectiveSameSite::NO_RESTRICTION
+                 : (IsRecentlyCreated(lax_allow_unsafe_threshold_age)
                         ? CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE
-                        : CookieEffectiveSameSite::LAX_MODE)
-                 : CookieEffectiveSameSite::NO_RESTRICTION;
+                        : CookieEffectiveSameSite::LAX_MODE);
     case CookieSameSite::NO_RESTRICTION:
       return CookieEffectiveSameSite::NO_RESTRICTION;
     case CookieSameSite::LAX_MODE:

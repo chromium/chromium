@@ -64,8 +64,6 @@ namespace net {
 using base::Time;
 using base::TimeDelta;
 using CookieDeletionInfo = net::CookieDeletionInfo;
-using features::kCookiesWithoutSameSiteMustBeSecure;
-using features::kSameSiteByDefaultCookies;
 
 namespace {
 
@@ -4075,14 +4073,12 @@ TEST_F(CookieMonsterTest, RejectCreatedHttpOnlyCookieOnSet) {
       {CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
 }
 
-// Test the CookiesWithoutSameSiteMustBeSecure experimental option (in
-// conjunction with SameSiteByDefaultCookies, which it depends upon).
+// Test that SameSite=None requires Secure.
 TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
   const base::TimeDelta kLongAge = kLaxAllowUnsafeMaxAge * 4;
   const base::TimeDelta kShortAge = kLaxAllowUnsafeMaxAge / 4;
 
   struct TestCase {
-    bool is_cookies_without_samesite_must_be_secure_enabled;
     bool is_url_secure;
     std::string cookie_line;
     CookieInclusionStatus expected_set_cookie_result;
@@ -4093,73 +4089,38 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
   } test_cases[] = {
       // Feature enabled:
       // Cookie set from a secure URL with SameSite enabled is not rejected.
-      {true, true, "A=B; SameSite=Lax", CookieInclusionStatus(),
+      {true, "A=B; SameSite=Lax", CookieInclusionStatus(),
        CookieEffectiveSameSite::LAX_MODE},
       // Cookie set from a secure URL which is defaulted into Lax is not
       // rejected.
-      {true, true, "A=B",  // recently-set session cookie.
+      {true, "A=B",  // recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
        kShortAge},
-      {true, true, "A=B",  // not-recently-set session cookie.
+      {true, "A=B",  // not-recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
       // Cookie set from a secure URL with SameSite=None and Secure is set.
-      {true, true, "A=B; SameSite=None; Secure",
+      {true, "A=B; SameSite=None; Secure",
        CookieInclusionStatus(
            CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED),
        CookieEffectiveSameSite::NO_RESTRICTION},
       // Cookie set from a secure URL with SameSite=None but not specifying
       // Secure is rejected.
-      {true, true, "A=B; SameSite=None",
+      {true, "A=B; SameSite=None",
        CookieInclusionStatus(
            CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE,
            CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE)},
       // Cookie set from an insecure URL which defaults into LAX_MODE is not
       // rejected.
-      {true, false, "A=B",  // recently-set session cookie.
+      {false, "A=B",  // recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
        kShortAge},
-      {true, false, "A=B",  // not-recently-set session cookie.
+      {false, "A=B",  // not-recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
-      {true, false, "A=B; Max-Age=1000000",  // recently-set persistent cookie.
+      {false, "A=B; Max-Age=1000000",  // recently-set persistent cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
        kShortAge},
-      {true, false,
+      {false,
        "A=B; Max-Age=1000000",  // not-recently-set persistent cookie.
-       CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
-
-      // Feature not enabled (but SameSiteByDefaultCookies is still enabled):
-      // Cookie set from a secure URL with SameSite enabled is not rejected.
-      {false, true, "A=B; SameSite=Lax", CookieInclusionStatus(),
-       CookieEffectiveSameSite::LAX_MODE},
-      // Cookie set from a secure URL which is defaulted into Lax is not
-      // rejected.
-      {false, true, "A=B",  // recently-set session cookie.
-       CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
-       kShortAge},
-      {false, true, "A=B",  // not-recently-set session cookie.
-       CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
-      // Cookie set from a secure URL with SameSite=None and Secure is set.
-      {false, true, "A=B; SameSite=None; Secure",
-       CookieInclusionStatus(
-           CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED),
-       CookieEffectiveSameSite::NO_RESTRICTION},
-      // Cookie set from an insecure URL with SameSite=None (which can't ever be
-      // secure because it's an insecure URL) is NOT rejected, because
-      // CookiesWithoutSameSiteMustBeSecure is not enabled.
-      {false, false, "A=B; SameSite=None",
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {},
-           {
-               CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE,
-               CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED,
-           }),
-       CookieEffectiveSameSite::NO_RESTRICTION},
-      // Cookie set from an insecure URL which is defaulted into Lax is not
-      // rejected.
-      {false, false, "A=B",  // recently-set session cookie.
-       CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE,
-       kShortAge},
-      {false, false, "A=B",  // not-recently-set session cookie.
        CookieInclusionStatus(), CookieEffectiveSameSite::LAX_MODE, kLongAge},
   };
 
@@ -4171,19 +4132,6 @@ TEST_F(CookieMonsterTest, CookiesWithoutSameSiteMustBeSecure) {
   for (int i = 0; i < length; ++i) {
     TestCase test = test_cases[i];
     base::test::ScopedFeatureList feature_list;
-    if (test.is_cookies_without_samesite_must_be_secure_enabled) {
-      feature_list.InitWithFeatures(
-          {kSameSiteByDefaultCookies,
-           kCookiesWithoutSameSiteMustBeSecure} /* enabled_features */,
-          {} /* disabled_features */);
-    } else {
-      feature_list.InitWithFeatures(
-          {kSameSiteByDefaultCookies} /* enabled_features */,
-          {kCookiesWithoutSameSiteMustBeSecure} /* disabled_features */);
-    }
-    ASSERT_TRUE(cookie_util::IsSameSiteByDefaultCookiesEnabled());
-    ASSERT_EQ(test.is_cookies_without_samesite_must_be_secure_enabled,
-              cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled());
 
     GURL url = test.is_url_secure ? secure_url : insecure_url;
     base::Time creation_time = base::Time::Now() - test.creation_time_delta;
@@ -4316,48 +4264,19 @@ class CookieMonsterLegacyCookieAccessTest : public CookieMonsterTest {
         std::make_unique<TestCookieAccessDelegate>();
     access_delegate_ = access_delegate.get();
     cm_->SetCookieAccessDelegate(std::move(access_delegate));
-
-    feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   }
 
-  ~CookieMonsterLegacyCookieAccessTest() override {}
-
-  void SetFeatures(bool is_same_site_by_default_cookies_enabled,
-                   bool is_cookies_without_samesite_must_be_secure_enabled) {
-    feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-
-    if (is_same_site_by_default_cookies_enabled) {
-      enabled.push_back(kSameSiteByDefaultCookies);
-    } else {
-      disabled.push_back(kSameSiteByDefaultCookies);
-    }
-
-    if (is_cookies_without_samesite_must_be_secure_enabled) {
-      enabled.push_back(kCookiesWithoutSameSiteMustBeSecure);
-    } else {
-      disabled.push_back(kCookiesWithoutSameSiteMustBeSecure);
-    }
-
-    feature_list_->InitWithFeatures(enabled, disabled);
-  }
+  ~CookieMonsterLegacyCookieAccessTest() override = default;
 
  protected:
   const std::string kDomain = "example.test";
   const GURL kHttpsUrl = GURL("https://example.test");
   const GURL kHttpUrl = GURL("http://example.test");
-  // The FeatureList must be before the CookieMonster because the CookieMonster
-  // destructor expects the state of the features to be the same as when it's in
-  // use.
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   std::unique_ptr<CookieMonster> cm_;
   TestCookieAccessDelegate* access_delegate_;
 };
 
 TEST_F(CookieMonsterLegacyCookieAccessTest, SetLegacyNoSameSiteCookie) {
-  SetFeatures(true, true);
   // Check that setting unspecified-SameSite cookie from cross-site context
   // fails if not set to Legacy semantics, but succeeds if set to legacy.
   EXPECT_FALSE(CreateAndSetCookie(cm_.get(), kHttpUrl, "cookie=chocolate_chip",
@@ -4377,22 +4296,17 @@ TEST_F(CookieMonsterLegacyCookieAccessTest, SetLegacyNoSameSiteCookie) {
 }
 
 TEST_F(CookieMonsterLegacyCookieAccessTest, GetLegacyNoSameSiteCookie) {
-  // Set an unspecified-SameSite cookie with SameSite features turned off.
-  // Getting the cookie will succeed.
-  SetFeatures(false, false);
+  // Set a cookie with no SameSite attribute.
   ASSERT_TRUE(CreateAndSetCookie(cm_.get(), kHttpUrl, "cookie=chocolate_chip",
-                                 CookieOptions()));
-  EXPECT_EQ("cookie=chocolate_chip",
-            GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
-  // Turn on the features. Now getting the cookie fails.
-  SetFeatures(true, true);
+                                 CookieOptions::MakeAllInclusive()));
+
+  // Getting the cookie fails unless semantics is legacy.
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::UNKNOWN);
   EXPECT_EQ("", GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::NONLEGACY);
   EXPECT_EQ("", GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
-  // Set the access semantics to legacy, to be able to get the cookie.
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::LEGACY);
   EXPECT_EQ("cookie=chocolate_chip",
@@ -4401,7 +4315,6 @@ TEST_F(CookieMonsterLegacyCookieAccessTest, GetLegacyNoSameSiteCookie) {
 
 TEST_F(CookieMonsterLegacyCookieAccessTest,
        SetLegacySameSiteNoneInsecureCookie) {
-  SetFeatures(true, true);
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::UNKNOWN);
   EXPECT_FALSE(CreateAndSetCookie(cm_.get(), kHttpsUrl,
@@ -4424,42 +4337,22 @@ TEST_F(CookieMonsterLegacyCookieAccessTest,
 
 TEST_F(CookieMonsterLegacyCookieAccessTest,
        GetLegacySameSiteNoneInsecureCookie) {
-  // Set an SameSite=None insecure cookie with SameSite features turned off.
-  // Getting the cookie will succeed.
-  SetFeatures(false, false);
+  // Need to inject such a cookie under legacy semantics.
+  access_delegate_->SetExpectationForCookieDomain(
+      kDomain, CookieAccessSemantics::LEGACY);
   ASSERT_TRUE(CreateAndSetCookie(cm_.get(), kHttpUrl,
                                  "cookie=oatmeal_raisin; SameSite=None",
-                                 CookieOptions()));
-  EXPECT_EQ("cookie=oatmeal_raisin",
-            GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
-  // Turn on the features. Now getting the cookie fails.
-  SetFeatures(true, true);
+                                 CookieOptions::MakeAllInclusive()));
+  // Getting a SameSite=None but non-Secure cookie fails unless semantics is
+  // legacy.
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::UNKNOWN);
   EXPECT_EQ("", GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::NONLEGACY);
   EXPECT_EQ("", GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
-  // Set the access semantics to legacy, to be able to get the cookie.
   access_delegate_->SetExpectationForCookieDomain(
       kDomain, CookieAccessSemantics::LEGACY);
-  EXPECT_EQ("cookie=oatmeal_raisin",
-            GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
-}
-
-TEST_F(CookieMonsterLegacyCookieAccessTest, NonlegacyCookie) {
-  // Nonlegacy cookie will have default as Lax.
-  SetFeatures(false, false);
-  access_delegate_->SetExpectationForCookieDomain(
-      kDomain, CookieAccessSemantics::NONLEGACY);
-  EXPECT_FALSE(CreateAndSetCookie(cm_.get(), kHttpUrl, "cookie=chocolate_chip",
-                                  CookieOptions()));
-
-  // The SameSite=None-must-be-Secure rule will only only activate if the
-  // feature is on, even if access semantics is Nonlegacy.
-  EXPECT_TRUE(CreateAndSetCookie(cm_.get(), kHttpUrl,
-                                 "cookie=oatmeal_raisin; SameSite=None",
-                                 CookieOptions()));
   EXPECT_EQ("cookie=oatmeal_raisin",
             GetCookiesWithOptions(cm_.get(), kHttpUrl, CookieOptions()));
 }

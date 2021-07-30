@@ -732,16 +732,6 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSubresource(
   return CookieOptions::SameSiteCookieContext::MakeInclusive();
 }
 
-bool IsSameSiteByDefaultCookiesEnabled() {
-  return base::FeatureList::IsEnabled(features::kSameSiteByDefaultCookies);
-}
-
-bool IsCookiesWithoutSameSiteMustBeSecureEnabled() {
-  return IsSameSiteByDefaultCookiesEnabled() &&
-         base::FeatureList::IsEnabled(
-             features::kCookiesWithoutSameSiteMustBeSecure);
-}
-
 bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }

@@ -4579,9 +4579,8 @@ crbug.com/773122 crbug.com/777813 [ Win ] virtual/text-antialias/font-ascent-mac
 # Cookie Store API
 crbug.com/827231 [ Win ] external/wpt/cookie-store/change_eventhandler_for_document_cookie.tentative.https.window.html [ Failure Pass Timeout ]
 
-# When SameSiteByDefaultCookies is enabled (which is the case by default since
-# it's one of the experimental-web-platform-features, the Lax-allow-unsafe
-# intervention causes POST tests to fail.
+# The "Lax+POST" or lax-allowing-unsafe intervention for SameSite-by-default
+# cookies causes POST tests to fail.
 crbug.com/990439 external/wpt/cookies/samesite/form-post-blank.https.html [ Failure ]
 crbug.com/843945 external/wpt/cookies/samesite/form-post-blank-reload.https.html [ Failure ]
 crbug.com/990439 http/tests/cookies/same-site/popup-cross-site-post.https.html [ Failure ]

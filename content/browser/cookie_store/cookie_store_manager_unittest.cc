@@ -1228,7 +1228,7 @@ TEST_P(CookieStoreManagerTest, OneCookieChange) {
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
             worker_test_helper_->changes()[0].cause);
   // example.com does not have a custom access semantics setting, so it defaults
-  // to NONLEGACY, because the FeatureList has SameSiteByDefaultCookies enabled.
+  // to NONLEGACY.
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             worker_test_helper_->changes()[0].access_result.access_semantics);
 }
@@ -1313,7 +1313,7 @@ TEST_P(CookieStoreManagerTest, CookieChangeNameStartsWith) {
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
             worker_test_helper_->changes()[0].cause);
   // example.com does not have a custom access semantics setting, so it defaults
-  // to NONLEGACY, because the FeatureList has SameSiteByDefaultCookies enabled.
+  // to NONLEGACY.
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             worker_test_helper_->changes()[0].access_result.access_semantics);
 
@@ -1331,7 +1331,7 @@ TEST_P(CookieStoreManagerTest, CookieChangeNameStartsWith) {
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
             worker_test_helper_->changes()[0].cause);
   // example.com does not have a custom access semantics setting, so it defaults
-  // to NONLEGACY, because the FeatureList has SameSiteByDefaultCookies enabled.
+  // to NONLEGACY.
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             worker_test_helper_->changes()[0].access_result.access_semantics);
 }
@@ -1445,7 +1445,7 @@ TEST_P(CookieStoreManagerTest, CookieChangeUrl) {
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
             worker_test_helper_->changes()[0].cause);
   // example.com does not have a custom access semantics setting, so it defaults
-  // to NONLEGACY, because the FeatureList has SameSiteByDefaultCookies enabled.
+  // to NONLEGACY.
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             worker_test_helper_->changes()[0].access_result.access_semantics);
 
@@ -1462,7 +1462,7 @@ TEST_P(CookieStoreManagerTest, CookieChangeUrl) {
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
             worker_test_helper_->changes()[0].cause);
   // example.com does not have a custom access semantics setting, so it defaults
-  // to NONLEGACY, because the FeatureList has SameSiteByDefaultCookies enabled.
+  // to NONLEGACY.
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             worker_test_helper_->changes()[0].access_result.access_semantics);
 }
@@ -1585,7 +1585,7 @@ TEST_P(CookieStoreManagerTest, HttpOnlyCookieChange) {
   EXPECT_EQ(net::CookieChangeCause::INSERTED,
             worker_test_helper_->changes()[0].cause);
   // example.com does not have a custom access semantics setting, so it defaults
-  // to NONLEGACY, because the FeatureList has SameSiteByDefaultCookies enabled.
+  // to NONLEGACY.
   EXPECT_EQ(net::CookieAccessSemantics::NONLEGACY,
             worker_test_helper_->changes()[0].access_result.access_semantics);
 }
