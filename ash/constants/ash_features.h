@@ -200,6 +200,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesZipUnpack;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFiltersInRecents;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFullscreenAlertBubble;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFuseBox;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kGaiaCloseViewMessage;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kGaiaReauthEndpoint;

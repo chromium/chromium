@@ -4339,6 +4339,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceSpectreVariant2MitigationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          sandbox::policy::features::kForceSpectreVariant2Mitigation)},
+    {"fuse-box", flag_descriptions::kFuseBoxName,
+     flag_descriptions::kFuseBoxDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kFuseBox)},
     {"spectre-v2-mitigation", flag_descriptions::kSpectreVariant2MitigationName,
      flag_descriptions::kSpectreVariant2MitigationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(sandbox::policy::features::kSpectreVariant2Mitigation)},

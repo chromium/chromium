@@ -3255,6 +3255,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "fuse-box",
+    "owners": [ "noel", "simmonsjosh@google.com" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "gdi-text-printing",
     "owners": [ "//printing/OWNERS" ],
     "expiry_milestone": 89

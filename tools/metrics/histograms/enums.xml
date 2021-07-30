@@ -47521,6 +47521,7 @@ from previous Chrome versions.
   <int value="-1311575452"
       label="AutofillEnforceMinRequiredFieldsForUpload:disabled"/>
   <int value="-1311503211" label="MuteNotificationsDuringScreenShare:enabled"/>
+  <int value="-1311204345" label="FuseBox:disabled"/>
   <int value="-1311133348" label="VrBrowsingNativeAndroidUi:enabled"/>
   <int value="-1310737697" label="MaterialDesignSettings:enabled"/>
   <int value="-1309828996"
@@ -50509,6 +50510,7 @@ from previous Chrome versions.
   <int value="1139363314" label="disable-supervised-user-blacklist"/>
   <int value="1139756271" label="WebOTPCrossDevice:enabled"/>
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
+  <int value="1140903063" label="FuseBox:enabled"/>
   <int value="1141918949" label="ContextualSearchLongpressPanelHelp:enabled"/>
   <int value="1142515376" label="enable-nacl"/>
   <int value="1142752111" label="CellularUseAttachApn:disabled"/>

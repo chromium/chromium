@@ -4839,6 +4839,9 @@ const char kFrameThrottleFps30[] = "30 fps";
 const char kFullRestoreName[] = "Full restore";
 const char kFullRestoreDescription[] = "Chrome OS full restore";
 
+const char kFuseBoxName[] = "Enable ChromeOS FuseBox service";
+const char kFuseBoxDescription[] = "ChromeOS FuseBox service.";
+
 const char kHelpAppBackgroundPageName[] = "Help App Background Page";
 const char kHelpAppBackgroundPageDescription[] =
     "Enables the Background page in the help app. The background page is used "

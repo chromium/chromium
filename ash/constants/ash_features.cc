@@ -519,6 +519,9 @@ const base::Feature kFiltersInRecents{"FiltersInRecents",
 const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable ChromeOS FuseBox service.
+const base::Feature kFuseBox{"FuseBox", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables handle of `closeView` message from Gaia. The message is
 // supposed to end the flow.
 const base::Feature kGaiaCloseViewMessage{"GaiaCloseViewMessage",
