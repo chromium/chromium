@@ -2620,7 +2620,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
 crbug.com/626703 [ Mac11.0 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html [ Failure ]
@@ -7252,3 +7251,8 @@ crbug.com/626703 virtual/synchronous_html_parser/http/tests/inspector-protocol/n
 crbug.com/626703 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
 crbug.com/626703 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Failure Pass ]
 crbug.com/626703 virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
+
+# Sheriff 20121-07-30
+crbug.com/1234619 external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Failure ]
+crbug.com/1234619 external/wpt/screen-capture/permissions-policy-audio.https.sub.html [ Failure ]
+crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
