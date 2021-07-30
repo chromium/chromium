@@ -352,7 +352,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        size_t size,
                        void* context) {
 #if defined(OS_APPLE)
-  if (!base::IsManagedByPartitionAlloc(address)) {
+  if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -366,7 +366,7 @@ void* PartitionRealloc(const AllocatorDispatch*,
 
 void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
 #if defined(OS_APPLE)
-  if (!base::IsManagedByPartitionAlloc(address)) {
+  if (UNLIKELY(!base::IsManagedByPartitionAlloc(address) && address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -380,6 +380,8 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
 size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
+  PA_DCHECK(address);
+
 #if defined(OS_APPLE)
   if (!base::IsManagedByPartitionAlloc(address)) {
     // The object pointed to by `address` is not allocated by the
