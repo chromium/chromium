@@ -88,7 +88,7 @@ Polymer({
    * @private {string}
    */
   urlTemplate_:
-      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v3_omni_$.html',
+      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v4_omni_$.html',
 
   /**
    * Whether try to reload with the default url when a 404 error occurred.
@@ -124,6 +124,13 @@ Polymer({
    * @private
    */
   headerReceived_: false,
+
+  /**
+   * Whether the webview has been successfully loaded.
+   * @type {boolean}
+   * @private
+   */
+  webViewLoaded_: false,
 
   /**
    * Whether all the setting zippy has been successfully loaded.
@@ -225,6 +232,7 @@ Polymer({
       this.consentStringLoaded_ = false;
     }
 
+    this.reloadWebView();
     this.buttonsDisabled = true;
     this.currentConsentStep_ = 0;
   },
@@ -235,6 +243,7 @@ Polymer({
   reloadWebView() {
     this.loadingError_ = false;
     this.headerReceived_ = false;
+    this.webViewLoaded_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
     this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
   },
@@ -263,7 +272,7 @@ Polymer({
       this.reloadWithDefaultUrl_ = false;
       return;
     }
-
+    this.webViewLoaded_ = true;
     if (this.settingZippyLoaded_ && this.consentStringLoaded_) {
       this.onPageLoaded();
     }
@@ -307,8 +316,8 @@ Polymer({
     this.equalWeightButtons_ = data['equalWeightButtons'];
 
     this.consentStringLoaded_ = true;
-    if (this.settingZippyLoaded_) {
-      this.reloadWebView();
+    if (this.settingZippyLoaded_ && this.webViewLoaded_) {
+      this.onPageLoaded();
     }
   },
 
@@ -317,8 +326,8 @@ Polymer({
    */
   addSettingZippy(zippy_data) {
     if (this.settingZippyLoaded_) {
-      if (this.consentStringLoaded_) {
-        this.reloadWebView();
+      if (this.consentStringLoaded_ && this.webViewLoaded_) {
+        this.onPageLoaded();
       }
       return;
     }
@@ -387,8 +396,8 @@ Polymer({
     this.showContentForStep_(this.currentConsentStep_);
 
     this.settingZippyLoaded_ = true;
-    if (this.consentStringLoaded_) {
-      this.reloadWebView();
+    if (this.consentStringLoaded_ && this.webViewLoaded_) {
+      this.onPageLoaded();
     }
   },
 
@@ -424,8 +433,13 @@ Polymer({
   onPageLoaded() {
     this.fire('loaded');
 
-    this.buttonsDisabled = false;
-    this.$['next-button'].focus();
+    // The webview animation only starts playing when it is focused (in order
+    // to make sure the animation and the caption are in sync).
+    this.valuePropView_.focus();
+    this.async(function() {
+      this.buttonsDisabled = false;
+      this.$['next-button'].focus();
+    }.bind(this), 300);
 
     if (!this.hidden && !this.screenShown_) {
       this.browserProxy_.screenShown(VALUE_PROP_SCREEN_ID);
