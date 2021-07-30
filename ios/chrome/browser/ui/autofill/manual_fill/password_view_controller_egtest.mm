@@ -169,7 +169,8 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that returning from "Manage Passwords..." leaves the keyboard and the
 // icons in the right state.
-- (void)testPasswordsStateAfterPresentingManagePasswords {
+// TODO(crbug.com/1234759): Re-enable after fixing flake.
+- (void)DISABLED_testPasswordsStateAfterPresentingManagePasswords {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
