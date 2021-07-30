@@ -52,6 +52,47 @@ void LogSiteIsolationMetricsForSubmittedForm(
       render_frame_host->GetSiteInstance()->RequiresDedicatedProcess());
 }
 
+GURL StripAuth(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  return gurl.ReplaceComponents(rep);
+}
+
+GURL StripAuthAndParams(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  rep.ClearQuery();
+  rep.ClearRef();
+  return gurl.ReplaceComponents(rep);
+}
+
+GURL GetURLFromRenderFrameHost(content::RenderFrameHost* render_frame_host) {
+  GURL url = render_frame_host->GetLastCommittedURL();
+  // GetLastCommittedURL doesn't include URL updates due to document.open() and
+  // so it might be about:blank or about:srcdoc. In this case fallback to
+  // GetLastCommittedOrigin. Otherwise renderer process will be killed because
+  // Password Manager can't use about:URLs to save passwords, see
+  // http://crbug.com/1220333 for more details.
+  if (url.SchemeIs(url::kAboutScheme)) {
+    url = render_frame_host->GetLastCommittedOrigin().GetURL();
+  }
+  return url;
+}
+
+bool HasValidURL(content::RenderFrameHost* render_frame_host) {
+  GURL url = GetURLFromRenderFrameHost(render_frame_host);
+
+  // URL might be invalid when GetLastCommittedOrigin is opaque.
+  if (!url.is_valid())
+    return false;
+
+  return password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+      render_frame_host, url,
+      password_manager::BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED);
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -132,11 +173,19 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
 }
 
 void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
-    const autofill::FormData& form_data,
+    const autofill::FormData& raw_form,
     autofill::FieldRendererId generation_element_id,
     const std::u16string& password) {
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  // TODO(crbug.com/1233990): Test that PasswordManager doesn't receive url
+  // and full_url from renderer.
+  if (!HasValidURL(render_frame_host_))
+    return;
+
   GetPasswordManager()->OnGeneratedPasswordAccepted(
-      this, form_data, generation_element_id, password);
+      this, GetFormWithFrameAndFormMetaData(raw_form), generation_element_id,
+      password);
 }
 
 void ContentPasswordManagerDriver::TouchToFillClosed(
@@ -214,54 +263,73 @@ void ContentPasswordManagerDriver::GeneratePassword(
 }
 
 void ContentPasswordManagerDriver::PasswordFormsParsed(
-    const std::vector<autofill::FormData>& forms_data) {
+    const std::vector<autofill::FormData>& raw_forms) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
-          render_frame_host_, forms_data,
-          BadMessageReason::CPMD_BAD_ORIGIN_FORMS_PARSED))
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  if (!HasValidURL(render_frame_host_))
     return;
-  GetPasswordManager()->OnPasswordFormsParsed(this, forms_data);
+
+  std::vector<autofill::FormData> forms = raw_forms;
+  for (auto& form : forms)
+    SetFrameAndFormMetaData(form);
+
+  GetPasswordManager()->OnPasswordFormsParsed(this, forms);
 }
 
 void ContentPasswordManagerDriver::PasswordFormsRendered(
-    const std::vector<autofill::FormData>& visible_forms_data,
+    const std::vector<autofill::FormData>& raw_forms,
     bool did_stop_loading) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicy(
-          render_frame_host_, visible_forms_data,
-          BadMessageReason::CPMD_BAD_ORIGIN_FORMS_RENDERED))
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  if (!HasValidURL(render_frame_host_))
     return;
-  GetPasswordManager()->OnPasswordFormsRendered(this, visible_forms_data,
-                                                did_stop_loading);
+
+  std::vector<autofill::FormData> forms = raw_forms;
+  for (auto& form : forms)
+    SetFrameAndFormMetaData(form);
+
+  GetPasswordManager()->OnPasswordFormsRendered(this, forms, did_stop_loading);
 }
 
 void ContentPasswordManagerDriver::PasswordFormSubmitted(
-    const autofill::FormData& form_data) {
+    const autofill::FormData& raw_form) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
-          render_frame_host_, form_data.url,
-          BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED))
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  if (!HasValidURL(render_frame_host_))
     return;
-  GetPasswordManager()->OnPasswordFormSubmitted(this, form_data);
+
+  GetPasswordManager()->OnPasswordFormSubmitted(
+      this, GetFormWithFrameAndFormMetaData(raw_form));
 
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
 
 void ContentPasswordManagerDriver::InformAboutUserInput(
-    const autofill::FormData& form_data) {
+    const autofill::FormData& raw_form) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
-          render_frame_host_, form_data.url,
-          BadMessageReason::CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE))
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  // TODO(crbug.com/1233990): Test that PasswordManager doesn't receive url
+  // and full_url from renderer.
+  if (!HasValidURL(render_frame_host_))
     return;
+
+  autofill::FormData form_data = GetFormWithFrameAndFormMetaData(raw_form);
   GetPasswordManager()->OnInformAboutUserInput(this, form_data);
 
   if (FormHasNonEmptyPasswordField(form_data) &&
@@ -290,11 +358,18 @@ void ContentPasswordManagerDriver::DynamicFormSubmission(
 }
 
 void ContentPasswordManagerDriver::PasswordFormCleared(
-    const autofill::FormData& form_data) {
+    const autofill::FormData& raw_form) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  GetPasswordManager()->OnPasswordFormCleared(this, form_data);
+
+  // In case we can't obtain a valid URL or a frame isn't allowed to perform an
+  // operation with generated URL, don't forward anything to password manager.
+  if (!HasValidURL(render_frame_host_))
+    return;
+
+  GetPasswordManager()->OnPasswordFormCleared(
+      this, GetFormWithFrameAndFormMetaData(raw_form));
 }
 
 void ContentPasswordManagerDriver::RecordSavePasswordProgress(
@@ -380,6 +455,27 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
           render_frame_host_))
     return;
   GetPasswordManager()->LogFirstFillingResult(this, form_renderer_id, result);
+}
+
+void ContentPasswordManagerDriver::SetFrameAndFormMetaData(
+    autofill::FormData& form) const {
+  GURL url = GetURLFromRenderFrameHost(render_frame_host_);
+  DCHECK(url.is_valid());
+
+  form.host_frame =
+      autofill::LocalFrameToken(render_frame_host_->GetFrameToken().value());
+
+  form.url = StripAuthAndParams(url);
+  form.full_url = StripAuth(url);
+  form.main_frame_origin =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+}
+
+autofill::FormData
+ContentPasswordManagerDriver::GetFormWithFrameAndFormMetaData(
+    autofill::FormData form) const {
+  SetFrameAndFormMetaData(form);
+  return form;
 }
 
 void ContentPasswordManagerDriver::SetKeyPressHandler(

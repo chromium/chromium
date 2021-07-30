@@ -274,6 +274,24 @@ void InjectBlankFrameWithPasswordForm(content::WebContents* web_contents,
                                      inject_blank_frame_with_password_form));
 }
 
+// Inject an iframe with a password form that uses the specified action URL into
+// |web_contents|.
+void InjectFrameWithPasswordForm(content::WebContents* web_contents,
+                                 const GURL& action_url) {
+  std::string form_html = GeneratePasswordFormForAction(action_url);
+  std::string inject_blank_frame_with_password_form =
+      "var ifr = document.createElement('iframe');"
+      "ifr.setAttribute('id', 'iframeResult');"
+      "document.body.appendChild(ifr);"
+      "ifr.contentWindow.document.open();"
+      "ifr.contentWindow.document.write(\"" +
+      form_html +
+      "\");"
+      "ifr.contentWindow.document.close();";
+  ASSERT_TRUE(content::ExecuteScript(web_contents,
+                                     inject_blank_frame_with_password_form));
+}
+
 // Fills in a fake password and submits the form in |frame|, waiting for the
 // submit navigation to finish.  |action_url| is the form action URL to wait
 // for.
@@ -2343,61 +2361,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   WaitForElementValue("iframe", "password_field", "pa55w0rd");
 }
 
-// The password manager driver will kill processes when they try to access
-// passwords of sites other than the site the process is dedicated to, under
-// site isolation.
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
-                       CrossSitePasswordEnforcement) {
-  // The code under test is only active under site isolation.
-  if (!content::AreAllSitesIsolatedForTesting()) {
-    return;
-  }
-
-  // Navigate the main frame.
-  GURL main_frame_url = embedded_test_server()->GetURL(
-      "/password/password_form_in_crosssite_iframe.html");
-  NavigationObserver observer(WebContents());
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
-  observer.Wait();
-
-  // Create an iframe and navigate cross-site.
-  NavigationObserver iframe_observer(WebContents());
-  iframe_observer.SetPathToWaitFor("/password/crossite_iframe_content.html");
-  GURL iframe_url = embedded_test_server()->GetURL(
-      "foo.com", "/password/crossite_iframe_content.html");
-  std::string create_iframe =
-      base::StringPrintf("create_iframe('%s');", iframe_url.spec().c_str());
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       create_iframe));
-  iframe_observer.Wait();
-
-  // The iframe should get its own process.
-  content::RenderFrameHost* main_frame = WebContents()->GetMainFrame();
-  content::RenderFrameHost* iframe = iframe_observer.render_frame_host();
-  content::SiteInstance* main_site_instance = main_frame->GetSiteInstance();
-  content::SiteInstance* iframe_site_instance = iframe->GetSiteInstance();
-  EXPECT_NE(main_site_instance, iframe_site_instance);
-  EXPECT_NE(main_frame->GetProcess(), iframe->GetProcess());
-
-  content::RenderProcessHostWatcher iframe_killed(
-      iframe->GetProcess(),
-      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-
-  // Try to get cross-site passwords from the subframe's process and wait for it
-  // to be killed.
-  std::vector<autofill::FormData> forms_data(1, autofill::FormData());
-  forms_data.back().url = main_frame_url;
-  ContentPasswordManagerDriverFactory* factory =
-      ContentPasswordManagerDriverFactory::FromWebContents(WebContents());
-  EXPECT_TRUE(factory);
-  autofill::mojom::PasswordManagerDriver* driver =
-      factory->GetDriverForFrame(iframe);
-  EXPECT_TRUE(driver);
-  driver->PasswordFormsParsed(forms_data);
-
-  iframe_killed.Wait();
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ChangePwdNoAccountStored) {
   NavigateToFile("/password/password_form.html");
 
@@ -4039,6 +4002,30 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
   // ChromePasswordManagerClient::DidFinishNavigation, (this GetCredentials call
   // will establish the mojo connection for the first time).
   EXPECT_TRUE(IsGetCredentialsSuccessful());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       DetectFormSubmissionOnIframe) {
+  // Start from a page without a password form.
+  NavigateToFile("/password/other.html");
+
+  // Add a blank iframe and then inject a password form into it.
+  BubbleObserver prompt_observer(WebContents());
+  GURL current_url(embedded_test_server()->GetURL("/password/other.html"));
+  GURL submit_url(embedded_test_server()->GetURL("/password/done.html"));
+  InjectFrameWithPasswordForm(WebContents(), submit_url);
+  content::RenderFrameHost* frame =
+      ChildFrameAt(WebContents()->GetMainFrame(), 0);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), frame->GetLastCommittedURL());
+  EXPECT_EQ(submit_url.GetOrigin(), frame->GetLastCommittedOrigin().GetURL());
+  EXPECT_TRUE(frame->IsRenderFrameLive());
+  EXPECT_FALSE(prompt_observer.IsSavePromptAvailable());
+
+  // Fill in the password and submit the form. This should bring up a save
+  // password prompt and shouldn't result in a renderer kill.
+  SubmitInjectedPasswordForm(WebContents(), frame, submit_url);
+  EXPECT_TRUE(frame->IsRenderFrameLive());
+  EXPECT_TRUE(prompt_observer.IsSavePromptAvailable());
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
