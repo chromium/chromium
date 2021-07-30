@@ -569,6 +569,11 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     WaitForOnPersonalDataChanged();
   }
 
+  void AddOfferDataForTest(AutofillOfferData offer_data) {
+    personal_data_->AddOfferDataForTest(
+        std::make_unique<AutofillOfferData>(offer_data));
+  }
+
   std::unique_ptr<PersonalDataManager> personal_data_;
 };
 
@@ -716,6 +721,11 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   int GetLastVersionValidatedUpdate() {
     return personal_data_->pref_service_->GetInteger(
         prefs::kAutofillLastVersionValidated);
+  }
+
+  void AddOfferDataForTest(AutofillOfferData offer_data) {
+    personal_data_->AddOfferDataForTest(
+        std::make_unique<AutofillOfferData>(offer_data));
   }
 
   // Verifies the credit card art image fetching should begin.
@@ -2004,6 +2014,61 @@ TEST_F(PersonalDataManagerTest, IncognitoReadOnly) {
   ResetPersonalDataManager(USER_MODE_INCOGNITO);
   EXPECT_EQ(1U, personal_data_->GetProfiles().size());
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
+}
+
+// Tests that GetAutofillOffers returns all available offers.
+TEST_F(PersonalDataManagerTest, GetAutofillOffers) {
+  // Add two card-linked offers and one promo code offer.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  AddOfferDataForTest(test::GetCardLinkedOfferData2());
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  // Should return all three.
+  EXPECT_EQ(3U, personal_data_->GetAutofillOffers().size());
+}
+
+// Tests that GetAutofillOffers does not return any offers if
+// |IsAutofillWalletImportEnabled()| returns |false|.
+TEST_F(PersonalDataManagerMockTest, GetAutofillOffers_WalletImportDisabled) {
+  // Add a card-linked offer and a promo code offer.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
+
+  // Should return neither of them as the wallet import pref is disabled.
+  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
+}
+
+// Tests that GetAutofillPromoCodeOffers returns available promo code offers
+// only.
+TEST_F(PersonalDataManagerTest, GetAutofillPromoCodeOffers) {
+  // Add two card-linked offers and one promo code offer.
+  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  AddOfferDataForTest(test::GetCardLinkedOfferData2());
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  // Only the promo code offer should be returned.
+  EXPECT_EQ(1U, personal_data_->GetAutofillPromoCodeOffers().size());
+}
+
+// Tests that GetAutofillPromoCodeOffers does not return any promo code offers
+// if |IsAutofillWalletImportEnabled()| returns |false|.
+TEST_F(PersonalDataManagerMockTest,
+       GetAutofillPromoCodeOffers_WalletImportDisabled) {
+  // Add a promo code offer.
+  AddOfferDataForTest(test::GetPromoCodeOfferData());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  prefs::SetPaymentsIntegrationEnabled(prefs_.get(), false);
+
+  // Should not return the offer as the wallet import pref is disabled.
+  EXPECT_EQ(0U, personal_data_->GetAutofillOffers().size());
 }
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {

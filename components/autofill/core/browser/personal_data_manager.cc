@@ -1231,6 +1231,20 @@ std::vector<AutofillOfferData*> PersonalDataManager::GetAutofillOffers() const {
   return result;
 }
 
+std::vector<const AutofillOfferData*>
+PersonalDataManager::GetAutofillPromoCodeOffers() const {
+  if (!IsAutofillWalletImportEnabled())
+    return {};
+
+  std::vector<const AutofillOfferData*> result;
+  result.reserve(autofill_offer_data_.size());
+  for (const auto& data : autofill_offer_data_) {
+    if (data.get()->IsPromoCodeOffer())
+      result.push_back(data.get());
+  }
+  return result;
+}
+
 gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
   if (!IsAutofillWalletImportEnabled())
