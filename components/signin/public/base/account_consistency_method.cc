@@ -25,7 +25,7 @@ const base::Feature kMobileIdentityConsistencyPromos{
 
 #if defined(OS_IOS)
 const base::Feature kMobileIdentityConsistency{
-    "MobileIdentityConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MobileIdentityConsistency", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMICEWebSignIn{"MICEWebSignIn",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
