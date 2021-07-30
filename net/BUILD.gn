@@ -2200,6 +2200,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":quic_test_flags_utils",
     ":simple_quic_tools",
     "//net/http:transport_security_state_unittest_data_default",
     "//third_party/zlib",
@@ -2570,6 +2571,15 @@ source_set("quiche_test_tools") {
       [ "//net/third_party/quiche:quiche_test_tools_core" ]
 }
 
+source_set("quic_test_flags_utils") {
+  testonly = true
+  sources = [
+    "quic/platform/impl/quic_test_flags_utils.cc",
+    "quic/platform/impl/quic_test_flags_utils.h",
+  ]
+  deps = [ ":net" ]
+}
+
 source_set("quic_test_tools") {
   testonly = true
   sources = [
@@ -2612,7 +2622,10 @@ source_set("quic_test_tools") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/quic_trace:quic_trace_proto",
   ]
-  public_deps = [ "//net/third_party/quiche:quic_test_tools_core" ]
+  public_deps = [
+    ":quic_test_flags_utils",
+    "//net/third_party/quiche:quic_test_tools_core",
+  ]
   allow_circular_includes_from =
       [ "//net/third_party/quiche:quic_test_tools_core" ]
 }

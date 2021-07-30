@@ -7,10 +7,32 @@
 #include "base/check_op.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_stream_factory.h"
+#include "net/quic/platform/impl/quic_test_flags_utils.h"
 #include "net/spdy/spdy_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+class NetUnitTestEventListener : public testing::EmptyTestEventListener {
+ public:
+  NetUnitTestEventListener() = default;
+  NetUnitTestEventListener(const NetUnitTestEventListener&) = delete;
+  NetUnitTestEventListener& operator=(const NetUnitTestEventListener&) = delete;
+  ~NetUnitTestEventListener() override = default;
+
+  void OnTestStart(const testing::TestInfo& test_info) override {
+    QuicFlagChecker checker;
+    DCHECK(!quic_flags_saver_);
+    quic_flags_saver_ = std::make_unique<QuicFlagSaverImpl>();
+  }
+
+  void OnTestEnd(const testing::TestInfo& test_info) override {
+    quic_flags_saver_.reset();
+  }
+
+ private:
+  std::unique_ptr<QuicFlagSaverImpl> quic_flags_saver_;
+};
+
 NetTestSuite* g_current_net_test_suite = nullptr;
 }  // namespace
 
@@ -28,6 +50,10 @@ NetTestSuite::~NetTestSuite() {
 void NetTestSuite::Initialize() {
   TestSuite::Initialize();
   InitializeTestThread();
+
+  testing::TestEventListeners& listeners =
+      testing::UnitTest::GetInstance()->listeners();
+  listeners.Append(new NetUnitTestEventListener());
 }
 
 void NetTestSuite::Shutdown() {
