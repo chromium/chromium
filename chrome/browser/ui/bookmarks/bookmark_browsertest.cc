@@ -187,6 +187,35 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MultiProfile) {
 
 #endif
 
+// Sanity check that bookmarks from Incognito mode persist Incognito restart.
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, IncognitoPersistence) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  BookmarkModel* bookmark_model =
+      WaitForBookmarkModel(incognito_browser->profile());
+
+  // Add bookmark for Incognito and ensure it is added.
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kPersistBookmarkURL),
+                                kPersistBookmarkTitle);
+
+  std::vector<UrlAndTitle> urls;
+  bookmark_model->GetBookmarks(&urls);
+  ASSERT_EQ(1u, urls.size());
+
+  // Restart Incognito, and check again.
+  CloseBrowserSynchronously(incognito_browser);
+  incognito_browser = CreateIncognitoBrowser();
+  bookmark_model = WaitForBookmarkModel(incognito_browser->profile());
+  urls.clear();
+  bookmark_model->GetBookmarks(&urls);
+  ASSERT_EQ(1u, urls.size());
+
+  // Ensure it is also available in regular mode.
+  bookmark_model = WaitForBookmarkModel(browser()->profile());
+  urls.clear();
+  bookmark_model->GetBookmarks(&urls);
+  ASSERT_EQ(1u, urls.size());
+}
+
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
                        HideStarOnNonbookmarkedInterstitial) {
   // Start an HTTPS server with a certificate error.
