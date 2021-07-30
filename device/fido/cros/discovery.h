@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "device/fido/cros/authenticator.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_discovery_base.h"
@@ -31,6 +32,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
   void Start() override;
 
  private:
+  void OnGetSupportedFeatures(
+      const ::tpm_manager::GetSupportedFeaturesReply& reply);
   void OnU2FServiceAvailable(bool u2f_service_available);
   void MaybeAddAuthenticator(bool is_available);
   void OnHasLegacyU2fCredential(bool has_credential);

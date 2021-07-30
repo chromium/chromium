@@ -2709,7 +2709,10 @@ test("content_unittests") {
       "//services/device/public/cpp/hid:test_support",
     ]
     if (is_chromeos_ash) {
-      deps += [ "//chromeos/dbus/u2f" ]
+      deps += [
+        "//chromeos/dbus/tpm_manager",
+        "//chromeos/dbus/u2f",
+      ]
     }
   }
 

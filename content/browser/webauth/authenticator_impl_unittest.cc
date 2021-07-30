@@ -97,6 +97,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #endif
 
@@ -482,6 +483,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::TpmManagerClient::InitializeFake();
     chromeos::U2FClient::InitializeFake();
 #endif
 
@@ -501,6 +503,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::U2FClient::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
 #endif
 #if defined(OS_WIN)
     AuthenticatorEnvironmentImpl::GetInstance()

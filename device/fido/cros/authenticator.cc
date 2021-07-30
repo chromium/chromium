@@ -11,6 +11,8 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "chromeos/dbus/u2f/u2f_interface.pb.h"
 #include "components/cbor/reader.h"
@@ -341,12 +343,24 @@ void ChromeOSAuthenticator::OnCancelResponse(
 
 void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
     base::OnceCallback<void(bool is_available)> callback) {
-  chromeos::U2FClient::Get()->IsUvpaa(
-      u2f::IsUvpaaRequest(),
+  chromeos::TpmManagerClient::Get()->GetSupportedFeatures(
+      ::tpm_manager::GetSupportedFeaturesRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_available)> callback,
-             absl::optional<u2f::IsUvpaaResponse> response) {
-            std::move(callback).Run(response && response->available());
+             const ::tpm_manager::GetSupportedFeaturesReply& reply) {
+            if (reply.support_u2f()) {
+              chromeos::U2FClient::Get()->IsUvpaa(
+                  u2f::IsUvpaaRequest(),
+                  base::BindOnce(
+                      [](base::OnceCallback<void(bool is_available)> callback,
+                         absl::optional<u2f::IsUvpaaResponse> response) {
+                        std::move(callback).Run(response &&
+                                                response->available());
+                      },
+                      std::move(callback)));
+            } else {
+              std::move(callback).Run(false);
+            }
           },
           std::move(callback)));
 }
