@@ -493,9 +493,9 @@ void NavigationControllerImpl::DidFinishNavigation(
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
 
-  navigation->set_safe_to_get_page();
-
   if (navigation_handle->HasCommitted()) {
+    navigation->set_safe_to_get_page();
+
     // Set state on NavigationEntry user data if a per-navigation user agent was
     // specified. This can't be done earlier because a NavigationEntry might not
     // have existed at the time that SetUserAgentString was called.

@@ -429,11 +429,12 @@ public class Navigation extends IClientNavigation.Stub {
 
     /*
      * Returns the Page object this navigation is occurring for.
-     * This method may only be called in or after {@link NavigationCallback.onNavigationCompleted}
-     * or {@link NavigationCallback.onNavigationFailed}. It can return null if the navigation didn't
-     * commit (e.g. 204/205 or download).
+     * This method may only be called in {@link NavigationCallback.onNavigationCompleted} or
+     * {@link NavigationCallback.onNavigationFailed} and only when {@link Navigation#getState}
+     * returns COMPLETE. It will return a non-null object in this case.
      *
-     * @throws IllegalStateException If called before completion or failure.
+     * @throws IllegalStateException If called outside the completion or failure callbacks or if the
+     * state is not COMPLETE.
      *
      * @since 90
      */
