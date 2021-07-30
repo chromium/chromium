@@ -31,15 +31,14 @@ component("lacros") {
     "//ui/native_theme",
   ]
   sources = [
-    "lacros_chrome_service_impl.cc",
-    "lacros_chrome_service_impl.h",
-    "lacros_chrome_service_impl_never_blocking_state.cc",
-    "lacros_chrome_service_impl_never_blocking_state.h",
     "lacros_dbus_helper.cc",
     "lacros_dbus_helper.h",
     "lacros_dbus_thread_manager.cc",
     "lacros_dbus_thread_manager.h",
+    "lacros_service.cc",
     "lacros_service.h",
+    "lacros_service_never_blocking_state.cc",
+    "lacros_service_never_blocking_state.h",
     "native_theme_cache.cc",
     "native_theme_cache.h",
     "system_idle_cache.cc",

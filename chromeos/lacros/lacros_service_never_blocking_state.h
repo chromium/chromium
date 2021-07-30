@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_LACROS_LACROS_CHROME_SERVICE_IMPL_NEVER_BLOCKING_STATE_H_
-#define CHROMEOS_LACROS_LACROS_CHROME_SERVICE_IMPL_NEVER_BLOCKING_STATE_H_
+#ifndef CHROMEOS_LACROS_LACROS_SERVICE_NEVER_BLOCKING_STATE_H_
+#define CHROMEOS_LACROS_LACROS_SERVICE_NEVER_BLOCKING_STATE_H_
 
 #include <utility>
 
@@ -20,13 +20,13 @@ namespace chromeos {
 // affine to a single, never-blocking sequence. The sequence must be
 // never-blocking to avoid deadlocks, see https://crbug.com/1103765.
 //
-// This class is considered an implementation detail of LacrosChromeServiceImpl.
+// This class is considered an implementation detail of LacrosService.
 // It exists as a standalone class/file because template member functions must
 // be defined in header files.
-class LacrosChromeServiceImplNeverBlockingState {
+class LacrosServiceNeverBlockingState {
  public:
-  LacrosChromeServiceImplNeverBlockingState();
-  ~LacrosChromeServiceImplNeverBlockingState();
+  LacrosServiceNeverBlockingState();
+  ~LacrosServiceNeverBlockingState();
 
   // Crosapi is the interface that lacros-chrome uses to message
   // ash-chrome. This method binds the remote, which allows queuing of message
@@ -48,7 +48,7 @@ class LacrosChromeServiceImplNeverBlockingState {
     (crosapi_.get()->*bind_func)(std::move(receiver));
   }
 
-  base::WeakPtr<LacrosChromeServiceImplNeverBlockingState> GetWeakPtr();
+  base::WeakPtr<LacrosServiceNeverBlockingState> GetWeakPtr();
 
  private:
   // This remote allows lacros-chrome to send messages to ash-chrome.
@@ -60,10 +60,9 @@ class LacrosChromeServiceImplNeverBlockingState {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<LacrosChromeServiceImplNeverBlockingState> weak_factory_{
-      this};
+  base::WeakPtrFactory<LacrosServiceNeverBlockingState> weak_factory_{this};
 };
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_LACROS_LACROS_CHROME_SERVICE_IMPL_NEVER_BLOCKING_STATE_H_
+#endif  // CHROMEOS_LACROS_LACROS_SERVICE_NEVER_BLOCKING_STATE_H_

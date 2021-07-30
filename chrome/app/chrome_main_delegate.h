@@ -21,7 +21,7 @@ class CommandLine;
 }
 
 namespace chromeos {
-class LacrosChromeServiceImpl;
+class LacrosService;
 }
 
 namespace tracing {
@@ -89,7 +89,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<HeapProfilerController> heap_profiler_controller_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
+  std::unique_ptr<chromeos::LacrosService> lacros_service_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeMainDelegate);

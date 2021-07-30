@@ -549,10 +549,10 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // This also needs ThreadPool sequences to post some tasks internally.
   // However, the tasks can be suspended until actual start of the ThreadPool
   // sequences later.
-  lacros_chrome_service_ = std::make_unique<chromeos::LacrosService>();
+  lacros_service_ = std::make_unique<chromeos::LacrosService>();
   {
     const crosapi::mojom::BrowserInitParams* init_params =
-        lacros_chrome_service_->init_params();
+        lacros_service_->init_params();
     // default_paths may null on browser_tests.
     if (init_params->default_paths) {
       base::FilePath drivefs;
