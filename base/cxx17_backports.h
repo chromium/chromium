@@ -6,6 +6,7 @@
 #define BASE_CXX17_BACKPORTS_H_
 
 #include <array>
+#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <string>
