@@ -66,7 +66,7 @@
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/metrics/demographics/user_demographics.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -210,9 +210,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
   DCHECK(!account_web_data_service_ ||
          web_data_service_thread_ ==
              account_web_data_service_->GetDBTaskRunner());
-  profile_password_store_ = PasswordStoreFactory::GetInterfaceForProfile(
+  profile_password_store_ = PasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_password_store_ = AccountPasswordStoreFactory::GetInterfaceForProfile(
+  account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ = std::make_unique<ProfileSyncComponentsFactoryImpl>(

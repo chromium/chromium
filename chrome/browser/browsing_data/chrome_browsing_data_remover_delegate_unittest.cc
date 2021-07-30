@@ -99,11 +99,10 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_field_info_store.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_password_sync_metadata_store.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -538,14 +537,13 @@ class RemovePasswordsTester {
     PasswordStoreFactory::GetInstance()->SetTestingFactory(
         testing_profile,
         base::BindRepeating(
-            &password_manager::BuildPasswordStoreInterface<
+            &password_manager::BuildPasswordStore<
                 content::BrowserContext,
-                testing::NiceMock<
-                    password_manager::MockPasswordStoreInterface>>));
+                testing::NiceMock<password_manager::MockPasswordStore>>));
 
-    profile_store_ = static_cast<password_manager::MockPasswordStoreInterface*>(
-        PasswordStoreFactory::GetInterfaceForProfile(
-            testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
+    profile_store_ = static_cast<password_manager::MockPasswordStore*>(
+        PasswordStoreFactory::GetForProfile(testing_profile,
+                                            ServiceAccessType::EXPLICIT_ACCESS)
             .get());
 
     if (base::FeatureList::IsEnabled(
@@ -553,16 +551,14 @@ class RemovePasswordsTester {
       AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
           testing_profile,
           base::BindRepeating(
-              &password_manager::BuildPasswordStoreInterface<
+              &password_manager::BuildPasswordStore<
                   content::BrowserContext,
-                  testing::NiceMock<
-                      password_manager::MockPasswordStoreInterface>>));
+                  testing::NiceMock<password_manager::MockPasswordStore>>));
 
-      account_store_ =
-          static_cast<password_manager::MockPasswordStoreInterface*>(
-              AccountPasswordStoreFactory::GetInterfaceForProfile(
-                  testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
-                  .get());
+      account_store_ = static_cast<password_manager::MockPasswordStore*>(
+          AccountPasswordStoreFactory::GetForProfile(
+              testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
+              .get());
     }
 
     OSCryptMocker::SetUp();
@@ -573,12 +569,16 @@ class RemovePasswordsTester {
 
   ~RemovePasswordsTester() { OSCryptMocker::TearDown(); }
 
-  password_manager::MockPasswordStoreInterface* profile_store() {
+  password_manager::MockPasswordStore* profile_store() {
     return profile_store_;
   }
 
-  password_manager::MockPasswordStoreInterface* account_store() {
+  password_manager::MockPasswordStore* account_store() {
     return account_store_;
+  }
+
+  password_manager::MockPasswordSyncMetadataStore* account_metadata_store() {
+    return &account_metadata_store_;
   }
 
   password_manager::MockSmartBubbleStatsStore* mock_smart_bubble_stats_store() {
@@ -590,8 +590,9 @@ class RemovePasswordsTester {
   }
 
  private:
-  password_manager::MockPasswordStoreInterface* profile_store_;
-  password_manager::MockPasswordStoreInterface* account_store_;
+  password_manager::MockPasswordStore* profile_store_;
+  password_manager::MockPasswordStore* account_store_;
+  password_manager::MockPasswordSyncMetadataStore account_metadata_store_;
   testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
       mock_smart_bubble_stats_store_;
   testing::NiceMock<password_manager::MockFieldInfoStore>
@@ -1178,7 +1179,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   }
 
   void ExpectRemoveLoginsByURLAndTime(
-      password_manager::MockPasswordStoreInterface* store) {
+      password_manager::MockPasswordStore* store) {
     EXPECT_CALL(*store, RemoveLoginsByURLAndTime)
         .WillOnce(
             testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
@@ -1189,7 +1190,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   }
 
   void ExpectRemoveLoginsByURLAndTimeWithFilter(
-      password_manager::MockPasswordStoreInterface* store,
+      password_manager::MockPasswordStore* store,
       base::RepeatingCallback<bool(const GURL&)> filter) {
     EXPECT_CALL(*store, RemoveLoginsByURLAndTime(ProbablySameFilter(filter), _,
                                                  _, _, _))
@@ -2102,6 +2103,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
         base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                       std::move(completion));
       }));
+
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
       content::BrowsingDataRemover::DATA_TYPE_COOKIES |
@@ -3153,6 +3155,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
 
   EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTime).Times(0);
   ExpectRemoveLoginsByURLAndTime(tester.account_store());
+  // For the account store, the remover delegate also waits until all the
+  // deletions have propagated to the Sync server. Pretend that happens
+  // immediately.
+  EXPECT_CALL(*tester.account_metadata_store(), HasUnsyncedDeletions())
+      .WillRepeatedly(Return(false));
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_ACCOUNT_PASSWORDS, false);
@@ -3164,6 +3171,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
 
   EXPECT_CALL(*tester.profile_store(), RemoveLoginsByURLAndTime).Times(0);
   ExpectRemoveLoginsByURLAndTime(tester.account_store());
+  // For the account store, the remover delegate also waits until all the
+  // deletions have propagated to the Sync server. In this test, that never
+  // happens.
+  EXPECT_CALL(*tester.account_metadata_store(), HasUnsyncedDeletions())
+      .WillRepeatedly(Return(true));
 
   uint64_t failed_data_types = BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(), constants::DATA_TYPE_ACCOUNT_PASSWORDS,

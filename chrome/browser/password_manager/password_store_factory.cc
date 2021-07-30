@@ -43,11 +43,8 @@
 #endif
 
 using password_manager::PasswordStore;
-using password_manager::PasswordStoreInterface;
 
-// TODO(crbug.com/1218413): Delete this method when the migration to
-// PasswordStoreInterface is complete and rename the method below to
-// GetForProfile. static
+// static
 scoped_refptr<PasswordStore> PasswordStoreFactory::GetForProfile(
     Profile* profile,
     ServiceAccessType access_type) {
@@ -59,13 +56,6 @@ scoped_refptr<PasswordStore> PasswordStoreFactory::GetForProfile(
     return nullptr;
   return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
       GetInstance()->GetServiceForBrowserContext(profile, true).get()));
-}
-
-// static
-scoped_refptr<PasswordStoreInterface>
-PasswordStoreFactory::GetInterfaceForProfile(Profile* profile,
-                                             ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
 }
 
 // static
