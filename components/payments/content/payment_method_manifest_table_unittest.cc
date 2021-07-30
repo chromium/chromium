@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -329,5 +330,72 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   EXPECT_EQ(expected_icon, instruments.back()->icon);
 }
 
+TEST_F(PaymentMethodManifestTableTest, ClearInstruments) {
+  PaymentMethodManifestTable* table =
+      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
+      SecurePaymentConfirmationInstrument(
+          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
+          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
+      SecurePaymentConfirmationInstrument(
+          CreateCredentialId(/*first_byte=*/1), "relying-party.example",
+          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+
+  table->ClearSecurePaymentConfirmationInstruments(
+      base::Time::Now() - base::TimeDelta::FromMinutes(1),
+      base::Time::Now() + base::TimeDelta::FromMinutes(1));
+
+  std::vector<std::vector<uint8_t>> credential_ids;
+  credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
+  credential_ids.push_back(CreateCredentialId(/*first_byte=*/1));
+  EXPECT_TRUE(
+      table->GetSecurePaymentConfirmationInstruments(std::move(credential_ids))
+          .empty());
+}
+
+TEST_F(PaymentMethodManifestTableTest,
+       ClearInstruments_NotDeleteOutOfTimeRange) {
+  PaymentMethodManifestTable* table =
+      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
+      SecurePaymentConfirmationInstrument(
+          CreateCredentialId(/*first_byte=*/0), "relying-party.example",
+          u"Instrument label 1", CreateIcon(/*first_byte=*/0))));
+
+  EXPECT_TRUE(table->AddSecurePaymentConfirmationInstrument(
+      SecurePaymentConfirmationInstrument(
+          CreateCredentialId(/*first_byte=*/1), "relying-party.example",
+          u"Instrument label 2", CreateIcon(/*first_byte=*/4))));
+
+  table->ClearSecurePaymentConfirmationInstruments(
+      base::Time(), base::Time::Now() - base::TimeDelta::FromMinutes(1));
+
+  std::vector<std::vector<uint8_t>> credential_ids;
+  credential_ids.push_back(CreateCredentialId(/*first_byte=*/0));
+  credential_ids.push_back(CreateCredentialId(/*first_byte=*/1));
+  EXPECT_EQ(
+      2u,
+      table->GetSecurePaymentConfirmationInstruments(std::move(credential_ids))
+          .size());
+}
+
+TEST_F(PaymentMethodManifestTableTest, InstrumentTableAddDateCreatedColumn) {
+  PaymentMethodManifestTable* payment_method_manifest_table =
+      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(payment_method_manifest_table->RazeForTest());
+  EXPECT_TRUE(payment_method_manifest_table->ExecuteForTest(
+      "CREATE TABLE IF NOT EXISTS secure_payment_confirmation_instrument ( "
+      "credential_id BLOB NOT NULL PRIMARY KEY, "
+      "relying_party_id VARCHAR NOT NULL, "
+      "label VARCHAR NOT NULL, "
+      "icon BLOB NOT NULL)"));
+  EXPECT_FALSE(payment_method_manifest_table->DoesColumnExistForTest(
+      "secure_payment_confirmation_instrument", "date_created"));
+  EXPECT_TRUE(payment_method_manifest_table->CreateTablesIfNecessary());
+  EXPECT_TRUE(payment_method_manifest_table->DoesColumnExistForTest(
+      "secure_payment_confirmation_instrument", "date_created"));
+}
 }  // namespace
 }  // namespace payments

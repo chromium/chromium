@@ -69,8 +69,18 @@ class PaymentManifestWebDataService : public WebDataServiceBase {
       std::vector<std::vector<uint8_t>> credential_ids,
       WebDataServiceConsumer* consumer);
 
+  // Clears all of the the secure payment confirmation instrument information
+  // created in the given time range `begin` and `end`.
+  void ClearSecurePaymentConfirmationInstruments(base::Time begin,
+                                                 base::Time end);
+
  private:
   ~PaymentManifestWebDataService() override;
+
+  WebDatabase::State ClearSecurePaymentConfirmationInstrumentsImpl(
+      base::Time begin,
+      base::Time end,
+      WebDatabase* db);
 
   void RemoveExpiredData(WebDatabase* db);
 
