@@ -15,7 +15,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/ukm/test_ukm_recorder.h"

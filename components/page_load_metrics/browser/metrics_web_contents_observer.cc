@@ -1093,11 +1093,12 @@ MetricsWebContentsObserver::TestingObserver::GetDelegateForCommittedLoad() {
   return observer_ ? &observer_->GetDelegateForCommittedLoad() : nullptr;
 }
 
-void MetricsWebContentsObserver::BroadcastEventToObservers(
-    PageLoadMetricsEvent event) {
-  // TODO(crbug.com/1190112): Support MPArch.
+void MetricsWebContentsObserver::OnPrefetchLikely() {
+  // Prefetching can be triggered by speculation rules (by SpeculationHostImpl::
+  // UpdateSpeculationCandidates()) or by NavigationPredictor, both of which
+  // work only on behalf of a primary page.
   if (committed_load_)
-    committed_load_->BroadcastEventToObservers(event);
+    committed_load_->OnPrefetchLikely();
 }
 
 void MetricsWebContentsObserver::OnV8MemoryChanged(

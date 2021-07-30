@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/global_routing_id.h"
@@ -551,8 +550,8 @@ class PageLoadMetricsObserver {
                                  bool blocked_by_policy,
                                  StorageType access_type) {}
 
-  // Called when |event| occurs in this page load.
-  virtual void OnEventOccurred(PageLoadMetricsEvent event) {}
+  // Called when prefetch is likely to occur in this page load.
+  virtual void OnPrefetchLikely() {}
 
   // Called when the page tracked was just activated after being loaded inside a
   // portal.

@@ -817,9 +817,9 @@ void PageLoadTracker::OnSubFrameMobileFriendlinessChanged(
   }
 }
 
-void PageLoadTracker::BroadcastEventToObservers(PageLoadMetricsEvent event) {
+void PageLoadTracker::OnPrefetchLikely() {
   for (const auto& observer : observers_) {
-    observer->OnEventOccurred(event);
+    observer->OnPrefetchLikely();
   }
 }
 

@@ -138,11 +138,8 @@ void PrefetchProxyPageLoadMetricsObserver::OnDidInternalNavigationAbort(
   RecordAfterSRPEvent();
 }
 
-void PrefetchProxyPageLoadMetricsObserver::OnEventOccurred(
-    page_load_metrics::PageLoadMetricsEvent event) {
-  if (event == page_load_metrics::PageLoadMetricsEvent::PREFETCH_LIKELY) {
-    GetPrefetchMetrics();
-  }
+void PrefetchProxyPageLoadMetricsObserver::OnPrefetchLikely() {
+  GetPrefetchMetrics();
 }
 
 void PrefetchProxyPageLoadMetricsObserver::GetPrefetchMetrics() {

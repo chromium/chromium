@@ -14,7 +14,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -180,10 +179,10 @@ class MetricsWebContentsObserver
       mojom::InputTimingPtr input_timing_delta,
       const blink::MobileFriendliness& mobile_friendliness);
 
-  // Informs the observers of the currently committed load that |event| has
-  // occurred. This should not be called within
-  // WebContentsObserver::DidFinishNavigation methods.
-  void BroadcastEventToObservers(PageLoadMetricsEvent event);
+  // Informs the observers of the currently committed primary page load that
+  // it's likely that prefetch will occur in this WebContents. This should
+  // not be called within WebContentsObserver::DidFinishNavigation methods.
+  void OnPrefetchLikely();
 
   // Called when V8 per-frame memory usage updates are available. Virtual for
   // test classes to override.

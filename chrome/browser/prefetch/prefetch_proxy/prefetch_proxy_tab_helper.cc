@@ -36,7 +36,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
@@ -106,8 +105,7 @@ void InformPLMOfLikelyPrefetching(content::WebContents* web_contents) {
   if (!metrics_web_contents_observer)
     return;
 
-  metrics_web_contents_observer->BroadcastEventToObservers(
-      page_load_metrics::PageLoadMetricsEvent::PREFETCH_LIKELY);
+  metrics_web_contents_observer->OnPrefetchLikely();
 }
 
 void OnGotCookieList(

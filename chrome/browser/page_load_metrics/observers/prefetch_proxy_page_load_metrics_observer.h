@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +70,7 @@ class PrefetchProxyPageLoadMetricsObserver
       content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override;
-  void OnEventOccurred(page_load_metrics::PageLoadMetricsEvent event) override;
+  void OnPrefetchLikely() override;
 
   // The time that the navigation started. Used to timebox the history service
   // query on commit.
