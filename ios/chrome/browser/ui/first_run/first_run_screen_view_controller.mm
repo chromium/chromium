@@ -242,6 +242,12 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
+  // Rescale image here as on iPad the view height isn't correctly set during
+  // -viewDidLoad.
+  self.imageView.image = [self scaleSourceImage:self.bannerImage
+                                   currentImage:self.imageView.image
+                                         toSize:[self computeBannerImageSize]];
+
   // Reset |didReachBottom| to make sure that its value is correctly updated
   // to reflect the scrolling state when the view reappears and is refreshed
   // (e.g., when getting back from a full screen view that was hidding this
@@ -303,12 +309,6 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   });
 }
 
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-  self.imageView.image = [self scaleImage:self.imageView.image
-                                   toSize:[self computeBannerImageSize]];
-}
-
 #pragma mark - Setter
 
 - (void)setPrimaryActionString:(NSString*)text {
@@ -337,9 +337,10 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 
 - (UIImageView*)imageView {
   if (!_imageView) {
-    _imageView = [[UIImageView alloc] initWithImage:self.bannerImage];
-    _imageView.image = [self scaleImage:_imageView.image
-                                 toSize:[self computeBannerImageSize]];
+    _imageView = [[UIImageView alloc]
+        initWithImage:[self scaleSourceImage:self.bannerImage
+                                currentImage:nil
+                                      toSize:[self computeBannerImageSize]]];
     _imageView.clipsToBounds = YES;
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
@@ -354,20 +355,23 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   CGFloat destinationHeight =
       roundf(self.view.bounds.size.height * bannerMultiplier);
   CGFloat destinationWidth =
-      roundf(self.imageView.image.size.width /
-             self.imageView.image.size.height * destinationHeight);
+      roundf(self.bannerImage.size.width / self.bannerImage.size.height *
+             destinationHeight);
   CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
   return newSize;
 }
 
-// Returns a new UIImage which is |image| resized to |newSize|.
-- (UIImage*)scaleImage:(UIImage*)image toSize:(CGSize)newSize {
-  if (CGSizeEqualToSize(newSize, image.size)) {
-    return image;
+// Returns a new UIImage which is |sourceImage| resized to |newSize|. Returns
+// |currentImage| if it is already at the correct size.
+- (UIImage*)scaleSourceImage:(UIImage*)sourceImage
+                currentImage:(UIImage*)currentImage
+                      toSize:(CGSize)newSize {
+  if (CGSizeEqualToSize(newSize, currentImage.size)) {
+    return currentImage;
   }
 
   UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
-  [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+  [sourceImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
   UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return newImage;
