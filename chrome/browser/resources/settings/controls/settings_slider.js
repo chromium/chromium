@@ -9,6 +9,7 @@
  * to a tick mark, it interpolates to the nearest tick.
  */
 import '../settings_vars_css.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 
 import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {CrPolicyPrefBehavior, CrPolicyPrefBehaviorInterface} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';

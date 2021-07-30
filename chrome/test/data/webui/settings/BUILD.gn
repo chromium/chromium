@@ -124,7 +124,7 @@ js_type_check("closure_compile") {
     #":settings_textarea_tests",
     #":settings_toggle_button_tests",
 
-    ":settings_ui_tests",
+    #":settings_ui_tests",
 
     #":site_data_details_subpage_tests",
     #":site_data_test",

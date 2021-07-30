@@ -77,12 +77,12 @@ let ModelArgs;
 /**
  * Singleton element that generates the languages model on start-up and
  * updates it whenever Chrome's pref store and other settings change.
- * @implements {LanguageHelper}
  */
 
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {LanguageHelper}
  * @implements {PrefsBehaviorInterface}
  */
 const SettingsLanguagesElementBase =

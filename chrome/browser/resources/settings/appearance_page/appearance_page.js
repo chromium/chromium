@@ -16,6 +16,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './home_url_input.js';
+import '../controls/settings_dropdown_menu.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

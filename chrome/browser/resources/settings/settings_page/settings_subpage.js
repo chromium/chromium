@@ -9,6 +9,7 @@
  */
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
