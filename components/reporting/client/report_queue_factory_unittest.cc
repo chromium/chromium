@@ -89,7 +89,7 @@ TEST_F(ReportQueueFactoryTest, EmptyDmToken) {
 
 // Tests if two consumers use the same provider and create two queues.
 // The test is flaky and has to be temporarily disabled. (crbug.com/1232156)
-TEST_F(ReportQueueFactoryTest, DISABLED_SameProviderForMultipleThreads) {
+TEST_F(ReportQueueFactoryTest, SameProviderForMultipleThreads) {
   const std::string dmToken2 = "TOKEN2";
   auto consumer2 = std::make_unique<MockReportQueueConsumer>();
   EXPECT_FALSE(consumer_->GetReportQueue());

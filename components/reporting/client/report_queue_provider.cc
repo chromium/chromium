@@ -212,6 +212,7 @@ void ReportQueueProvider::InitializingContext::Complete(Status status) {
   if (status.ok()) {
     // Export the results to the provider.
     OnCompleted();
+    std::move(release_leader_cb_).Run(/*initialization_successful=*/true);
   } else if (status.error_code() == error::ALREADY_EXISTS) {
     // Between building this InitializingContext and attempting to promote to
     // leader, the |ReportQueueProvider| was configured. Respond Ok but do not
@@ -219,7 +220,6 @@ void ReportQueueProvider::InitializingContext::Complete(Status status) {
     status = Status::StatusOK();
   }
 
-  std::move(release_leader_cb_).Run(/*initialization_successful=*/status.ok());
   std::move(init_complete_cb_).Run(status);
   delete this;
 }
