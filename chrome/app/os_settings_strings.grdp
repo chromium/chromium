@@ -1998,6 +1998,9 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_NO_DEVICES" desc="Message displayed when there are no paired Bluetooth devices scan.">
     No paired devices
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIR_NEW_DEVICES" desc="Message displayed describing how to pair a new Bluetooth device.">
+    Pair new device
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_NO_DEVICES_FOUND" desc="Message displayed when no Bluetooth devices are found after a scan.">
     No Bluetooth devices found
   </message>

@@ -145,6 +145,7 @@ generate_grd("build_grd") {
     "images/error_badge.svg",
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
+    "images/icon_pair_bluetooth.svg",
     "images/icon_add_cellular.svg",
     "images/notification_access_connecting.svg",
     "images/notification_access_error.svg",

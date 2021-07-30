@@ -37,9 +37,27 @@ class SettingsBluetoothSummaryElement extends
     return html`{__html_template__}`;
   }
 
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onSubpageArrowClick_(e) {
+    this.navigateToBluetoothDevicesSubpage_();
+    e.stopPropagation();
+  }
+
   /** @private */
-  onSubpageArrowTap_() {
+  navigateToBluetoothDevicesSubpage_() {
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
+  }
+
+  /** @private */
+  onWrapperClick_(e) {
+    e.stopPropagation();
+    // TODO(crbug.com/1010321): Check the state of Bluetooth properties
+    // before opening subpage. Only open if enable Bluetooth toggle is enabled
+    // and Bluetooth |systemState| is enabled.
+    this.navigateToBluetoothDevicesSubpage_();
   }
 }
 

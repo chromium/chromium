@@ -1,9 +1,33 @@
-<style include="settings-shared iron-flex">
+<style include="settings-shared os-settings-icons">
+  #pairNewDeviceBtn {
+    margin-inline-end: 20px;
+  }
 </style>
 <div id="bluetoothSummary" class="settings-box two-line first no-padding">
-  <cr-icon-button id="iconButton" class="subpage-arrow layout end"
-      on-click="onSubpageArrowTap_"
-      aria-label="$i18n{bluetoothPageTitle}"
-      aria-roledescription="$i18n{subpageArrowRoleDescription}">
+  <div class="link-wrapper" actionable on-click="onWrapperClick_">
+    <iron-icon id="bluetoothIcon" icon="cr:bluetooth">
+    </iron-icon>
+    <div id="bluetoothPageTitle"
+        class="middle settings-box-text"
+        aria-hidden="true">
+      $i18n{bluetoothPageTitle}
+    </div>
+    <cr-icon-button id="iconButton"
+        class="subpage-arrow layout end"
+        on-click="onSubpageArrowClick_"
+        aria-labelledby="bluetoothPageTitle"
+        aria-roledescription="$i18n{subpageArrowRoleDescription}">
+    </cr-icon-button>
+  </div>
+</div>
+
+<div id="pairNewDevice" class="settings-box no-padding">
+  <div id="pairNewDeviceLabel" class="middle settings-box-text"
+      aria-hidden="true">
+    $i18n{bluetoothPairNewDevice}
+  </div>
+  <cr-icon-button id="pairNewDeviceBtn"
+      class="icon-pair-bluetooth layout end"
+      aria-labelledby="pairNewDeviceLabel">
   </cr-icon-button>
 </div>

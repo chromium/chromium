@@ -8,6 +8,7 @@
 // #import 'chrome://os-settings/strings.m.js';
 
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
@@ -21,8 +22,19 @@ suite('OsBluetoothSummaryTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Base Test', function() {
+  function flushAsync() {
+    Polymer.dom.flush();
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
+  test('Route to Bluetooth devices subpage', async function() {
     const iconButton = bluetoothSummary.$$('#iconButton');
     assertTrue(!!iconButton);
+    iconButton.click();
+
+    await flushAsync();
+    assertEquals(
+        settings.Router.getInstance().getCurrentRoute(),
+        settings.routes.BLUETOOTH_DEVICES);
   });
 });
