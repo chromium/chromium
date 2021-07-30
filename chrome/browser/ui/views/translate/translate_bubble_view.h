@@ -60,6 +60,21 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
                                          kTargetLanguageTab);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kOptionsMenuButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kChangeTargetLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kTargetLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kTargetLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kChangeSourceLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kSourceLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                         kSourceLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
 
   ~TranslateBubbleView() override;
 

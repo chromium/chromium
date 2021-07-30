@@ -148,6 +148,20 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kSourceLanguageTab);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kTargetLanguageTab);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kOptionsMenuButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                      kChangeTargetLanguage);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                      kTargetLanguageCombobox);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                      kTargetLanguageDoneButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                      kChangeSourceLanguage);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                      kSourceLanguageCombobox);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
+                                      kSourceLanguageDoneButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
 
 // static
 views::Widget* TranslateBubbleView::ShowBubble(
@@ -362,6 +376,8 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   options_menu_model_->AddItemWithStringId(
       OptionsMenuItem::CHANGE_TARGET_LANGUAGE,
       IDS_TRANSLATE_BUBBLE_CHANGE_TARGET_LANGUAGE);
+  options_menu_model_->SetElementIdentifierAt(
+      options_menu_model_->GetItemCount() - 1, kChangeTargetLanguage);
 
   auto source_language_code = model_->GetSourceLanguageCode();
   auto source_language =
@@ -394,6 +410,8 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
       OptionsMenuItem::CHANGE_SOURCE_LANGUAGE,
       l10n_util::GetStringFUTF16(IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE,
                                  source_language));
+  options_menu_model_->SetElementIdentifierAt(
+      options_menu_model_->GetItemCount() - 1, kChangeSourceLanguage);
 
   options_menu_runner_ = std::make_unique<views::MenuRunner>(
       options_menu_model_.get(), views::MenuRunner::COMBOBOX);
@@ -713,6 +731,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
+  options_menu->SetProperty(views::kElementIdentifierKey, kOptionsMenuButton);
   options_menu->SetProperty(
       views::kMarginsKey,
       gfx::Insets(0, provider->GetDistanceMetric(
@@ -790,6 +809,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewErrorNoTitle(
   const int vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
   error_message_label->SetLineHeight(vertical_spacing * 5);
+  error_message_label->SetProperty(views::kElementIdentifierKey, kErrorMessage);
   layout->AddView(std::move(error_message_label));
   layout->AddView(CreateCloseButton());
 
@@ -831,6 +851,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
   // Using normal pointer for compatibility with existing code.
   auto source_language_combobox =
       std::make_unique<views::Combobox>(source_language_combobox_model_.get());
+  source_language_combobox->SetProperty(views::kElementIdentifierKey,
+                                        kSourceLanguageCombobox);
 
   // In an incognito window or when the source language is unknown, "Always
   // translate" checkbox shouldn't be shown.
@@ -858,6 +880,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
   advanced_done_button->SetID(BUTTON_ID_DONE);
   advanced_done_button->SetIsDefault(true);
   advanced_done_button_source_ = advanced_done_button.get();
+  advanced_done_button_source_->SetProperty(views::kElementIdentifierKey,
+                                            kSourceLanguageDoneButton);
 
   return CreateViewAdvanced(std::move(source_language_combobox),
                             std::move(source_language_title_label),
@@ -881,6 +905,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   // Using normal pointer for compatibility with existing code.
   auto target_language_combobox =
       std::make_unique<views::Combobox>(target_language_combobox_model_.get());
+  target_language_combobox->SetProperty(views::kElementIdentifierKey,
+                                        kTargetLanguageCombobox);
 
   target_language_combobox->SetCallback(base::BindRepeating(
       &TranslateBubbleView::TargetLanguageChanged, base::Unretained(this)));
@@ -895,6 +921,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   advanced_done_button->SetID(BUTTON_ID_DONE);
   advanced_done_button->SetIsDefault(true);
   advanced_done_button_target_ = advanced_done_button.get();
+  advanced_done_button_target_->SetProperty(views::kElementIdentifierKey,
+                                            kTargetLanguageDoneButton);
 
   return CreateViewAdvanced(std::move(target_language_combobox),
                             std::move(target_language_title_label),
