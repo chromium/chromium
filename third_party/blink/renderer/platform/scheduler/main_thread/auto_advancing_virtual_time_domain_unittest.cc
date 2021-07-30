@@ -44,8 +44,7 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
     initial_time_ticks_ = test_task_runner_->NowTicks();
     auto_advancing_time_domain_ =
         std::make_unique<AutoAdvancingVirtualTimeDomain>(
-            initial_time_, initial_time_ticks_, scheduler_helper_.get(),
-            AutoAdvancingVirtualTimeDomain::BaseTimeOverridePolicy::OVERRIDE);
+            initial_time_, initial_time_ticks_, scheduler_helper_.get());
     scheduler_helper_->RegisterTimeDomain(auto_advancing_time_domain_.get());
     task_queue_->SetTimeDomain(auto_advancing_time_domain_.get());
   }

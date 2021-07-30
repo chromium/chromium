@@ -295,16 +295,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   using VirtualTimePolicy = PageScheduler::VirtualTimePolicy;
 
-  using BaseTimeOverridePolicy =
-      AutoAdvancingVirtualTimeDomain::BaseTimeOverridePolicy;
-
-  // Tells the scheduler that all TaskQueues should use virtual time. Depending
-  // on the initial time, picks the policy to be either overriding or not.
-  base::TimeTicks EnableVirtualTime();
-
   // Tells the scheduler that all TaskQueues should use virtual time. Returns
   // the base::TimeTicks that virtual time offsets will be relative to.
-  base::TimeTicks EnableVirtualTime(BaseTimeOverridePolicy policy);
+  base::TimeTicks EnableVirtualTime();
   bool IsVirtualTimeEnabled() const;
 
   // Migrates all task queues to real time.

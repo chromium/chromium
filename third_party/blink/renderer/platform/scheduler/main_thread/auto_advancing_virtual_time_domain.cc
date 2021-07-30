@@ -17,8 +17,7 @@ namespace scheduler {
 AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
     base::Time initial_time,
     base::TimeTicks initial_time_ticks,
-    SchedulerHelper* helper,
-    BaseTimeOverridePolicy policy)
+    SchedulerHelper* helper)
     : task_starvation_count_(0),
       max_task_starvation_count_(0),
       can_advance_virtual_time_(true),
@@ -36,11 +35,9 @@ AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
   // preventing reordering via a release fence.
   std::atomic_thread_fence(std::memory_order_release);
 
-  if (policy == BaseTimeOverridePolicy::OVERRIDE) {
-    time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-        &AutoAdvancingVirtualTimeDomain::GetVirtualTime,
-        &AutoAdvancingVirtualTimeDomain::GetVirtualTimeTicks, nullptr);
-  }
+  time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+      &AutoAdvancingVirtualTimeDomain::GetVirtualTime,
+      &AutoAdvancingVirtualTimeDomain::GetVirtualTimeTicks, nullptr);
 
   helper_->AddTaskObserver(this);
 }

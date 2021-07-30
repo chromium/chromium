@@ -3129,8 +3129,7 @@ TEST_F(
 
 TEST_F(MainThreadSchedulerImplTest, EnableVirtualTime) {
   EXPECT_FALSE(scheduler_->IsVirtualTimeEnabled());
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
   EXPECT_TRUE(scheduler_->IsVirtualTimeEnabled());
   scoped_refptr<MainThreadTaskQueue> loading_tq =
       scheduler_->NewLoadingTaskQueue(
@@ -3205,16 +3204,14 @@ TEST_F(MainThreadSchedulerImplTest, EnableVirtualTimeAfterThrottling) {
   frame_scheduler->SetFrameVisible(false);
   EXPECT_TRUE(throttleable_tq->IsThrottled());
 
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
   EXPECT_EQ(throttleable_tq->GetTaskQueue()->GetTimeDomain(),
             scheduler_->GetVirtualTimeDomain());
   EXPECT_TRUE(throttleable_tq->IsThrottled());
 }
 
 TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
   scheduler_->DisableVirtualTimeForTesting();
   EXPECT_EQ(scheduler_->DefaultTaskQueue()->GetTaskQueue()->GetTimeDomain(),
             scheduler_->real_time_domain());
@@ -3232,8 +3229,7 @@ TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
 }
 
 TEST_F(MainThreadSchedulerImplTest, VirtualTimePauser) {
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
   scheduler_->SetVirtualTimePolicy(
       PageSchedulerImpl::VirtualTimePolicy::kDeterministicLoading);
 
@@ -3253,8 +3249,7 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimePauser) {
 }
 
 TEST_F(MainThreadSchedulerImplTest, VirtualTimePauserNonInstantTask) {
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
   scheduler_->SetVirtualTimePolicy(
       PageSchedulerImpl::VirtualTimePolicy::kDeterministicLoading);
 
@@ -3273,8 +3268,7 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimeWithOneQueueWithoutVirtualTime) {
   // This test ensures that we do not do anything strange like stopping
   // processing task queues after we encountered one task queue with
   // DoNotUseVirtualTime trait.
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
   scheduler_->SetVirtualTimePolicy(
       PageSchedulerImpl::VirtualTimePolicy::kDeterministicLoading);
 
@@ -3591,8 +3585,7 @@ TEST_F(MainThreadSchedulerImplTest, TaskQueueReferenceClearedOnShutdown) {
 
   scheduler_->OnShutdownTaskQueue(queue1);
 
-  scheduler_->EnableVirtualTime(
-      MainThreadSchedulerImpl::BaseTimeOverridePolicy::DO_NOT_OVERRIDE);
+  scheduler_->EnableVirtualTime();
 
   // Virtual time should be enabled for queue2, as it is a regular queue and
   // nothing should change for queue1 because it was shut down.

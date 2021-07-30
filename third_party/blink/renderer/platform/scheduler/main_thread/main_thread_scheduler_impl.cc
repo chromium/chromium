@@ -313,7 +313,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     // we choose an arbitrary initial offset.
     main_thread_only().initial_virtual_time_ticks =
         base::TimeTicks() + base::TimeDelta::FromSeconds(10);
-    EnableVirtualTime(BaseTimeOverridePolicy::OVERRIDE);
+    EnableVirtualTime();
     SetVirtualTimePolicy(VirtualTimePolicy::kPause);
   }
 
@@ -1823,13 +1823,6 @@ IdleTimeEstimator* MainThreadSchedulerImpl::GetIdleTimeEstimatorForTesting() {
 }
 
 base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
-  return EnableVirtualTime(main_thread_only().initial_virtual_time.is_null()
-                               ? BaseTimeOverridePolicy::DO_NOT_OVERRIDE
-                               : BaseTimeOverridePolicy::OVERRIDE);
-}
-
-base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
-    BaseTimeOverridePolicy policy) {
   if (main_thread_only().use_virtual_time)
     return main_thread_only().initial_virtual_time_ticks;
   main_thread_only().use_virtual_time = true;
@@ -1840,7 +1833,7 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
     main_thread_only().initial_virtual_time_ticks = tick_clock()->NowTicks();
   virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
       main_thread_only().initial_virtual_time,
-      main_thread_only().initial_virtual_time_ticks, &helper_, policy);
+      main_thread_only().initial_virtual_time_ticks, &helper_);
   RegisterTimeDomain(virtual_time_domain_.get());
 
   DCHECK(!virtual_time_control_task_queue_);
