@@ -188,11 +188,15 @@ CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetCanvasResourceProvider() const {
   return Host()->ResourceProvider();
 }
+
 void OffscreenCanvasRenderingContext2D::Reset() {
   Host()->DiscardResourceProvider();
   BaseRenderingContext2D::reset();
   // Because the host may have changed to a zero size
   is_valid_size_ = IsValidImageSize(Host()->Size());
+  // We must resize the damage rect to avoid a potentially larger damage than
+  // actual canvas size. See: crbug.com/1227165
+  dirty_rect_for_commit_ = SkIRect::MakeWH(Width(), Height());
 }
 
 scoped_refptr<CanvasResource>
