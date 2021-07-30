@@ -44,9 +44,9 @@ namespace {
 //
 // See: b/183505430 for more context.
 constexpr base::TimeDelta kIceConnectionReceivingTimeout =
-    base::TimeDelta::FromMinutes(1);
+    base::TimeDelta::FromMinutes(10);
 constexpr base::TimeDelta kIceCheckIntervalStrongConnectivity =
-    base::TimeDelta::FromMilliseconds(2500);
+    base::TimeDelta::FromSeconds(25);
 constexpr base::TimeDelta kStableWritableConnectionPingInterval =
     base::TimeDelta::FromSeconds(30);
 

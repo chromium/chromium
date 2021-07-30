@@ -55,9 +55,12 @@ constexpr base::TimeDelta kWebRtcUpgradeDelay =
 // the impact.
 //
 // Nearby Connections keep alive interval default is 5 seconds.
-constexpr base::TimeDelta kKeepAliveInterval = base::TimeDelta::FromSeconds(15);
-// Nearby Connections keep alive timeout default is 30 seconds.
-constexpr base::TimeDelta kKeepAliveTimeout = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kKeepAliveInterval = base::TimeDelta::FromSeconds(25);
+// Nearby Connections keep alive timeout default is 30 seconds. When the phone
+// goes into deep sleep mode Chrome OS cannot expect to receive keepalives every
+// 25 seconds. The timeout needs to be set high enough to ensure a stable
+// connection when the phone is in deep sleep mode.
+constexpr base::TimeDelta kKeepAliveTimeout = base::TimeDelta::FromMinutes(10);
 
 // Numerical values should not be reused or changed since this is used by
 // metrics.
