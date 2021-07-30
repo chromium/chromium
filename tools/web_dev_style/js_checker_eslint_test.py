@@ -39,12 +39,16 @@ class JsCheckerEsLintTest(unittest.TestCase):
     checker = js_checker.JSChecker(input_api, MockOutputApi())
 
     try:
-      return checker.RunEsLintChecks(input_api.AffectedFiles(), format='json')
+      # ESLint JSON warnings come from stdout without error return.
+      output = checker.RunEsLintChecks(input_api.AffectedFiles(),
+                                       format='json')[0]
+      json_error = str(output)
     except RuntimeError as err:
       # Extract ESLint's JSON error output from the error message.
       message = str(err)
       json_error = message[message.index('['):]
-      return json.loads(json_error)[0].get('messages')
+
+    return json.loads(json_error)[0].get('messages')
 
   def _assertError(self, results, rule_id, line):
     self.assertEqual(1, len(results))
@@ -66,6 +70,13 @@ class JsCheckerEsLintTest(unittest.TestCase):
 
     results = self._runChecks('const a: number = new Number(1);', 'ts')
     self._assertError(results, 'no-new-wrappers', 1)
+
+  def testTypeScriptEslintPluginCheck(self):
+    results = self._runChecks('const a: any;', 'ts')
+    self._assertError(results, '@typescript-eslint/no-explicit-any', 1)
+
+    results = self._runChecks('const a: number = 1;', 'ts')
+    self._assertError(results, '@typescript-eslint/no-inferrable-types', 1)
 
 
 if __name__ == '__main__':
