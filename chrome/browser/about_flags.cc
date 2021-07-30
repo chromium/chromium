@@ -217,6 +217,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/arc/arc_features.h"
@@ -2533,6 +2534,15 @@ const FeatureEntry::Choice kForceControlFaceAeChoices[] = {
     {"Enable", media::switches::kForceControlFaceAe, "enable"},
     {"Disable", media::switches::kForceControlFaceAe, "disable"}};
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const FeatureEntry::Choice kCrostiniContainerChoices[] = {
+    {"Default", "", ""},
+    {"Stretch", crostini::kCrostiniContainerFlag, "stretch"},
+    {"Buster", crostini::kCrostiniContainerFlag, "buster"},
+    {"Bullseye", crostini::kCrostiniContainerFlag, "bullseye"},
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
 // The variations of --password-change-in-settings.
@@ -6343,10 +6353,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"crosh-swa", flag_descriptions::kCroshSWAName,
      flag_descriptions::kCroshSWADescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCroshSWA)},
-    {"crostini-use-buster-image",
-     flag_descriptions::kCrostiniUseBusterImageName,
-     flag_descriptions::kCrostiniUseBusterImageDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniUseBusterImage)},
+    {"crostini-container-install",
+     flag_descriptions::kCrostiniContainerInstallName,
+     flag_descriptions::kCrostiniContainerInstallDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kCrostiniContainerChoices)},
     {"crostini-disk-resizing", flag_descriptions::kCrostiniDiskResizingName,
      flag_descriptions::kCrostiniDiskResizingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniDiskResizing)},

@@ -4305,10 +4305,10 @@ const char kCrostiniDiskResizingDescription[] =
     "Use preallocated user-resizeable disks for Crostini instead of sparse "
     "automatically sized disks.";
 
-const char kCrostiniUseBusterImageName[] = "New Crostini containers use Buster";
-const char kCrostiniUseBusterImageDescription[] =
-    "New Crostini containers use Debian Buster images instead of Debian "
-    "Stretch.";
+const char kCrostiniContainerInstallName[] =
+    "Debian version for new Crostini containers";
+const char kCrostiniContainerInstallDescription[] =
+    "New Crostini containers will use this debian version";
 
 const char kCrostiniGpuSupportName[] = "Crostini GPU Support";
 const char kCrostiniGpuSupportDescription[] = "Enable Crostini GPU support.";

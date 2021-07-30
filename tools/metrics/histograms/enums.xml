@@ -16942,6 +16942,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Debian Buster"/>
   <int value="3" label="Other Debian Version"/>
   <int value="4" label="Non-Debian OS"/>
+  <int value="5" label="Debian Bullseye"/>
 </enum>
 
 <enum name="CrostiniDiskImageStatus">
@@ -49835,6 +49836,7 @@ from previous Chrome versions.
   <int value="573385109" label="SharedClipboardUI:enabled"/>
   <int value="575380532" label="ExperimentalAccessibilityLabels:disabled"/>
   <int value="575394365" label="AndroidPaymentApps:disabled"/>
+  <int value="575441361" label="crostini-container-install-version"/>
   <int value="575829120" label="shelf-hotseat"/>
   <int value="576701073" label="WebPaymentsJustInTimePaymentApp:disabled"/>
   <int value="576878329" label="enable-background-blur"/>

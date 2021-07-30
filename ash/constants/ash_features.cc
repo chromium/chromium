@@ -287,9 +287,6 @@ const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
 const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables Crostini using Buster container images.
-const base::Feature kCrostiniUseBusterImage{"CrostiniUseBusterImage",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
 // Use DLC instead of component updater for managing the Termina image if set
 // (and component updater instead of DLC if not).
 const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",

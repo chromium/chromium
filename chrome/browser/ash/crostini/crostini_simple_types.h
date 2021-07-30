@@ -250,13 +250,16 @@ enum class CrostiniDiskImageType {
 
 }  // namespace crostini
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ContainerOsVersion {
   kUnknown = 0,
   kDebianStretch = 1,
   kDebianBuster = 2,
   kDebianOther = 3,
   kOtherOs = 4,
-  kMaxValue = kOtherOs,
+  kDebianBullseye = 5,
+  kMaxValue = kDebianBullseye,
 };
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_SIMPLE_TYPES_H_

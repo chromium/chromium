@@ -2471,8 +2471,8 @@ extern const char kCrosRegionsModeHide[];
 extern const char kCrostiniDiskResizingName[];
 extern const char kCrostiniDiskResizingDescription[];
 
-extern const char kCrostiniUseBusterImageName[];
-extern const char kCrostiniUseBusterImageDescription[];
+extern const char kCrostiniContainerInstallName[];
+extern const char kCrostiniContainerInstallDescription[];
 
 extern const char kCrostiniGpuSupportName[];
 extern const char kCrostiniGpuSupportDescription[];

@@ -842,6 +842,11 @@
       "expiry_milestone": 93
   },
   {
+    "name": "crostini-container-install",
+    "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "crostini-disk-resizing",
     "owners": [ "davidmunro@google.com", "nverne" ],
     "expiry_milestone": 93
@@ -859,11 +864,6 @@
   {
     "name": "crostini-reset-lxd-db",
     "owners": [ "davidmunro@google.com", "nverne", "sidereal" ],
-    "expiry_milestone": 99
-  },
-  {
-    "name": "crostini-use-buster-image",
-    "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
     "expiry_milestone": 99
   },
   {

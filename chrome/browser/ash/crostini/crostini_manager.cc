@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -785,6 +786,8 @@ ContainerOsVersion VersionFromOsRelease(
       return ContainerOsVersion::kDebianStretch;
     } else if (os_release.version_id() == "10") {
       return ContainerOsVersion::kDebianBuster;
+    } else if (os_release.version_id() == "11") {
+      return ContainerOsVersion::kDebianBullseye;
     } else {
       return ContainerOsVersion::kDebianOther;
     }
@@ -1336,12 +1339,16 @@ void CrostiniManager::CreateLxdContainer(ContainerId container_id,
   request.set_image_server(image_server_url.empty()
                                ? kCrostiniDefaultImageServerUrl
                                : image_server_url);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrostiniUseBusterImage)) {
-    request.set_image_alias(kCrostiniBusterImageAlias);
+  std::string debian_version;
+  auto* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(kCrostiniContainerFlag)) {
+    debian_version = cmdline->GetSwitchValueASCII(kCrostiniContainerFlag);
   } else {
-    request.set_image_alias(kCrostiniStretchImageAlias);
+    debian_version = kCrostiniContainerDefaultVersion;
   }
+  request.set_image_alias(
+      base::StringPrintf(kCrostiniImageAliasPattern, debian_version.c_str()));
+
   GetCiceroneClient()->CreateLxdContainer(
       std::move(request),
       base::BindOnce(&CrostiniManager::OnCreateLxdContainer,

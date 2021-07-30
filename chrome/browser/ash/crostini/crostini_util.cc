@@ -59,13 +59,15 @@ const char kCrostiniDeletedTerminalId[] = "oajcgpnkmhaalajejhlfpacbiokdnnfe";
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
+const char kCrostiniImageAliasPattern[] = "debian/%s";
+const char kCrostiniContainerDefaultVersion[] = "buster";
+const char kCrostiniContainerFlag[] = "crostini-container-install-version";
+
 const char kCrostiniDefaultVmName[] = "termina";
 const char kCrostiniDefaultContainerName[] = "penguin";
 const char kCrostiniDefaultUsername[] = "emperor";
 const char kCrostiniDefaultImageServerUrl[] =
     "https://storage.googleapis.com/cros-containers/%d";
-const char kCrostiniStretchImageAlias[] = "debian/stretch";
-const char kCrostiniBusterImageAlias[] = "debian/buster";
 const char kCrostiniDlcName[] = "termina-dlc";
 
 const base::FilePath::CharType kHomeDirectory[] = FILE_PATH_LITERAL("/home");
