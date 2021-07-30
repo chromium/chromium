@@ -65,6 +65,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     FencedFramesImplementationType>
     kFencedFramesImplementationTypeParam;
 
+BLINK_COMMON_EXPORT extern const base::Feature kSharedStorageAPI;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSharedStorageURLSelectionOperationInputURLSizeLimit;
+
 // Prerender2:
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
 

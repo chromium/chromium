@@ -239,6 +239,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kExpensiveBackgroundTimerThrottling},
     {wf::EnableFencedFrames, blink::features::kFencedFrames,
      kSetOnlyIfOverridden},
+    {wf::EnableSharedStorageAPI, blink::features::kSharedStorageAPI},
     {wf::EnableForcedColors, features::kForcedColors},
     {wf::EnableFractionalScrollOffsets, features::kFractionalScrollOffsets},
     {wf::EnableGenericSensorExtraClasses, features::kGenericSensorExtraClasses},

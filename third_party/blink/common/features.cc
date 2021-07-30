@@ -194,6 +194,15 @@ const base::FeatureParam<FencedFramesImplementationType>
         FencedFramesImplementationType::kShadowDOM,
         &fenced_frame_implementation_types};
 
+// Enable the shared storage API. This base::Feature directly controls the
+// corresponding runtime enabled feature.
+// https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+const base::Feature kSharedStorageAPI{"SharedStorageAPI",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int>
+    kSharedStorageURLSelectionOperationInputURLSizeLimit{
+        &kSharedStorageAPI, "url_selection_operation_input_url_size_limit", 5};
+
 // Enable the prerender2. https://crbug.com/1126305.
 // Note that default enabling this does not enable the Prerender2 features
 // because kSetOnlyIfOverridden is used for setting WebRuntimeFeatures'

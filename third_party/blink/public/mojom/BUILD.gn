@@ -177,6 +177,7 @@ mojom("mojom_platform") {
     "service_worker/service_worker_stream_handle.mojom",
     "service_worker/service_worker_worker_client.mojom",
     "service_worker/service_worker_worker_client_registry.mojom",
+    "shared_storage/shared_storage.mojom",
     "site_engagement/site_engagement.mojom",
     "sms/webotp_service.mojom",
     "speculation_rules/speculation_rules.mojom",

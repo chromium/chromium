@@ -372,6 +372,10 @@ void WebRuntimeFeatures::EnableSharedAutofill(bool enable) {
   RuntimeEnabledFeatures::SetSharedAutofillEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableSharedStorageAPI(bool enable) {
+  RuntimeEnabledFeatures::SetSharedStorageAPIEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableSharedWorker(bool enable) {
   RuntimeEnabledFeatures::SetSharedWorkerEnabled(enable);
 }

@@ -1,0 +1,7 @@
+include_rules = [
+    "-third_party/blink/renderer/modules",
+    "+third_party/blink/renderer/modules/modules_export.h",
+    "+third_party/blink/renderer/modules/shared_storage",
+    "+third_party/blink/renderer/modules/v8",
+    "+third_party/blink/renderer/core",
+]

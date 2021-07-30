@@ -2008,6 +2008,10 @@
       status: "experimental",
     },
     {
+      name: "SharedStorageAPI",
+      status: "test",
+    },
+    {
       name: "SharedWorker",
       // Android does not yet support SharedWorker. crbug.com/154571
       status: {"Android": "", "default": "stable"},

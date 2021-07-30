@@ -1,0 +1,19 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(() => {
+  return sharedStorage.worklet.addModule("foo");
+}, 'addModule');
+
+promise_test(() => {
+  return sharedStorage.runURLSelectionOperation("operation1", ["foo1", "foo2", "foo3", "foo4", "foo5"]);
+}, 'runURLSelectionOperation');
+
+promise_test(() => {
+  return sharedStorage.runURLSelectionOperation("operation1", ["foo1", "foo2", "foo3", "foo4", "foo5"], {data: {'custom-key': 'custom-value'}});
+}, 'runURLSelectionOperation with custom data');
+
+</script>

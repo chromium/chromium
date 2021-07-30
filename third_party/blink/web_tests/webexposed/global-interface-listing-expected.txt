@@ -8369,6 +8369,16 @@ interface ShadowRoot : DocumentFragment
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML
+interface SharedStorage
+    attribute @@toStringTag
+    getter worklet
+    method append
+    method clear
+    method constructor
+    method delete
+    method runOperation
+    method runURLSelectionOperation
+    method set
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror
@@ -11442,6 +11452,7 @@ namespace CSS
     getter scrollbars
     getter self
     getter sessionStorage
+    getter sharedStorage
     getter speechSynthesis
     getter status
     getter statusbar

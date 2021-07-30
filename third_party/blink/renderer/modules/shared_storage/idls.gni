@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+modules_idl_files = [
+  "shared_storage_worklet.idl",
+  "shared_storage.idl",
+]
+
+modules_dictionary_idl_files = [
+  "shared_storage_set_method_options.idl",
+  "shared_storage_run_operation_method_options.idl",
+]
+
+modules_dependency_idl_files = [ "window_shared_storage.idl" ]

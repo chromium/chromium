@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// SharedStorage is an origin-keyed storage mechanism where the output is
+// carefully guarded to mitigate the risk of cross-site correlation.
+// See https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
+//
+// Implemented by the browser and exposed to the renderer process on a per-frame
+// basis, to allow accessing the shared storage and initiating worklet
+// operations, etc.
+interface SharedStorageDocumentService {};

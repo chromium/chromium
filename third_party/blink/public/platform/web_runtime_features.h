@@ -158,6 +158,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableAutoLazyLoadOnReloads(bool);
   BLINK_PLATFORM_EXPORT static void EnableSharedArrayBuffer(bool);
   BLINK_PLATFORM_EXPORT static void EnableSharedAutofill(bool);
+  BLINK_PLATFORM_EXPORT static void EnableSharedStorageAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnableSharedWorker(bool);
   BLINK_PLATFORM_EXPORT static void EnableTextFragmentAnchor(bool);
   BLINK_PLATFORM_EXPORT static void EnableTextFragmentColorChange(bool);
