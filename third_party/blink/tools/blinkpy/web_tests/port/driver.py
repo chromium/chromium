@@ -227,7 +227,13 @@ class Driver(object):
         """
         start_time = time.time()
         stdin_deadline = start_time + int(driver_input.timeout) / 2000.0
-        self.start(driver_input.args, stdin_deadline)
+        ok, startup_output = self.start(driver_input.args, stdin_deadline)
+        if not ok:
+            return startup_output
+
+        return self._run_one_input(driver_input, start_time)
+
+    def _run_one_input(self, driver_input, start_time):
         test_begin_time = time.time()
         self.error_from_test = bytearray()
         self.err_seen_eof = False
@@ -432,10 +438,14 @@ class Driver(object):
         return False
 
     def start(self, per_test_args, deadline):
+        """Returns a tuple of (whether driver was started, optional startup test result)."""
         new_cmd_line = self.cmd_line(per_test_args)
         if not self._server_process or new_cmd_line != self._current_cmd_line:
-            self._start(per_test_args)
-            self._run_post_start_tasks()
+            started, output = self._start(per_test_args)
+            if started:
+                self._run_post_start_tasks()
+            return started, output
+        return True, None
 
     def _setup_environ_for_driver(self, environment):
         if self._profiler:
@@ -451,6 +461,8 @@ class Driver(object):
             more_logging=self._port.get_option('driver_logging'))
 
     def _start(self, per_test_args, wait_for_ready=True):
+        """Returns a tuple of (whether driver was started, optional startup test result)."""
+
         self.stop()
         self._driver_tempdir = self._port.host.filesystem.mkdtemp(
             prefix='%s-' % self._port.driver_name())
@@ -470,6 +482,37 @@ class Driver(object):
             if not self._wait_for_server_process_output(
                     self._server_process, deadline, b'#READY'):
                 _log.error('%s took too long to startup.' % server_name)
+                # Even though the server hasn't started up, we pretend it has
+                # so that the rest of the error-handling code can deal with
+                # this as if the test has simply crashed.
+
+        if self._port.get_option('initialize_webgpu_adapter_at_startup'):
+            return self._initialize_webgpu_adapter_at_startup(per_test_args)
+        return True, None
+
+    def _initialize_webgpu_adapter_at_startup(self, per_test_args):
+        # TODO(crbug.com/953991) - Apparently content_shell isn't
+        # "really" ready when it signals #READY; in some WebGPU cases
+        # there are intermittent additional delays that we haven't
+        # been able to diagnose yet, but that running this particular
+        # test seems to address. We should figure out what is going on
+        # and remove this workaround, which causes every content shell
+        # startup to be slower (if the workaround is triggered via the
+        # --initialize-webgpu-adapter-at-startup flag, right above in the
+        # code in _start()).
+        startup_input = DriverInput(
+            "wpt_internal/webgpu/000_run_me_first.html",
+            timeout=self._port.timeout_ms(),
+            image_hash=None,
+            args=per_test_args)
+        output = self._run_one_input(startup_input, start_time=time.time())
+        if output.text and 'PASS 000_run_me_first' in output.text:
+            return True, None
+
+        output.text = ('Failed to initialize WebGPU adapter at startup '
+                       'via wpt_internal_webgpu/0000_run_me_first.html:\n' +
+                       output.text)
+        return False, output
 
     def _wait_for_server_process_output(self, server_process, deadline, text):
         output = b''

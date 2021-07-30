@@ -551,6 +551,10 @@ def parse_args(args):
             optparse.make_option('--time-out-ms',
                                  help='Set the timeout for each test'),
             optparse.make_option(
+                '--initialize-webgpu-adapter-at-startup',
+                action='store_true',
+                help='Initialize WebGPU adapter before running any tests.'),
+            optparse.make_option(
                 '--wrapper',
                 help=
                 ('wrapper command to insert before invocations of the driver; option '
