@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// DELETE LATER
+#include "base/logging.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -32,6 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -155,6 +161,10 @@ void BookmarkContextMenuController::BuildMenu() {
     AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
   }
 
   AddSeparator();
@@ -223,9 +233,11 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
   switch (id) {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
     case IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO:
+    case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP:
     case IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW: {
       WindowOpenDisposition initial_disposition;
-      if (id == IDC_BOOKMARK_BAR_OPEN_ALL) {
+      if (id == IDC_BOOKMARK_BAR_OPEN_ALL ||
+          id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
         initial_disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       } else if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW) {
         initial_disposition = WindowOpenDisposition::NEW_WINDOW;
@@ -236,8 +248,33 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           GetActionForLocationAndDisposition(opened_from_, initial_disposition);
       if (action)
         base::RecordAction(*action);
+
       chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection_,
                                initial_disposition);
+
+      if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
+        TabStripModel* model = browser_->tab_strip_model();
+        int count = chrome::OpenCount(parent_window_, selection_);
+        std::vector<int> tab_indicies(count);
+
+        for (auto i = 0; i < count; i++)
+          tab_indicies[i] = model->count() - count + i;
+
+        tab_groups::TabGroupId newGroupId = model->AddToNewGroup(tab_indicies);
+
+        // use the bookmark folder's title as the group's title
+        std::u16string folderTitle = selection_[0]->GetTitledUrlNodeTitle();
+        TabGroup* group = model->group_model()->GetTabGroup(newGroupId);
+        const tab_groups::TabGroupVisualData* current_visual_data =
+            group->visual_data();
+        tab_groups::TabGroupVisualData new_visual_data(
+            folderTitle, current_visual_data->color(),
+            current_visual_data->is_collapsed());
+        group->SetVisualData(new_visual_data);
+
+        model->OpenTabGroupEditor(newGroupId);
+      }
+
       break;
     }
 

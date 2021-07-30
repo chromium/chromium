@@ -85,6 +85,12 @@
           =1 {Open in &amp;Incognito window}
           other {Open all ({COUNT}) in &amp;Incognito window}}
     </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP" desc="Menu description for opening all urls in a bookmark folder in a new group">
+        {COUNT, plural,
+          =0 {Open all in &amp;new tab group}
+          =1 {Open in &amp;new tab group}
+          other {Open all ({COUNT}) in &amp;new tab group}}
+    </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB" desc="Menu description for loading bookmark in a new tab">
       &amp;Open in new tab
     </message>
@@ -136,6 +142,12 @@
           =0 {Open All in &amp;Incognito Window}
           =1 {Open in &amp;Incognito Window}
           other {Open All ({COUNT}) in &amp;Incognito Window}}
+    </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP" desc="In Title Case: Menu title for opening all urls in a bookmark folder in a new group">
+        {COUNT, plural,
+          =0 {Open All in &amp;New Tab Group}
+          =1 {Open in &amp;New Tab Group}
+          other {Open All ({COUNT}) in &amp;New Tab Group}}
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB" desc="In Title Case: Menu description for loading bookmark in a new tab">
       &amp;Open in New Tab
