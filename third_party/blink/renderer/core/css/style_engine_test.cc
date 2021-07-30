@@ -2140,8 +2140,7 @@ TEST_F(StyleEngineTest, RejectSelectorForPseudoElement) {
   UpdateAllLifecyclePhases();
 
   StyleEngine& engine = GetStyleEngine();
-  // If the Stats() were already enabled, we would not start with 0 counts.
-  EXPECT_FALSE(engine.Stats());
+  // Even if the Stats() were already enabled, the following resets it to 0.
   engine.SetStatsEnabled(true);
 
   StyleResolverStats* stats = engine.Stats();
@@ -3759,8 +3758,7 @@ TEST_F(StyleEngineTest, VideoControlsReject) {
   UpdateAllLifecyclePhases();
 
   StyleEngine& engine = GetStyleEngine();
-  // If the Stats() were already enabled, we would not start with 0 counts.
-  EXPECT_FALSE(engine.Stats());
+  // Even if the Stats() were already enabled, the following resets it to 0.
   engine.SetStatsEnabled(true);
 
   StyleResolverStats* stats = engine.Stats();
@@ -3802,8 +3800,7 @@ TEST_F(StyleEngineTest, FastRejectForHostChild) {
   UpdateAllLifecyclePhases();
 
   StyleEngine& engine = GetStyleEngine();
-  // If the Stats() were already enabled, we would not start with 0 counts.
-  EXPECT_FALSE(engine.Stats());
+  // Even if the Stats() were already enabled, the following resets it to 0.
   engine.SetStatsEnabled(true);
 
   StyleResolverStats* stats = engine.Stats();
@@ -3843,8 +3840,7 @@ TEST_F(StyleEngineTest, RejectSlottedSelector) {
   UpdateAllLifecyclePhases();
 
   StyleEngine& engine = GetStyleEngine();
-  // If the Stats() were already enabled, we would not start with 0 counts.
-  EXPECT_FALSE(engine.Stats());
+  // Even if the Stats() were already enabled, the following resets it to 0.
   engine.SetStatsEnabled(true);
 
   StyleResolverStats* stats = engine.Stats();
