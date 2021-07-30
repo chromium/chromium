@@ -5,6 +5,7 @@
 #include "net/base/network_isolation_key.h"
 
 #include "base/cxx17_backports.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +39,31 @@ TEST(NetworkIsolationKeyTest, NonEmptyKey) {
             key.ToDebugString());
 }
 
+TEST(NetworkIsolationKeyTest, KeyWithNonce) {
+  SchemefulSite site1 = SchemefulSite(GURL("http://a.test/"));
+  SchemefulSite site2 = SchemefulSite(GURL("http://b.test/"));
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  NetworkIsolationKey key(site1, site2, &nonce);
+  EXPECT_TRUE(key.IsFullyPopulated());
+  EXPECT_EQ("", key.ToString());
+  EXPECT_TRUE(key.IsTransient());
+  EXPECT_EQ(site1.GetDebugString() + " " + site2.GetDebugString() +
+                " (with nonce " + nonce.ToString() + ")",
+            key.ToDebugString());
+
+  // Create another NetworkIsolationKey with the same input parameters, and
+  // check that it is equal.
+  NetworkIsolationKey same_key(site1, site2, &nonce);
+  EXPECT_EQ(key, same_key);
+
+  // Create another NetworkIsolationKey with a different nonce and check that
+  // it's different.
+  base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  NetworkIsolationKey key2(site1, site2, &nonce2);
+  EXPECT_NE(key, key2);
+  EXPECT_NE(key.ToDebugString(), key2.ToDebugString());
+}
+
 TEST(NetworkIsolationKeyTest, OpaqueOriginKey) {
   SchemefulSite site_data = SchemefulSite(GURL(kDataUrl));
   NetworkIsolationKey key(site_data, site_data);
@@ -54,6 +80,10 @@ TEST(NetworkIsolationKeyTest, OpaqueOriginKey) {
 }
 
 TEST(NetworkIsolationKeyTest, Operators) {
+  base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+  base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  if (nonce2 < nonce1)
+    std::swap(nonce1, nonce2);
   // These are in ascending order.
   const NetworkIsolationKey kKeys[] = {
       NetworkIsolationKey(),
@@ -69,6 +99,10 @@ TEST(NetworkIsolationKeyTest, Operators) {
                           SchemefulSite(GURL("http://b.test/"))),
       NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
                           SchemefulSite(GURL("https://a.test/"))),
+      NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
+                          SchemefulSite(GURL("https://a.test/")), &nonce1),
+      NetworkIsolationKey(SchemefulSite(GURL("https://a.test/")),
+                          SchemefulSite(GURL("https://a.test/")), &nonce2),
   };
 
   for (size_t first = 0; first < base::size(kKeys); ++first) {

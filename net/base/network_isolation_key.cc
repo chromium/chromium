@@ -4,9 +4,11 @@
 
 #include <string>
 
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -22,16 +24,20 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 }  // namespace
 
 NetworkIsolationKey::NetworkIsolationKey(const SchemefulSite& top_frame_site,
-                                         const SchemefulSite& frame_site)
+                                         const SchemefulSite& frame_site,
+                                         const base::UnguessableToken* nonce)
     : NetworkIsolationKey(SchemefulSite(top_frame_site),
                           SchemefulSite(frame_site),
-                          false /* opaque_and_non_transient */) {}
+                          false /* opaque_and_non_transient */,
+                          nonce) {}
 
 NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                                         SchemefulSite&& frame_site)
+                                         SchemefulSite&& frame_site,
+                                         const base::UnguessableToken* nonce)
     : NetworkIsolationKey(std::move(top_frame_site),
                           std::move(frame_site),
-                          false /* opaque_and_non_transient */) {}
+                          false /* opaque_and_non_transient */,
+                          nonce) {}
 
 NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
                                          const url::Origin& frame_origin)
@@ -63,7 +69,8 @@ NetworkIsolationKey NetworkIsolationKey::CreateOpaqueAndNonTransient() {
   SchemefulSite site_with_opaque_origin;
   return NetworkIsolationKey(SchemefulSite(site_with_opaque_origin),
                              SchemefulSite(site_with_opaque_origin),
-                             true /* opaque_and_non_transient */);
+                             true /* opaque_and_non_transient */,
+                             nullptr /* nonce */);
 }
 
 NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
@@ -72,6 +79,7 @@ NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
     return NetworkIsolationKey();
   NetworkIsolationKey key(top_frame_site_.value(), new_frame_site);
   key.opaque_and_non_transient_ = opaque_and_non_transient_;
+  key.nonce_ = nonce_;
   return key;
 }
 
@@ -107,6 +115,10 @@ std::string NetworkIsolationKey::ToDebugString() const {
 
   if (IsFullyPopulated() && IsOpaque() && opaque_and_non_transient_) {
     return_string += " non-transient";
+  }
+
+  if (nonce_.has_value()) {
+    return_string += " (with nonce " + nonce_->ToString() + ")";
   }
 
   return return_string;
@@ -195,16 +207,22 @@ bool NetworkIsolationKey::IsEmpty() const {
 
 NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
                                          SchemefulSite&& frame_site,
-                                         bool opaque_and_non_transient)
+                                         bool opaque_and_non_transient,
+                                         const base::UnguessableToken* nonce)
     : opaque_and_non_transient_(opaque_and_non_transient),
       top_frame_site_(std::move(top_frame_site)),
-      frame_site_(std::move(frame_site)) {
+      frame_site_(std::move(frame_site)),
+      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
   DCHECK(!opaque_and_non_transient || top_frame_site_->opaque());
   DCHECK(!opaque_and_non_transient || frame_site.opaque());
+  DCHECK(!nonce || !nonce->is_empty());
+  // If there is a nonce, this is always transient.
+  DCHECK(!nonce || !opaque_and_non_transient);
 }
 
 bool NetworkIsolationKey::IsOpaque() const {
-  return top_frame_site_->opaque() || frame_site_->opaque();
+  return top_frame_site_->opaque() || frame_site_->opaque() ||
+         nonce_.has_value();
 }
 
 absl::optional<std::string> NetworkIsolationKey::SerializeSiteWithNonce(

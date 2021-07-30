@@ -49,6 +49,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.opaque_and_non_transient();
   }
 
+  static const absl::optional<base::UnguessableToken>& nonce(
+      const net::IsolationInfo& input) {
+    return input.nonce_;
+  }
+
   static const net::SiteForCookies& site_for_cookies(
       const net::IsolationInfo& input) {
     return input.site_for_cookies();

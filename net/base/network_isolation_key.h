@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,11 +41,13 @@ class NET_EXPORT NetworkIsolationKey {
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_site| parameter when calling this constructor.
   NetworkIsolationKey(const SchemefulSite& top_frame_site,
-                      const SchemefulSite& frame_site);
+                      const SchemefulSite& frame_site,
+                      const base::UnguessableToken* nonce = nullptr);
 
   // Alternative constructor that takes ownership of arguments, to save copies.
   NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                      SchemefulSite&& frame_site);
+                      SchemefulSite&& frame_site,
+                      const base::UnguessableToken* nonce = nullptr);
 
   // Legacy constructor.
   // TODO(https://crbug.com/1145294):  Remove this in favor of above
@@ -92,9 +95,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_) ==
+    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_,
+                    nonce_) ==
            std::tie(other.top_frame_site_, other.frame_site_,
-                    other.opaque_and_non_transient_);
+                    other.opaque_and_non_transient_, other.nonce_);
   }
 
   // Compare keys for inequality, true if any enabled field varies.
@@ -104,9 +108,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_) <
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.opaque_and_non_transient_);
+    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_,
+                    nonce_) < std::tie(other.top_frame_site_, other.frame_site_,
+                                       other.opaque_and_non_transient_,
+                                       other.nonce_);
   }
 
   // Returns the string representation of the key, which is the string
@@ -135,6 +140,11 @@ class NET_EXPORT NetworkIsolationKey {
     return frame_site_;
   }
 
+  // Getter for the nonce.
+  const absl::optional<base::UnguessableToken>& GetNonce() const {
+    return nonce_;
+  }
+
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
 
@@ -159,8 +169,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   NetworkIsolationKey(SchemefulSite&& top_frame_site,
                       SchemefulSite&& frame_site,
-                      bool opaque_and_non_transient);
+                      bool opaque_and_non_transient,
+                      const base::UnguessableToken* nonce);
 
+  // Whether this key has opaque origins or a nonce.
   bool IsOpaque() const;
 
   // SchemefulSite::Serialize() is not const, as it may initialize the nonce.
@@ -177,6 +189,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // The origin/etld+1 of the frame that initiates the request.
   absl::optional<SchemefulSite> frame_site_;
+
+  // Having a nonce is a way to force a transient opaque `NetworkIsolationKey`
+  // for non-opaque origins.
+  absl::optional<base::UnguessableToken> nonce_;
 };
 
 }  // namespace net

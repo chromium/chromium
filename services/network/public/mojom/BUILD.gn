@@ -127,6 +127,7 @@ mojom("mojom_network_isolation_key") {
 
   public_deps = [
     ":mojom_schemeful_site",
+    "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_origin",
   ]
 

@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
 // Mapped to net::NetworkIsolationKey.
@@ -14,4 +15,6 @@ struct NetworkIsolationKey {
   SchemefulSite? frame_site;
 
   bool opaque_and_non_transient;
+
+  mojo_base.mojom.UnguessableToken? nonce;
 };

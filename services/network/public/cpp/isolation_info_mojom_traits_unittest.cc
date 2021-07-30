@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -20,6 +21,8 @@ namespace mojo {
 TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
   const url::Origin kOrigin1 = url::Origin::Create(GURL("https://a.test/"));
   const url::Origin kOrigin2 = url::Origin::Create(GURL("https://b.test/"));
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
 
   const absl::optional<std::set<net::SchemefulSite>> kPartyContext1 =
       absl::nullopt;
@@ -51,6 +54,24 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                  url::Origin(), url::Origin(),
                                  net::SiteForCookies()),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
+          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2, &nonce),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kSubFrame, kOrigin1, kOrigin2,
+          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2, &nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kSubFrame,
+                                 kOrigin1, kOrigin2, net::SiteForCookies(),
+                                 kPartyContext3, &nonce),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther, kOrigin1, kOrigin1,
+          net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext1, &nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 url::Origin(), url::Origin(),
+                                 net::SiteForCookies(), kPartyContext1, &nonce),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 url::Origin(), url::Origin(),
+                                 net::SiteForCookies(), absl::nullopt, &nonce),
   };
 
   for (auto original : keys) {

@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 
+#include "base/unguessable_token.h"
+
 namespace mojo {
 
 bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
@@ -18,17 +20,25 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
   // A key is either fully empty or fully populated.
   if (top_frame_site.has_value() != frame_site.has_value())
     return false;
-  if (top_frame_site.has_value()) {
-    *out = net::NetworkIsolationKey(std::move(top_frame_site.value()),
-                                    std::move(frame_site.value()));
-  } else {
+  absl::optional<base::UnguessableToken> nonce;
+  if (!data.ReadNonce(&nonce))
+    return false;
+  if (!top_frame_site.has_value()) {
+    // If there is a nonce, then the sites must be populated.
+    if (nonce.has_value())
+      return false;
     *out = net::NetworkIsolationKey();
+  } else {
+    *out = net::NetworkIsolationKey(std::move(top_frame_site.value()),
+                                    std::move(frame_site.value()),
+                                    nonce ? &nonce.value() : nullptr);
   }
   out->opaque_and_non_transient_ = data.opaque_and_non_transient();
 
   // If opaque_and_non_transient_ is set, then the key must also be opaque.
-  // Otherwise, the key is not valid.
-  return !out->opaque_and_non_transient_ || out->IsOpaque();
+  // Moreover, it cannot have a nonce. Otherwise, the key is not valid.
+  return !out->opaque_and_non_transient_ ||
+         (out->IsOpaque() && !out->GetNonce());
 }
 
 }  // namespace mojo

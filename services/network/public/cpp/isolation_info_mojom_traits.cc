@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/isolation_info_mojom_traits.h"
 
 #include "base/notreached.h"
+#include "base/unguessable_token.h"
 #include "services/network/public/cpp/crash_keys.h"
 #include "services/network/public/cpp/site_for_cookies_mojom_traits.h"
 
@@ -49,6 +50,7 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     Read(network::mojom::IsolationInfoDataView data, net::IsolationInfo* out) {
   absl::optional<url::Origin> top_frame_origin;
   absl::optional<url::Origin> frame_origin;
+  absl::optional<base::UnguessableToken> nonce;
   net::SiteForCookies site_for_cookies;
   net::IsolationInfo::RequestType request_type;
   absl::optional<std::vector<net::SchemefulSite>> mojo_party_context;
@@ -61,7 +63,7 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
     network::debug::SetDeserializationCrashKeyString("isolation_frame_origin");
     return false;
   }
-  if (!data.ReadSiteForCookies(&site_for_cookies) ||
+  if (!data.ReadNonce(&nonce) || !data.ReadSiteForCookies(&site_for_cookies) ||
       !data.ReadRequestType(&request_type) ||
       !data.ReadPartyContext(&mojo_party_context)) {
     return false;
@@ -78,7 +80,8 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
   absl::optional<net::IsolationInfo> isolation_info =
       net::IsolationInfo::CreateIfConsistent(
           request_type, top_frame_origin, frame_origin, site_for_cookies,
-          data.opaque_and_non_transient(), std::move(party_context));
+          data.opaque_and_non_transient(), std::move(party_context),
+          nonce.has_value() ? &nonce.value() : nullptr);
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");
     return false;
