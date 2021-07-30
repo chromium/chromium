@@ -142,4 +142,12 @@ public abstract class NavigationCallback {
      * @since 90
      */
     public void onPageDestroyed(@NonNull Page page) {}
+
+    /*
+     * Called when the source language for |page| has been determined to be |language|.
+     * Note: |language| is an ISO 639 language code (two letters, except for Chinese where a
+     * localization is necessary).
+     * @since 93
+     */
+    public void onPageLanguageDetermined(@NonNull Page page, @NonNull String language) {}
 }

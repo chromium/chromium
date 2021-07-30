@@ -118,6 +118,12 @@ class NavigationObserver {
   // method will either be called when the back-forward cache entry is evicted
   // or if it is used then this cycle repeats.
   virtual void OnPageDestroyed(Page* page) {}
+
+  // Called when the source language for |page| has been determined to be
+  // |language|.
+  // Note: |language| is an ISO 639 language code (two letters, except for
+  // Chinese where a localization is necessary).
+  virtual void OnPageLanguageDetermined(Page* page, std::string language) {}
 };
 
 }  // namespace weblayer

@@ -241,6 +241,13 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
 
     @CalledByNative
     private void navigationCompleted(NavigationImpl navigation) throws RemoteException {
+        // Ensure that the Java-side Page object for this navigation is populated from and linked to
+        // the native Page object (which is guaranteed to exist at this point). Without this call,
+        // the Java-side navigation object won't be created and linked to the native object
+        // until/unless the client calls Navigation#getPage(), which is problematic when
+        // implementation-side callers need to bridge the C++ Page object into Java (e.g., to fire
+        // NavigationCallback#onPageLanguageDetermined()).
+        navigation.getPage();
         mNavigationControllerClient.navigationCompleted(navigation.getClientNavigation());
     }
 
@@ -288,6 +295,13 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     @CalledByNative
     private void onOldPageNoLongerRendered(String uri) throws RemoteException {
         mNavigationControllerClient.onOldPageNoLongerRendered(uri);
+    }
+
+    @CalledByNative
+    private void onPageLanguageDetermined(PageImpl page, String language) throws RemoteException {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 93) return;
+
+        mNavigationControllerClient.onPageLanguageDetermined(page.getClientPage(), language);
     }
 
     private long getNativeTickOffsetUs() {
