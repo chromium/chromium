@@ -4299,7 +4299,11 @@ others/histograms.xml -->
   <int value="1" label="ACCEPTED-VIA-SETTINGS"/>
   <int value="2" label="REJECTED-VIA-BUTTON"/>
   <int value="3" label="REJECTED-VIA-SETTINGS"/>
-  <int value="4" label="REJECTED-VIA-DISMISS"/>
+  <int value="4" label="REJECTED-VIA-DISMISS-DEPRECATED"/>
+  <int value="5" label="REJECTED-VIA-BACK-BUTTON-PRESS"/>
+  <int value="6" label="REJECTED-VIA-SCRIM-TAP"/>
+  <int value="7" label="CANCELED-VIA-BACK-BUTTON-PRESS"/>
+  <int value="8" label="CANCELED-VIA-SCRIM-TAP"/>
 </enum>
 
 <enum name="AssistantEntryPoint">

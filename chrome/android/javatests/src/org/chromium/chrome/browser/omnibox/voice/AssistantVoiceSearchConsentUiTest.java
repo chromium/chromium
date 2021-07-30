@@ -118,9 +118,8 @@ public class AssistantVoiceSearchConsentUiTest {
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
     }
 
-    @Test
-    @MediumTest
-    public void testDialogInteractivity_AcceptButton() {
+    // Helper method that accepts consent via button taps and verifies expected state.
+    private void verifyAcceptingConsent() {
         showConsentUi();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -139,6 +138,12 @@ public class AssistantVoiceSearchConsentUiTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.ACCEPTED_VIA_BUTTON));
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogInteractivity_AcceptButton() {
+        verifyAcceptingConsent();
     }
 
     @Test
@@ -184,50 +189,82 @@ public class AssistantVoiceSearchConsentUiTest {
         activity.finish();
     }
 
-    @Test
-    @MediumTest
-    public void testDialogInteractivity_BackButton() {
+    // Helper method for test cases covering dimissing the dialog.
+    private void verifyBackingOffConsent(Runnable backOffMethod, boolean expectConsentValueSet,
+            int expectedHistogramCount, int expectedConsentOutcome) {
         showConsentUi();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mBottomSheetTestSupport.handleBackPress(); });
-
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mSharedPreferencesManager.readBoolean(
-                                       ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ true),
-                    is(false));
-        });
-        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_DISMISS));
-    }
-
-    // Helper method for ASSISTANT_CONSENT_V2 flows.
-    private void verifyBackingOffConsent(boolean expectedConsentValue, int expectedHistogramCount) {
-        showConsentUi();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBottomSheetTestSupport.forceClickOutsideTheSheet(); });
+        TestThreadUtils.runOnUiThreadBlocking(backOffMethod);
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mSharedPreferencesManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED),
-                    is(expectedConsentValue));
+                    is(expectConsentValueSet));
+            if (expectConsentValueSet) {
+                Criteria.checkThat(mSharedPreferencesManager.readBoolean(
+                                           ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ true),
+                        is(false));
+            }
         });
 
         Mockito.verify(mCallback).onResult(false);
-
         Assert.assertEquals(expectedHistogramCount,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        CONSENT_OUTCOME_HISTOGRAM, ConsentOutcome.REJECTED_VIA_DISMISS));
+                        CONSENT_OUTCOME_HISTOGRAM, expectedConsentOutcome));
 
         Mockito.reset(mCallback);
     }
 
     @Test
     @MediumTest
+    public void testDialogInteractivity_BackButton() {
+        verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+                /*expectConsentValueSet=*/true,
+                /*expectedHistogramCount*/ 1, ConsentOutcome.REJECTED_VIA_BACK_BUTTON_PRESS);
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogInteractivity_ScrimTap() {
+        verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
+                /*expectConsentValueSet=*/true,
+                /*expectedHistogramCount*/ 1, ConsentOutcome.REJECTED_VIA_SCRIM_TAP);
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
-    public void testDialogInteractivity_tappingOutsideDialog() {
-        verifyBackingOffConsent(/*expectedConsentValue=*/false, /*expectedHistogramCount=*/0);
+    public void testDialogInteractivity_ScrimTapIgnored() {
+        verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
+                /*expectConsentValueSet=*/false,
+                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_SCRIM_TAP);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
+    public void testDialogInteractivity_BackButtonIgnored() {
+        verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+                /*expectConsentValueSet=*/false,
+                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ASSISTANT_CONSENT_V2)
+    public void testDialogInteractivity_AcceptingConsentAfterDismissal() {
+        verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+                /*expectConsentValueSet=*/false,
+                /*expectedHistogramCount=*/1, ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
+
+        // Successful showing of the consent calls destroy(). Need to recreate the new
+        // instance to set up the state again.
+        mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
+                mActivityTestRule.getActivity().getWindowAndroid(), mActivityTestRule.getActivity(),
+                mSharedPreferencesManager, () -> {
+                    AutofillAssistantPreferenceFragment.launchSettings(
+                            mActivityTestRule.getActivity());
+                }, mBottomSheetController);
+        verifyAcceptingConsent();
     }
 
     @Test
@@ -236,10 +273,13 @@ public class AssistantVoiceSearchConsentUiTest {
             "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:count/3"})
     @Feature({"AssistantConsentV2"})
     public void
-    testDialogInteractivity_tapsCounter() {
+    testDialogInteractivity_TapsCounter() {
         int max_taps_ignored = 3;
         for (int i = 0; i < max_taps_ignored; i++) {
-            verifyBackingOffConsent(/*expectedConsentValue=*/false, /*expectedHistogramCount=*/0);
+            verifyBackingOffConsent(mBottomSheetTestSupport::handleBackPress,
+                    /*expectConsentValueSet=*/false,
+                    /*expectedHistogramCount=*/i + 1,
+                    ConsentOutcome.CANCELED_VIA_BACK_BUTTON_PRESS);
             // Successful showing of the consent calls destroy(). Need to recreate the new
             // instance to set up the state again.
             mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(
@@ -251,6 +291,8 @@ public class AssistantVoiceSearchConsentUiTest {
         }
 
         // But the max_taps_ignored+1-th will be treated as a rejection.
-        verifyBackingOffConsent(/*expectedConsentValue=*/true, /*expectedHistogramCount=*/1);
+        verifyBackingOffConsent(mBottomSheetTestSupport::forceClickOutsideTheSheet,
+                /*expectConsentValueSet=*/true,
+                /*expectedHistogramCount=*/1, ConsentOutcome.REJECTED_VIA_SCRIM_TAP);
     }
 }
