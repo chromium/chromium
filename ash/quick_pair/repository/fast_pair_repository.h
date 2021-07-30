@@ -17,6 +17,8 @@ class BluetoothDevice;
 namespace ash {
 namespace quick_pair {
 
+class DeviceMetadataFetcher;
+
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
 class FastPairRepository {
@@ -30,7 +32,8 @@ class FastPairRepository {
   // |callback|, if available.
   void GetDeviceMetadata(
       const std::string& hex_model_id,
-      base::OnceCallback<void(absl::optional<nearby::fastpair::Device>)>
+      base::OnceCallback<
+          void(absl::optional<nearby::fastpair::GetObservedDeviceResponse>)>
           callback);
 
   // Checks if the input |hex_model_id| is valid and notifies the requester
@@ -53,6 +56,9 @@ class FastPairRepository {
 
   // Deletes the associated data for a given |device|.
   void DeleteAssociatedDevice(const device::BluetoothDevice* device);
+
+ private:
+  std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
 };
 
 }  // namespace quick_pair
