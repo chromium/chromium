@@ -33,6 +33,7 @@ NSString* const kFirstRunScrollViewAccessibilityIdentifier =
 namespace {
 
 constexpr CGFloat kDefaultMargin = 16;
+constexpr CGFloat kTitleHorizontalMargin = 18;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
@@ -176,7 +177,8 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
     [self.titleLabel.centerXAnchor
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.titleLabel.widthAnchor
-        constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+        constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor
+                                 constant:-2 * kTitleHorizontalMargin],
     [self.subtitleLabel.topAnchor
         constraintEqualToAnchor:self.titleLabel.bottomAnchor
                        constant:kDefaultMargin],
