@@ -14,7 +14,6 @@
 #include <shobjidl.h>
 #include <wininet.h>
 
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
