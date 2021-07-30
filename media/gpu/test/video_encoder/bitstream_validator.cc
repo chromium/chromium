@@ -318,7 +318,7 @@ void BitstreamValidator::VerifyOutputFrame(scoped_refptr<VideoFrame> frame) {
     DVLOGF(3) << "Skip a frame to be not shown. visible_rect="
               << frame->visible_rect().ToString()
               << ", shown visible_rect=" << desired_decoding_rect_.ToString();
-    DCHECK_EQ(frame_index, 0u);
+
     OutputFrameProcessed();
     return;
   }
