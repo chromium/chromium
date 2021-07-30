@@ -60,6 +60,7 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_preset_options.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -177,7 +178,14 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   void TextSelectionChanged(const blink::WebString& selection_text,
                             uint32_t offset,
                             const gfx::Range& range) override {
-    GetFrame()->TextSelectionChanged(selection_text, offset, range);
+    // Focus the plugin's containing frame before changing the text selection.
+    // TODO(crbug.com/1234559): Would it make more sense not to change the text
+    // selection at all in this case? Maybe we only have this problem because we
+    // support a "selectAll" message.
+    blink::WebLocalFrame* frame = GetFrame();
+    frame->View()->SetFocusedFrame(frame);
+
+    frame->TextSelectionChanged(selection_text, offset, range);
   }
 
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
