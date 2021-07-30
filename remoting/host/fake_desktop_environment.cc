@@ -90,7 +90,7 @@ FakeDesktopEnvironment::CreateVideoCapturer() {
     fake_capturer->set_frame_generator(frame_generator_);
 
   std::unique_ptr<DesktopCapturerProxy> result(
-      new DesktopCapturerProxy(capture_thread_, nullptr));
+      new DesktopCapturerProxy(capture_thread_, capture_thread_, nullptr));
   result->set_capturer(std::move(fake_capturer));
   return std::move(result);
 }

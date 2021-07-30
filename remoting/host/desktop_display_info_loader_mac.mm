@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_loader.h"
 
 #include <Cocoa/Cocoa.h>
 
@@ -10,10 +10,20 @@
 
 namespace remoting {
 
+namespace {
+
 constexpr int kDefaultScreenDpi = 96;
 
-void DesktopDisplayInfo::LoadCurrentDisplayInfo() {
-  displays_.clear();
+class DesktopDisplayInfoLoaderMac : public DesktopDisplayInfoLoader {
+ public:
+  DesktopDisplayInfoLoaderMac() = default;
+  ~DesktopDisplayInfoLoaderMac() override = default;
+
+  DesktopDisplayInfo GetCurrentDisplayInfo() override;
+};
+
+DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
+  DesktopDisplayInfo result;
 
   NSArray* screens = [NSScreen screens];
   DCHECK(screens);
@@ -24,7 +34,7 @@ void DesktopDisplayInfo::LoadCurrentDisplayInfo() {
   int main_display_height = 0;
 
   for (NSUInteger i = 0; i < [screens count]; ++i) {
-    std::unique_ptr<DisplayGeometry> info(new DisplayGeometry());
+    auto info = std::make_unique<DisplayGeometry>();
 
     NSScreen* screen = screens[i];
     NSDictionary* device = [screen deviceDescription];
@@ -58,8 +68,16 @@ void DesktopDisplayInfo::LoadCurrentDisplayInfo() {
     info->dpi = (int)(kDefaultScreenDpi * dsf);
     info->bpp = 24;
 
-    displays_.push_back(std::move(info));
+    result.AddDisplay(std::move(info));
   }
+  return result;
+}
+
+}  // namespace
+
+// static
+std::unique_ptr<DesktopDisplayInfoLoader> DesktopDisplayInfoLoader::Create() {
+  return std::make_unique<DesktopDisplayInfoLoaderMac>();
 }
 
 }  // namespace remoting

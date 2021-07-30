@@ -145,7 +145,7 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   std::unique_ptr<DesktopCapturerProxy> result(new DesktopCapturerProxy(
-      video_capture_task_runner_, client_session_control_));
+      video_capture_task_runner_, ui_task_runner_, client_session_control_));
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }

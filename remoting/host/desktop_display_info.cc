@@ -8,14 +8,12 @@
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 namespace remoting {
 
 DesktopDisplayInfo::DesktopDisplayInfo() = default;
-
+DesktopDisplayInfo::DesktopDisplayInfo(DesktopDisplayInfo&&) = default;
+DesktopDisplayInfo& DesktopDisplayInfo::operator=(DesktopDisplayInfo&&) =
+    default;
 DesktopDisplayInfo::~DesktopDisplayInfo() = default;
 
 bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) {
@@ -165,49 +163,5 @@ void DesktopDisplayInfo::AddDisplayFrom(protocol::VideoTrackLayout track) {
   display->is_default = false;
   displays_.push_back(std::move(display));
 }
-
-#if !defined(OS_APPLE)
-void DesktopDisplayInfo::LoadCurrentDisplayInfo() {
-  displays_.clear();
-
-#if defined(OS_WIN)
-  BOOL enum_result = TRUE;
-  for (int device_index = 0;; ++device_index) {
-    std::unique_ptr<DisplayGeometry> info(new DisplayGeometry());
-    info->id = device_index;
-
-    DISPLAY_DEVICE device = {};
-    device.cb = sizeof(device);
-    enum_result = EnumDisplayDevices(NULL, device_index, &device, 0);
-
-    // |enum_result| is 0 if we have enumerated all devices.
-    if (!enum_result)
-      break;
-
-    // We only care about active displays.
-    if (!(device.StateFlags & DISPLAY_DEVICE_ACTIVE))
-      continue;
-
-    info->is_default = false;
-    if (device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE)
-      info->is_default = true;
-
-    // Get additional info about device.
-    DEVMODE devmode;
-    devmode.dmSize = sizeof(devmode);
-    EnumDisplaySettingsEx(device.DeviceName, ENUM_CURRENT_SETTINGS, &devmode,
-                          0);
-
-    info->x = devmode.dmPosition.x;
-    info->y = devmode.dmPosition.y;
-    info->width = devmode.dmPelsWidth;
-    info->height = devmode.dmPelsHeight;
-    info->dpi = devmode.dmLogPixels;
-    info->bpp = devmode.dmBitsPerPel;
-    displays_.push_back(std::move(info));
-  }
-#endif  // OS_WIN
-}
-#endif  // !OS_APPLE
 
 }  // namespace remoting

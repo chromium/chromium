@@ -230,6 +230,7 @@ static_library("common") {
     "desktop_capturer_proxy.h",
     "desktop_display_info.cc",
     "desktop_display_info.h",
+    "desktop_display_info_loader.h",
     "desktop_environment.h",
     "desktop_environment_options.cc",
     "desktop_environment_options.h",
@@ -448,6 +449,7 @@ static_library("common") {
 
   if (use_x11 && ((!is_chromeos_ash && !is_chromeos_lacros) || !use_ozone)) {
     sources += [
+      "desktop_display_info_loader_x11.cc",
       "desktop_resizer_x11.cc",
       "desktop_resizer_x11.h",
       "input_injector_x11.cc",
@@ -495,6 +497,7 @@ static_library("common") {
     sources += [
       "audio_capturer_chromeos.cc",
       "continue_window_chromeos.cc",
+      "desktop_display_info_loader_chromeos.cc",
       "disconnect_window_chromeos.cc",
       "input_injector_chromeos.cc",
       "input_injector_chromeos.h",
@@ -525,7 +528,7 @@ static_library("common") {
       "audio_capturer_mac.h",
       "continue_window_mac.mm",
       "curtain_mode_mac.cc",
-      "desktop_display_info_mac.mm",
+      "desktop_display_info_loader_mac.mm",
       "desktop_resizer_mac.cc",
       "disconnect_window_mac.h",
       "disconnect_window_mac.mm",
@@ -556,6 +559,7 @@ static_library("common") {
       "continue_window_win.cc",
       "curtain_mode_win.cc",
       "daemon_process_win.cc",
+      "desktop_display_info_loader_win.cc",
       "desktop_resizer_win.cc",
       "desktop_session_win.cc",
       "desktop_session_win.h",

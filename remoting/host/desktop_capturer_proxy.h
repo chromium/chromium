@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_loader.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace base {
@@ -28,12 +29,14 @@ class ClientSessionControl;
 
 // DesktopCapturerProxy is responsible for calling webrtc::DesktopCapturer on
 // the capturer thread and then returning results to the caller's thread.
-// GetSourceList() and SelectSource() functions are not implemented by this
-// class, they always return false.
+// GetSourceList() is not implemented by this class, it always returns false.
+// This class also loads the list of desktop displays on the UI thread, and
+// notifies the ClientSessionControl if the displays have changed.
 class DesktopCapturerProxy : public webrtc::DesktopCapturer {
  public:
   explicit DesktopCapturerProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control);
   ~DesktopCapturerProxy() override;
 
@@ -56,11 +59,14 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
 
   void OnFrameCaptured(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
+  void OnDisplayInfoLoaded(DesktopDisplayInfo info);
 
   base::ThreadChecker thread_checker_;
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
   webrtc::DesktopCapturer::Callback* callback_;
 
   // Used to disconnect the client session.
@@ -69,7 +75,10 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
   // Contains the most recently gathered info about the desktop displays.
-  std::unique_ptr<DesktopDisplayInfo> desktop_display_info_;
+  DesktopDisplayInfo desktop_display_info_;
+
+  // Created on the calling thread, but accessed and destroyed on the UI thread.
+  std::unique_ptr<DesktopDisplayInfoLoader> desktop_display_info_loader_;
 
   base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
 
