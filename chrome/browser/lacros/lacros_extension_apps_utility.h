@@ -22,7 +22,9 @@ std::string MuxId(const Profile* profile,
                   const extensions::Extension* extension);
 
 // Returns true on success, and populates the output variables |profile| and
-// |extension|.
+// |extension|. We pass a Profile** and an Extension** rather than Profile*& and
+// Extension*& for clarity -- the root problem is that Profiles and Extensions
+// are always passed by raw pointer to begin with.
 bool DemuxId(const std::string& muxed_id,
              Profile** profile,
              const extensions::Extension** extension);
