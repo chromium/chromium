@@ -18,17 +18,22 @@ from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockFile
 
 
 class JsCheckerEsLintTest(unittest.TestCase):
+  def setUp(self):
+    self._tmp_files = []
+
   def tearDown(self):
-    os.remove(self._tmp_file)
+    for file in self._tmp_files:
+      os.remove(file)
 
   def _runChecks(self, file_contents, file_type):
     tmp_args = {'suffix': '.' + file_type, 'dir': _HERE_PATH, 'delete': False}
     with tempfile.NamedTemporaryFile(**tmp_args) as f:
-      self._tmp_file = f.name
+      tmp_file = f.name
+      self._tmp_files.append(tmp_file)
       f.write(file_contents.encode('utf-8'))
 
     input_api = MockInputApi()
-    input_api.files = [MockFile(os.path.abspath(self._tmp_file), '')]
+    input_api.files = [MockFile(os.path.abspath(tmp_file), '')]
     input_api.presubmit_local_path = _HERE_PATH
 
     checker = js_checker.JSChecker(input_api, MockOutputApi())
