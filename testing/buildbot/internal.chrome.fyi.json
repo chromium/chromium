@@ -8,12 +8,12 @@
     ],
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_finch_smoke_tests",
+        "isolate_name": "variations_smoke_tests",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "chrome_finch_smoke_tests",
+        "name": "variations_smoke_tests",
         "resultdb": {
           "enable": true,
           "result_format": "single"
@@ -28,7 +28,7 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://chrome/test:chrome_finch_smoke_tests/"
+        "test_id_prefix": "ninja://chrome/test:variations_smoke_tests/"
       }
     ]
   }

@@ -18,5 +18,5 @@ per-file run_performance_tests.py=wenbinzhang@google.com
 
 per-file run_chromedriver_tests.py=johnchen@chromium.org
 
-per-file testing/scripts/run_finch_smoke_tests.py=liaoyuke@chromium.org
-per-file testing/scripts/run_finch_smoke_tests.py=wuwang@chromium.org
+per-file testing/scripts/run_variations_smoke_tests.py=liaoyuke@chromium.org
+per-file testing/scripts/run_variations_smoke_tests.py=wuwang@chromium.org

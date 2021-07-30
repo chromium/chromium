@@ -6408,7 +6408,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_finch_smoke_tests',
+          'isolated_scripts': 'variations_smoke_tests',
         },
       },
     },
