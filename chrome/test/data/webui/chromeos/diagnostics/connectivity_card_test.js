@@ -79,6 +79,15 @@ export function connectivityCardTestSuite() {
   }
 
   /**
+   * @suppress {visibility} // access private member
+   * return {!Array<!RoutineType>>}
+   */
+  function getRoutines() {
+    assertTrue(!!connectivityCardElement);
+    return connectivityCardElement.routines_;
+  }
+
+  /**
    * @param {string} activeGuid
    * @param {boolean=} isActive
    */
@@ -149,4 +158,20 @@ export function connectivityCardTestSuite() {
               fakeEthernetNetwork, ipConfigInfoDrawerElement.network);
         });
       });
+
+  test('RoutinesForWiFiIncludedWhenNetworkIsWifi', () => {
+    return initializeConnectivityCard('wifiGuid').then(() => {
+      const routines = getRoutines();
+      assertTrue(routines.includes(RoutineType.kSignalStrength));
+      assertTrue(routines.includes(RoutineType.kHasSecureWiFiConnection));
+    });
+  });
+
+  test('RoutinesForWiFiExcludedWhenNetworkIsNotWifi', () => {
+    return initializeConnectivityCard('ethernetGuid').then(() => {
+      const routines = getRoutines();
+      assertFalse(routines.includes(RoutineType.kSignalStrength));
+      assertFalse(routines.includes(RoutineType.kHasSecureWiFiConnection));
+    });
+  });
 }

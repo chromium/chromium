@@ -47,7 +47,8 @@ Polymer({
     /** @private {!Array<!RoutineType>} */
     routines_: {
       type: Array,
-      value: () => getRoutinesByNetworkType(NetworkType.kWiFi),
+      value: [],
+      computed: 'computeRoutines_(activeGuid, network.type)',
     },
 
     /** @type {string} */
@@ -84,6 +85,18 @@ Polymer({
   /** @override */
   created() {
     this.networkHealthProvider_ = getNetworkHealthProvider();
+  },
+
+  computeRoutines_() {
+    if (!this.network) {
+      return [];
+    }
+
+    return getRoutinesByNetworkType(this.network.type);
+  },
+
+  displayRoutines_() {
+    return this.routines_ && this.routines_.length > 0;
   },
 
   /** @private */
