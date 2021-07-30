@@ -200,14 +200,14 @@ class TestAppsGridViewFolderDelegate : public AppsGridViewFolderDelegate {
       AppsGridView::Pointer pointer,
       const gfx::Point& drag_point_in_folder_grid) override {}
 
-  void DispatchEndDragEventForReparent(bool events_forwarded_to_drag_drop_host,
-                                       bool cancel_drag) override {}
+  void DispatchEndDragEventForReparent(
+      bool events_forwarded_to_drag_drop_host,
+      bool cancel_drag,
+      std::unique_ptr<AppDragIconProxy> drag_icon_proxy) override {}
 
   bool IsViewOutsideOfFolder(AppListItemView* view) override { return false; }
 
   bool IsOEMFolder() const override { return false; }
-
-  void SetRootLevelDragViewVisible(bool visible) override {}
 
   void HandleKeyboardReparent(AppListItemView* reparented_item,
                               ui::KeyboardCode key_code) override {}
