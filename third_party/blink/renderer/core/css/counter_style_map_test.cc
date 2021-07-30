@@ -212,7 +212,6 @@ TEST_F(CounterStyleMapTest, SpeakAsKeywords) {
       @counter-style bullets { speak-as: bullets; symbols: 'X'; }
       @counter-style numbers { speak-as: numbers; symbols: 'X'; }
       @counter-style words { speak-as: words; symbols: 'X'; }
-      @counter-style spell-out { speak-as: spell-out; symbols: 'X'; }
     </style>
   )HTML");
 
@@ -232,9 +231,6 @@ TEST_F(CounterStyleMapTest, SpeakAsKeywords) {
 
   const CounterStyle& words = GetCounterStyle(GetDocument(), "words");
   EXPECT_EQ(CounterStyleSpeakAs::kWords, words.GetSpeakAs());
-
-  const CounterStyle& spell_out = GetCounterStyle(GetDocument(), "spell-out");
-  EXPECT_EQ(CounterStyleSpeakAs::kSpellOut, spell_out.GetSpeakAs());
 }
 
 TEST_F(CounterStyleMapTest, SpeakAsReference) {

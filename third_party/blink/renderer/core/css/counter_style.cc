@@ -614,8 +614,6 @@ CounterStyleSpeakAs ToCounterStyleSpeakAsEnum(
       return CounterStyleSpeakAs::kNumbers;
     case CSSValueID::kWords:
       return CounterStyleSpeakAs::kWords;
-    case CSSValueID::kSpellOut:
-      return CounterStyleSpeakAs::kSpellOut;
     default:
       NOTREACHED();
       return CounterStyleSpeakAs::kAuto;

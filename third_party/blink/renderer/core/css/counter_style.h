@@ -40,7 +40,6 @@ enum class CounterStyleSpeakAs {
   kBullets,
   kNumbers,
   kWords,
-  kSpellOut,
   kReference,
 };
 
