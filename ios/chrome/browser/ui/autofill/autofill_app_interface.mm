@@ -25,7 +25,7 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -467,7 +467,7 @@ class SaveCardInfobarEGTestHelper
 }
 
 + (NSString*)paymentsRiskData {
-  return base::SysUTF8ToNSString(ios::GetChromeBrowserProvider().GetRiskData());
+  return ios::provider::GetRiskData();
 }
 
 #pragma mark - Private

@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -49,7 +50,7 @@
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -439,7 +440,8 @@ void ChromeAutofillClientIOS::ExecuteCommand(int id) {
 
 void ChromeAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(ios::GetChromeBrowserProvider().GetRiskData());
+  std::move(callback).Run(
+      base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
 LogManager* ChromeAutofillClientIOS::GetLogManager() const {
