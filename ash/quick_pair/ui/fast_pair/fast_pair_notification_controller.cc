@@ -82,15 +82,22 @@ class NotificationDelegate : public message_center::NotificationDelegate {
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override {
     // If the button displayed on the notification is clicked.
-    if (button_index) {
+    if (button_index && !is_complete_) {
+      is_complete_ = true;
       std::move(on_click_).Run();
     }
   }
 
   // message_center::NotificationDelegate override:
-  void Close(bool by_user) override { std::move(on_close_).Run(by_user); }
+  void Close(bool by_user) override {
+    if (!is_complete_) {
+      is_complete_ = true;
+      std::move(on_close_).Run(by_user);
+    }
+  }
 
  private:
+  bool is_complete_ = false;
   base::OnceClosure on_click_;
   base::OnceCallback<void(bool)> on_close_;
 };
