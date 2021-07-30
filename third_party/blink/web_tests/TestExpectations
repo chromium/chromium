@@ -6746,18 +6746,6 @@ crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects
 crbug.com/1208173 [ Mac ] virtual/synchronous_html_parser/svg/filters/feDisplacementMap.svg [ Failure ]
 crbug.com/1208173 [ Mac10.14 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
 
-# Temporarily disabled to allow forward progress on crbug.com/1173132
-crbug.com/1173132 [ Mac ] fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] media/color-profile-video-seek-filter.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] media/color-profile-video-seek-object-fit.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] media/track/track-cue-rendering-horizontal.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] virtual/backface-visibility-interop/compositing/overflow/overflow-compositing-descendant.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] virtual/gpu/fast/canvas/canvas-composite-video.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] virtual/gpu/fast/canvas/canvas-drawImage-video-reset.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-pattern-video.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/overflow-compositing-descendant.html [ Failure Pass ]
-crbug.com/1173132 [ Mac ] virtual/synchronous_html_parser/media/controls-styling-strict.html [ Failure Pass ]
-
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/url/failure.html [ Failure ]
 crbug.com/1209223 external/wpt/url/a-element-xhtml.xhtml [ Failure ]
