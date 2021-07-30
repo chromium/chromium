@@ -8,7 +8,7 @@ import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {selectCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
-import {isSelectionEvent, unguessableTokenToString} from '../common/utils.js';
+import {getLoadingPlaceholderAnimationDelay, isSelectionEvent, unguessableTokenToString} from '../common/utils.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user
@@ -412,8 +412,8 @@ class CollectionsGrid extends PolymerElement {
    * @param {number} index
    * @return {string}
    */
-  getLoadingPlaceholderStyle(index) {
-    return `--animation-delay: ${index * 83}ms;`;
+  getLoadingPlaceholderAnimationDelay(index) {
+    return getLoadingPlaceholderAnimationDelay(index);
   }
 }
 

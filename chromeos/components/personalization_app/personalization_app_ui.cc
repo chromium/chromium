@@ -69,7 +69,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"dailyRefresh", IDS_PERSONALIZATION_APP_DAILY_REFRESH},
       {"unknownImageAttribution",
        IDS_PERSONALIZATION_APP_UNKNOWN_IMAGE_ATTRIBUTION},
-      {"networkError", IDS_PERSONALIZATION_APP_NETWORK_ERROR}};
+      {"networkError", IDS_PERSONALIZATION_APP_NETWORK_ERROR},
+      {"ariaLabelLoading", IDS_PERSONALIZATION_APP_ARIA_LABEL_LOADING}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }

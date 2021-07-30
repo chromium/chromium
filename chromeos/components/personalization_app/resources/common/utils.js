@@ -73,3 +73,12 @@ export function isSelectionEvent(event) {
   return (event instanceof MouseEvent && event.type === 'click') ||
       (event instanceof KeyboardEvent && event.key === 'Enter');
 }
+
+/**
+ * Sets a css variable to control the animation delay.
+ * @param {number} index
+ * @return {string}
+ */
+export function getLoadingPlaceholderAnimationDelay(index) {
+  return `--animation-delay: ${index * 83}ms;`
+}

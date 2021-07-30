@@ -10,7 +10,7 @@
       <template is="dom-if" if="[[isLoadingTile_(item)]]">
         <div tabindex$="[[tabIndex]]" role="option"
             class="photo-loading-placeholder"
-            style$="[[getLoadingPlaceholderStyle(index)]]"
+            style$="[[getLoadingPlaceholderAnimationDelay(index)]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
             aria-label$="[[geti18n_('ariaLabelLoading')]]" aria-disabled="true">
         </div>
