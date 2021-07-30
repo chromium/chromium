@@ -331,20 +331,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void AddInternalObserver(RenderProcessHostInternalObserver* observer);
   void RemoveInternalObserver(RenderProcessHostInternalObserver* observer);
 
-  // Called when the renderer has fully destroyed the associated RenderView
-  // identified by |closed_view_route_id|. This is static because its also
-  // called with mock hosts as input in test cases.
-  static void DidDestroyRenderView(int process_id, int closed_view_route_id);
-
-  // Used to extend the lifetime of the sessions until the RenderView
-  // in the renderer is fully closed. This is static because its also called
-  // with mock hosts as input in test cases. The RenderView routing id is used
-  // as the key. A subsequent call to |DidDestroyRenderView| will be called
-  // once the renderer has completed its work.
-  static void WillDestroyRenderView(RenderProcessHost* host,
-                                    const SessionStorageNamespaceMap& sessions,
-                                    int view_route_id);
-
   // Register/unregister the host identified by the host id in the global host
   // list.
   static void RegisterHost(int host_id, RenderProcessHost* host);

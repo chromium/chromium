@@ -339,27 +339,11 @@ RenderViewHostImpl::RenderViewHostImpl(
 RenderViewHostImpl::~RenderViewHostImpl() {
   PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
 
-  // We can't release the SessionStorageNamespace until our peer
-  // in the renderer has wound down.
-  // TODO(crbug.com/1111231): `WillDestroyRenderView()` should probably be
-  // called on the AgentSchedulingGroupHost rather than the
-  // RenderProcessHostImpl. If that happens, does it still make sense to test if
-  // the process is still alive, or should that be encapsulated in
-  // `AgentSchedulingGroupHost::WillDestroyRenderView()`?
-  if (GetProcess()->IsInitializedAndNotDead()) {
-    RenderProcessHostImpl::WillDestroyRenderView(
-        GetProcess(), delegate_->GetSessionStorageNamespaceMap(),
-        GetRoutingID());
-  }
-
   // Destroy the RenderWidgetHost.
   GetWidget()->ShutdownAndDestroyWidget(false);
   if (IsRenderViewLive()) {
     // Destroy the RenderView, which will also destroy the RenderWidget.
-    GetAgentSchedulingGroup().DestroyView(
-        GetRoutingID(),
-        base::BindOnce(&RenderProcessHostImpl::DidDestroyRenderView,
-                       GetProcess()->GetID(), GetRoutingID()));
+    GetAgentSchedulingGroup().DestroyView(GetRoutingID());
   }
 
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);

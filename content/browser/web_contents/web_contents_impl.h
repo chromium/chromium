@@ -851,7 +851,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                   blink::mojom::MediaStreamType type) override;
   std::string GetDefaultMediaDeviceID(
       blink::mojom::MediaStreamType type) override;
-  SessionStorageNamespaceMap GetSessionStorageNamespaceMap() override;
   bool IsJavaScriptDialogShowing() const override;
   bool ShouldIgnoreUnresponsiveRenderer() override;
   bool IsGuest() override;

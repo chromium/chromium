@@ -109,44 +109,4 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, IsFocusedElementEditable) {
   EXPECT_TRUE(contents->IsFocusedElementEditable());
 }
 
-// Flaky on Linux (https://crbug.com/559192).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_ReleaseSessionOnCloseACK DISABLED_ReleaseSessionOnCloseACK
-#else
-#define MAYBE_ReleaseSessionOnCloseACK ReleaseSessionOnCloseACK
-#endif
-IN_PROC_BROWSER_TEST_F(RenderViewHostTest, MAYBE_ReleaseSessionOnCloseACK) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL test_url = embedded_test_server()->GetURL(
-      "/access-session-storage.html");
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Make a new Shell, a seperate tab with it's own session namespace and
-  // have it start loading a url but still be in progress.
-  ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecJs(shell(), "window.open();"));
-  Shell* new_shell = new_shell_observer.GetShell();
-  new_shell->LoadURL(test_url);
-  auto* site_instance = static_cast<SiteInstanceImpl*>(
-      new_shell->web_contents()->GetMainFrame()->GetSiteInstance());
-  auto* controller = static_cast<NavigationControllerImpl*>(
-      &new_shell->web_contents()->GetController());
-  scoped_refptr<SessionStorageNamespace> session_namespace =
-      controller->GetSessionStorageNamespace(site_instance->GetSiteInfo());
-  EXPECT_FALSE(session_namespace->HasOneRef());
-
-  // Close it, or rather start the close operation. The session namespace
-  // should remain until RPH gets an ACK from the renderer about having
-  // closed the view.
-  new_shell->Close();
-  EXPECT_FALSE(session_namespace->HasOneRef());
-
-  // Do something that causes ipc queues to flush and tasks in
-  // flight to complete such that we should have received the ACK.
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  // Verify we have the only remaining reference to the namespace.
-  EXPECT_TRUE(session_namespace->HasOneRef());
-}
-
 }  // namespace content

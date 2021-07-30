@@ -81,10 +81,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // JavaScript window.focus() method).
   virtual void Activate() {}
 
-  // Returns a copy of the map of all session storage namespaces related
-  // to this view.
-  virtual SessionStorageNamespaceMap GetSessionStorageNamespaceMap();
-
   // Returns true if RenderWidgets under this RenderViewHost will never be
   // user-visible and thus never need to generate pixels for display.
   virtual bool IsNeverComposited();

@@ -526,37 +526,6 @@ class RendererSandboxedProcessLauncherDelegateWin
 };
 #endif  // defined(OS_WIN)
 
-const char kSessionStorageHolderKey[] = "kSessionStorageHolderKey";
-
-class SessionStorageHolder : public base::SupportsUserData::Data {
- public:
-  SessionStorageHolder()
-      : session_storage_namespaces_awaiting_close_(
-            new std::map<int, SessionStorageNamespaceMap>) {}
-
-  ~SessionStorageHolder() override {
-    // Its important to delete the map on the IO thread to avoid deleting
-    // the underlying namespaces prior to processing ipcs referring to them.
-    GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, session_storage_namespaces_awaiting_close_.release());
-  }
-
-  SessionStorageHolder(const SessionStorageHolder& other) = delete;
-  SessionStorageHolder& operator=(const SessionStorageHolder& other) = delete;
-
-  void Hold(const SessionStorageNamespaceMap& sessions, int widget_route_id) {
-    (*session_storage_namespaces_awaiting_close_)[widget_route_id] = sessions;
-  }
-
-  void Release(int old_route_id) {
-    session_storage_namespaces_awaiting_close_->erase(old_route_id);
-  }
-
- private:
-  std::unique_ptr<std::map<int, SessionStorageNamespaceMap>>
-      session_storage_namespaces_awaiting_close_;
-};
-
 // This class manages spare RenderProcessHosts.
 //
 // There is a singleton instance of this class which manages a single spare
@@ -3941,12 +3910,6 @@ void RenderProcessHostImpl::Cleanup() {
   // object, to avoid method invocations that trigger usages of profile.
   ResetIPC();
 
-  // Its important to remove the kSessionStorageHolder after the channel
-  // has been reset to avoid deleting the underlying namespaces prior
-  // to processing ipcs referring to them.
-  DCHECK(!channel_);
-  RemoveUserData(kSessionStorageHolderKey);
-
   // Remove ourself from the list of renderer processes so that we can't be
   // reused in between now and when the Delete task runs.
   UnregisterHost(GetID());
@@ -4737,8 +4700,6 @@ void RenderProcessHostImpl::ProcessDied(
       Details<ChildProcessTerminationInfo>(&info));
   within_process_died_observer_ = false;
 
-  RemoveUserData(kSessionStorageHolderKey);
-
   // Initialize a new ChannelProxy in case this host is re-used for a new
   // process. This ensures that new messages can be sent on the host ASAP
   // (even before Init()) and they'll eventually reach the new process.
@@ -4819,35 +4780,6 @@ void RenderProcessHost::PostTaskWhenProcessIsReady(base::OnceClosure task) {
 void RenderProcessHost::SetHungRendererAnalysisFunction(
     AnalyzeHungRendererFunction analyze_hung_renderer) {
   g_analyze_hung_renderer = analyze_hung_renderer;
-}
-
-void RenderProcessHostImpl::DidDestroyRenderView(int process_id,
-                                                 int closed_view_route_id) {
-  RenderProcessHost* host = RenderProcessHost::FromID(process_id);
-  if (!host)
-    return;
-  SessionStorageHolder* holder = static_cast<SessionStorageHolder*>(
-      host->GetUserData(kSessionStorageHolderKey));
-  if (!holder)
-    return;
-  holder->Release(closed_view_route_id);
-}
-
-void RenderProcessHostImpl::WillDestroyRenderView(
-    RenderProcessHost* host,
-    const SessionStorageNamespaceMap& sessions,
-    int view_route_id) {
-  DCHECK(host);
-  if (sessions.empty())
-    return;
-  SessionStorageHolder* holder = static_cast<SessionStorageHolder*>(
-      host->GetUserData(kSessionStorageHolderKey));
-  if (!holder) {
-    auto empty_holder = std::make_unique<SessionStorageHolder>();
-    holder = empty_holder.get();
-    host->SetUserData(kSessionStorageHolderKey, std::move(empty_holder));
-  }
-  holder->Hold(sessions, view_route_id);
 }
 
 void RenderProcessHostImpl::SuddenTerminationChanged(bool enabled) {

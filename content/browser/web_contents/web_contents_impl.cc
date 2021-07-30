@@ -4119,10 +4119,6 @@ void WebContentsImpl::SetCaptureHandleConfig(
                              capture_handle_config_);
 }
 
-SessionStorageNamespaceMap WebContentsImpl::GetSessionStorageNamespaceMap() {
-  return GetController().GetSessionStorageNamespaceMap();
-}
-
 FrameTree* WebContentsImpl::GetFrameTree() {
   return &frame_tree_;
 }

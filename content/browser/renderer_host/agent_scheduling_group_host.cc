@@ -325,15 +325,11 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
   mojo_remote_.get()->CreateView(std::move(params));
 }
 
-void AgentSchedulingGroupHost::DestroyView(
-    int32_t routing_id,
-    mojom::AgentSchedulingGroup::DestroyViewCallback callback) {
+void AgentSchedulingGroupHost::DestroyView(int32_t routing_id) {
   DCHECK_EQ(state_, LifecycleState::kBound);
-  if (mojo_remote_.is_bound()) {
-    mojo_remote_.get()->DestroyView(routing_id, std::move(callback));
-  } else {
-    std::move(callback).Run();
-  }
+  if (!mojo_remote_.is_bound())
+    return;
+  mojo_remote_.get()->DestroyView(routing_id);
 }
 
 void AgentSchedulingGroupHost::CreateFrameProxy(

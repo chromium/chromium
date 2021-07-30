@@ -90,8 +90,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   mojom::RouteProvider* GetRemoteRouteProvider();
   void CreateFrame(mojom::CreateFrameParamsPtr params);
   void CreateView(mojom::CreateViewParamsPtr params);
-  void DestroyView(int32_t routing_id,
-                   mojom::AgentSchedulingGroup::DestroyViewCallback callback);
+  void DestroyView(int32_t routing_id);
   void CreateFrameProxy(
       const blink::RemoteFrameToken& token,
       int32_t routing_id,
