@@ -88,6 +88,7 @@
 #include "content/public/test/find_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
@@ -4875,4 +4876,20 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   EXPECT_EQ(blink::IdentifiableToken(
                 extensions::ExtensionResourceAccessResult::kFailure),
             entry->metrics.begin()->second);
+}
+
+class WebViewPPAPITest : public WebViewTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebViewTest::SetUpCommandLine(command_line);
+    ASSERT_TRUE(ppapi::RegisterTestPlugin(command_line));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewPPAPITest, Shim_TestPlugin) {
+  TestHelper("testPlugin", "web_view/shim", NO_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
+  TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
 }
