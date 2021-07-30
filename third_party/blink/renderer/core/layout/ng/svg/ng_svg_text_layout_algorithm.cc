@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/resolved_text_layout_attributes_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/svg/svg_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
@@ -13,54 +14,6 @@
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 
 namespace blink {
-
-namespace {
-
-// This class wraps a sparse list, |Vector<std::pair<unsigned,
-// NGSvgCharacterData>>|, so that it looks to have NGSvgCharacterData for
-// any index.
-//
-// For example, if |resolved| contains the following pairs:
-//     resolved[0]: (0, NGSvgCharacterData)
-//     resolved[1]: (10, NGSvgCharacterData)
-//     resolved[2]: (42, NGSvgCharacterData)
-//
-// AdvanceTo(0) returns the NGSvgCharacterData at [0].
-// AdvanceTo(1 - 9) returns the default NGSvgCharacterData, which has no data.
-// AdvanceTo(10) returns the NGSvgCharacterData at [1].
-// AdvanceTo(11 - 41) returns the default NGSvgCharacterData.
-// AdvanceTo(42) returns the NGSvgCharacterData at [2].
-// AdvanceTo(43 or greater) returns the default NGSvgCharacterData.
-class ResolvedIterator final {
- public:
-  explicit ResolvedIterator(
-      const Vector<std::pair<unsigned, NGSvgCharacterData>>& resolved)
-      : resolved_(resolved) {}
-  ResolvedIterator(const ResolvedIterator&) = delete;
-  ResolvedIterator& operator=(const ResolvedIterator&) = delete;
-
-  const NGSvgCharacterData& AdvanceTo(unsigned addressable_index) {
-    if (index_ >= resolved_.size())
-      return default_data_;
-    if (addressable_index < resolved_[index_].first)
-      return default_data_;
-    if (addressable_index == resolved_[index_].first)
-      return resolved_[index_].second;
-    auto* it = std::find_if(resolved_.begin() + index_, resolved_.end(),
-                            [addressable_index](const auto& pair) {
-                              return addressable_index <= pair.first;
-                            });
-    index_ = std::distance(resolved_.begin(), it);
-    return AdvanceTo(addressable_index);
-  }
-
- private:
-  const NGSvgCharacterData default_data_;
-  const Vector<std::pair<unsigned, NGSvgCharacterData>>& resolved_;
-  unsigned index_ = 0u;
-};
-
-}  // anonymous namespace
 
 // See https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 
@@ -96,7 +49,8 @@ void NGSvgTextLayoutAlgorithm::Layout(
   // This was already done in PrepareLayout() step. See
   // NGSvgTextLayoutAttributesBuilder.
   // Copy |rotate| and |anchored_chunk| fields.
-  ResolvedIterator iterator(inline_node_.SvgCharacterDataList());
+  ResolvedTextLayoutAttributesIterator iterator(
+      inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < result_.size(); ++i) {
     const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
     if (resolve.HasRotate())
@@ -271,7 +225,8 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
   // attributes".
   FloatPoint shift;
   // 2. For each array element with index i in result:
-  ResolvedIterator iterator(inline_node_.SvgCharacterDataList());
+  ResolvedTextLayoutAttributesIterator iterator(
+      inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < addressable_count_; ++i) {
     const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
     // https://github.com/w3c/svgwg/issues/846
@@ -487,7 +442,8 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
   // 2. Set index = 1.
   // 3. While index < count:
   // 3.5. Set index to index + 1.
-  ResolvedIterator iterator(inline_node_.SvgCharacterDataList());
+  ResolvedTextLayoutAttributesIterator iterator(
+      inline_node_.SvgCharacterDataList());
   for (wtf_size_t i = 0; i < result_.size(); ++i) {
     const float scaling_factor = ScalingFactorAt(items, i);
     const NGSvgCharacterData& resolve = iterator.AdvanceTo(i);
