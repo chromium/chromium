@@ -78,6 +78,7 @@ class HttpAuthManager;
 class PasswordRequirementsService;
 class PasswordReuseManager;
 class PasswordStore;
+class PasswordStoreInterface;
 struct PasswordForm;
 
 enum class SyncState {
@@ -239,10 +240,9 @@ class PasswordManagerClient {
                                 const PasswordFormManagerForUI* form_manager);
 
   // Informs the embedder that user credentials were leaked.
-  virtual void NotifyUserCredentialsWereLeaked(
-      CredentialLeakType leak_type,
-      const GURL& origin,
-      const std::u16string& username);
+  virtual void NotifyUserCredentialsWereLeaked(CredentialLeakType leak_type,
+                                               const GURL& origin,
+                                               const std::u16string& username);
 
   // Requests a reauth for the primary account with |access_point| representing
   // where the reauth was triggered.
@@ -264,6 +264,11 @@ class PasswordManagerClient {
 
   // Returns the account PasswordStore associated with this instance.
   virtual PasswordStore* GetAccountPasswordStore() const = 0;
+
+  // TODO(crbug.com/1218413): remove the follow two method once the two above
+  // methods are returning PasswordStoreInterface.
+  virtual PasswordStoreInterface* GetProfilePasswordStoreInterface() const;
+  virtual PasswordStoreInterface* GetAccountPasswordStoreInterface() const;
 
   // Returns the PasswordReuseManager associated with this instance.
   virtual PasswordReuseManager* GetPasswordReuseManager() const = 0;

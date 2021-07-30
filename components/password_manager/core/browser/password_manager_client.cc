@@ -66,6 +66,16 @@ void PasswordManagerClient::TriggerReauthForPrimaryAccount(
 
 void PasswordManagerClient::TriggerSignIn(signin_metrics::AccessPoint) {}
 
+PasswordStoreInterface*
+PasswordManagerClient::GetProfilePasswordStoreInterface() const {
+  return GetProfilePasswordStore();
+}
+
+PasswordStoreInterface*
+PasswordManagerClient::GetAccountPasswordStoreInterface() const {
+  return GetAccountPasswordStore();
+}
+
 SyncState PasswordManagerClient::GetPasswordSyncState() const {
   return SyncState::kNotSyncing;
 }
