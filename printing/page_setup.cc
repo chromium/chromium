@@ -36,6 +36,19 @@ bool IsValidPrintableArea(const gfx::Size& page_size,
 PageMargins::PageMargins()
     : header(0), footer(0), left(0), right(0), top(0), bottom(0) {}
 
+PageMargins::PageMargins(int header,
+                         int footer,
+                         int left,
+                         int right,
+                         int top,
+                         int bottom)
+    : header(header),
+      footer(footer),
+      left(left),
+      right(right),
+      top(top),
+      bottom(bottom) {}
+
 void PageMargins::Clear() {
   header = 0;
   footer = 0;

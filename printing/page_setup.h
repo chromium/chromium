@@ -14,6 +14,7 @@ namespace printing {
 class COMPONENT_EXPORT(PRINTING) PageMargins {
  public:
   PageMargins();
+  PageMargins(int header, int footer, int left, int right, int top, int bottom);
 
   void Clear();
 

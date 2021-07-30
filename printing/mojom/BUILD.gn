@@ -7,3 +7,20 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "print.mojom" ]
 }
+
+mojom("printing_context") {
+  sources = [ "printing_context.mojom" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "printing.mojom.PageMargins"
+          cpp = "::printing::PageMargins"
+        },
+      ]
+      traits_sources = [ "printing_context_mojom_traits.cc" ]
+      traits_headers = [ "printing_context_mojom_traits.h" ]
+    },
+  ]
+}
