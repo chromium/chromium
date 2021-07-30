@@ -3542,10 +3542,10 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
   auto write_result_callback = base::BindRepeating(
       [](base::WeakPtr<Transaction> transaction,
          storage::mojom::WriteBlobToFileResult result) {
-        DCHECK_CALLED_ON_VALID_SEQUENCE(transaction->sequence_checker_);
-
         if (!transaction)
           return;
+        DCHECK_CALLED_ON_VALID_SEQUENCE(transaction->sequence_checker_);
+
         // This can be null if Rollback() is called.
         if (!transaction->write_state_)
           return;
