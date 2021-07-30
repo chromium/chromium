@@ -106,6 +106,7 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/channel_info.h"
@@ -131,6 +132,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/arc/arc_prefs.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/flags_ui/flags_ui_metrics.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
@@ -1786,6 +1788,9 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
 
   ProfileHelper::Get()->ProfileStartup(profile);
 
+  PrefService* prefs = profile->GetPrefs();
+  arc::RecordPlayStoreLaunchWithinAWeek(prefs, /*launched=*/false);
+
   if (start_session_type_ == StartSessionType::kPrimary) {
     WizardController* wizard_controller =
         WizardController::default_controller();
@@ -1812,11 +1817,12 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
     }
 
     if (user_manager->IsCurrentUserNew() && !skip_post_login_screens) {
-      profile->GetPrefs()->SetTime(prefs::kOobeOnboardingTime,
-                                   base::Time::Now());
+      prefs->SetTime(prefs::kOobeOnboardingTime, base::Time::Now());
+      prefs->SetBoolean(arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded,
+                        true);
       // Don't specify start URLs if the administrator has configured the
       // start URLs via policy.
-      if (!SessionStartupPref::TypeIsManaged(profile->GetPrefs())) {
+      if (!SessionStartupPref::TypeIsManaged(prefs)) {
         if (child_service->IsChildAccountStatusKnown())
           MaybeLaunchHelpApp(profile);
         else

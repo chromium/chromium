@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "components/arc/arc_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -110,6 +111,14 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kOobeMarketingOptInChoice, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(prefs::kLastLoginInputMethod, std::string());
+  registry->RegisterTimePref(prefs::kOobeOnboardingTime, base::Time());
+  // The `Arc.PlayStoreLaunchWithinAWeek` metric can only be recorded if
+  // `kOobeOnboardingTime` has been set. Therefore,
+  // `kArcPlayStoreLaunchMetricCanBeRecorded` should be registered and
+  // initialized along with `kOobeOnboardingTime`.
+  registry->RegisterBooleanPref(
+      arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded, false);
   ash::OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 

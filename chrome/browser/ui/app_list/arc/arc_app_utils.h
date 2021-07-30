@@ -227,6 +227,15 @@ void ExecuteArcShortcutCommand(content::BrowserContext* context,
                                const std::string& id,
                                const std::string& shortcut_id,
                                int64_t display_id);
+
+// Records whether or not Play Store has been launched by the user within a
+// week after from the when onboarding (OOBE) finished, following this logic:
+// * we are still within a week from onboarding:
+//   -Play Store has been launched --> true
+//   -Play Store has not been launched yet --> do nothing
+// * a week has passed since onboarding --> no
+void RecordPlayStoreLaunchWithinAWeek(PrefService* prefs, bool launched);
+
 }  // namespace arc
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_ARC_ARC_APP_UTILS_H_

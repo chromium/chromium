@@ -430,13 +430,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kShowSyncSettingsOnSessionStart,
                                 false);
 
-  // OOBE and login related prefs.
-  registry->RegisterStringPref(chromeos::prefs::kLastLoginInputMethod,
-                               std::string(),
-                               PrefRegistry::NO_REGISTRATION_FLAGS);
-  registry->RegisterTimePref(chromeos::prefs::kOobeOnboardingTime,
-                             base::Time());
-
   // Text-to-speech prefs.
   registry->RegisterDictionaryPref(
       ::prefs::kTextToSpeechLangToVoiceName,

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -826,6 +828,20 @@ void ExecuteArcShortcutCommand(content::BrowserContext* context,
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;
   launch_data.ranking_item_type = app_list::RankingItemType::kArcAppShortcut;
   app_list_client_impl->search_controller()->Train(std::move(launch_data));
+}
+
+void RecordPlayStoreLaunchWithinAWeek(PrefService* prefs, bool launched) {
+  if (!prefs->GetBoolean(arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded))
+    return;
+  auto time_oobe_finished = prefs->GetTime(ash::prefs::kOobeOnboardingTime);
+  if (!time_oobe_finished.is_null())
+    return;
+  bool within_a_week =
+      base::Time::Now() - time_oobe_finished < base::TimeDelta::FromDays(7);
+  if (within_a_week && !launched)
+    return;
+  base::UmaHistogramBoolean("Arc.PlayStoreLaunchWithinAWeek", within_a_week);
+  prefs->ClearPref(arc::prefs::kArcPlayStoreLaunchMetricCanBeRecorded);
 }
 
 }  // namespace arc

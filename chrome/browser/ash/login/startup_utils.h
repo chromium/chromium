@@ -66,7 +66,8 @@ class StartupUtils {
   // Registers OOBE local state preferences .
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Registers OOBE preferences that are associated with a profile.
+  // Registers OOBE and login related preferences that are associated with a
+  // profile.
   static void RegisterOobeProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns whether the device is owned by a consumer or has been enterprise

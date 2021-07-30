@@ -12,6 +12,7 @@
 namespace apps_util {
 
 bool IsInstalled(apps::mojom::Readiness readiness);
+bool IsHumanLaunch(apps::mojom::LaunchSource launch_source);
 
 }  // namespace apps_util
 

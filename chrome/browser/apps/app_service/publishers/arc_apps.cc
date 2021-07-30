@@ -50,6 +50,7 @@
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -670,6 +671,12 @@ void ArcApps::Launch(const std::string& app_id,
     return;
   }
 
+  if (app_id == arc::kPlayStoreAppId &&
+      apps_util::IsHumanLaunch(launch_source)) {
+    arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
+                                          /*launched=*/true);
+  }
+
   auto new_window_info = SetSessionId(std::move(window_info));
   int32_t session_id = new_window_info->window_id;
   int64_t display_id = new_window_info->display_id;
@@ -690,6 +697,12 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
   auto user_interaction_type = GetUserInterationType(launch_source);
   if (!user_interaction_type.has_value()) {
     return;
+  }
+
+  if (app_id == arc::kPlayStoreAppId &&
+      apps_util::IsHumanLaunch(launch_source)) {
+    arc::RecordPlayStoreLaunchWithinAWeek(profile_->GetPrefs(),
+                                          /*launched=*/true);
   }
 
   arc::ArcMetricsService::RecordArcUserInteraction(

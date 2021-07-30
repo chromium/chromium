@@ -22,4 +22,35 @@ bool IsInstalled(apps::mojom::Readiness readiness) {
   }
 }
 
+bool IsHumanLaunch(apps::mojom::LaunchSource launch_source) {
+  switch (launch_source) {
+    case apps::mojom::LaunchSource::kFromAppListGrid:
+    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
+    case apps::mojom::LaunchSource::kFromAppListQuery:
+    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::mojom::LaunchSource::kFromAppListRecommendation:
+    case apps::mojom::LaunchSource::kFromParentalControls:
+    case apps::mojom::LaunchSource::kFromShelf:
+    case apps::mojom::LaunchSource::kFromFileManager:
+    case apps::mojom::LaunchSource::kFromLink:
+    case apps::mojom::LaunchSource::kFromOmnibox:
+    case apps::mojom::LaunchSource::kFromKeyboard:
+    case apps::mojom::LaunchSource::kFromOtherApp:
+    case apps::mojom::LaunchSource::kFromMenu:
+    case apps::mojom::LaunchSource::kFromInstalledNotification:
+    case apps::mojom::LaunchSource::kFromSharesheet:
+    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
+    case apps::mojom::LaunchSource::kFromFullRestore:
+    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+      return true;
+    case apps::mojom::LaunchSource::kUnknown:
+    case apps::mojom::LaunchSource::kFromChromeInternal:
+    case apps::mojom::LaunchSource::kFromTest:
+    case apps::mojom::LaunchSource::kFromArc:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace apps_util

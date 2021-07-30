@@ -1080,6 +1080,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.PlayStoreLaunchWithinAWeek" enum="BooleanUsage"
+    expires_after="2022-07-20">
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether the Play Store has been launched by the user within a week from the
+    when onboarding (OOBE) is finished. The metric is recorded only once. The
+    recording happens when Play Store is launched by the user or when a week has
+    passed since onboarding (a check is done at user session initialization).
+  </summary>
+</histogram>
+
 <histogram name="Arc.PlayStoreSearch.DefaultResultClickLatency" units="ms"
     expires_after="2021-12-31">
   <owner>jennyz@chromium.org</owner>
