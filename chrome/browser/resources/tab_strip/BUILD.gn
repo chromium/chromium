@@ -139,7 +139,7 @@ js_library("tab") {
     ":tab_swiper",
     ":tabs_api_proxy",
     "//ui/webui/resources/js:custom_element",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
   ]

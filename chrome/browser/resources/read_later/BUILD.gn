@@ -121,7 +121,7 @@ js_library("read_later_item") {
     "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
   ]
 }
 

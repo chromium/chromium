@@ -425,6 +425,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_search_field.html",
                                  "ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager.html",
                                  "ui/webui/resources/cr_elements/find_shortcut_behavior.html",
+                                 "ui/webui/resources/html/icon.html",
                                  "ui/webui/resources/html/plural_string_proxy.html",
                                  "ui/webui/resources/html/search_highlight_utils.html",
                                ]

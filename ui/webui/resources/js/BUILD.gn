@@ -45,6 +45,7 @@ preprocess_if_expr("preprocess_src") {
     "cr.m.js",
     "custom_element.js",
     "i18n_template_no_process.js",
+    "icon.js",
     "load_time_data.m.js",
     "plural_string_proxy.js",
     "search_highlight_utils.js",
@@ -66,7 +67,6 @@ preprocess_if_expr("preprocess_src") {
       "cr.js",
       "event_tracker.js",
       "i18n_behavior.js",
-      "icon.js",
       "list_property_update_behavior.js",
       "parse_html_subset.js",
       "polymer_config.js",
@@ -96,7 +96,6 @@ preprocess_if_expr("preprocess_generated") {
     "cr/event_target.m.js",
     "cr/ui.m.js",
     "event_tracker.m.js",
-    "icon.m.js",
     "load_time_data.js",
     "parse_html_subset.m.js",
     "promise_resolver.m.js",
@@ -129,7 +128,6 @@ js_type_check("js_resources") {
     ":event_tracker",
     ":i18n_behavior",
     ":i18n_template_no_process",
-    ":icon",
     ":list_property_update_behavior",
     ":load_time_data",
     ":parse_html_subset",
@@ -162,13 +160,6 @@ js_library("cr") {
 
 js_library("event_tracker") {
   deps = [ ":cr" ]
-}
-
-js_library("icon") {
-  deps = [
-    ":cr",
-    ":util",
-  ]
 }
 
 js_library("i18n_template_no_process") {
@@ -227,7 +218,6 @@ js_modulizer("modulize_local") {
   input_files = [
     "assert.js",
     "event_tracker.js",
-    "icon.js",
     "i18n_behavior.js",
     "list_property_update_behavior.js",
     "parse_html_subset.js",
@@ -261,7 +251,7 @@ js_type_check("js_resources_modules") {
     ":custom_element",
     ":event_tracker.m",
     ":i18n_behavior.m",
-    ":icon.m",
+    ":icon",
     ":list_property_update_behavior.m",
     ":load_time_data.m",
     ":parse_html_subset.m",
@@ -294,10 +284,8 @@ js_library("event_tracker.m") {
   extra_deps = [ ":modulize_local" ]
 }
 
-js_library("icon.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/icon.m.js" ]
+js_library("icon") {
   deps = [ ":cr.m" ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("i18n_behavior.m") {

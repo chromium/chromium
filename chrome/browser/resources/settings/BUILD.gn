@@ -571,7 +571,7 @@ js_library("settings_routes") {
 js_library("site_favicon") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
   ]
 }
 

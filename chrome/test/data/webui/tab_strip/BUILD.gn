@@ -120,7 +120,7 @@ js_library("tab_test") {
     "//chrome/browser/resources/tab_strip:tab",
     "//chrome/browser/resources/tab_strip:tab_strip_embedder_proxy",
     "//chrome/browser/resources/tab_strip:tabs_api_proxy",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

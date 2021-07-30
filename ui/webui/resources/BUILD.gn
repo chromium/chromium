@@ -234,7 +234,7 @@ ts_library("library") {
     "$root_dir/js/parse_html_subset.m.d.ts",
     "$root_dir/js/plural_string_proxy.d.ts",
     "$root_dir/js/search_highlight_utils.d.ts",
-    "$root_dir/js/icon.m.d.ts",
+    "$root_dir/js/icon.d.ts",
     "$root_dir/js/util.m.d.ts",
   ]
 
@@ -310,7 +310,7 @@ ts_definitions("generate_definitions") {
     "js/cr/ui/store.m.js",
     "js/custom_element.js",
     "js/event_tracker.m.js",
-    "js/icon.m.js",
+    "js/icon.js",
     "js/load_time_data.m.js",
     "js/parse_html_subset.m.js",
     "js/plural_string_proxy.js",

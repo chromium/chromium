@@ -7,7 +7,7 @@
  * site URL.
  */
 
-import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFavicon, getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 

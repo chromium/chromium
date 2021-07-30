@@ -86,7 +86,7 @@ js_library("people_page") {
     "//ui/webui/resources/cr_elements/chromeos/cr_picture:png.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }

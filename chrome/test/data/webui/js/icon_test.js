@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
-import {getFavicon, getFaviconForPageURL, getFileIconUrl} from 'chrome://resources/js/icon.m.js';
+import {getFavicon, getFaviconForPageURL, getFileIconUrl} from 'chrome://resources/js/icon.js';
 
 suite('IconModuleTest', function() {
   test('GetFaviconForPageURL', function() {

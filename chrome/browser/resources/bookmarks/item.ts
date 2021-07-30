@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {StoreObserver} from 'chrome://resources/js/cr/ui/store.m.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,9 +25,9 @@ import {BookmarkNode, BookmarksPageState} from './types.js';
 
 const BookmarksItemElementBase =
     mixinBehaviors(StoreClient, PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
+      new (): PolymerElement & BookmarksStoreClientInterface &
       StoreObserver<BookmarksPageState>
-}
+    };
 
 export interface BookmarksItemElement {
   $: {
