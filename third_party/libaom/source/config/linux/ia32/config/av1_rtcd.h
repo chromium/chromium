@@ -1047,7 +1047,10 @@ RTCD_EXTERN void (*av1_fwd_txfm2d_8x8)(const int16_t* input,
                                        int bd);
 
 void av1_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
-#define av1_fwht4x4 av1_fwht4x4_c
+void av1_fwht4x4_sse4_1(const int16_t* input, tran_low_t* output, int stride);
+RTCD_EXTERN void (*av1_fwht4x4)(const int16_t* input,
+                                tran_low_t* output,
+                                int stride);
 
 uint32_t av1_get_crc32c_value_c(void* crc_calculator,
                                 uint8_t* p,
@@ -1164,7 +1167,12 @@ void av1_highbd_convolve_copy_c(const uint8_t* src,
 #define av1_highbd_convolve_copy av1_highbd_convolve_copy_c
 
 void av1_highbd_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
-#define av1_highbd_fwht4x4 av1_highbd_fwht4x4_c
+void av1_highbd_fwht4x4_sse4_1(const int16_t* input,
+                               tran_low_t* output,
+                               int stride);
+RTCD_EXTERN void (*av1_highbd_fwht4x4)(const int16_t* input,
+                                       tran_low_t* output,
+                                       int stride);
 
 void av1_highbd_inv_txfm_add_c(const tran_low_t* input,
                                uint8_t* dest,
@@ -2199,6 +2207,9 @@ static void setup_rtcd_internal(void) {
     av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_sse4_1;
   if (flags & HAS_AVX2)
     av1_fwd_txfm2d_8x8 = av1_fwd_txfm2d_8x8_avx2;
+  av1_fwht4x4 = av1_fwht4x4_c;
+  if (flags & HAS_SSE4_1)
+    av1_fwht4x4 = av1_fwht4x4_sse4_1;
   av1_get_crc32c_value = av1_get_crc32c_value_c;
   if (flags & HAS_SSE4_2)
     av1_get_crc32c_value = av1_get_crc32c_value_sse4_2;
@@ -2207,6 +2218,9 @@ static void setup_rtcd_internal(void) {
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_sse4_1;
   if (flags & HAS_AVX2)
     av1_get_horver_correlation_full = av1_get_horver_correlation_full_avx2;
+  av1_highbd_fwht4x4 = av1_highbd_fwht4x4_c;
+  if (flags & HAS_SSE4_1)
+    av1_highbd_fwht4x4 = av1_highbd_fwht4x4_sse4_1;
   av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_c;
   if (flags & HAS_SSE4_1)
     av1_highbd_inv_txfm_add = av1_highbd_inv_txfm_add_sse4_1;
