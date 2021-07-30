@@ -13,7 +13,9 @@
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/web/public/browser_state.h"
+#import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/http/http_request_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -248,6 +250,12 @@ NSURLSession* GaiaAuthFetcherIOSNSURLSessionBridge::CreateNSURLSession(
   NSURLSessionConfiguration* session_configuration =
       NSURLSessionConfiguration.ephemeralSessionConfiguration;
   session_configuration.HTTPShouldSetCookies = YES;
+  std::string user_agent =
+      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE);
+  session_configuration.HTTPAdditionalHeaders = @{
+    base::SysUTF8ToNSString(net::HttpRequestHeaders::kUserAgent) :
+        base::SysUTF8ToNSString(user_agent),
+  };
   return [NSURLSession sessionWithConfiguration:session_configuration
                                        delegate:url_session_delegate
                                   delegateQueue:NSOperationQueue.mainQueue];
