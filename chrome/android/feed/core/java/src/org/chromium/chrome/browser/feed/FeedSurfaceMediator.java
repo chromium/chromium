@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
@@ -226,6 +228,7 @@ public class FeedSurfaceMediator
     private @Nullable SignInPromo mSignInPromo;
     private RecyclerViewAnimationFinishDetector mRecyclerViewAnimationFinishDetector =
             new RecyclerViewAnimationFinishDetector();
+    private @Nullable View mEnhancedProtectionPromo;
 
     private boolean mFeedEnabled;
     private boolean mHasHeader;
@@ -410,7 +413,7 @@ public class FeedSurfaceMediator
             mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
             TemplateUrlServiceFactory.get().addObserver(this);
 
-            boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+            boolean suggestionsVisible = isSuggestionsVisible();
 
             addHeaderAndStream(
                     getInterestFeedHeaderText(suggestionsVisible), mCoordinator.getStream());
@@ -631,12 +634,12 @@ public class FeedSurfaceMediator
 
     private void initStreamHeaderViews() {
         boolean signInPromoVisible = createSignInPromoIfNeeded();
-        View enhancedProtectionPromoView = null;
+        mEnhancedProtectionPromo = null;
         if (!signInPromoVisible) {
-            enhancedProtectionPromoView = createEnhancedProtectionPromoIfNeeded();
+            mEnhancedProtectionPromo = createEnhancedProtectionPromoIfNeeded();
         }
         // We are not going to show two promos at the same time.
-        mCoordinator.updateHeaderViews(signInPromoVisible, enhancedProtectionPromoView);
+        mCoordinator.updateHeaderViews(signInPromoVisible, mEnhancedProtectionPromo);
     }
 
     /**
@@ -650,10 +653,8 @@ public class FeedSurfaceMediator
             return false;
         }
         if (mSignInPromo == null) {
-            boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
-
             mSignInPromo = new FeedSignInPromo(mSigninManager);
-            mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
+            mSignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
         }
         return mSignInPromo.isVisible();
     }
@@ -666,8 +667,19 @@ public class FeedSurfaceMediator
         if (enhancedProtectionPromoView != null) {
             mCoordinator.getEnhancedProtectionPromoController()
                     .setEnhancedProtectionPromoStateListener(this);
+            updatePromoCardPadding(enhancedProtectionPromoView);
         }
         return enhancedProtectionPromoView;
+    }
+
+    private void updatePromoCardPadding(View promoCard) {
+        MarginLayoutParams layoutParams = promoCard.getLayoutParams() == null
+                ? new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+                : (MarginLayoutParams) promoCard.getLayoutParams();
+        layoutParams.bottomMargin = isSuggestionsVisible()
+                ? 0
+                : mContext.getResources().getDimensionPixelSize(R.dimen.ntp_promo_bottom_margin);
+        promoCard.setLayoutParams(layoutParams);
     }
 
     /** Clear any dependencies related to the {@link Stream}. */
@@ -754,7 +766,7 @@ public class FeedSurfaceMediator
      * Called when a settings change or update to this/another NTP caused the feed to show/hide.
      */
     void updateSectionHeader() {
-        boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+        boolean suggestionsVisible = isSuggestionsVisible();
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .get(INTEREST_FEED_HEADER_POSITION)
                 .set(SectionHeaderProperties.HEADER_TEXT_KEY,
@@ -767,6 +779,9 @@ public class FeedSurfaceMediator
 
         if (mSignInPromo != null) {
             mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
+        }
+        if (mEnhancedProtectionPromo != null) {
+            updatePromoCardPadding(mEnhancedProtectionPromo);
         }
         if (suggestionsVisible) mCoordinator.getSurfaceLifecycleManager().show();
         mStreamContentChanged = true;
@@ -1139,5 +1154,9 @@ public class FeedSurfaceMediator
         FeedLaunchReliabilityLogger logger = mCoordinator.getLaunchReliabilityLogger();
         if (!logger.isLaunchInProgress()) return;
         logger.logLaunchFinished(System.nanoTime(), result.getNumber());
+    }
+
+    private boolean isSuggestionsVisible() {
+        return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 }
