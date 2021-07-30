@@ -68,7 +68,7 @@ PasswordCredential* PasswordCredential::Create(
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
     V8FormDataEntryValue* value =
         form_data->get(submittable_element->GetName());
-    if (!value->IsUSVString())
+    if (!value || !value->IsUSVString())
       continue;
     const String& usv_string_value = value->GetAsUSVString();
 #else   // defined(USE_BLINK_V8_BINDING_NEW_IDL_UNION)
