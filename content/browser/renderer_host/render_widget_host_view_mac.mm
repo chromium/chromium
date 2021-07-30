@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -1874,7 +1875,15 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
         GetFocusedWidget(), requested_range);
     // TODO(thakis): Pipe |actualRange| through TextInputClientMac machinery.
     *actual_range = requested_range;
+
+    // It seems that only the Pepper-PDF would reach here while
+    // an ordinary webpage always retrieves the rect from the cache.
+    // After fixing crbug.com/601322, we should have fixed the PDF code and so
+    // this block can be removed. To be prudent, track if there is any usage
+    // in the wild before we do that.
+    base::debug::DumpWithoutCrashing();
   }
+
   return true;
 }
 
