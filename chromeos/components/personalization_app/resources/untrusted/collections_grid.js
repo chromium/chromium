@@ -109,7 +109,6 @@ function getImages(localImages, localImageData) {
 /**
  * A common display format between local images and WallpaperCollection.
  * Get the first displayable image with data from the list of possible images.
- * TODO(b/184774974) display a collage of up to three images.
  * @param {Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
  * @param {Object<string, string>} localImageData
  * @return {!ImageTile}
@@ -400,12 +399,21 @@ class CollectionsGrid extends PolymerElement {
   }
 
   /**
+   * @param {?Tile} item
+   * @return {boolean}
+   * @private
+   */
+  isEmptyTile_(item) {
+    return !!item && item.type === TileType.image && item.preview.length === 0;
+  }
+
+  /**
    * @private
    * @param {?Tile} item
    * @return {boolean}
    */
   isImageTile_(item) {
-    return item?.type === TileType.image;
+    return item?.type === TileType.image && !this.isEmptyTile_(item);
   }
 
   /**

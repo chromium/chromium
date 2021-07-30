@@ -43,6 +43,7 @@ preprocess_if_expr("preprocess") {
     "common/base.css",
     "common/icons.js",
     "common/iframe_api.js",
+    "common/no_images.svg",
     "common/styles.js",
     "common/utils.js",
   ]

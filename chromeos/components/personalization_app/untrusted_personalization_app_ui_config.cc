@@ -88,7 +88,7 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     // Allow images only from this url.
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ImgSrc,
-        "img-src data: https://*.googleusercontent.com;");
+        "img-src 'self' data: https://*.googleusercontent.com;");
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ScriptSrc, "script-src 'self';");

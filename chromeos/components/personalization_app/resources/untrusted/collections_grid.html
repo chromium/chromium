@@ -30,11 +30,23 @@
               [[geti18n_('zeroImages')]]
             </p>
           </div>
-          <div class="photo-gradient-mask"></div>
       </div>
       </template>
+      <template is="dom-if" if="[[isEmptyTile_(item)]]">
+        <div tabindex$="[[tabIndex]]" role="option" aria-disabled="true"
+            class="photo-inner-container photo-empty"
+            aria-posinset$="[[getAriaIndex_(index)]]">
+          <div class$="[[getClassForImagesContainer_(item)]]">
+            <img src="//personalization/common/no_images.svg"">
+          </div>
+          <div class="photo-text-container">
+            <p title$="[[item.name]]">[[item.name]]</p>
+            <p title$="[[item.count]]">[[item.count]]</p>
+          </div>
+        </div>
+      </template>
       <template is="dom-if" if="[[isImageTile_(item)]]">
-        <div class="photo-inner-container" data-id$="[[item.id]]" 
+        <div class="photo-inner-container" data-id$="[[item.id]]"
             on-click="onCollectionSelected_" on-keypress="onCollectionSelected_"
             tabindex$="[[tabIndex]]" role="option"
             aria-posinset$="[[getAriaIndex_(index)]]">
