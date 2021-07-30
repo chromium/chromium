@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_NOTIFICATION_TYPES_H_
 #define EXTENSIONS_BROWSER_NOTIFICATION_TYPES_H_
 
-#include <string>
-
 #include "content/public/browser/notification_types.h"
 #include "extensions/buildflags/buildflags.h"
 
