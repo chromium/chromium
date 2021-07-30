@@ -4477,9 +4477,6 @@ void AXNodeObject::HandleActiveDescendantChanged() {
 }
 
 AXObject* AXNodeObject::ErrorMessage() const {
-  if (GetInvalidState() == ax::mojom::blink::InvalidState::kFalse)
-    return nullptr;
-
   // Check for aria-errormessage.
   Element* existing_error_message =
       GetAOMPropertyOrARIAAttribute(AOMRelationProperty::kErrorMessage);
