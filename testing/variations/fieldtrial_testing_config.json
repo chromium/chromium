@@ -8349,6 +8349,7 @@
                         "privacy-settings-probability": "0.6",
                         "privacy-settings-time": "20s",
                         "privacy-settings-trigger-id": "s8powWsbG0ugnJ3q1cK0Qbbtr57c",
+                        "probability": "1.0",
                         "transactions-password-manager-time": "20s",
                         "transactions-probability": "0.05",
                         "transactions-trigger-id": "iQHiAhgfp0ugnJ3q1cK0Wbuz3fZg",
