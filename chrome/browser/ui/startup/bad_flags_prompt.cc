@@ -139,7 +139,6 @@ static const char* kBadFlags[] = {
     // GPU sanboxing isn't implemented for the Web GPU API yet meaning it would
     // be possible to read GPU data for other Chromium processes.
     switches::kEnableUnsafeWebGPU,
-    switches::kEnableUnsafeWebGPUService,
 
     // A flag to support local file based WebBundle loading, only for testing
     // purpose.

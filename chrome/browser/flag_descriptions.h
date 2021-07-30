@@ -1575,9 +1575,6 @@ extern const char kUnifiedPasswordManagerAndroidDescription[];
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 
-extern const char kUnsafeWebGPUServiceName[];
-extern const char kUnsafeWebGPUServiceDescription[];
-
 extern const char kUnsafeFastJSCallsName[];
 extern const char kUnsafeFastJSCallsDescription[];
 

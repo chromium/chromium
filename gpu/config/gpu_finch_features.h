@@ -64,6 +64,8 @@ GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
 GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
 GPU_EXPORT extern const base::Feature kEnableDrDc;
 
+GPU_EXPORT extern const base::Feature kWebGPUService;
+
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool IsANGLEValidationEnabled();

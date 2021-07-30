@@ -159,7 +159,7 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kIgnoreGpuBlocklist);
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU) ||
-      command_line->HasSwitch(switches::kEnableUnsafeWebGPUService);
+      base::FeatureList::IsEnabled(features::kWebGPUService);
   gpu_preferences.enable_webgpu_spirv =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
   gpu_preferences.force_webgpu_compat =

@@ -201,6 +201,11 @@ const base::Feature kVulkan {
 const base::Feature kEnableDrDc{"EnableDrDc",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable WebGPU on gpu service side only. This is used with origin trial
+// before gpu service is enabled by default.
+const base::Feature kWebGPUService{"WebGPUService",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_ANDROID)
 
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{

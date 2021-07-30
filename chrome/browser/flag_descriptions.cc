@@ -2750,12 +2750,6 @@ const char kUnsafeWebGPUDescription[] =
     "Enables access to the experimental WebGPU API. Warning: As GPU sandboxing "
     "isn't implemented yet for the WebGPU API, it is possible to read GPU data "
     "for other processes.";
-const char kUnsafeWebGPUServiceName[] = "Unsafe WebGPU Service";
-const char kUnsafeWebGPUServiceDescription[] =
-    "Enables access to the experimental WebGPU API on service side but not "
-    "blink side."
-    "This is used to test origin trial code integrations before WebGPU is "
-    "enabled globally.";
 
 const char kUnsafeFastJSCallsName[] = "Unsafe fast JS calls";
 const char kUnsafeFastJSCallsDescription[] =

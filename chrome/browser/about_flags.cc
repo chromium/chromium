@@ -5860,10 +5860,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,
      flag_descriptions::kUnsafeWebGPUDescription, kOsMac | kOsLinux | kOsWin,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
-    {"enable-unsafe-webgpu-service",
-     flag_descriptions::kUnsafeWebGPUServiceName,
-     flag_descriptions::kUnsafeWebGPUServiceDescription,
-     kOsMac | kOsLinux | kOsWin, FEATURE_VALUE_TYPE(features::kWebGPUService)},
 
     {"enable-unsafe-fast-js-calls", flag_descriptions::kUnsafeFastJSCallsName,
      flag_descriptions::kUnsafeFastJSCallsDescription, kOsAll,

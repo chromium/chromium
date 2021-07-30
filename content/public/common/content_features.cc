@@ -962,11 +962,6 @@ const base::Feature kWebBundlesFromNetwork{"WebBundlesFromNetwork",
 const base::Feature kWebGLImageChromium{"WebGLImageChromium",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable WebGPU on gpu serivce side only. This is used with origin trial
-// before gpu service is enabled by default.
-const base::Feature kWebGPUService{"WebGPUService",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable browser mediation API for federated identity interactions.
 const base::Feature kWebID{"WebID", base::FEATURE_DISABLED_BY_DEFAULT};
 

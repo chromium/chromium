@@ -2738,11 +2738,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-unsafe-webgpu-service",
-    "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "enable-use-aaudio-driver",
     "owners": [ "tguilbert" ],
     // This feature has launched and is on by default. We are still debugging a
