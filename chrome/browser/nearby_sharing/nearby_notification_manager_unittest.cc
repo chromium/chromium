@@ -60,6 +60,8 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/strings/grit/ui_strings.h"
 
+using testing::Return;
+
 namespace {
 
 const char kTextBody[] = "text body";
@@ -686,6 +688,53 @@ TEST_F(NearbyNotificationManagerTest, ShowOnboarding_ShowsNotification) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
             notification.display_source());
   EXPECT_EQ(0u, notification.buttons().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       FastInitiationDeviceFound_ShowsOnboarding) {
+  manager()->OnFastInitiationDeviceFound();
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  // Minimum to confirm it's actually the onboarding notification.
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE),
+            notification.title());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE),
+      notification.message());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       FastInitiationDeviceLost_ClosesOnboarding) {
+  manager()->OnFastInitiationDeviceFound();
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+
+  // The notification should remain visible while there are still Fast
+  // Initiation devices detected.
+  ON_CALL(*nearby_service_, AreFastInitiationDevicesDetected())
+      .WillByDefault(Return(true));
+  manager()->OnFastInitiationDeviceLost();
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+
+  // The notification should be dismissed if Fast Initiation devices are no
+  // longer detected.
+  ON_CALL(*nearby_service_, AreFastInitiationDevicesDetected())
+      .WillByDefault(Return(false));
+  manager()->OnFastInitiationDeviceLost();
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       FastInitiationScanningStopped_ClosesOnboarding) {
+  manager()->OnFastInitiationDeviceFound();
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+
+  manager()->OnFastInitiationScanningStopped();
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
 TEST_F(NearbyNotificationManagerTest, ShowSuccess_ShowsNotification) {

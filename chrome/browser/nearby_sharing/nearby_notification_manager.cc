@@ -720,6 +720,20 @@ void NearbyNotificationManager::OnNearbyProcessStopped() {
   last_transfer_status_ = absl::nullopt;
 }
 
+void NearbyNotificationManager::OnFastInitiationDeviceFound() {
+  ShowOnboarding();
+}
+
+void NearbyNotificationManager::OnFastInitiationDeviceLost() {
+  if (!nearby_service_->AreFastInitiationDevicesDetected()) {
+    CloseOnboarding();
+  }
+}
+
+void NearbyNotificationManager::OnFastInitiationScanningStopped() {
+  CloseOnboarding();
+}
+
 void NearbyNotificationManager::ShowProgress(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {

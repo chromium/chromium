@@ -133,6 +133,7 @@ class NearbySharingServiceImpl
   NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() override;
   NearbyShareContactManager* GetContactManager() override;
   NearbyShareCertificateManager* GetCertificateManager() override;
+  bool AreFastInitiationDevicesDetected() const override;
 
   // NearbyConnectionsManager::IncomingConnectionListener:
   void OnIncomingConnection(const std::string& endpoint_id,

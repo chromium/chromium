@@ -76,6 +76,10 @@ class NearbySharingService : public KeyedService {
     virtual void OnStartAdvertisingFailure() {}
     virtual void OnStartDiscoveryResult(bool success) {}
 
+    virtual void OnFastInitiationDeviceFound() {}
+    virtual void OnFastInitiationDeviceLost() {}
+    virtual void OnFastInitiationScanningStopped() {}
+
     // Called during the |KeyedService| shutdown, but before everything has been
     // cleaned up. It is safe to remove any observers on this event.
     virtual void OnShutdown() = 0;
@@ -174,6 +178,10 @@ class NearbySharingService : public KeyedService {
   virtual NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() = 0;
   virtual NearbyShareContactManager* GetContactManager() = 0;
   virtual NearbyShareCertificateManager* GetCertificateManager() = 0;
+
+  // Returns true if we currently detect any devices nearby that are attempting
+  // to share.
+  virtual bool AreFastInitiationDevicesDetected() const = 0;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_H_

@@ -993,6 +993,11 @@ NearbySharingServiceImpl::GetCertificateManager() {
   return certificate_manager_.get();
 }
 
+bool NearbySharingServiceImpl::AreFastInitiationDevicesDetected() const {
+  return fast_initiation_scanner_ &&
+         fast_initiation_scanner_->AreFastInitiationDevicesDetected();
+}
+
 void NearbySharingServiceImpl::OnNearbyProcessStopped(
     NearbyProcessShutdownReason shutdown_reason) {
   DCHECK(process_reference_);
@@ -2182,20 +2187,15 @@ void NearbySharingServiceImpl::StartFastInitiationScanning() {
 
 void NearbySharingServiceImpl::OnFastInitiationDeviceFound() {
   NS_LOG(VERBOSE) << __func__;
-
-  // This shows a notification indicating that a device nearby is attempting to
-  // share. When the notification is clicked it will take the user through the
-  // onboarding flow if needed and then enable high visibility mode.
-  nearby_notification_manager_->ShowOnboarding();
+  for (auto& observer : observers_) {
+    observer.OnFastInitiationDeviceFound();
+  }
 }
 
 void NearbySharingServiceImpl::OnFastInitiationDeviceLost() {
   NS_LOG(VERBOSE) << __func__;
-
-  // This will just dismiss the "onboarding" notification, it does not have any
-  // effect on the actual onboarding or high visibility UI.
-  if (!fast_initiation_scanner_->AreFastInitiationDevicesDetected()) {
-    nearby_notification_manager_->CloseOnboarding();
+  for (auto& observer : observers_) {
+    observer.OnFastInitiationDeviceLost();
   }
 }
 
@@ -2204,8 +2204,11 @@ void NearbySharingServiceImpl::StopFastInitiationScanning() {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, not background scanning.";
     return;
   }
-  nearby_notification_manager_->CloseOnboarding();
+
   fast_initiation_scanner_.reset();
+  for (auto& observer : observers_) {
+    observer.OnFastInitiationScanningStopped();
+  }
   NS_LOG(VERBOSE) << __func__ << ": Stopped background scanning.";
 }
 

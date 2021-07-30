@@ -67,6 +67,9 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   void OnHighVisibilityChanged(bool in_high_visibility) override {}
   void OnNearbyProcessStopped() override;
   void OnShutdown() override {}
+  void OnFastInitiationDeviceFound() override;
+  void OnFastInitiationDeviceLost() override;
+  void OnFastInitiationScanningStopped() override;
 
   // Shows a progress notification of the data being transferred to or from
   // |share_target|. Has a cancel action to cancel the transfer.
@@ -80,8 +83,8 @@ class NearbyNotificationManager : public TransferUpdateCallback,
                              const TransferMetadata& transfer_metadata);
 
   // Shows an onboarding notification when a nearby device is attempting to
-  // share. Clicking it will make the local device visible to all nearby
-  // devices.
+  // share. Clicking it will take the user through the onboarding flow if needed
+  // and then make the local device visible to all nearby devices.
   void ShowOnboarding();
 
   // Shows a notification for send or receive success.
@@ -98,7 +101,8 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // connection).
   void CloseTransfer();
 
-  // Closes any currently shown onboarding notification.
+  // Closes any currently shown onboarding notification. It does not have any
+  // effect on the actual onboarding UI or the high visibility mode UI.
   void CloseOnboarding();
 
   // Gets the currently registered delegate for |notification_id|.
