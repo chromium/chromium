@@ -708,11 +708,9 @@ std::ostream& operator<<(std::ostream& out,
 
 CallInstance::CallInstance() : line_number(0), is_annotated(false) {}
 
-CallInstance::CallInstance(const CallInstance& other)
-    : file_path(other.file_path),
-      line_number(other.line_number),
-      function_name(other.function_name),
-      is_annotated(other.is_annotated) {}
+CallInstance::CallInstance(const CallInstance& other) = default;
+
+CallInstance& CallInstance::operator=(const CallInstance& other) = default;
 
 AuditorResult CallInstance::Deserialize(
     const std::vector<std::string>& serialized_lines,

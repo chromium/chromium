@@ -156,6 +156,7 @@ class CallInstance : public InstanceBase {
  public:
   CallInstance();
   CallInstance(const CallInstance& other);
+  CallInstance& operator=(const CallInstance& other);
 
   // Deserializes an instance from serialized lines of text provided by the
   // extractor.
