@@ -186,9 +186,11 @@ void AppServiceAppResult::Launch(int event_flags,
         }
       });
   if (is_active_app) {
+    ash::ShelfLaunchSource source =
+        is_recommendation() ? ash::LAUNCH_FROM_APP_LIST_RECOMMENDATION
+                            : ash::LAUNCH_FROM_APP_LIST_SEARCH;
     ChromeShelfController::instance()->ActivateApp(
-        app_id(), ash::LAUNCH_FROM_APP_LIST_SEARCH, event_flags,
-        controller()->GetAppListDisplayId());
+        app_id(), source, event_flags, controller()->GetAppListDisplayId());
   } else {
     proxy->Launch(app_id(), event_flags, launch_source,
                   apps::MakeWindowInfo(controller()->GetAppListDisplayId()));

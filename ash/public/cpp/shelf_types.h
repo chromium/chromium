@@ -117,6 +117,9 @@ enum ShelfLaunchSource {
   // The item was launched from an app list search view.
   LAUNCH_FROM_APP_LIST_SEARCH,
 
+  // The item was launched from an app list search Recommendation.
+  LAUNCH_FROM_APP_LIST_RECOMMENDATION,
+
   // The item was launched from the shelf itself.
   LAUNCH_FROM_SHELF,
 };
