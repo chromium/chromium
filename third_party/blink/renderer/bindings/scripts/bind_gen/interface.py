@@ -4756,16 +4756,22 @@ def _make_property_entry_v8_property_attribute(property_):
         return "unsigned({})".format(" | ".join(values))
 
 
-def _make_property_entry_v8_side_effect(property_,
-                                        is_attribute=False,
-                                        is_operation=False):
-    if property_.extended_attributes.value_of("Affects") == "Everything":
+def _make_property_entry_v8_side_effect(property_):
+    value = property_.extended_attributes.value_of("Affects")
+    if value:
+        if value == "Everything":
+            return "unsigned(v8::SideEffectType::kHasSideEffect)"
+        elif value == "Nothing":
+            return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
+        else:
+            assert False
+    elif isinstance(property_, web_idl.Attribute):
         return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
-    if property_.extended_attributes.value_of("Affects") == "Nothing":
+    elif isinstance(property_, web_idl.Operation):
+        assert property_.identifier == "toString"
+        # The stringifier should have no side effect.
         return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
-    if is_attribute:
-        return "unsigned(v8::SideEffectType::kHasNoSideEffect)"
-    if is_operation:
+    elif isinstance(property_, web_idl.OperationGroup):
         return "unsigned(v8::SideEffectType::kHasSideEffect)"
     assert False
 
@@ -4821,7 +4827,7 @@ def _make_attribute_registration_table(table_name, attribute_entries):
                 _make_property_entry_cross_origin_check(entry.property_,
                                                         is_set=True)),
             v8_side_effect=_make_property_entry_v8_side_effect(
-                entry.property_, is_attribute=True),
+                entry.property_),
             v8_cached_accessor=_make_property_entry_v8_cached_accessor(
                 entry.property_))
         entry_nodes.append(T(text))
@@ -4990,7 +4996,7 @@ def _make_operation_registration_table(table_name, operation_entries):
             cross_origin_check=_make_property_entry_cross_origin_check(
                 entry.property_),
             v8_side_effect=_make_property_entry_v8_side_effect(
-                entry.property_, is_operation=True),
+                entry.property_),
             v8_cfunction_table=nadc_overload_table_name)
         entry_nodes.append(T(text))
 

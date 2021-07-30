@@ -541,14 +541,18 @@ class IdlCompiler(object):
                            for overload in group):
                         group.extended_attributes.append(
                             ExtendedAttribute(key=key))
-                if all((overload.extended_attributes.value_of('Affects') ==
-                        'Everything') for overload in group):
+
+                affects_values = set()
+                for overload in group:
+                    affects_values.add(
+                        overload.extended_attributes.value_of('Affects'))
+                assert len(affects_values) == 1, (
+                    "Overloaded operations have inconsistent extended "
+                    "attributes of [Affects].")
+                affects_value = affects_values.pop()
+                if affects_value:
                     group.extended_attributes.append(
-                        ExtendedAttribute(key='Affects', values='Everything'))
-                if all((overload.extended_attributes.value_of('Affects') ==
-                        'Nothing') for overload in group):
-                    group.extended_attributes.append(
-                        ExtendedAttribute(key='Affects', values='Nothing'))
+                        ExtendedAttribute(key='Affects', values=affects_value))
 
     def _calculate_group_exposure(self):
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.CALLBACK_INTERFACE,
