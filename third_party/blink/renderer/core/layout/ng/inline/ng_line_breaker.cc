@@ -21,7 +21,9 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/resolved_text_layout_attributes_iterator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 #include "third_party/blink/renderer/platform/text/character.h"
@@ -244,6 +246,11 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       base_direction_(node_.BaseDirection()) {
   available_width_ = ComputeAvailableWidth();
   break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
+  if (is_svg_text_) {
+    svg_resolved_iterator_ =
+        std::make_unique<ResolvedTextLayoutAttributesIterator>(
+            node_.SvgCharacterDataList());
+  }
 
   if (!break_token)
     return;
@@ -937,7 +944,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   }
 
   if (is_svg_text_) {
-    SplitTextByGlyphs(item, line_info);
+    SplitTextIntoSegements(item, line_info);
     return;
   }
 
@@ -966,15 +973,14 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   MoveToNextOf(item);
 }
 
-// In SVG <text>, we produce NGInlineItemResult split by glyphs for simplicity.
+// In SVG <text>, we produce NGInlineItemResult split into segments partitioned
+// by x/y/dx/dy/rotate attributes.
+//
 // Split in PrepareLayout() or after producing NGFragmentItem would need
 // additional memory overhead. So we split in NGLineBreaker while it converts
 // NGInlineItems to NGInlineItemResults.
-//
-// TODO(crbug.com/1179585): Ideally we should split the text by segments
-// partitioned by x/y/dx/dy/rotate attributes.
-void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
-                                      NGLineInfo* line_info) {
+void NGLineBreaker::SplitTextIntoSegements(const NGInlineItem& item,
+                                           NGLineInfo* line_info) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK(is_svg_text_);
   DCHECK_EQ(offset_, item.StartOffset());
@@ -986,9 +992,19 @@ void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
   if (shape.IsRtl())
     index_list.Reverse();
   wtf_size_t size = index_list.size();
+  unsigned glyph_start = offset_;
   for (wtf_size_t i = 0; i < size; ++i) {
-    DCHECK_EQ(offset_, index_list[i]);
+    DCHECK_EQ(glyph_start, index_list[i]);
     unsigned glyph_end = i + 1 < size ? index_list[i + 1] : shape.EndIndex();
+    StringView text_view(Text());
+    bool should_split = i == size - 1;
+    for (; glyph_start < glyph_end;
+         glyph_start = text_view.NextCodePointOffset(glyph_start)) {
+      ++svg_addressable_offset_;
+      should_split = should_split || ShouldCreateNewSvgSegment();
+    }
+    if (!should_split)
+      continue;
     NGInlineItemResult* result = AddItem(item, glyph_end, line_info);
     result->should_create_line_box = true;
     auto shape_result_view =
@@ -1011,6 +1027,28 @@ void NGLineBreaker::SplitTextByGlyphs(const NGInlineItem& item,
   }
   trailing_whitespace_ = WhitespaceState::kUnknown;
   MoveToNextOf(item);
+}
+
+bool NGLineBreaker::ShouldCreateNewSvgSegment() const {
+  DCHECK(is_svg_text_);
+  for (const auto& range : node_.SvgTextPathRangeList()) {
+    if (range.start_index <= svg_addressable_offset_ &&
+        svg_addressable_offset_ <= range.end_index)
+      return true;
+  }
+  for (const auto& range : node_.SvgTextLengthRangeList()) {
+    if (To<SVGTextContentElement>(range.layout_object->GetNode())
+            ->lengthAdjust()
+            ->CurrentEnumValue() == kSVGLengthAdjustSpacingAndGlyphs)
+      continue;
+    if (range.start_index <= svg_addressable_offset_ &&
+        svg_addressable_offset_ <= range.end_index)
+      return true;
+  }
+  const NGSvgCharacterData& char_data =
+      svg_resolved_iterator_->AdvanceTo(svg_addressable_offset_);
+  return char_data.HasRotate() || char_data.HasX() || char_data.HasY() ||
+         char_data.HasDx() || char_data.HasDy();
 }
 
 NGLineBreaker::BreakResult NGLineBreaker::BreakText(

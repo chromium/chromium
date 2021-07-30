@@ -854,13 +854,13 @@ B AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   // This test passes if no CHECK failures.
 }
 
-TEST_F(NGLineBreakerTest, SplitTextByGlyphs) {
+TEST_F(NGLineBreakerTest, SplitTextIntoSegements) {
   RuntimeEnabledFeaturesTestHelpers::ScopedSVGTextNG svg_text_ng(true);
   NGInlineNode node = CreateInlineNode(
       uR"HTML(
       <!DOCTYPE html>
       <svg viewBox="0 0 800 600">
-      <text id="container" style="font-family:Times">AV)HTML"
+      <text id="container" rotate="1" style="font-family:Times">AV)HTML"
       u"\U0001F197\u05E2\u05B4\u05D1\u05E8\u05B4\u05D9\u05EA</text></svg>)");
   BreakLines(
       node, LayoutUnit::Max(),

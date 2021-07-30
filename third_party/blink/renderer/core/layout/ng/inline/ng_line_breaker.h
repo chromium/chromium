@@ -22,6 +22,7 @@ class NGBlockBreakToken;
 class NGInlineBreakToken;
 class NGInlineItem;
 class NGLineInfo;
+class ResolvedTextLayoutAttributesIterator;
 
 // The line breaker needs to know which mode its in to properly handle floats.
 enum class NGLineBreakerMode { kContent, kMinContent, kMaxContent };
@@ -131,9 +132,12 @@ class CORE_EXPORT NGLineBreaker {
   };
 
   void HandleText(const NGInlineItem& item, const ShapeResult&, NGLineInfo*);
-  // Split |item| by glyphs, and add them to |line_info|.
+  // Split |item| into segments, and add them to |line_info|.
   // This is for SVG <text>.
-  void SplitTextByGlyphs(const NGInlineItem& item, NGLineInfo* line_info);
+  void SplitTextIntoSegements(const NGInlineItem& item, NGLineInfo* line_info);
+  // Returns true if we should split NGInlineItem before
+  // svg_addressable_offset_.
+  bool ShouldCreateNewSvgSegment() const;
   enum BreakResult { kSuccess, kOverflow };
   BreakResult BreakText(NGInlineItemResult*,
                         const NGInlineItem&,
@@ -236,6 +240,7 @@ class CORE_EXPORT NGLineBreaker {
   LineBreakState state_;
   unsigned item_index_ = 0;
   unsigned offset_ = 0;
+  unsigned svg_addressable_offset_ = 0;
 
   // |WhitespaceState| of the current end. When a line is broken, this indicates
   // the state of trailing whitespaces.
@@ -353,6 +358,9 @@ class CORE_EXPORT NGLineBreaker {
     wtf_size_t to_index;
   };
   absl::optional<RewindIndex> last_rewind_;
+
+  // This has a valid object if is_svg_text_.
+  std::unique_ptr<ResolvedTextLayoutAttributesIterator> svg_resolved_iterator_;
 };
 
 }  // namespace blink
