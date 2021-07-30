@@ -11,6 +11,7 @@
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_bucket_lookup.h"
 #include "base/debug/profiler.h"
 #include "base/format_macros.h"
 #include "base/memory/nonscannable_memory.h"
@@ -393,9 +394,10 @@ void ReportPartitionAllocThreadCacheStats(ProcessMemoryDump* pmd,
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
     if (detailed) {
+      base::internal::BucketIndexLookup lookup{};
       std::string name = dump->absolute_name();
       for (size_t i = 0; i < kNumBuckets; i++) {
-        size_t bucket_size = stats.bucket_size_[i];
+        size_t bucket_size = lookup.bucket_sizes()[i];
         if (bucket_size == kInvalidBucketSize)
           continue;
         std::string dump_name = base::StringPrintf(

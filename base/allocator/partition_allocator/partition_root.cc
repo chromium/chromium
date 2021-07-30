@@ -554,7 +554,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     // Set up the actual usable buckets first.
     constexpr internal::BucketIndexLookup lookup{};
     size_t bucket_index = 0;
-    while (lookup.bucket_sizes()[bucket_index]) {
+    while (lookup.bucket_sizes()[bucket_index] != kInvalidBucketSize) {
       buckets[bucket_index].Init(lookup.bucket_sizes()[bucket_index]);
       bucket_index++;
     }

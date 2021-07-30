@@ -662,7 +662,6 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   for (size_t i = 0; i < kNumBuckets + 1; i++) {
-    stats->bucket_size_[i] = root_->buckets[i].slot_size;
     stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
   }
 #endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
