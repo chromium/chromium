@@ -26,7 +26,7 @@
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/typed_url_model_type_controller.h"
 #include "components/history/core/common/pref_names.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -133,9 +133,9 @@ ProfileSyncComponentsFactoryImpl::ProfileSyncComponentsFactoryImpl(
         web_data_service_on_disk,
     const scoped_refptr<autofill::AutofillWebDataService>&
         web_data_service_in_memory,
-    const scoped_refptr<password_manager::PasswordStore>&
+    const scoped_refptr<password_manager::PasswordStoreInterface>&
         profile_password_store,
-    const scoped_refptr<password_manager::PasswordStore>&
+    const scoped_refptr<password_manager::PasswordStoreInterface>&
         account_password_store,
     sync_bookmarks::BookmarkSyncService* bookmark_sync_service)
     : sync_client_(sync_client),
