@@ -856,7 +856,6 @@
 
       # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
       'android-marshmallow-arm64-rel',
-      'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
       'Marshmallow 64 bit Tester': {
@@ -877,7 +876,6 @@
       },
       'android-11-x86-fyi-rel': {
         'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android30.textpb',
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
@@ -885,16 +883,6 @@
         # are fixed.
         'swarming': {
           'shards': 30,
-          'named_caches': [
-            {
-              'name': 'avd_generic_playstore_android30',
-              'path': '.android',
-            },
-            {
-              'name': 'system_images_android_30_google_apis_playstore_x86',
-              'path': '.emulator_sdk',
-            },
-          ],
           'dimension_sets': [
             {
               'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
@@ -940,9 +928,55 @@
       },
       'android-pie-x86-rel': {
         'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
           # https://crbug.com/1046059
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'machine_type': 'n1-standard-8', # use 8-core to shorten runtime
+            },
+          ],
+          # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
+          'shards': 30,
+        },
+      },
+    },
+  },
+  'chrome_public_test_apk_with_playstore': {
+    'remove_from': [
+      # Android Emulator does not ship playstore image on Marshmallow.
+      'android-marshmallow-x86-rel',
+    ],
+    'modifications': {
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--avd-config=../../tools/android/avd/proto/generic_playstore_android30.textpb',
+        ],
+        'swarming': {
+          # soft affinity so that bots with caches will be picked first
+          'optional_dimensions': {
+            '60': [
+              {
+                'caches': 'avd_generic_playstore_android28',
+              }
+            ],
+          },
+          'named_caches': [
+            {
+              'name': 'avd_generic_playstore_android30',
+              'path': '.android',
+            },
+            {
+              'name': 'system_images_android_30_google_apis_playstore_x86',
+              'path': '.emulator_sdk',
+            },
+          ],
+        },
+      },
+      'android-pie-x86-rel': {
+        'args': [
+          '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
         ],
         'swarming': {
           # soft affinity so that bots with caches will be picked first
@@ -963,13 +997,6 @@
               'path': '.emulator_sdk',
             },
           ],
-          'dimension_sets': [
-            {
-              'machine_type': 'n1-standard-8', # use 8-core to shorten runtime
-            },
-          ],
-          # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
-          'shards': 30,
         },
       },
     },

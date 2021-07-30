@@ -69,6 +69,52 @@
         'test': 'chrome_public_test_vr_apk',
       },
     },
+
+    'android_emulator_specific_chrome_public_tests': {
+      'chrome_public_test_apk': {
+        'args': [
+            # These tests launch external intent thus require playstore to be
+            # present. See crbug.com/1056330 for more details.
+            # Exclude them here since this test suite will run on emulator
+            # on images that do not have playstore.
+            # They will be ran in chrome_public_test_apk_with_playstore below.
+            '--gtest_filter=-'
+            'org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*'
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+      },
+      'chrome_public_test_apk_with_playstore': {
+        'args': [
+            # These tests launch external intent thus require playstore to be
+            # present. See crbug.com/1056330 for more details.
+            # They should be ran in emulator on images that have playstore.
+            '--gtest_filter='
+            'org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.test*ExternalNavigationWithUserGesture*:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.test*UserGesture*:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndShortTimeout:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackInSubFrame:'
+            'org.chromium.chrome.browser.externalnav.UrlOverridingTest.testRedirectionFromIntent*'
+        ],
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
+        'test': 'chrome_public_test_apk',
+      }
+    },
+
     'android_incremental_tests': {
       'base_unittests': {
         'args': [
@@ -107,17 +153,6 @@
     # MM emulator CQ builder currently has limited capacity so some composition
     # test suites cannot be fullly enabled at once.
     'android_marshmallow_emulator_limited_capacity_gtests': {
-      # Tests from android_specific_chromium_gtests
-      'chrome_public_test_apk': {
-        'swarming': {
-          'shards': 20,
-        },
-        'mixins': [
-          'chrome-gold-service-account',
-          'skia_gold_test',
-        ],
-      },
-
       # Tests from chromium_gtests_for_devices_with_graphical_output
       'unit_tests': {
         'android_swarming': {
@@ -172,15 +207,6 @@
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
       'blink_platform_unittests': {},
-      'chrome_public_test_apk': {
-        'swarming': {
-          'shards': 20,
-        },
-        'mixins': [
-          'chrome-gold-service-account',
-          'skia_gold_test',
-        ],
-      },
       'content_browsertests': {
         'swarming': {
           'shards': 15,
@@ -215,15 +241,6 @@
       },
       'android_webview_unittests': {},
       'breakpad_unittests': {},
-      'chrome_public_test_apk': {
-        'swarming': {
-          'shards': 20,
-        },
-        'mixins': [
-          'chrome-gold-service-account',
-          'skia_gold_test',
-        ],
-      },
       'content_shell_test_apk': {
         'swarming': {
           'shards': 3,
@@ -423,6 +440,18 @@
           'enable': True,
           'result_format': 'single'
         },
+      },
+    },
+
+    'chrome_public_tests': {
+      'chrome_public_test_apk': {
+        'swarming': {
+          'shards': 20,
+        },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+        ],
       },
     },
 
@@ -5606,6 +5635,7 @@
     ],
 
     'android_11_emulator_gtests': [
+      'android_emulator_specific_chrome_public_tests',
       'android_monochrome_smoke_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
@@ -5620,6 +5650,7 @@
     ],
 
     'android_12_emulator_gtests': [
+      'android_emulator_specific_chrome_public_tests',
       'android_monochrome_smoke_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
@@ -5642,6 +5673,7 @@
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'chrome_public_tests',
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
@@ -5657,6 +5689,7 @@
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'chrome_public_tests',
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
@@ -5665,9 +5698,11 @@
     ],
 
     # List gtests that run on android-marshmallow-x86-rel builder.
-    # Test suites will be gradually moved from android_marshmallow_wpr_gtests
+    # Test suites will be gradually moved from
+    # android_marshmallow_wpr_gtests
     # to this one, when there are more GCE capacity.
     'android_marshmallow_emulator_gtests': [
+      'android_emulator_specific_chrome_public_tests',
       # TODO(crbug.com/1127110): Deprecate this when all the test suites below
       # it are re-enabled.
       'android_marshmallow_emulator_limited_capacity_gtests',
@@ -5715,6 +5750,7 @@
       'android_webapk_launch_tests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'chrome_public_tests',
       'linux_flavor_specific_chromium_gtests',
       'system_webview_shell_instrumentation_tests', # Not an experimental test
       'vr_android_specific_chromium_tests',
@@ -5747,6 +5783,7 @@
      # vr_{android,platform}_specific_chromium_gtests which are not applicable
      # to android emulators on x86 & x64.
     'android_pie_rel_emulator_gtests': [
+      'android_emulator_specific_chrome_public_tests',
       'android_monochrome_smoke_tests',
       'android_pagecontroller_self_tests',
       'android_smoke_tests',
@@ -5774,6 +5811,7 @@
     #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
     #   'chromium_gtests',
     #   'chromium_gtests_for_devices_with_graphical_output',
+      'chrome_public_tests',
     #   'linux_flavor_specific_chromium_gtests',
     #   'system_webview_shell_instrumentation_tests', # Not an experimental test
     #   'vr_android_specific_chromium_tests',
@@ -5814,6 +5852,7 @@
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
+      'chrome_public_tests',
       'linux_flavor_specific_chromium_gtests',
       'vr_android_specific_chromium_tests',
       'vr_platform_specific_chromium_gtests',
