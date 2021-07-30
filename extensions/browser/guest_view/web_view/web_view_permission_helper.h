@@ -105,6 +105,10 @@ class WebViewPermissionHelper
 
   WebViewGuest* web_view_guest() { return web_view_guest_; }
 
+  WebViewPermissionHelperDelegate* delegate() {
+    return web_view_permission_helper_delegate_.get();
+  }
+
   void set_default_media_access_permission(bool allow_media_access) {
     default_media_access_permission_ = allow_media_access;
   }

@@ -91,6 +91,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
 #include "chrome/browser/plugins/plugin_observer.h"
 #endif
 
@@ -363,6 +364,13 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     return true;
   }
 #if BUILDFLAG(ENABLE_PLUGINS)
+  if (interface_name == chrome::mojom::PluginAuthHost::Name_) {
+    extensions::ChromeWebViewPermissionHelperDelegate::BindPluginAuthHost(
+        mojo::PendingAssociatedReceiver<chrome::mojom::PluginAuthHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
   if (interface_name == chrome::mojom::PluginHost::Name_) {
     PluginObserver::BindPluginHost(
         mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost>(

@@ -37,14 +37,33 @@ void CallbackWrapper(base::OnceCallback<void(bool)> callback,
 
 }  // anonymous namespace
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+// static
+void ChromeWebViewPermissionHelperDelegate::BindPluginAuthHost(
+    mojo::PendingAssociatedReceiver<chrome::mojom::PluginAuthHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* permission_helper =
+      extensions::WebViewPermissionHelper::FromWebContents(web_contents);
+  if (!permission_helper)
+    return;
+  WebViewPermissionHelperDelegate* delegate = permission_helper->delegate();
+  if (!delegate)
+    return;
+  auto* chrome_delegate =
+      static_cast<ChromeWebViewPermissionHelperDelegate*>(delegate);
+  chrome_delegate->plugin_auth_host_receivers_.Bind(rfh, std::move(receiver));
+}
+#endif
+
 ChromeWebViewPermissionHelperDelegate::ChromeWebViewPermissionHelperDelegate(
     WebViewPermissionHelper* web_view_permission_helper)
     : WebViewPermissionHelperDelegate(web_view_permission_helper)
 #if BUILDFLAG(ENABLE_PLUGINS)
       ,
-      plugin_auth_host_receivers_(web_contents(),
-                                  this,
-                                  content::WebContentsFrameReceiverSetPassKey())
+      plugin_auth_host_receivers_(web_contents(), this)
 #endif
 {
 }
