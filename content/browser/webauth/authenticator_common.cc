@@ -1014,18 +1014,15 @@ void AuthenticatorCommon::MakeCredential(
 
   // Cryptotoken requests, making payment credentials, and Touch-to-Autofill
   // should be proxied without UI.
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin) ||
+  const bool origin_is_crypto_token_extension =
+      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
+          caller_origin);
+  if (origin_is_crypto_token_extension ||
       options->is_payment_credential_creation || disable_ui_) {
     request_delegate_->DisableUI();
   }
 
-  if (options->is_payment_credential_creation) {
-    client_data_json_ = BuildClientDataJson(
-        ClientDataRequestType::kPaymentCreate, caller_origin_.Serialize(),
-        options->challenge, is_cross_origin);
-  } else if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-                 caller_origin)) {
+  if (origin_is_crypto_token_extension) {
     // Cryptotoken passes the real caller origin in |relying_party.name|.
     const url::Origin client_data_origin =
         url::Origin::Create(GURL(*options->relying_party.name));
@@ -1035,11 +1032,8 @@ void AuthenticatorCommon::MakeCredential(
   } else {
     // Regular WebAuthn request
     client_data_json_ = BuildClientDataJson(
-        WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-            caller_origin)
-            ? ClientDataRequestType::kU2fRegister
-            : ClientDataRequestType::kWebAuthnCreate,
-        caller_origin_.Serialize(), options->challenge, is_cross_origin);
+        ClientDataRequestType::kWebAuthnCreate, caller_origin_.Serialize(),
+        options->challenge, is_cross_origin);
   }
 
   ctap_make_credential_request_ = device::CtapMakeCredentialRequest(

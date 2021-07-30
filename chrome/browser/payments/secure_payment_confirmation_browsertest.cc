@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_P(SecurePaymentConfirmationCreationTestWithParameter,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
 
-  EXPECT_EQ("payment.create",
+  EXPECT_EQ("webauthn.create",
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace(
                                 "createCredentialAndReturnClientDataType($1)",
