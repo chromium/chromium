@@ -5,7 +5,7 @@
   }
 </style>
 
-<cr-dialog id="editDialog">
+<cr-dialog id="editDialog" on-close="onDialogClose_">
   <div id="dialogTitle" slot="title">
     [[description]]
   </div>
@@ -34,7 +34,7 @@
 
   </div>
   <div slot="button-container">
-    <cr-button id="doneButton" on-click="onDoneButtonClicked">
+    <cr-button id="doneButton" on-click="onDoneButtonClicked_">
       <!-- TODO(jimmyxgong): Localize this string -->
       Done
     </cr-button>

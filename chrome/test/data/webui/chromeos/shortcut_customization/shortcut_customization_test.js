@@ -6,7 +6,8 @@ import {getShortcutProvider, setShortcutProviderForTesting} from 'chrome://short
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/shortcut_customization_app.js';
 import {ShortcutProviderInterface} from 'chrome://shortcut-customization/shortcut_types.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function shortcutCustomizationAppTest() {
   /** @type {?ShortcutCustomizationAppElement} */
@@ -27,6 +28,35 @@ export function shortcutCustomizationAppTest() {
     // TODO(jimmyxgong): Remove this stub test once the page has more
     // capabilities to test.
     assertTrue(!!page.shadowRoot.querySelector('navigation-view-panel'));
+  });
+
+  test('DialogOpensOnEvent', async () => {
+    await flushTasks();
+    // The edit dialog should not be stamped and visible.
+    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertFalse(!!editDialog);
+
+    const nav = page.shadowRoot.querySelector('navigation-view-panel');
+
+    // Simulate the trigger event to display the dialog.
+    nav.dispatchEvent(new CustomEvent('show-edit-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: /**@type {!Object}*/ (
+          {description: 'test', accelerators: [{modifiers: 1 << 1, key: 'c'}]})
+    }));
+    await flushTasks();
+
+    // Requery dialog.
+    editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Close the dialog.
+    const dialog = editDialog.shadowRoot.querySelector('#editDialog');
+    dialog.close();
+    await flushTasks();
+
+    assertFalse(dialog.open);
   });
 
   suite('FakeMojoProviderTest', () => {

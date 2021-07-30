@@ -170,6 +170,7 @@ js_library("mojo_interface_provider") {
 
 js_library("shortcut_customization_app") {
   deps = [
+    ":accelerator_edit_dialog",
     ":shortcut_customization_fonts_css",
     ":shortcut_input",
     "//ash/webui/common/resources:navigation_view_panel",

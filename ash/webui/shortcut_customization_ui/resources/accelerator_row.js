@@ -42,6 +42,29 @@ export class AcceleratorRowElement extends PolymerElement {
       }
     }
   }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    // TODO(jimmyxgong): Only add the click event listener if the accelerator is
+    // not locked.
+    this.addEventListener('click', () => this.showDialog_());
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', () => this.showDialog_());
+  }
+
+  /** @private */
+  showDialog_() {
+    this.dispatchEvent(new CustomEvent(
+        'show-edit-dialog', {bubbles: true, composed: true,
+            detail: {description: this.description,
+                     accelerators: this.accelerators}},
+    ));
+  }
 }
 
 customElements.define(AcceleratorRowElement.is, AcceleratorRowElement);
