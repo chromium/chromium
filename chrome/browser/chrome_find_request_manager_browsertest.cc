@@ -183,10 +183,6 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 // https://crbug.com/1027173.
 IN_PROC_BROWSER_TEST_P(ChromeFindRequestManagerTestWithPdfPartialLoading,
                        FindInChunkedPDF) {
-  // TODO(crbug.com/1232701): Flaky in unseasoned mode.
-  if (GetParam())
-    GTEST_SKIP() << "Flaky in unseasoned mode; see crbug.com/1232701";
-
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
 
