@@ -87,10 +87,7 @@ suite('ParseHtmlSubsetModuleTest', function() {
   });
 
   test('invalid optional tags', function() {
-    parseAndAssertThrows(
-        'a pirate\'s<script>alert();<' +
-            '/script>',
-        ['script']);
+    parseAndAssertThrows('a pirate\'s<script>alert();</script>', ['script']);
   });
 
   test('supported optional attributes', function() {

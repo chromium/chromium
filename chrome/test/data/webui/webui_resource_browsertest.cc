@@ -99,12 +99,6 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
   LoadTestUrl("mock_timer_test.html");
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
-  LoadTestUrl("parse_html_subset_test.html");
-}
-#endif
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {
   LoadTestUrl("?module=js/cr/ui/position_util_test.js");
 }
@@ -124,21 +118,3 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonModuleTest) {
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterModuleTest) {
   LoadTestUrl("?module=js/cr/ui/splitter_test.js");
 }
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
-  LoadTestUrl("util_test.html");
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, IconTest) {
-  LoadTestUrl("js/icon_test.html");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PromiseResolverTest) {
-  LoadTestUrl("promise_resolver_test.html");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nBehaviorTest) {
-  LoadTestUrl("i18n_behavior_test.html");
-}
-#endif
