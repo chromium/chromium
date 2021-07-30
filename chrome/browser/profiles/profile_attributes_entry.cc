@@ -55,6 +55,16 @@ const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
 
+// All accounts info. This is a dictionary containing sub-dictionaries of
+// account information, keyed by the gaia ID. The sub-dictionaries are empty for
+// now but can be populated in the future. Example for two accounts:
+//
+// "all_accounts": {
+//   "gaia_id1": {},
+//   "gaia_id2": {}
+// }
+const char kAllAccountsKey[] = "all_accounts";
+
 // Avatar info.
 const char kLastDownloadedGAIAPictureUrlWithSizeKey[] =
     "last_downloaded_gaia_picture_url_with_size";
@@ -532,6 +542,29 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
 
 std::string ProfileAttributesEntry::GetAccountIdKey() const {
   return GetString(kAccountIdKey);
+}
+
+base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
+  const base::Value* accounts = GetValue(kAllAccountsKey);
+  if (!accounts || !accounts->is_dict())
+    return base::flat_set<std::string>();
+
+  std::vector<std::string> gaia_ids;
+  for (const auto it : accounts->DictItems())
+    gaia_ids.push_back(it.first);
+  return base::flat_set<std::string>(std::move(gaia_ids));
+}
+
+void ProfileAttributesEntry::SetGaiaIds(
+    const base::flat_set<std::string>& gaia_ids) {
+  base::Value accounts(base::Value::Type::DICTIONARY);
+  for (const auto& gaia_id : gaia_ids) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    // The dictionary is empty for now, but can hold account-specific info in
+    // the future.
+    accounts.SetKey(gaia_id, std::move(dict));
+  }
+  SetValue(kAllAccountsKey, std::move(accounts));
 }
 
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,

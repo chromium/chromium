@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
@@ -152,6 +153,11 @@ class ProfileAttributesEntry {
   // Returns an account id key of the user of the profile. Empty if the profile
   // doesn't have any associated `user_manager::User`.
   std::string GetAccountIdKey() const;
+
+  // Gets/Sets the gaia IDs of the accounts signed into the profile (accounts
+  // known by the `IdentityManager`).
+  base::flat_set<std::string> GetGaiaIds() const;
+  void SetGaiaIds(const base::flat_set<std::string>& gaia_ids);
 
   // |is_using_default| should be set to false for non default profile names.
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
