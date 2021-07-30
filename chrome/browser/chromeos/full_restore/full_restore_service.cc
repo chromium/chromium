@@ -68,11 +68,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
           std::make_unique<FullRestoreDataHandler>(profile_)) {
   notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                               content::NotificationService::AllSources());
-}
 
-FullRestoreService::~FullRestoreService() = default;
-
-void FullRestoreService::Init() {
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
 
@@ -89,6 +85,27 @@ void FullRestoreService::Init() {
         user->GetAccountId(), CanPerformRestore(prefs));
   }
 
+  if (!HasRestorePref(prefs) && HasSessionStartupPref(prefs)) {
+    // If there is no full restore pref, but there is a session restore setting,
+    // set the first run flag to maintain the previous behavior for the first
+    // time running the full restore feature when migrate to the full restore
+    // release. Restore browsers and web apps by the browser session restore.
+    first_run_full_restore_ = true;
+    SetDefaultRestorePrefIfNecessary(prefs);
+  }
+}
+
+FullRestoreService::~FullRestoreService() = default;
+
+void FullRestoreService::Init() {
+  // If it is the first time to migrate to the full restore release, we don't
+  // have other restore data, so we don't need to consider restoration.
+  if (first_run_full_restore_)
+    return;
+
+  PrefService* prefs = profile_->GetPrefs();
+  DCHECK(prefs);
+
   // If the system crashed before reboot, show the restore notification.
   if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
     if (!HasRestorePref(prefs))
@@ -104,13 +121,6 @@ void FullRestoreService::Init() {
   if (!HasRestorePref(prefs) && !HasSessionStartupPref(prefs)) {
     new_user_pref_handler_ =
         std::make_unique<NewUserRestorePrefHandler>(profile_);
-    return;
-  }
-
-  // If it is the first time to migrate to the full restore release, we don't
-  // have other restore data, so we don't need to consider restoration.
-  if (!HasRestorePref(prefs)) {
-    SetDefaultRestorePrefIfNecessary(prefs);
     return;
   }
 
@@ -133,7 +143,7 @@ void FullRestoreService::LaunchBrowserWhenReady() {
   if (!g_restore_for_testing)
     return;
 
-  app_launch_handler_->LaunchBrowserWhenReady();
+  app_launch_handler_->LaunchBrowserWhenReady(first_run_full_restore_);
 }
 
 void FullRestoreService::Close(bool by_user) {

@@ -20,6 +20,7 @@
 #include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/common/chrome_switches.h"
@@ -52,11 +53,25 @@ FullRestoreAppLaunchHandler::FullRestoreAppLaunchHandler(
 
 FullRestoreAppLaunchHandler::~FullRestoreAppLaunchHandler() = default;
 
-void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady() {
+void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady(
+    bool first_run_full_restore) {
   if (g_launch_browser_for_testing ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kForceLaunchBrowser)) {
     ForceLaunchBrowserForTesting();
+    return;
+  }
+
+  if (first_run_full_restore) {
+    // Observe AppRegistryCache to get the notification when the app is ready.
+    if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+            profile_)) {
+      auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile_)
+                         ->AppRegistryCache();
+      Observe(cache);
+    }
+
+    LaunchBrowserForFirstRunFullRestore();
     return;
   }
 
@@ -97,6 +112,12 @@ void FullRestoreAppLaunchHandler::OnAppTypeInitialized(
     return;
 
   are_web_apps_initialized_ = true;
+
+  if (first_run_full_restore_) {
+    LaunchBrowserForFirstRunFullRestore();
+    return;
+  }
+
   if (should_launch_browser_ && CanLaunchBrowser()) {
     LaunchBrowser();
     should_launch_browser_ = false;
@@ -207,6 +228,40 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
       ::switches::kRestoreLastSession);
 
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+}
+
+void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
+  first_run_full_restore_ = true;
+
+  // Wait for the web apps initialized. Because the app type in AppRegistryCache
+  // is checked when save the browser window. If the app doesn't exist in
+  // AppRegistryCache, the web app window can't be saved in the full restore
+  // file, which could affect the restoration next time after reboot.
+  if (!are_web_apps_initialized_)
+    return;
+
+  first_run_full_restore_ = false;
+
+  UserSessionManager::GetInstance()->LaunchBrowser(profile_);
+
+  PrefService* prefs = profile_->GetPrefs();
+  DCHECK(prefs);
+  SessionStartupPref session_startup_pref =
+      SessionStartupPref::GetStartupPref(prefs);
+
+  // If the system is upgrading from a crash, the app type browser window can be
+  // restored, so we don't need to call session restore to restore app type
+  // browsers. If the session restore setting is not restore, we don't need to
+  // restore app type browser neither.
+  if (profile_->GetLastSessionExitType() != Profile::EXIT_CRASHED &&
+      !::full_restore::HasAppTypeBrowser(profile_->GetPath()) &&
+      session_startup_pref.type == SessionStartupPref::LAST) {
+    // Restore the app type browsers only when the web apps are ready.
+    SessionRestore::RestoreSession(
+        profile_, nullptr, SessionRestore::RESTORE_APPS, std::vector<GURL>());
+  }
+
+  UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }
 
 void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(

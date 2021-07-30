@@ -114,6 +114,9 @@ class FullRestoreService : public KeyedService,
 
   bool is_shut_down_ = false;
 
+  // Specifies whether it is the first time to run the full restore feature.
+  bool first_run_full_restore_ = false;
+
   // If the user clicks a notification button, set
   // |skip_notification_histogram_| as true to skip the notification close
   // histogram.
