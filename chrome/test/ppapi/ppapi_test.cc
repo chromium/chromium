@@ -49,10 +49,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 using content::RenderViewHost;
 using content::TestMessageHandler;
 
@@ -319,12 +315,10 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
-  // TODO(crbug.com/1231528): Investigate why this test fails on Win 7 bots.
 #if defined(OS_WIN)
-  if (test_case == "Printing" &&
-      base::win::GetVersion() <= base::win::Version::WIN7) {
+  // See crbug.com/1231528 for context.
+  if (test_case == "Printing")
     return;
-  }
 #endif
 
   PPAPITestBase::RunTest(test_case);
