@@ -57,6 +57,12 @@ config("compiler") {
     # For outline atomics on AArch64 (can't pass this unconditionally
     # due to unused flag warning on other targets).
     cflags += [ "--rtlib=libgcc" ]
+    if (arm_control_flow_integrity == "standard") {
+      cflags += [ "-mbranch-protection=standard" ]
+    } else {
+      assert(arm_control_flow_integrity == "none",
+             "Invalid branch protection option")
+    }
   }
 
   # $compile_api_level corresponds to the API level used for the sysroot path
