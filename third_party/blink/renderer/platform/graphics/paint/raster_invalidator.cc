@@ -59,6 +59,9 @@ const PaintChunk& RasterInvalidator::GetOldChunk(wtf_size_t index) const {
 wtf_size_t RasterInvalidator::MatchNewChunkToOldChunk(
     const PaintChunk& new_chunk,
     wtf_size_t old_index) const {
+  if (!new_chunk.is_cacheable)
+    return kNotFound;
+
   for (wtf_size_t i = old_index; i < old_paint_chunks_info_.size(); i++) {
     if (new_chunk.Matches(GetOldChunk(i)))
       return i;
@@ -159,13 +162,19 @@ PaintInvalidationReason RasterInvalidator::ChunkPropertiesChanged(
   return PaintInvalidationReason::kNone;
 }
 
-// Skip the chunk for raster invalidation if it contains only one non-drawing
-// display item. We could also skip chunks containing all non-drawing display
-// items, but single non-drawing item is more common, e.g. scroll hit test.
 static bool ShouldSkipForRasterInvalidation(
     const PaintChunkIterator& chunk_it) {
-  return chunk_it->size() == 1 &&
-         !chunk_it.DisplayItems().begin()->DrawsContent();
+  // Skip the chunk if it contains only one non-drawing display item. We could
+  // also skip chunks containing all non-drawing display items, but single
+  // non-drawing item is more common, e.g. scroll hit test.
+  if (chunk_it->size() == 1 && !chunk_it.DisplayItems().begin()->DrawsContent())
+    return true;
+
+  // Foreign layers take care of raster invalidation by themselves.
+  if (DisplayItem::IsForeignLayerType(chunk_it->id.type))
+    return true;
+
+  return false;
 }
 
 // Generates raster invalidations by checking changes (appearing, disappearing,
@@ -193,26 +202,16 @@ void RasterInvalidator::GenerateRasterInvalidations(
       continue;
 
     const auto& new_chunk = *it;
-    mapper.SwitchToChunk(new_chunk);
-    auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
-
-    // Foreign layers take care of raster invalidation by themselves.
-    if (DisplayItem::IsForeignLayerType(new_chunk.id.type))
-      continue;
-
-    if (!new_chunk.is_cacheable) {
-      AddRasterInvalidation(
-          function, new_chunk_info.bounds_in_layer, new_chunk.id.client,
-          PaintInvalidationReason::kChunkUncacheable, kClientIsNew);
-      continue;
-    }
-
     auto matched_old_index = MatchNewChunkToOldChunk(new_chunk, old_index);
     if (matched_old_index == kNotFound) {
       // The new chunk doesn't match any old chunk.
+      mapper.SwitchToChunk(new_chunk);
+      auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
       AddRasterInvalidation(
           function, new_chunk_info.bounds_in_layer, new_chunk.id.client,
-          PaintInvalidationReason::kChunkAppeared, kClientIsNew);
+          new_chunk.is_cacheable ? PaintInvalidationReason::kChunkAppeared
+                                 : PaintInvalidationReason::kChunkUncacheable,
+          kClientIsNew);
       continue;
     }
 
@@ -225,11 +224,27 @@ void RasterInvalidator::GenerateRasterInvalidations(
     old_chunk_info.bounds_in_layer =
         ClipByLayerBounds(old_chunk_info.bounds_in_layer);
 
-    PaintInvalidationReason reason =
-        matched_old_index < max_matched_old_index
-            ? PaintInvalidationReason::kChunkReordered
-            : ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
-                                     old_chunk_info, layer_state);
+    auto reason = PaintInvalidationReason::kNone;
+    if (matched_old_index < max_matched_old_index)
+      reason = PaintInvalidationReason::kChunkReordered;
+
+    // No need to invalidate if the chunk is moved from cached subsequence and
+    // its paint properties didn't change relative to the layer.
+    if (reason == PaintInvalidationReason::kNone &&
+        new_chunk.is_moved_from_cached_subsequence &&
+        !new_chunk.properties.GetPropertyTreeState().Unalias().Changed(
+            PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state)) {
+      new_chunks_info.emplace_back(old_chunk_info, it);
+      continue;
+    }
+
+    mapper.SwitchToChunk(new_chunk);
+    auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
+
+    if (reason == PaintInvalidationReason::kNone) {
+      reason = ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
+                                      old_chunk_info, layer_state);
+    }
 
     if (IsFullPaintInvalidationReason(reason)) {
       // Invalidate both old and new bounds of the chunk if the chunk's paint

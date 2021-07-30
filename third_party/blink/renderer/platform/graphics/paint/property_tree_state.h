@@ -139,9 +139,13 @@ class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
     PropertyTreeStateOrAlias::SetEffect(node);
   }
 
-  // Returns true if any property tree state change is >= |change|. Note that
-  // this is O(|nodes|).
-  bool ChangedToRoot(PaintPropertyChangeType change) const;
+  // Returns true if any property tree state change is >= |change| relative to
+  // |relative_to|. Note that this is O(|nodes|).
+  bool Changed(PaintPropertyChangeType change,
+               const PropertyTreeState& relative_to) const;
+  bool ChangedToRoot(PaintPropertyChangeType change) const {
+    return Changed(change, Root());
+  }
 
   // Determines whether drawings based on the 'guest' state can be painted into
   // a layer with the 'home' state, and if yes, returns the common ancestor

@@ -79,6 +79,20 @@ class PLATFORM_EXPORT RasterInvalidator {
           chunk_to_layer_transform(mapper.Transform()) {
     }
 
+    PaintChunkInfo(const PaintChunkInfo& old_chunk_info,
+                   const PaintChunkIterator& chunk_it)
+        : index_in_paint_artifact(chunk_it.IndexInPaintArtifact()),
+#if DCHECK_IS_ON()
+          id(chunk_it->id),
+#endif
+          bounds_in_layer(old_chunk_info.bounds_in_layer),
+          chunk_to_layer_clip(old_chunk_info.chunk_to_layer_clip),
+          chunk_to_layer_transform(old_chunk_info.chunk_to_layer_transform) {
+#if DCHECK_IS_ON()
+      DCHECK_EQ(id, old_chunk_info.id);
+#endif
+    }
+
     // The index of the chunk in the PaintArtifact. It may be different from
     // the index of this PaintChunkInfo in paint_chunks_info_ when a subset of
     // the paint chunks is handled by the RasterInvalidator.
