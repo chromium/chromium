@@ -1270,7 +1270,7 @@ void ShelfView::PointerPressedOnButton(views::View* view,
                             SHELF_ALIGNMENT_UMA_ENUM_VALUE_COUNT);
 }
 
-void ShelfView::PointerDraggedOnButton(views::View* view,
+void ShelfView::PointerDraggedOnButton(const views::View* view,
                                        Pointer pointer,
                                        const ui::LocatedEvent& event) {
   if (CanPrepareForDrag(pointer, event))
@@ -1280,7 +1280,7 @@ void ShelfView::PointerDraggedOnButton(views::View* view,
     ContinueDrag(event);
 }
 
-void ShelfView::PointerReleasedOnButton(views::View* view,
+void ShelfView::PointerReleasedOnButton(const views::View* view,
                                         Pointer pointer,
                                         bool canceled) {
   drag_scroll_dir_ = 0;
@@ -1937,10 +1937,12 @@ int ShelfView::CancelDrag(int modified_index) {
   drag_scroll_dir_ = 0;
   scrolling_timer_.Stop();
   speed_up_drag_scrolling_.Stop();
-  drag_icon_proxy_.reset();
-  delegate_->CancelScrollForItemDrag();
 
   FinalizeRipOffDrag(true);
+
+  delegate_->CancelScrollForItemDrag();
+  drag_icon_proxy_.reset();
+
   if (!drag_view_)
     return modified_index;
   bool was_dragging = dragging();

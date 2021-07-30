@@ -215,10 +215,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void PointerPressedOnButton(views::View* view,
                               Pointer pointer,
                               const ui::LocatedEvent& event);
-  void PointerDraggedOnButton(views::View* view,
+  void PointerDraggedOnButton(const views::View* view,
                               Pointer pointer,
                               const ui::LocatedEvent& event);
-  void PointerReleasedOnButton(views::View* view,
+  void PointerReleasedOnButton(const views::View* view,
                                Pointer pointer,
                                bool canceled);
 

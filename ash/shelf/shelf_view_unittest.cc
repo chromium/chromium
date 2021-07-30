@@ -588,7 +588,7 @@ class ShelfViewTest : public AshTestBase {
     return GetButtonCenter(GetButtonByID(button_id));
   }
 
-  gfx::Point GetButtonCenter(ShelfAppButton* button) {
+  gfx::Point GetButtonCenter(const ShelfAppButton* button) {
     return button->GetBoundsInScreen().CenterPoint();
   }
 
@@ -1025,6 +1025,50 @@ TEST_P(LtrRtlShelfViewTest, ShelfRipOff) {
   generator->MoveMouseTo(first_app_location);
   generator->ReleaseLeftButton();
   EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
+}
+
+// Test that rip off drag can gracefully be canceled.
+TEST_P(LtrRtlShelfViewTest, ShelfRipOffCancel) {
+  // The test makes some assumptions that the shelf is bottom aligned.
+  ASSERT_EQ(shelf_view_->shelf()->alignment(), ShelfAlignment::kBottom);
+
+  // The rip off threshold. Taken from |kRipOffDistance| in shelf_view.cc.
+  constexpr int kRipOffDistance = 48;
+
+  // Add two apps on the main shelf.
+  ShelfID first_app_id = AddAppShortcut();
+  AddAppShortcut();
+
+  // Cache the shelf state - test will verify that shelf items are not changed
+  // if rip off drag gets canceled.
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  for (size_t i = 0; i < model_->items().size(); ++i) {
+    ShelfAppButton* button = test_api_->GetButton(i);
+    id_map.push_back(std::make_pair(model_->items()[i].id, button));
+  }
+
+  // Verify that dragging an app off the shelf will trigger the app getting
+  // ripped off, unless the distance is less than |kRipOffDistance|.
+  const ShelfAppButton* dragged_button = GetButtonByID(first_app_id);
+  gfx::Point first_app_location = GetButtonCenter(dragged_button);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(first_app_location);
+  generator->PressLeftButton();
+
+  // Drag the mouse to just off the shelf.
+  generator->MoveMouseBy(0, -ShelfConfig::Get()->shelf_size() / 2 - 1);
+  EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
+
+  // Drag the mouse past the rip off threshold.
+  generator->MoveMouseBy(0, -kRipOffDistance);
+  EXPECT_TRUE(test_api_->IsRippedOffFromShelf());
+
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, true);
+  generator->ReleaseLeftButton();
+
+  EXPECT_FALSE(test_api_->IsRippedOffFromShelf());
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
 }
 
 // Tests that drag and drop a pinned running app will unpin it.
