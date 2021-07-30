@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_monitor/resource_coalition_mac.h"
 
 namespace performance_monitor {
 
@@ -73,19 +74,21 @@ void RecordCoalitionData(const ProcessMonitor::Metrics& metrics) {
   // same constants as for the |AverageCPU2| histograms.
   constexpr int kPercentScaleFactor = 100;
 
-  base::UmaHistogramCustomCounts("PerformanceMonitor.ResourceCoalition.CPUTime",
-                                 metrics.coalition_data->cpu_time_per_second *
-                                     kPercentScaleFactor * kCPUUsageFactor,
-                                 kCPUUsageHistogramMin, kCPUUsageHistogramMax,
-                                 kCPUUsageHistogramBucketCount);
+  base::UmaHistogramCustomCounts(
+      "PerformanceMonitor.ResourceCoalition.CPUTime2",
+      metrics.coalition_data->cpu_time_per_second * kPercentScaleFactor *
+          kCPUUsageFactor,
+      kCPUUsageHistogramMin, kCPUUsageHistogramMax,
+      kCPUUsageHistogramBucketCount);
   // The GPU usage should always be <= 100% so use a lower value for the
   // histogram max.
   // TODO(sebmarchand): Confirm this from the data.
-  base::UmaHistogramCustomCounts("PerformanceMonitor.ResourceCoalition.GPUTime",
-                                 metrics.coalition_data->gpu_time_per_second *
-                                     kPercentScaleFactor * kCPUUsageFactor,
-                                 kCPUUsageHistogramMin, 100 * kCPUUsageFactor,
-                                 kCPUUsageHistogramBucketCount);
+  base::UmaHistogramCustomCounts(
+      "PerformanceMonitor.ResourceCoalition.GPUTime2",
+      metrics.coalition_data->gpu_time_per_second * kPercentScaleFactor *
+          kCPUUsageFactor,
+      kCPUUsageHistogramMin, 100 * kCPUUsageFactor,
+      kCPUUsageHistogramBucketCount);
 
   // Report the metrics based on a count (e.g. wakeups) with a millievent/sec
   // granularity. In theory it doesn't make much sense to talk about a
@@ -97,24 +100,23 @@ void RecordCoalitionData(const ProcessMonitor::Metrics& metrics) {
     return sample * kMilliFactor + 0.5;
   };
   base::UmaHistogramCounts1M(
-      "PerformanceMonitor.ResourceCoalition.milliInterruptWakeupsPerSecond",
+      "PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond",
       scale_sample(metrics.coalition_data->interrupt_wakeups_per_second));
   base::UmaHistogramCounts1M(
-      "PerformanceMonitor.ResourceCoalition.milliPlatformIdleWakeupsPerSecond",
+      "PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond",
       scale_sample(metrics.coalition_data->platform_idle_wakeups_per_second));
   base::UmaHistogramCounts10M(
-      "PerformanceMonitor.ResourceCoalition.milliBytesReadPerSecond",
+      "PerformanceMonitor.ResourceCoalition.BytesReadPerSecond",
       scale_sample(metrics.coalition_data->bytesread_per_second));
   base::UmaHistogramCounts10M(
-      "PerformanceMonitor.ResourceCoalition.milliBytesWrittenPerSecond",
+      "PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond",
       scale_sample(metrics.coalition_data->byteswritten_per_second));
 
   constexpr int kNanoWattToMilliWatt = 1000 * 1000;
-  // Use a maximum of 100 watts, of 100 * 1000 milliwatts.
+  // Use a maximum of 100 watts, or 100 * 1000 milliwatts.
   base::UmaHistogramCounts100000(
-      "PerformanceMonitor.ResourceCoalition.Energy",
-      metrics.coalition_data->energy_nj_per_second / kNanoWattToMilliWatt +
-          0.5);
+      "PerformanceMonitor.ResourceCoalition.Power",
+      metrics.coalition_data->power_nw / kNanoWattToMilliWatt + 0.5);
 }
 #endif
 
