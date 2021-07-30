@@ -4,12 +4,22 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.Manifest;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.AndroidPermissionDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -57,6 +67,7 @@ public class AdaptiveToolbarFeatures {
     private static Boolean sIgnoreSegmentationResultsForTesting;
     private static Boolean sDisableUiForTesting;
     private static Boolean sShowUiOnlyAfterReadyForTesting;
+    private static Boolean sIsVoiceRecognitionEnabledForTesting;
 
     /**
      * Unique identifiers for each of the possible button variants.
@@ -243,12 +254,18 @@ public class AdaptiveToolbarFeatures {
     }
 
     @VisibleForTesting
+    static void setIsVoiceRecognitionEnabledForTesting(boolean enabled) {
+        sIsVoiceRecognitionEnabledForTesting = enabled;
+    }
+
+    @VisibleForTesting
     public static void clearParsedParamsForTesting() {
         sButtonVariant = null;
         sDefaultSegmentForTesting = null;
         sIgnoreSegmentationResultsForTesting = null;
         sDisableUiForTesting = null;
         sShowUiOnlyAfterReadyForTesting = null;
+        sIsVoiceRecognitionEnabledForTesting = null;
     }
 
     /**
@@ -277,6 +294,44 @@ public class AdaptiveToolbarFeatures {
             return false;
         }
         return ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR);
+    }
+
+    /** Returns whether voice search is enabled. */
+    public static boolean isVoiceSearchEnabled(
+            AndroidPermissionDelegate androidPermissionDelegate) {
+        if (sIsVoiceRecognitionEnabledForTesting != null) {
+            return sIsVoiceRecognitionEnabledForTesting;
+        }
+
+        if (androidPermissionDelegate == null) return false;
+        if (!androidPermissionDelegate.hasPermission(Manifest.permission.RECORD_AUDIO)
+                && !androidPermissionDelegate.canRequestPermission(
+                        Manifest.permission.RECORD_AUDIO)) {
+            return false;
+        }
+
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY)) {
+            @Nullable
+            PrefService prefService = getPrefService();
+            // If the PrefService isn't initialized yet we won't know here whether or not voice
+            // search is allowed by policy. In that case, treat voice search as enabled but check
+            // again when a Profile is set and PrefService becomes available.
+            if (prefService != null && !prefService.getBoolean(Pref.AUDIO_CAPTURE_ALLOWED)) {
+                return false;
+            }
+        }
+        return VoiceRecognitionUtil.isRecognitionIntentPresent(true);
+    }
+
+    /** Returns the PrefService for the active Profile, or null if no profile has been loaded. */
+    private static @Nullable PrefService getPrefService() {
+        if (!ProfileManager.isInitialized()) {
+            return null;
+        }
+
+        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     private AdaptiveToolbarFeatures() {}

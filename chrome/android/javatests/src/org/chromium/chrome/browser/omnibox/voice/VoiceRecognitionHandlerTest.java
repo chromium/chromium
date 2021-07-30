@@ -227,11 +227,6 @@ public class VoiceRecognitionHandlerTest {
             mVoiceConfidenceValue = value;
         }
 
-        @Override
-        protected boolean isRecognitionIntentPresent(boolean useCachedValue) {
-            return true;
-        }
-
         @VoiceInteractionSource
         public int getVoiceSearchStartEventSource() {
             return mStartSource;
@@ -612,6 +607,7 @@ public class VoiceRecognitionHandlerTest {
 
         mDataProvider = new TestDataProvider();
         mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
+        VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(true);
         mHandler = new TestVoiceRecognitionHandler(mDelegate, mProfileSupplier);
         mHandler.addObserver(mObserver);
         mPermissionDelegate = new TestAndroidPermissionDelegate();
@@ -638,7 +634,10 @@ public class VoiceRecognitionHandlerTest {
     public void tearDown() {
         mHandler.removeObserver(mObserver);
         SysUtils.resetForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
+            mWindowAndroid.destroy();
+        });
     }
 
     /**

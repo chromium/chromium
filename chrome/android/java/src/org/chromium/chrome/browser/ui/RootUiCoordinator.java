@@ -703,7 +703,7 @@ public class RootUiCoordinator
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
                             mActivity.getLifecycleDispatcher(),
-                            new AdaptiveButtonActionMenuCoordinator(),
+                            new AdaptiveButtonActionMenuCoordinator(), mActivity.getWindowAndroid(),
                             SharedPreferencesManager.getInstance());
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
