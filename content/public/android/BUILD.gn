@@ -195,6 +195,7 @@ android_library("content_full_java") {
   sources = [
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AppWebMessagePortDescriptor.java",
+    "java/src/org/chromium/content/browser/AttributionReporterImpl.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BindingManager.java",
@@ -318,6 +319,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
     "java/src/org/chromium/content_public/browser/ActionModeCallbackHelper.java",
+    "java/src/org/chromium/content_public/browser/AttributionReporter.java",
     "java/src/org/chromium/content_public/browser/ChildProcessLauncherHelper.java",
     "java/src/org/chromium/content_public/browser/ClientDataJson.java",
     "java/src/org/chromium/content_public/browser/ContactsPicker.java",
@@ -412,6 +414,7 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/app/ContentMain.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AppWebMessagePortDescriptor.java",
+    "java/src/org/chromium/content/browser/AttributionReporterImpl.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BrowserStartupControllerImpl.java",

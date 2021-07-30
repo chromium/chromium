@@ -146,9 +146,9 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       const base::android::JavaParamRef<jobject>& obj,
       jint index);
 
- private:
-  url::Origin OriginFromPackageName(const std::string& package);
+  static url::Origin OriginFromPackageName(const std::string& package);
 
+ private:
   NavigationControllerImpl* navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 

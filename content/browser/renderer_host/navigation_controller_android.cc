@@ -512,6 +512,7 @@ jboolean NavigationControllerAndroid::IsEntryMarkedToBeSkipped(
   return navigation_controller_->IsEntryMarkedToBeSkipped(index);
 }
 
+// static
 url::Origin NavigationControllerAndroid::OriginFromPackageName(
     const std::string& package) {
   return url::Origin::Create(

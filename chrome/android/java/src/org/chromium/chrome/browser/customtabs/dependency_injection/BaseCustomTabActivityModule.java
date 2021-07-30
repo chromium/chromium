@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.dependency_injection;
 
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandler;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
 import org.chromium.chrome.browser.browserservices.ClientAppDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
+import org.chromium.content_public.browser.AttributionReporter;
 
 import dagger.Lazy;
 import dagger.Module;
@@ -125,5 +128,15 @@ public class BaseCustomTabActivityModule {
     @Provides
     public IncognitoTabHostRegistry provideIncognitoTabHostRegistry() {
         return IncognitoTabHostRegistry.getInstance();
+    }
+
+    @Provides
+    public AttributionReporter provideAttributionReporter() {
+        return AttributionReporter.getInstance();
+    }
+
+    @Provides
+    public AttributionIntentHandler provideAttributionIntentHandler() {
+        return AttributionIntentHandlerFactory.getInstance();
     }
 }

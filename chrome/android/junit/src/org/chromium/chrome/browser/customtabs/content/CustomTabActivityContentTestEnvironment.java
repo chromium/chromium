@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
+import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
@@ -187,18 +188,17 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
-        CustomTabIntentHandlingStrategy strategy =
-                new DefaultCustomTabIntentHandlingStrategy(tabProvider, navigationController,
-                        navigationEventObserver, () -> customTabObserver) {
-                    @Override
-                    public GURL getGurlForUrl(String url) {
-                        return JUnitTestGURLs.getGURL(url);
-                    }
-                };
-        return new CustomTabIntentHandler(tabProvider,
-                intentDataProvider, strategy, (intent) -> false, activity);
+        CustomTabIntentHandlingStrategy strategy = new DefaultCustomTabIntentHandlingStrategy(
+                tabProvider, navigationController, navigationEventObserver,
+                () -> customTabObserver, null, AttributionIntentHandlerFactory.getInstance()) {
+            @Override
+            public GURL getGurlForUrl(String url) {
+                return JUnitTestGURLs.getGURL(url);
+            }
+        };
+        return new CustomTabIntentHandler(
+                tabProvider, intentDataProvider, strategy, (intent) -> false, activity);
     }
-
 
     public void warmUp() {
         when(connection.hasWarmUpBeenFinished()).thenReturn(true);

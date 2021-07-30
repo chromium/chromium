@@ -5,15 +5,18 @@
 package org.chromium.chrome.browser.attribution_reporting;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.view.KeyEvent;
 
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -42,6 +45,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
@@ -50,6 +55,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.content_public.browser.AttributionReporter;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -73,6 +79,9 @@ public class AttributionIntentIntegrationTest {
 
     @Mock
     public EmptyTabObserver mTabObserver;
+
+    @Mock
+    public AttributionReporter mAttributionReporter;
 
     @Captor
     public ArgumentCaptor<NavigationHandle> navigationHandleCaptor;
@@ -117,6 +126,7 @@ public class AttributionIntentIntegrationTest {
 
     @After
     public void tearDown() {
+        AttributionReporter.setInstanceForTesting(null);
         ContextUtils.getApplicationContext().unregisterReceiver(mReceiver);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ApplicationStatus.unregisterActivityStateListener(mActivityStateListener));
@@ -210,6 +220,63 @@ public class AttributionIntentIntegrationTest {
             IntentUtils.safePutBinderExtra(intent, CustomTabsIntent.EXTRA_SESSION, null);
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"ConversionMeasurement"})
+    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
+    public void testConversionIntentEnabled_CCT_preload_sameUrl() {
+        AttributionReporter.setInstanceForTesting(mAttributionReporter);
+        CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
+        Context context = ContextUtils.getApplicationContext();
+        String url = mCustomTabActivityTestRule.getTestServer().getURL("/echo");
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, url);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        Assert.assertTrue(connection.newSession(token));
+        try {
+            connection.setCanUseHiddenTabForSession(token, true);
+            Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), null, null));
+            CustomTabsTestUtils.ensureCompletedSpeculationForUrl(connection, url);
+
+            Intent outerIntent = makeValidAttributionIntent(
+                    "1234", "https://example.com", "https://example2.com", 5678);
+            intent.fillIn(outerIntent, 0);
+            mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+            Mockito.verify(mAttributionReporter, Mockito.times(1))
+                    .reportAttributionForCurrentNavigation(any(),
+                            eq(ContextUtils.getApplicationContext().getPackageName()), eq("1234"),
+                            eq("https://example.com"), eq("https://example2.com"), eq(5678L));
+        } finally {
+            CustomTabsTestUtils.cleanupSessions(connection);
+        }
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"ConversionMeasurement"})
+    @Features.EnableFeatures(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION)
+    public void testConversionIntentEnabled_CCT_preload_differentUrl() {
+        AttributionReporter.setInstanceForTesting(mAttributionReporter);
+        CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
+        Context context = ContextUtils.getApplicationContext();
+        String url = mCustomTabActivityTestRule.getTestServer().getURL("/echo");
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(context, url);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        Assert.assertTrue(connection.newSession(token));
+        try {
+            connection.setCanUseHiddenTabForSession(token, true);
+            String otherUrl = url + "/other.html";
+            Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(otherUrl), null, null));
+            CustomTabsTestUtils.ensureCompletedSpeculationForUrl(connection, otherUrl);
+
+            doTestConversionIntentEnabledInner(true, (Intent outerIntent) -> {
+                intent.fillIn(outerIntent, 0);
+                mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+            });
+        } finally {
+            CustomTabsTestUtils.cleanupSessions(connection);
+        }
     }
 
     @Test

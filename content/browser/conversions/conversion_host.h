@@ -43,6 +43,21 @@ class CONTENT_EXPORT ConversionHost
       mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
       RenderFrameHost* rfh);
 
+  // Normally, Attributions should be reported at the start of a navigation.
+  // However, in some cases, like with speculative navigation on Android, the
+  // attribution parameters aren't available at the start of the navigation.
+  //
+  // This method allows Attributions to be reported for ongoing or already
+  // completed navigations, as long as the current navigation finishes on the
+  // destination URL for the Impression.
+  //
+  // TODO(crbug.com/1234529): Attributions for preloaded pages that perform
+  // javascript redirects may get dropped if the new navigation begins before
+  // the attribution data arrives.
+  void ReportAttributionForCurrentNavigation(
+      const url::Origin& impression_origin,
+      const blink::Impression& impression);
+
   static absl::optional<blink::Impression> ParseImpressionFromApp(
       const std::string& attribution_source_event_id,
       const std::string& attribution_destination,
@@ -59,7 +74,11 @@ class CONTENT_EXPORT ConversionHost
   friend class ConversionHostTestPeer;
   friend class WebContentsUserData<ConversionHost>;
 
-  // Private constructor exposed to `ConversionHostTestPeer` for testing.
+  struct PendingAttribution {
+    url::Origin initiator_origin;
+    blink::Impression impression;
+  };
+
   ConversionHost(
       WebContents* web_contents,
       std::unique_ptr<ConversionManager::Provider> conversion_manager_provider);
@@ -108,6 +127,9 @@ class CONTENT_EXPORT ConversionHost
   std::unique_ptr<ConversionPageMetrics> conversion_page_metrics_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
+
+  absl::optional<PendingAttribution> pending_attribution_;
+  bool last_navigation_allows_attribution_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -50,6 +50,8 @@ class ConversionHostTestPeer {
 namespace {
 
 const char kConversionUrl[] = "https://b.com";
+const char kConversionUrlWithFragment[] = "https://b.com/#fragment";
+const char kConversionUrlWithSubDomain[] = "https://sub.b.com";
 
 blink::Impression CreateValidImpression() {
   blink::Impression result;
@@ -78,9 +80,11 @@ class ConversionHostTest : public RenderViewHostTestHarness {
     return static_cast<TestWebContents*>(web_contents());
   }
 
-  blink::mojom::ConversionHost* conversion_host() {
+  blink::mojom::ConversionHost* conversion_host_mojom() {
     return conversion_host_.get();
   }
+
+  ConversionHost* conversion_host() { return conversion_host_.get(); }
 
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
     ConversionHostTestPeer::SetCurrentTargetFrameForTesting(
@@ -109,7 +113,7 @@ TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -141,7 +145,7 @@ TEST_F(ConversionHostTest,
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -172,7 +176,7 @@ TEST_F(ConversionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
@@ -222,7 +226,7 @@ TEST_F(ConversionHostTest,
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =
         url::Origin::Create(test_case.reporting_origin);
-    conversion_host()->RegisterConversion(std::move(conversion));
+    conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
     EXPECT_EQ(static_cast<size_t>(test_case.conversion_allowed),
               test_manager_.num_conversions())
@@ -247,7 +251,7 @@ TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {
       url::Origin::Create(GURL("https://secure.com"));
 
   // Message should be ignored because it was registered from an insecure page.
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
@@ -266,7 +270,7 @@ TEST_F(ConversionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
 
   // Message should be ignored because it was registered with an insecure
   // redirect.
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
@@ -286,7 +290,7 @@ TEST_F(ConversionHostTest, ValidConversion_NoBadMessage) {
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -307,7 +311,7 @@ TEST_F(ConversionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
   EXPECT_EQ(0u, test_manager_.num_conversions());
   SetBrowserClientForTesting(old_browser_client);
@@ -340,7 +344,7 @@ TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =
         url::Origin::Create(test_case.reporting_origin);
-    conversion_host()->RegisterConversion(std::move(conversion));
+    conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
     EXPECT_EQ(static_cast<size_t>(test_case.conversion_allowed),
               test_manager_.num_conversions())
@@ -424,7 +428,7 @@ TEST_F(ConversionHostTest, Conversion_AssociatedWithConversionSite) {
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(1u, test_manager_.num_conversions());
 
   // Verify that we use the domain of the page where the conversion occurred
@@ -447,7 +451,7 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
       url::Origin::Create(GURL("https://secure.com"));
 
   for (size_t i = 0u; i < 8u; i++) {
-    conversion_host()->RegisterConversion(conversion->Clone());
+    conversion_host_mojom()->RegisterConversion(conversion->Clone());
     EXPECT_EQ(1u, test_manager_.num_conversions());
     test_manager_.Reset();
   }
@@ -484,7 +488,7 @@ TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
+  conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
   // Navigate again to trigger histogram code.
   contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
@@ -679,7 +683,7 @@ TEST_F(ConversionHostTest,
   mojo::test::BadMessageObserver bad_message_observer;
 
   const blink::Impression impression = CreateValidImpression();
-  conversion_host()->RegisterImpression(impression);
+  conversion_host_mojom()->RegisterImpression(impression);
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -701,7 +705,7 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   mojo::test::BadMessageObserver bad_message_observer;
 
   const blink::Impression impression = CreateValidImpression();
-  conversion_host()->RegisterImpression(impression);
+  conversion_host_mojom()->RegisterImpression(impression);
 
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
@@ -734,7 +738,7 @@ TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
         SetBrowserClientForTesting(test_case.browser_client);
 
     base::HistogramTester histograms;
-    conversion_host()->RegisterImpression(CreateValidImpression());
+    conversion_host_mojom()->RegisterImpression(CreateValidImpression());
     histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed",
                                   test_case.want_allowed, 1);
 
@@ -766,12 +770,231 @@ TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =
         url::Origin::Create(GURL("https://secure.com"));
-    conversion_host()->RegisterConversion(std::move(conversion));
+    conversion_host_mojom()->RegisterConversion(std::move(conversion));
     histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed",
                                   test_case.want_allowed, 1);
 
     SetBrowserClientForTesting(old_browser_client);
   }
+}
+
+// In pre-loaded CCT navigations, the attribution can arrive after the
+// navigation begins but before it's committed. Currently only used on Android
+// but should work cross-platform.
+TEST_F(ConversionHostTest, AndroidConversion_DuringNavigation) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  navigation->Start();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  navigation->Commit();
+
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+}
+
+// In pre-loaded CCT navigations, the attribution can arrive after the
+// navigation completes. Currently only used on Android but should work
+// cross-platform.
+TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  navigation->Commit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+
+  // Make sure we don't allow repeated attributions for the same navigation.
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+}
+
+TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrlWithSubDomain), contents());
+  navigation->Commit();
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  EXPECT_EQ(1u, test_manager_.num_impressions());
+}
+
+// In pre-loaded CCT navigations, the attribution can arrive after the
+// navigation completes, but the destination must match the attribution.
+TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation_WrongDestination) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto bad_navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL("https://other.com"), contents());
+  bad_navigation->Commit();
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  // Navigating to the correct URL after navigation to the wrong one still
+  // shouldn't allow the attribution.
+  auto good_navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  good_navigation->Commit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+}
+
+// Ensure we don't re-use pending Impressions after an aborted commit. Currently
+// only used on Android but should work cross-platform.
+TEST_F(ConversionHostTest, AndroidConversion_NavigationAborted) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto navigation_abort = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  navigation_abort->Start();
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  navigation_abort->AbortCommit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+
+  navigation_commit->Commit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+}
+
+// Ensure we don't re-use pending Impressions after an Error page commit.
+// Currently only used on Android but should work cross-platform.
+TEST_F(ConversionHostTest, AndroidConversion_NavigationError) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto navigation_error = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+  navigation_error->Start();
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  navigation_error->Fail(net::ERR_UNEXPECTED);
+  navigation_error->CommitErrorPage();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+
+  navigation_commit->Commit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+}
+
+// We don't allow attributions before a navigation begins. Currently only used
+// on Android but should work cross-platform.
+TEST_F(ConversionHostTest, AndroidConversion_BeforeNavigation) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+
+  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL(kConversionUrl), contents());
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  navigation->Commit();
+
+  EXPECT_EQ(0u, test_manager_.num_impressions());
+}
+
+// We ignore same-document navigations.
+TEST_F(ConversionHostTest, AndroidConversion_SameDocument) {
+  std::string origin(
+#if defined(OS_ANDROID)
+      "android-app:com.any.app");
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
+#else
+      "https://secure.com");
+#endif
+  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+      GURL(kConversionUrl), main_rfh());
+  navigation->Commit();
+  auto navigation2 = NavigationSimulatorImpl::CreateRendererInitiated(
+      GURL(kConversionUrlWithFragment), main_rfh());
+  navigation2->CommitSameDocument();
+
+  conversion_host()->ReportAttributionForCurrentNavigation(
+      url::Origin::Create(GURL(origin)), CreateValidImpression());
+
+  EXPECT_EQ(1u, test_manager_.num_impressions());
 }
 
 #if defined(OS_ANDROID)

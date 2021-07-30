@@ -1071,7 +1071,7 @@ public class CustomTabsConnection {
     }
 
     @VisibleForTesting
-    void setCanUseHiddenTabForSession(CustomTabsSessionToken session, boolean value) {
+    public void setCanUseHiddenTabForSession(CustomTabsSessionToken session, boolean value) {
         mClientManager.setCanUseHiddenTab(session, value);
     }
 
