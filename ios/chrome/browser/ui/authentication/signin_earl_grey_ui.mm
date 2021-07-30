@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -316,20 +315,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
       assertWithMatcher:visibilityMatcher];
 }
 
-+ (void)submitSyncPassphrase:(NSString*)passphrase {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
-      performAction:grey_typeText(passphrase)];
-
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClassName(@"_UIButtonBarButton"),
-                                   ButtonWithAccessibilityLabel(
-                                       l10n_util::GetNSString(
-                                           IDS_IOS_SYNC_DECRYPT_BUTTON)),
-                                   nil)] performAction:grey_tap()];
-}
 #pragma mark - Private
 
 + (void)signOutWithButton:(id<GREYMatcher>)buttonMatcher
