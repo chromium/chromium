@@ -290,13 +290,25 @@ HTMLCanvasElement* XRWebGLLayer::output_canvas() const {
   return nullptr;
 }
 
-uint32_t XRWebGLLayer::CameraImageTextureId() const {
-  return camera_image_texture_id_;
-}
+WebGLTexture* XRWebGLLayer::GetCameraTexture() {
+  DVLOG(1) << __func__;
 
-absl::optional<gpu::MailboxHolder> XRWebGLLayer::CameraImageMailboxHolder()
-    const {
-  return camera_image_mailbox_holder_;
+  // We already have a WebGL texture for the camera image - return it:
+  if (camera_image_texture_) {
+    return camera_image_texture_;
+  }
+
+  // We don't have a WebGL texture, and we cannot create it - return null:
+  if (!camera_image_texture_id_) {
+    return nullptr;
+  }
+
+  // We don't have a WebGL texture, but we can create it, so create, store and
+  // return it:
+  camera_image_texture_ = MakeGarbageCollected<WebGLUnownedTexture>(
+      webgl_context_, camera_image_texture_id_, GL_TEXTURE_2D);
+
+  return camera_image_texture_;
 }
 
 void XRWebGLLayer::OnFrameStart(
@@ -320,7 +332,9 @@ void XRWebGLLayer::OnFrameStart(
       camera_image_mailbox_holder_ = camera_image_mailbox_holder;
       camera_image_texture_id_ =
           GetBufferTextureId(camera_image_mailbox_holder_);
-      BindBufferTexture(camera_image_mailbox_holder_);
+      DVLOG(3) << __func__
+               << ": camera_image_texture_id_=" << camera_image_texture_id_;
+      BindCameraBufferTexture(camera_image_mailbox_holder_);
     }
   }
 }
@@ -333,10 +347,11 @@ uint32_t XRWebGLLayer::GetBufferTextureId(
            << buffer_mailbox_holder->sync_token.ToDebugString();
   GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
       buffer_mailbox_holder->mailbox.name);
+  DVLOG(3) << __func__ << ": texture_id=" << texture_id;
   return texture_id;
 }
 
-void XRWebGLLayer::BindBufferTexture(
+void XRWebGLLayer::BindCameraBufferTexture(
     const absl::optional<gpu::MailboxHolder>& buffer_mailbox_holder) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
 
@@ -385,10 +400,23 @@ void XRWebGLLayer::OnFrameEnd() {
       session()->xr()->frameProvider()->SubmitWebGLLayer(this,
                                                          framebuffer_dirty);
       if (camera_image_mailbox_holder_ && camera_image_texture_id_) {
-        DVLOG(3) << __func__ << "Deleting camera image texture";
+        DVLOG(3) << __func__
+                 << ": deleting camera image texture, camera_image_texture_id_="
+                 << camera_image_texture_id_;
         gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
+
         gl->EndSharedImageAccessDirectCHROMIUM(camera_image_texture_id_);
         gl->DeleteTextures(1, &camera_image_texture_id_);
+
+        // Notify our WebGLUnownedTexture (created from
+        // camera_image_texture_id_) that we have deleted it. Also, release the
+        // reference since we no longer need it (note that it could still be
+        // kept alive by the JS application, but should be a defunct object).
+        if (camera_image_texture_) {
+          camera_image_texture_->OnGLDeleteTextures();
+          camera_image_texture_ = nullptr;
+        }
+
         camera_image_texture_id_ = 0;
         camera_image_mailbox_holder_ = absl::nullopt;
       }
@@ -424,6 +452,7 @@ void XRWebGLLayer::Trace(Visitor* visitor) const {
   visitor->Trace(right_viewport_);
   visitor->Trace(webgl_context_);
   visitor->Trace(framebuffer_);
+  visitor->Trace(camera_image_texture_);
   XRLayer::Trace(visitor);
 }
 

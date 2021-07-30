@@ -153,7 +153,7 @@ Tests that AR camera access returns non-empty GLTexture.
 
         // Assign pixels array non-zero values.
         pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4);
-        pixels.fill(1);
+        pixels.fill(0);
 
         // Counter of rAFcb calls in which readPixels() call was performed:
         let numIterations = 0;
@@ -167,6 +167,7 @@ Tests that AR camera access returns non-empty GLTexture.
             // texture before attempting to get the camera image texture.
             if (numPosesFound >= MIN_NUM_FRAMES_WITH_POSES
              && numPosesFound < MAX_NUM_FRAMES_WITH_POSES) {
+
               const view = pose.views.find(v => v.camera != null);
               if (view == undefined) return;
 
@@ -177,17 +178,24 @@ Tests that AR camera access returns non-empty GLTexture.
               gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D,
                                       cameraImageTexture, level);
 
-              const fbComplete = readCameraImageTexturePixels();
+              const fbComplete = readCameraImageTexturePixels(pixels);
+
+              console.log("Framebuffer complete? " + fbComplete);
               if (!fbComplete) return;
 
               numIterations++;
 
               const numZeroedRGBAValues = countZeros(pixels);
+
+              // We should get at least some non-zero pixels.
               assert_not_equals(numZeroedRGBAValues, pixels.length,
-                                "Camera image texture was already empty.");
+                                "Camera image texture was empty.");
+
+              // Clean up after ourselves:
+              pixels.fill(0);
             }
 
-            if (numPosesFound > MAX_NUM_FRAMES_WITH_POSES) {
+            if (numPosesFound >= MAX_NUM_FRAMES_WITH_POSES) {
               onARFrameCallback = null;
 
               assert_not_equals(numIterations, 0, "We should have read the pixels at least once!");
@@ -199,7 +207,7 @@ Tests that AR camera access returns non-empty GLTexture.
               gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D,
                                       cameraImageTexture, level);
 
-              const fbComplete = readCameraImageTexturePixels();
+              const fbComplete = readCameraImageTexturePixels(pixels);
               if (fbComplete) {
                 const numZeroedRGBAValues = countZeros(pixels);
                 assert_equals(numZeroedRGBAValues, pixels.length,
@@ -212,11 +220,11 @@ Tests that AR camera access returns non-empty GLTexture.
         };
       }
 
-      // Reads pixels from the framebuffer into the `pixels` variable.
+      // Reads pixels from the framebuffer into the |pixels| parameter.
       // Returns true if framebuffer status was FRAMEBUFFER_COMPLETE, false
       // otherwise. If the framebuffer was incomplete, readPixels() call was not
       // performed.
-      function readCameraImageTexturePixels () {
+      function readCameraImageTexturePixels (pixels) {
         if(gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE){
           gl.readPixels(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
           assert_equals(gl.getError(), gl.NO_ERROR);

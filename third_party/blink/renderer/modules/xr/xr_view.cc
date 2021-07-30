@@ -190,6 +190,9 @@ XRCamera* XRView::camera() const {
       frame_->session()->mode() ==
       device::mojom::blink::XRSessionMode::kImmersiveAr;
 
+  DVLOG(3) << __func__ << ": camera_access_enabled=" << camera_access_enabled
+           << ", is_immersive_ar_session=" << is_immersive_ar_session;
+
   if (camera_access_enabled && is_immersive_ar_session) {
     // The feature is enabled and we're in immersive-ar session, so let's return
     // a camera object if the camera image was received in the current frame.
