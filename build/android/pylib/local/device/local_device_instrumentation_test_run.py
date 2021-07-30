@@ -803,11 +803,18 @@ class LocalDeviceInstrumentationTestRun(
         for r in results:
           if r.GetType() == base_test_result.ResultType.UNKNOWN:
             r.SetType(base_test_result.ResultType.CRASH)
-      if (crashed_packages and len(results) == 1
-          and results[0].GetType() != base_test_result.ResultType.PASS):
+      elif (crashed_packages and len(results) == 1
+            and results[0].GetType() != base_test_result.ResultType.PASS):
+        # Add log message and set failure reason if:
+        #   1) The app crash was likely not caused by the test.
+        #   AND
+        #   2) The app crash possibly caused the test to fail.
+        # Crashes of the package under test are assumed to be the test's fault.
         _AppendToLogForResult(
             results[0], 'OS displayed error dialogs for {}'.format(
                 ', '.join(crashed_packages)))
+        results[0].SetFailureReason('{} Crashed'.format(
+            ','.join(crashed_packages)))
     except device_errors.CommandTimeoutError:
       logging.warning('timed out when detecting/dismissing error dialogs')
       # Attach screenshot to the test to help with debugging the dialog boxes.

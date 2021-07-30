@@ -36,7 +36,7 @@ class ResultType(object):
 class BaseTestResult(object):
   """Base class for a single test result."""
 
-  def __init__(self, name, test_type, duration=0, log=''):
+  def __init__(self, name, test_type, duration=0, log='', failure_reason=None):
     """Construct a BaseTestResult.
 
     Args:
@@ -51,6 +51,7 @@ class BaseTestResult(object):
     self._test_type = test_type
     self._duration = duration
     self._log = log
+    self._failure_reason = failure_reason
     self._links = {}
 
   def __str__(self):
@@ -100,6 +101,18 @@ class BaseTestResult(object):
   def GetLog(self):
     """Get the test log."""
     return self._log
+
+  def SetFailureReason(self, failure_reason):
+    """Set the reason the test failed."""
+    self._failure_reason = failure_reason
+
+  def GetFailureReason(self):
+    """Get the reason the test failed.
+
+    Returns None if the test did not fail or if the reason the test failed is
+    unknown.
+    """
+    return self._failure_reason
 
   def SetLink(self, name, link_url):
     """Set link with test result data."""
