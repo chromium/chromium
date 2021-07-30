@@ -45,9 +45,8 @@ namespace arc {
 // separate task.  This class is created on the UI thread but deleted on the
 // IO thread.  FileShareConfig is a convenience subclass for containing related
 // files information needed to create a Chrome share intent.
-class ShareInfoFileHandler : public base::RefCountedThreadSafe<
-                                 ShareInfoFileStreamAdapter,
-                                 content::BrowserThread::DeleteOnIOThread> {
+class ShareInfoFileHandler
+    : public base::RefCountedThreadSafe<ShareInfoFileHandler> {
  public:
   // |result| signifies state of shared files after streaming has completed.
   using CompletedCallback =
@@ -56,9 +55,14 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   // |value| is a percentage from 0 to 1 in double format (e.g. 0.50 for 50%).
   using ProgressBarUpdateCallback = base::RepeatingCallback<void(double value)>;
 
+  // |profile| is the current user profile.
+  // |share_info| represents the data being shared.
+  // |directory| is the top level share directory.
+  // |task_runner| is used for any cleanup which requires disk IO.
   ShareInfoFileHandler(Profile* profile,
                        mojom::ShareIntentInfo* share_info,
-                       base::FilePath directory);
+                       base::FilePath directory,
+                       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ShareInfoFileHandler(const ShareInfoFileHandler&) = delete;
   ShareInfoFileHandler& operator=(const ShareInfoFileHandler&) = delete;
@@ -72,6 +76,9 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
   const std::vector<std::string>& GetMimeTypes() const;
   uint64_t GetTotalSizeOfFiles() const { return file_config_.total_size; }
   size_t GetNumberOfFiles() const { return file_config_.num_files; }
+  const base::FilePath& GetShareDirectory() const {
+    return file_config_.directory;
+  }
 
   // Start streaming virtual files to destination file descriptors in
   // preparation for Nearby Share.  Callbacks are run on the UI thread.
@@ -83,9 +90,7 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
                            ProgressBarUpdateCallback update_callback);
 
  private:
-  friend struct content::BrowserThread::DeleteOnThread<
-      content::BrowserThread::IO>;
-  friend class base::DeleteHelper<ShareInfoFileStreamAdapter>;
+  friend class base::RefCountedThreadSafe<ShareInfoFileHandler>;
 
   ~ShareInfoFileHandler();
 
@@ -154,6 +159,9 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
 
   // Unowned pointer to profile.
   Profile* const profile_;
+
+  // Runner for tasks that may require disk IO.
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Timeout timer for asynchronous file streaming tasks.
   base::OneShotTimer file_streaming_timer_;

@@ -26,4 +26,9 @@ bool ShareAction::OnAcceleratorPressed(const ui::Accelerator& accelerator) {
   return false;
 }
 
+void ShareAction::SetActionCleanupCallbackForArc(
+    base::OnceCallback<void()> callback) {
+  return;
+}
+
 }  // namespace sharesheet

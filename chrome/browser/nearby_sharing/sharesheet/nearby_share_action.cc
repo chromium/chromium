@@ -200,12 +200,12 @@ bool NearbyShareAction::IsNearbyShareDisabledByPolicy() {
   if (!profile) {
     return false;
   }
-  NearbySharingService* nearby_share_service =
+  NearbySharingService* nearby_sharing_service =
       NearbySharingServiceFactory::GetForBrowserContext(profile);
-  if (!nearby_share_service) {
+  if (!nearby_sharing_service) {
     return false;
   }
-  return nearby_share_service->GetSettings()->IsDisabledByPolicy();
+  return nearby_sharing_service->GetSettings()->IsDisabledByPolicy();
 }
 
 std::vector<std::unique_ptr<Attachment>>
@@ -228,6 +228,25 @@ bool NearbyShareAction::OnAcceleratorPressed(
   // instead to indicate we will handle the accelerator ourselves, which
   // prevents the UI from being closed by the sharesheet.
   return true;
+}
+
+void NearbyShareAction::SetActionCleanupCallbackForArc(
+    base::OnceCallback<void()> callback) {
+  if (callback.is_null()) {
+    return;
+  }
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    std::move(callback).Run();
+    return;
+  }
+  NearbySharingService* nearby_sharing_service =
+      NearbySharingServiceFactory::GetForBrowserContext(profile);
+  if (!nearby_sharing_service) {
+    std::move(callback).Run();
+    return;
+  }
+  nearby_sharing_service->SetArcTransferCleanupCallback(std::move(callback));
 }
 
 bool NearbyShareAction::HandleKeyboardEvent(

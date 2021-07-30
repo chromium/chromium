@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,6 +37,10 @@ struct IntentTestCase {
   int file_count;
 };
 
+void ActionCleanupCallbackStub() {
+  return;
+}
+
 }  // namespace
 
 class NearbyShareActionTest : public testing::Test {
@@ -53,6 +58,10 @@ class NearbyShareActionTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile("testing_profile");
 
     nearby_share_action_.SetNearbyShareDisabledByPolicyForTesting(false);
+    // Calling the cleanup callback means an error occurred in the function.
+    ASSERT_DEATH(ActionCleanupCallbackStub(), "");
+    nearby_share_action_.SetActionCleanupCallbackForArc(
+        base::BindOnce(&ActionCleanupCallbackStub));
   }
 
   std::vector<IntentTestCase> GetIntentTestCases() {

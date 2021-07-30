@@ -197,6 +197,15 @@ class FakePowerClient : public PowerClient {
   using PowerClient::SetSuspended;
 };
 
+class FakeArcNearbyShareSession {
+ public:
+  void OnCleanupCallbackStub() { callback_called = true; }
+  bool CleanupCallbackCalled() { return callback_called; }
+
+ private:
+  bool callback_called = false;
+};
+
 namespace NearbySharingServiceUnitTests {
 
 constexpr base::TimeDelta kDelta = base::TimeDelta::FromMilliseconds(100);
@@ -1077,6 +1086,7 @@ class NearbySharingServiceImplTest : public testing::Test {
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<FakeFastInitiationManagerFactory>
       fast_initiation_manager_factory_;
+  std::unique_ptr<FakeArcNearbyShareSession> arc_nearby_share_session_;
   bool is_bluetooth_present_ = true;
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
@@ -3964,6 +3974,99 @@ TEST_F(NearbySharingServiceImplTest, ShutdownCallsObservers) {
   service_->Shutdown();
 
   EXPECT_TRUE(observer.shutdown_called_);
+
+  // Prevent a double shutdown.
+  service_.reset();
+}
+
+TEST_F(NearbySharingServiceImplTest, SendPayloadWithArcCallback) {
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  FakeArcNearbyShareSession arc_session;
+
+  service_->SetArcTransferCleanupCallback(
+      base::BindOnce(&FakeArcNearbyShareSession::OnCleanupCallbackStub,
+                     base::Unretained(&arc_session)));
+  EXPECT_FALSE(arc_session.CleanupCallbackCalled());
+
+  ShareTarget target =
+      SetUpOutgoingShareTarget(transfer_callback, discovery_callback);
+
+  base::RunLoop introduction_run_loop;
+  ExpectTransferUpdates(transfer_callback, target,
+                        {TransferMetadata::Status::kConnecting,
+                         TransferMetadata::Status::kAwaitingLocalConfirmation,
+                         TransferMetadata::Status::kAwaitingRemoteAcceptance},
+                        introduction_run_loop.QuitClosure());
+
+  EXPECT_EQ(
+      NearbySharingServiceImpl::StatusCodes::kOk,
+      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  introduction_run_loop.Run();
+
+  // Verify data sent to the remote device so far.
+  ExpectPairedKeyEncryptionFrame();
+  ExpectPairedKeyResultFrame();
+  auto intro = ExpectIntroductionFrame();
+
+  ASSERT_EQ(1, intro.text_metadata_size());
+  auto meta = intro.text_metadata(0);
+
+  EXPECT_EQ(kTextPayload, meta.text_title());
+  EXPECT_EQ(strlen(kTextPayload), static_cast<size_t>(meta.size()));
+  EXPECT_EQ(sharing::nearby::TextMetadata_Type_TEXT, meta.type());
+
+  ASSERT_TRUE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
+  auto advertisement =
+      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+          *fake_nearby_connections_manager_->connection_endpoint_info(
+              kEndpointId)));
+  ASSERT_TRUE(advertisement);
+  EXPECT_EQ(kDeviceName, advertisement->device_name());
+  EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
+            advertisement->device_type());
+  auto& test_metadata_key = GetNearbyShareTestEncryptedMetadataKey();
+  EXPECT_EQ(test_metadata_key.salt(), advertisement->salt());
+  EXPECT_EQ(test_metadata_key.encrypted_key(),
+            advertisement->encrypted_metadata_key());
+
+  PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
+  FinishOutgoingTransfer(transfer_callback, target, info);
+
+  // Make sure ARC cleanup is called after transfer completes.
+  EXPECT_TRUE(arc_session.CleanupCallbackCalled());
+
+  // We should not have called disconnect yet as we want to wait for 1 minute to
+  // make sure all outgoing packets have been sent properly.
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
+
+  // Forward time until we send the disconnect request to Nearby Connections.
+  task_environment_.FastForwardBy(kOutgoingDisconnectionDelay);
+
+  // Expect to be disconnected now.
+  EXPECT_FALSE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
+
+  service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
+}
+
+TEST_F(NearbySharingServiceImplTest, ShutdownCallsObserversWithArcCallback) {
+  TestObserver observer(service_.get());
+  FakeArcNearbyShareSession arc_session;
+
+  service_->SetArcTransferCleanupCallback(
+      base::BindOnce(&FakeArcNearbyShareSession::OnCleanupCallbackStub,
+                     base::Unretained(&arc_session)));
+
+  EXPECT_FALSE(arc_session.CleanupCallbackCalled());
+  EXPECT_FALSE(observer.shutdown_called_);
+
+  service_->Shutdown();
+
+  EXPECT_TRUE(observer.shutdown_called_);
+  EXPECT_TRUE(arc_session.CleanupCallbackCalled());
 
   // Prevent a double shutdown.
   service_.reset();

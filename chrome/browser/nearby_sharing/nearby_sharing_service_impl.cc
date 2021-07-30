@@ -414,6 +414,13 @@ void NearbySharingServiceImpl::Shutdown() {
 
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   on_network_changed_delay_timer_.Stop();
+
+  if (arc_transfer_cleanup_callback_) {
+    // Cleanup files / session in the case where the user started ARC Nearby
+    // Share but did not take further action (i.e. cancel, next, etc.) prior
+    // to shutdown.
+    std::move(arc_transfer_cleanup_callback_).Run();
+  }
 }
 
 void NearbySharingServiceImpl::AddObserver(
@@ -945,6 +952,26 @@ void NearbySharingServiceImpl::OpenURL(GURL url) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
   chrome::AddSelectedTabWithURL(displayer.browser(), url,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+}
+
+void NearbySharingServiceImpl::SetArcTransferCleanupCallback(
+    base::OnceCallback<void()> callback) {
+  // In the case where multiple Nearby Share sessions are started, successive
+  // Nearby Share bubbles shown will prevent the user from sharing while the
+  // initial bubble is still active. For the successive bubble(s), we want to
+  // make sure only the original cleanup callback is valid.
+  // Also in the following case:
+  // 1. CrOS starts a receive transfer.
+  // 2. ARC starts a send transfer and |arc_transfer_cleanup_callback_| is set
+  //    erroneously if |is_transferring_| check is missing.
+  // As multiple transfers cannot occur at the same time, a "Can't Share" error
+  // will occur. When the transfer in [1] finishes and another ARC Nearby Share
+  // session starts, the |arc_transfer_cleanup_callback_| can't be set if a
+  // value is already set to ensure all clean up is performed. Hence, check if
+  // not |is_transferring_| before setting |arc_transfer_cleanup_callback_|.
+  if (!is_transferring_ && arc_transfer_cleanup_callback_.is_null()) {
+    arc_transfer_cleanup_callback_ = std::move(callback);
+  }
 }
 
 NearbyNotificationDelegate* NearbySharingServiceImpl::GetNotificationDelegate(
@@ -2288,6 +2315,13 @@ void NearbySharingServiceImpl::OnTransferComplete() {
   is_receiving_files_ = false;
   is_transferring_ = false;
   is_sending_files_ = false;
+
+  // Cleanup ARC session/files used during send transfer since reading file
+  // descriptor(s) are completed at this point even though there could be
+  // Nearby Connection frames cached that are not yet sent to the remote device.
+  if (was_sending_files && arc_transfer_cleanup_callback_) {
+    std::move(arc_transfer_cleanup_callback_).Run();
+  }
 
   NS_LOG(VERBOSE) << __func__
                   << ": NearbySharing state change transfer finished";

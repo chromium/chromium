@@ -88,21 +88,25 @@ void SharesheetService::CloseBubble(gfx::NativeWindow native_window,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void SharesheetService::ShowNearbyShareBubble(
+void SharesheetService::ShowNearbyShareBubbleForArc(
     gfx::NativeWindow native_window,
     apps::mojom::IntentPtr intent,
     SharesheetMetrics::LaunchSource source,
-    sharesheet::DeliveredCallback delivered_callback,
-    sharesheet::CloseCallback close_callback) {
+    DeliveredCallback delivered_callback,
+    CloseCallback close_callback,
+    ActionCleanupCallback action_cleanup_callback) {
   DCHECK(intent->action == apps_util::kIntentActionSend ||
          intent->action == apps_util::kIntentActionSendMultiple);
 
   ShareAction* share_action = sharesheet_action_cache_->GetActionFromName(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));
-  if (!share_action) {
+  if (!share_action || !share_action->ShouldShowAction(
+                           intent, false /*contains_google_document=*/)) {
     std::move(delivered_callback).Run(SharesheetResult::kCancel);
     return;
   }
+  share_action->SetActionCleanupCallbackForArc(
+      std::move(action_cleanup_callback));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
 
   auto* sharesheet_service_delegate = GetOrCreateDelegate(native_window);

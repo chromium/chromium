@@ -161,6 +161,10 @@ class NearbySharingService : public KeyedService {
   // Opens an url target on a browser instance.
   virtual void OpenURL(GURL url) = 0;
 
+  // Sets a cleanup callback to be called once done with transfer for ARC.
+  virtual void SetArcTransferCleanupCallback(
+      base::OnceCallback<void()> callback) = 0;
+
   // Gets a delegate to handle events for |notification_id| or nullptr.
   virtual NearbyNotificationDelegate* GetNotificationDelegate(
       const std::string& notification_id) = 0;

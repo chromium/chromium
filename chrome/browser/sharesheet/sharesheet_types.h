@@ -77,6 +77,7 @@ struct TargetInfo {
 using DeliveredCallback = base::OnceCallback<void(SharesheetResult success)>;
 using CloseCallback =
     base::OnceCallback<void(views::Widget::ClosedReason reason)>;
+using ActionCleanupCallback = base::OnceCallback<void()>;
 
 }  // namespace sharesheet
 

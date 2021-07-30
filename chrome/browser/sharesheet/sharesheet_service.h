@@ -79,12 +79,13 @@ class SharesheetService : public KeyedService {
   void CloseBubble(gfx::NativeWindow native_window, SharesheetResult result);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Skips the generic Sharesheet bubble and directly displays the
-  // NearbyShare bubble dialog.
-  void ShowNearbyShareBubble(gfx::NativeWindow native_window,
-                             apps::mojom::IntentPtr intent,
-                             SharesheetMetrics::LaunchSource source,
-                             sharesheet::DeliveredCallback delivered_callback,
-                             sharesheet::CloseCallback close_callback);
+  // NearbyShare bubble dialog for ARC.
+  void ShowNearbyShareBubbleForArc(gfx::NativeWindow native_window,
+                                   apps::mojom::IntentPtr intent,
+                                   SharesheetMetrics::LaunchSource source,
+                                   DeliveredCallback delivered_callback,
+                                   CloseCallback close_callback,
+                                   ActionCleanupCallback cleanup_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnBubbleClosed(gfx::NativeWindow native_window,
                       const std::u16string& active_action);
