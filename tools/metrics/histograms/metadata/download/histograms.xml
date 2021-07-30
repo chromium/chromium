@@ -538,6 +538,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Network connection type when starting a new download.</summary>
 </histogram>
 
+<histogram name="Download.Notification.Suppressed" enum="BooleanSuppressed"
+    expires_after="2022-7-27">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records each time a notification for a download is suppressed. Note that a
+    single download can experience multiple instances of notification
+    suppression during its lifetime. This histogram is only emitted for Ash
+    Chrome builds.
+  </summary>
+</histogram>
+
 <histogram name="Download.OpenDownloads.PerProfileType"
     enum="BrowserProfileType" expires_after="2021-12-31">
   <owner>sideyilmaz@chromium.org</owner>

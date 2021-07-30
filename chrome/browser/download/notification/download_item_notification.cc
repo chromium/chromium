@@ -447,16 +447,27 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
                                                       bool force_pop_up) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  const bool was_suppressed = suppressed_;
+
   // When holding space in-progress downloads integration is enabled,
   // download in-progress notifications should be suppressed so long as they
   // do not `force_pop_up`, such as is done in the case of dangerous or mixed
-  // content downloads.
-  suppressed_ =
-      display && !force_pop_up &&
-      ash::features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled() &&
-      item_->GetState() == download::DownloadItem::IN_PROGRESS;
+  // content downloads. Note that download notifications associated with an
+  // incognito profile are only suppressed if holding space incognito profile
+  // integration is also enabled.
+  if (!item_->profile()->IsIncognitoProfile() ||
+      ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
+    suppressed_ =
+        display && !force_pop_up &&
+        ash::features::IsHoldingSpaceInProgressDownloadsIntegrationEnabled() &&
+        item_->GetState() == download::DownloadItem::IN_PROGRESS;
+  } else {
+    suppressed_ = false;
+  }
 
   if (suppressed_) {
+    if (!was_suppressed)
+      RecordDownloadNotificationSuppressed();
     CloseNotification();
     return;
   }

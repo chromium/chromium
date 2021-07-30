@@ -176,4 +176,9 @@ void RecordDownloadPromptStatus(DownloadPromptStatus status);
 void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status);
 #endif  // OS_ANDROID
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Records that a notification for a download was suppressed.
+void RecordDownloadNotificationSuppressed();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_

@@ -1196,7 +1196,10 @@ void DownloadItemImpl::OnDownloadScheduleChanged(
 }
 
 void DownloadItemImpl::SetOpenWhenComplete(bool open) {
-  open_when_complete_ = open;
+  if (open_when_complete_ != open) {
+    open_when_complete_ = open;
+    UpdateObservers();
+  }
 }
 
 void DownloadItemImpl::SetOpened(bool opened) {
