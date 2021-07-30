@@ -23,9 +23,14 @@ namespace subtle {
 
 // Override the return value of Time::Now and Time::NowFromSystemTime /
 // TimeTicks::Now / ThreadTicks::Now to emulate time, e.g. for tests or to
-// modify progression of time. Note that the override should be set while
+// modify progression of time. It is recommended that the override be set while
 // single-threaded and before the first call to Now() to avoid threading issues
-// and inconsistencies in returned values. Nested overrides are not allowed.
+// and inconsistencies in returned values. Overriding time while other threads
+// are running is very subtle and should be reserved for developer only use
+// cases (e.g. virtual time in devtools) where any flakiness caused by a racy
+// time update isn't surprising. Instantiating a ScopedTimeClockOverrides while
+// other threads are running might break their expectation that TimeTicks and
+// ThreadTicks increase monotonically. Nested overrides are not allowed.
 class BASE_EXPORT ScopedTimeClockOverrides {
  public:
   // Pass |nullptr| for any override if it shouldn't be overriden.
@@ -71,10 +76,10 @@ namespace internal {
 // avoiding the indirection via the NowIgnoringOverride functions. Note that the
 // pointers can be overridden and later reset to the NowIgnoringOverride
 // functions by ScopedTimeClockOverrides.
-extern TimeNowFunction g_time_now_function;
-extern TimeNowFunction g_time_now_from_system_time_function;
-extern TimeTicksNowFunction g_time_ticks_now_function;
-extern ThreadTicksNowFunction g_thread_ticks_now_function;
+extern std::atomic<TimeNowFunction> g_time_now_function;
+extern std::atomic<TimeNowFunction> g_time_now_from_system_time_function;
+extern std::atomic<TimeTicksNowFunction> g_time_ticks_now_function;
+extern std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function;
 
 }  // namespace internal
 

@@ -15,7 +15,12 @@ namespace scheduler {
 class SchedulerHelper;
 
 // A time domain that runs tasks sequentially in time order but doesn't sleep
-// between delayed tasks.
+// between delayed tasks. Because AutoAdvancingVirtualTimeDomain may override
+// Time/TimeTicks in a multi-threaded context, it must outlive any thread that
+// may call Time::Now() or TimeTicks::Now(). In practice, this means
+// AutoAdvancingVirtualTimeDomain can never be destroyed in production and acts
+// as a one-way switch. In tests, it should only be destroyed after all threads
+// have been joined.
 //
 // KEY: A-E are delayed tasks
 // |    A   B C  D           E  (Execution with RealTimeDomain)

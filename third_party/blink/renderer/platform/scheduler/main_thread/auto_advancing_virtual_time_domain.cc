@@ -30,8 +30,11 @@ AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
   DCHECK_EQ(AutoAdvancingVirtualTimeDomain::g_time_domain_, nullptr);
   AutoAdvancingVirtualTimeDomain::g_time_domain_ = this;
 
-  // GetVirtualTime / GetVirtualTimeTicks access g_time_domain_.
-  std::atomic_thread_fence(std::memory_order_seq_cst);
+  // GetVirtualTime / GetVirtualTimeTicks access |g_time_domain_|. Ensure that
+  // the write of |g_time_domain_| above propagates before the overrides to
+  // GetVirtualTime / GetVirtualTimeTicks are put in place below, by
+  // preventing reordering via a release fence.
+  std::atomic_thread_fence(std::memory_order_release);
 
   if (policy == BaseTimeOverridePolicy::OVERRIDE) {
     time_overrides_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
@@ -46,10 +49,6 @@ AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
   helper_->RemoveTaskObserver(this);
 
   time_overrides_.reset();
-
-  // GetVirtualTime / GetVirtualTimeTicks (the functions we may have
-  // temporariliy installed in the constructor) access g_time_domain_.
-  std::atomic_thread_fence(std::memory_order_seq_cst);
 
   DCHECK_EQ(AutoAdvancingVirtualTimeDomain::g_time_domain_, this);
   AutoAdvancingVirtualTimeDomain::g_time_domain_ = nullptr;
@@ -188,12 +187,22 @@ AutoAdvancingVirtualTimeDomain* AutoAdvancingVirtualTimeDomain::g_time_domain_ =
 
 // static
 base::TimeTicks AutoAdvancingVirtualTimeDomain::GetVirtualTimeTicks() {
+  // ScopedTimeClockOverrides sets the override to GetVirtualTimeTicks() as a
+  // relaxed atomic operation. To ensure that the read of |g_time_domain_| is
+  // not reordered with the read of the override, place an acquire fence before
+  // loading |g_time_domain_|.
+  std::atomic_thread_fence(std::memory_order_acquire);
   DCHECK(AutoAdvancingVirtualTimeDomain::g_time_domain_);
   return AutoAdvancingVirtualTimeDomain::g_time_domain_->Now();
 }
 
 // static
 base::Time AutoAdvancingVirtualTimeDomain::GetVirtualTime() {
+  // ScopedTimeClockOverrides sets the override to GetVirtualTimeTicks() as a
+  // relaxed atomic operation. To ensure that the read of |g_time_domain_| is
+  // not reordered with the read of the override, place an acquire fence before
+  // loading |g_time_domain_|.
+  std::atomic_thread_fence(std::memory_order_acquire);
   DCHECK(AutoAdvancingVirtualTimeDomain::g_time_domain_);
   return AutoAdvancingVirtualTimeDomain::g_time_domain_->Date();
 }

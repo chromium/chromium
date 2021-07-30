@@ -48,6 +48,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -507,8 +508,8 @@ TimeTicks InitialNowFunction();
 
 // See "threading notes" in InitializeNowFunctionPointer() for details on how
 // concurrent reads/writes to these globals has been made safe.
-TimeTicksNowFunction g_time_ticks_now_ignoring_override_function =
-    &InitialNowFunction;
+std::atomic<TimeTicksNowFunction> g_time_ticks_now_ignoring_override_function{
+    &InitialNowFunction};
 int64_t g_qpc_ticks_per_second = 0;
 
 TimeDelta QPCValueToTimeDelta(LONGLONG qpc_value) {
@@ -561,8 +562,9 @@ void InitializeNowFunctionPointer() {
 
   // Threading note 1: In an unlikely race condition, it's possible for two or
   // more threads to enter InitializeNowFunctionPointer() in parallel. This is
-  // not a problem since all threads should end up writing out the same values
-  // to the global variables.
+  // not a problem since all threads end up writing out the same values
+  // to the global variables, and those variable being atomic are safe to read
+  // from other threads.
   //
   // Threading note 2: A release fence is placed here to ensure, from the
   // perspective of other threads using the function pointers, that the
@@ -571,18 +573,21 @@ void InitializeNowFunctionPointer() {
   g_qpc_ticks_per_second = ticks_per_sec.QuadPart;
   std::atomic_thread_fence(std::memory_order_release);
   // Also set g_time_ticks_now_function to avoid the additional indirection via
-  // TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now(). But
-  // g_time_ticks_now_function may have already be overridden.
-  if (internal::g_time_ticks_now_function ==
-      &subtle::TimeTicksNowIgnoringOverride) {
-    internal::g_time_ticks_now_function = now_function;
-  }
-  g_time_ticks_now_ignoring_override_function = now_function;
+  // TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now(), only
+  // if it wasn't already overridden to a different value. memory_order_relaxed
+  // is sufficient since an explicit fence was inserted above.
+  base::TimeTicksNowFunction initial_time_ticks_now_function =
+      &subtle::TimeTicksNowIgnoringOverride;
+  internal::g_time_ticks_now_function.compare_exchange_strong(
+      initial_time_ticks_now_function, now_function, std::memory_order_relaxed);
+  g_time_ticks_now_ignoring_override_function.store(now_function,
+                                                    std::memory_order_relaxed);
 }
 
 TimeTicks InitialNowFunction() {
   InitializeNowFunctionPointer();
-  return g_time_ticks_now_ignoring_override_function();
+  return g_time_ticks_now_ignoring_override_function.load(
+      std::memory_order_relaxed)();
 }
 
 }  // namespace
@@ -598,7 +603,8 @@ TimeTicks::TickFunctionType TimeTicks::SetMockTickFunction(
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
-  return g_time_ticks_now_ignoring_override_function();
+  return g_time_ticks_now_ignoring_override_function.load(
+      std::memory_order_relaxed)();
 }
 }  // namespace subtle
 
