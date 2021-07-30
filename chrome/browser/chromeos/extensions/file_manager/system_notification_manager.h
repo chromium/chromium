@@ -129,6 +129,12 @@ class SystemNotificationManager {
                                         absl::optional<int> button_index);
 
   /**
+   * Click handler for the progress notification.
+   */
+  void HandleProgressClick(const std::string& notification_id,
+                           absl::optional<int> button_index);
+
+  /**
    * Makes a notification instance for removable devices.
    */
   std::unique_ptr<message_center::Notification> MakeRemovableNotification(

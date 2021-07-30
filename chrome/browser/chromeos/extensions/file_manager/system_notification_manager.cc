@@ -9,14 +9,47 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+
+namespace {
+
+void CancelCopyOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    storage::FileSystemOperationRunner::OperationID operation_id) {
+  file_system_context->operation_runner()->Cancel(
+      operation_id, base::BindOnce([](base::File::Error error) {
+        DLOG_IF(WARNING, error != base::File::FILE_OK)
+            << "Failed to cancel copy: " << error;
+      }));
+}
+
+constexpr char kSwaFileOperationPrefix[] = "swa-file-operation-";
+
+bool NotificationIdToOperationId(
+    const std::string& notification_id,
+    storage::FileSystemOperationRunner::OperationID* operation_id) {
+  *operation_id = 0;
+  std::string id_string;
+  if (base::RemoveChars(notification_id, kSwaFileOperationPrefix, &id_string)) {
+    if (base::StringToUint64(id_string, operation_id)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
 
 namespace file_manager {
 
@@ -47,6 +80,22 @@ SystemNotificationManager::CreateNotification(
       message_center::SystemNotificationWarningLevel::NORMAL);
 }
 
+void SystemNotificationManager::HandleProgressClick(
+    const std::string& notification_id,
+    absl::optional<int> button_index) {
+  if (button_index) {
+    // Cancel the copy operation.
+    scoped_refptr<storage::FileSystemContext> file_system_context =
+        util::GetFileManagerFileSystemContext(profile_);
+    storage::FileSystemOperationRunner::OperationID operation_id;
+    if (NotificationIdToOperationId(notification_id, &operation_id)) {
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&CancelCopyOnIOThread, file_system_context,
+                                    operation_id));
+    }
+  }
+}
+
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::CreateProgressNotification(
     const std::string& notification_id,
@@ -62,7 +111,7 @@ SystemNotificationManager::CreateProgressNotification(
       message, std::u16string(), GURL(), message_center::NotifierId(),
       *rich_data.get(),
       new message_center::HandleNotificationClickDelegate(
-          base::BindRepeating(&SystemNotificationManager::Dismiss,
+          base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
                               weak_ptr_factory_.GetWeakPtr(), notification_id)),
       kNotificationGoogleIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
@@ -308,8 +357,6 @@ void SystemNotificationManager::HandleCopyStart(
   }
 }
 
-const char* kSwaFileOperationPrefix = "swa-file-operation-";
-
 void SystemNotificationManager::HandleCopyEvent(
     int copy_id,
     file_manager_private::CopyOrMoveProgressStatus& status) {
@@ -346,6 +393,8 @@ void SystemNotificationManager::HandleCopyEvent(
   switch (status.type) {
     case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_BEGIN:
       notification = CreateProgressNotification(id, title, message, 0);
+      notification->set_buttons({message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
       break;
     case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_PROGRESS:
       if (copy_operation != required_copy_space_.end()) {
@@ -355,6 +404,8 @@ void SystemNotificationManager::HandleCopyEvent(
         }
       }
       notification = CreateProgressNotification(id, title, message, progress);
+      notification->set_buttons({message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL))});
       break;
     case file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_END_COPY:
       notification = CreateProgressNotification(id, title, message, 100);
