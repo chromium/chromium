@@ -19,7 +19,6 @@ import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
-import org.chromium.components.signin.ProfileDataSource;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -36,8 +35,6 @@ import java.util.UUID;
  * (including confirming them), and handling of dummy auth tokens.
  */
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
-    private static final String TAG = "FakeAccountManager";
-
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
@@ -46,12 +43,6 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     public FakeAccountManagerDelegate() {
         mObserver = null;
-    }
-
-    @Nullable
-    @Override
-    public ProfileDataSource getProfileDataSource() {
-        return null;
     }
 
     @Nullable
