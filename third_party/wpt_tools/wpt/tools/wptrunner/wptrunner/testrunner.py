@@ -633,6 +633,17 @@ class TestRunnerManager(threading.Thread):
                                     known_intermittent=known_intermittent,
                                     stack=result.stack)
 
+        expected = test.expected()
+        known_intermittent = test.known_intermittent()
+        status = file_result.status
+
+        if self.browser.check_crash(test.id) and status != "CRASH":
+            if test.test_type == "crashtest" or status == "EXTERNAL-TIMEOUT":
+                self.logger.info("Found a crash dump file; changing status to CRASH")
+                status = "CRASH"
+            else:
+                self.logger.warning("Found a crash dump; should change status from %s to CRASH but this causes instability" % (status,))
+
         # We have a couple of status codes that are used internally, but not exposed to the
         # user. These are used to indicate that some possibly-broken state was reached
         # and we should restart the runner before the next test.
@@ -641,16 +652,7 @@ class TestRunnerManager(threading.Thread):
         # because the test didn't return a result after reaching the test-internal timeout
         status_subns = {"INTERNAL-ERROR": "ERROR",
                         "EXTERNAL-TIMEOUT": "TIMEOUT"}
-        expected = test.expected()
-        known_intermittent = test.known_intermittent()
-        status = status_subns.get(file_result.status, file_result.status)
-
-        if self.browser.check_crash(test.id) and status != "CRASH":
-            if test.test_type == "crashtest":
-                self.logger.info("Found a crash dump file; changing status to CRASH")
-                status = "CRASH"
-            else:
-                self.logger.warning("Found a crash dump; should change status from %s to CRASH but this causes instability" % (status,))
+        status = status_subns.get(status, status)
 
         self.test_count += 1
         is_unexpected = expected != status and status not in known_intermittent
