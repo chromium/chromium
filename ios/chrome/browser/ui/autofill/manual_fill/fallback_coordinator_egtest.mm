@@ -210,11 +210,9 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
     // Dismissing the popover by tapping on the webView, then tapping on the
     // form element below in quick succession seems to end up dismissing the
     // keyboard on iOS15. This may be because the state element is still
-    // focused. Instead, force the element to lose focus with a long press.
+    // focused. Instead, wait a moment for the focus to be dismissed.
     if (base::ios::IsRunningOnIOS15OrLater()) {
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-          performAction:grey_longPressAtPointWithDuration(CGPointMake(20, 0),
-                                                          1)];
+      base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSeconds(1));
     }
   }
 
