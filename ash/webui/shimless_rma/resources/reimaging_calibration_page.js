@@ -8,6 +8,7 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
@@ -15,14 +16,12 @@ import {CalibrationComponent, CalibrationObserverInterface, CalibrationObserverR
 
 /**
  * @fileoverview
- * 'reimaging-accelerometer-calibration-page' is for recalibration of the
- * accelerometer during the reimaging process.
- * TODO(joonbug): when needed, generalize this for different components.
+ * 'reimaging-calibration-page' is for recalibration of the
+ * various components during the reimaging process.
  */
-export class ReimagingAccelerometerCalibrationPageElement extends
-    PolymerElement {
+export class ReimagingCalibrationPageElement extends PolymerElement {
   static get is() {
-    return 'reimaging-accelerometer-calibration-page';
+    return 'reimaging-calibration-page';
   }
 
   static get template() {
@@ -31,6 +30,12 @@ export class ReimagingAccelerometerCalibrationPageElement extends
 
   static get properties() {
     return {
+      /** @type {CalibrationComponent} */
+      repairedComponent: {
+        type: Object,
+        value: null,
+      },
+
       /** @private {ShimlessRmaServiceInterface} */
       shimlessRmaService_: {
         type: Object,
@@ -63,6 +68,8 @@ export class ReimagingAccelerometerCalibrationPageElement extends
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
+    assert(this.repairedComponent);
+
     if (!this.calibrationObserverReceiver_) {
       this.observeCalibrationProgress_();
       return Promise.reject();
@@ -80,7 +87,7 @@ export class ReimagingAccelerometerCalibrationPageElement extends
    * @param {number} progress
    */
   onCalibrationUpdated(component, progress) {
-    if (progress === 100) {
+    if (this.repairedComponent === component && progress === 100) {
       this.calibrationComplete_ = true;
     }
   }
@@ -96,5 +103,4 @@ export class ReimagingAccelerometerCalibrationPageElement extends
 };
 
 customElements.define(
-    ReimagingAccelerometerCalibrationPageElement.is,
-    ReimagingAccelerometerCalibrationPageElement);
+    ReimagingCalibrationPageElement.is, ReimagingCalibrationPageElement);

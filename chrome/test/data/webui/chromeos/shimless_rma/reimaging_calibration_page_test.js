@@ -5,14 +5,14 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingAccelerometerCalibrationPageElement} from 'chrome://shimless-rma/reimaging_accelerometer_calibration_page.js';
+import {ReimagingCalibrationPageElement} from 'chrome://shimless-rma/reimaging_calibration_page.js';
 import {CalibrationComponent} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
-export function reimagingAccelerometerCalibrationPageTest() {
-  /** @type {?ReimagingAccelerometerCalibrationPageElement} */
+export function reimagingCalibrationPageTest() {
+  /** @type {?ReimagingCalibrationPageElement} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -35,20 +35,22 @@ export function reimagingAccelerometerCalibrationPageTest() {
 
   /**
    * @return {!Promise}
+   * @param {!CalibrationComponent} repairedComponent
    */
-  function initializeCalibrationPage() {
+  function initializeCalibrationPage(repairedComponent) {
     assertFalse(!!component);
 
-    component = /** @type {!ReimagingAccelerometerCalibrationPageElement} */ (
-        document.createElement('reimaging-accelerometer-calibration-page'));
+    component = /** @type {!ReimagingCalibrationPageElement} */ (
+        document.createElement('reimaging-calibration-page'));
     assertTrue(!!component);
+    component.repairedComponent = repairedComponent;
     document.body.appendChild(component);
 
     return flushTasks();
   }
 
   test('Initializes', async () => {
-    await initializeCalibrationPage();
+    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
     const preCalibration =
         component.shadowRoot.querySelector('#preCalibration');
     const Calibration = component.shadowRoot.querySelector('#calibration');
@@ -57,7 +59,7 @@ export function reimagingAccelerometerCalibrationPageTest() {
   });
 
   test('NextButtonTriggersCalibration', async () => {
-    await initializeCalibrationPage();
+    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
 
     const preCalibration =
@@ -68,7 +70,7 @@ export function reimagingAccelerometerCalibrationPageTest() {
   });
 
   test('CalibrationComplete', async () => {
-    await initializeCalibrationPage();
+    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 
@@ -87,7 +89,7 @@ export function reimagingAccelerometerCalibrationPageTest() {
   });
 
   test('CalibrationInProgress', async () => {
-    await initializeCalibrationPage();
+    await initializeCalibrationPage(CalibrationComponent.kAccelerometer);
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 
