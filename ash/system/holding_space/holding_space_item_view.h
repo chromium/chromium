@@ -97,8 +97,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   // NOTE: This view may outlive `delegate_` and/or `item_` during destruction
   // since the widget is closed asynchronously and the model is updated prior
   // to animation completion.
-  HoldingSpaceItemViewDelegate* delegate_;
-  const HoldingSpaceItem* const item_;
+  HoldingSpaceItemViewDelegate* delegate_ = nullptr;
+  const HoldingSpaceItem* item_ = nullptr;
 
   // Cache the id of the associated holding space item so that it can be
   // accessed even after `item_` has been destroyed. Note that `item_` may be
@@ -115,6 +115,9 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
 
   // Whether or not this view is selected.
   bool selected_ = false;
+
+  // Subscription to be notified of `item_` deletion.
+  base::RepeatingClosureList::Subscription item_deletion_subscription_;
 
   // Subscription to be notified of changes to `delegate_''s selection UI.
   base::RepeatingClosureList::Subscription selection_ui_changed_subscription_;

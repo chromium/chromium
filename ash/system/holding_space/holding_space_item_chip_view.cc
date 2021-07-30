@@ -93,7 +93,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
           RoundedImageView::Alignment::kLeading));
   image_->SetID(kHoldingSpaceItemImageId);
 
-  // Subscribe to be notified of changes to `item_`'s image.
+  // Subscribe to be notified of changes to `item`'s image.
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
@@ -204,6 +204,11 @@ void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   image_->SetImage(item()->image().GetImageSkia(
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize),
       /*dark_background=*/AshColorProvider::Get()->IsDarkModeEnabled()));

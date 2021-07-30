@@ -88,6 +88,12 @@ HoldingSpaceItemView::HoldingSpaceItemView(
     HoldingSpaceItemViewDelegate* delegate,
     const HoldingSpaceItem* item)
     : delegate_(delegate), item_(item), item_id_(item->id()) {
+  // Subscribe to be notified of `item_` deletion. Note that it is safe to use a
+  // raw pointer here since `this` owns the callback.
+  item_deletion_subscription_ = item_->AddDeletionCallback(base::BindRepeating(
+      [](HoldingSpaceItemView* view) { view->item_ = nullptr; },
+      base::Unretained(this)));
+
   model_observer_.Observe(HoldingSpaceController::Get()->model());
 
   SetProperty(kIsHoldingSpaceItemViewProperty, true);
@@ -359,6 +365,11 @@ void HoldingSpaceItemView::OnPaintSelect(gfx::Canvas* canvas, gfx::Size size) {
 }
 
 void HoldingSpaceItemView::OnPinPressed() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   const bool is_item_pinned =
       HoldingSpaceController::Get()->model()->ContainsItem(
           HoldingSpaceItem::Type::kPinnedFile, item()->file_path());
@@ -375,6 +386,11 @@ void HoldingSpaceItemView::OnPinPressed() {
 }
 
 void HoldingSpaceItemView::UpdatePin() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
   if (!IsMouseHovered()) {
     pin_->SetVisible(false);
     OnPinVisibilityChanged(false);
