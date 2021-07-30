@@ -5,8 +5,6 @@
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/common/debug_utils.h"
@@ -244,13 +242,8 @@ void BackForwardCacheCanStoreDocumentResult::No(
           BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures ||
       reason == BackForwardCacheMetrics::NotRestoredReason::
                     kDisableForRenderFrameHostCalled) {
-    // This function should not be called if blocklisted features are there or
-    // DisableForRenderFrameHost is called. Log the reason here.
-    SCOPED_CRASH_KEY_STRING256("NotRestoredReason", "reason",
-                               NotRestoredReasonToString(reason));
     CaptureTraceForNavigationDebugScenario(
         DebugScenario::kDebugBackForwardCacheMetricsMismatch);
-    base::debug::DumpWithoutCrashing();
   }
   AddNotStoredReason(reason);
 }

@@ -4,8 +4,6 @@
 
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
@@ -152,12 +150,8 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     if (served_from_bfcache_not_match ||
         browsing_instance_not_swapped_not_match || disable_for_rfh_not_match ||
         blocklisted_features_not_match) {
-      // Record if logged reasons and the situations do not match.
-      SCOPED_CRASH_KEY_STRING256("PageStoreResult", "page_store_result_",
-                                 page_store_result_->ToString());
       CaptureTraceForNavigationDebugScenario(
           DebugScenario::kDebugBackForwardCacheMetricsMismatch);
-      base::debug::DumpWithoutCrashing();
     }
 
     TRACE_EVENT1("navigation", "HistoryNavigationOutcome", "outcome",
