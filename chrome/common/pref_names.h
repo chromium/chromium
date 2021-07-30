@@ -1036,6 +1036,8 @@ extern const char kSitePerProcess[];
 
 extern const char kCrossOriginWebAssemblyModuleSharingEnabled[];
 
+extern const char kDisplayCapturePermissionsPolicyEnabled[];
+
 #if !defined(OS_ANDROID)
 extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
 extern const char kAutoplayAllowed[];

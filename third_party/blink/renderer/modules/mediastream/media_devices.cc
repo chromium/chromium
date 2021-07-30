@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
@@ -203,18 +204,26 @@ ScriptPromise MediaDevices::getDisplayMedia(
     return ScriptPromise();
   }
 
-  const bool display_capture_allowed = context->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
-      ReportOptions::kReportOnFailure);
+  // The kDisplayCapturePermissionsPolicyEnabled preference controls whether
+  // the display-capture permissions-policy is applied or skipped.
+  // The kDisplayCapturePermissionsPolicyEnabled preference is translated
+  // into DisplayCapturePermissionsPolicyEnabled RuntimeEnabledFeature.
+  if (RuntimeEnabledFeatures::DisplayCapturePermissionsPolicyEnabled()) {
+    const bool capture_allowed_by_permissions_policy =
+        context->IsFeatureEnabled(
+            mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
+            ReportOptions::kReportOnFailure);
 
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult",
-      display_capture_allowed ? DisplayCapturePolicyResult::kAllowed
-                              : DisplayCapturePolicyResult::kDisallowed);
+    base::UmaHistogramEnumeration(
+        "Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult",
+        capture_allowed_by_permissions_policy
+            ? DisplayCapturePolicyResult::kAllowed
+            : DisplayCapturePolicyResult::kDisallowed);
 
-  if (!display_capture_allowed) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
+    if (!capture_allowed_by_permissions_policy) {
+      exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+      return ScriptPromise();
+    }
   }
 
   return SendUserMediaRequest(script_state,

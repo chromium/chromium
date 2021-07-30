@@ -1208,6 +1208,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
 #endif
   registry->RegisterBooleanPref(
       prefs::kCrossOriginWebAssemblyModuleSharingEnabled, true);
+  registry->RegisterBooleanPref(prefs::kDisplayCapturePermissionsPolicyEnabled,
+                                true);
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
   registry->RegisterBooleanPref(
@@ -2198,6 +2200,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
               prefs::kCrossOriginWebAssemblyModuleSharingEnabled)) {
         command_line->AppendSwitch(
             switches::kCrossOriginWebAssemblyModuleSharingAllowed);
+      }
+
+      if (prefs->GetBoolean(prefs::kDisplayCapturePermissionsPolicyEnabled)) {
+        command_line->AppendSwitch(
+            switches::kDisplayCapturePermissionsPolicyAllowed);
       }
 
       if (prefs->HasPrefPath(prefs::kAllowDinosaurEasterEgg) &&

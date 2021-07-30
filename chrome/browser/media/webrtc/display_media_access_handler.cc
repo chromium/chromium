@@ -152,15 +152,23 @@ void DisplayMediaAccessHandler::HandleRequest(
           blink::mojom::MediaStreamRequestResult::INVALID_STATE, nullptr);
       return;
     }
-    if (!rfh->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kDisplayCapture)) {
-      bad_message::ReceivedBadMessage(
-          rfh->GetProcess(), bad_message::BadMessageReason::
-                                 RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
-      std::move(callback).Run(
-          blink::MediaStreamDevices(),
-          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
-      return;
+
+    // The kDisplayCapturePermissionsPolicyEnabled preference controls whether
+    // the display-capture permissions-policy is applied or skipped.
+    if (profile->GetPrefs()->GetBoolean(
+            prefs::kDisplayCapturePermissionsPolicyEnabled)) {
+      // If the display-capture permissions-policy disallows capture, the render
+      // process was not supposed to send this message.
+      if (!rfh->IsFeatureEnabled(
+              blink::mojom::PermissionsPolicyFeature::kDisplayCapture)) {
+        bad_message::ReceivedBadMessage(
+            rfh->GetProcess(), bad_message::BadMessageReason::
+                                   RFH_DISPLAY_CAPTURE_PERMISSION_MISSING);
+        std::move(callback).Run(
+            blink::MediaStreamDevices(),
+            blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
+        return;
+      }
     }
   }
 

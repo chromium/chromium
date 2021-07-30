@@ -25891,6 +25891,7 @@ Called by update_document_policy_enum.py.-->
   <int value="878" label="CrossOriginWebAssemblyModuleSharingAllowed"/>
   <int value="879"
       label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
+  <int value="880" label="DisplayCapturePermissionsPolicy"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

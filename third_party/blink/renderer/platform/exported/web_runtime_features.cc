@@ -526,6 +526,10 @@ void WebRuntimeFeatures::EnableCrossOriginWebAssemblyModuleSharingAllowed(
       enable);
 }
 
+void WebRuntimeFeatures::EnableDisplayCapturePermissionsPolicy(bool enable) {
+  RuntimeEnabledFeatures::SetDisplayCapturePermissionsPolicyEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableRemotePlaybackAPI(bool enable) {
   RuntimeEnabledFeatures::SetRemotePlaybackEnabled(enable);
 }

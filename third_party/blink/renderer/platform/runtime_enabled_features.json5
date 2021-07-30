@@ -847,6 +847,14 @@
       name: "DisableLayerSquashing",
     },
     {
+      // When on, the display-capture permissions-policy is enforced.
+      // When off, enforcement of this permissions-policy is skipped.
+      // This is driven from the browser process by the Enterprise policy
+      // called "DisplayCapturePermissionsPolicyEnabled".
+      // TODO(crbug.com/1233969): Remove this around m100.
+      name: "DisplayCapturePermissionsPolicy",
+    },
+    {
       name: "DisplayCutoutAPI",
       settable_from_internals: true,
     },

@@ -2881,6 +2881,44 @@
       }
     ]
   },
+  "DisplayCapturePermissionsPolicyEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DisplayCapturePermissionsPolicyEnabled": false
+        },
+        "prefs": {
+          "display_capture_permissions_policy_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisplayCapturePermissionsPolicyEnabled": true
+        },
+        "prefs": {
+          "display_capture_permissions_policy_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "display_capture_permissions_policy_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  },
   "WebDriverOverridesIncompatiblePolicies": {
     "reason_for_missing_test": "Policy was removed"
   },
