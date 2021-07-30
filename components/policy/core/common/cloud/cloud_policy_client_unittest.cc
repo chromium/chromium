@@ -73,6 +73,9 @@ using CertProvisioningResponseError =
 
 namespace em = enterprise_management;
 
+// An enum for PSM execution result values.
+using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
+
 namespace policy {
 
 namespace {
@@ -275,8 +278,14 @@ em::DeviceManagementRequest GetReregistrationRequest() {
   return request;
 }
 
+// Constructs the DeviceManagementRequest with
+// CertificateBasedDeviceRegistrationData.
+// Also, if |psm_execution_result| or |psm_determination_timestamp| has a value,
+// then populate its corresponding PSM field in DeviceRegisterRequest.
 em::DeviceManagementRequest GetCertBasedRegistrationRequest(
-    FakeSigningService* fake_signing_service) {
+    FakeSigningService* fake_signing_service,
+    absl::optional<PsmExecutionResult> psm_execution_result,
+    absl::optional<int64_t> psm_determination_timestamp) {
   em::CertificateBasedDeviceRegistrationData data;
   data.set_certificate_type(em::CertificateBasedDeviceRegistrationData::
                                 ENTERPRISE_ENROLLMENT_CERTIFICATE);
@@ -297,6 +306,12 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
   register_request->set_flavor(
       em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
+  if (psm_determination_timestamp.has_value()) {
+    register_request->set_psm_determination_timestamp_ms(
+        psm_determination_timestamp.value());
+  }
+  if (psm_execution_result.has_value())
+    register_request->set_psm_execution_result(psm_execution_result.value());
 
   em::DeviceManagementRequest request;
 
@@ -768,7 +783,10 @@ TEST_F(CloudPolicyClientTest, RegistrationWithCertificateAndPolicyFetch) {
       DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
       job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetCertBasedRegistrationRequest(&fake_signing_service_)
+            GetCertBasedRegistrationRequest(
+                &fake_signing_service_,
+                /*psm_execution_result=*/absl::nullopt,
+                /*psm_determination_timestamp=*/absl::nullopt)
                 .SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
@@ -1632,6 +1650,61 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
             chrome_os_user_report_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
+
+// A helper class to test all em::DeviceRegisterRequest::PsmExecutionResult enum
+// values.
+class CloudPolicyClientRegisterWithPsmParamsTest
+    : public CloudPolicyClientTest,
+      public testing::WithParamInterface<PsmExecutionResult> {
+ public:
+  PsmExecutionResult GetPsmExecutionResult() const { return GetParam(); }
+};
+
+TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
+       RegistrationWithCertificateAndPsmResult) {
+  const int64_t kExpectedPsmDeterminationTimestamp = 2;
+
+  const em::DeviceManagementResponse policy_response = GetPolicyResponse();
+  const PsmExecutionResult psm_execution_result = GetPsmExecutionResult();
+
+  EXPECT_CALL(device_dmtoken_callback_observer_,
+              OnDeviceDMTokenRequested(
+                  /*user_affiliation_ids=*/std::vector<std::string>()))
+      .WillOnce(Return(kDeviceDMToken));
+  ExpectAndCaptureJob(GetRegistrationResponse());
+  fake_signing_service_.set_success(true);
+  EXPECT_CALL(observer_, OnRegistrationStateChanged);
+  CloudPolicyClient::RegistrationParameters device_attestation(
+      em::DeviceRegisterRequest::DEVICE,
+      em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_ATTESTATION);
+  device_attestation.SetPsmDeterminationTimestamp(
+      kExpectedPsmDeterminationTimestamp);
+  device_attestation.SetPsmExecutionResult(psm_execution_result);
+  client_->RegisterWithCertificate(
+      device_attestation, std::string() /* client_id */, DMAuth::NoAuth(),
+      kEnrollmentCertificate, std::string() /* sub_organization */);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
+      job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            GetCertBasedRegistrationRequest(&fake_signing_service_,
+                                            psm_execution_result,
+                                            kExpectedPsmDeterminationTimestamp)
+                .SerializePartialAsString());
+  EXPECT_TRUE(client_->is_registered());
+  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CloudPolicyClientRegisterWithPsmParams,
+    CloudPolicyClientRegisterWithPsmParamsTest,
+    ::testing::Values(
+        em::DeviceRegisterRequest::PSM_RESULT_UNKNOWN,
+        em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+        em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE,
+        em::DeviceRegisterRequest::PSM_RESULT_ERROR));
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)

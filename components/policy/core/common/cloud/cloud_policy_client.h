@@ -134,6 +134,16 @@ class POLICY_EXPORT CloudPolicyClient {
         enterprise_management::DeviceRegisterRequest::Flavor flavor);
     ~RegistrationParameters();
 
+    // A setter for |psm_execution_result| field.
+    void SetPsmExecutionResult(
+        absl::optional<
+            enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
+            new_psm_result);
+
+    // A setter for |psm_determination_timestamp| field.
+    void SetPsmDeterminationTimestamp(
+        absl::optional<int64_t> new_psm_timestamp);
+
     enterprise_management::DeviceRegisterRequest::Type registration_type;
     enterprise_management::DeviceRegisterRequest::Flavor flavor;
 
@@ -147,6 +157,21 @@ class POLICY_EXPORT CloudPolicyClient {
 
     // Server-backed state keys (used for forced enrollment check).
     std::string current_state_key;
+
+    // The following field is relevant only to Chrome OS.
+    // PSM protocol execution result. Its value will exist if the device
+    // undergoes enrollment and a PSM server-backed state determination was
+    // performed before (on Chrome OS, as encoded in the
+    // `prefs::kEnrollmentPsmResult` pref).
+    absl::optional<
+        enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
+        psm_execution_result;
+
+    // The following field is relevant only to Chrome OS.
+    // PSM protocol determination timestamp. Its value will exist if the device
+    // undergoes enrollment and PSM got executed successfully (on ChromeOS, as
+    // encoded in `prefs::kEnrollmentPsmDeterminationTime` pref).
+    absl::optional<int64_t> psm_determination_timestamp;
   };
 
   // If non-empty, |machine_id|, |machine_model|, |brand_code|,

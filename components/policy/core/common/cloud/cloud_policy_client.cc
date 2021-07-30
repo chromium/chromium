@@ -25,11 +25,15 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/signing_service.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
+
+// An enum for PSM execution result values.
+using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 // The type for variables containing an error from DM Server response.
 using CertProvisioningResponseErrorType =
@@ -130,6 +134,18 @@ CloudPolicyClient::RegistrationParameters::RegistrationParameters(
     : registration_type(registration_type), flavor(flavor) {}
 
 CloudPolicyClient::RegistrationParameters::~RegistrationParameters() = default;
+
+void CloudPolicyClient::RegistrationParameters::SetPsmExecutionResult(
+    absl::optional<
+        enterprise_management::DeviceRegisterRequest::PsmExecutionResult>
+        new_psm_result) {
+  psm_execution_result = new_psm_result;
+}
+
+void CloudPolicyClient::RegistrationParameters::SetPsmDeterminationTimestamp(
+    absl::optional<int64_t> new_psm_timestamp) {
+  psm_determination_timestamp = new_psm_timestamp;
+}
 
 CloudPolicyClient::Observer::~Observer() {}
 
@@ -1625,6 +1641,12 @@ void CloudPolicyClient::CreateDeviceRegisterRequest(
     request->set_requisition(params.requisition);
   if (!params.current_state_key.empty())
     request->set_server_backed_state_key(params.current_state_key);
+  if (params.psm_execution_result.has_value())
+    request->set_psm_execution_result(params.psm_execution_result.value());
+  if (params.psm_determination_timestamp.has_value()) {
+    request->set_psm_determination_timestamp_ms(
+        params.psm_determination_timestamp.value());
+  }
 }
 
 }  // namespace policy

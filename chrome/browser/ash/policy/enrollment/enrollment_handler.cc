@@ -27,6 +27,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -34,6 +35,8 @@
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -41,6 +44,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
+
+// An enum for PSM execution result values.
+using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy {
 
@@ -139,6 +145,57 @@ absl::optional<std::string> ReadFileToOptionalString(
   return result;
 }
 
+// Returns the PSM protocol execution result if prefs::kEnrollmentPsmResult is
+// set, and its value is within the
+// em::DeviceRegisterRequest::PsmExecutionResult enum range. Otherwise,
+// absl::nullopt.
+absl::optional<PsmExecutionResult> GetPsmExecutionResult(
+    const PrefService& local_state) {
+  const PrefService::Preference* has_psm_execution_result_pref =
+      local_state.FindPreference(prefs::kEnrollmentPsmResult);
+
+  if (!has_psm_execution_result_pref ||
+      has_psm_execution_result_pref->IsDefaultValue() ||
+      !has_psm_execution_result_pref->GetValue()->is_int()) {
+    return absl::nullopt;
+  }
+
+  int psm_execution_result =
+      has_psm_execution_result_pref->GetValue()->GetInt();
+
+  // Check if the psm_execution_result is a valid value of
+  // em::DeviceRegisterRequest::PsmExecutionResult enum.
+  if (!em::DeviceRegisterRequest::PsmExecutionResult_IsValid(
+          psm_execution_result))
+    return absl::nullopt;
+
+  // Cast the psm_execution_result integer value to its corresponding enum
+  // entry.
+  return static_cast<PsmExecutionResult>(psm_execution_result);
+}
+
+// Returns the PSM determination timestamp in ms if
+// prefs::kEnrollmentPsmDeterminationTime is set. Otherwise, absl::nullopt.
+absl::optional<int64_t> GetPsmDeterminationTimestamp(
+    const PrefService& local_state) {
+  const PrefService::Preference* has_psm_determination_timestamp_pref =
+      local_state.FindPreference(prefs::kEnrollmentPsmDeterminationTime);
+
+  if (!has_psm_determination_timestamp_pref ||
+      has_psm_determination_timestamp_pref->IsDefaultValue()) {
+    return absl::nullopt;
+  }
+
+  const base::Time psm_determination_timestamp =
+      local_state.GetTime(prefs::kEnrollmentPsmDeterminationTime);
+
+  // The PSM determination timestamp should exist at this stage. Because
+  // we already checked the existence of the pref with non-default value.
+  DCHECK(!psm_determination_timestamp.is_null());
+
+  return psm_determination_timestamp.ToJavaTime();
+}
+
 // Returns binary config which is encrypted by a password that the joining user
 // has to enter.
 std::string GetActiveDirectoryDomainJoinConfig(
@@ -204,6 +261,11 @@ EnrollmentHandler::EnrollmentHandler(
         std::make_unique<CloudPolicyClient::RegistrationParameters>(
             em::DeviceRegisterRequest::DEVICE,
             EnrollmentModeToRegistrationFlavor(enrollment_config.mode));
+    register_params_->SetPsmExecutionResult(
+        GetPsmExecutionResult(*g_browser_process->local_state()));
+    register_params_->SetPsmDeterminationTimestamp(
+        GetPsmDeterminationTimestamp(*g_browser_process->local_state()));
+
     register_params_->requisition = requisition;
   }
 
