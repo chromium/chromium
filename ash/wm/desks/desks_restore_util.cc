@@ -355,6 +355,12 @@ void OverrideClockForTesting(base::Clock* test_clock) {
   g_override_clock_ = test_clock;
 }
 
+void SetPrimaryUserHasUsedDesksRecentlyForTesting(bool value) {
+  PrefService* primary_user_prefs = GetPrimaryUserPrefService();
+  DCHECK(primary_user_prefs);
+  primary_user_prefs->SetBoolean(kUserHasUsedDesksRecently, value);
+}
+
 }  // namespace desks_restore_util
 
 }  // namespace ash

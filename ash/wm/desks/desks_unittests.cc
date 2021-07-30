@@ -5775,17 +5775,8 @@ class PersistentDesksBarTest : public AshTestBase {
     scoped_feature_list_.InitAndEnableFeature(features::kBentoBar);
     AshTestBase::SetUp();
 
-    // Initializing pref `kUserHasUsedDesksRecently` to be true for the tests.
-    base::SimpleTestClock test_clock;
-    base::Time time;
-    auto* desks_controller = DesksController::Get();
-    ASSERT_TRUE(base::Time::FromString("Tue, 27 Jul 2021 00:00:01", &time));
-    test_clock.SetNow(time);
-    desks_restore_util::OverrideClockForTesting(&test_clock);
-    NewDesk();
-    RemoveDesk(desks_controller->desks().back().get());
-    desks_restore_util::OverrideClockForTesting(nullptr);
-    EXPECT_TRUE(desks_restore_util::HasPrimaryUserUsedDesksRecently());
+    desks_restore_util::SetPrimaryUserHasUsedDesksRecentlyForTesting(true);
+    ASSERT_TRUE(desks_restore_util::HasPrimaryUserUsedDesksRecently());
   }
   PersistentDesksBarTest() = default;
   PersistentDesksBarTest(const PersistentDesksBarTest&) = delete;

@@ -51,6 +51,7 @@ const base::Time GetTimeNow();
 ASH_EXPORT int GetDaysFromLocalEpoch();
 
 ASH_EXPORT void OverrideClockForTesting(base::Clock* test_clock);
+ASH_EXPORT void SetPrimaryUserHasUsedDesksRecentlyForTesting(bool value);
 
 }  // namespace desks_restore_util
 
