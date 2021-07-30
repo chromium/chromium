@@ -2164,6 +2164,14 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
         blink::features::kWebAppEnableProtocolHandlers);
   }
 
+  bool AreProtocolHandlersSupported() {
+#if defined(OS_WIN)
+    return base::win::GetVersion() > base::win::Version::WIN7;
+#else
+    return true;
+#endif
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -2217,17 +2225,12 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky on Win7: crbug/1233009.
-#if defined(OS_WIN)
-#define MAYBE_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel \
-  DISABLED_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel
-#else
-#define MAYBE_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel \
-  WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel
-#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    MAYBE_WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
+    WebAppLaunch_WebAppIsNotLaunchedWithProtocolUrlAndDialogCancel) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
 
@@ -2249,17 +2252,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
 }
 
-// Flaky on Win7: crbug/1233009.
-#if defined(OS_WIN)
-#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept \
-  DISABLED_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept
-#else
-#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept \
-  WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept
-#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    MAYBE_WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
+    WebAppLaunch_WebAppIsLaunchedWithProtocolUrlAndDialogAccept) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
 
@@ -2300,17 +2298,12 @@ IN_PROC_BROWSER_TEST_F(
             web_contents->GetVisibleURL());
 }
 
-// Flaky on Win7: crbug/1233009.
-#if defined(OS_WIN)
-#define MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl \
-  DISABLED_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl
-#else
-#define MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl \
-  WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl
-#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    MAYBE_WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
+    WebAppLaunch_WebAppIsNotTranslatedWithUnhandledProtocolUrl) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
   // Register web app as a protocol handler that should *not* handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
@@ -2338,19 +2331,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
 }
 
-// Flaky on Win7: crbug/1233009.
-#if defined(OS_WIN)
-#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref \
-  DISABLED_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref
-#else
-#define MAYBE_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref \
-  WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref
-#endif
 IN_PROC_BROWSER_TEST_F(
     StartupBrowserWebAppProtocolHandlingTest,
-    MAYBE_WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref) {
+    WebAppLaunch_WebAppIsLaunchedWithApprovedProtocolUrlPref) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
+
   // Register web app as a protocol handler that should handle the launch.
   apps::ProtocolHandlerInfo protocol_handler;
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
