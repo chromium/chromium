@@ -78,13 +78,18 @@ suite('NewTabPageModulesModulesTest', () => {
       // Assert.
       const moduleWrappers =
           modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+      const moduleWrapperContainers =
+          modulesElement.shadowRoot.querySelectorAll('.module-container');
       assertEquals(2, moduleWrappers.length);
+      assertEquals(2, moduleWrapperContainers.length);
+      assertNotStyle(moduleWrappers[0], 'display', 'none');
       if (visible) {
-        assertNotStyle(moduleWrappers[0], 'display', 'none');
+        assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
       } else {
-        assertStyle(moduleWrappers[0], 'display', 'none');
+        assertStyle(moduleWrapperContainers[0], 'display', 'none');
       }
-      assertStyle(moduleWrappers[1], 'display', 'none');
+      assertNotStyle(moduleWrappers[1], 'display', 'none');
+      assertStyle(moduleWrapperContainers[1], 'display', 'none');
       const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
       assertEquals(1, metrics.count(`${histogram}.foo`, visible));
       assertEquals(1, metrics.count(`${histogram}.bar`, false));
@@ -112,8 +117,12 @@ suite('NewTabPageModulesModulesTest', () => {
     // Assert.
     const moduleWrappers =
         modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+    const moduleWrapperContainers =
+        modulesElement.shadowRoot.querySelectorAll('.module-container');
     assertEquals(1, moduleWrappers.length);
+    assertEquals(1, moduleWrapperContainers.length);
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
 
     // Act.
@@ -129,7 +138,8 @@ suite('NewTabPageModulesModulesTest', () => {
     }));
 
     // Assert.
-    assertStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertStyle(moduleWrapperContainers[0], 'display', 'none');
     assertTrue($$(modulesElement, '#removeModuleToast').open);
     assertEquals(
         'Foo',
@@ -143,6 +153,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
     // Assert.
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
     assertTrue(restoreCalled);
     assertEquals('foo', handler.getArgs('onRestoreModule')[0]);
@@ -166,8 +177,12 @@ suite('NewTabPageModulesModulesTest', () => {
     // Assert.
     const moduleWrappers =
         modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+    const moduleWrapperContainers =
+        modulesElement.shadowRoot.querySelectorAll('.module-container');
     assertEquals(1, moduleWrappers.length);
+    assertEquals(1, moduleWrapperContainers.length);
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
 
     // Act.
@@ -190,7 +205,8 @@ suite('NewTabPageModulesModulesTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert.
-    assertStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertStyle(moduleWrapperContainers[0], 'display', 'none');
     assertTrue($$(modulesElement, '#removeModuleToast').open);
     assertEquals(
         'Foo',
@@ -212,6 +228,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
     // Assert.
     assertNotStyle(moduleWrappers[0], 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
     assertTrue(restoreCalled);
     assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));

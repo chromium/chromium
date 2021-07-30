@@ -151,10 +151,10 @@ export class ModulesElement extends mixinBehaviors
                */
               (event));
         });
-        moduleWrapper.hidden = this.moduleDisabled_(module.descriptor.id);
 
         const moduleContainer = this.ownerDocument.createElement('div');
         moduleContainer.classList.add('module-container');
+        moduleContainer.hidden = this.moduleDisabled_(module.descriptor.id);
         moduleContainer.appendChild(moduleWrapper);
         this.$.modules.appendChild(moduleContainer);
       });
@@ -297,7 +297,7 @@ export class ModulesElement extends mixinBehaviors
   onRemovedModulesChange_() {
     this.shadowRoot.querySelectorAll('ntp-module-wrapper')
         .forEach(moduleWrapper => {
-          moduleWrapper.hidden =
+          moduleWrapper.parentElement.hidden =
               this.moduleDisabled_(moduleWrapper.module.descriptor.id);
         });
   }
