@@ -69,6 +69,13 @@ if (is_linux || is_chromeos_lacros) {
   ]
 }
 
+if (is_fuchsia) {
+  grit_defines += [
+    "-D",
+    "is_fuchsia",
+  ]
+}
+
 if (toolkit_views) {
   grit_defines += [
     "-D",

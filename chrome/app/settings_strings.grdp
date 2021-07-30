@@ -137,7 +137,7 @@
       Use Classic
     </message>
   </if>
-  <if expr="not is_linux or chromeos or lacros">
+  <if expr="not is_linux or chromeos or lacros or is_fuchsia">
     <message name="IDS_SETTINGS_RESET_TO_DEFAULT_THEME" desc="Name of the control which resets the browser theme back to the default theme.">
       Reset to default
     </message>
