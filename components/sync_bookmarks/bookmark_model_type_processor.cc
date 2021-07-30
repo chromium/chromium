@@ -563,6 +563,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
                           base::Value::FromUniquePtrValue(
                               syncer::EntityMetadataToValue(*metadata)));
   data_dictionary->SetString("modelType", "Bookmarks");
+  data_dictionary->SetBoolean("IS_DIR", node->is_folder());
   all_nodes->Append(std::move(data_dictionary));
 
   int i = 0;
