@@ -22,6 +22,7 @@
 
 @class NSURLRequest;
 @class NSURLResponse;
+class SessionCertificatePolicyCache;
 
 namespace web {
 
@@ -183,6 +184,22 @@ class FakeWebState : public WebState {
   base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
 
   base::WeakPtrFactory<FakeWebState> weak_factory_{this};
+};
+
+// FakeWebState doesn't provide a policy cache; this variant subclass adds one.
+class FakeWebStateWithPolicyCache : public FakeWebState {
+ public:
+  explicit FakeWebStateWithPolicyCache(BrowserState* browser_state);
+
+  ~FakeWebStateWithPolicyCache() override;
+
+  const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
+      const override;
+
+  SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;
+
+ private:
+  std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;
 };
 
 }  // namespace web

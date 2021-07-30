@@ -27,6 +27,7 @@ void BrowserListImpl::Shutdown() {
   for (Browser* browser : incognito_browsers_) {
     browser->RemoveObserver(this);
   }
+  is_shutdown_ = true;
 }
 
 // BrowserList:
@@ -78,6 +79,10 @@ void BrowserListImpl::AddObserver(BrowserListObserver* observer) {
 // Removes an observer from the model.
 void BrowserListImpl::RemoveObserver(BrowserListObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+bool BrowserListImpl::IsShutdown() {
+  return is_shutdown_;
 }
 
 // BrowserObserver

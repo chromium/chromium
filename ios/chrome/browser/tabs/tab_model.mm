@@ -4,65 +4,16 @@
 
 #import "ios/chrome/browser/tabs/tab_model.h"
 
-#include "base/task/cancelable_task_tracker.h"
-#include "base/task/post_task.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
-#include "ios/web/public/security/certificate_policy_cache.h"
-#include "ios/web/public/session/session_certificate_policy_cache.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Updates CRWSessionCertificatePolicyManager's certificate policy cache.
-void UpdateCertificatePolicyCacheFromWebState(
-    const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
-    const web::WebState* web_state) {
-  DCHECK(web_state);
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache(
-      policy_cache);
-}
-
-// Populates the certificate policy cache based on the WebStates of
-// |web_state_list|.
-void RestoreCertificatePolicyCacheFromModel(
-    const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
-    WebStateList* web_state_list) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    UpdateCertificatePolicyCacheFromWebState(
-        policy_cache, web_state_list->GetWebStateAt(index));
-  }
-}
-
-// Scrubs the certificate policy cache of all certificates policies except
-// those for the current entries in |web_state_list|.
-void CleanCertificatePolicyCache(
-    base::CancelableTaskTracker* task_tracker,
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
-    WebStateList* web_state_list) {
-  DCHECK(policy_cache);
-  DCHECK(web_state_list);
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  task_tracker->PostTaskAndReply(
-      task_runner.get(), FROM_HERE,
-      base::BindOnce(&web::CertificatePolicyCache::ClearCertificatePolicies,
-                     policy_cache),
-      base::BindOnce(&RestoreCertificatePolicyCacheFromModel, policy_cache,
-                     base::Unretained(web_state_list)));
-}
-
-}  // anonymous namespace
 
 @interface TabModel () {
   // Weak reference to the underlying shared model implementation.
@@ -74,10 +25,6 @@ void CleanCertificatePolicyCache(
   // Weak reference to the session restoration agent.
   SessionRestorationBrowserAgent* _sessionRestorationBrowserAgent;
 
-  // Used to ensure thread-safety of the certificate policy management code.
-  base::CancelableTaskTracker _clearPoliciesTaskTracker;
-
-  // BrowserState associated with this TabModel.
   ChromeBrowserState* _browserState;
 }
 
@@ -155,7 +102,6 @@ void CleanCertificatePolicyCache(
   }
 
   _webStateList = nullptr;
-  _clearPoliciesTaskTracker.TryCancelAll();
 }
 
 #pragma mark - Notification Handlers
@@ -195,14 +141,6 @@ void CleanCertificatePolicyCache(
 - (void)saveSessionOnBackgroundingOrTermination {
   if (!_browserState)
     return;
-
-  // Evict all the certificate policies except for the current entries of the
-  // active sessions.
-  CleanCertificatePolicyCache(
-      &_clearPoliciesTaskTracker,
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
-      web::BrowserState::GetCertificatePolicyCache(_browserState),
-      _webStateList);
 
   // Normally, the session is saved after some timer expires but since the app
   // is about to be backgrounded or terminated send true to save the session

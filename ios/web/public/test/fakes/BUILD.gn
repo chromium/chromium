@@ -20,6 +20,7 @@ source_set("fakes") {
     "//ios/web/public/security",
     "//ios/web/public/session",
     "//ios/web/public/test:util",
+    "//ios/web/session",
     "//ios/web/test:test_constants",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",

@@ -59,6 +59,9 @@ class BrowserList : public KeyedService {
   // when it is destroyed.
   virtual void RemoveObserver(BrowserListObserver* observer) = 0;
 
+  // true if this service has been shut down.
+  virtual bool IsShutdown() = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BrowserList);
 };

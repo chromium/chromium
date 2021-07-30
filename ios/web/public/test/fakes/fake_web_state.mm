@@ -18,6 +18,7 @@
 #import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
 #include "ui/gfx/image/image.h"
 
@@ -487,6 +488,25 @@ bool FakeWebState::SetSessionStateData(NSData* data) {
 
 NSData* FakeWebState::SessionStateData() {
   return nil;
+}
+
+FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
+    BrowserState* browser_state)
+    : FakeWebState(),
+      certificate_policy_cache_(
+          std::make_unique<web::SessionCertificatePolicyCacheImpl>(
+              browser_state)) {}
+
+FakeWebStateWithPolicyCache::~FakeWebStateWithPolicyCache() {}
+
+const SessionCertificatePolicyCache*
+FakeWebStateWithPolicyCache::GetSessionCertificatePolicyCache() const {
+  return certificate_policy_cache_.get();
+}
+
+SessionCertificatePolicyCache*
+FakeWebStateWithPolicyCache::GetSessionCertificatePolicyCache() {
+  return certificate_policy_cache_.get();
 }
 
 }  // namespace web

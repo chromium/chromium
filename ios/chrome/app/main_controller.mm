@@ -103,6 +103,7 @@
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/certificate_policy_app_agent.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -657,6 +658,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self.appState addAgent:[[EnterpriseAppAgent alloc] init]];
   [self.appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
   [self.appState addAgent:[[FirstRunAppAgent alloc] init]];
+  [self.appState addAgent:[[CertificatePolicyAppAgent alloc] init]];
 }
 
 #pragma mark - Property implementation.
