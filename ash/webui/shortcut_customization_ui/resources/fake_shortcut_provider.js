@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {AcceleratorConfig, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfig, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -18,6 +18,7 @@ export class FakeShortcutProvider {
 
     // Setup method resolvers.
     this.methods_.register('getAllAcceleratorConfig');
+    this.methods_.register('getLayoutInfo');
   }
 
   /**
@@ -28,11 +29,27 @@ export class FakeShortcutProvider {
   }
 
   /**
+   * @return {!Promise<!LayoutInfoList>}
+   */
+  getLayoutInfo() {
+    return this.methods_.resolveMethod('getLayoutInfo');
+  }
+
+  /**
    * Sets the value that will be returned when calling
    * getAllAcceleratorConfig().
    * @param {!AcceleratorConfig} config
    */
   setFakeAcceleratorConfig(config) {
     this.methods_.setResult('getAllAcceleratorConfig', config);
+  }
+
+  /**
+   * Sets the value that will be returned when calling
+   * getLayoutInfo().
+   * @param {!LayoutInfoList} layout
+   */
+  setFakeLayoutInfo(layout) {
+    this.methods_.setResult('getLayoutInfo', layout);
   }
 }
