@@ -38,9 +38,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/info_map.h"
-#include "extensions/browser/media_router_extension_access_logger.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"
@@ -161,14 +159,6 @@ network::ResourceRequest CreateResourceRequest(
   return request;
 }
 
-class MockMediaRouterExtensionAccessLogger
-    : public MediaRouterExtensionAccessLogger {
- public:
-  ~MockMediaRouterExtensionAccessLogger() override = default;
-  MOCK_CONST_METHOD2(LogMediaRouterComponentExtensionUse,
-                     void(const url::Origin&, content::BrowserContext*));
-};
-
 // The result of either a URLRequest of a URLLoader response (but not both)
 // depending on the on test type.
 class GetResult {
@@ -221,10 +211,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
         browser_context(),
         std::make_unique<ChromeContentVerifierDelegate>(browser_context()));
     info_map()->SetContentVerifier(content_verifier_.get());
-
-    // Set up mocks.
-    ChromeExtensionsBrowserClient::SetMediaRouterAccessLoggerForTesting(
-        &media_router_access_logger_);
   }
 
   void TearDown() override {
@@ -232,10 +218,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
     content_verifier_->Shutdown();
     // Shut down the PowerMonitor if initialized.
     base::PowerMonitor::ShutdownForTesting();
-
-    // Remove mocks.
-    ChromeExtensionsBrowserClient::SetMediaRouterAccessLoggerForTesting(
-        nullptr);
   }
 
   void SetProtocolHandler(bool is_incognito) {
@@ -334,7 +316,6 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
  protected:
   scoped_refptr<ContentVerifier> content_verifier_;
-  StrictMock<MockMediaRouterExtensionAccessLogger> media_router_access_logger_;
 
  private:
   GetResult LoadURL(const GURL& url,
@@ -858,20 +839,6 @@ TEST_F(ExtensionProtocolsTest, ExtensionRequestsNotAborted) {
   // Request the background.js file. Ensure the request completes successfully.
   EXPECT_EQ(net::OK,
             DoRequestOrLoad(extension.get(), "background.js").result());
-}
-
-TEST_F(ExtensionProtocolsTest, MetricGeneratedForReleaseCastExtension) {
-  ExtensionId extension_id(extension_misc::kCastExtensionIdRelease);
-  EXPECT_CALL(media_router_access_logger_,
-              LogMediaRouterComponentExtensionUse(_, _));
-  AddExtensionAndPerformResourceLoad(extension_id);
-}
-
-TEST_F(ExtensionProtocolsTest, MetricGeneratedForDevCastExtension) {
-  ExtensionId extension_id(extension_misc::kCastExtensionIdDev);
-  EXPECT_CALL(media_router_access_logger_,
-              LogMediaRouterComponentExtensionUse(_, _));
-  AddExtensionAndPerformResourceLoad(extension_id);
 }
 
 }  // namespace extensions

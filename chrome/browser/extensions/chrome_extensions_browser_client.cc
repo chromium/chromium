@@ -90,10 +90,6 @@ const char kJsonUrlPath[] = "/service/update2/json";
 // new chrome update.
 bool g_did_chrome_update_for_testing = false;
 
-// The fake metrics logger instance to use for testing.
-MediaRouterExtensionAccessLogger* g_media_router_access_logger_for_testing =
-    nullptr;
-
 bool ExtensionsDisabled(const base::CommandLine& command_line) {
   return command_line.HasSwitch(::switches::kDisableExtensions) ||
          command_line.HasSwitch(::switches::kDisableExtensionsExcept);
@@ -566,13 +562,6 @@ void ChromeExtensionsBrowserClient::SetLastSaveFilePath(
   download_prefs->SetSaveFilePath(path);
 }
 
-const MediaRouterExtensionAccessLogger*
-ChromeExtensionsBrowserClient::GetMediaRouterAccessLogger() const {
-  return g_media_router_access_logger_for_testing
-             ? g_media_router_access_logger_for_testing
-             : &media_router_access_logger_;
-}
-
 bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
     const std::string& extension_id,
     content::BrowserContext* context) {
@@ -589,12 +578,6 @@ bool ChromeExtensionsBrowserClient::IsValidTabId(
     int tab_id) const {
   return ExtensionTabUtil::GetTabById(
       tab_id, context, true /* include_incognito */, nullptr /* contents */);
-}
-
-// static
-void ChromeExtensionsBrowserClient::SetMediaRouterAccessLoggerForTesting(
-    MediaRouterExtensionAccessLogger* media_router_access_logger) {
-  g_media_router_access_logger_for_testing = media_router_access_logger;
 }
 
 // static

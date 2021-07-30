@@ -642,8 +642,6 @@ static_library("extensions") {
     "launch_util.h",
     "load_error_reporter.cc",
     "load_error_reporter.h",
-    "media_router_extension_access_logger_impl.cc",
-    "media_router_extension_access_logger_impl.h",
     "menu_manager.cc",
     "menu_manager.h",
     "menu_manager_factory.cc",

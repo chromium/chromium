@@ -190,7 +190,4 @@ const char kPolicyBlockedScripting[] =
 
 const int kContentVerificationDefaultBlockSize = 4096;
 
-const char kCastExtensionIdRelease[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
-const char kCastExtensionIdDev[] = "enhhojjnijigcajfphajepfemndkmdlo";
-
 }  // namespace extension_misc

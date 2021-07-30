@@ -432,8 +432,6 @@ source_set("browser_sources") {
     "management_policy.h",
     "media_capture_util.cc",
     "media_capture_util.h",
-    "media_router_extension_access_logger.cc",
-    "media_router_extension_access_logger.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
     "notification_types.h",

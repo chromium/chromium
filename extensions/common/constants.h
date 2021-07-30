@@ -299,10 +299,6 @@ extern const char kPolicyBlockedScripting[];
 // The default block size for hashing used in content verification.
 extern const int kContentVerificationDefaultBlockSize;
 
-// IDs for the Media Router Component Extension.
-extern const char kCastExtensionIdRelease[];
-extern const char kCastExtensionIdDev[];
-
 }  // namespace extension_misc
 
 #endif  // EXTENSIONS_COMMON_CONSTANTS_H_

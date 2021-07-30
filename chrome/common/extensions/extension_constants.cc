@@ -62,7 +62,6 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kIdentityApiUiAppId,
     kTextEditorAppId,
     kInAppPaymentsSupportAppId,
-    kCastExtensionIdRelease,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     kAssessmentAssistantExtensionId,
     kAccessibilityCommonExtensionId,

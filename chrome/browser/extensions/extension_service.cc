@@ -137,13 +137,6 @@ bool g_external_updates_disabled_for_test_ = false;
 // Wait this long after an extensions becomes idle before updating it.
 constexpr base::TimeDelta kUpdateIdleDelay = base::TimeDelta::FromSeconds(5);
 
-// IDs of extensions that have been replaced by component extensions and need to
-// be uninstalled.
-const char* const kMigratedExtensionIds[] = {
-    "boadgeojelhgndaghljhdicfkmllpafd",  // Google Cast
-    "dliochdbjfkdbacpmhlcpmleaejidimm"   // Google Cast (Beta)
-};
-
 // IDs of component extensions that have been obsoleted and need to be
 // uninstalled.
 // Note: We preserve at least one entry here for continued testing coverage.
@@ -2371,13 +2364,6 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
 void ExtensionService::UninstallMigratedExtensions() {
   std::unique_ptr<ExtensionSet> installed_extensions =
       registry_->GenerateInstalledExtensionsSet();
-
-  for (const std::string& extension_id : kMigratedExtensionIds) {
-    if (installed_extensions->Contains(extension_id)) {
-      UninstallExtension(extension_id, UNINSTALL_REASON_MIGRATED, nullptr);
-    }
-  }
-
   for (const std::string& extension_id : kObsoleteComponentExtensionIds) {
     auto* extension = installed_extensions->GetByID(extension_id);
     if (extension) {
