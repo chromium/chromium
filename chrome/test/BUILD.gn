@@ -3890,7 +3890,10 @@ if (is_chromeos_lacros) {
 
     data = [ "data/media/" ]
 
-    data_deps = [ "//chrome:packed_resources" ]
+    data_deps = [
+      "//chrome:packed_resources",
+      "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
+    ]
   }
 
   # This test target is intended for lacros chrome specific tests that depend
@@ -3925,7 +3928,10 @@ if (is_chromeos_lacros) {
       "//ui/platform_window",
     ]
 
-    data_deps = [ "//chrome:packed_resources" ]
+    data_deps = [
+      "//chrome:packed_resources",
+      "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
+    ]
   }
 }
 

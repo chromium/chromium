@@ -47,6 +47,7 @@
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4573.0/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
     'identifier': 'Lacros version skew testing ash 93.0.4573.0',
     'swarming': {
@@ -62,6 +63,7 @@
   'LACROS_VERSION_SKEW_DEV': {
     'args': [
       '--ash-chrome-path-override=../../lacros_version_skew_tests_v93.0.4577.10/test_ash_chrome',
+      '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter',
     ],
     'identifier': 'Lacros version skew testing ash 93.0.4577.10',
     'swarming': {
