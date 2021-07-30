@@ -259,16 +259,18 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
   CallJS("login.OAuthEnrollmentScreen.doReload");
   switch (error_type) {
     case UserErrorType::kConsumerDomain: {
-      ShowError(
-          IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
+      ShowErrorMessage(
+          l10n_util::GetStringFUTF8(
+              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
+              base::ASCIIToUTF16(email)),
           true);
       break;
     }
     case UserErrorType::kBusinessDomain: {
       ShowErrorMessage(
           l10n_util::GetStringFUTF8(
-              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_BUSINESS_DOMAIN_WITH_PACKAGED_LICENSE,
-              base::ASCIIToUTF16(gaia::ExtractDomainName(email))),
+              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
+              base::ASCIIToUTF16(email)),
           true);
       break;
     }

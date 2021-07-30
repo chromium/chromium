@@ -2815,8 +2815,8 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE" desc="Error message to show when the user tries to enroll a device with a packaged license using a consumer account.">
     Your device includes a Chrome Enterprise Upgrade, but your username is not associated with an enterprise account. Please create an enterprise account by visiting g.co/ChromeEnterpriseAccount on a secondary device.
   </message>
-  <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_BUSINESS_DOMAIN_WITH_PACKAGED_LICENSE" desc="Error message to show when the user tries to enroll a device with a packaged license using a consumer account with business domain.">
-    <ph name="DOMAIN">$1<ex>gmail.com</ex></ph> isn't a valid organization. Contact your administator. If you are an administator, you can set up your organization by visiting: g.co/ChromeEnterpriseAccount
+  <message name="IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK" desc="Error message to show after account check when the user tries to enroll a device with a packaged license using a consumer account.">
+    <ph name="USER_EMAIL">$1<ex>john.doe@example.com</ex></ph> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organization by visiting: g.co/ChromeEnterpriseAccount
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Error message to show when the user tries to enroll a device with an ineligible enterprise account.">
     Your username belongs to your organization's enterprise account. To enroll devices to the account, first verify domain ownership in the Admin console. You will need administrative privileges on the account to verify.
