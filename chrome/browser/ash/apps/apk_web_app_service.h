@@ -90,6 +90,7 @@ class ApkWebAppService : public KeyedService,
   void OnPackageRemoved(const std::string& package_name,
                         bool uninstalled) override;
   void OnPackageListInitialRefreshed() override;
+  void OnArcAppListPrefsDestroyed() override;
 
   // web_app::AppRegistrarObserver overrides.
   void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override;

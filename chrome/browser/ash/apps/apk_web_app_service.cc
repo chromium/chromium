@@ -407,6 +407,10 @@ void ApkWebAppService::OnPackageListInitialRefreshed() {
   }
 }
 
+void ApkWebAppService::OnArcAppListPrefsDestroyed() {
+  arc_app_list_prefs_observer_.Reset();
+}
+
 void ApkWebAppService::OnWebAppWillBeUninstalled(
     const web_app::AppId& web_app_id) {
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))

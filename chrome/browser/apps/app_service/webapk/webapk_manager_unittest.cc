@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -56,6 +58,11 @@ class WebApkManagerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    // Disable the WebAPKs feature so that App Service does not start a
+    // WebApkManager which interferes with the test.
+    // TODO(crbug.com/1234279): Reuse the WebApkManager from App Service
+    // instead.
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kWebApkGenerator);
 
     arc_test_.SetUp(&profile_);
 
@@ -94,6 +101,7 @@ class WebApkManagerTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   ArcAppTest arc_test_;
