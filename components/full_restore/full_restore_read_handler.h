@@ -189,6 +189,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // initialized.
   void OnWidgetInitialized(views::WidgetDelegate* delegate);
 
+  RestoreData* GetRestoreData(const base::FilePath& profile_path);
+
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
