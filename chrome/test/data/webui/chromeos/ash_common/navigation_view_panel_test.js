@@ -6,7 +6,7 @@ import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.m.js';
 
 export function navigationViewPanelTestSuite() {
   /** @type {?NavigationViewPanelElement} */
@@ -56,7 +56,7 @@ export function navigationViewPanelTestSuite() {
     viewElement.addSelector('dummyPage1', dummyPage1);
     viewElement.addSelector('dummyPage2', dummyPage2);
 
-    await waitAfterNextRender(viewElement);
+    await flushTasks();
 
     const sideNav = viewElement.shadowRoot.querySelector('navigation-selector');
     const navElements = sideNav.shadowRoot.querySelectorAll('.navigation-item');
@@ -64,7 +64,7 @@ export function navigationViewPanelTestSuite() {
     // Click the first menu item. Expect that the dummyPage1 to be created and
     // not hidden.
     navElements[0].click();
-    await waitAfterNextRender(viewElement);
+    await flushTasks();
     const dummyElement1 =
         viewElement.shadowRoot.querySelector(`#${dummyPage1}`);
     assertFalse(dummyElement1.hidden);
@@ -73,7 +73,7 @@ export function navigationViewPanelTestSuite() {
     // Click the second menu item. Expect that the dummyPage2 to be created and
     // not hidden. dummyPage1 should be hidden now.
     navElements[1].click();
-    await waitAfterNextRender(viewElement);
+    await flushTasks();
     const dummyElement2 =
         viewElement.shadowRoot.querySelector(`#${dummyPage2}`);
     dummyElement2['onNavigationPageChanged'] = onNavigationPageChanged;
@@ -86,7 +86,7 @@ export function navigationViewPanelTestSuite() {
     // Click the first menu item. Expect that dummyPage2 is now hidden and
     // dummyPage1 is not hidden.
     navElements[0].click();
-    await waitAfterNextRender(viewElement);
+    await flushTasks();
     assertTrue(dummyElement2.hidden);
     assertFalse(dummyElement1.hidden);
     // Now that both dummy pages have implemented "onNavigationPageChanged",
@@ -99,14 +99,14 @@ export function navigationViewPanelTestSuite() {
 
     viewElement.addSelector('dummyPage1', dummyPage1);
 
-    await waitAfterNextRender(viewElement);
+    await flushTasks();
 
     const sideNav = viewElement.shadowRoot.querySelector('navigation-selector');
     const navElements = sideNav.shadowRoot.querySelectorAll('.navigation-item');
 
     // Create the element.
     navElements[0].click();
-    await waitAfterNextRender(viewElement);
+    await flushTasks();
     const dummyElement = viewElement.shadowRoot.querySelector(`#${dummyPage1}`);
 
     const functionName = 'onEventReceived';
