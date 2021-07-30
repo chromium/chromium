@@ -350,7 +350,9 @@ void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
 
   // Begin renderng all items in the clipboard history. Current items will
   // render even if Deactivate() is called on the ClipboardImageModelFactory.
-  ash::ClipboardImageModelFactory::Get()->RenderCurrentPendingRequests();
+  if (ash::ClipboardImageModelFactory::Get()) {
+    ash::ClipboardImageModelFactory::Get()->RenderCurrentPendingRequests();
+  }
 
   std::move(get_history_callback)
       .Run(clipboard_history_controller->GetHistoryValues(item_ids_filter));
