@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -128,9 +129,15 @@ class TrustedVaultRequestTest : public testing::Test {
 TEST_F(TrustedVaultRequestTest, ShouldSendGetRequestAndHandleSuccess) {
   base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
+  base::HistogramTester histogram_tester;
   std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
       kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/absl::nullopt, completion_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"Sync.TrustedVaultAccessTokenFetchSuccess",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       GetPendingRequest();
@@ -273,6 +280,7 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleNotFoundStatus) {
 TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
   base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
+  base::HistogramTester histogram_tester;
   // Access token fetching failure propagated immediately in this test, so
   // |completion_callback| should be called immediately as well.
   EXPECT_CALL(
@@ -281,6 +289,10 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleAccessTokenFetchingFailures) {
   std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
       /*access_token=*/absl::nullopt, TrustedVaultRequest::HttpMethod::kGet,
       /*request_body=*/absl::nullopt, completion_callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"Sync.TrustedVaultAccessTokenFetchSuccess",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace syncer
