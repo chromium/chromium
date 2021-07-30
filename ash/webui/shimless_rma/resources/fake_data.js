@@ -4,7 +4,7 @@
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
-import {Component, ComponentRepairStatus, ComponentType, Network, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
+import {Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadErrorCode, RmaState, StateResult} from './shimless_rma_types.js';
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
@@ -28,6 +28,12 @@ export const fakeChromeVersion = [
   '92.0.999.0',
   '95.0.4444.123',
 ];
+
+/** @type {!QrCode} */
+export const fakeRsuChallengeQrCode = {
+  size: 4,
+  data: [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0],
+};
 
 /** @type {!Array<!Component>} */
 export const fakeComponents = [

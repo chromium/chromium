@@ -7,6 +7,8 @@
     <h1>Enter RSU Hardware Write Protection Disable Code</h1>
   </div>
   <div slot="body">
+    <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
+    </canvas>
     <p>Challenge: <span id="rsuChallenge">[[rsuChallenge_]]</span></p>
     <cr-input
         label="RSU Code:"

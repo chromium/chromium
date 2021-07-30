@@ -7,7 +7,7 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -267,6 +267,22 @@ export class FakeShimlessRmaService {
   setGetRsuDisableWriteProtectChallengeResult(challenge) {
     this.methods_.setResult(
         'getRsuDisableWriteProtectChallenge', {challenge: challenge});
+  }
+
+  /**
+   * @return {!Promise<!{qrCode: QrCode}>}
+   */
+  getRsuDisableWriteProtectChallengeQrCode() {
+    return this.methods_.resolveMethod(
+        'getRsuDisableWriteProtectChallengeQrCode');
+  }
+
+  /**
+   * @param {!QrCode} qrCode
+   */
+  setGetRsuDisableWriteProtectChallengeQrCodeResponse(qrCode) {
+    this.methods_.setResult(
+        'getRsuDisableWriteProtectChallengeQrCode', {qrCode: qrCode});
   }
 
   /**
@@ -677,6 +693,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('chooseManuallyDisableWriteProtect');
     this.methods_.register('chooseRsuDisableWriteProtect');
     this.methods_.register('getRsuDisableWriteProtectChallenge');
+    this.methods_.register('getRsuDisableWriteProtectChallengeQrCode');
     this.methods_.register('setRsuDisableWriteProtectCode');
 
     this.methods_.register('getComponentList');

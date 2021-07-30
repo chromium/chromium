@@ -3,11 +3,22 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {fakeRsuChallengeQrCode} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingEnterRsuWpDisableCodePageElement} from 'chrome://shimless-rma/onboarding_enter_rsu_wp_disable_code_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
+
+
+/**
+ * It is not possible to suppress visibility inline so this helper
+ * function wraps the access to canvasSize_.
+ * @suppress {visibility}
+ */
+function suppressedComponentCanvasSize_(component) {
+  return component.canvasSize_;
+}
 
 export function onboardingEnterRsuWpDisableCodePageTest() {
   /** @type {?OnboardingEnterRsuWpDisableCodePageElement} */
@@ -40,6 +51,8 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
 
     // Initialize the fake data.
     service.setGetRsuDisableWriteProtectChallengeResult(challenge);
+    service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
+        fakeRsuChallengeQrCode);
 
     component = /** @type {!OnboardingEnterRsuWpDisableCodePageElement} */ (
         document.createElement('onboarding-enter-rsu-wp-disable-code-page'));
@@ -60,6 +73,22 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     const rsChallengeComponent =
         component.shadowRoot.querySelector('#rsuChallenge');
     assertEquals(rsChallengeComponent.innerHTML, 'rsu challenge');
+  });
+
+  test('EnterRsuWpDisableCodePageRendersQrCode', async () => {
+    await initializeEnterRsuWpDisableCodePage('rsu challenge');
+
+    const expectedCanvasSize = 60;
+
+
+    assertEquals(suppressedComponentCanvasSize_(component), expectedCanvasSize);
+    const canvas = component.shadowRoot.querySelector('#qrCodeCanvas');
+    assertTrue(!!canvas);
+    assertEquals(canvas.width, expectedCanvasSize);
+    assertEquals(canvas.height, expectedCanvasSize);
+
+    const context = canvas.getContext('2d');
+    assertTrue(!!context);
   });
 
   test(

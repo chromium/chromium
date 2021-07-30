@@ -164,6 +164,22 @@ enum RmadErrorCode {
   kCannotCancelRma = 36,
 };
 
+// TODO(gavindodd): This is copied from
+// https://source.chromium.org/chromium/chromium/src/+/f83ef939cb00bfc7949e5e8f601e0115af8d2981:chromeos/services/cellular_setup/public/mojom/esim_manager.mojom;l=60
+// and the code that uses it is copied from
+// https://source.chromium.org/chromium/chromium/src/+/f83ef939cb00bfc7949e5e8f601e0115af8d2981:chromeos/services/cellular_setup/
+// Consider moving to a shared location.
+// Represents a QR Code image.
+struct QrCode {
+  // Width and height (which are equal) of the generated QR Code image in
+  // number of tiles.
+  uint8 size;
+  // QR Code image data. This is an array of bytes representing tiles in the
+  // QR Code in row major order. Values can be 0 or 1 where 1 indicates that
+  // the corresponding tile should be filled.
+  array<uint8> data;
+};
+
 // Device components
 // This maps to RmadComponent in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
@@ -359,12 +375,14 @@ interface ShimlessRmaService {
   ChooseRsuDisableWriteProtect() => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
-  // Method for kEnterRSUWPDisableCode state.
+  // Methods for kEnterRSUWPDisableCode state.
   //
   // Get the RSU challenge code.
   // Returns the challenge as a string.
   GetRsuDisableWriteProtectChallenge() => (string challenge);
-  // TODO(gavindodd): Get the challenge as a QR code.
+  // Returns a QR Code image representing the URL to generate the RSU unlock
+  // code. A null value is returned if the QR Code could not be generated.
+  GetRsuDisableWriteProtectChallengeQrCode() => (QrCode? qr_code);
   // Attempt to disable HWWP using a RSU code.
   // Returns the next state to display and an error code.
   SetRsuDisableWriteProtectCode(string code)

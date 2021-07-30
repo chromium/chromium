@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
+#include "components/qr_code_generator/qr_code_generator.h"
 
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::FilterType;
@@ -217,6 +218,35 @@ void ShimlessRmaService::GetRsuDisableWriteProtectChallenge(
     return;
   }
   std::move(callback).Run(state_proto_.wp_disable_rsu().challenge_code());
+}
+
+void ShimlessRmaService::GetRsuDisableWriteProtectChallengeQrCode(
+    GetRsuDisableWriteProtectChallengeQrCodeCallback callback) {
+  // TODO(gavindodd): Get URL from proto when available.
+  std::string challenge_url_string = "https://www.google.com";
+  QRCodeGenerator qr_generator;
+  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
+      qr_generator.Generate(base::as_bytes(base::make_span(
+          challenge_url_string.data(), challenge_url_string.size())));
+  if (!qr_data || qr_data->data.data() == nullptr ||
+      qr_data->data.size() == 0) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  // Data returned from QRCodeGenerator consist of bytes that represents
+  // tiles. Least significant bit of each byte is set if the tile should be
+  // filled. Other bit positions indicate QR Code structure and are not required
+  // for rendering. Convert this data to 0 or 1 values for simpler UI side
+  // rendering.
+  for (uint8_t& qr_data_byte : qr_data->data) {
+    qr_data_byte &= 1;
+  }
+
+  mojom::QrCodePtr qr_code = mojom::QrCode::New();
+  qr_code->size = qr_data->qr_size;
+  qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
+  std::move(callback).Run(std::move(qr_code));
 }
 
 void ShimlessRmaService::SetRsuDisableWriteProtectCode(
