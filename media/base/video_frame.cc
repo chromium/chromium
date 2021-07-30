@@ -325,6 +325,10 @@ scoped_refptr<VideoFrame> VideoFrame::CreateVideoHoleFrame(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   auto layout = VideoFrameLayout::Create(PIXEL_FORMAT_UNKNOWN, natural_size);
+  if (!layout) {
+    DLOG(ERROR) << "Invalid layout.";
+    return nullptr;
+  }
   scoped_refptr<VideoFrame> frame = new VideoFrame(
       *layout, StorageType::STORAGE_OPAQUE, gfx::Rect(natural_size),
       natural_size, timestamp, FrameControlType::kVideoHole);
