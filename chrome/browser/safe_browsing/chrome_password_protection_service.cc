@@ -1751,7 +1751,7 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     return;
 
   for (const auto& credential : matching_reused_credentials) {
-    password_manager::PasswordStore* password_store =
+    password_manager::PasswordStoreInterface* password_store =
         GetStoreForReusedCredential(credential);
     // Password store can be null in tests.
     if (!password_store) {
@@ -1770,7 +1770,7 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     return;
 
   for (const auto& credential : matching_reused_credentials) {
-    password_manager::PasswordStore* password_store =
+    password_manager::PasswordStoreInterface* password_store =
         GetStoreForReusedCredential(credential);
     // Password store can be null in tests.
     if (!password_store) {
@@ -1795,20 +1795,20 @@ ChromePasswordProtectionService::GetPasswordReuseManager() const {
   return PasswordReuseManagerFactory::GetForProfile(profile_);
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetProfilePasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
-  // itself when it shouldn't access the PasswordStore.
-  return PasswordStoreFactory::GetForProfile(profile_,
-                                             ServiceAccessType::EXPLICIT_ACCESS)
+  // itself when it shouldn't access the PasswordStoreInterface.
+  return PasswordStoreFactory::GetInterfaceForProfile(
+             profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetAccountPasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
-  // itself when it shouldn't access the PasswordStore.
-  return AccountPasswordStoreFactory::GetForProfile(
+  // itself when it shouldn't access the PasswordStoreInterface.
+  return AccountPasswordStoreFactory::GetInterfaceForProfile(
              profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
@@ -1867,7 +1867,7 @@ gfx::Size ChromePasswordProtectionService::GetCurrentContentAreaSize() const {
 }
 #endif  // FULL_SAFE_BROWSING
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetStoreForReusedCredential(
     const password_manager::MatchingReusedCredential& reused_credential) {
   if (!profile_)
