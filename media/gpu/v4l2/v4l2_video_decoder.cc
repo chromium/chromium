@@ -119,6 +119,7 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
 }
 
 void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
+                                  bool /*low_delay*/,
                                   CdmContext* cdm_context,
                                   InitCB init_cb,
                                   const OutputCB& output_cb,
@@ -186,6 +187,10 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   output_cb_ = std::move(output_cb);
   SetState(State::kInitialized);
   std::move(init_cb).Run(::media::OkStatus());
+}
+
+VideoDecoderType V4L2VideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kV4L2;
 }
 
 StatusCode V4L2VideoDecoder::InitializeBackend() {

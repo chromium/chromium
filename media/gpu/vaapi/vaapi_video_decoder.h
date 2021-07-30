@@ -57,6 +57,7 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   // DecoderInterface implementation.
   void Initialize(const VideoDecoderConfig& config,
+                  bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb,
@@ -65,6 +66,7 @@ class VaapiVideoDecoder : public DecoderInterface,
   void Reset(base::OnceClosure reset_cb) override;
   void ApplyResolutionChange() override;
   bool NeedsTranscryption() override;
+  VideoDecoderType GetDecoderType() const override;
 
   // DecodeSurfaceHandler<VASurface> implementation.
   scoped_refptr<VASurface> CreateSurface() override;

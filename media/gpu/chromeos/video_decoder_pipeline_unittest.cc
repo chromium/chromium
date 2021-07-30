@@ -67,8 +67,9 @@ class MockDecoder : public DecoderInterface {
                          base::WeakPtr<DecoderInterface::Client>(nullptr)) {}
   ~MockDecoder() override = default;
 
-  MOCK_METHOD5(Initialize,
+  MOCK_METHOD6(Initialize,
                void(const VideoDecoderConfig&,
+                    bool,
                     CdmContext*,
                     InitCB,
                     const OutputCB&,
@@ -77,6 +78,7 @@ class MockDecoder : public DecoderInterface {
   MOCK_METHOD1(Reset, void(base::OnceClosure));
   MOCK_METHOD0(ApplyResolutionChange, void());
   MOCK_METHOD0(NeedsTranscryption, bool());
+  MOCK_CONST_METHOD0(GetDecoderType, VideoDecoderType());
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,8 +228,8 @@ class VideoDecoderPipelineTest
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<DecoderInterface::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
-    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _))
-        .WillOnce(::testing::WithArgs<2>([](VideoDecoder::InitCB init_cb) {
+    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _, _))
+        .WillOnce(::testing::WithArgs<3>([](VideoDecoder::InitCB init_cb) {
           std::move(init_cb).Run(OkStatus());
         }));
     EXPECT_CALL(*decoder, NeedsTranscryption()).WillRepeatedly(Return(false));
@@ -240,8 +242,8 @@ class VideoDecoderPipelineTest
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<DecoderInterface::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
-    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _))
-        .WillOnce(::testing::WithArgs<2>([](VideoDecoder::InitCB init_cb) {
+    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _, _))
+        .WillOnce(::testing::WithArgs<3>([](VideoDecoder::InitCB init_cb) {
           std::move(init_cb).Run(OkStatus());
         }));
     EXPECT_CALL(*decoder, NeedsTranscryption()).WillRepeatedly(Return(true));
@@ -253,8 +255,8 @@ class VideoDecoderPipelineTest
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<DecoderInterface::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
-    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _))
-        .WillOnce(::testing::WithArgs<2>([](VideoDecoder::InitCB init_cb) {
+    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _, _))
+        .WillOnce(::testing::WithArgs<3>([](VideoDecoder::InitCB init_cb) {
           std::move(init_cb).Run(StatusCode::kDecoderInitializationFailed);
         }));
     EXPECT_CALL(*decoder, NeedsTranscryption()).WillRepeatedly(Return(false));

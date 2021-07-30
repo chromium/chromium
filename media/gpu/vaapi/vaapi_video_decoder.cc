@@ -155,6 +155,7 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
 }
 
 void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
+                                   bool /*low_delay*/,
                                    CdmContext* cdm_context,
                                    InitCB init_cb,
                                    const OutputCB& output_cb,
@@ -830,6 +831,10 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 
 bool VaapiVideoDecoder::NeedsTranscryption() {
   return transcryption_;
+}
+
+VideoDecoderType VaapiVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kVaapi;
 }
 
 void VaapiVideoDecoder::ReleaseVideoFrame(VASurfaceID surface_id) {

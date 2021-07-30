@@ -189,6 +189,7 @@ void VideoDecoderPipeline::DestroyAsync(
 
 VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  // TODO(mcasas): query |decoder_| instead.
 #if BUILDFLAG(USE_VAAPI)
   return VideoDecoderType::kVaapi;
 #elif BUILDFLAG(USE_V4L2_CODEC)
@@ -292,7 +293,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   }
 
   decoder_->Initialize(
-      config, cdm_context,
+      config, /*low_delay=*/false, cdm_context,
       base::BindOnce(&VideoDecoderPipeline::OnInitializeDone,
                      decoder_weak_this_, std::move(init_cb), cdm_context),
       base::BindRepeating(&VideoDecoderPipeline::OnFrameDecoded,
