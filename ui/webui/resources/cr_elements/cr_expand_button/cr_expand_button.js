@@ -12,8 +12,9 @@ Polymer({
 
   properties: {
     /**
-     * If true, the button is in the expanded state and will show the
-     * 'expand-less' icon. If false, the button shows the 'expand-more' icon.
+     * If true, the button is in the expanded state and will show the icon
+     * specified in the `collapseIcon` property. If false, the button shows the
+     * icon specified in the `expandIcon` property.
      */
     expanded: {
       type: Boolean,
@@ -40,6 +41,18 @@ Polymer({
     tabIndex: {
       type: Number,
       value: 0,
+    },
+
+    expandIcon: {
+      type: String,
+      value: 'cr:expand-more',
+      observer: 'onIconChange_',
+    },
+
+    collapseIcon: {
+      type: String,
+      value: 'cr:expand-less',
+      observer: 'onIconChange_',
     },
   },
 
@@ -78,7 +91,17 @@ Polymer({
 
   /** @private */
   onExpandedChange_() {
-    this.$.icon.ironIcon = this.expanded ? 'cr:expand-less' : 'cr:expand-more';
+    this.updateIcon_();
+  },
+
+  /** @private */
+  onIconChange_() {
+    this.updateIcon_();
+  },
+
+  /** @private */
+  updateIcon_() {
+    this.$.icon.ironIcon = this.expanded ? this.collapseIcon : this.expandIcon;
   },
 
   /**
