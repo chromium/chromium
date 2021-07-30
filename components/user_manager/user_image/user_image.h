@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_MANAGER_USER_IMAGE_USER_IMAGE_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
