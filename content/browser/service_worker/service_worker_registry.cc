@@ -1226,7 +1226,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     registration->set_resources_total_size_bytes(
         stored_resources_total_size_bytes);
   }
-  context_->NotifyRegistrationStored(stored_registration_id, stored_scope);
+  context_->NotifyRegistrationStored(stored_registration_id, stored_scope, key);
 
   if (storage_policy_observer_)
     storage_policy_observer_->StartTrackingOrigin(key.origin());

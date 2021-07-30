@@ -349,7 +349,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   int GetVersionFailureCount(int64_t version_id);
 
   // Called by ServiceWorkerStorage when StoreRegistration() succeeds.
-  void NotifyRegistrationStored(int64_t registration_id, const GURL& scope);
+  void NotifyRegistrationStored(int64_t registration_id,
+                                const GURL& scope,
+                                const blink::StorageKey& key);
   // Called on the core thread and notifies observers that all registrations
   // have been deleted for a particular `key`.
   void NotifyAllRegistrationsDeletedForStorageKey(const blink::StorageKey& key);
