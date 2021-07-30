@@ -62,7 +62,14 @@
 
     assert_equals(encoding.scalabilityMode, 'L1T3');
 
-  }, `Setting scalabilityMode to a legal value should be accepted`);
+    encoding.scalabilityMode = 'L1T2';
+    await sender.setParameters(param);
+
+    const updatedParam = sender.getParameters();
+    const updatedEncoding = getFirstEncoding(updatedParam);
+
+    assert_equals(updatedEncoding.scalabilityMode, 'L1T2');
+  }, `Setting and updating scalabilityMode to a legal value should be accepted`);
 
   promise_test(async t => {
     const capabilities = RTCRtpSender.getCapabilities('video');

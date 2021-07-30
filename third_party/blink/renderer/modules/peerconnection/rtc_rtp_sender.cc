@@ -507,15 +507,9 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
         PriorityFromDouble(webrtc_encoding.bitrate_priority).c_str());
     encoding->setNetworkPriority(
         PriorityFromEnum(webrtc_encoding.network_priority).c_str());
-    if (webrtc_encoding.num_temporal_layers) {
-      if (*webrtc_encoding.num_temporal_layers == 2) {
-        encoding->setScalabilityMode("L1T2");
-      } else if (*webrtc_encoding.num_temporal_layers == 3) {
-        encoding->setScalabilityMode("L1T3");
-      } else {
-        LOG(ERROR) << "Not understood value of num_temporal_layers: "
-                   << *webrtc_encoding.num_temporal_layers;
-      }
+    if (webrtc_encoding.scalability_mode) {
+      encoding->setScalabilityMode(
+          webrtc_encoding.scalability_mode.value().c_str());
     }
     encoding->setAdaptivePtime(webrtc_encoding.adaptive_ptime);
     encodings.push_back(encoding);
