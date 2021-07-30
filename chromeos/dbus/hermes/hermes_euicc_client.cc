@@ -123,6 +123,20 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void ResetMemory(const dbus::ObjectPath& euicc_path,
+                   hermes::euicc::ResetOptions reset_option,
+                   HermesResponseCallback callback) override {
+    dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                                 hermes::euicc::kResetMemory);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendInt32(static_cast<int32_t>(reset_option));
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
+    object_proxy->CallMethodWithErrorResponse(
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
+        base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   Properties* GetProperties(const dbus::ObjectPath& euicc_path) override {
     return GetOrCreateProperties(euicc_path).second;
   }

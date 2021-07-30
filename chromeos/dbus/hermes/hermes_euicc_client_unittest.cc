@@ -57,6 +57,21 @@ MATCHER_P(MatchRequestPendingProfilesCall, expected_root_smds, "") {
   return true;
 }
 
+// Matches dbus::MethodCall for ResetMemory call with given
+// |expected_reset_option|.
+MATCHER_P(MatchResetMemoryCall, expected_reset_option, "") {
+  dbus::MessageReader reader(arg);
+  int32_t reset_option;
+  if (arg->GetMember() != hermes::euicc::kResetMemory ||
+      !reader.PopInt32(&reset_option) ||
+      reset_option != static_cast<int32_t>(expected_reset_option)) {
+    *result_listener << "has method_name=" << arg->GetMember()
+                     << " reset_option=" << reset_option;
+    return false;
+  }
+  return true;
+}
+
 // Matches dbus::MethodCall for InstrallProfileFromActivationCode call with
 // given activation code and confirmation code.
 MATCHER_P2(MatchInstallFromActivationCodeCall,
@@ -330,6 +345,42 @@ TEST_F(HermesEuiccClientTest, TestUninstallProfile) {
   AddPendingMethodCallResult(nullptr, std::move(error_response));
   client_->UninstallProfile(
       test_euicc_path, test_carrier_path,
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
+}
+
+TEST_F(HermesEuiccClientTest, TestResetMemory) {
+  const hermes::euicc::ResetOptions kTestResetOption =
+      hermes::euicc::ResetOptions::kDeleteOperationalProfiles;
+  dbus::ObjectPath test_euicc_path(kTestEuiccPath);
+  dbus::MethodCall method_call(hermes::kHermesEuiccInterface,
+                               hermes::euicc::kResetMemory);
+
+  method_call.SetSerial(123);
+  EXPECT_CALL(*proxy_.get(), DoCallMethodWithErrorResponse(
+                                 MatchResetMemoryCall(kTestResetOption), _, _))
+      .Times(2)
+      .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
+
+  HermesResponseStatus status;
+
+  // Verify that client makes corresponding dbus method call with
+  // correct arguments.
+  AddPendingMethodCallResult(dbus::Response::CreateEmpty(), nullptr);
+  client_->ResetMemory(
+      test_euicc_path, kTestResetOption,
+      base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(status, HermesResponseStatus::kSuccess);
+
+  // Verify that error responses are returned properly.
+  std::unique_ptr<dbus::ErrorResponse> error_response =
+      dbus::ErrorResponse::FromMethodCall(&method_call, hermes::kErrorUnknown,
+                                          "");
+  AddPendingMethodCallResult(nullptr, std::move(error_response));
+  client_->ResetMemory(
+      test_euicc_path, kTestResetOption,
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);

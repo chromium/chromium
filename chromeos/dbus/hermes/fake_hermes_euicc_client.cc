@@ -303,6 +303,18 @@ void FakeHermesEuiccClient::UninstallProfile(
       interactive_delay_);
 }
 
+void FakeHermesEuiccClient::ResetMemory(
+    const dbus::ObjectPath& euicc_path,
+    hermes::euicc::ResetOptions reset_option,
+    HermesResponseCallback callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeHermesEuiccClient::DoResetMemory,
+                     weak_ptr_factory_.GetWeakPtr(), euicc_path, reset_option,
+                     std::move(callback)),
+      interactive_delay_);
+}
+
 FakeHermesEuiccClient::Properties* FakeHermesEuiccClient::GetProperties(
     const dbus::ObjectPath& euicc_path) {
   auto it = properties_map_.find(euicc_path);
@@ -461,6 +473,20 @@ void FakeHermesEuiccClient::DoUninstallProfile(
   std::move(callback).Run(remove_success
                               ? HermesResponseStatus::kSuccess
                               : HermesResponseStatus::kErrorInvalidIccid);
+}
+
+void FakeHermesEuiccClient::DoResetMemory(
+    const dbus::ObjectPath& euicc_path,
+    hermes::euicc::ResetOptions reset_option,
+    HermesResponseCallback callback) {
+  HermesEuiccClient::Properties* properties = GetProperties(euicc_path);
+  const std::vector<dbus::ObjectPath>& installed_carrier_profiles =
+      properties->installed_carrier_profiles().value();
+  for (auto& profile_path : installed_carrier_profiles) {
+    bool remove_success = RemoveCarrierProfile(euicc_path, profile_path);
+    DCHECK(remove_success);
+  }
+  std::move(callback).Run(HermesResponseStatus::kSuccess);
 }
 
 // Creates cellular service in shill for the given carrier profile path.

@@ -84,6 +84,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   void UninstallProfile(const dbus::ObjectPath& euicc_path,
                         const dbus::ObjectPath& carrier_profile_path,
                         HermesResponseCallback callback) override;
+  void ResetMemory(const dbus::ObjectPath& euicc_path,
+                   hermes::euicc::ResetOptions reset_option,
+                   HermesResponseCallback callback) override;
   Properties* GetProperties(const dbus::ObjectPath& euicc_path) override;
   HermesEuiccClient::TestInterface* GetTestInterface() override;
 
@@ -104,6 +107,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   void DoUninstallProfile(const dbus::ObjectPath& euicc_path,
                           const dbus::ObjectPath& carrier_profile_path,
                           HermesResponseCallback callback);
+  void DoResetMemory(const dbus::ObjectPath& euicc_path,
+                     hermes::euicc::ResetOptions reset_option,
+                     HermesResponseCallback callback);
   dbus::ObjectPath AddFakeCarrierProfile(hermes::profile::State state,
                                          std::string activation_code);
   void CreateCellularService(const dbus::ObjectPath& euicc_path,

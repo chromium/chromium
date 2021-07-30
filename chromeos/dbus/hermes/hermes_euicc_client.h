@@ -198,6 +198,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
                                 const dbus::ObjectPath& carrier_profile_path,
                                 HermesResponseCallback callback) = 0;
 
+  // Erases all profiles on the Euicc at |euicc_path|. |reset_option| specifies
+  // the type of reset operation that will be performed.
+  virtual void ResetMemory(const dbus::ObjectPath& euicc_path,
+                           hermes::euicc::ResetOptions reset_option,
+                           HermesResponseCallback callback) = 0;
+
   // Returns properties for the Euicc with given |euicc_path|.
   virtual Properties* GetProperties(const dbus::ObjectPath& euicc_path) = 0;
 
