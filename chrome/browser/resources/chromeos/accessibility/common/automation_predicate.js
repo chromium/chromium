@@ -199,7 +199,9 @@ AutomationPredicate = class {
         node.role === Role.SLIDER || node.role === Role.SWITCH ||
         node.role === Role.TEXT_FIELD ||
         node.role === Role.TEXT_FIELD_WITH_COMBO_BOX ||
-        (node.role === Role.MENU_ITEM && !hasActionableDescendant(node));
+        (node.role === Role.MENU_ITEM && !hasActionableDescendant(node)) ||
+        // Simple list items should be leaves.
+        AutomationPredicate.simpleListItem(node);
   }
 
   /**
@@ -372,6 +374,11 @@ AutomationPredicate = class {
          node.role === Role.RADIO_BUTTON || node.role === Role.SWITCH) &&
         hasActionableDescendant(node)) {
       return true;
+    }
+
+    // Simple list items are not containers.
+    if (AutomationPredicate.simpleListItem(node)) {
+      return false;
     }
 
     return AutomationPredicate.match({
@@ -724,6 +731,13 @@ AutomationPredicate.table =
 AutomationPredicate.listLike =
     AutomationPredicate.roles([Role.LIST, Role.DESCRIPTION_LIST]);
 
+/** @type {AutomationPredicate.Unary} */
+AutomationPredicate.simpleListItem = AutomationPredicate.match({
+  anyPredicate:
+      [(node) => node.role === Role.LIST_ITEM && node.children.length === 2 &&
+           node.firstChild.role === Role.LIST_MARKER &&
+           node.lastChild.role === Role.STATIC_TEXT]
+});
 
 /** @type {AutomationPredicate.Unary} */
 AutomationPredicate.formField = AutomationPredicate.match({

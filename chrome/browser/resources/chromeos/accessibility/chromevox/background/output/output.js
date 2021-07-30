@@ -1374,7 +1374,7 @@ Output = class {
     const outputStrings = [];
     while (walker.next().node) {
       if (walker.node.name) {
-        outputStrings.push(walker.node.name);
+        outputStrings.push(walker.node.name.trim());
       }
     }
     const finalOutput = outputStrings.join(' ');

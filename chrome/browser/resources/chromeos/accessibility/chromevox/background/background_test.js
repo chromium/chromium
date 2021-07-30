@@ -940,7 +940,7 @@ TEST_F('ChromeVoxBackgroundTest', 'ListMarkerIsIgnored', function() {
       function(root) {
         mockFeedback.call(doCmd('nextObject'))
             .expectNextSpeechUtteranceIsNot('listMarker')
-            .expectSpeech('apple')
+            .expectSpeech('\u2022 apple')  // bullet apple
             .replay();
       });
 });
@@ -1286,24 +1286,27 @@ TEST_F('ChromeVoxBackgroundTest', 'ListItem', function() {
   `,
       function(root) {
         mockFeedback.call(doCmd('nextLine'))
-            .expectSpeech('\u2022 ', 'apple', 'List item')
-            .expectBraille('\u2022 lst +3 apple lstitm')
+            .expectSpeech('\u2022 apple', 'List item')
+            .expectBraille('\u2022 apple lstitm lst +3')
             .call(doCmd('nextLine'))
-            .expectSpeech('\u2022 ', 'grape', 'List item')
+            .expectSpeech('\u2022 grape', 'List item')
             .expectBraille('\u2022 grape lstitm')
             .call(doCmd('nextLine'))
-            .expectSpeech('\u2022 ', 'banana', 'List item')
-            .expectBraille('\u2022 banana lst end lstitm')
+            .expectSpeech('\u2022 banana', 'List item')
+            .expectBraille('\u2022 banana lstitm lst end')
 
-            .call(doCmd('nextLine'))
-            .expectSpeech('1. ', 'pork', 'List item')
-            .expectBraille('1. lst +3 pork lstitm')
-            .call(doCmd('nextLine'))
-            .expectSpeech('2. ', 'beef', 'List item')
+            // Object nav should be the same.
+            .call(doCmd('nextObject'))
+            .expectSpeech('1. pork', 'List item')
+            .expectBraille('1. pork lstitm lst +3')
+            .call(doCmd('nextObject'))
+            .expectSpeech('2. beef', 'List item')
             .expectBraille('2. beef lstitm')
+
+            // Mixing with line nav.
             .call(doCmd('nextLine'))
-            .expectSpeech('3. ', 'chicken', 'List item')
-            .expectBraille('3. chicken lst end lstitm')
+            .expectSpeech('3. chicken', 'List item')
+            .expectBraille('3. chicken lstitm lst end')
             .replay();
       });
 });
@@ -2181,7 +2184,7 @@ TEST_F('ChromeVoxBackgroundTest', 'NonModalDialogHeadingJump', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'NavigationByListTest', function() {
+TEST_F('ChromeVoxBackgroundTest', 'NavigationByList', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
@@ -2231,7 +2234,7 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationByListTest', function() {
             .expectSpeech('Drinks', 'List', 'with 2 items')
             .call(doCmd('nextObject'))
             .call(doCmd('nextObject'))
-            .expectSpeech('Coffee')
+            .expectSpeech('\u2022 Coffee')
             // Ensure we wrap correctly and go to previous list, not top of
             // current list.
             .call(doCmd('previousList'))
@@ -2245,7 +2248,7 @@ TEST_F('ChromeVoxBackgroundTest', 'NavigationByListTest', function() {
             .expectSpeech('Lunch')
             .call(doCmd('nextObject'))
             .call(doCmd('nextObject'))
-            .expectSpeech('Burgers')
+            .expectSpeech('1. Burgers')
             // Ensure we go to the previous list, not the top of the current
             // list.
             .call(doCmd('previousList'))
