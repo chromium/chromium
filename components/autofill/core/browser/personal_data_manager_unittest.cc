@@ -6092,9 +6092,16 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
     }
   }
 
-  // Sets the virtual card enrollment state for the first card.
+  // Sets the virtual card enrollment state for the first three server cards.
   server_cards[0].set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  server_cards[0].set_card_art_url(GURL("https://www.example.com/image1"));
+  server_cards[1].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  server_cards[1].set_card_art_url(GURL("https://www.example.com/image1"));
+  server_cards[2].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  server_cards[2].set_card_art_url(GURL("https://www.example.com/image2"));
 
   SetServerCards(server_cards);
 
@@ -6112,6 +6119,8 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
   // Reload the database, which will log the stored profile counts.
   base::HistogramTester histogram_tester;
   ResetPersonalDataManager(USER_MODE_NORMAL);
+
+  EXPECT_EQ(personal_data_->GetServerCardWithArtImageCount(), 3U);
 
   ASSERT_EQ(6U, personal_data_->GetCreditCards().size());
 
@@ -6136,6 +6145,8 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
       "Autofill.StoredCreditCardCount.Server.Unmasked", 2, 1);
   histogram_tester.ExpectTotalCount(
       "Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata", 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StoredCreditCardCount.Server.WithCardArtImage", 3, 1);
 }
 
 TEST_F(PersonalDataManagerTest, CreateDataForTest) {

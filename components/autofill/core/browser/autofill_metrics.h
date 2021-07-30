@@ -1451,6 +1451,7 @@ class AutofillMetrics {
   static void LogStoredCreditCardMetrics(
       const std::vector<std::unique_ptr<CreditCard>>& local_cards,
       const std::vector<std::unique_ptr<CreditCard>>& server_cards,
+      size_t server_card_count_with_card_art_image,
       base::TimeDelta disused_data_threshold);
 
   // Logs metrics about the offer data associated with a profile. This should be

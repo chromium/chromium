@@ -547,6 +547,7 @@ class PersonalDataManager : public KeyedService,
                            RequestProfileServerValidity);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            GetProfileSuggestions_Validity);
+  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, LogStoredCreditCardMetrics);
 
   friend class autofill::AutofillInteractiveTest;
   friend class autofill::PersonalDataManagerCleaner;
@@ -803,6 +804,10 @@ class PersonalDataManager : public KeyedService,
   // Checks whether any virtual card metadata for server cards is new and makes
   // corresponding changes.
   void ProcessVirtualCardMetadataChanges();
+
+  // Returns the number of server credit cards that have a valid credit card art
+  // image.
+  size_t GetServerCardWithArtImageCount() const;
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;

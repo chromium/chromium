@@ -1965,7 +1965,8 @@ void PersonalDataManager::LogStoredProfileMetrics() const {
 void PersonalDataManager::LogStoredCreditCardMetrics() const {
   if (!has_logged_stored_credit_card_metrics_) {
     AutofillMetrics::LogStoredCreditCardMetrics(
-        local_credit_cards_, server_credit_cards_, kDisusedDataModelTimeDelta);
+        local_credit_cards_, server_credit_cards_,
+        GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
 
     // Only log this info once per chrome user profile load.
     has_logged_stored_credit_card_metrics_ = true;
@@ -2456,6 +2457,12 @@ void PersonalDataManager::ProcessVirtualCardMetadataChanges() {
   }
   if (!updated_urls.empty())
     FetchImagesForUrls(updated_urls);
+}
+
+size_t PersonalDataManager::GetServerCardWithArtImageCount() const {
+  return base::ranges::count_if(
+      server_credit_cards_.begin(), server_credit_cards_.end(),
+      [](const auto& card) { return card->card_art_url().is_valid(); });
 }
 
 }  // namespace autofill
