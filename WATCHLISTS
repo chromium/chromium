@@ -1683,6 +1683,10 @@
       'filepath': 'chrome/browser/sharing/|'\
                   'chrome/browser/ui/views/sharing/',
     },
+    'shimless_rma': {
+      'filepath': 'ash/webui/shimless_rma/'\
+                  '|chrome/test/data/webui/chromeos/shimless_rma/',
+    },
     'site_engagement': {
       'filepath': 'chrome/browser/engagement/|'\
                   'chrome/browser/ui/webui/engagement/',
@@ -2721,6 +2725,9 @@
     'share_sheet': ['chrome-sharing-eng+watch@google.com'],
     'sharing': ['knollr+watch-sharing@chromium.org',
                 'mvanouwerkerk+watch-sharing@chromium.org'],
+    'shimless_rma': ['zentaro+watch-shimless@chromium.org',
+                     'jimmyxgong+watch-shimless@chromium.org',
+                     'gavindodd+watch-shimless@chromium.org'],
     'site_engagement': ['dominickn+watch-engagement@chromium.org'],
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
