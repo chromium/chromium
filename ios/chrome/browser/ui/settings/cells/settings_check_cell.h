@@ -47,6 +47,11 @@
 // Shows/Hides |infoButton|.
 - (void)setInfoButtonHidden:(BOOL)hidden;
 
+// If |enabled|, |infoButton| image's tint color is set to blue otherwise to
+// UIColor.cr_secondaryLabelColor. Also, enable/disable the |infoButton| based
+// on |enabled|.
+- (void)setInfoButtonEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_CHECK_CELL_H_

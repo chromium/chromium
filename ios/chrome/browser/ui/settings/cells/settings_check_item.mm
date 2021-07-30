@@ -29,22 +29,22 @@
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
+  [cell setInfoButtonHidden:self.infoButtonHidden];
+  [cell setInfoButtonEnabled:self.enabled];
+  self.indicatorHidden ? [cell hideActivityIndicator]
+                       : [cell showActivityIndicator];
   if (self.enabled) {
-    [cell setInfoButtonHidden:self.infoButtonHidden];
     [cell setLeadingImage:self.leadingImage
             withTintColor:self.leadingImageTintColor];
     [cell setTrailingImage:self.trailingImage
              withTintColor:self.trailingImageTintColor];
-    self.indicatorHidden ? [cell hideActivityIndicator]
-                         : [cell showActivityIndicator];
     cell.textLabel.textColor = UIColor.cr_labelColor;
     cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   } else {
     [cell setLeadingImage:self.leadingImage
             withTintColor:UIColor.cr_secondaryLabelColor];
-    [cell setTrailingImage:nil withTintColor:nil];
-    [cell hideActivityIndicator];
-    [cell setInfoButtonHidden:YES];
+    [cell setTrailingImage:self.trailingImage
+             withTintColor:UIColor.cr_secondaryLabelColor];
     cell.textLabel.textColor = UIColor.cr_secondaryLabelColor;
     cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }

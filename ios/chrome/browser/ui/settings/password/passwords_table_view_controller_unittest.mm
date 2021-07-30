@@ -275,6 +275,13 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
                 [cell detailText]);
   }
 
+  // Enables/Disables the edit mode based on |editing|.
+  void SetEditing(bool editing) {
+    PasswordsTableViewController* passwords_controller =
+        static_cast<PasswordsTableViewController*>(controller());
+    [passwords_controller setEditing:editing animated:NO];
+  }
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
@@ -498,6 +505,30 @@ TEST_F(PasswordsTableViewControllerTest,
                UIAccessibilityTraitNotEnabled);
 }
 
+// Tests that the "Check Now" button is greyed out in edit mode.
+TEST_F(PasswordsTableViewControllerTest,
+       TestCheckPasswordButtonDisabledEditMode) {
+  PasswordsTableViewController* passwords_controller =
+      static_cast<PasswordsTableViewController*>(controller());
+  AddSavedForm1();
+
+  TableViewDetailTextItem* checkPasswordButton =
+      GetTableViewItem(GetSectionIndex(PasswordCheck), 1);
+  CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
+                          GetSectionIndex(PasswordCheck), 1);
+
+  [passwords_controller setEditing:YES animated:NO];
+
+  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, checkPasswordButton.textColor);
+  EXPECT_TRUE(checkPasswordButton.accessibilityTraits &
+              UIAccessibilityTraitNotEnabled);
+
+  [passwords_controller setEditing:NO animated:NO];
+  EXPECT_NSEQ([UIColor colorNamed:kBlueColor], checkPasswordButton.textColor);
+  EXPECT_FALSE(checkPasswordButton.accessibilityTraits &
+               UIAccessibilityTraitNotEnabled);
+}
+
 // Tests filtering of items.
 TEST_F(PasswordsTableViewControllerTest, FilterItems) {
   AddSavedForm1();
@@ -558,6 +589,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateDisabled) {
   EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
 }
 
 // Test verifies default state of password check cell.
@@ -574,6 +610,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateDefault) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
 }
 
 // Test verifies safe state of password check cell.
@@ -588,6 +629,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateSafe) {
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(PasswordCheck), 0);
   EXPECT_TRUE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_TRUE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
 }
@@ -608,6 +654,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateUnSafe) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_TRUE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_TRUE(checkPassword.trailingImage);
 }
 
 // Test verifies running state of password check cell.
@@ -624,6 +675,11 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateRunning) {
   EXPECT_TRUE(checkPassword.enabled);
   EXPECT_FALSE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
+  EXPECT_FALSE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
 }
 
 // Test verifies error state of password check cell.
@@ -638,6 +694,12 @@ TEST_F(PasswordsTableViewControllerTest, PasswordCheckStateError) {
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(PasswordCheck), 0);
   EXPECT_TRUE(checkPassword.enabled);
+  EXPECT_TRUE(checkPassword.indicatorHidden);
+  EXPECT_FALSE(checkPassword.trailingImage);
+  EXPECT_FALSE(checkPassword.infoButtonHidden);
+
+  SetEditing(true);
+  EXPECT_FALSE(checkPassword.enabled);
   EXPECT_TRUE(checkPassword.indicatorHidden);
   EXPECT_FALSE(checkPassword.trailingImage);
   EXPECT_FALSE(checkPassword.infoButtonHidden);

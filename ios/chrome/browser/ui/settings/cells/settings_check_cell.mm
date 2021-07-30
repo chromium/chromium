@@ -273,6 +273,15 @@
   [self updateTrailingImageTextConstraints];
 }
 
+- (void)setInfoButtonEnabled:(BOOL)enabled {
+  self.infoButton.enabled = enabled;
+  if (enabled) {
+    [self.infoButton setTintColor:[UIColor colorNamed:kBlueColor]];
+  } else {
+    [self.infoButton setTintColor:UIColor.cr_secondaryLabelColor];
+  }
+}
+
 #pragma mark - Private Methods
 
 // Updates the constraints around the trailing image for when |trailingImage| or
@@ -296,6 +305,7 @@
   [super prepareForReuse];
 
   self.textLabel.text = nil;
+  [self setInfoButtonEnabled:YES];
   [self.infoButton removeTarget:nil
                          action:nil
                forControlEvents:UIControlEventAllEvents];

@@ -7,6 +7,7 @@
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -81,6 +82,24 @@ TEST_F(SettingsCheckItemTest, InfoButtonVisibilityDuringConflict) {
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_TRUE(CheckCell.infoButton.hidden);
+}
+
+// Tests that infoButton would be greyed out when the item is not enabled.
+TEST_F(SettingsCheckItemTest, InfoButtonVisibilityWhenDisabled) {
+  SettingsCheckItem* item = [[SettingsCheckItem alloc] initWithType:0];
+  item.text = @"Test Text";
+  item.detailText = @"Test Text";
+  item.enabled = NO;
+  item.indicatorHidden = YES;
+  item.infoButtonHidden = NO;
+
+  id cell = [[[item cellClass] alloc] init];
+  SettingsCheckCell* CheckCell =
+      base::mac::ObjCCastStrict<SettingsCheckCell>(cell);
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_FALSE(CheckCell.infoButton.hidden);
+  EXPECT_NSEQ(CheckCell.infoButton.tintColor, UIColor.cr_secondaryLabelColor);
 }
 
 }  // namespace

@@ -364,6 +364,14 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     }
     [self setSearchBarEnabled:YES];
   }
+  [self updatePasswordCheckButtonWithState:self.passwordCheckState];
+  [self updatePasswordCheckStatusLabelWithState:self.passwordCheckState];
+  if (_checkForProblemsItem) {
+    [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
+  }
+  if (_passwordProblemsItem) {
+    [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
+  }
   [self updateUIForEditState];
 }
 
@@ -1081,6 +1089,15 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   if (!_checkForProblemsItem)
     return;
 
+  _checkForProblemsItem.text =
+      l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
+
+  if (self.editing) {
+    _checkForProblemsItem.textColor = UIColor.cr_secondaryLabelColor;
+    _checkForProblemsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    return;
+  }
+
   switch (state) {
     case PasswordCheckStateSafe:
     case PasswordCheckStateUnSafe:
@@ -1089,14 +1106,10 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
       _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
       _checkForProblemsItem.accessibilityTraits &=
           ~UIAccessibilityTraitNotEnabled;
-      _checkForProblemsItem.text =
-          l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
       break;
     case PasswordCheckStateRunning:
     // Fall through.
     case PasswordCheckStateDisabled:
-      _checkForProblemsItem.text =
-          l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
       _checkForProblemsItem.textColor = UIColor.cr_secondaryLabelColor;
       _checkForProblemsItem.accessibilityTraits |=
           UIAccessibilityTraitNotEnabled;
@@ -1110,7 +1123,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
     return;
 
   _passwordProblemsItem.trailingImage = nil;
-  _passwordProblemsItem.enabled = YES;
+  _passwordProblemsItem.enabled = !self.editing;
   _passwordProblemsItem.indicatorHidden = YES;
   _passwordProblemsItem.infoButtonHidden = YES;
   _passwordProblemsItem.accessoryType = UITableViewCellAccessoryNone;
