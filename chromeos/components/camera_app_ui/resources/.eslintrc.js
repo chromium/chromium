@@ -357,6 +357,9 @@ const googleRules = {
   'yield-star-spacing': ['error', 'after'],
 };
 
+const typescriptEslintDir =
+    '../../../../third_party/node/node_modules/@typescript-eslint';
+
 /* global module */
 module.exports = {
   'root': true,
@@ -412,4 +415,10 @@ module.exports = {
     // `git cl format --js` before uploading.
     'indent': 'off',
   }),
+  'overrides': [{
+    'files': ['**/*.ts'],
+    'plugins': ['@typescript-eslint'],
+    'parser': `${typescriptEslintDir}/parser`,
+    'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  }],
 };

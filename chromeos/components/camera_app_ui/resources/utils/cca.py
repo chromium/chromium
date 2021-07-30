@@ -137,7 +137,12 @@ def test(args):
 
 
 def lint(args):
-    cmd = ['eslint/bin/eslint.js', 'js']
+    cmd = [
+        'eslint/bin/eslint.js',
+        'js',
+        '--resolve-plugins-relative-to',
+        os.path.join(get_chromium_root(), 'third_party/node'),
+    ]
     if args.fix:
         cmd.append('--fix')
     try:
