@@ -37,9 +37,6 @@ class MetricsWebContentsObserver;
 namespace printing {
 class PrintManager;
 }
-namespace security_interstitials {
-class SecurityInterstitialTabHelper;
-}
 namespace subresource_redirect {
 class SubresourceRedirectObserver;
 }
@@ -116,7 +113,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::offline_pages::OfflinePageTabHelper;
   friend class ::page_load_metrics::MetricsWebContentsObserver;
   friend class ::printing::PrintManager;
-  friend class ::security_interstitials::SecurityInterstitialTabHelper;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
   friend class ScreenOrientationProvider;
   friend class TestFrameInterfaceBinder;

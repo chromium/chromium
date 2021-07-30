@@ -42,6 +42,7 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
@@ -905,7 +906,16 @@ bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
-
+  if (interface_name ==
+      security_interstitials::mojom::InterstitialCommands::Name_) {
+    security_interstitials::SecurityInterstitialTabHelper::
+        BindInterstitialCommands(
+            mojo::PendingAssociatedReceiver<
+                security_interstitials::mojom::InterstitialCommands>(
+                std::move(*handle)),
+            render_frame_host);
+    return true;
+  }
   if (interface_name ==
       subresource_filter::mojom::SubresourceFilterHost::Name_) {
     subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(

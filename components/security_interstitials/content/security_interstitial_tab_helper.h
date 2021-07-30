@@ -9,8 +9,8 @@
 
 #include "components/security_interstitials/core/common/mojom/interstitial_commands.mojom.h"
 #include "components/security_interstitials/core/controller_client.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -42,6 +42,12 @@ class SecurityInterstitialTabHelper
       int64_t navigation_id,
       std::unique_ptr<security_interstitials::SecurityInterstitialPage>
           blocking_page);
+
+  // Binds a receiver to the instance associated with the RenderFrameHost.
+  static void BindInterstitialCommands(
+      mojo::PendingAssociatedReceiver<
+          security_interstitials::mojom::InterstitialCommands> receiver,
+      content::RenderFrameHost* rfh);
 
   // Determines whether a URL should be shown on the current navigation page.
   bool ShouldDisplayURL() const;
@@ -97,9 +103,9 @@ class SecurityInterstitialTabHelper
   std::unique_ptr<security_interstitials::SecurityInterstitialPage>
       blocking_page_for_currently_committed_navigation_;
 
-  content::WebContentsFrameReceiverSet<
+  content::RenderFrameHostReceiverSet<
       security_interstitials::mojom::InterstitialCommands>
-      receiver_;
+      receivers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

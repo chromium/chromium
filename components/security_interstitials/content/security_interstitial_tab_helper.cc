@@ -63,6 +63,21 @@ void SecurityInterstitialTabHelper::AssociateBlockingPage(
   helper->SetBlockingPage(navigation_id, std::move(blocking_page));
 }
 
+// static
+void SecurityInterstitialTabHelper::BindInterstitialCommands(
+    mojo::PendingAssociatedReceiver<
+        security_interstitials::mojom::InterstitialCommands> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper =
+      SecurityInterstitialTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->receivers_.Bind(rfh, std::move(receiver));
+}
+
 bool SecurityInterstitialTabHelper::ShouldDisplayURL() const {
   CHECK(IsDisplayingInterstitial());
   return blocking_page_for_currently_committed_navigation_->ShouldDisplayURL();
@@ -86,10 +101,7 @@ SecurityInterstitialTabHelper::
 
 SecurityInterstitialTabHelper::SecurityInterstitialTabHelper(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      receiver_(web_contents,
-                this,
-                content::WebContentsFrameReceiverSetPassKey()) {}
+    : WebContentsObserver(web_contents), receivers_(web_contents, this) {}
 
 void SecurityInterstitialTabHelper::SetBlockingPage(
     int64_t navigation_id,
