@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_H_
+#define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -55,15 +55,15 @@ class ServerBackedStateKeysBroker;
 //      it.
 //   6. Establish the device lock in installation-time attributes.
 //   7. Store the policy blob and API refresh token.
-class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
-                                  public CloudPolicyStore::Observer,
-                                  public DeviceAccountInitializer::Delegate {
+class EnrollmentHandler : public CloudPolicyClient::Observer,
+                          public CloudPolicyStore::Observer,
+                          public DeviceAccountInitializer::Delegate {
  public:
   using EnrollmentCallback = DeviceCloudPolicyInitializer::EnrollmentCallback;
 
   // |store| and |install_attributes| must remain valid for the life time of the
   // enrollment handler.
-  EnrollmentHandlerChromeOS(
+  EnrollmentHandler(
       DeviceCloudPolicyStoreAsh* store,
       chromeos::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
@@ -77,7 +77,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
       const std::string& requisition,
       const std::string& sub_organization,
       EnrollmentCallback completion_callback);
-  ~EnrollmentHandlerChromeOS() override;
+  ~EnrollmentHandler() override;
 
   // Starts the enrollment process and reports the result to
   // |completion_callback_|.
@@ -242,11 +242,11 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   // initialization.
   int lockbox_init_duration_ = 0;
 
-  base::WeakPtrFactory<EnrollmentHandlerChromeOS> weak_ptr_factory_{this};
+  base::WeakPtrFactory<EnrollmentHandler> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentHandlerChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(EnrollmentHandler);
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_ENROLLMENT_ENROLLMENT_HANDLER_H_

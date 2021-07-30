@@ -176,7 +176,7 @@ class DeviceCloudPolicyManagerAshTest
     manager_->Init(&schema_registry_);
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
-    // they are accessed by EnrollmentHandlerChromeOS and StartupUtils.
+    // they are accessed by EnrollmentHandler and StartupUtils.
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
@@ -660,7 +660,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
     AllowUninterestingRemoteCommandFetches();
 
     // Process robot refresh token fetch if the auth code fetch succeeded.
-    // DeviceCloudPolicyInitializer holds an EnrollmentHandlerChromeOS which
+    // DeviceCloudPolicyInitializer holds an EnrollmentHandler which
     // holds a GaiaOAuthClient that fetches the refresh token during enrollment.
     // We return a successful OAuth response via a TestURLLoaderFactory to
     // trigger the happy path for these classes so that enrollment can continue.

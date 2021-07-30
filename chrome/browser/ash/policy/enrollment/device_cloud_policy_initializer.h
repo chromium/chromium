@@ -47,7 +47,7 @@ class DeviceCloudPolicyManagerAsh;
 class DeviceCloudPolicyStoreAsh;
 class DeviceManagementService;
 struct EnrollmentConfig;
-class EnrollmentHandlerChromeOS;
+class EnrollmentHandler;
 class EnrollmentStatus;
 
 // The |DeviceCloudPolicyInitializer| is a helper class which calls
@@ -201,7 +201,7 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   bool is_initialized_ = false;
 
   // Non-NULL if there is an enrollment operation pending.
-  std::unique_ptr<EnrollmentHandlerChromeOS> enrollment_handler_;
+  std::unique_ptr<EnrollmentHandler> enrollment_handler_;
 
   base::CallbackListSubscription state_keys_update_subscription_;
 

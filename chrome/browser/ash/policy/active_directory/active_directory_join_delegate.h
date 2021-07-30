@@ -18,8 +18,7 @@ using OnDomainJoinedCallback =
 
 // Delegate being used during enterprise enrollment to start Active Directory
 // domain join flow. This is needed because we have to start the join flow from
-// inside EnrollmentHandlerChromeOS and enrollment screen is not available
-// there.
+// inside EnrollmentHandler and enrollment screen is not available there.
 class ActiveDirectoryJoinDelegate {
  public:
   ActiveDirectoryJoinDelegate() = default;

@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
-#include "chrome/browser/ash/policy/enrollment/enrollment_handler_chromeos.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_handler.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
@@ -127,7 +127,7 @@ void DeviceCloudPolicyInitializer::PrepareEnrollment(
 
   policy_manager_->core()->Disconnect();
 
-  enrollment_handler_ = std::make_unique<EnrollmentHandlerChromeOS>(
+  enrollment_handler_ = std::make_unique<EnrollmentHandler>(
       policy_store_, install_attributes_, state_keys_broker_,
       attestation_flow_.get(), CreateClient(device_management_service),
       background_task_runner_, ad_join_delegate, enrollment_config,
