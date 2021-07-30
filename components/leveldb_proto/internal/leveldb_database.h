@@ -32,6 +32,15 @@ namespace leveldb_proto {
 // same thread (not necessarily the same as the constructor).
 class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
  public:
+  // Decides the next action based on the key.
+  //
+  // Returns `kSkipAndStop` when |while_callback| is false. Skips entries when
+  // |filter| is false.  Doesn't ever return `kLoadAndStop`.
+  static Enums::KeyIteratorAction ComputeIteratorAction(
+      const KeyFilter& while_callback,
+      const KeyFilter& filter,
+      const std::string& key);
+
   // Constructor. Does *not* open a leveldb - only initialize this class.
   // |client_name| is the name of the "client" that owns this instance. Used
   // for UMA statics as so: LevelDB.<value>.<client name>. It is best to not
@@ -78,8 +87,22 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) LevelDB {
       const leveldb::ReadOptions& options,
       const std::string& target_prefix);
 
-  // Retrieves keys and values, starting at key |start_key|, includes keys when
-  // |filter| return true and stops when |while_callback| returns false.
+  // Retrieves consecutive keys and values.
+  //
+  // Starts at or after |start_key|. Loads entries when |controller| returns
+  // `kLoadAndContinue` or `kLoadAndStop`. Finishes when |controller| returns
+  // `kLoadAndStop` or `kSkipAndStop`.
+  virtual bool LoadKeysAndEntriesWhile(
+      std::map<std::string, std::string>* keys_entries,
+      const leveldb::ReadOptions& options,
+      const std::string& start_key,
+      const KeyIteratorController& controller);
+
+  // Retrieves consecutive keys and values.
+  //
+  // Starts at or after |start_key|. Skips entries when |filter| returns
+  // `false`. Stops scanning and skips the entry when |while_callback| returns
+  // `false`.
   virtual bool LoadKeysAndEntriesWhile(
       const KeyFilter& filter,
       std::map<std::string, std::string>* keys_entries,

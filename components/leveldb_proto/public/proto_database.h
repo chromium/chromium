@@ -40,6 +40,16 @@ class Enums {
     // leveldb.
     kInvalidOperation = 3,
   };
+  enum KeyIteratorAction {
+    // Load the current entry and continue scanning.
+    kLoadAndContinue = 0,
+    // Skip the current entry and continue scanning.
+    kSkipAndContinue = 1,
+    // Load the current entry and stop scanning.
+    kLoadAndStop = 2,
+    // Skip the current entry and stop scanning.
+    kSkipAndStop = 3,
+  };
 };
 
 class Callbacks {
@@ -82,26 +92,36 @@ class Util {
   };
 };
 
+//  When used to filter keys, a key is skipped skipped if the callback returns
+//  `false`. When used to control a while loop, the loop is stopped if the
+//  callback returns `false`.
 using KeyFilter = base::RepeatingCallback<bool(const std::string& key)>;
+
+// Callback choosing the next action when scanning the database.
+using KeyIteratorController =
+    base::RepeatingCallback<Enums::KeyIteratorAction(const std::string& key)>;
 
 // Interface for classes providing persistent storage of Protocol Buffer
 // entries. P must be a proto type extending MessageLite. T is optional and
 // defaults to P and there is then no additional requirements for clients.
 // If T is set to something else, the client must provide these functions
 // (note the namespace requirement):
-// namespace leveldb_proto {
-// void DataToProto(const T& data, P* proto);
-// void ProtoToData(const P& proto, T* data);
-// }  // namespace leveldb_proto
+//    namespace leveldb_proto {
+//    void DataToProto(const T& data, P* proto);
+//    void ProtoToData(const P& proto, T* data);
+//    }  // namespace leveldb_proto
+//
 // The P type will be stored in the database, and the T type will be required
 // as input and will be provided as output for all API calls. The backend will
 // invoke the methods above for all conversions between the two types.
+//
 // For retrieving a database of proto type ClientProto, use:
-// auto db = ProtoDatabaseProviderFactory::GetForBrowserContext(...)
-//               -> GetDB<ClientProto>(...);
+//    auto db = ProtoDatabaseProviderFactory::GetForBrowserContext(...)
+//        -> GetDB<ClientProto>(...);
+//
 // For automatically converting to a different data type, use:
-// auto db = ProtoDatabaseProviderFactory::GetForBrowserContext(...)
-//               -> GetDB<ClientProto, ClientStruct>(...);
+//    auto db = ProtoDatabaseProviderFactory::GetForBrowserContext(...)
+//        -> GetDB<ClientProto, ClientStruct>(...);
 template <typename P, typename T = P>
 class ProtoDatabase {
  public:
@@ -169,14 +189,31 @@ class ProtoDatabase {
       const leveldb::ReadOptions& options,
       const std::string& target_prefix,
       typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) = 0;
+
   // Asynchronously loads entries and their keys for keys in range [start, end]
   // (both inclusive) and invokes |callback| when complete.
+  //
   // Range is defined as |start| <= returned keys <= |end|.
   // When |start| = 'bar' and |end| = 'foo' then the keys within brackets are
   // returned: baa, [bar, bara, barb, foa, foo], fooa, fooz, fop.
   virtual void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
+      typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) = 0;
+
+  // Asynchronously loads entries and their keys iterating in lexicographical
+  // order.
+  //
+  // For each encountered key the |controller| dictates the next action:
+  //    - Should the entry corresponding to the current key should be loaded?
+  //    - Should the sequential scanning of the db continue?
+  //
+  // The first processed key is equal to or greater than |start|. Unless
+  // interrupted, loads keys until the last entry in the database. Invokes
+  // |callback| when complete.
+  virtual void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const leveldb_proto::KeyIteratorController& controller,
       typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) = 0;
 
   // Asynchronously loads all keys from the database and invokes |callback| with

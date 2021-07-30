@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
       Callbacks::DestroyCallback callback);
 
   // All blocking calls/disk access will happen on the provided |task_runner|.
-  ProtoLevelDBWrapper(
+  explicit ProtoLevelDBWrapper(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
   ProtoLevelDBWrapper(
@@ -95,16 +95,25 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoLevelDBWrapper {
       const std::string& target_prefix,
       Callbacks::LoadKeysAndEntriesCallback callback);
 
-  void LoadKeysAndEntriesWhile(const KeyFilter& while_callback,
-                               const KeyFilter& filter,
-                               const leveldb::ReadOptions& options,
-                               const std::string& target_prefix,
-                               Callbacks::LoadKeysAndEntriesCallback callback);
-
   void LoadKeysAndEntriesInRange(
       const std::string& start,
       const std::string& end,
       Callbacks::LoadKeysAndEntriesCallback callback);
+
+  void LoadKeysAndEntriesWhile(const KeyIteratorController& controller,
+                               const leveldb::ReadOptions& options,
+                               const std::string& start_key,
+                               Callbacks::LoadKeysAndEntriesCallback callback);
+
+  void LoadKeysAndEntriesWhile(const KeyFilter& while_callback,
+                               const KeyFilter& filter,
+                               const leveldb::ReadOptions& options,
+                               const std::string& start_key,
+                               Callbacks::LoadKeysAndEntriesCallback callback);
+
+  void LoadKeysAndEntriesWhile(const std::string& start_key,
+                               const KeyIteratorController& controller,
+                               Callbacks::LoadKeysAndEntriesCallback callback);
 
   void LoadKeys(Callbacks::LoadKeysCallback callback);
   void LoadKeys(const std::string& target_prefix,

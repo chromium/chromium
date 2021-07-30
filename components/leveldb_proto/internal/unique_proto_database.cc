@@ -132,6 +132,13 @@ void UniqueProtoDatabase::LoadKeysAndEntriesInRange(
   db_wrapper_->LoadKeysAndEntriesInRange(start, end, std::move(callback));
 }
 
+void UniqueProtoDatabase::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const KeyIteratorController& controller,
+    typename Callbacks::LoadKeysAndEntriesCallback callback) {
+  db_wrapper_->LoadKeysAndEntriesWhile(start, controller, std::move(callback));
+}
+
 void UniqueProtoDatabase::LoadKeys(Callbacks::LoadKeysCallback callback) {
   db_wrapper_->LoadKeys(std::move(callback));
 }

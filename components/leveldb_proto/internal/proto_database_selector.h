@@ -121,6 +121,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) ProtoDatabaseSelector
       const std::string& start,
       const std::string& end,
       typename Callbacks::LoadKeysAndEntriesCallback callback);
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const KeyIteratorController& controller,
+      typename Callbacks::LoadKeysAndEntriesCallback callback);
 
   void LoadKeys(Callbacks::LoadKeysCallback callback);
 

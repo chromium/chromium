@@ -44,6 +44,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
   static bool KeyFilterStripPrefix(const KeyFilter& key_filter,
                                    const std::string& prefix,
                                    const std::string& key);
+  static Enums::KeyIteratorAction KeyIteratorControllerStripPrefix(
+      const KeyIteratorController& controller,
+      const std::string& prefix,
+      const std::string& key);
 
   static void GetSharedDatabaseInitStatusAsync(
       const std::string& client_db_id,
@@ -120,6 +124,10 @@ class COMPONENT_EXPORT(LEVELDB_PROTO) SharedProtoDatabaseClient
       const std::string& start,
       const std::string& end,
       Callbacks::LoadKeysAndEntriesCallback callback) override;
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const leveldb_proto::KeyIteratorController& controller,
+      typename Callbacks::LoadKeysAndEntriesCallback callback) override;
 
   void GetEntry(const std::string& key,
                 Callbacks::GetCallback callback) override;

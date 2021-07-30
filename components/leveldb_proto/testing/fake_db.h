@@ -74,6 +74,11 @@ class FakeDB : public ProtoDatabaseImpl<P, T> {
       const std::string& end,
       typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback)
       override;
+  void LoadKeysAndEntriesWhile(
+      const std::string& start,
+      const leveldb_proto::KeyIteratorController& controller,
+      typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback)
+      override;
   void LoadKeys(Callbacks::LoadKeysCallback callback) override;
   void GetEntry(const std::string& key,
                 typename Callbacks::Internal<T>::GetCallback callback) override;
@@ -322,6 +327,27 @@ void FakeDB<P, T>::LoadKeysAndEntriesInRange(
   for (const auto& pair : *db_) {
     if (pair.first >= start && pair.first <= end)
       ProtoToDataWrap<P, T>(pair.second, &(*keys_entries)[pair.first]);
+  }
+
+  load_callback_ = base::BindOnce(RunLoadKeysAndEntriesCallback,
+                                  std::move(callback), std::move(keys_entries));
+}
+
+template <typename P, typename T>
+void FakeDB<P, T>::LoadKeysAndEntriesWhile(
+    const std::string& start,
+    const leveldb_proto::KeyIteratorController& controller,
+    typename Callbacks::Internal<T>::LoadKeysAndEntriesCallback callback) {
+  auto keys_entries = std::make_unique<std::map<std::string, T>>();
+  for (const auto& pair : *db_) {
+    if (pair.first < start)
+      continue;
+    const Enums::KeyIteratorAction action = controller.Run(pair.first);
+    if (action == Enums::kLoadAndContinue || action == Enums::kLoadAndStop) {
+      ProtoToDataWrap<P, T>(pair.second, &(*keys_entries)[pair.first]);
+    }
+    if (action == Enums::kSkipAndStop || action == Enums::kLoadAndStop)
+      break;
   }
 
   load_callback_ = base::BindOnce(RunLoadKeysAndEntriesCallback,
