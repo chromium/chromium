@@ -37,24 +37,16 @@ bool FlatlandSurface::SetTextureToNewImagePipe(
 mojo::PlatformHandle FlatlandSurface::CreateView() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  fuchsia::ui::composition::ContentLinkToken parent_token;
-  fuchsia::ui::composition::GraphLinkToken child_token;
-  auto status = zx::channel::create(0, &parent_token.value, &child_token.value);
-  CHECK_EQ(status, ZX_OK);
-
-  flatland_.flatland()->LinkToParent(std::move(child_token),
-                                     graph_link_to_parent_.NewRequest());
-  graph_link_to_parent_->GetLayout(
-      fit::bind_member(this, &FlatlandSurface::OnGetLayout));
-  return mojo::PlatformHandle(std::move(parent_token.value));
+  // TODO(crbug.com/1230150): Link to parent by initializing tokens and return
+  // parent_token.
+  return mojo::PlatformHandle();
 }
 
 void FlatlandSurface::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   layout_info_ = std::move(info);
 
-  graph_link_to_parent_->GetLayout(
-      fit::bind_member(this, &FlatlandSurface::OnGetLayout));
+  // TODO(crbug.com/1230150): Add GetLayout call.
 }
 
 }  // namespace ui

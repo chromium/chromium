@@ -37,14 +37,7 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
   // TODO(crbug.com/1230150): Add OnError after SDK roll.
   flatland_.flatland()->SetDebugName("Chromium FlatlandWindow");
 
-  flatland_.flatland()->LinkToParent(
-      fuchsia::ui::composition::GraphLinkToken(
-          {zx::channel(std::move(properties.view_token))}),
-      graph_link_to_parent_.NewRequest());
-  graph_link_to_parent_->GetLayout(
-      fit::bind_member(this, &FlatlandWindow::OnGetLayout));
-  graph_link_to_parent_->GetStatus(
-      fit::bind_member(this, &FlatlandWindow::OnGetStatus));
+  // TODO(crbug.com/1230150): Link to parent using |properties.view_token|.
 
   root_transform_id_ = {++next_transform_id_};
   flatland_.flatland()->CreateTransform(root_transform_id_);
@@ -72,28 +65,6 @@ FlatlandWindow::FlatlandWindow(FlatlandWindowManager* window_manager,
 
 FlatlandWindow::~FlatlandWindow() {
   manager_->RemoveWindow(window_id_, this);
-}
-
-void FlatlandWindow::AttachSurfaceContent(
-    fuchsia::ui::composition::ContentLinkToken token) {
-  surface_transform_id_ = {++next_transform_id_};
-  flatland_.flatland()->CreateTransform(surface_transform_id_);
-  flatland_.flatland()->AddChild(render_transform_id_, surface_transform_id_);
-
-  // TODO(crbug.com/1230150): |view_properties_| may be updated earlier.
-  // Consider using whichever is more recent.
-  fuchsia::ui::composition::LinkProperties properties;
-  properties.set_logical_size({static_cast<uint32_t>(bounds_.width()),
-                               static_cast<uint32_t>(bounds_.height())});
-
-  surface_content_id_ = {++next_content_id_};
-  fuchsia::ui::composition::ContentLinkPtr content_link;
-  flatland_.flatland()->CreateLink(surface_content_id_, std::move(token),
-                                   std::move(properties),
-                                   content_link.NewRequest());
-
-  flatland_.flatland()->SetContent(surface_transform_id_, surface_content_id_);
-  flatland_.QueuePresent();
 }
 
 fuchsia::ui::views::ViewRef FlatlandWindow::CloneViewRef() {
@@ -230,20 +201,6 @@ void FlatlandWindow::SizeConstraintsChanged() {
 void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
   OnViewMetrics(info.pixel_scale());
   OnViewProperties(info.logical_size());
-}
-
-void FlatlandWindow::OnGetStatus(
-    fuchsia::ui::composition::GraphLinkStatus status) {
-  switch (status) {
-    case fuchsia::ui::composition::GraphLinkStatus::CONNECTED_TO_DISPLAY:
-      OnViewAttachedChanged(true);
-      break;
-    case fuchsia::ui::composition::GraphLinkStatus::DISCONNECTED_FROM_DISPLAY:
-      OnViewAttachedChanged(false);
-      break;
-    default:
-      break;
-  }
 }
 
 void FlatlandWindow::UpdateSize() {

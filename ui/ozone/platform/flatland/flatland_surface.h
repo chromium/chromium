@@ -66,8 +66,7 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   fuchsia::ui::composition::TransformId root_transform_id_;
   fuchsia::ui::composition::TransformId main_plane_transform_id_;
 
-  fuchsia::ui::composition::GraphLinkPtr graph_link_to_parent_;
-  fuchsia::ui::composition::ContentLinkPtr content_link_to_main_plane_;
+  // TODO(crbug.com/1230150): Add link primitives.
   fuchsia::ui::composition::LayoutInfo layout_info_;
 
   FlatlandSurfaceFactory* const flatland_surface_factory_;

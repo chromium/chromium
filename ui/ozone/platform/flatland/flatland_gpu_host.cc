@@ -70,10 +70,7 @@ void FlatlandGpuHost::AttachSurfaceToWindow(
       flatland_window_manager_->GetWindow(window_id);
   if (!flatland_window)
     return;
-  fuchsia::ui::composition::ContentLinkToken surface_view_holder_token;
-  surface_view_holder_token.value =
-      zx::channel(surface_view_holder_token_mojo.TakeHandle());
-  flatland_window->AttachSurfaceContent(std::move(surface_view_holder_token));
+  // TODO(crbug.com/1230150): Create ContentLinkToken and AttachSurfaceContent.
 }
 
 void FlatlandGpuHost::OnChannelDestroyed(int host_id) {}

@@ -46,9 +46,6 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   FlatlandWindow(const FlatlandWindow&) = delete;
   FlatlandWindow& operator=(const FlatlandWindow&) = delete;
 
-  // Embeds the Flatland identified by |token| into the scene graph.
-  void AttachSurfaceContent(fuchsia::ui::composition::ContentLinkToken token);
-
   // Returns a ViewRef associated with this window.
   fuchsia::ui::views::ViewRef CloneViewRef();
 
@@ -87,7 +84,6 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
  private:
   // Callbacks from |graph_link_to_parent_|.
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);
-  void OnGetStatus(fuchsia::ui::composition::GraphLinkStatus status);
 
   // Called from link callbacks to handle view properties and metrics
   // changes.
@@ -127,10 +123,9 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   fuchsia::ui::composition::TransformId render_transform_id_;
   fuchsia::ui::composition::TransformId surface_transform_id_;
 
-  uint64_t next_content_id_ = 1;
   fuchsia::ui::composition::ContentId surface_content_id_;
 
-  fuchsia::ui::composition::GraphLinkPtr graph_link_to_parent_;
+  // TODO(crbug.com/1230150): Add link primitives.
 
   // The scale between logical pixels and physical pixels, set based on the
   // fuchsia::ui::gfx::Metrics event. It's used to calculate dimensions of the
