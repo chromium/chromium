@@ -60,25 +60,30 @@ bool IsCompositedScrollbar(const DisplayItem& item) {
 
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk)
-    : bounds_(first_chunk->bounds),
-      rect_known_to_be_opaque_(first_chunk->rect_known_to_be_opaque),
-      has_text_(first_chunk->has_text),
+    : PendingLayer(chunks, *first_chunk, first_chunk.IndexInPaintArtifact()) {}
+
+PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
+                           const PaintChunk& first_chunk,
+                           wtf_size_t first_chunk_index_in_paint_artifact)
+    : bounds_(first_chunk.bounds),
+      rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
+      has_text_(first_chunk.has_text),
       text_known_to_be_on_opaque_background_(
-          first_chunk->text_known_to_be_on_opaque_background),
-      chunks_(&chunks.GetPaintArtifact(), first_chunk.IndexInPaintArtifact()),
+          first_chunk.text_known_to_be_on_opaque_background),
+      chunks_(&chunks.GetPaintArtifact(), first_chunk_index_in_paint_artifact),
       property_tree_state_(
-          first_chunk->properties.GetPropertyTreeState().Unalias()),
+          first_chunk.properties.GetPropertyTreeState().Unalias()),
       compositing_type_(kOther) {
-  DCHECK(!RequiresOwnLayer() || first_chunk->size() <= 1u);
+  DCHECK(!RequiresOwnLayer() || first_chunk.size() <= 1u);
   // Though text_known_to_be_on_opaque_background is only meaningful when
   // has_text is true, we expect text_known_to_be_on_opaque_background to be
   // true when !has_text to simplify code.
   DCHECK(has_text_ || text_known_to_be_on_opaque_background_);
   ClipToVisibilityLimit(property_tree_state_, bounds_);
 
-  if (IsCompositedScrollHitTest(*first_chunk)) {
+  if (IsCompositedScrollHitTest(first_chunk)) {
     compositing_type_ = kScrollHitTestLayer;
-  } else if (first_chunk->size()) {
+  } else if (first_chunk.size()) {
     const auto& first_display_item = FirstDisplayItem();
     if (first_display_item.IsForeignLayer())
       compositing_type_ = kForeignLayer;

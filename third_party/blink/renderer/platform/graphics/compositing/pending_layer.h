@@ -124,6 +124,9 @@ class PLATFORM_EXPORT PendingLayer {
   static void DecompositeTransforms(Vector<PendingLayer>& pending_layers);
 
  private:
+  PendingLayer(const PaintChunkSubset&,
+               const PaintChunk& first_chunk,
+               wtf_size_t first_chunk_index_in_paint_artifact);
   FloatRect VisualRectForOverlapTesting(
       const PropertyTreeState& ancestor_state) const;
   FloatRect MapRectKnownToBeOpaque(const PropertyTreeState&) const;
