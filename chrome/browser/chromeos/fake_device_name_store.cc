@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/fake_device_name_store.h"
 
+#include "base/strings/string_util.h"
+#include "chrome/browser/chromeos/device_name_validator.h"
+
 namespace chromeos {
 
 // static
@@ -13,20 +16,33 @@ FakeDeviceNameStore::FakeDeviceNameStore() = default;
 
 FakeDeviceNameStore::~FakeDeviceNameStore() = default;
 
-std::string FakeDeviceNameStore::GetDeviceName() const {
-  return device_name_;
+DeviceNameStore::DeviceNameMetadata FakeDeviceNameStore::GetDeviceNameMetadata()
+    const {
+  return {device_name_, device_name_state_};
 }
 
 DeviceNameStore::SetDeviceNameResult FakeDeviceNameStore::SetDeviceName(
     const std::string& new_device_name) {
-  if (name_update_result_ == DeviceNameStore::SetDeviceNameResult::kSuccess)
-    device_name_ = new_device_name;
-  return name_update_result_;
+  switch (device_name_state_) {
+    case DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy:
+      return DeviceNameStore::SetDeviceNameResult::kProhibitedByPolicy;
+
+    case DeviceNameStore::DeviceNameState::
+        kCannotBeModifiedBecauseNotDeviceOwner:
+      return DeviceNameStore::SetDeviceNameResult::kNotDeviceOwner;
+
+    case DeviceNameStore::DeviceNameState::kCanBeModified:
+      if (!IsValidDeviceName(new_device_name))
+        return DeviceNameStore::SetDeviceNameResult::kInvalidName;
+
+      device_name_ = new_device_name;
+      return DeviceNameStore::SetDeviceNameResult::kSuccess;
+  }
 }
 
-void FakeDeviceNameStore::SetNextSetDeviceNameResult(
-    DeviceNameStore::SetDeviceNameResult name_update_result) {
-  name_update_result_ = name_update_result;
+void FakeDeviceNameStore::SetDeviceNameState(
+    DeviceNameStore::DeviceNameState device_name_state) {
+  device_name_state_ = device_name_state;
 }
 
 }  // namespace chromeos

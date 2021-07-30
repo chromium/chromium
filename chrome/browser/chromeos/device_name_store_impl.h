@@ -25,7 +25,7 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   ~DeviceNameStoreImpl() override;
 
   // DeviceNameStore:
-  std::string GetDeviceName() const override;
+  DeviceNameMetadata GetDeviceNameMetadata() const override;
   DeviceNameStore::SetDeviceNameResult SetDeviceName(
       const std::string& new_device_name) override;
 
@@ -39,11 +39,17 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   // policy::DeviceNamePolicyHandler::Observer:
   void OnHostnamePolicyChanged() override;
 
+  std::string GetDeviceName() const;
+
   // Computes the new device name according to the device name policy.
   std::string ComputeDeviceName() const;
 
+  // Computes the new device name state according to any active policies and
+  // whether user is device owner.
+  DeviceNameStore::DeviceNameState ComputeDeviceNameState() const;
+
   // Returns whether the device name policy in place prohits name update.
-  bool IsConfiguringDeviceNameProhibitedByPolicy();
+  bool IsConfiguringDeviceNameProhibitedByPolicy() const;
 
   // Sets the device name and notify observers of DeviceNameStore class.
   void ChangeDeviceName(const std::string& device_name);
@@ -51,10 +57,13 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   // Called from OnHostnamePolicyChanged() and SetDeviceName() to set the device
   // name and notify observers of DeviceNameStore class. The new device name
   // must be different from the one set previously in |prefs_|.
-  void AttemptDeviceNameChange(const std::string& device_name);
+  void AttemptDeviceNameUpdate(const std::string& new_device_name);
 
   // Provides access and persistence for the device name value.
   PrefService* prefs_;
+
+  // Stores the device name state that was last set.
+  DeviceNameStore::DeviceNameState device_name_state_;
 
   policy::DeviceNamePolicyHandler* handler_;
   std::unique_ptr<DeviceNameApplier> device_name_applier_;

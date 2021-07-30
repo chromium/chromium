@@ -38,7 +38,8 @@ void DeviceNameHandler::HandleGetDeviceNameMetadata(
   CHECK(args->GetString(0, &callback_id));
 
   base::DictionaryValue metadata;
-  metadata.SetString("deviceName", device_name_store_->GetDeviceName());
+  metadata.SetString("deviceName",
+                     device_name_store_->GetDeviceNameMetadata().device_name);
 
   ResolveJavascriptCallback(base::Value(callback_id), metadata);
 }

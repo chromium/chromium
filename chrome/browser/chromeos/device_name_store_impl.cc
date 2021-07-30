@@ -40,6 +40,7 @@ DeviceNameStoreImpl::DeviceNameStoreImpl(
   if (device_name.empty())
     device_name = kDefaultDeviceName;
 
+  device_name_state_ = ComputeDeviceNameState();
   ChangeDeviceName(device_name);
 }
 
@@ -51,7 +52,23 @@ std::string DeviceNameStoreImpl::GetDeviceName() const {
   return prefs_->GetString(prefs::kDeviceName);
 }
 
-bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() {
+DeviceNameStore::DeviceNameState DeviceNameStoreImpl::ComputeDeviceNameState()
+    const {
+  if (!IsConfiguringDeviceNameProhibitedByPolicy())
+    return DeviceNameState::kCannotBeModifiedBecauseOfPolicy;
+
+  if (!user_manager::UserManager::Get()->IsCurrentUserOwner())
+    return DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner;
+
+  return DeviceNameState::kCanBeModified;
+}
+
+DeviceNameStore::DeviceNameMetadata DeviceNameStoreImpl::GetDeviceNameMetadata()
+    const {
+  return {GetDeviceName(), device_name_state_};
+}
+
+bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() const {
   switch (handler_->GetDeviceNamePolicy()) {
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable:
@@ -71,29 +88,36 @@ bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() {
 void DeviceNameStoreImpl::ChangeDeviceName(const std::string& device_name) {
   device_name_applier_->SetDeviceName(device_name);
   prefs_->SetString(prefs::kDeviceName, device_name);
-  NotifyDeviceNameChanged();
 }
 
-void DeviceNameStoreImpl::AttemptDeviceNameChange(
-    const std::string& device_name) {
-  if (GetDeviceName() == device_name)
+void DeviceNameStoreImpl::AttemptDeviceNameUpdate(
+    const std::string& new_device_name) {
+  std::string old_device_name = GetDeviceName();
+  DeviceNameStore::DeviceNameState new_state = ComputeDeviceNameState();
+
+  if (old_device_name == new_device_name && device_name_state_ == new_state)
     return;
 
-  ChangeDeviceName(device_name);
+  if (old_device_name != new_device_name)
+    ChangeDeviceName(new_device_name);
+
+  device_name_state_ = new_state;
+  NotifyDeviceNameChanged();
 }
 
 DeviceNameStore::SetDeviceNameResult DeviceNameStoreImpl::SetDeviceName(
     const std::string& new_device_name) {
-  if (!IsConfiguringDeviceNameProhibitedByPolicy())
+  if (device_name_state_ == DeviceNameState::kCannotBeModifiedBecauseOfPolicy)
     return SetDeviceNameResult::kProhibitedByPolicy;
 
-  if (!user_manager::UserManager::Get()->IsCurrentUserOwner())
+  if (device_name_state_ ==
+      DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner)
     return SetDeviceNameResult::kNotDeviceOwner;
 
   if (!IsValidDeviceName(new_device_name))
     return SetDeviceNameResult::kInvalidName;
 
-  AttemptDeviceNameChange(new_device_name);
+  AttemptDeviceNameUpdate(new_device_name);
   return SetDeviceNameResult::kSuccess;
 }
 
@@ -117,7 +141,7 @@ std::string DeviceNameStoreImpl::ComputeDeviceName() const {
 }
 
 void DeviceNameStoreImpl::OnHostnamePolicyChanged() {
-  AttemptDeviceNameChange(ComputeDeviceName());
+  AttemptDeviceNameUpdate(ComputeDeviceName());
 }
 
 }  // namespace chromeos

@@ -52,13 +52,32 @@ class DeviceNameStore {
     kInvalidName
   };
 
+  // Types of states for the current device name.
+  enum class DeviceNameState {
+    // Device name can be modified.
+    kCanBeModified,
+
+    // Device name change is prohibited by policy. An administrator can choose
+    // the device name directly and/or prevent managed users from changing it.
+    kCannotBeModifiedBecauseOfPolicy,
+
+    // Non-managed users who are not device owners cannot modify the name.
+    kCannotBeModifiedBecauseNotDeviceOwner,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
 
-    // Called when the device name changes. Use GetDeviceName() to get the new
-    // device name
-    virtual void OnDeviceNameChanged() = 0;
+    // Called when the device name and/or state changes. Use
+    // GetDeviceNameMetadata() to get the new device name and state.
+    virtual void OnDeviceNameMetadataChanged() = 0;
+  };
+
+  // Contains the device name and whether device name change is possible.
+  struct DeviceNameMetadata {
+    std::string device_name;
+    DeviceNameState device_name_state;
   };
 
   // Returns a pointer to the singleton instance for the current process.
@@ -79,7 +98,7 @@ class DeviceNameStore {
   // longer need it.
   static void Shutdown();
 
-  virtual std::string GetDeviceName() const = 0;
+  virtual DeviceNameMetadata GetDeviceNameMetadata() const = 0;
 
   // Attempts to update the device name and returns the result of the update.
   virtual SetDeviceNameResult SetDeviceName(
