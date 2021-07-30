@@ -6,6 +6,7 @@
 #include "printing/mojom/printing_context.mojom.h"
 #include "printing/page_setup.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace printing {
 
@@ -18,6 +19,30 @@ const PageMargins kPageMarginNonzero(/*header=*/1,
                                      /*right=*/4,
                                      /*top=*/5,
                                      /*bottom=*/6);
+
+constexpr int kPageSetupTextHeight = 1;
+constexpr gfx::Size kPageSetupPhysicalSize =
+    gfx::Size(/*width=*/100, /*height=*/200);
+constexpr gfx::Rect kPageSetupPrintableArea =
+    gfx::Rect(/*x=*/5, /*y=*/10, /*width=*/80, /*height=*/170);
+const PageMargins kPageSetupRequestedMargins(
+    /*header=*/10,
+    /*footer=*/20,
+    /*left=*/5,
+    /*right=*/15,
+    /*top=*/10 + kPageSetupTextHeight,
+    /*bottom=*/20 + kPageSetupTextHeight);
+
+const PageSetup kPageSetupAsymmetricalMargins(kPageSetupPhysicalSize,
+                                              kPageSetupPrintableArea,
+                                              kPageSetupRequestedMargins,
+                                              /*forced_margins=*/false,
+                                              kPageSetupTextHeight);
+const PageSetup kPageSetupForcedMargins(kPageSetupPhysicalSize,
+                                        kPageSetupPrintableArea,
+                                        kPageSetupRequestedMargins,
+                                        /*forced_margins=*/true,
+                                        kPageSetupTextHeight);
 
 }  // namespace
 
@@ -95,6 +120,50 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::PageMargins>(input, output));
   EXPECT_EQ(-1, output.bottom);
+}
+
+TEST(PrintingContextMojomTraitsTest, TestSerializeAndDeserializePageSetup) {
+  PageSetup input = kPageSetupAsymmetricalMargins;
+  PageSetup output;
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PageSetup>(input, output));
+
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.physical_size(),
+            output.physical_size());
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.printable_area(),
+            output.printable_area());
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.overlay_area(),
+            output.overlay_area());
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.content_area(),
+            output.content_area());
+  EXPECT_TRUE(kPageSetupAsymmetricalMargins.effective_margins().Equals(
+      output.effective_margins()));
+  EXPECT_TRUE(kPageSetupAsymmetricalMargins.requested_margins().Equals(
+      output.requested_margins()));
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.forced_margins(),
+            output.forced_margins());
+  EXPECT_EQ(kPageSetupAsymmetricalMargins.text_height(), output.text_height());
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePageSetupForcedMargins) {
+  PageSetup input = kPageSetupForcedMargins;
+  PageSetup output;
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PageSetup>(input, output));
+
+  EXPECT_EQ(kPageSetupForcedMargins.physical_size(), output.physical_size());
+  EXPECT_EQ(kPageSetupForcedMargins.printable_area(), output.printable_area());
+  EXPECT_EQ(kPageSetupForcedMargins.overlay_area(), output.overlay_area());
+  EXPECT_EQ(kPageSetupForcedMargins.content_area(), output.content_area());
+  EXPECT_TRUE(kPageSetupForcedMargins.effective_margins().Equals(
+      output.effective_margins()));
+  EXPECT_TRUE(kPageSetupForcedMargins.requested_margins().Equals(
+      output.requested_margins()));
+  EXPECT_EQ(kPageSetupForcedMargins.forced_margins(), output.forced_margins());
+  EXPECT_EQ(kPageSetupForcedMargins.text_height(), output.text_height());
 }
 
 }  // namespace printing

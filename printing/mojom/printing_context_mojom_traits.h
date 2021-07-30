@@ -7,6 +7,7 @@
 
 #include "printing/mojom/printing_context.mojom-shared.h"
 #include "printing/page_setup.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace mojo {
 
@@ -22,6 +23,39 @@ struct StructTraits<printing::mojom::PageMarginsDataView,
 
   static bool Read(printing::mojom::PageMarginsDataView data,
                    printing::PageMargins* out);
+};
+
+template <>
+struct StructTraits<printing::mojom::PageSetupDataView, printing::PageSetup> {
+  static const gfx::Size& physical_size(const printing::PageSetup& s) {
+    return s.physical_size();
+  }
+  static const gfx::Rect& printable_area(const printing::PageSetup& s) {
+    return s.printable_area();
+  }
+  static const gfx::Rect& overlay_area(const printing::PageSetup& s) {
+    return s.overlay_area();
+  }
+  static const gfx::Rect& content_area(const printing::PageSetup& s) {
+    return s.content_area();
+  }
+  static const printing::PageMargins& effective_margins(
+      const printing::PageSetup& s) {
+    return s.effective_margins();
+  }
+  static const printing::PageMargins& requested_margins(
+      const printing::PageSetup& s) {
+    return s.requested_margins();
+  }
+  static bool forced_margins(const printing::PageSetup& s) {
+    return s.forced_margins();
+  }
+  static int32_t text_height(const printing::PageSetup& s) {
+    return s.text_height();
+  }
+
+  static bool Read(printing::mojom::PageSetupDataView data,
+                   printing::PageSetup* out);
 };
 
 }  // namespace mojo

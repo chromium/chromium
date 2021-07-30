@@ -67,6 +67,15 @@ PageSetup::PageSetup() {
   Clear();
 }
 
+PageSetup::PageSetup(const gfx::Size& physical_size,
+                     const gfx::Rect& printable_area,
+                     const PageMargins& requested_margins,
+                     bool forced_margins,
+                     int text_height)
+    : requested_margins_(requested_margins), forced_margins_(forced_margins) {
+  Init(physical_size, printable_area, text_height);
+}
+
 PageSetup::PageSetup(const PageSetup& other) = default;
 
 PageSetup::~PageSetup() = default;
