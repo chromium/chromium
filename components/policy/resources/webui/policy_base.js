@@ -567,9 +567,16 @@ export class Page {
       chrome.send('reloadPolicies');
     };
 
-    $('export-policies').onclick = () => {
-      chrome.send('exportPoliciesJSON');
-    };
+    const exportButton = $('export-policies');
+    const hideExportButton = loadTimeData.valueExists('hideExportButton') &&
+        loadTimeData.getBoolean('hideExportButton');
+    if (hideExportButton) {
+      exportButton.style.display = 'none';
+    } else {
+      exportButton.onclick = () => {
+        chrome.send('exportPoliciesJSON');
+      };
+    }
 
     $('copy-policies').onclick = () => {
       chrome.send('copyPoliciesJSON');

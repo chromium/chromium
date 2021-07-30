@@ -82,6 +82,8 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
   source->AddLocalizedStrings(kStrings);
   source->UseStringsJs();
 
+  source->AddBoolean("hideExportButton", true);
+
   source->AddResourcePath("policy.css", IDR_POLICY_CSS);
   source->AddResourcePath("policy_base.js", IDR_POLICY_BASE_JS);
   source->AddResourcePath("policy.js", IDR_POLICY_JS);
