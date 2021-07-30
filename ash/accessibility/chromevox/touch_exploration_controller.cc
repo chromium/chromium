@@ -28,6 +28,7 @@
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
+#include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -56,16 +57,12 @@ void SetTouchAccessibilityFlag(ui::Event* event) {
 std::unique_ptr<ui::GestureProviderAura> BuildGestureProviderAura(
     TouchExplorationController* owner) {
   // Tune some aspects of gesture detection for ChromeVox.
-  auto* config = ui::GestureConfiguration::GetInstance();
-  float original_max_swipe_deviation_angle =
-      config->max_swipe_deviation_angle();
-  config->set_max_swipe_deviation_angle(45);
-
+  ui::GestureProvider::Config config =
+      GetGestureProviderConfig(ui::GestureProviderConfigType::CURRENT_PLATFORM);
+  config.gesture_detector_config.maximum_swipe_deviation_angle = 45;
   auto gesture_provider =
       std::make_unique<ui::GestureProviderAura>(owner, owner);
-
-  config->set_max_swipe_deviation_angle(original_max_swipe_deviation_angle);
-
+  gesture_provider->filtered_gesture_provider().UpdateConfig(config);
   return gesture_provider;
 }
 

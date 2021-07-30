@@ -41,6 +41,10 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
     gesture_consumer_ = consumer;
   }
 
+  FilteredGestureProvider& filtered_gesture_provider() {
+    return filtered_gesture_provider_;
+  }
+
   bool OnTouchEvent(TouchEvent* event);
   void OnTouchEventAck(uint32_t unique_touch_event_id,
                        bool event_consumed,
