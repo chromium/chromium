@@ -4,7 +4,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
