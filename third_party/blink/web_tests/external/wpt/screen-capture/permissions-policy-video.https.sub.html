@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <body>
-  <button id="button">User gesture</button>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testharness.js"
+          type="text/javascript{{GET[in-iframe]}}"></script>
+  <script src="/resources/testharnessreport.js"
+          type="text/javascript{{GET[in-iframe]}}"></script>
   <script src="/resources/testdriver.js"></script>
   <script src="/resources/testdriver-vendor.js"></script>
   <script src="/common/get-host-info.sub.js"></script>
-  <script src="/feature-policy/resources/featurepolicy.js"></script>
+  <script src="/permissions-policy/resources/permissions-policy.js"></script>
   <script>
   'use strict';
 
   async function getDisplayMedia(constraints) {
-    const p = new Promise(r => button.onclick = r);
-    await test_driver.click(button);
-    await p;
+    await test_driver.bless('transient activation for getDisplayMedia()');
     return navigator.mediaDevices.getDisplayMedia(constraints);
   }
 
@@ -33,6 +32,9 @@
     }
   }
 
+  if (page_loaded_in_iframe()) {
+    test_driver.set_test_context(window.parent);
+  }
   const cross_domain = get_host_info().HTTPS_REMOTE_ORIGIN;
   run_all_fp_tests_allow_self(
     cross_domain,
@@ -40,8 +42,6 @@
     'NotAllowedError',
     async () => {
       await testGDM({video: true});
-      await testGDM({audio: true, video: true});
-      await testGDM({audio: true});
     }
   );
   </script>
