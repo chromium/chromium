@@ -11,6 +11,7 @@
 #include "ash/quick_pair/feature_status_tracker/fake_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/mock_quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/quick_pair/scanning/mock_scanner_broker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/mock_ui_broker.h"
@@ -45,7 +46,8 @@ class MediatorTest : public testing::Test {
     mock_ui_broker_ = static_cast<MockUIBroker*>(ui_broker.get());
 
     mediator_ = std::make_unique<Mediator>(
-        std::move(tracker), std::move(scanner_broker), std::move(ui_broker));
+        std::move(tracker), std::move(scanner_broker), std::move(ui_broker),
+        std::unique_ptr<FastPairRepository>());
 
     device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
                                            Protocol::kFastPair);

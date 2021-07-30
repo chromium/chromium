@@ -7,24 +7,62 @@
 #include <string>
 
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/quick_pair/ui/actions.h"
+#include "ash/quick_pair/ui/fast_pair/fast_pair_image_decoder.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
 
-FastPairPresenter::FastPairPresenter() = default;
+FastPairPresenter::FastPairPresenter()
+    : image_decoder_(std::make_unique<FastPairImageDecoder>(
+          std::unique_ptr<image_fetcher::ImageFetcher>())) {}
 
 FastPairPresenter::~FastPairPresenter() = default;
 
 void FastPairPresenter::ShowDiscovery(scoped_refptr<Device> device,
                                       DiscoveryCallback callback) {
+  FastPairRepository::Get()->GetDeviceMetadata(
+      device->metadata_id,
+      base::BindOnce(&FastPairPresenter::ShowDiscoveryMetadataRetrieved,
+                     weak_pointer_factory_.GetWeakPtr(), std::move(device),
+                     std::move(callback)));
+}
+
+void FastPairPresenter::ShowDiscoveryMetadataRetrieved(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    absl::optional<nearby::fastpair::GetObservedDeviceResponse>
+        device_metadata) {
+  QP_LOG(VERBOSE) << __func__;
+  if (!device_metadata) {
+    return;
+  }
+  const std::string& string_data = device_metadata->image();
+  std::vector<uint8_t> binary_data(string_data.begin(), string_data.end());
+  image_decoder_->DecodeImage(
+      binary_data,
+      base::BindOnce(&FastPairPresenter::ShowDiscoveryImpl,
+                     weak_pointer_factory_.GetWeakPtr(), std::move(device),
+                     std::move(callback), *device_metadata));
+}
+void FastPairPresenter::ShowDiscoveryImpl(
+    scoped_refptr<Device> device,
+    DiscoveryCallback callback,
+    nearby::fastpair::GetObservedDeviceResponse device_metadata,
+    gfx::Image image) {
+  QP_LOG(VERBOSE) << __func__;
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   notification_controller_->ShowDiscoveryNotification(
-      base::ASCIIToUTF16(device->metadata_id), gfx::Image(),
+      base::ASCIIToUTF16(device_metadata.device().name()), std::move(image),
       base::BindOnce(&FastPairPresenter::OnDiscoveryClicked,
                      weak_pointer_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),

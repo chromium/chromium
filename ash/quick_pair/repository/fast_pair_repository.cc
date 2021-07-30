@@ -11,9 +11,28 @@
 namespace ash {
 namespace quick_pair {
 
+FastPairRepository* g_instance = nullptr;
+
+// static
+FastPairRepository* FastPairRepository::Get() {
+  DCHECK(g_instance);
+  return g_instance;
+}
+
+// static
+void FastPairRepository::SetInstance(FastPairRepository* instance) {
+  DCHECK(!g_instance);
+  g_instance = instance;
+}
+
 FastPairRepository::FastPairRepository()
-    : device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()) {}
-FastPairRepository::~FastPairRepository() = default;
+    : device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()) {
+  SetInstance(this);
+}
+
+FastPairRepository::~FastPairRepository() {
+  SetInstance(nullptr);
+}
 
 void FastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,

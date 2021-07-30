@@ -23,6 +23,8 @@ class DeviceMetadataFetcher;
 // responsible for connecting to back-end services.
 class FastPairRepository {
  public:
+  static FastPairRepository* Get();
+
   FastPairRepository();
   FastPairRepository(const FastPairRepository&) = delete;
   FastPairRepository& operator=(const FastPairRepository&) = delete;
@@ -58,6 +60,8 @@ class FastPairRepository {
   void DeleteAssociatedDevice(const device::BluetoothDevice* device);
 
  private:
+  static void SetInstance(FastPairRepository* instance);
+
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
 };
 

@@ -12,7 +12,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-using DecodeImageCallback = base::OnceCallback<void(const gfx::Image&)>;
+using DecodeImageCallback = base::OnceCallback<void(gfx::Image)>;
 
 namespace image_fetcher {
 class ImageFetcher;
