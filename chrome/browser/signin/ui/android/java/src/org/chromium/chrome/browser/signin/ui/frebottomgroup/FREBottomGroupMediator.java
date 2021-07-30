@@ -104,6 +104,9 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
      * TODO(crbug/1227313): Implement sign-in without sync.
      */
     private void onContinueAsClicked() {
+        if (mSelectedAccountName == null) {
+            mListener.addAccount();
+        }
         mListener.advanceToNextPage();
     }
 

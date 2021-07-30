@@ -34,10 +34,13 @@ class FREBottomGroupViewBinder {
             final @Nullable DisplayableProfileData profileData =
                     model.get(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA);
             if (profileData == null) {
-                // TODO(crbug/1227316): Bind view when no account on device
+                view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.INVISIBLE);
+                ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
+                button.setText(R.string.signin_add_account_to_device);
             } else {
                 ExistingAccountRowViewBinder.bindAccountView(
                         profileData, view.findViewById(R.id.signin_fre_selected_account));
+                view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.VISIBLE);
                 ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
                 button.setText(view.getContext().getString(R.string.signin_promo_continue_as,
                         profileData.getGivenNameOrFullNameOrEmail()));
