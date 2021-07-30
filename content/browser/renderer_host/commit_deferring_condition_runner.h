@@ -131,7 +131,7 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   // This is needed as PrerenderHost hasn't been reserved and
   // prerender_frame_tree_node_id() on NavigationRequest is not available yet
   // while CommitDeferringCondition is running.
-  absl::optional<int> candidate_prerender_frame_tree_node_id_;
+  const absl::optional<int> candidate_prerender_frame_tree_node_id_;
 
   // True when we're blocked waiting on a call to ResumeProcessing.
   bool is_deferred_ = false;

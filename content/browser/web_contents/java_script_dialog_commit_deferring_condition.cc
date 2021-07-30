@@ -62,10 +62,10 @@ JavaScriptDialogCommitDeferringCondition::WillCommitNavigation(
   // may have been dismissed by the time we run this check. If that's the
   // case, move on synchronously to the next deferral.
   if (!web_contents_.JavaScriptDialogDefersNavigations())
-    return kProceed;
+    return Result::kProceed;
 
   web_contents_.NotifyOnJavaScriptDialogDismiss(std::move(resume));
-  return kDefer;
+  return Result::kDefer;
 }
 
 }  // namespace content
