@@ -116,7 +116,7 @@ health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
 health::mojom::CachedVpdInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::SystemInfoPtr input) {
   return health::mojom::CachedVpdInfo::New(
-      std::move(input->product_sku_number),
+      std::move(input->first_power_date), std::move(input->product_sku_number),
       std::move(input->product_serial_number),
       std::move(input->product_model_name));
 }

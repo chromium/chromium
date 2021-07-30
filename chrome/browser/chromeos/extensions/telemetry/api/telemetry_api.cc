@@ -39,6 +39,10 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
   api::os_telemetry::VpdInfo result;
 
   const auto& vpd_info = ptr->vpd_result->get_vpd_info();
+  if (vpd_info->first_power_date.has_value()) {
+    result.activate_date =
+        std::make_unique<std::string>(vpd_info->first_power_date.value());
+  }
   if (vpd_info->model_name.has_value()) {
     result.model_name =
         std::make_unique<std::string>(vpd_info->model_name.value());

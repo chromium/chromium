@@ -226,6 +226,8 @@ union NonRemovableBlockDeviceResult {
 
 // Cached VPD read from sysfs.
 struct CachedVpdInfo {
+  // Contents of /sys/firmware/vpd/rw/ActivateDate, if the device supports it.
+  string? first_power_date;
   // Contents of /sys/firmware/vpd/ro/sku_number, if the device supports it.
   string? sku_number;
   // Contents of /sys/firmware/vpd/ro/serial_number, if the device supports it.

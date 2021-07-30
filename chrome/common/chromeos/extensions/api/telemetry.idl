@@ -6,6 +6,9 @@
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"]
 namespace os.telemetry {
   dictionary VpdInfo {
+    // Device activate date. Format: YYYY-WW.
+    DOMString? activateDate;
+
     // Device model name.
     DOMString? modelName;
 
