@@ -2580,24 +2580,6 @@
             ]
         }
     ],
-    "CrosMemoryAblationStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "CrosMemoryAblationStudy",
-                    "params": {
-                        "ablation-size-mb": "10"
-                    },
-                    "enable_features": [
-                        "CrosMemoryAblationStudy"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrosSchedulerCore": [
         {
             "platforms": [
