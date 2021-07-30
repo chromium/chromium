@@ -562,6 +562,11 @@ const base::Feature kLiveCaption{"LiveCaption",
 const base::Feature kUseSodaForLiveCaption{"UseSodaForLiveCaption",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable the Speaker Change Detection feature, which inserts a line break when
+// the Speech On-Device API (SODA) detects a speaker change.
+const base::Feature kSpeakerChangeDetection{"SpeakerChangeDetection",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Live Caption can be used in multiple languages, as opposed to just English.
 const base::Feature kLiveCaptionMultiLanguage{
     "LiveCaptionMultiLanguage", base::FEATURE_DISABLED_BY_DEFAULT};

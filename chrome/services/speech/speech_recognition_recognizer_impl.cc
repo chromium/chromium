@@ -347,6 +347,8 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config_msg.set_recognition_mode(
       GetSodaSpeechRecognitionMode(options_->recognition_mode));
   config_msg.set_enable_formatting(options_->enable_formatting);
+  config_msg.set_enable_speaker_change_detection(
+      base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
   auto serialized = config_msg.SerializeAsString();
 
   SerializedSodaConfig config;
