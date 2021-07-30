@@ -400,11 +400,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   // For layer tree mode only.
   // Marks this layer as being scrollable and needing an associated scroll node,
-  // and specifies the total size of the content to be scrolled (ie the max
-  // scroll offsets. The size should be a union of the layer and its subtree, as
-  // well as any layers for whom this layer is their scroll parent, and their
-  // subtrees, when they are transformed into this layer's space. Thus
-  // transforms of children affect the size of the |scroll_container_bounds|.
+  // and specifies the size of the container in which the scrolling contents are
+  // visible. (Use SetBounds to set the size of the content to be scrolled.)
   // Once scrollable, a Layer cannot become un-scrollable.
   void SetScrollable(const gfx::Size& scroll_container_bounds);
   bool scrollable() const {
