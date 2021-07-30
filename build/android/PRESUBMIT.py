@@ -76,7 +76,6 @@ def CommonChecks(input_api, output_api):
       'PYTHONPATH': build_android_dir,
       'PYTHONDONTWRITEBYTECODE': '1',
   })
-  # Tests that still need python2-compatibility.
   tests.extend(
       input_api.canned_checks.GetUnitTests(
           input_api,
@@ -109,27 +108,15 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'utils', 'gold_utils_test.py'),
               J('pylib', 'utils', 'proguard_test.py'),
               J('pylib', 'utils', 'test_filter_test.py'),
+              J('gyp', 'util', 'build_utils_test.py'),
+              J('gyp', 'util', 'manifest_utils_test.py'),
+              J('gyp', 'util', 'md5_check_test.py'),
+              J('gyp', 'util', 'resource_utils_test.py'),
           ],
           env=pylib_test_env,
-          run_on_python2=True,
-          run_on_python3=True))
-  # Python3-only tests:
-  tests.extend(
-      input_api.canned_checks.GetUnitTests(input_api,
-                                           output_api,
-                                           unit_tests=[
-                                               J('gyp', 'util',
-                                                 'build_utils_test.py'),
-                                               J('gyp', 'util',
-                                                 'manifest_utils_test.py'),
-                                               J('gyp', 'util',
-                                                 'md5_check_test.py'),
-                                               J('gyp', 'util',
-                                                 'resource_utils_test.py'),
-                                           ],
-                                           env=pylib_test_env,
-                                           run_on_python2=False,
-                                           run_on_python3=True))
+          run_on_python2=False,
+          run_on_python3=True,
+          skip_shebang_check=True))
 
   return input_api.RunTests(tests)
 
