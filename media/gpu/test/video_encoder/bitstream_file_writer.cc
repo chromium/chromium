@@ -50,7 +50,9 @@ BitstreamFileWriter::BitstreamFileWriter(
       num_buffers_writing_(0),
       num_errors_(0),
       writer_thread_("BitstreamFileWriterThread"),
-      writer_cv_(&writer_lock_) {}
+      writer_cv_(&writer_lock_) {
+  DETACH_FROM_SEQUENCE(writer_thread_sequence_checker_);
+}
 
 BitstreamFileWriter::~BitstreamFileWriter() {
   base::AutoLock auto_lock(writer_lock_);
