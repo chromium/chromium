@@ -340,7 +340,10 @@ class CaptureModeSession::CursorSetter {
         original_cursor_(cursor_manager_->GetCursor()),
         original_cursor_visible_(cursor_manager_->IsCursorVisible()),
         original_cursor_locked_(cursor_manager_->IsCursorLocked()),
-        current_orientation_(GetCurrentScreenOrientation()) {}
+        current_orientation_(GetCurrentScreenOrientation()) {
+    if (!cursor_manager_->IsMouseEventsEnabled())
+      cursor_manager_->EnableMouseEvents();
+  }
 
   CursorSetter(const CursorSetter&) = delete;
   CursorSetter& operator=(const CursorSetter&) = delete;

@@ -519,6 +519,54 @@ TEST_F(CaptureModeTest, StartStop) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(CaptureModeTest, CheckCursorVisibility) {
+  // Hide cursor before entering capture mode.
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
+  cursor_manager->HideCursor();
+  cursor_manager->DisableMouseEvents();
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  // After capture mode initialization, cursor should be visible.
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsMouseEventsEnabled());
+
+  // Enter tablet mode.
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  tablet_mode_controller_test_api.DetachAllMice();
+  tablet_mode_controller_test_api.EnterTabletMode();
+  // After entering tablet mode, cursor should be invisible and locked.
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+
+  // Leave tablet mode, cursor should be visible again.
+  tablet_mode_controller_test_api.LeaveTabletMode();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+TEST_F(CaptureModeTest, CheckCursorVisibilityOnTabletMode) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  // Enter tablet mode.
+  TabletModeControllerTestApi tablet_mode_controller_test_api;
+  tablet_mode_controller_test_api.DetachAllMice();
+  tablet_mode_controller_test_api.EnterTabletMode();
+  // After entering tablet mode, cursor should be invisible.
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  // Open capture mode.
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  // Cursor should be invisible since it's still in tablet mode.
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  // Leave tablet mode, cursor should be visible now.
+  tablet_mode_controller_test_api.LeaveTabletMode();
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
 // Regression test for https://crbug.com/1172425.
 TEST_F(CaptureModeTest, NoCrashOnClearingCapture) {
   TestCaptureClientObserver observer(CreateTestWindow(gfx::Rect(200, 200)));
