@@ -192,6 +192,10 @@ class CORE_EXPORT NGFragmentItem {
   // untransformed RectInContainerFragment().
   PhysicalOffset MapPointInContainer(const PhysicalOffset& point) const;
 
+  // For kSvgText type, convert the specified inline offset in this item so
+  // that the result can be used with ShapeResult.
+  float ScaleInlineOffset(LayoutUnit inline_offset) const;
+
   // Returns true if |position|, which is a point in the IFC's coordinate
   // system, is in the transformed rectangle of this item.
   // This works only for kSvgText type.
