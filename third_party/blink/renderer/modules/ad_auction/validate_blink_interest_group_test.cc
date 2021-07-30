@@ -21,6 +21,13 @@
 
 namespace blink {
 
+namespace {
+
+constexpr char kOriginString[] = "https://origin.test/";
+constexpr char kNameString[] = "name";
+
+}  // namespace
+
 // Test fixture for testing both ValidateBlinkInterestGroup() and
 // ValidateInterestGroup(), and making sure they behave the same.
 class ValidateBlinkInterestGroupTest : public testing::Test {
@@ -131,10 +138,9 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
  protected:
   // SecurityOrigin used as the owner in most tests.
   const scoped_refptr<const SecurityOrigin> kOrigin =
-      SecurityOrigin::CreateFromString(
-          String::FromUTF8("https://origin.test/"));
+      SecurityOrigin::CreateFromString(String::FromUTF8(kOriginString));
 
-  const String kName = String::FromUTF8("name");
+  const String kName = String::FromUTF8(kNameString);
 };
 
 // Test behavior with an InterestGroup with as few fields populated as allowed.
@@ -341,6 +347,46 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
           kBadAdUrlError /* expected_error */);
     }
   }
+}
+
+// Mojo rejects malformed URLs when converting mojom::blink::InterestGroup to
+// blink::InterestGroup. Since the rejection happens internally in Mojo,
+// typemapping code that invokes blink::InterestGroup::IsValid() isn't run, so
+// adding a AdRenderUrlValidation testcase to verify malformed URLs wouldn't
+// exercise blink::InterestGroup::IsValid(). Since blink::InterestGroup users
+// can call IsValid() directly (i.e when not using Mojo), we need a test that
+// also calls IsValid() directly.
+TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
+  constexpr char kMalformedUrl[] = "https://invalid^";
+
+  // First, check against mojom::blink::InterestGroup.
+  constexpr char kBadAdUrlError[] =
+      "renderUrls must be HTTPS and have no embedded credentials.";
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      mojom::blink::InterestGroup::New();
+  blink_interest_group->owner = kOrigin;
+  blink_interest_group->name = kName;
+  blink_interest_group->ads.emplace();
+  blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
+      KURL(kMalformedUrl), String() /* metadata */));
+  String error_field_name;
+  String error_field_value;
+  String error;
+  EXPECT_FALSE(ValidateBlinkInterestGroup(
+      *blink_interest_group, error_field_name, error_field_value, error));
+  EXPECT_EQ(error_field_name, String::FromUTF8("ad[0].renderUrl"));
+  // The invalid ^ gets escaped.
+  EXPECT_EQ(error_field_value, String::FromUTF8("https://invalid%5E/"));
+  EXPECT_EQ(error, String::FromUTF8(kBadAdUrlError));
+
+  // Now, test against blink::InterestGroup.
+  blink::InterestGroup interest_group;
+  interest_group.owner = url::Origin::Create(GURL(kOriginString));
+  interest_group.name = kNameString;
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(
+      blink::InterestGroup::Ad(GURL(kMalformedUrl), /*metadata=*/""));
+  EXPECT_FALSE(interest_group.IsValid());
 }
 
 }  // namespace blink
