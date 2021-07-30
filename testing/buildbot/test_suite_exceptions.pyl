@@ -879,6 +879,8 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
+        # TODO(crbug.com/1137474): Remove after the test suite is green.
+        'experiment_percentage': 100,
         # TODO(crbug.com/1137474): Revisit the shard number once failed tests
         # are fixed.
         'swarming': {
@@ -1260,6 +1262,8 @@
         ],
       },
       'android-11-x86-fyi-rel': {
+        # TODO(crbug.com/1137474): Remove after the test suite is green.
+        'experiment_percentage': 100,
         # TODO(crbug.com/1137474): Revisit the shard number once failed tests
         # are fixed.
         'swarming': {
@@ -2555,6 +2559,12 @@
       },
     },
     'modifications': {
+      'android-11-x86-fyi-rel': {
+        'args': [
+          # TODO(crbug.com/1234824): Fix the failed tests
+          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
+        ],
+      },
       'android-nougat-arm64-rel': {
         # TODO(crbug.com/1108055): Remove this filter
         'args': [

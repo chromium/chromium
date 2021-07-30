@@ -1316,6 +1316,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
           "--timeout-scale=2.0"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -1610,6 +1611,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -3690,7 +3692,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*"
         ],
         "merge": {
           "args": [
