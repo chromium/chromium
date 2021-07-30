@@ -5,13 +5,13 @@
 ##
 ## Top level settings
 ##
-version_id: 3
+version_id: 4
 
 ##
 ## Share Targets
 ##
 targets {
-  nickname: "mail"
+  nickname: "Email"
   url: "mailto:?subject=%(escaped_subject)&body=%(escaped_url)"
 }
 
@@ -150,7 +150,7 @@ targets {
 }
 
 targets {
-  nickname: "whatsapp"
+  nickname: "WhatsApp"
   url: "https://web.whatsapp.com/send?text=%(escaped_url)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
@@ -306,7 +306,7 @@ targets {
 }
 
 targets {
-  nickname: "facebook"
+  nickname: "Facebook"
   url: "https://www.facebook.com/sharer/sharer.php?u=%(escaped_url)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
@@ -360,7 +360,7 @@ targets {
 }
 
 targets {
-  nickname: "linkedin"
+  nickname: "Linkedin"
   url: "http://www.linkedin.com/shareArticle?url=%(escaped_url)&title=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
@@ -456,7 +456,7 @@ targets {
 }
 
 targets {
-  nickname: "pinterest"
+  nickname: "Pinterest"
   url: "http://pinterest.com/pin/create/button/?url=%(escaped_url)&description=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
@@ -610,7 +610,7 @@ targets {
 }
 
 targets {
-  nickname: "twitter"
+  nickname: "Twitter"
   url: "https://twitter.com/intent/tweet?url=%(escaped_url)&text=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
@@ -704,7 +704,7 @@ targets {
 }
 
 targets {
-  nickname: "vkontakte"
+  nickname: "Vkontakte"
   url: "http://vkontakte.ru/share.php?url=%(escaped_url)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
@@ -802,85 +802,85 @@ targets {
 locale_mapping {
   locale_keys: "US"
   locale_keys: "CA"
-  targets: "mail"
-  targets: "facebook"
-  targets: "twitter"
+  targets: "Email"
+  targets: "Facebook"
+  targets: "Twitter"
   targets: "reddit"
-  targets: "linkedin"
-  targets: "pinterest"
+  targets: "Linkedin"
+  targets: "Pinterest"
 }
 
 locale_mapping {
   locale_keys: "JP"
   locale_keys: "KR"
-  targets: "mail"
-  targets: "twitter"
-  targets: "facebook"
+  targets: "Email"
+  targets: "Twitter"
+  targets: "Facebook"
 }
 
 locale_mapping {
   locale_keys: "IN"
-  targets: "mail"
-  targets: "whatsapp"
-  targets: "facebook"
-  targets: "linkedin"
-  targets: "twitter"
+  targets: "Email"
+  targets: "WhatsApp"
+  targets: "Facebook"
+  targets: "Linkedin"
+  targets: "Twitter"
 }
 
 locale_mapping {
   locale_keys: "BR"
-  targets: "mail"
-  targets: "facebook"
-  targets: "whatsapp"
-  targets: "linkedin"
-  targets: "twitter"
+  targets: "Email"
+  targets: "Facebook"
+  targets: "WhatsApp"
+  targets: "Linkedin"
+  targets: "Twitter"
 }
 
 locale_mapping {
   locale_keys: "GB"
-  targets: "mail"
-  targets: "facebook"
-  targets: "twitter"
-  targets: "linkedin"
-  targets: "whatsapp"
+  targets: "Email"
+  targets: "Facebook"
+  targets: "Twitter"
+  targets: "Linkedin"
+  targets: "WhatsApp"
 }
 
 locale_mapping {
   locale_keys: "FR"
-  targets: "mail"
-  targets: "facebook"
-  targets: "twitter"
-  targets: "linkedin"
+  targets: "Email"
+  targets: "Facebook"
+  targets: "Twitter"
+  targets: "Linkedin"
 
 }
 locale_mapping {
   locale_keys: "RU"
-  targets: "mail"
-  targets: "vkontakte"
-  targets: "facebook"
-  targets: "whatsapp"
-  targets: "twitter"
-  targets: "linkedin"
+  targets: "Email"
+  targets: "Vkontakte"
+  targets: "Facebook"
+  targets: "WhatsApp"
+  targets: "Twitter"
+  targets: "Linkedin"
 }
 
 locale_mapping {
   locale_keys: "GLOBAL"
-  targets: "mail"
-  targets: "facebook"
-  targets: "whatsapp"
-  targets: "twitter"
-  targets: "linkedin"
+  targets: "Email"
+  targets: "Facebook"
+  targets: "WhatsApp"
+  targets: "Twitter"
+  targets: "Linkedin"
 }
 
 locale_mapping {
   locale_keys: "ALL"
-  targets: "facebook"
-  targets: "linkedin"
-  targets: "mail"
-  targets: "pinterest"
+  targets: "Facebook"
+  targets: "Linkedin"
+  targets: "Email"
+  targets: "Pinterest"
   targets: "reddit"
-  targets: "twitter"
-  targets: "vkontakte"
-  targets: "whatsapp"
+  targets: "Twitter"
+  targets: "Vkontakte"
+  targets: "WhatsApp"
 }
 
