@@ -176,12 +176,12 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     size_t estimated_size,
-    GLuint gl_format,
-    GLuint gl_type,
+    const SharedImageBackingFactoryGLCommon::FormatInfo format_info,
     SharedImageBatchAccessManager* batch_access_manager,
     const GpuDriverBugWorkarounds& workarounds,
     const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
-    bool use_passthrough)
+    bool use_passthrough,
+    base::span<const uint8_t> pixel_data)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -191,18 +191,22 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
                                       usage,
                                       estimated_size,
                                       true /*is_thread_safe*/),
-      gl_format_(gl_format),
-      gl_type_(gl_type),
+      format_info_(format_info),
       batch_access_manager_(batch_access_manager),
       gl_unpack_attribs_(attribs),
       use_passthrough_(use_passthrough) {
   DCHECK(batch_access_manager_);
   created_on_context_ = gl::g_current_gl_context;
   // On some GPUs (NVidia) keeping reference to egl image itself is not enough,
-  // we must keep reference to at least one sibling.
-  if (workarounds.dont_delete_source_texture_for_egl_image) {
-    source_texture_holder_ = GenEGLImageSibling();
-  }
+  // we must keep reference to at least one sibling. Note that this workaround
+  // is currently enabled for all android devices.
+  // When we have pixel data, we want to initialize the texture with pixel data
+  // first before creating eglimage from it. Hence using GenEGLImageSibling()
+  // call to do that.
+  if (workarounds.dont_delete_source_texture_for_egl_image)
+    source_texture_holder_ = GenEGLImageSibling(pixel_data);
+  else if (!pixel_data.empty())
+    auto texture_holder = GenEGLImageSibling(pixel_data);
 }
 
 SharedImageBackingEglImage::~SharedImageBackingEglImage() {
@@ -237,7 +241,8 @@ std::unique_ptr<T> SharedImageBackingEglImage::ProduceGLTextureInternal(
     return std::make_unique<T>(manager, this, tracker, source_texture_holder_);
   }
 
-  auto texture_holder = GenEGLImageSibling();
+  auto texture_holder =
+      GenEGLImageSibling(/*pixel_data=*/base::span<const uint8_t>());
   if (!texture_holder)
     return nullptr;
   return std::make_unique<T>(manager, this, tracker, std::move(texture_holder));
@@ -368,7 +373,8 @@ void SharedImageBackingEglImage::EndRead(const RepresentationGLShared* reader) {
 }
 
 scoped_refptr<SharedImageBackingEglImage::TextureHolder>
-SharedImageBackingEglImage::GenEGLImageSibling() {
+SharedImageBackingEglImage::GenEGLImageSibling(
+    base::span<const uint8_t> pixel_data) {
   // Create a gles2::texture.
   GLenum target = GL_TEXTURE_2D;
   gl::GLApi* api = gl::g_current_gl_context;
@@ -390,12 +396,44 @@ SharedImageBackingEglImage::GenEGLImageSibling() {
   scoped_refptr<gles2::NativeImageBuffer> buffer;
   {
     AutoLock auto_lock(this);
+
+    // |pixel_data| if present should only be used to initialize texture when we
+    // create |egl_image_buffer_| from it and not after it has been already
+    // created.
+    DCHECK(pixel_data.empty() || !egl_image_buffer_);
     if (!egl_image_buffer_) {
-      // Allocate memory for texture object if this is the first EGLImage
-      // target/sibling. Memory for EGLImage will not be created if we don't
-      // allocate memory for the texture object.
-      api->glTexImage2DFn(target, 0, gl_format_, size().width(),
-                          size().height(), 0, gl_format_, gl_type_, nullptr);
+      // Note that we only want to upload pixel data to a texture during init
+      // time before we create |egl_image_buffer_| from it. If pixel data is
+      // empty we only allocate memory for the texture object which is required
+      // to create EGLImage.
+      if (format_info_.supports_storage) {
+        api->glTexStorage2DEXTFn(target, 1,
+                                 format_info_.storage_internal_format,
+                                 size().width(), size().height());
+
+        if (!pixel_data.empty()) {
+          SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+              scoped_unpack_state(api, gl_unpack_attribs_,
+                                  true /* uploading_data */);
+          api->glTexSubImage2DFn(target, 0, 0, 0, size().width(),
+                                 size().height(), format_info_.adjusted_format,
+                                 format_info_.gl_type, pixel_data.data());
+        }
+      } else if (format_info_.is_compressed) {
+        SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+            scoped_unpack_state(api, gl_unpack_attribs_, !pixel_data.empty());
+        api->glCompressedTexImage2DFn(
+            target, 0, format_info_.image_internal_format, size().width(),
+            size().height(), 0, pixel_data.size(), pixel_data.data());
+      } else {
+        SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+            scoped_unpack_state(api, gl_unpack_attribs_, !pixel_data.empty());
+
+        api->glTexImage2DFn(target, 0, format_info_.image_internal_format,
+                            size().width(), size().height(), 0,
+                            format_info_.adjusted_format, format_info_.gl_type,
+                            pixel_data.data());
+      }
 
       // Use service id of the texture as a source to create the native buffer.
       egl_image_buffer_ = gles2::NativeImageBuffer::Create(service_id);
@@ -407,6 +445,13 @@ SharedImageBackingEglImage::GenEGLImageSibling() {
     }
     buffer = egl_image_buffer_;
   }
+
+  // Mark the backing as cleared if pixel data has been uploaded. Note that
+  // SetCleared() acquires the lock. Hence it is kept outside of previous lock
+  // above.
+  if (!pixel_data.empty())
+    SetCleared();
+
   if (bind_egl_image) {
     // If we already have the |egl_image_buffer_|, just bind it to the new
     // texture to make it an EGLImage sibling.
@@ -416,9 +461,10 @@ SharedImageBackingEglImage::GenEGLImageSibling() {
   if (use_passthrough_) {
     auto texture_passthrough =
         base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
-            service_id, GL_TEXTURE_2D, gl_format_, size().width(),
+            service_id, GL_TEXTURE_2D, format_info_.gl_format, size().width(),
             size().height(),
-            /*depth=*/1, /*border=*/0, gl_format_, gl_type_);
+            /*depth=*/1, /*border=*/0, format_info_.gl_format,
+            format_info_.gl_type);
     return base::MakeRefCounted<TextureHolder>(std::move(texture_passthrough));
   }
 
@@ -436,9 +482,9 @@ SharedImageBackingEglImage::GenEGLImageSibling() {
     cleared_rect = gfx::Rect(size());
 
   // Set the level info.
-  texture->SetLevelInfo(GL_TEXTURE_2D, 0, gl_format_, size().width(),
-                        size().height(), 1, 0, gl_format_, gl_type_,
-                        cleared_rect);
+  texture->SetLevelInfo(
+      GL_TEXTURE_2D, 0, format_info_.gl_format, size().width(), size().height(),
+      1, 0, format_info_.gl_format, format_info_.gl_type, cleared_rect);
 
   texture->SetImmutable(true /*immutable*/, false /*immutable_storage*/);
   return base::MakeRefCounted<TextureHolder>(std::move(texture));
@@ -457,22 +503,6 @@ void SharedImageBackingEglImage::MarkForDestruction() {
   if (source_texture_holder_ && !have_context())
     source_texture_holder_->MarkContextLost();
   source_texture_holder_.reset();
-}
-
-void SharedImageBackingEglImage::InitializePixels(GLenum format,
-                                                  GLenum type,
-                                                  const uint8_t* data) {
-  auto texture_holder =
-      source_texture_holder_ ? source_texture_holder_ : GenEGLImageSibling();
-  const GLenum target = texture_holder->texture()->target();
-  const unsigned int service_id = texture_holder->texture()->service_id();
-  gl::GLApi* api = gl::g_current_gl_context;
-  SharedImageBackingGLCommon::ScopedRestoreTexture scoped_restore(api, target);
-  api->glBindTextureFn(target, service_id);
-  SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
-      scoped_unpack_state(api, gl_unpack_attribs_, true /* uploading_data */);
-  api->glTexSubImage2DFn(target, 0, 0, 0, size().width(), size().height(),
-                         format, type, data);
 }
 
 }  // namespace gpu

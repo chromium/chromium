@@ -139,16 +139,10 @@ SharedImageBackingFactoryEGL::MakeEglImageBacking(
     return nullptr;
   }
 
-  auto egl_backing = std::make_unique<SharedImageBackingEglImage>(
+  return std::make_unique<SharedImageBackingEglImage>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info.gl_format, format_info.gl_type,
-      batch_access_manager_, workarounds_, attribs_, use_passthrough_);
-
-  if (!pixel_data.empty()) {
-    egl_backing->InitializePixels(format_info.adjusted_format,
-                                  format_info.gl_type, pixel_data.data());
-  }
-  return egl_backing;
+      estimated_size, format_info, batch_access_manager_, workarounds_,
+      attribs_, use_passthrough_, pixel_data);
 }
 
 }  // namespace gpu

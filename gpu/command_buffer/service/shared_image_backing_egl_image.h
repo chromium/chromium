@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_gl_common.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_bindings.h"
@@ -44,20 +45,18 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       SkAlphaType alpha_type,
       uint32_t usage,
       size_t estimated_size,
-      GLuint gl_format,
-      GLuint gl_type,
+      const SharedImageBackingFactoryGLCommon::FormatInfo format_into,
       SharedImageBatchAccessManager* batch_access_manager,
       const GpuDriverBugWorkarounds& workarounds,
       const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
-      bool use_passthrough);
+      bool use_passthrough,
+      base::span<const uint8_t> pixel_data);
 
   ~SharedImageBackingEglImage() override;
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void MarkForDestruction() override;
-
-  void InitializePixels(GLenum format, GLenum type, const uint8_t* data);
 
  protected:
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
@@ -90,12 +89,14 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
   void EndRead(const RepresentationGLShared* reader);
 
   // Use to create EGLImage texture target from the same EGLImage object.
-  scoped_refptr<TextureHolder> GenEGLImageSibling();
+  // Optional |pixel_data| to initialize a texture with before EGLImage object
+  // is created from it.
+  scoped_refptr<TextureHolder> GenEGLImageSibling(
+      base::span<const uint8_t> pixel_data);
 
   void SetEndReadFence(scoped_refptr<gl::SharedGLFenceEGL> shared_egl_fence);
 
-  const GLuint gl_format_;
-  const GLuint gl_type_;
+  const SharedImageBackingFactoryGLCommon::FormatInfo format_info_;
   scoped_refptr<TextureHolder> source_texture_holder_;
   gl::GLApi* created_on_context_;
 
