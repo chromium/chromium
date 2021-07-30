@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/providers/images/chromium_branded_image_provider.h"
 
-#import <UIKit/UIKit.h>
-
 #include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,55 +16,53 @@ ChromiumBrandedImageProvider::ChromiumBrandedImageProvider() {}
 
 ChromiumBrandedImageProvider::~ChromiumBrandedImageProvider() {}
 
-UIImage* ChromiumBrandedImageProvider::GetAccountsListActivityControlsImage() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
-}
-
 UIImage*
 ChromiumBrandedImageProvider::GetClearBrowsingDataAccountActivityImage() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kClearBrowsingDataAccountActivity);
 }
 
 UIImage* ChromiumBrandedImageProvider::GetClearBrowsingDataSiteDataImage() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
-}
-
-UIImage*
-ChromiumBrandedImageProvider::GetSigninConfirmationSyncSettingsImage() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
-}
-
-UIImage*
-ChromiumBrandedImageProvider::GetSigninConfirmationPersonalizeServicesImage() {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return rb.GetNativeImageNamed(IDR_IOS_SETTINGS_INFO_24).ToUIImage();
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kClearBrowsingDataSiteData);
 }
 
 UIImage* ChromiumBrandedImageProvider::GetWhatsNewIconImage(WhatsNewIcon type) {
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return rb.GetNativeImageNamed(IDR_IOS_PROMO_INFO).ToUIImage();
+  switch (type) {
+    case WHATS_NEW_LOGO:
+      return ios::provider::GetBrandedImage(
+          ios::provider::BrandedImage::kWhatsNewLogo);
+    case WHATS_NEW_LOGO_ROUNDED_RECTANGLE:
+      return ios::provider::GetBrandedImage(
+          ios::provider::BrandedImage::kWhatsNewLogoRoundedRectangle);
+    case WHATS_NEW_INFO: {
+      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+      return rb.GetNativeImageNamed(IDR_IOS_PROMO_INFO).ToUIImage();
+    }
+  }
 }
 
 UIImage* ChromiumBrandedImageProvider::GetDownloadGoogleDriveImage() {
-  return [UIImage imageNamed:@"download_drivium"];
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kDownloadGoogleDrive);
 }
 
 UIImage* ChromiumBrandedImageProvider::GetStaySafePromoImage() {
-  return [UIImage imageNamed:@"chromium_stay_safe"];
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kStaySafePromo);
 }
 
 UIImage* ChromiumBrandedImageProvider::GetMadeForIOSPromoImage() {
-  return [UIImage imageNamed:@"chromium_ios_made"];
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kMadeForIOSPromo);
 }
 
 UIImage* ChromiumBrandedImageProvider::GetMadeForIPadOSPromoImage() {
-  return [UIImage imageNamed:@"chromium_ipados_made"];
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kMadeForIPadOSPromo);
 }
 
 UIImage* ChromiumBrandedImageProvider::GetNonModalPromoImage() {
-  return [UIImage imageNamed:@"chromium_non_default_promo"];
+  return ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kNonModalDefaultBrowserPromo);
 }

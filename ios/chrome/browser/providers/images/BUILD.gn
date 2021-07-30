@@ -8,14 +8,9 @@ source_set("images") {
     "chromium_branded_image_provider.mm",
   ]
   deps = [
-    "resources:chromium_ios_made",
-    "resources:chromium_ipados_made",
-    "resources:chromium_non_default_promo",
-    "resources:chromium_stay_safe",
-    "resources:download_drivium",
-    "//base",
     "//ios/chrome/app/theme",
-    "//ios/public/provider/chrome/browser",
+    "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/images",
     "//ui/base",
   ]

@@ -43,6 +43,7 @@ source_set("font_size_java_script_feature") {
 group("provider_api") {
   deps = [
     # The individual APIs.
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
@@ -93,6 +94,7 @@ group("test_providers") {
     ":test_provider_factory",
 
     # The individual API implementations.
+    "//ios/public/provider/chrome/browser/branded_images:test_branded_images",
     "//ios/public/provider/chrome/browser/lens:test_lens",
     "//ios/public/provider/chrome/browser/modals:test_modals",
     "//ios/public/provider/chrome/browser/risk_data:test_risk_data",

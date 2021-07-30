@@ -13,11 +13,8 @@ class ChromiumBrandedImageProvider : public BrandedImageProvider {
   ~ChromiumBrandedImageProvider() override;
 
   // BrandedImageProvider.
-  UIImage* GetAccountsListActivityControlsImage() override;
   UIImage* GetClearBrowsingDataAccountActivityImage() override;
   UIImage* GetClearBrowsingDataSiteDataImage() override;
-  UIImage* GetSigninConfirmationSyncSettingsImage() override;
-  UIImage* GetSigninConfirmationPersonalizeServicesImage() override;
   UIImage* GetWhatsNewIconImage(WhatsNewIcon type) override;
   UIImage* GetDownloadGoogleDriveImage() override;
   UIImage* GetStaySafePromoImage() override;
