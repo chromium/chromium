@@ -721,8 +721,9 @@ class AppControllerReplaceNTPBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that when a GURL is opened after startup, it replaces the NTP.
+// Flaky. See crbug.com/1234765.
 IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
-                       ReplaceNTPAfterStartup) {
+                       DISABLED_ReplaceNTPAfterStartup) {
   // Depending on network connectivity, the NTP URL can either be
   // chrome://newtab/ or chrome://new-tab-page-third-party. See
   // ntp_test_utils::GetFinalNtpUrl for more details.
