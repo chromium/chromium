@@ -3,12 +3,12 @@
 <div id="wifiInfoContainer">
   <div class="horizontal-data-point-container">
     <div class="data-point-container">
-      <data-point id="name" header="Network Name"
-          value="[[network.name]]"
-          orientation="horizontal">
-      </data-point>
       <data-point id="ipAddress" header="IP Address"
           value="[[network.ipConfig.ipAddress]]"
+          orientation="horizontal">
+      </data-point>
+      <data-point id="ssid" header="SSID"
+          value="[[network.typeProperties.wifi.ssid]]"
           orientation="horizontal">
       </data-point>
       <data-point id="bssid" header="BSSID"

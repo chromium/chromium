@@ -60,8 +60,8 @@ export function wifiInfoTestSuite() {
     const expectedGhz = 5.745;
     return initializeWifiInfo().then(() => {
       assertTextContains(
-          getDataPointValue(wifiInfoElement, '#name'),
-          `${fakeWifiNetwork.name}`);
+          getDataPointValue(wifiInfoElement, '#ssid'),
+          fakeWifiNetwork.typeProperties.wifi.ssid);
       assertTextContains(
           getDataPointValue(wifiInfoElement, '#ipAddress'),
           `${fakeWifiNetwork.ipConfig.ipAddress}`);
