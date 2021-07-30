@@ -107,6 +107,8 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   void CreateNonUserGestureReferrerChain() {
     user_gesture_map()->clear();
     base::Time now = base::Time::Now();
+    base::Time half_hour_ago =
+        base::Time::FromDoubleT(now.ToDoubleT() - 30.0 * 60.0);
     base::Time one_hour_ago =
         base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
     base::Time two_hours_ago =
@@ -151,7 +153,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
         std::make_unique<NavigationEvent>();
     last_navigation->source_url = prev_url;
     last_navigation->original_request_url = GURL("http://A.com");
-    last_navigation->last_updated = now;
+    last_navigation->last_updated = half_hour_ago;
     last_navigation->navigation_initiation =
         ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
     navigation_event_list()->RecordNavigationEvent(std::move(last_navigation));
@@ -530,25 +532,24 @@ TEST_F(SBNavigationObserverTest,
   ReferrerChain referrer_chain;
   navigation_observer_manager_->AppendRecentNavigations(10, &referrer_chain);
 
-  int utm_counter = 9;
-  GURL expected_current_url =
-      GURL("http://C.com?utm=" + base::NumberToString(utm_counter));
+  int utm_counter = 10;
+  GURL expected_current_url = GURL("http://A.com");
   GURL expected_prev_url;
 
   // AppendRecentNavigations skips some entries based on the time.
   // Before:
   // Gesture(0...1) -> NonGesture(2..11) -> Gesture(12)
   // After:
-  // Non Gesture(0...2) -> Empty(3...4) -> NG(5...8) -> G(9..10)
+  // Gesture(0) -> Non Gesture(1...4) -> Empty(5...7) -> NG(5...8) -> G(9..10)
   // (on recording into referrer chain, the navigations are recorded in a
   // reverse order and the first two are skipped due to timing)
-  for (int i = 0; i < 9; i++) {
+  for (int i = 0; i < 10; i++) {
     expected_prev_url = expected_current_url;
     utm_counter--;
     expected_current_url =
         GURL("http://C.com?utm=" + base::NumberToString(utm_counter));
     // The middle entries should have an empty ReferrerChainEntry.
-    if (i == 3 || i == 4) {
+    if (i == 5 || i == 6 || i == 7) {
       EXPECT_EQ("", referrer_chain[i].url());
     } else {
       EXPECT_EQ(expected_prev_url, referrer_chain[i].url());
@@ -556,10 +557,10 @@ TEST_F(SBNavigationObserverTest,
     }
   }
   expected_prev_url = expected_current_url;
-  EXPECT_EQ(expected_prev_url, referrer_chain[9].url());
-  EXPECT_EQ(GURL("http://B.com"), referrer_chain[9].referrer_url());
-  EXPECT_EQ(GURL("http://B.com"), referrer_chain[10].url());
-  EXPECT_EQ(GURL("http://A.com"), referrer_chain[10].referrer_url());
+  EXPECT_EQ(expected_prev_url, referrer_chain[10].url());
+  EXPECT_EQ(GURL("http://B.com"), referrer_chain[10].referrer_url());
+  EXPECT_EQ(GURL("http://B.com"), referrer_chain[11].url());
+  EXPECT_EQ(GURL("http://A.com"), referrer_chain[11].referrer_url());
 }
 
 TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
