@@ -18,6 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -85,7 +86,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             ChromeShareExtras chromeShareExtras, long shareStartTime, String visibleUrl) {
         this(/*context=*/null, tab, chromeOptionShareCallback, chromeShareExtras, shareStartTime,
                 visibleUrl, shareParams.getText());
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
     }
 
     private LinkToTextCoordinator(Context context, Tab tab,
@@ -103,21 +103,20 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mTab.addObserver(this);
         mCancelRequest = false;
         mRequestSelectorStartTime = System.currentTimeMillis();
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                && mChromeShareExtras != null && mChromeShareExtras.isReshareHighlightedText()) {
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
+    }
+
+    public ShareParams getShareParams(@LinkToggleState int linkToggleState) {
+        if (linkToggleState == LinkToggleState.LINK) {
+            return mShareLinkParams;
+        }
+        return mShareTextParams;
+    }
+
+    public void shareLinkToText() {
+        if (mChromeShareExtras.isReshareHighlightedText()) {
             reshareHighlightedText();
         } else {
             startRequestSelector();
-        }
-    }
-
-    public ShareParams getShareParams(@LinkGeneration int linkGeneration) {
-        switch (linkGeneration) {
-            case LinkGeneration.LINK:
-                return mShareLinkParams;
-            default:
-                return mShareTextParams;
         }
     }
 
@@ -186,13 +185,12 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                         .setLinkToTextSuccessful(!selector.isEmpty())
                         .build();
         mChromeOptionShareCallback.showShareSheet(
-                getShareParams(selector.isEmpty() ? LinkGeneration.FAILURE : LinkGeneration.LINK),
+                getShareParams(selector.isEmpty() ? LinkToggleState.NO_LINK : LinkToggleState.LINK),
                 mChromeShareExtras, mShareStartTime);
         cleanup();
     }
 
-    @VisibleForTesting
-    void startRequestSelector() {
+    private void startRequestSelector() {
         if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mShareUrl))) {
             LinkToTextBridge.logGenerateErrorBlockList();
             onSelectorReady(INVALID_SELECTOR);
@@ -218,6 +216,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void reshareHighlightedText() {
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
         setTextFragmentReceiver();
         mProducer.extractTextFragmentsMatches(
                 new TextFragmentReceiver.ExtractTextFragmentsMatchesResponse() {

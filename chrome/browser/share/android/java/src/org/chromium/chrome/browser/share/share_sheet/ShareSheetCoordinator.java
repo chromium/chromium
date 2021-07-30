@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.share.ShareRankingBridge;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -71,6 +72,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final SettingsLauncher mSettingsLauncher;
     private final boolean mIsSyncEnabled;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
+    private final BottomSheetObserver mBottomSheetObserver;
+    private final LargeIconBridge mIconBridge;
+    private final Tracker mFeatureEngagementTracker;
+
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
@@ -83,9 +88,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private WindowAndroid mWindowAndroid;
     private ChromeShareExtras mChromeShareExtras;
     private LinkToTextCoordinator mLinkToTextCoordinator;
-    private final BottomSheetObserver mBottomSheetObserver;
-    private final LargeIconBridge mIconBridge;
-    private final Tracker mFeatureEngagementTracker;
+    private ShareSheetLinkToggleCoordinator mShareSheetLinkToggleCoordinator;
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
 
     // This same constant is used on the C++ side, in ShareRanking, to indicate
@@ -183,18 +186,20 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     /**
-     * Updates {@code mShareParams} from the {@link LinkGeneration} state.
+     * Updates {@code mShareParams} from the {@link LinkToggleState}.
      * Called when toggling between LinkToText options
      *
-     * @param state The state from {@link LinkGeneration} to which ShareParams should be updated.
+     * @param state The state from {@link LinkToggleState} to which ShareParams should be updated.
      */
-    void updateShareSheetForLinkToText(@LinkGeneration int state) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
-                || mLinkToTextCoordinator == null) {
+    void updateShareSheetForLinkToggle(@LinkToggleState int state) {
+        if ((!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                    || mLinkToTextCoordinator == null)
+                && (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                        || mShareSheetLinkToggleCoordinator == null)) {
             return;
         }
 
-        mShareParams = mLinkToTextCoordinator.getShareParams(state);
+        mShareParams = mShareSheetLinkToggleCoordinator.getShareParams(state);
         mBottomSheet.updateShareParams(mShareParams);
         mLinkGenerationStatusForMetrics = state;
         updateShareSheet(null);
@@ -252,10 +257,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             mLinkToTextCoordinator =
                     new LinkToTextCoordinator(params, mTabProvider.get(), this, chromeShareExtras,
                             shareStartTime, getUrlToShare(params, chromeShareExtras, tabUrl));
-            return;
         }
-
-        showShareSheet(params, chromeShareExtras, shareStartTime);
+        mShareSheetLinkToggleCoordinator =
+                new ShareSheetLinkToggleCoordinator(params, chromeShareExtras, shareStartTime,
+                        mLinkToTextCoordinator, /*chromeOptionShareCallback=*/this);
     }
 
     private Profile getCurrentProfile() {

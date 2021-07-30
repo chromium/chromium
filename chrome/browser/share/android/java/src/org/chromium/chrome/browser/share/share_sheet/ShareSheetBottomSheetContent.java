@@ -34,6 +34,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -366,7 +367,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                             AppCompatResources.getDrawable(mContext, R.drawable.link));
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_success_link_toast_message));
-                    mShareSheetCoordinator.updateShareSheetForLinkToText(LinkGeneration.LINK);
+                    mShareSheetCoordinator.updateShareSheetForLinkToggle(LinkToggleState.LINK);
                     RecordUserAction.record("SharingHubAndroid.LinkGeneration.Link");
                     break;
                 case LinkGeneration.TEXT:
@@ -375,7 +376,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                             AppCompatResources.getDrawable(mContext, R.drawable.link_off));
                     linkImageView.setContentDescription(mContext.getResources().getString(
                             R.string.link_to_text_success_text_toast_message));
-                    mShareSheetCoordinator.updateShareSheetForLinkToText(LinkGeneration.TEXT);
+                    mShareSheetCoordinator.updateShareSheetForLinkToggle(LinkToggleState.NO_LINK);
                     RecordUserAction.record("SharingHubAndroid.LinkGeneration.Text");
                     break;
             }

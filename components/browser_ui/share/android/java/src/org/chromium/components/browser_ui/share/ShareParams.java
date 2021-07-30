@@ -33,7 +33,7 @@ public class ShareParams {
     private final String mTextFormat;
 
     /** The URL of the page to be shared. */
-    private final String mUrl;
+    private String mUrl;
 
     /** The common MIME type of the files to be shared. A wildcard if they have differing types. */
     private final String mFileContentType;
@@ -132,6 +132,13 @@ public class ShareParams {
      */
     public String getUrl() {
         return mUrl;
+    }
+
+    /**
+     * @param url set URL to be shared.
+     */
+    public void setUrl(String url) {
+        mUrl = url;
     }
 
     /**
