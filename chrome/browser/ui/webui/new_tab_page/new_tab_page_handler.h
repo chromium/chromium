@@ -43,6 +43,10 @@ namespace search_provider_logos {
 class LogoService;
 }  // namespace search_provider_logos
 
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
+
 class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public InstantServiceObserver,
                           public NtpBackgroundServiceObserver,
@@ -55,6 +59,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     Profile* profile,
                     InstantService* instant_service,
                     search_provider_logos::LogoService* logo_service,
+                    const ui::ThemeProvider* theme_provider,
                     content::WebContents* web_contents,
                     const base::Time& ntp_navigation_start_time);
   ~NewTabPageHandler() override;
@@ -153,6 +158,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   InstantService* instant_service_;
   NtpBackgroundService* ntp_background_service_;
   search_provider_logos::LogoService* logo_service_;
+  const ui::ThemeProvider* theme_provider_;
   GURL last_blocklisted_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;

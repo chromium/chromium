@@ -21,6 +21,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -490,7 +491,8 @@ void NewTabPageUI::CreatePageHandler(
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       instant_service_, LogoServiceFactory::GetForProfile(profile_),
-      web_contents_, navigation_start_time_);
+      &ThemeService::GetThemeProviderForProfile(profile_), web_contents_,
+      navigation_start_time_);
 }
 
 void NewTabPageUI::CreateCustomizeThemesHandler(

@@ -318,11 +318,6 @@ v8::Local<v8::Object> GenerateNtpTheme(v8::Isolate* isolate,
     }
   }
 
-  builder.Set("themeId", theme.theme_id);
-  builder.Set("themeName", theme.theme_name);
-
-  builder.Set("customBackgroundDisabledByPolicy",
-              theme.custom_background_disabled_by_policy);
   builder.Set("customBackgroundConfigured",
               !theme.custom_background_url.is_empty());
 
@@ -339,55 +334,6 @@ v8::Local<v8::Object> GenerateNtpTheme(v8::Isolate* isolate,
     // a custom background is set.
     builder.Set("attributionUrl", std::string());
   }
-
-  // Set fields for themeing NTP elements.
-  builder.Set("isNtpBackgroundDark", !color_utils::IsDark(theme.text_color));
-  builder.Set("useTitleContainer", theme.has_theme_image);
-
-  // TODO(gayane): Rename icon color to shortcut color in JS for consitancy.
-  builder.Set("iconBackgroundColor",
-              SkColorToArray(isolate, theme.shortcut_color));
-  builder.Set("useWhiteAddIcon", color_utils::IsDark(theme.shortcut_color));
-
-  builder.Set("logoColor", SkColorToArray(isolate, theme.logo_color));
-
-  builder.Set("colorId", theme.color_id);
-  if (theme.color_id != -1) {
-    builder.Set("colorDark", SkColorToArray(isolate, theme.color_dark));
-    builder.Set("colorLight", SkColorToArray(isolate, theme.color_light));
-    builder.Set("colorPicked", SkColorToArray(isolate, theme.color_picked));
-  }
-
-  gin::DataObjectBuilder search_box(isolate);
-  search_box.Set("bg", SkColorToArray(isolate, theme.search_box.bg));
-  search_box.Set("icon", SkColorToArray(isolate, theme.search_box.icon));
-  search_box.Set("iconSelected",
-                 SkColorToArray(isolate, theme.search_box.icon_selected));
-  search_box.Set("placeholder",
-                 SkColorToArray(isolate, theme.search_box.placeholder));
-  search_box.Set("resultsBg",
-                 SkColorToArray(isolate, theme.search_box.results_bg));
-  search_box.Set("resultsBgHovered",
-                 SkColorToArray(isolate, theme.search_box.results_bg_hovered));
-  search_box.Set("resultsBgSelected",
-                 SkColorToArray(isolate, theme.search_box.results_bg_selected));
-  search_box.Set("resultsDim",
-                 SkColorToArray(isolate, theme.search_box.results_dim));
-  search_box.Set(
-      "resultsDimSelected",
-      SkColorToArray(isolate, theme.search_box.results_dim_selected));
-  search_box.Set("resultsText",
-                 SkColorToArray(isolate, theme.search_box.results_text));
-  search_box.Set(
-      "resultsTextSelected",
-      SkColorToArray(isolate, theme.search_box.results_text_selected));
-  search_box.Set("resultsUrl",
-                 SkColorToArray(isolate, theme.search_box.results_url));
-  search_box.Set(
-      "resultsUrlSelected",
-      SkColorToArray(isolate, theme.search_box.results_url_selected));
-  search_box.Set("text", SkColorToArray(isolate, theme.search_box.text));
-  builder.Set("searchBox", search_box.Build());
 
   return builder.Build();
 }

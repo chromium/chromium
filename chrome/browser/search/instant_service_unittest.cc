@@ -690,10 +690,6 @@ TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
       ThemeService::GetThemeProviderForProfile(profile());
   SkColor default_text_color =
       theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT);
-  SkColor default_logo_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_LOGO);
-  SkColor default_shortcut_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
 
   ASSERT_FALSE(instant_service_->IsCustomBackgroundSet());
 
@@ -701,8 +697,6 @@ TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
   NtpTheme* theme = instant_service_->GetInitializedNtpTheme();
   EXPECT_EQ(default_text_color, theme->text_color);
   EXPECT_FALSE(theme->logo_alternate);
-  EXPECT_EQ(default_logo_color, theme->logo_color);
-  EXPECT_EQ(default_shortcut_color, theme->shortcut_color);
 
   // Install colors, theme update should trigger SetNTPElementsNtpTheme() and
   // update NTP themed elements info.
@@ -714,8 +708,6 @@ TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
   theme = instant_service_->GetInitializedNtpTheme();
   EXPECT_NE(default_text_color, theme->text_color);
   EXPECT_TRUE(theme->logo_alternate);
-  EXPECT_NE(default_logo_color, theme->logo_color);
-  EXPECT_NE(default_shortcut_color, theme->shortcut_color);
 
   // Setting a custom background should call SetNTPElementsNtpTheme() and
   // update NTP themed elements info.
@@ -727,10 +719,4 @@ TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
   theme = instant_service_->GetInitializedNtpTheme();
   EXPECT_NE(default_text_color, theme->text_color);
   EXPECT_TRUE(theme->logo_alternate);
-  EXPECT_EQ(default_logo_color, theme->logo_color);
-  // The shortcut color with a background set should always use the light mode
-  // default regardless of system setting.
-  EXPECT_EQ(ThemeProperties::GetDefaultColor(
-                ThemeProperties::COLOR_NTP_SHORTCUT, false),
-            theme->shortcut_color);
 }

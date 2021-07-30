@@ -43,29 +43,6 @@ enum ThemeBackgroundImageTiling {
   THEME_BKGRND_IMAGE_LAST = THEME_BKGRND_IMAGE_REPEAT,
 };
 
-struct SearchBoxTheme {
-  SearchBoxTheme();
-  SearchBoxTheme(const SearchBoxTheme& other);
-  ~SearchBoxTheme();
-
-  bool operator==(const SearchBoxTheme& rhs) const;
-
-  SkColor bg = gfx::kPlaceholderColor;
-  SkColor icon = gfx::kPlaceholderColor;
-  SkColor icon_selected = gfx::kPlaceholderColor;
-  SkColor placeholder = gfx::kPlaceholderColor;
-  SkColor results_bg = gfx::kPlaceholderColor;
-  SkColor results_bg_hovered = gfx::kPlaceholderColor;
-  SkColor results_bg_selected = gfx::kPlaceholderColor;
-  SkColor results_dim = gfx::kPlaceholderColor;
-  SkColor results_dim_selected = gfx::kPlaceholderColor;
-  SkColor results_text = gfx::kPlaceholderColor;
-  SkColor results_text_selected = gfx::kPlaceholderColor;
-  SkColor results_url = gfx::kPlaceholderColor;
-  SkColor results_url_selected = gfx::kPlaceholderColor;
-  SkColor text = gfx::kPlaceholderColor;
-};
-
 // Theme settings for the NTP.
 struct NtpTheme {
   NtpTheme();
@@ -76,13 +53,6 @@ struct NtpTheme {
 
   // True if the default theme is selected.
   bool using_default_theme = true;
-
-  // True if the system theme uses a light-on-dark color scheme instead of
-  // dark-on-light.
-  bool using_dark_colors = false;
-
-  // True if having a custom background is disabled by policy.
-  bool custom_background_disabled_by_policy = false;
 
   // Url of the custom background selected by the user.
   GURL custom_background_url;
@@ -134,32 +104,6 @@ struct NtpTheme {
 
   // True if theme has NTP image.
   bool has_theme_image = false;
-
-  // The theme name.
-  std::string theme_name;
-
-  // The color id for Chrome Colors. It is -1 if Chrome Colors is not set, 0
-  // when Chrome Colors is set but not from predefined color list, and > 0 if
-  // Chrome Colors is set from predefined color list.
-  int color_id = -1;
-
-  // The dark color for Chrome Colors. Valid only if Chrome Colors is set.
-  SkColor color_dark = gfx::kPlaceholderColor;
-
-  // The light color for Chrome Colors. Valid only if Chrome Colors is set.
-  SkColor color_light = gfx::kPlaceholderColor;
-
-  // The picked custom color for Chrome Colors. Valid only if Chrome Colors is
-  // set.
-  SkColor color_picked = gfx::kPlaceholderColor;
-
-  // Color used for alternative Google logo on NTP.
-  SkColor logo_color = gfx::kPlaceholderColor;
-
-  // Color for NTP shortcut backgrounds.
-  SkColor shortcut_color = gfx::kPlaceholderColor;
-
-  SearchBoxTheme search_box;
 };
 
 struct InstantMostVisitedItem {

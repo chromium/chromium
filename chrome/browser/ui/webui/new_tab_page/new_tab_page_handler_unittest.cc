@@ -7,8 +7,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/test_theme_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
@@ -75,7 +77,8 @@ class NewTabPageHandlerTest : public testing::Test {
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), &profile_, &mock_instant_service_,
-        &mock_logo_service_, web_contents_, base::Time::Now());
+        &mock_logo_service_, &test_theme_provider_, web_contents_,
+        base::Time::Now());
     EXPECT_EQ(handler_.get(), instant_service_observer_);
   }
 
@@ -117,6 +120,7 @@ class NewTabPageHandlerTest : public testing::Test {
   TestingProfile profile_;
   MockInstantService mock_instant_service_;
   MockLogoService mock_logo_service_;
+  TestThemeProvider test_theme_provider_;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
   base::HistogramTester histogram_tester_;
@@ -140,28 +144,49 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   ntp_theme.text_color = SkColorSetRGB(0, 0, 2);
   ntp_theme.using_default_theme = false;
   ntp_theme.logo_alternate = true;
-  ntp_theme.logo_color = SkColorSetRGB(0, 0, 3);
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_NTP_LOGO,
+                                SkColorSetRGB(0, 0, 3));
   ntp_theme.theme_id = "bar";
   ntp_theme.image_horizontal_alignment = THEME_BKGRND_IMAGE_ALIGN_CENTER;
   ntp_theme.image_vertical_alignment = THEME_BKGRND_IMAGE_ALIGN_TOP;
   ntp_theme.image_tiling = THEME_BKGRND_IMAGE_REPEAT_X;
   ntp_theme.has_attribution = true;
   ntp_theme.has_theme_image = true;
-  ntp_theme.shortcut_color = SkColorSetRGB(0, 0, 4);
-  ntp_theme.search_box.bg = SkColorSetRGB(0, 0, 5);
-  ntp_theme.search_box.icon = SkColorSetRGB(0, 0, 6);
-  ntp_theme.search_box.icon_selected = SkColorSetRGB(0, 0, 7);
-  ntp_theme.search_box.placeholder = SkColorSetRGB(0, 0, 8);
-  ntp_theme.search_box.results_bg = SkColorSetRGB(0, 0, 9);
-  ntp_theme.search_box.results_bg_hovered = SkColorSetRGB(0, 0, 10);
-  ntp_theme.search_box.results_bg_selected = SkColorSetRGB(0, 0, 11);
-  ntp_theme.search_box.results_dim = SkColorSetRGB(0, 0, 12);
-  ntp_theme.search_box.results_dim_selected = SkColorSetRGB(0, 0, 13);
-  ntp_theme.search_box.results_text = SkColorSetRGB(0, 0, 14);
-  ntp_theme.search_box.results_text_selected = SkColorSetRGB(0, 0, 15);
-  ntp_theme.search_box.results_url = SkColorSetRGB(0, 0, 16);
-  ntp_theme.search_box.results_url_selected = SkColorSetRGB(0, 0, 17);
-  ntp_theme.search_box.text = SkColorSetRGB(0, 0, 18);
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_NTP_SHORTCUT,
+                                SkColorSetRGB(0, 0, 4));
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_OMNIBOX_BACKGROUND,
+                                SkColorSetRGB(0, 0, 5));
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON,
+                                SkColorSetRGB(0, 0, 6));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED,
+      SkColorSetRGB(0, 0, 7));
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED,
+                                SkColorSetRGB(0, 0, 8));
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_BG,
+                                SkColorSetRGB(0, 0, 9));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED,
+      SkColorSetRGB(0, 0, 10));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED,
+      SkColorSetRGB(0, 0, 11));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED,
+      SkColorSetRGB(0, 0, 12));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED,
+      SkColorSetRGB(0, 0, 13));
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_OMNIBOX_TEXT,
+                                SkColorSetRGB(0, 0, 14));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED,
+      SkColorSetRGB(0, 0, 15));
+  test_theme_provider_.SetColor(ThemeProperties::COLOR_OMNIBOX_RESULTS_URL,
+                                SkColorSetRGB(0, 0, 16));
+  test_theme_provider_.SetColor(
+      ThemeProperties::COLOR_OMNIBOX_RESULTS_URL_SELECTED,
+      SkColorSetRGB(0, 0, 17));
 
   instant_service_observer_->NtpThemeChanged(ntp_theme);
   mock_page_.FlushForTesting();
@@ -203,7 +228,7 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_EQ(SkColorSetRGB(0, 0, 15), theme->search_box->results_text_selected);
   EXPECT_EQ(SkColorSetRGB(0, 0, 16), theme->search_box->results_url);
   EXPECT_EQ(SkColorSetRGB(0, 0, 17), theme->search_box->results_url_selected);
-  EXPECT_EQ(SkColorSetRGB(0, 0, 18), theme->search_box->text);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 14), theme->search_box->text);
 }
 
 TEST_F(NewTabPageHandlerTest, Histograms) {

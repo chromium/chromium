@@ -30,9 +30,11 @@
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -52,27 +54,39 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/theme_provider.h"
 #include "ui/gfx/color_utils.h"
 
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
-new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
+new_tab_page::mojom::ThemePtr MakeTheme(
+    const NtpTheme& ntp_theme,
+    const ui::ThemeProvider* theme_provider) {
   auto theme = new_tab_page::mojom::Theme::New();
   auto most_visited = most_visited::mojom::MostVisitedTheme::New();
   theme->is_default = ntp_theme.using_default_theme;
   theme->background_color = ntp_theme.background_color;
-  most_visited->background_color = ntp_theme.shortcut_color;
+  if (!ntp_theme.custom_background_url.is_empty()) {
+    most_visited->background_color = ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_NTP_SHORTCUT, false);
+    theme->logo_color = ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_NTP_LOGO, false);
+  } else {
+    most_visited->background_color =
+        theme_provider->GetColor(ThemeProperties::COLOR_NTP_SHORTCUT);
+    if (ntp_theme.logo_alternate) {
+      theme->logo_color =
+          theme_provider->GetColor(ThemeProperties::COLOR_NTP_LOGO);
+    }
+  }
   most_visited->use_white_tile_icon =
       color_utils::IsDark(most_visited->background_color);
   most_visited->is_dark = !color_utils::IsDark(ntp_theme.text_color);
   most_visited->use_title_pill = false;
   theme->text_color = ntp_theme.text_color;
   theme->is_dark = !color_utils::IsDark(ntp_theme.text_color);
-  if (ntp_theme.logo_alternate) {
-    theme->logo_color = ntp_theme.logo_color;
-  }
   auto background_image = new_tab_page::mojom::BackgroundImage::New();
   if (!ntp_theme.custom_background_url.is_empty()) {
     background_image->url = ntp_theme.custom_background_url;
@@ -160,21 +174,38 @@ new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg = ntp_theme.search_box.bg;
-  search_box->icon = ntp_theme.search_box.icon;
-  search_box->icon_selected = ntp_theme.search_box.icon_selected;
-  search_box->placeholder = ntp_theme.search_box.placeholder;
-  search_box->results_bg = ntp_theme.search_box.results_bg;
-  search_box->results_bg_hovered = ntp_theme.search_box.results_bg_hovered;
-  search_box->results_bg_selected = ntp_theme.search_box.results_bg_selected;
-  search_box->results_dim = ntp_theme.search_box.results_dim;
-  search_box->results_dim_selected = ntp_theme.search_box.results_dim_selected;
-  search_box->results_text = ntp_theme.search_box.results_text;
+  search_box->bg =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+  search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
+  search_box->icon_selected = GetOmniboxColor(
+      theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
+  search_box->placeholder =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
+  search_box->results_bg =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
+  search_box->results_bg_hovered =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
+                      OmniboxPartState::HOVERED);
+  search_box->results_bg_selected =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND,
+                      OmniboxPartState::SELECTED);
+  search_box->results_dim =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED);
+  search_box->results_dim_selected =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DIMMED,
+                      OmniboxPartState::SELECTED);
+  search_box->results_text =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT);
   search_box->results_text_selected =
-      ntp_theme.search_box.results_text_selected;
-  search_box->results_url = ntp_theme.search_box.results_url;
-  search_box->results_url_selected = ntp_theme.search_box.results_url_selected;
-  search_box->text = ntp_theme.search_box.text;
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_DEFAULT,
+                      OmniboxPartState::SELECTED);
+  search_box->results_url =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL);
+  search_box->results_url_selected =
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_TEXT_URL,
+                      OmniboxPartState::SELECTED);
+  search_box->text =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
   theme->search_box = std::move(search_box);
 
   return theme;
@@ -319,12 +350,14 @@ NewTabPageHandler::NewTabPageHandler(
     Profile* profile,
     InstantService* instant_service,
     search_provider_logos::LogoService* logo_service,
+    const ui::ThemeProvider* theme_provider,
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : instant_service_(instant_service),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       logo_service_(logo_service),
+      theme_provider_(theme_provider),
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
@@ -335,6 +368,7 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(instant_service_);
   CHECK(ntp_background_service_);
   CHECK(logo_service_);
+  CHECK(theme_provider_);
   CHECK(promo_service_);
   CHECK(web_contents_);
   instant_service_->AddObserver(this);
@@ -780,7 +814,7 @@ void NewTabPageHandler::OnPromoLinkClicked() {
 }
 
 void NewTabPageHandler::NtpThemeChanged(const NtpTheme& ntp_theme) {
-  page_->SetTheme(MakeTheme(ntp_theme));
+  page_->SetTheme(MakeTheme(ntp_theme, theme_provider_));
 }
 
 void NewTabPageHandler::MostVisitedInfoChanged(
