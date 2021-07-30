@@ -631,7 +631,7 @@ export class Preview {
         return;  // Focus was cancelled.
       }
       const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
-      const clone = aim.cloneNode(true);
+      const clone = assertInstanceof(aim.cloneNode(true), HTMLObjectElement);
       clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
       clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
       clone.hidden = false;
