@@ -660,6 +660,11 @@ const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
 const base::Feature kLauncherAppSort{"LauncherAppSort",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the flag to remove empty spaces on launcher pages. If the
+// flag is enabled, all of pages expect for the last one should be filled.
+const base::Feature kLauncherRemoveEmptySpace{
+    "LauncherRemoveEmptySpace", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables new flow for license packaged devices with enterprise license.
 const base::Feature kLicensePackagedOobeFlow{"LicensePackagedOobeFlow",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1370,7 +1375,12 @@ bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
 }
 
 bool IsLauncherAppSortEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherAppSort);
+  return IsLauncherRemoveEmptySpaceEnabled() &&
+         base::FeatureList::IsEnabled(kLauncherAppSort);
+}
+
+bool IsLauncherRemoveEmptySpaceEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherRemoveEmptySpace);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {

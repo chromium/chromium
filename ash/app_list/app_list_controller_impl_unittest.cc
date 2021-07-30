@@ -1310,7 +1310,9 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
 class AppListSortTest : public AshTestBase {
  public:
   AppListSortTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kLauncherAppSort);
+    feature_list_.InitWithFeatures({ash::features::kLauncherAppSort,
+                                    ash::features::kLauncherRemoveEmptySpace},
+                                   {});
   }
   ~AppListSortTest() override = default;
 
