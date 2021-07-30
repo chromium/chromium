@@ -37,19 +37,19 @@ namespace media {
 class DmabufVideoFramePool;
 
 class MEDIA_GPU_EXPORT V4L2VideoDecoder
-    : public DecoderInterface,
+    : public VideoDecoderMixin,
       public V4L2VideoDecoderBackend::Client {
  public:
   // Create V4L2VideoDecoder instance. The success of the creation doesn't
   // ensure V4L2VideoDecoder is available on the device. It will be
   // determined in Initialize().
-  static std::unique_ptr<DecoderInterface> Create(
+  static std::unique_ptr<VideoDecoderMixin> Create(
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-      base::WeakPtr<DecoderInterface::Client> client);
+      base::WeakPtr<VideoDecoderMixin::Client> client);
 
   static SupportedVideoDecoderConfigs GetSupportedConfigs();
 
-  // DecoderInterface implementation.
+  // VideoDecoderMixin implementation.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
@@ -78,7 +78,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   friend class V4L2VideoDecoderTest;
 
   V4L2VideoDecoder(scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-                   base::WeakPtr<DecoderInterface::Client> client,
+                   base::WeakPtr<VideoDecoderMixin::Client> client,
                    scoped_refptr<V4L2Device> device);
   ~V4L2VideoDecoder() override;
 

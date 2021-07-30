@@ -92,10 +92,10 @@ VaapiVideoDecoder::DecodeTask::~DecodeTask() = default;
 VaapiVideoDecoder::DecodeTask::DecodeTask(DecodeTask&&) = default;
 
 // static
-std::unique_ptr<DecoderInterface> VaapiVideoDecoder::Create(
+std::unique_ptr<VideoDecoderMixin> VaapiVideoDecoder::Create(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<DecoderInterface::Client> client) {
-  return base::WrapUnique<DecoderInterface>(
+    base::WeakPtr<VideoDecoderMixin::Client> client) {
+  return base::WrapUnique<VideoDecoderMixin>(
       new VaapiVideoDecoder(std::move(decoder_task_runner), std::move(client)));
 }
 
@@ -112,8 +112,8 @@ SupportedVideoDecoderConfigs VaapiVideoDecoder::GetSupportedConfigs() {
 
 VaapiVideoDecoder::VaapiVideoDecoder(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<DecoderInterface::Client> client)
-    : DecoderInterface(std::move(decoder_task_runner), std::move(client)),
+    base::WeakPtr<VideoDecoderMixin::Client> client)
+    : VideoDecoderMixin(std::move(decoder_task_runner), std::move(client)),
       buffer_id_to_timestamp_(kTimestampCacheSize),
       weak_this_factory_(this) {
   VLOGF(2);

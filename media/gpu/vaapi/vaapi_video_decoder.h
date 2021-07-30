@@ -46,16 +46,16 @@ class VaapiWrapper;
 class VideoFrame;
 class VASurface;
 
-class VaapiVideoDecoder : public DecoderInterface,
+class VaapiVideoDecoder : public VideoDecoderMixin,
                           public DecodeSurfaceHandler<VASurface> {
  public:
-  static std::unique_ptr<DecoderInterface> Create(
+  static std::unique_ptr<VideoDecoderMixin> Create(
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-      base::WeakPtr<DecoderInterface::Client> client);
+      base::WeakPtr<VideoDecoderMixin::Client> client);
 
   static SupportedVideoDecoderConfigs GetSupportedConfigs();
 
-  // DecoderInterface implementation.
+  // VideoDecoderMixin implementation.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
@@ -110,7 +110,7 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   VaapiVideoDecoder(
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-      base::WeakPtr<DecoderInterface::Client> client);
+      base::WeakPtr<VideoDecoderMixin::Client> client);
   ~VaapiVideoDecoder() override;
 
   // Schedule the next decode task in the queue to be executed.

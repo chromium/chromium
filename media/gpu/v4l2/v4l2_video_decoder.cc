@@ -50,9 +50,9 @@ constexpr size_t kDpbOutputBufferExtraCount = limits::kMaxVideoFrames + 1;
 base::AtomicRefCount V4L2VideoDecoder::num_instances_(0);
 
 // static
-std::unique_ptr<DecoderInterface> V4L2VideoDecoder::Create(
+std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<DecoderInterface::Client> client) {
+    base::WeakPtr<VideoDecoderMixin::Client> client) {
   DCHECK(decoder_task_runner->RunsTasksInCurrentSequence());
   DCHECK(client);
 
@@ -62,7 +62,7 @@ std::unique_ptr<DecoderInterface> V4L2VideoDecoder::Create(
     return nullptr;
   }
 
-  return base::WrapUnique<DecoderInterface>(new V4L2VideoDecoder(
+  return base::WrapUnique<VideoDecoderMixin>(new V4L2VideoDecoder(
       std::move(decoder_task_runner), std::move(client), std::move(device)));
 }
 
@@ -80,9 +80,9 @@ SupportedVideoDecoderConfigs V4L2VideoDecoder::GetSupportedConfigs() {
 
 V4L2VideoDecoder::V4L2VideoDecoder(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<DecoderInterface::Client> client,
+    base::WeakPtr<VideoDecoderMixin::Client> client,
     scoped_refptr<V4L2Device> device)
-    : DecoderInterface(std::move(decoder_task_runner), std::move(client)),
+    : VideoDecoderMixin(std::move(decoder_task_runner), std::move(client)),
       device_(std::move(device)),
       weak_this_factory_(this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);

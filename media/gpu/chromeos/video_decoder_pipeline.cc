@@ -60,14 +60,14 @@ absl::optional<Fourcc> PickRenderableFourcc(
 
 }  //  namespace
 
-DecoderInterface::DecoderInterface(
+VideoDecoderMixin::VideoDecoderMixin(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<DecoderInterface::Client> client)
+    base::WeakPtr<VideoDecoderMixin::Client> client)
     : decoder_task_runner_(std::move(decoder_task_runner)),
       client_(std::move(client)) {}
-DecoderInterface::~DecoderInterface() = default;
+VideoDecoderMixin::~VideoDecoderMixin() = default;
 
-bool DecoderInterface::NeedsTranscryption() {
+bool VideoDecoderMixin::NeedsTranscryption() {
   return false;
 }
 
@@ -293,7 +293,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
   }
 
   decoder_->Initialize(
-      config, /*low_delay=*/false, cdm_context,
+      config, /* low_delay=*/false, cdm_context,
       base::BindOnce(&VideoDecoderPipeline::OnInitializeDone,
                      decoder_weak_this_, std::move(init_cb), cdm_context),
       base::BindRepeating(&VideoDecoderPipeline::OnFrameDecoded,
