@@ -59,6 +59,14 @@ Event::Properties GetEventPropertiesFromXEvent(EventType type,
 
     // Keyboard group
     auto state = static_cast<uint32_t>(key->state);
+    properties.emplace(kPropertyKeyboardState,
+                       Values{
+                           static_cast<uint8_t>(state),
+                           static_cast<uint8_t>(state >> 8),
+                           static_cast<uint8_t>(state >> 16),
+                           static_cast<uint8_t>(state >> 24),
+                       });
+
     uint8_t group = XkbGroupForCoreState(state);
     properties.emplace(kPropertyKeyboardGroup, Values{group});
 
