@@ -93,6 +93,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":distilled_bundle_data",
+    ":fakes",
     ":reading_list",
     "//base",
     "//base/test:test_support",
@@ -109,6 +110,19 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gtest",
     "//url",
+  ]
+}
+
+source_set("fakes") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fake_reading_list_model.h",
+    "fake_reading_list_model.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/reading_list/core",
   ]
 }
 

@@ -46,7 +46,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
 
   // If called, sets the pref to never show the Reading List Message.
-  void NeverShow();
+  virtual void NeverShow();
 
  private:
   // The URL of the page to be saved to Reading List.
