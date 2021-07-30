@@ -22,6 +22,7 @@ class ObjectPath;
 namespace chromeos {
 
 class CellularConnectionHandler;
+class CellularESimInstaller;
 class CellularESimUninstallHandler;
 class CellularInhibitor;
 class NetworkConnectionHandler;
@@ -45,6 +46,7 @@ class ESimManager : public mojom::ESimManager,
 
   ESimManager();
   ESimManager(CellularConnectionHandler* cellular_connection_handler,
+              CellularESimInstaller* cellular_esim_installer,
               CellularESimProfileHandler* cellular_esim_profile_handler,
               CellularESimUninstallHandler* cellular_esim_uninstall_handler,
               CellularInhibitor* cellular_inhibitor,
@@ -77,6 +79,10 @@ class ESimManager : public mojom::ESimManager,
 
   // Notifies observers of changes to ESimProfile Lists.
   void NotifyESimProfileListChanged(Euicc* euicc);
+
+  CellularESimInstaller* cellular_esim_installer() {
+    return cellular_esim_installer_;
+  }
 
   CellularESimProfileHandler* cellular_esim_profile_handler() {
     return cellular_esim_profile_handler_;
@@ -111,6 +117,7 @@ class ESimManager : public mojom::ESimManager,
   bool CreateEuiccIfNew(const dbus::ObjectPath& euicc_path);
 
   CellularConnectionHandler* cellular_connection_handler_;
+  CellularESimInstaller* cellular_esim_installer_;
   CellularESimProfileHandler* cellular_esim_profile_handler_;
   CellularESimUninstallHandler* cellular_esim_uninstall_handler_;
   CellularInhibitor* cellular_inhibitor_;

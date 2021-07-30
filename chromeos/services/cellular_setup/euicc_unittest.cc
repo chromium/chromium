@@ -13,6 +13,7 @@
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/network/network_type_pattern.h"
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/services/cellular_setup/esim_test_base.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,8 +26,6 @@ namespace {
 
 const char kInstallViaQrCodeHistogram[] =
     "Network.Cellular.ESim.InstallViaQrCode.Result";
-const char kInstallViaQrCodeOperationHistogram[] =
-    "Network.Cellular.ESim.InstallViaQrCode.OperationResult";
 
 using InstallResultPair = std::pair<mojom::ProfileInstallResult,
                                     mojo::PendingRemote<mojom::ESimProfile>>;
@@ -69,6 +68,7 @@ class EuiccTest : public ESimTestBase {
       const mojo::Remote<mojom::Euicc>& euicc,
       const std::string& activation_code,
       const std::string& confirmation_code,
+      bool wait_for_create,
       bool wait_for_connect,
       bool fail_connect) {
     mojom::ProfileInstallResult out_install_result;
@@ -85,6 +85,13 @@ class EuiccTest : public ESimTestBase {
               run_loop.Quit();
             }));
 
+    if (wait_for_create) {
+      base::RunLoop().RunUntilIdle();
+      // Set the enable notify prolie list update back to true if it was false
+      // before and fire the pending notify profile list update and that should
+      // make the pending create callback complete.
+      cellular_esim_profile_handler()->SetEnableNotifyProfileListUpdate(true);
+    }
     FastForwardProfileRefreshDelay();
 
     if (wait_for_connect) {
@@ -141,63 +148,35 @@ TEST_F(EuiccTest, GetProfileList) {
 
 TEST_F(EuiccTest, InstallProfileFromActivationCode) {
   base::HistogramTester histogram_tester;
-
   mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
   ASSERT_TRUE(euicc.is_bound());
 
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
-  // Verify that install errors return error code properly.
-  euicc_test->QueueHermesErrorStatus(
-      HermesResponseStatus::kErrorInvalidActivationCode);
+  // Verify that the callback is not completed if update profile list
+  // notification is not fired and save the callback until an update profile
+  // list gets called.
+  cellular_esim_profile_handler()->SetEnableNotifyProfileListUpdate(false);
   InstallResultPair result_pair = InstallProfileFromActivationCode(
-      euicc, /*activation_code=*/std::string(),
-      /*confirmation_code=*/std::string(), /*wait_for_connect=*/false,
-      /*fail_connect=*/false);
-  EXPECT_EQ(mojom::ProfileInstallResult::kErrorInvalidActivationCode,
-            result_pair.first);
-  EXPECT_FALSE(result_pair.second.is_valid());
-  histogram_tester.ExpectBucketCount(
-      kInstallViaQrCodeHistogram,
-      HermesResponseStatus::kErrorInvalidActivationCode,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaQrCodeOperationHistogram,
-      Euicc::InstallProfileViaQrCodeResult::kHermesInstallFailed,
-      /*expected_count=*/1);
-
-  // Verify that connect failures are handled properly.
-  result_pair = InstallProfileFromActivationCode(
       euicc, euicc_test->GenerateFakeActivationCode(),
-      /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
-      /*fail_connect=*/true);
+      /*confirmation_code=*/std::string(), /*wait_for_create=*/true,
+      /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
-  ASSERT_TRUE(result_pair.second.is_valid());
+  EXPECT_TRUE(result_pair.second.is_valid());
   histogram_tester.ExpectBucketCount(kInstallViaQrCodeHistogram,
                                      HermesResponseStatus::kSuccess,
                                      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaQrCodeOperationHistogram,
-      Euicc::InstallProfileViaQrCodeResult::kSuccess,
-      /*expected_count=*/1);
 
   // Verify that install succeeds when valid activation code is passed.
   result_pair = InstallProfileFromActivationCode(
       euicc, euicc_test->GenerateFakeActivationCode(),
-      /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
-      /*fail_connect=*/false);
+      /*confirmation_code=*/std::string(), /*wait_for_create=*/false,
+      /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
-  ASSERT_TRUE(result_pair.second.is_valid());
-
-  histogram_tester.ExpectTotalCount(
-      "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency", 2);
+  EXPECT_TRUE(result_pair.second.is_valid());
   histogram_tester.ExpectBucketCount(kInstallViaQrCodeHistogram,
                                      HermesResponseStatus::kSuccess,
                                      /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(
-      kInstallViaQrCodeOperationHistogram,
-      Euicc::InstallProfileViaQrCodeResult::kSuccess,
-      /*expected_count=*/2);
 }
 
 TEST_F(EuiccTest, InstallProfileAlreadyConnected) {
@@ -213,8 +192,8 @@ TEST_F(EuiccTest, InstallProfileAlreadyConnected) {
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode(),
-      /*confirmation_code=*/std::string(), /*wait_for_connect=*/false,
-      /*fail_connect=*/false);
+      /*confirmation_code=*/std::string(), /*wait_for_create=*/false,
+      /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
 }
 
@@ -239,8 +218,8 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
 
   InstallResultPair result_pair = InstallProfileFromActivationCode(
       euicc, dbus_properties->activation_code().value(),
-      /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
-      /*fail_connect=*/false);
+      /*confirmation_code=*/std::string(), /*wait_for_create=*/false,
+      /*wait_for_connect=*/true, /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
   ASSERT_TRUE(result_pair.second.is_valid());
 
