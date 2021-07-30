@@ -459,8 +459,17 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK_NE(state_, State::kUninitialized);
 
+  // VideoDecoder interface: |decode_cb| can't be called from within Decode().
+  auto trampoline_decode_cb = base::BindOnce(
+      [](const scoped_refptr<base::SequencedTaskRunner>& this_sequence_runner,
+         DecodeCB decode_cb, Status status) {
+        this_sequence_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(decode_cb), status));
+      },
+      base::SequencedTaskRunnerHandle::Get(), std::move(decode_cb));
+
   if (state_ == State::kError) {
-    std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(trampoline_decode_cb).Run(DecodeStatus::DECODE_ERROR);
     return;
   }
 
@@ -468,14 +477,14 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     const StatusCode status = InitializeBackend();
     if (status != StatusCode::kOk) {
       SetState(State::kError);
-      std::move(decode_cb).Run(status);
+      std::move(trampoline_decode_cb).Run(status);
       return;
     }
   }
 
   const int32_t bitstream_id = bitstream_id_generator_.GetNextBitstreamId();
-  backend_->EnqueueDecodeTask(std::move(buffer), std::move(decode_cb),
-                              bitstream_id);
+  backend_->EnqueueDecodeTask(std::move(buffer),
+                              std::move(trampoline_decode_cb), bitstream_id);
 }
 
 bool V4L2VideoDecoder::StartStreamV4L2Queue(bool start_output_queue) {
