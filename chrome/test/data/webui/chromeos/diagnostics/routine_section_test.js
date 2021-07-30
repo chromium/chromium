@@ -236,6 +236,24 @@ export function routineSectionTestSuite() {
   }
 
   /**
+   * @param {boolean} runTestsAutomatically
+   * @return {!Promise}
+   */
+  function setRunTestsAutomatically(runTestsAutomatically) {
+    routineSectionElement.runTestsAutomatically = runTestsAutomatically;
+    return flushTasks();
+  }
+
+  /**
+   * @param {!Array<!RoutineType>} routines
+   * @return {!Promise}
+   */
+  function setRoutines(routines) {
+    routineSectionElement.routines = routines;
+    return flushTasks();
+  }
+
+  /**
    * @param {boolean} hideRoutineStatus
    * @return {!Promise}
    */
@@ -931,5 +949,14 @@ export function routineSectionTestSuite() {
           assertFalse(isVisible(/** @type {!HTMLElement} */ (
               routineSectionElement.$$('.button-container'))));
         });
+  });
+
+  test('IsTestRunningShouldBeTrueWhenListOfRoutinesUpdate', () => {
+    return initializeRoutineSection([])
+        .then(() => setRunTestsAutomatically(true))
+        .then(() => setIsActive(true))
+        .then(() => assertFalse(routineSectionElement.isTestRunning))
+        .then(() => setRoutines([RoutineType.kCpuStress]))
+        .then(() => assertTrue(routineSectionElement.isTestRunning));
   });
 }

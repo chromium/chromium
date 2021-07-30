@@ -205,7 +205,7 @@ Polymer({
   observers: [
     'routineStatusChanged_(executionStatus_, currentTestName_,' +
         'additionalMessage)',
-    'onActivePageChanged_(isActive)',
+    'onActivePageChanged_(isActive, routines.length)',
   ],
 
   /**
@@ -225,6 +225,10 @@ Polymer({
 
   /** @private */
   runTests_() {
+    // Do not attempt to run tests when no routines available to run.
+    if (this.routines.length === 0) {
+      return;
+    }
     this.isTestRunning = true;
     this.hasTestFailure_ = false;
 
