@@ -382,7 +382,9 @@ TEST(ClientSidePhishingModelTest, FlatbufferonFollowingUpdate) {
   // around. Death tests misbehave on Android, or the memory may be re-mapped.
   // See https://crbug.com/815537 and base/test/gtest_util.h.
   // Can remove this if flaky.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+  // Windows ASAN flake: crbug.com/1234652
+#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) && \
+    !(defined(OS_WIN) && defined(ADDRESS_SANITIZER))
   EXPECT_DEATH_IF_SUPPORTED(memset(memory_addr, 'G', 1), "");
 #endif
 }
