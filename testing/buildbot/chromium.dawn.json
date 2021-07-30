@@ -1298,7 +1298,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1327,7 +1327,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1356,7 +1356,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1386,7 +1386,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1416,7 +1416,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1446,7 +1446,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1473,7 +1473,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1498,7 +1498,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1532,7 +1532,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1568,7 +1568,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1606,7 +1606,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2304,7 +2304,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2333,7 +2333,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2362,7 +2362,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2392,7 +2392,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2422,7 +2422,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2452,7 +2452,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2479,7 +2479,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2504,7 +2504,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2538,7 +2538,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2574,7 +2574,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2612,7 +2612,7 @@
               "display_attached": "1",
               "gpu": "1002:6821",
               "hidpi": "1",
-              "os": "Mac-10.14.6",
+              "os": "Mac-10.14.6|Mac-11.4",
               "pool": "chromium.tests.gpu"
             }
           ],
