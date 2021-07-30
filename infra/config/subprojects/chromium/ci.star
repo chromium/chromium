@@ -1922,24 +1922,6 @@ ci.chromiumos_builder(
 )
 
 ci.chromiumos_builder(
-    name = "linux-lacros-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "default",
-        short_name = "lcr",
-    ),
-
-    # TODO(crbug.com/1233247): Remove once it's stable.
-    experimental = True,
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = "main",
-
-    # TODO(crbug.com/1233247): Make it a tree closer once it's stable.
-    tree_closing = False,
-    os = os.LINUX_BIONIC_REMOVE,
-)
-
-ci.chromiumos_builder(
     name = "linux-lacros-tester-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -1950,6 +1932,18 @@ ci.chromiumos_builder(
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["linux-lacros-builder-rel"],
     tree_closing = False,
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.chromiumos_builder(
+    name = "linux-lacros-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "debug",
+        short_name = "lcr",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
 )
 
