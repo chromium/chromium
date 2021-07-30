@@ -3,6 +3,8 @@
 <translationbundle lang="bg">
 <translation id="1175958423215084756">Разпозната е връзка. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Изображения в галерията</translation>
+<translation id="1300209025925956156">Сканиране на документ</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. За достъп натиснете клавиша „търсене“ + стрелката за наляво.</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1467231725790366244">Устройството <ph name="CAMERA" /> е изключено.</translation>
 <translation id="1473110567575736769">Таймер за 3 секунди</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Понастоящем няма достъп до камерата ви.
         Моля, проверете дали камерата е свързана правилно.</translation>
 <translation id="5152121255775685072">Към галерията</translation>
+<translation id="520537883758714667">Функцията за сканиране на документи вече е налице</translation>
 <translation id="5268823927180092501">Активиране на режима за документи за всички камери</translation>
 <translation id="5422455049771430511">Снимките и видеоклиповете ви имат нов дом</translation>
+<translation id="5444515100983837161">Поставете документа изцяло в рамката. Функцията работи най-добре, ако документът и фонът са с различни цветове.</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5753488212459587150">Активиране на експертния режим</translation>
 <translation id="5759254179196327752">Сканиране на документи</translation>

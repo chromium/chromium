@@ -3,6 +3,8 @@
 <translationbundle lang="sl">
 <translation id="1175958423215084756">Zaznana je bila povezava. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Slike v galeriji</translation>
+<translation id="1300209025925956156">Optično branje dokumenta</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tipka za iskanja + puščica levo za dostop.</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
 <translation id="1473110567575736769">3-sekundni časovnik</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Fotoaparat trenutno ni na voljo.
         Preverite, ali je fotoaparat ustrezno povezan.</translation>
 <translation id="5152121255775685072">V galerijo</translation>
+<translation id="520537883758714667">Optično branje dokumentov je zdaj na voljo</translation>
 <translation id="5268823927180092501">Omogočanje načina dokumentov v vseh fotoaparatih</translation>
 <translation id="5422455049771430511">Fotografije in videoposnetki imajo novi dom</translation>
+<translation id="5444515100983837161">Postavite vse robe dokumenta znotraj okvira. Optično branje deluje najbolje, če sta dokument in ozadje različnih barv.</translation>
 <translation id="5671277269877808209">Kvadratno</translation>
 <translation id="5753488212459587150">Omogoči poznavalski način</translation>
 <translation id="5759254179196327752">Optično branje dokumenta</translation>

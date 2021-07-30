@@ -137,7 +137,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1990046457226896323">Amafayela wenkulumo alandiwe</translation>
 <translation id="1993072747612765854">Funda kabanzi mayelana nesibuyekezo sakamuva se-<ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Itafula lamanje</translation>
-<translation id="1999628559811343244">Ukuthatha iphakethe lenethiwekhi kuqalile</translation>
 <translation id="2016340657076538683">Thayipha umlayezo</translation>
 <translation id="2018630726571919839">Ngitshele ihlaya</translation>
 <translation id="2021864487439853900">Chofoza ukuze uvule</translation>
@@ -703,6 +702,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6559976592393364813">Buza umlawuli</translation>
 <translation id="6570902864550063460">Ishaja nge-USB</translation>
 <translation id="6585808820553845416">Iseshini izophela ngo-<ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333">I-<ph name="SECURITY_STATUS" />, Amandla esignali angu-<ph name="SIGNAL_STRENGTH" />, iphethwe umlawuli wakho</translation>
 <translation id="6612802754306526077">Imodi yokurekhoda isikrini ikhethiwe</translation>
 <translation id="6614169507485700968">Isikrini sobumfihlo sivuliwe</translation>
@@ -729,7 +729,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6751826523481687655">Ukulandelela kokusebenza kuvuliwe</translation>
 <translation id="6752912906630585008">Ideski <ph name="REMOVED_DESK" /> lisusiwe futhi lahlanganiswa nedeski <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Ayikho imidiya edlalayo</translation>
-<translation id="6773040085467426602">Chofoza okuthi misa ukumisa imisebenzi yokuthatha iphakethe eqhubekayo.</translation>
 <translation id="6777216307882431711">Inika amandla amadivayisi axhunyiwe e-USB-C</translation>
 <translation id="6790428901817661496">Dlala</translation>
 <translation id="6803622936009808957">Ayikwazanga ukwenza isibuko izibonisi njengoba kungekho ukulungiswa okusekelwe okutholiwe. Ingene kudeskithophu enwetshiwe kunalokho.</translation>

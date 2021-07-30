@@ -3,6 +3,8 @@
 <translationbundle lang="az">
 <translation id="1175958423215084756">Keçid aşkarlanıb. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Qalereya şəkilləri</translation>
+<translation id="1300209025925956156">Sənədinizi skanlayın</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Daxil olmaq üçün Axtarış + Sol ox.</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli çıxarılıb.</translation>
 <translation id="1473110567575736769">3 saniyəlik taymer</translation>
@@ -62,8 +64,10 @@
 <translation id="5057360777601936059">Kamera hazırda əlçatan deyil.
         Kameranın düzgün qoşulub-qoşulmadığını yoxlayın.</translation>
 <translation id="5152121255775685072">Qalereyaya daxil olun</translation>
+<translation id="520537883758714667">Sənəd skanlama əlçatan deyil</translation>
 <translation id="5268823927180092501">Bütün kameralarda sənəd rejimini aktivləşdirin</translation>
 <translation id="5422455049771430511">Foto və videolarınızın yeni məkanı var</translation>
+<translation id="5444515100983837161">Sənədin bütün kənarlarını çərçivənin daxilinə yerləşdirin. Sənəd və arxa fon fərqli rənglərdə olduqda skanlama daha keyfiyyətli olur.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5753488212459587150">Ekspert rejimini aktiv edin</translation>
 <translation id="5759254179196327752">Sənədi skan edin</translation>

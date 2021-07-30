@@ -232,7 +232,6 @@
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ခု ရွေးထားသည်}other{# ခု ရွေးထားသည်}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်။ မျက်နှာပြင်၏ ထိပ်နားတွင် ရွေးချယ်စရာများ ရှိသည်</translation>
-<translation id="7128222689758636196">လက်ရှိရှာဖွေမှု အင်ဂျင်အတွက် ခွင့်ပြုပါ</translation>
 <translation id="7141896414559753902">ပေါ့ပ်အပ်နှင့် တစ်ဆင့်ပြန်ညွှန်ချက်များကို မဖော်ပြနိုင်စေရန် ဝဘ်ဆိုက်များအား ပိတ်ပါ (အကြံပြုထားသည်)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ကီလိုဘိုက်</translation>
 <translation id="723171743924126238">ပုံများကို ရွေးရန်</translation>
@@ -247,7 +246,6 @@
 <translation id="7561196759112975576">အမြဲတမ်း</translation>
 <translation id="7572498721684305250">NFC စက်များကို တို့လိုက်သည့်အခါ အချက်အလက်များ ပို့ခြင်း၊ လက်ခံခြင်းတို့မှ ဝဘ်ဆိုက်များကို ပိတ်ထားသည်</translation>
 <translation id="757524316907819857">ကာကွယ်ထားသည့် အကြောင်းအရာများကို မပြသရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
-<translation id="7589445247086920869">လက်ရှိရှာဖွေမှု အင်ဂျင်အတွက် ပိတ်လိုက်ပါ</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
@@ -316,6 +314,5 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်များကို ဖွင့်ပါ။</translation>
 <translation id="930525582205581608">ဤဝဘ်ဆိုက်ကို မေ့ပစ်မလား။</translation>
-<translation id="965817943346481315">စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများ ပြလျှင် ဝဘ်ဆိုက်ကို ပိတ်သည် (အကြံပြုထားသည်)</translation>
 <translation id="967624055006145463">သိမ်းဆည်းထားသည့် ဒေတာ</translation>
 </translationbundle>

@@ -232,7 +232,6 @@
 <translation id="7053983685419859001">தடு</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 தேர்ந்தெடுக்கப்பட்டது}other{# தேர்ந்தெடுக்கப்பட்டன}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> தேர்ந்தெடுக்கப்பட்டன.  திரையின் மேற்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன</translation>
-<translation id="7128222689758636196">நடப்புத் தேடல் இன்ஜினுக்கு அனுமதிக்கும்</translation>
 <translation id="7141896414559753902">தளங்கள் பாப்-அப்களையும் திசைதிருப்புதல்களையும் காட்டாமல் தடு (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> கி.பை.</translation>
 <translation id="723171743924126238">படங்களைத் தேர்ந்தெடுக்கவும்</translation>
@@ -247,7 +246,6 @@
 <translation id="7561196759112975576">எப்போதும்</translation>
 <translation id="7572498721684305250">நீங்கள் NFC சாதனங்களைத் தட்டும்போது தகவல்களை அனுப்புவதிலிருந்தும் பெறுவதிலிருந்தும் தளங்களைத் தடுக்கும்</translation>
 <translation id="757524316907819857">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைத் தளங்கள் இயக்குவதைத் தடுக்கும்</translation>
-<translation id="7589445247086920869">நடப்புத் தேடல் இன்ஜினுக்குத் தடுக்கும்</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7781829728241885113">நேற்று</translation>
@@ -316,6 +314,5 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android அமைப்புகளில் <ph name="END_LINK" /> <ph name="APP_NAME" /> ஆப்ஸுக்கான அனுமதிகளை இயக்கவும்.</translation>
 <translation id="930525582205581608">இந்தத் தளத்தை அகற்றவா?</translation>
-<translation id="965817943346481315">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களை தளம் காண்பித்தால், அதைத் தடு (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="967624055006145463">சேமிக்கப்பட்ட தரவின்படி</translation>
 </translationbundle>

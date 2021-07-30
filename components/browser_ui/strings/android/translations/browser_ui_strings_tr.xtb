@@ -232,7 +232,6 @@
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> öğe seçildi. Seçenekler, ekranın üst kısmına yakın bir yerde bulunur</translation>
-<translation id="7128222689758636196">Geçerli arama motoruna izin ver</translation>
 <translation id="7141896414559753902">Sitelerin pop-up göstermesini ve yönlendirme yapmasını engelle (önerilir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">Resim seç</translation>
@@ -247,7 +246,6 @@
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7572498721684305250">NFC cihazlarına dokunduğunuzda sitelerin bilgi göndermesini ve almasını engelle</translation>
 <translation id="757524316907819857">Sitelerin korumalı içeriği oynatmasını engellenir</translation>
-<translation id="7589445247086920869">Geçerli arama motorunu engelle</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7781829728241885113">Dün</translation>
@@ -316,6 +314,5 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>
 <translation id="930525582205581608">Bu site unutulsun mu?</translation>
-<translation id="965817943346481315">Araya giren veya yanıltıcı reklamlar gösteren sitelerde reklamları engelle (önerilir)</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 </translationbundle>

@@ -3,6 +3,8 @@
 <translationbundle lang="hr">
 <translation id="1175958423215084756">Veza je prepoznata. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Slike iz galerije</translation>
+<translation id="1300209025925956156">Skeniranje dokumenta</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pretraživanje + strelica lijevo za pristup.</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> nije priključena.</translation>
 <translation id="1473110567575736769">Odbrojavanje od 3 sekunde</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Vaš fotoaparat trenutačno nije dostupan.
         Provjerite je li fotoaparat pravilno povezan.</translation>
 <translation id="5152121255775685072">Otvori galeriju</translation>
+<translation id="520537883758714667">Sad je dostupno skeniranje dokumenata</translation>
 <translation id="5268823927180092501">Omogućite način rada s dokumentom na svim kamerama</translation>
 <translation id="5422455049771430511">Fotografije i videozapisi sad se nalaze na novom mjestu</translation>
+<translation id="5444515100983837161">Postavite sve rubove dokumenta unutar okvira. Skeniranje najbolje funkcionira ako su dokument i pozadina različitih boja.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5753488212459587150">Omogući stručni način rada</translation>
 <translation id="5759254179196327752">Čitanje dokumenta</translation>

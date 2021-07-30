@@ -3,6 +3,8 @@
 <translationbundle lang="el">
 <translation id="1175958423215084756">Εντοπίστηκε σύνδεσμος. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Εικόνες gallery</translation>
+<translation id="1300209025925956156">Σάρωση του εγγράφου σας</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Αναζήτηση + αριστερό βέλος για πρόσβαση.</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1467231725790366244">Η κάμερα <ph name="CAMERA" /> είναι αποσυνδεδεμένη.</translation>
 <translation id="1473110567575736769">Χρονόμετρο 3 δευτερολέπτων</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Η κάμερά σας δεν είναι διαθέσιμη προς το παρόν.
         Ελέγξτε εάν η κάμερα έχει συνδεθεί σωστά.</translation>
 <translation id="5152121255775685072">Μετάβαση στο gallery</translation>
+<translation id="520537883758714667">Η σάρωση εγγράφων είναι πλέον διαθέσιμη</translation>
 <translation id="5268823927180092501">Ενεργοποίηση λειτουργίας εγγράφου σε όλες τις κάμερες</translation>
 <translation id="5422455049771430511">Οι φωτογραφίες και τα βίντεό σας βρήκαν νέα στέγη</translation>
+<translation id="5444515100983837161">Τοποθετήστε όλες τις άκρες του εγγράφου μέσα στο πλαίσιο. Η σάρωση λειτουργεί καλύτερα εάν το έγγραφο και το φόντο έχουν διαφορετικά χρώματα.</translation>
 <translation id="5671277269877808209">Τετράγωνο</translation>
 <translation id="5753488212459587150">Ενεργοποίηση λειτουργίας Expert</translation>
 <translation id="5759254179196327752">Σάρωση εγγράφου</translation>

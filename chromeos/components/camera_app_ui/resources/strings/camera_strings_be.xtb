@@ -3,6 +3,8 @@
 <translationbundle lang="be">
 <translation id="1175958423215084756">Выяўлена спасылка. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Відарысы ў галерэі</translation>
+<translation id="1300209025925956156">Сканіраванне дакумента</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Каб перайсці да іх, націсніце кнопку Пошук + стрэлка ўлева.</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1467231725790366244">Камера "<ph name="CAMERA" />" адключана.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунды</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Камера недаступная.
         Праверце правільнасць яе падключэння.</translation>
 <translation id="5152121255775685072">Перайсці ў галерэю</translation>
+<translation id="520537883758714667">Функцыя сканіравання дакументаў даступная</translation>
 <translation id="5268823927180092501">Уключыць рэжым здымкі дакументаў для ўсіх камер</translation>
 <translation id="5422455049771430511">Новае месца захоўвання для вашых фота і відэа</translation>
+<translation id="5444515100983837161">Памясціце ўсе краі дакумента ўнутр рамкі. Якасць сканіравання будзе лепшай, калі дакумент і фон, на якім ён знаходзіцца, маюць розны колер.</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5753488212459587150">Уключыць экспертны рэжым</translation>
 <translation id="5759254179196327752">Сканіраваць дакумент</translation>

@@ -3,6 +3,8 @@
 <translationbundle lang="zu">
 <translation id="1175958423215084756">Isixhumanisi sitholiwe. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Izithombe zegalari</translation>
+<translation id="1300209025925956156">Skena idokhumenti yakho</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Sesha + Umcibisholo ongakwesokunxele ukuze ufinyelele.</translation>
 <translation id="1430915738399379752">Phrinta</translation>
 <translation id="1467231725790366244">I-<ph name="CAMERA" /> ayixhunywanga.</translation>
 <translation id="1473110567575736769">Isibali sikhathi samasekhondi ama-3</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Ikhamera yakho manje ayitholakali.
         Hlola uma ngabe ikhamera ixhumeke kahle yini.</translation>
 <translation id="5152121255775685072">Hamba kugalari</translation>
+<translation id="520537883758714667">Ukuskena idokhumenti manje sekuyatholakala</translation>
 <translation id="5268823927180092501">Nika amandla imodi yedokhumenti kuwo wonke amakhamera</translation>
 <translation id="5422455049771430511">Izithombe namavidiyo wakho sekunekhaya elisha</translation>
+<translation id="5444515100983837161">Beka bonke onqenqema bedokhumenti ngaphakathi kohlaka. Ukuskena kusebenza kangcono uma idokhumenti nengemuva kuyimibala ehlukile.</translation>
 <translation id="5671277269877808209">Isikwele</translation>
 <translation id="5753488212459587150">Nika amandla imodi yengcweti</translation>
 <translation id="5759254179196327752">Skena idokhumenti</translation>

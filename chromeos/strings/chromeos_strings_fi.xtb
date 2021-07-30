@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
-<translation id="2294675138977897428">Ethernet-yhteyttä ei havaittu</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
 <translation id="2364498172489649528">Onnistui</translation>
@@ -271,6 +270,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6125438912510167220">Yhteyden nopeus</translation>
 <translation id="6137767437444130246">Käyttäjävarmenne</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="6147514244879357420">PNG</translation>

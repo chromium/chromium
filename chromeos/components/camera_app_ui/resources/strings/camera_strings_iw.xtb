@@ -3,6 +3,8 @@
 <translationbundle lang="iw">
 <translation id="1175958423215084756">זוהה קישור. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">תמונות מהגלריה</translation>
+<translation id="1300209025925956156">סריקת המסמך</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ניתן לגשת אליהם באמצעות חיפוש + חץ שמאלה.</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> מנותקת.</translation>
 <translation id="1473110567575736769">טיימר ל-3 שניות</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">המצלמה אינה זמינה כרגע.
         יש לבדוק אם המצלמה מחוברת כראוי.</translation>
 <translation id="5152121255775685072">למעבר אל הגלריה</translation>
+<translation id="520537883758714667">התכונה 'סריקת מסמכים' זמינה עכשיו</translation>
 <translation id="5268823927180092501">הפעלת מצב מסמך בכל המצלמות</translation>
 <translation id="5422455049771430511">התמונות והסרטונים שלך עברו למקום חדש</translation>
+<translation id="5444515100983837161">יש למקם את כל קצות המסמך בתוך המסגרת. הסריקה תתבצע בצורה הטובה ביותר אם המסמך והרקע יהיו בצבעים שונים.</translation>
 <translation id="5671277269877808209">ריבוע</translation>
 <translation id="5753488212459587150">הפעלת מצב מתקדם</translation>
 <translation id="5759254179196327752">סריקת מסמך</translation>

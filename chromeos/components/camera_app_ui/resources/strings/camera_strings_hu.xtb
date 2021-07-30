@@ -3,6 +3,8 @@
 <translationbundle lang="hu">
 <translation id="1175958423215084756">Link észlelve. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galériaképek</translation>
+<translation id="1300209025925956156">Dokumentum beolvasása</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Megtekintésükhöz nyomja le a Keresés + Balra nyíl billentyűparancsot.</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> nincs csatlakoztatva.</translation>
 <translation id="1473110567575736769">Három másodperces időzítő</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">A kamera jelenleg nem használható.
         Ellenőrizze, hogy a kamera megfelelően van-e csatlakoztatva.</translation>
 <translation id="5152121255775685072">Ugrás a galériába</translation>
+<translation id="520537883758714667">A dokumentumbeolvasás már használható</translation>
 <translation id="5268823927180092501">Dokumentum mód engedélyezése az összes kamerán</translation>
 <translation id="5422455049771430511">Fényképei és videói új otthonba költöztek.</translation>
+<translation id="5444515100983837161">A dokumentum összes szélének a kereten belül kell lennie. A beolvasás akkor működik a legjobban, ha a dokumentum és a háttér színei különbözőek.</translation>
 <translation id="5671277269877808209">Négyzet</translation>
 <translation id="5753488212459587150">Szakértői mód bekapcsolása</translation>
 <translation id="5759254179196327752">Dokumentum beolvasása</translation>

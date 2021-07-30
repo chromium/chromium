@@ -3,6 +3,8 @@
 <translationbundle lang="nl">
 <translation id="1175958423215084756">Link gevonden. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galerij-afbeeldingen</translation>
+<translation id="1300209025925956156">Je document scannen</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Zoeken + pijl-links om te openen.</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is niet aangesloten.</translation>
 <translation id="1473110567575736769">Timer 3 seconden</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Je camera is momenteel niet beschikbaar.
         Controleer of de camera correct is aangesloten.</translation>
 <translation id="5152121255775685072">Naar galerij</translation>
+<translation id="520537883758714667">Documenten scannen is nu beschikbaar</translation>
 <translation id="5268823927180092501">Documentmodus aanzetten voor alle camera's</translation>
 <translation id="5422455049771430511">Je foto's en video's staan op een nieuwe plaats</translation>
+<translation id="5444515100983837161">Plaats alle randen van het document binnen het frame. Scannen werkt het beste als het document en de achtergrond een verschillende kleur hebben.</translation>
 <translation id="5671277269877808209">Vierkant</translation>
 <translation id="5753488212459587150">Expertmodus aanzetten</translation>
 <translation id="5759254179196327752">Document scannen</translation>

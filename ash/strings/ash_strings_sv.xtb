@@ -137,7 +137,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1993072747612765854">Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Aktuellt skrivbord</translation>
-<translation id="1999628559811343244">Analys av nätverkspaket har startats</translation>
 <translation id="2016340657076538683">Skriv ett meddelande</translation>
 <translation id="2018630726571919839">Dra ett skämt</translation>
 <translation id="2021864487439853900">Klicka för att låsa upp</translation>
@@ -703,6 +702,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6559976592393364813">Fråga administratören</translation>
 <translation id="6570902864550063460">Laddas via USB</translation>
 <translation id="6585808820553845416">Sessionen upphör om <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6612802754306526077">Skärminspelningsläget har valts</translation>
 <translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
@@ -729,7 +729,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6751826523481687655">Prestandaspårning har aktiverats</translation>
 <translation id="6752912906630585008">Skrivbordet <ph name="REMOVED_DESK" /> har tagits bort och slagits samman med skrivbordet <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
-<translation id="6773040085467426602">Klicka på stopp om du vill avsluta den pågående paketanalysen.</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6803622936009808957">Det gick inte att spegla visningar eftersom inga upplösningar som stöds hittades. Utökat skrivbordsläge används i stället.</translation>

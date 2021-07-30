@@ -3,6 +3,8 @@
 <translationbundle lang="ca">
 <translation id="1175958423215084756">Enllaç detectat. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imatges de la galeria</translation>
+<translation id="1300209025925956156">Escaneja el document</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Cerca+fletxa esquerra per accedir-hi.</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> no està endollada.</translation>
 <translation id="1473110567575736769">Temporitzador de 3 segons</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">La càmera no està disponible en aquest moment.
         Comprova que estigui ben connectada.</translation>
 <translation id="5152121255775685072">Ves a la galeria</translation>
+<translation id="520537883758714667">L'escaneig de documents ja està disponible</translation>
 <translation id="5268823927180092501">Activa el mode de document en totes les càmeres</translation>
 <translation id="5422455049771430511">Les teves fotos i els teus vídeos han canviat de lloc</translation>
+<translation id="5444515100983837161">Col·loca totes les vores del document dins del marc. L'escaneig funciona millor si el document i el fons tenen colors diferents.</translation>
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5753488212459587150">Activa el mode expert</translation>
 <translation id="5759254179196327752">Escaneja el document</translation>

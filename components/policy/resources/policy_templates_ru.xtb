@@ -858,6 +858,7 @@
         Это правило не поддерживается начиная с версии M72. Вместо него используется правило CloudManagementEnrollmentToken.
         </translation>
 <translation id="2113068765175018713">Ограничение продолжительности работы устройства за счет автоматической перезагрузки</translation>
+<translation id="2116169546538119304"> Правило больше не поддерживается. Вместо него действуют правила повторного использования пароля для входа, применяемые в Kerberos.</translation>
 <translation id="2117990069872855599">URL для скачивания аватара.</translation>
 <translation id="2124881675920287921">Это правило перестало поддерживаться в версии M82, а в M85 – удалено. Вместо него используйте <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Отключение правила <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> эквивалентно отключению правила <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Включение правила <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> или отсутствие значения эквивалентно отсутствию значения для правила <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 

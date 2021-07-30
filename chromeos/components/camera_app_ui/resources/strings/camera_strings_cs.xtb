@@ -3,6 +3,8 @@
 <translationbundle lang="cs">
 <translation id="1175958423215084756">Byl zjištěn odkaz. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Obrázky v galerii</translation>
+<translation id="1300209025925956156">Naskenujte dokument</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Přejdete na ně stisknutím tlačítka Hledat a šipky vlevo.</translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojena.</translation>
 <translation id="1473110567575736769">3sekundový časovač</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Fotoaparát momentálně není dostupný.
         Zkontrolujte, zda je fotoaparát správně připojen.</translation>
 <translation id="5152121255775685072">Přejít do galerie</translation>
+<translation id="520537883758714667">Nově je k dispozici skenování dokumentů</translation>
 <translation id="5268823927180092501">Aktivovat režim dokumentu na všech fotoaparátech</translation>
 <translation id="5422455049771430511">Vaše fotky a videa mají nový domov</translation>
+<translation id="5444515100983837161">Umístěte všechny okraje dokumentu do rámečku. Skenování funguje nejlépe, když se barva dokumentu liší od barvy pozadí.</translation>
 <translation id="5671277269877808209">Čtverec</translation>
 <translation id="5753488212459587150">Aktivovat režim pro experty</translation>
 <translation id="5759254179196327752">Naskenovat dokument</translation>

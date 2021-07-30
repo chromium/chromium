@@ -870,6 +870,7 @@
         Це правило не підтримується у версії M72. Застосовуйте правило CloudManagementEnrollmentToken.
         </translation>
 <translation id="2113068765175018713">Обмежувати режим роботи пристрою за допомогою автоматичного перезавантаження</translation>
+<translation id="2116169546538119304"> Це правило більше не підтримується. Натомість налаштуйте правила Kerberos, щоб повторно використовувати пароль для входу.</translation>
 <translation id="2117990069872855599">URL-адреса, з якої можна завантажити зображення аватара.</translation>
 <translation id="2124881675920287921">Це правило не підтримується у версії M82 та вилучене у версії M85. Натомість використовуйте правило <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Вимкнути правило <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> – те саме, що вимкнути правило <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Увімкнути правило <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> або не налаштувати цей параметр – те саме, що не налаштувати правило <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 

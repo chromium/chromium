@@ -3,6 +3,8 @@
 <translationbundle lang="hy">
 <translation id="1175958423215084756">Հայտնաբերվել է հղում։ <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Ցուցասրահի պատկերներ</translation>
+<translation id="1300209025925956156">Փաստաթղթի սկանավորում</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />։ Դրանք օգտագործելու համար սեղմեք «Որոնում»+ձախ սլաք։</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> սարքը միացված չէ։</translation>
 <translation id="1473110567575736769">Ժամաչափ 3 վայրկյան</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Ձեր տեսախցիկն այս պահին հասանելի չէ:
         Ստուգեք՝ արդյոք տեսախցիկը ճիշտ է միացված:</translation>
 <translation id="5152121255775685072">Անցնել ցուցասրահ</translation>
+<translation id="520537883758714667">Փաստաթղթերի սկանավորումն արդեն հասանելի է</translation>
 <translation id="5268823927180092501">Միացնել փաստաթղթի ռեժիմը բոլոր տեսախցիկներում</translation>
 <translation id="5422455049771430511">Ձեր լուսանկարներն ու տեսանյութերը կպահվեն նոր տեղում</translation>
+<translation id="5444515100983837161">Փաստաթուղթը դրեք շրջանակի մեջ։ Սկանավորումը լավագույնս աշխատում է, երբ փաստաթղթի և ֆոնի գույները տարբեր են։</translation>
 <translation id="5671277269877808209">Քառակուսի</translation>
 <translation id="5753488212459587150">Միացնել փորձագետի ռեժիմը</translation>
 <translation id="5759254179196327752">Սկանավորել փաստաթուղթը</translation>

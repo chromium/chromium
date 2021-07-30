@@ -137,7 +137,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
 <translation id="1998100899771863792">Current desk</translation>
-<translation id="1999628559811343244">Network packet capture started</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2021864487439853900">Click to unlock</translation>
@@ -729,7 +728,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">No media playing</translation>
-<translation id="6773040085467426602">Click stop to stop ongoing packet capture operations.</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>

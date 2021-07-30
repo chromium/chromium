@@ -3,6 +3,8 @@
 <translationbundle lang="pl">
 <translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Zdjęcia z galerii</translation>
+<translation id="1300209025925956156">Skanowanie dokumentu</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Wyszukaj + strzałka w lewo, aby przejść.</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1467231725790366244">Odłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3-sekundowy samowyzwalacz</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Aparat jest obecnie niedostępny.
         Sprawdź, czy jest prawidłowo podłączony.</translation>
 <translation id="5152121255775685072">Otwórz galerię</translation>
+<translation id="520537883758714667">Skanowanie dokumentów jest teraz dostępne</translation>
 <translation id="5268823927180092501">Włącz tryb dokumentu dla wszystkich aparatów</translation>
 <translation id="5422455049771430511">Masz nowe miejsce na zdjęcia i filmy</translation>
+<translation id="5444515100983837161">Wszystkie krawędzie dokumentu muszą znaleźć się wewnątrz ramki. Skanowanie działa najlepiej, jeśli dokument i tło mają różne kolory.</translation>
 <translation id="5671277269877808209">Kwadrat</translation>
 <translation id="5753488212459587150">Włącz tryb eksperta</translation>
 <translation id="5759254179196327752">Skanuj dokument</translation>

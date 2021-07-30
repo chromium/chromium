@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">啟用狀態</translation>
-<translation id="2294675138977897428">偵測不到以太網絡連線</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
 <translation id="2364498172489649528">已通過</translation>
@@ -271,6 +270,7 @@
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
 <translation id="6108689792487843350">無法連接閘道</translation>
 <translation id="6122191549521593678">線上</translation>
+<translation id="6125438912510167220">連線速度</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>

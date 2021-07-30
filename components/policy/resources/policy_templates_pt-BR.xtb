@@ -863,6 +863,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
         O uso desta política foi suspenso no M72. Use CloudManagementEnrollmentToken.
         </translation>
 <translation id="2113068765175018713">Limitar tempo de execução do dispositivo reiniciando automaticamente</translation>
+<translation id="2116169546538119304"> Esta política foi descontinuada. Configure as políticas do Kerberos para reutilizar a senha do login.</translation>
 <translation id="2117990069872855599">O URL no qual o download da imagem do avatar pode ser feito.</translation>
 <translation id="2124881675920287921">Esta política está obsoleta na versão M82 e ausente na M85. Em vez dela, use a <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Desativar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> equivale a desativar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Ativar <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> ou não definir essa configuração equivale a não definir <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 

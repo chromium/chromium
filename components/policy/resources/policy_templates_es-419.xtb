@@ -865,6 +865,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
         Esta política quedó obsoleta a partir de M72. En su lugar, utiliza CloudManagementEnrollmentToken.
         </translation>
 <translation id="2113068765175018713">Limita el tiempo de actividad del dispositivo mediante un reinicio automático.</translation>
+<translation id="2116169546538119304"> Esta política está obsoleta. Configura las políticas de Kerberos para reutilizar la contraseña de acceso en su lugar.</translation>
 <translation id="2117990069872855599">La URL desde la cual se puede descargar la imagen del avatar.</translation>
 <translation id="2124881675920287921">Esta política dejó de estar disponible en la versión M82 y se quitó en la versión M85. En su lugar, usa <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Si inhabilitas <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" />, también se inhabilitará <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Si habilitas <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> o no estableces esta configuración, no se establecerá <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 

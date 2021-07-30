@@ -871,6 +871,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
         Chính sách này không còn dùng trong M72 nữa. Thay vào đó, hãy sử dụng CloudManagementEnrollmentToken.
         </translation>
 <translation id="2113068765175018713">Giới hạn thời gian hoạt động của thiết bị bằng cách tự động khởi động lại</translation>
+<translation id="2116169546538119304"> Chính sách này không còn dùng nữa, vui lòng định cấu hình các chính sách của Kerberos để sử dụng lại mật khẩu đăng nhập.</translation>
 <translation id="2117990069872855599">URL mà từ đó có thể tải hình đại diện xuống.</translation>
 <translation id="2124881675920287921">Chính sách này không còn dùng trong phiên bản M82 nữa và sẽ bị xóa khỏi phiên bản M85. Thay vào đó, hãy sử dụng <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Việc tắt <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> cũng giống như tắt <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />. Việc bật <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> hoặc không đặt tùy chọn cài đặt này cũng giống như không đặt <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />.
 

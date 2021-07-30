@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Bez internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stav aktivácie</translation>
-<translation id="2294675138977897428">Nezistilo sa žiadne ethernetové pripojenie</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
 <translation id="2364498172489649528">Úspešné</translation>
@@ -271,6 +270,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6106186594183574873">Ak chcete zmenu dokončiť, zadajte staré heslo</translation>
 <translation id="6108689792487843350">Brána je nedostupná</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6125438912510167220">Rýchlosť pripojenia</translation>
 <translation id="6137767437444130246">Certifikát používateľa</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>

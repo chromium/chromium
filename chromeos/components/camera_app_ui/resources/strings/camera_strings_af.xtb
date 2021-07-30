@@ -3,6 +3,8 @@
 <translationbundle lang="af">
 <translation id="1175958423215084756">Skakel is bespeur. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galeryprente</translation>
+<translation id="1300209025925956156">Skandeer jou dokument</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + linkspyl om toegang te kry</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is uitgeprop.</translation>
 <translation id="1473110567575736769">Afteller van 3 sekondes</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Jou kamera is tans nie beskikbaar nie.
         Kyk asseblief of die kamera behoorlik gekoppel is.</translation>
 <translation id="5152121255775685072">Gaan na galery toe</translation>
+<translation id="520537883758714667">Dokumentskandering is nou beskikbaar</translation>
 <translation id="5268823927180092501">Aktiveer dokumentmodus op alle kameras</translation>
 <translation id="5422455049771430511">Jou foto's en video's het 'n nuwe tuiste</translation>
+<translation id="5444515100983837161">Plaas al die kante van die dokument binne die raam. Skandering werk die beste as die dokument en agtergrond verskillende kleure is.</translation>
 <translation id="5671277269877808209">Vierkant</translation>
 <translation id="5753488212459587150">Aktiveer kennermodus</translation>
 <translation id="5759254179196327752">Skandeer dokument</translation>

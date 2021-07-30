@@ -3,6 +3,8 @@
 <translationbundle lang="lo">
 <translation id="1175958423215084756">ກວດພົບລິ້ງ. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">ຮູບພາບໃນຄັງ</translation>
+<translation id="1300209025925956156">ສະແກນເອກະສານຂອງທ່ານ</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ຊອກຫາ + ລູກສອນຊ້າຍເພື່ອເຂົ້າເຖິງ.</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1467231725790366244">ຖອດສາຍ <ph name="CAMERA" /> ແລ້ວ.</translation>
 <translation id="1473110567575736769">ໂມງນັບຖອຍຫຼັງ 3 ວິນາທີ</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">ກ້ອງຖ່າຍຮູບຂອງທ່ານບໍ່ສາມາດໃຊ້ໄດ້ໃນຂະນະນີ້.
         ກະລຸນາກວດເບິ່ງວ່າໄດ້ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຢ່າງຖືກຕ້ອງຫຼືບໍ່.</translation>
 <translation id="5152121255775685072">ໄປທີ່ຄັງຮູບພາບ</translation>
+<translation id="520537883758714667">ຕອນນີ້ສາມາດສະແກນເອກະສານໄດ້ແລ້ວ</translation>
 <translation id="5268823927180092501">ເປີດການນຳໃຊ້ໂໝດເອກະສານຢູ່ກ້ອງຖ່າຍຮູບທັງໝົດ</translation>
 <translation id="5422455049771430511">ຮູບພາບ ແລະ ວິດີໂອຂອງທ່ານມີໂຟນເດີໃໝ່</translation>
+<translation id="5444515100983837161">ວາງຂອບທັງໝົດຂອງເອກະສານໄວ້ພາຍໃນເຟຣມ. ການສະແກນເຮັດວຽກໄດ້ດີທີ່ສຸດຫາກເອກະສານ ແລະ ພື້ນຫຼັງເປັນຄົນລະສີກັນ.</translation>
 <translation id="5671277269877808209">ສີ່ຫຼ່ຽມ</translation>
 <translation id="5753488212459587150">ເປີດການນຳໃຊ້ໂໝດຜູ້ຊ່ຽວຊານ</translation>
 <translation id="5759254179196327752">ສະແກນເອກະສານ</translation>

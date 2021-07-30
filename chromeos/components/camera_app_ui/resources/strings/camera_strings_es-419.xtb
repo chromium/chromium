@@ -3,6 +3,8 @@
 <translationbundle lang="es-419">
 <translation id="1175958423215084756">Se detectó un vínculo. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
+<translation id="1300209025925956156">Escanea tu documento</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Presiona Búsqueda + flecha hacia la izquierda para acceder.</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">La cámara <ph name="CAMERA" /> está desconectada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -64,8 +66,10 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="5057360777601936059">La cámara no está disponible en este momento.
         Asegúrate de que esté conectada de forma correcta.</translation>
 <translation id="5152121255775685072">Ir a la galería</translation>
+<translation id="520537883758714667">La función para escanear documentos ya está disponible.</translation>
 <translation id="5268823927180092501">Habilitar el modo de documento en todas las cámaras</translation>
 <translation id="5422455049771430511">Tus fotos y videos tienen un nuevo hogar</translation>
+<translation id="5444515100983837161">Coloca todos los bordes del documento dentro del cuadro. El escaneado funciona mejor si el documento tiene un color diferente al del fondo.</translation>
 <translation id="5671277269877808209">Cuadrado</translation>
 <translation id="5753488212459587150">Habilitar el modo experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>

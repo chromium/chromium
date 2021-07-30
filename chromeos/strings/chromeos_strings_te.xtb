@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">ఇంటర్నెట్ లేదు</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
-<translation id="2294675138977897428">ఈథర్‌నెట్ కనెక్షన్ కనుగొనబడలేదు</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
 <translation id="2364498172489649528">ఆమోదించినవి</translation>
@@ -319,6 +318,7 @@
 <translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
 <translation id="708426984172631313">ఆపివేయబడింది</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>

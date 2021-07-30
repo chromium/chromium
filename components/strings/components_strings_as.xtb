@@ -994,6 +994,7 @@
 <translation id="443121186588148776">ছিৰিয়েল প'ৰ্ট</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" />এ আপোনাৰ লগ ইনৰ প্ৰমাণপত্ৰ গ্ৰহণ কৰা নাই বা কোনো প্ৰমাণপত্ৰ দিয়া হোৱা নাই।</translation>
 <translation id="4432792777822557199">এতিয়াৰে পৰা <ph name="SOURCE_LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ <ph name="TARGET_LANGUAGE" /> ভাষালৈ অনুবাদ কৰা হ’ব।</translation>
+<translation id="4433642172056592619">ব্যৱহাৰকাৰীজন মেচিন পৰিচালনাৰ সৈতে জড়িত নোহোৱাৰ বাবে অথবা মেচিনটো পৰিচালনা কৰি নথকাৰ বাবে উপেক্ষা কৰা হৈছে।</translation>
 <translation id="4434045419905280838">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="4435702339979719576">প’ষ্টকার্ড)</translation>
 <translation id="443673843213245140">এটা প্ৰক্সিৰ ব্যৱহাৰ অক্ষম কৰা হৈছে কিন্তু এটা মুখ্য প্ৰক্সিৰ কনফিগাৰেশ্বন নিৰ্দিষ্ট কৰা হৈছে।</translation>
@@ -2032,7 +2033,6 @@
 <translation id="8202370299023114387">সংঘাত</translation>
 <translation id="8206978196348664717">Prc4 (লেফাফা)</translation>
 <translation id="8211406090763984747">সংযোগটো নিৰাপদ</translation>
-<translation id="8213464188712611711">স্মৃতি</translation>
 <translation id="8218327578424803826">অভিযোজন কৰা অৱস্থান:</translation>
 <translation id="8220146938470311105">C7/C6 (লেফাফা)</translation>
 <translation id="8221250263817408492">আপুনি এটা প্ৰবঞ্চনামূলক ছাইটত এইমাত্ৰ নিজৰ পাছৱৰ্ডটো দিছে। Chromiumএ <ph name="WEBSITE_1" /> আৰু আপুনি এই পাছৱৰ্ডটো ব্যৱহাৰ কৰা অন্য ছাইটসমূহলৈ গৈ এইটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>

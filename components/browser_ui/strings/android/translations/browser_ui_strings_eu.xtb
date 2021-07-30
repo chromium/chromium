@@ -232,7 +232,6 @@
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 hautatuta}other{# hautatuta}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> hautatu dira. Pantailaren goialdean daude aukera erabilgarriak.</translation>
-<translation id="7128222689758636196">Baimendu bilatzaile honetan</translation>
 <translation id="7141896414559753902">Ez utzi webguneei leiho gainerakorrak eta birbideratzeak erakusten (gomendatua)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">Hautatu irudiak</translation>
@@ -247,7 +246,6 @@
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7572498721684305250">Blokeatu webguneak, ez dezaten bidali eta jaso informaziorik NFC darabilten gailuak ukitzen dituzunean.</translation>
 <translation id="757524316907819857">Ez utzi webguneei eduki babestua erreproduzitzen</translation>
-<translation id="7589445247086920869">Blokeatu bilatzaile honetan</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7781829728241885113">Atzo</translation>
@@ -316,6 +314,5 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimenak <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="930525582205581608">Webgunea ahaztea nahi duzu?</translation>
-<translation id="965817943346481315">Webguneak iragarki oztopatzaileak erakusten baditu, blokea itzazu (gomendatua)</translation>
 <translation id="967624055006145463">Gordetako datuak</translation>
 </translationbundle>

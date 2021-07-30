@@ -3,6 +3,8 @@
 <translationbundle lang="is">
 <translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Myndir úr galleríi</translation>
+<translation id="1300209025925956156">Skannaðu skjalið</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Leit + Vinstri ör til að opna.</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er ekki í sambandi.</translation>
 <translation id="1473110567575736769">3 sekúndna teljari</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Ekki er hægt að nota myndavélina eins og er.
         Athugaðu hvort myndavélin er rétt tengd.</translation>
 <translation id="5152121255775685072">Opna safn</translation>
+<translation id="520537883758714667">Nú er skjalaskönnun í boði</translation>
 <translation id="5268823927180092501">Virkja skjalastillingu í öllum myndavélum</translation>
 <translation id="5422455049771430511">Myndirnar þínar og myndskeiðin eru komin á nýjan stað</translation>
+<translation id="5444515100983837161">Settu öll horn skjalsins í rammann. Skönnun virkar betur ef skjalið og bakgrunnurinn eru í mismunandi litum.</translation>
 <translation id="5671277269877808209">Ferningur</translation>
 <translation id="5753488212459587150">Nota ítarlegar stillingar</translation>
 <translation id="5759254179196327752">Skanna skjal</translation>

@@ -137,7 +137,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1990046457226896323">Download de arquivos de fala concluído</translation>
 <translation id="1993072747612765854">Saiba mais sobre a última atualização do <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Espaço de trabalho atual</translation>
-<translation id="1999628559811343244">Captura de pacote de rede iniciada</translation>
 <translation id="2016340657076538683">Digite uma mensagem</translation>
 <translation id="2018630726571919839">Conte uma piada</translation>
 <translation id="2021864487439853900">Clique para desbloquear</translation>
@@ -703,6 +702,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6559976592393364813">Peça ao administrador</translation>
 <translation id="6570902864550063460">Carregando por USB</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />: <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, gerenciada pelo seu administrador</translation>
 <translation id="6612802754306526077">Modo de gravação de tela selecionado</translation>
 <translation id="6614169507485700968">A tela de privacidade está ativada</translation>
@@ -729,7 +729,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6751826523481687655">O acompanhamento de desempenho está ativado</translation>
 <translation id="6752912906630585008">Espaço de trabalho <ph name="REMOVED_DESK" /> removido e integrado ao <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Nenhuma mídia em reprodução</translation>
-<translation id="6773040085467426602">Clique em "Parar" para interromper as operações atuais de captura de pacotes.</translation>
 <translation id="6777216307882431711">Carregando dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os displays porque não foram encontradas resoluções suportadas. Em vez disso, foi ativada a área de trabalho estendida.</translation>

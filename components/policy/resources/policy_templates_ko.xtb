@@ -867,6 +867,7 @@
         이 정책은 M72부터 지원이 중단되었습니다. 대신 CloudManagementEnrollmentToken을 사용하세요.
         </translation>
 <translation id="2113068765175018713">자동으로 재부팅하여 기기 가동 시간 제한</translation>
+<translation id="2116169546538119304"> 이 정책은 지원 중단되었으므로 로그인 비밀번호를 다시 사용하려면 Kerberos 정책을 구성해 주세요.</translation>
 <translation id="2117990069872855599">아바타 이미지를 다운로드할 수 있는 URL입니다.</translation>
 <translation id="2124881675920287921">이 정책은 M82에서 지원이 중단되었으며 M85에서 삭제되었습니다. 대신 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />를 사용하세요. <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" />를 사용 중지하는 것은 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />를 사용 중지하는 것과 동일합니다. <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" />를 사용 설정하거나 이 설정을 설정하지 않으면 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />를 설정하지 않는 것과 같습니다.
 

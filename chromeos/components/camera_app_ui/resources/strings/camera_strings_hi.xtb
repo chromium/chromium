@@ -3,6 +3,8 @@
 <translationbundle lang="hi">
 <translation id="1175958423215084756">लिंक पहचाना गया. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">गैलरी की इमेज</translation>
+<translation id="1300209025925956156">अपना दस्तावेज़ स्कैन करें</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. ऐक्सेस करने के लिए, खोज बटन + लेफ़्ट ऐरो दबाएं.</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> अनप्लग किया गया.</translation>
 <translation id="1473110567575736769">तीन सेकंड का टाइमर</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">फ़िलहाल आपका कैमरा उपलब्ध नहीं है.
         कृपया देखें कि कैमरा ठीक तरह से कनेक्ट है या नहीं.</translation>
 <translation id="5152121255775685072">गैलरी में जाएं</translation>
+<translation id="520537883758714667">दस्तावेज़ को स्कैन करने की सुविधा अब उपलब्ध है</translation>
 <translation id="5268823927180092501">सभी कैमरे के लिए दस्तावेज़ मोड चालू करें</translation>
 <translation id="5422455049771430511">आपकी फ़ोटो और वीडियो के लिए नई जगह</translation>
+<translation id="5444515100983837161">दस्तावेज़ के सभी कोने फ़्रेम के अंदर रखें. दस्तावेज़ और बैकग्राउंड अलग-अलग रंग के होने पर स्कैन बेहतर होते हैं.</translation>
 <translation id="5671277269877808209">वर्ग</translation>
 <translation id="5753488212459587150">एक्सपर्ट मोड चालू करें</translation>
 <translation id="5759254179196327752">दस्तावेज़ स्कैन करें</translation>

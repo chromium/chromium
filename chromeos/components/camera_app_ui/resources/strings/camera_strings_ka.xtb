@@ -3,6 +3,8 @@
 <translationbundle lang="ka">
 <translation id="1175958423215084756">აღმოჩენილია ბმული. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">გალერეის სურათები</translation>
+<translation id="1300209025925956156">დაასკანირეთ თქვენი დოკუმენტი</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. წვდომისთვის გამოიყენეთ კლავიშთა კომბინაცია Search + მარცხნივ მიმართული ისარი.</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> გამოერთებულია.</translation>
 <translation id="1473110567575736769">3-წამიანი ტაიმერი</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">თქვენი კამერა ამჟამად მიუწვდომელია.
         შეამოწმეთ, რომ კამერა სწორად არის დაკავშირებული.</translation>
 <translation id="5152121255775685072">გალერეაზე გადასვლა</translation>
+<translation id="520537883758714667">ამიერიდან ხელმისაწვდომია დოკუმენტების სკანირების ფუნქცია</translation>
 <translation id="5268823927180092501">დოკუმენტის რეჟიმის ჩართვა ყველა კამერაზე</translation>
 <translation id="5422455049771430511">თქვენმა ფოტოებმა და ვიდეოებმა ახალ სივრცეში გადაინაცვლა</translation>
+<translation id="5444515100983837161">მოათავსეთ დოკუმენტის ყველა კიდე ჩარჩოში. საუკეთესო შედეგების მისაღებად დოკუმენტისა და ფონის ფერები განსხვავებული უნდა იყოს.</translation>
 <translation id="5671277269877808209">კვადრატი</translation>
 <translation id="5753488212459587150">ექსპერტის რეჟიმის ჩართვა</translation>
 <translation id="5759254179196327752">დოკუმენტის სკანირება</translation>

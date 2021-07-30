@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">激活状态</translation>
-<translation id="2294675138977897428">未检测到以太网连接</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2364498172489649528">通过</translation>
@@ -320,6 +319,7 @@
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="708426984172631313">已停止</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="714876143603641390">LAN 连接性</translation>

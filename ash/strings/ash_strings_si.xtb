@@ -137,7 +137,6 @@
 <translation id="1990046457226896323">කථන ගොනු බාගන්නා ලදී</translation>
 <translation id="1993072747612765854">නවතම <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන තව දැන ගන්න</translation>
 <translation id="1998100899771863792">වත්මන් වැඩතලය</translation>
-<translation id="1999628559811343244">ජාල පැකට් ග්‍රහණය ආරම්භ විය</translation>
 <translation id="2016340657076538683">පණිවිඩයක් ටයිප් කරන්න</translation>
 <translation id="2018630726571919839">මට විහිළුවක් කියන්න</translation>
 <translation id="2021864487439853900">අගුලු හැරීමට ක්ලික් කරන්න</translation>
@@ -703,6 +702,7 @@
 <translation id="6559976592393364813">පරිපාලකයාගෙන් අසන්න</translation>
 <translation id="6570902864550063460">USB හරහා ආරෝපණය වෙමින්</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />කින් සැසිය අවසන්වේ.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="6612802754306526077">තිර පටිගත කිරීම් ප්‍රකාරය තෝරන ලදි</translation>
 <translation id="6614169507485700968">පෞද්ගලිකත්ව තිරය සක්‍රීයයි</translation>
@@ -729,7 +729,6 @@
 <translation id="6751826523481687655">කාර්ය සාධන අනුරේඛනය ක්‍රියාත්මකයි</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
-<translation id="6773040085467426602">සිදු වෙමින් පවතින පැකට් ග්‍රහණ මෙහෙයුම් නැවැත්වීමට නවත්වන්න ක්ලික් කරන්න.</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6803622936009808957">සහාය වන විසඳුම් හමු නොවුන නිසා ප්‍රදර්ශන කැඩපත්කරනය කළ නොහැකි විය. ඒ වෙනුවට දිගු කළ ඩෙස්ක්ටොප් එකට ඇතුළු විය.</translation>

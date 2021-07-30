@@ -3,6 +3,8 @@
 <translationbundle lang="ar">
 <translation id="1175958423215084756">تم رصد رابط. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">صور المعرض</translation>
+<translation id="1300209025925956156">مسح المستند ضوئيًا</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. انقر على زر البحث + السهم المتّجه لليمين للوصول إلى عناصر التحكم الجديدة.</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1467231725790366244">تم فصل كاميرا <ph name="CAMERA" /> عن الجهاز.</translation>
 <translation id="1473110567575736769">مؤقّت لمدة 3 ثوانٍ</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">الكاميرا غير مُتاحة حاليًا.
         يُرجى التحقُّق من اتصال الكاميرا بشكلٍ صحيح.</translation>
 <translation id="5152121255775685072">الانتقال إلى المعرض</translation>
+<translation id="520537883758714667">تتوفّر الآن ميزة مسح المستندات ضوئيًا.</translation>
 <translation id="5268823927180092501">تفعيل وضع المستند على جميع الكاميرات</translation>
 <translation id="5422455049771430511">سيتم حفظ صورك وفيديوهاتك في مكان جديد</translation>
+<translation id="5444515100983837161">المستند بكل حوافه يجب أن يكون ضمن الإطار. وللحصول على أفضل النتائج، يجب أن يختلف لون المستند عن لون الخلفية.</translation>
 <translation id="5671277269877808209">وضع المربّع</translation>
 <translation id="5753488212459587150">تفعيل الوضع المختصّ</translation>
 <translation id="5759254179196327752">مسح المستند ضوئيًا</translation>

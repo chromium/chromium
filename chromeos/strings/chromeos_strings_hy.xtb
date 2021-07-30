@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Ակտիվացման կարգավիճակը</translation>
-<translation id="2294675138977897428">Ethernet միացում չի հայտնաբերվել</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
@@ -271,6 +270,7 @@
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
 <translation id="6122191549521593678">Առցանց</translation>
+<translation id="6125438912510167220">Կապի արագությունը</translation>
 <translation id="6137767437444130246">Օգտատիրոջ հավաստագիր</translation>
 <translation id="6146993107019042706">Ավարտելու համար մուտքագրեք ձեր նոր գաղտնաբառը</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -320,7 +320,7 @@
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվերներ}other{Անվանումների սերվերներ}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>

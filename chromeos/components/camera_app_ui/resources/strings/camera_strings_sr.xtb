@@ -3,6 +3,8 @@
 <translationbundle lang="sr">
 <translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Слике у галерији</translation>
+<translation id="1300209025925956156">Скенирајте документ</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Тастер за претрагу + стрелица налево да бисте приступили.</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1467231725790366244">Камера <ph name="CAMERA" /> је искључена.</translation>
 <translation id="1473110567575736769">Тајмер за 3 секунде</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Камера тренутно није доступна.
         Проверите да ли је камера исправно повезана.</translation>
 <translation id="5152121255775685072">Иди у галерију</translation>
+<translation id="520537883758714667">Сада је доступно скенирање докумената</translation>
 <translation id="5268823927180092501">Омогући режим документа на свим камерама</translation>
 <translation id="5422455049771430511">Слике и видео снимци су сада на новом месту</translation>
+<translation id="5444515100983837161">Поставите све ивице документа у оквир. Скенирање је најуспешније ако су документ и позадина различите боје.</translation>
 <translation id="5671277269877808209">Квадрат</translation>
 <translation id="5753488212459587150">Омогући режим за стручњаке</translation>
 <translation id="5759254179196327752">Скенирање докумената</translation>

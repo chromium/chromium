@@ -137,7 +137,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1990046457226896323">Pliki z mową zostały pobrane</translation>
 <translation id="1993072747612765854">Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1998100899771863792">Bieżące biurko</translation>
-<translation id="1999628559811343244">Przechwytywanie pakietów sieci zostało rozpoczęte</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
 <translation id="2018630726571919839">Opowiedz mi kawał</translation>
 <translation id="2021864487439853900">Kliknij, aby odblokować</translation>
@@ -703,6 +702,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6559976592393364813">Poproś administratora</translation>
 <translation id="6570902864550063460">Ładowanie przez USB</translation>
 <translation id="6585808820553845416">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6612802754306526077">Wybrano tryb nagrywania ekranu</translation>
 <translation id="6614169507485700968">Ekran chroniący prywatność jest włączony</translation>
@@ -729,7 +729,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6751826523481687655">Śledzenie wydajności jest włączone</translation>
 <translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Multimedia nie są odtwarzane</translation>
-<translation id="6773040085467426602">Kliknij Stop, aby zatrzymać trwające operacje przechwytywania pakietów.</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>

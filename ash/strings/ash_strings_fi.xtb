@@ -137,7 +137,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1990046457226896323">Puhetiedostot ladattu</translation>
 <translation id="1993072747612765854">Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="1998100899771863792">Nykyinen työpöytä</translation>
-<translation id="1999628559811343244">Verkkopakettien kaappaaminen käynnistetty</translation>
 <translation id="2016340657076538683">Kirjoita viesti</translation>
 <translation id="2018630726571919839">Kerro vitsi</translation>
 <translation id="2021864487439853900">Klikkaa avataksesi lukituksen</translation>
@@ -703,6 +702,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6559976592393364813">Pyydä apua järjestelmänvalvojalta</translation>
 <translation id="6570902864550063460">Ladataan USB:n kautta</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
+<translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, järjestelmänvalvojan hallinnoima</translation>
 <translation id="6612802754306526077">Näytön tallentajatila valittu</translation>
 <translation id="6614169507485700968">Näytönsuoja on päällä</translation>
@@ -729,7 +729,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6751826523481687655">Tehokkuuden seuranta on käytössä</translation>
 <translation id="6752912906630585008">Työpöytä <ph name="REMOVED_DESK" /> poistettu ja yhdistetty työpöytään <ph name="RECEIVE_DESK" /></translation>
 <translation id="6757237461819837179">Mediaa ei toisteta</translation>
-<translation id="6773040085467426602">Pysäytä nykyiset paketin kaappausoperaatiot klikkaamalla lopeta.</translation>
 <translation id="6777216307882431711">Toimii yhdistettyjen USB-C-laitteiden virtalähteenä</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6803622936009808957">Näyttöjen peilaaminen ei onnistunut, sillä tuettua resoluutiota ei löytynyt. Sen sijaan valittiin työpöydän laajennus.</translation>

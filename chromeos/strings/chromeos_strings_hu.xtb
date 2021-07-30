@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Nincs internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Aktiválás állapota</translation>
-<translation id="2294675138977897428">Nincs észlelhető Ethernet-kapcsolat</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Kapcsolja be a Bluetooth-t a közeli eszközök felfedezéséhez</translation>
 <translation id="2364498172489649528">Sikeres ellenőrzés</translation>
@@ -271,6 +270,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6125438912510167220">Kapcsolódási sebesség</translation>
 <translation id="6137767437444130246">Felhasználói tanúsítvány</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
 <translation id="6147514244879357420">PNG</translation>

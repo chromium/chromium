@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
-<translation id="2294675138977897428">Не е открита връзка с Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2364498172489649528">Премината</translation>
@@ -271,6 +270,7 @@
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
 <translation id="6122191549521593678">Онлайн</translation>
+<translation id="6125438912510167220">Скорост на връзката</translation>
 <translation id="6137767437444130246">Потребителски сертификат</translation>
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
 <translation id="6147514244879357420">PNG</translation>

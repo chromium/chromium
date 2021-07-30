@@ -3,6 +3,8 @@
 <translationbundle lang="fi">
 <translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Gallerian kuvat</translation>
+<translation id="1300209025925956156">Skannaa dokumenttisi</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Käytä valitsemalla Haku + vasen nuoli.</translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on irrotettu.</translation>
 <translation id="1473110567575736769">3 sekunnin ajastin</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Kamerasi ei ole käytettävissä tällä hetkellä.
         Tarkista, onko kamera yhdistetty oikein.</translation>
 <translation id="5152121255775685072">Siirry galleriaan</translation>
+<translation id="520537883758714667">Dokumenttien skannaus on nyt saatavilla</translation>
 <translation id="5268823927180092501">Ota dokumenttitila käyttöön kaikilla kameroilla</translation>
 <translation id="5422455049771430511">Kuvillasi ja videoillasi on nyt uusi koti</translation>
+<translation id="5444515100983837161">Aseta dokumentti niin, että kaikki reunat ovat kehyksen sisällä. Skannaus toimii parhaiten, kun dokumentti ja tausta ovat erivärisiä</translation>
 <translation id="5671277269877808209">Neliö</translation>
 <translation id="5753488212459587150">Ota asiantuntijatila käyttöön</translation>
 <translation id="5759254179196327752">Skannaa dokumentti</translation>

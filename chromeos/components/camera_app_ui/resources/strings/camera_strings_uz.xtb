@@ -3,6 +3,8 @@
 <translationbundle lang="uz">
 <translation id="1175958423215084756">Havola aniqlandi. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galereyadagi rasmlar</translation>
+<translation id="1300209025925956156">Hujjatni skanerlang</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Ochish uchun Search + Chapga strelka tugmalarini bosing.</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli uzildi.</translation>
 <translation id="1473110567575736769">3 soniyalik taymer</translation>
@@ -64,8 +66,10 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 <translation id="5057360777601936059">Kamera hozirda ishlamayapti.
         Kamera bexato ulanganini tekshiring.</translation>
 <translation id="5152121255775685072">Galereyani ochish</translation>
+<translation id="520537883758714667">Endi hujjatlarni skanerlash mumkin</translation>
 <translation id="5268823927180092501">Barcha kameralarda hujjat rejimini yoqish</translation>
 <translation id="5422455049771430511">Rasm va videolaringiz endi yangi joyda saqlanadi</translation>
+<translation id="5444515100983837161">Hujjat chetlarini hoshiyaga moslab joylang. Hujjat uning rangi foni bilan farqli boʻlganda yaxshi skanerlanadi.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
 <translation id="5753488212459587150">Ekspert rejimini yoqish</translation>
 <translation id="5759254179196327752">Hujjatni skanerlash</translation>

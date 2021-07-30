@@ -3,6 +3,8 @@
 <translationbundle lang="ko">
 <translation id="1175958423215084756">링크가 감지되었습니다. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">갤러리 이미지</translation>
+<translation id="1300209025925956156">문서 스캔</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. 검색 + 왼쪽 화살표 키를 사용하여 액세스하세요.</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> 카메라의 연결이 해제되었습니다.</translation>
 <translation id="1473110567575736769">3초 타이머</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">현재 카메라를 사용할 수 없습니다.
         카메라가 제대로 연결되어 있는지 확인하세요.</translation>
 <translation id="5152121255775685072">갤러리로 이동</translation>
+<translation id="520537883758714667">이제 문서를 스캔할 수 있습니다.</translation>
 <translation id="5268823927180092501">모든 카메라에서 문서 모드 사용 설정</translation>
 <translation id="5422455049771430511">사진과 동영상이 새로운 폴더에 저장됩니다</translation>
+<translation id="5444515100983837161">프레임 안에 문서의 네 모서리를 위치시키세요. 문서와 배경이 서로 다른 색상일 때 스캔이 가장 잘 작동합니다.</translation>
 <translation id="5671277269877808209">정사각형</translation>
 <translation id="5753488212459587150">전문가 모드 사용 설정</translation>
 <translation id="5759254179196327752">문서 스캔</translation>

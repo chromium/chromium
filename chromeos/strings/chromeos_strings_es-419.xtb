@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Sin Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Estado de activación</translation>
-<translation id="2294675138977897428">No se detectó ninguna conexión de Ethernet</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Activar Bluetooth para buscar los dispositivos cercanos</translation>
 <translation id="2364498172489649528">Aprobado</translation>
@@ -271,6 +270,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6106186594183574873">Para finalizar, ingresa tu contraseña anterior</translation>
 <translation id="6108689792487843350">no se puede acceder a la puerta de enlace</translation>
 <translation id="6122191549521593678">En línea</translation>
+<translation id="6125438912510167220">Velocidad de vínculo</translation>
 <translation id="6137767437444130246">Certificado del usuario</translation>
 <translation id="6146993107019042706">Para finalizar, ingresa tu nueva contraseña</translation>
 <translation id="6147514244879357420">PNG</translation>

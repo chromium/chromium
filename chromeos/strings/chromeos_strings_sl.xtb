@@ -66,7 +66,6 @@
 <translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Stanje aktiviranja</translation>
-<translation id="2294675138977897428">Ethernetna povezava ni zaznana</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
@@ -271,6 +270,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
+<translation id="6125438912510167220">Hitrost povezave</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
 <translation id="6146993107019042706">Za dokončanje vnesite novo geslo</translation>
 <translation id="6147514244879357420">PNG</translation>

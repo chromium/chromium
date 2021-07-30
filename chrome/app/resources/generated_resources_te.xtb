@@ -323,10 +323,12 @@
 <translation id="1347512539447549782">Linux స్టోరేజ్</translation>
 <translation id="1347975661240122359">బ్యాటరీ <ph name="BATTERY_LEVEL" />% ఉన్నప్పుడు అప్‌డేట్ ప్రారంభమవుతుంది.</translation>
 <translation id="1353275871123211385">యాప్ ఆమోదం, పరికర వినియోగ వ్యవధిపై పరిమితుల వంటి తల్లిదండ్రుల కంట్రోల్స్‌ను ఉపయోగించడానికి, చిన్నారి వద్ద తల్లి/తండ్రి ద్వారా మేనేజ్ చేయబడే Google ఖాతా ఉండాలి. Google Classroom వంటి టూల్స్‌కు స్కూల్ ఖాతాను తర్వాత జోడించవచ్చు.</translation>
+<translation id="135389172849514421">ఆఫ్‌లైన్‌లో పని చేస్తుంది</translation>
 <translation id="1353980523955420967">PPDని కనుగొనడం సాధ్యం కాదు. మీ Chromebook ఇంటర్నెట్‌కు కనెక్ట్ అయ్యి ఉందని నిర్ధారించుకుని, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="1354045473509304750">మీ కెమెరాను ఉపయోగించడానికి, తరలించడానికి <ph name="HOST" />ను అనుమతించడాన్ని కొనసాగించండి</translation>
 <translation id="1355088139103479645">మొత్తం డేటాను తొలగించాలా?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> బ్లాక్ చేయబడింది</translation>
+<translation id="1356178530321889280">మీరు వెబ్‌లో బ్రౌజింగ్, షాపింగ్ చేస్తున్నప్పుడు మీరు చూసే విజువల్ కంటెంట్ గురించి మరింత తెలుసుకోవడానికి ఆ సైట్‌లో ఏదైనా ఏరియాను సెర్చ్ చేయడానికి కుడి క్లిక్ చేసి, "Google Lensతో ఈ పేజీ ఏదైనా భాగంలో సెర్చ్ చేయండి"ని ఎంచుకోండి.</translation>
 <translation id="1358741672408003399">అక్షరక్రమం మరియు వ్యాకరణం</translation>
 <translation id="1359923111303110318">మీ పరికరాన్ని Smart Lockతో అన్‌లాక్ చేయవచ్చు. అన్‌లాక్ చేయడానికి 'ఎంటర్'ను నొక్కండి.</translation>
 <translation id="1361164813881551742">మాన్యువల్‌గా జోడించండి</translation>
@@ -1459,6 +1461,7 @@
 <translation id="2509495747794740764">స్కేల్ ప్రమాణం తప్పనిసరిగా 10 మరియు 200 మధ్య ఉండే సంఖ్య అయ్యి ఉండాలి.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">బ్లూటూత్ పరికరాన్ని విస్మరించండి</translation>
+<translation id="2512065992892294946"><ph name="LANGUAGE" /> (ఎంచుకోబడింది)</translation>
 <translation id="2513396635448525189">లాగిన్ ఇమేజ్</translation>
 <translation id="2514326558286966059">మీ వేలిముద్రతో మరింత వేగంగా అన్‌లాక్ చేయండి</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -2365,6 +2368,7 @@
 <translation id="3495496470825196617">ఛార్జింగ్‌లో ఉన్నప్పుడు ఇన్‌యాక్టివ్ పవర్</translation>
 <translation id="3495660573538963482">Google సహాయకం సెట్టింగ్‌లు</translation>
 <translation id="3496213124478423963">దూరంగా జూమ్ చేయి</translation>
+<translation id="3496238553815913323"><ph name="LANGUAGE" /> (ఎంచుకోబడలేదు)</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> నుండి USB పరికరం (ప్రోడక్ట్ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">డూడుల్‌ని షేర్ చేయి</translation>
 <translation id="3498215018399854026">మేము ప్రస్తుతం మీ తల్లి/తండ్రిని సంప్రదించలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
@@ -4128,6 +4132,7 @@
 <translation id="5449551289610225147">పాస్‌వర్డ్ చెల్లదు</translation>
 <translation id="5449588825071916739">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయి</translation>
 <translation id="5449716055534515760">&amp;విండో మూసివెయ్యి</translation>
+<translation id="5452976525201205853"><ph name="LANGUAGE" /> (ఆఫ్‌లైన్‌లో పని చేస్తుంది)</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />తో</translation>
 <translation id="5457113250005438886">చెల్లదు</translation>
 <translation id="5457459357461771897">మీ కంప్యూటర్‌లోని ఫోటోలు, సంగీతం మరియు ఇతర మీడియాను చదవడం మరియు తొలగించడం</translation>
@@ -4588,6 +4593,7 @@
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> మిగిలి ఉన్నాయి)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{అన్నింటినీ &amp;కొత్త విండోలో తెరువు}=1{&amp;కొత్త విండోలో తెరువు}other{అన్నింటినీ ({COUNT}) &amp;కొత్త విండోలో తెరువు}}</translation>
 <translation id="5965661248935608907">ఇది, మీరు హోమ్ బటన్‌ను క్లిక్ చేసేటప్పుడు లేదా ఓమ్నిబాక్స్‌ నుండి శోధించేటప్పుడు చూపబడే పేజీని కూడా నియంత్రిస్తుంది.</translation>
+<translation id="5968022600320704045">సెర్చ్ ఫలితాలు ఏవీ లేవు</translation>
 <translation id="5969419185858894314"><ph name="FOLDERNAME" />లో ఫైల్‌లను <ph name="ORIGIN" /> చూడగలదు</translation>
 <translation id="5969728632630673489">కీబోర్డ్ షార్ట్‌కట్ నోటిస్‌ను విస్మరించారు</translation>
 <translation id="5971037678316050792">బ్లూటూత్ అడాప్టర్ స్థితిని, జత చేసే విధానాన్ని నియంత్రించడానికి అనుమతి</translation>
@@ -5397,6 +5403,7 @@
 <translation id="6855892664589459354">Crostini బ్యాకప్ చేసి, పునరుద్ధరించడం</translation>
 <translation id="6856348640027512653">వర్చువల్ రియాలిటీ పరికరాలు లేదా డేటాను ఉపయోగించడానికి అనుమతించబడలేదు</translation>
 <translation id="6856623341093082836">మీ టచ్‌స్క్రీన్ ఖచ్చితత్వాన్ని సెటప్ చేసి సర్దుబాటు చేయండి</translation>
+<translation id="6856850379840757744">దీనిని ఆన్ చేసినప్పుడు, నోటిఫికేషన్‌లు అన్నీ మ్యూట్ చేయబడతాయి</translation>
 <translation id="6857145580237920905">పవర్‌వాష్‌కు ముందుగానే eSIM ప్రొఫైల్‌లను తీసివేయండి</translation>
 <translation id="6857699260879628349">కాన్ఫిగరేషన్ సమాచారాన్ని పొందండి</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> సెక</translation>
@@ -6374,6 +6381,7 @@
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">నకిలీ</translation>
 <translation id="7887864092952184874">బ్లూటూత్ మౌస్ జత చేయబడింది</translation>
+<translation id="7889371445710865055">డిక్టేషన్ భాషను మార్చండి</translation>
 <translation id="7890147169288018054">మీ IP లేదా MAC అడ్రస్ వంటి నెట్‌వర్క్ సమాచారాన్ని చూడండి</translation>
 <translation id="7893008570150657497">మీ కంప్యూటర్ నుండి ఫోటోలు, సంగీతం మరియు ఇతర మీడియాను యాక్సెస్ చేయండి</translation>
 <translation id="7893153962594818789">ఈ <ph name="DEVICE_TYPE" />లో బ్లూటూత్ ఆఫ్‌లో ఉంది. మీ పాస్‌వర్డ్‌ను నమోదు చేసి బ్లూటూత్‌ను ఆన్ చేయండి.</translation>

@@ -3,6 +3,8 @@
 <translationbundle lang="ms">
 <translation id="1175958423215084756">Pautan dikesan. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imej galeri</translation>
+<translation id="1300209025925956156">Imbas dokumen anda</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Carian + Anak panah ke kiri untuk mengakses.</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1467231725790366244">Palam <ph name="CAMERA" /> dicabut.</translation>
 <translation id="1473110567575736769">Pemasa 3 saat</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Kamera anda tidak tersedia pada masa ini.
         Sila periksa sama ada kamera telah disambungkan dengan betul.</translation>
 <translation id="5152121255775685072">Pergi ke galeri</translation>
+<translation id="520537883758714667">Kini pengimbasan dokumen tersedia</translation>
 <translation id="5268823927180092501">Dayakan mod dokumen pada semua kamera</translation>
 <translation id="5422455049771430511">Foto dan video anda mempunyai wadah baharu</translation>
+<translation id="5444515100983837161">Pastikan keempat-empat sisi dokumen berada dalam bingkai. Pengimbasan berfungsi pada tahap terbaik jika warna dokumen dan latar belakang adalah berbeza.</translation>
 <translation id="5671277269877808209">Segi empat sama</translation>
 <translation id="5753488212459587150">Dayakan mod pakar</translation>
 <translation id="5759254179196327752">Imbas dokumen</translation>

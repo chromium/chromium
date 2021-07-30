@@ -3,6 +3,8 @@
 <translationbundle lang="ro">
 <translation id="1175958423215084756">A fost detectat un link. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Imagini din galerie</translation>
+<translation id="1300209025925956156">Scanează documentul</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasta de căutare + săgeată spre stânga pentru acces.</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> este deconectată.</translation>
 <translation id="1473110567575736769">Cronometru de 3 secunde</translation>
@@ -64,8 +66,10 @@
 <translation id="5057360777601936059">Camera foto este indisponibilă.
         Verifică dacă ai conectat corect camera foto.</translation>
 <translation id="5152121255775685072">Accesează galeria</translation>
+<translation id="520537883758714667">Scanarea documentelor este acum disponibilă</translation>
 <translation id="5268823927180092501">Activează modul documentare pentru toate camerele</translation>
 <translation id="5422455049771430511">Fotografiile și videoclipurile se salvează într-o nouă locație</translation>
+<translation id="5444515100983837161">Încadrează toate marginile documentului în cadru. Scanarea funcționează optim dacă documentul și fundalul sunt de culori diferite.</translation>
 <translation id="5671277269877808209">Pătrat</translation>
 <translation id="5753488212459587150">Activează modul expert</translation>
 <translation id="5759254179196327752">Scanează documentul</translation>
