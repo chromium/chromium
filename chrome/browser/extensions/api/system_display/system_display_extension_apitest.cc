@@ -60,6 +60,9 @@ class SystemDisplayExtensionApiTest
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
+// TODO(crbug.com/1231357): MockScreen causes random failures on Windows.
+#if !defined(OS_WIN)
+
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          SystemDisplayExtensionApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
@@ -67,18 +70,14 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          SystemDisplayExtensionApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/1231357): Flakes (at least) on Windows
-#if defined(OS_WIN)
-#define MAYBE_GetDisplayInfo DISABLED_GetDisplayInfo
-#else
-#define MAYBE_GetDisplayInfo GetDisplayInfo
-#endif  // defined(OS_WIN)
-IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, MAYBE_GetDisplayInfo) {
+IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
   ASSERT_TRUE(RunExtensionTest(
       "system_display/info", {},
       {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
       << message_;
 }
+
+#endif  // defined(OS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
