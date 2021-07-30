@@ -33,6 +33,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -516,11 +517,14 @@ uint16_t GetPort(const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
   return absl::get<HostPortPair>(host).port();
 }
 
-// Only use scheme/port in JobKey if `features::kUseDnsHttpsSvcb` is enabled.
-// Otherwise DNS will not give different results for the same hostname.
+// Only use scheme/port in JobKey if `features::kUseDnsHttpsSvcb` is enabled
+// (or the query is explicitly for HTTPS). Otherwise DNS will not give different
+// results for the same hostname.
 absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& input) {
-  if (base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb) &&
+    const absl::variant<url::SchemeHostPort, HostPortPair>& input,
+    DnsQueryType query_type) {
+  if ((base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb) ||
+       query_type == DnsQueryType::HTTPS) &&
       absl::holds_alternative<url::SchemeHostPort>(input)) {
     return absl::get<url::SchemeHostPort>(input);
   }
@@ -1298,11 +1302,49 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       DnsQueryType dns_query_type) {
     DCHECK_NE(DnsQueryType::UNSPECIFIED, dns_query_type);
 
-    // TODO(crbug.com/1225776): Adjust the query hostname for
-    // non-https/non-port-443 HTTPS queries.
+    std::string transaction_hostname(GetHostname(host_));
+
+    // For HTTPS, prepend "_<port>._https." for any non-default port.
+    if (dns_query_type == DnsQueryType::HTTPS &&
+        absl::holds_alternative<url::SchemeHostPort>(host_)) {
+      const auto& scheme_host_port = absl::get<url::SchemeHostPort>(host_);
+
+      DCHECK(!scheme_host_port.host().empty() &&
+             scheme_host_port.host().front() != '.');
+
+      // Normalize ws/wss schemes to http/https.
+      base::StringPiece normalized_scheme = scheme_host_port.scheme();
+      if (normalized_scheme == url::kWsScheme) {
+        normalized_scheme = url::kHttpScheme;
+      } else if (normalized_scheme == url::kWssScheme) {
+        normalized_scheme = url::kHttpsScheme;
+      }
+
+      // For http-schemed hosts, request the corresponding upgraded https host
+      // per the rules in draft-ietf-dnsop-svcb-https-06, Section 8.5.
+      uint16_t port = scheme_host_port.port();
+      if (normalized_scheme == url::kHttpScheme) {
+        normalized_scheme = url::kHttpsScheme;
+        if (port == 80)
+          port = 443;
+      }
+
+      // Scheme should always end up normalized to "https" to create HTTPS
+      // transactions.
+      DCHECK_EQ(normalized_scheme, url::kHttpsScheme);
+
+      // Per the rules in draft-ietf-dnsop-svcb-https-06, Section 8.1 and 2.3,
+      // encode scheme and port in the transaction hostname, unless the port is
+      // the default 443.
+      if (port != 443) {
+        transaction_hostname = base::StrCat({"_", base::NumberToString(port),
+                                             "._https.", transaction_hostname});
+      }
+    }
+
     std::unique_ptr<DnsTransaction> trans =
         client_->GetTransactionFactory()->CreateTransaction(
-            std::string(GetHostname(host_)),
+            std::move(transaction_hostname),
             DnsQueryTypeToQtype(dns_query_type),
             base::BindOnce(&DnsTask::OnTransactionComplete,
                            base::Unretained(this), tick_clock_->NowTicks(),
@@ -2908,7 +2950,8 @@ int HostResolverManager::Resolve(RequestImpl* request) {
 
   const auto& parameters = request->parameters();
   JobKey job_key;
-  job_key.host = CreateHostForJobKey(request->request_host());
+  job_key.host =
+      CreateHostForJobKey(request->request_host(), parameters.dns_query_type);
   job_key.network_isolation_key = request->network_isolation_key();
   job_key.source = parameters.source;
   job_key.resolve_context = request->resolve_context();
