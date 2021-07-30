@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -122,6 +123,13 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     }
   }
 
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(origin, web_contents);
+
+  capture_policy::FilterMediaList(media_types, capture_level);
+  DesktopMediaList::WebContentsFilter includable_web_contents_filter =
+      capture_policy::GetIncludableWebContentsFilter(origin, capture_level);
+
   // Avoid offering window-capture as a separate source, since PipeWire's
   // content-picker will offer both screen and window sources.
   // See crbug.com/1157006.
@@ -143,7 +151,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(g_picker_factory);
   picker_controller_->Show(picker_params, std::move(media_types),
-                           std::move(callback));
+                           includable_web_contents_filter, std::move(callback));
   return RespondLater();
 }
 

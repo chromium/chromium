@@ -699,6 +699,8 @@ static_library("browser") {
     "media/output_protection_proxy.h",
     "media/webrtc/audio_debug_recordings_handler.cc",
     "media/webrtc/audio_debug_recordings_handler.h",
+    "media/webrtc/capture_policy_utils.cc",
+    "media/webrtc/capture_policy_utils.h",
     "media/webrtc/desktop_media_list.h",
     "media/webrtc/desktop_media_list_base.cc",
     "media/webrtc/desktop_media_list_base.h",

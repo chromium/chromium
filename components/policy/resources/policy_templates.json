@@ -757,6 +757,20 @@
         'ShowCastIconInToolbar',
       ],
     },
+    {
+      'name': 'ScreenCapture',
+      'type': 'group',
+      'caption': '''Allow or deny screen capture''',
+      'desc': '''Configure policies to control the level of screen-share APIs (e.g., getDisplayMedia() or the Desktop Capture extension API)
+      that a site may capture (e.g. tab, window or desktop capture).''',
+      'policies': [
+        'ScreenCaptureAllowed',
+        'ScreenCaptureAllowedByOrigins',
+        'WindowCaptureAllowedByOrigins',
+        'TabCaptureAllowedByOrigins',
+        'SameOriginTabCaptureAllowedByOrigins',
+      ],
+    },
 
     {
       'name': 'QuickUnlock',
@@ -24213,7 +24227,124 @@
       to prompt the user to select a tab, window or desktop to capture.
 
       When this policy is disabled, any calls to screen-share APIs will fail
-      with an error.''',
+      with an error; however this policy is not considered (and a site will be
+      allowed to use screen-share APIs) if the site matches an origin pattern in
+      any of the following policies:
+      <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">ScreenCaptureAllowedByOrigins</ph>,
+      <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">WindowCaptureAllowedByOrigins</ph>,
+      <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">TabCaptureAllowedByOrigins</ph>,
+      <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">SameOriginTabCaptureAllowedByOrigins</ph>.
+      ''',
+    },
+    {
+      'name': 'ScreenCaptureAllowedByOrigins',
+      'owners': ['alcooper@chromium.org', 'mfoltz@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 881,
+      'caption': '''Allow Desktop, Window, and Tab capture by these origins''',
+      'tags': [],
+      'desc': '''Setting the policy lets you set a list of URL patterns that can use Desktop, Window, and Tab Capture.
+
+      Leaving the policy unset means that sites will not be considered for an override at this level of Capture.
+
+      This policy is not considered if a site matches a URL pattern in any of the following policies: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">WindowCaptureAllowedByOrigins</ph>, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">TabCaptureAllowedByOrigins</ph>, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">SameOriginTabCaptureAllowedByOrigins</ph>.
+
+      If a site matches a URL pattern in this policy, the <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME">ScreenCaptureAllowed</ph> will not be considered.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  This policy only matches based on origin, so any path in the URL pattern is ignored.''',
+    },
+    {
+      'name': 'WindowCaptureAllowedByOrigins',
+      'owners': ['alcooper@chromium.org', 'mfoltz@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 882,
+      'caption': '''Allow Window and Tab capture by these origins''',
+      'tags': [],
+      'desc': '''Setting the policy lets you set a list of URL patterns that can use Window and Tab Capture.
+
+      Leaving the policy unset means that sites will not be considered for an override at this level of Capture.
+
+      This policy is not considered if a site matches a URL pattern in any of the following policies: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">TabCaptureAllowedByOrigins</ph>, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">SameOriginTabCaptureAllowedByOrigins</ph>.
+
+      If a site matches a URL pattern in this policy, the following policies will not be considered: <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">ScreenCaptureAllowedByOrigins</ph>, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME">ScreenCaptureAllowed</ph>.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  This policy only matches based on origin, so any path in the URL pattern is ignored.''',
+    },
+    {
+      'name': 'TabCaptureAllowedByOrigins',
+      'owners': ['alcooper@chromium.org', 'mfoltz@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 883,
+      'caption': '''Allow Tab capture by these origins''',
+      'tags': [],
+      'desc': '''Setting the policy lets you set a list of URL patterns that can use Tab Capture.
+
+      Leaving the policy unset means that sites will not be considered for an override at this level of capture.
+
+      Note that windowed Chrome Apps will still be allowed to be captured.
+
+      This policy is not considered if a site matches a URL pattern in the <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">SameOriginTabCaptureAllowedByOrigins</ph> policy.
+
+      If a site matches a URL pattern in this policy, the following policies will not be considered: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">WindowCaptureAllowedByOrigins</ph>, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">ScreenCaptureAllowedByOrigins</ph>, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME">ScreenCaptureAllowed</ph>.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  This policy only matches based on origin, so any path in the URL pattern is ignored.''',
+    },
+    {
+      'name': 'SameOriginTabCaptureAllowedByOrigins',
+      'owners': ['alcooper@chromium.org', 'mfoltz@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com', '[*.]example.edu'],
+      'id': 884,
+      'caption': '''Allow Same Origin Tab capture by these origins''',
+      'tags': [],
+      'desc': '''Setting the policy lets you set a list of URL patterns that can capture tabs with their same Origin.
+
+      Leaving the policy unset means that sites will not be considered for an override at this level of capture.
+
+      Note that windowed Chrome Apps with the same origin as this site will still be allowed to be captured.
+
+      If a site matches a URL pattern in this policy, the following policies will not be considered: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">TabCaptureAllowedByOrigins</ph>, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">WindowCaptureAllowedByOrigins</ph>, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">ScreenCaptureAllowedByOrigins</ph>, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME">ScreenCaptureAllowed</ph>.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  This policy only matches based on origin, so any path in the URL pattern is ignored.''',
     },
     {
       'name': 'AdvancedProtectionDeepScanningEnabled',
@@ -27651,10 +27782,22 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'InsecurePrivateNetworkRequestsAllowedForUrls',
       ],
     },
+    {
+      'id': 41,
+      'name': 'ScreenCaptureSettings',
+      'caption': '''Screen Capture settings''',
+      'policies': [
+        'ScreenCaptureAllowed',
+        'ScreenCaptureAllowedByOrigins',
+        'WindowCaptureAllowedByOrigins',
+        'TabCaptureAllowedByOrigins',
+        'SameOriginTabCaptureAllowedByOrigins',
+      ],
+    },
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 880,
-  'highest_atomic_group_id_currently_used': 40
+  'highest_id_currently_used': 884,
+  'highest_atomic_group_id_currently_used': 41
 }

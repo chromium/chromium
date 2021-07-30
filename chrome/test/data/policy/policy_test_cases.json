@@ -4483,6 +4483,118 @@
       }
     ]
   },
+  "ScreenCaptureAllowedByOrigins": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenCaptureAllowedByOrigins": [
+            "[*.]google.com",
+            "example.com",
+            "https://example2.com"
+          ]
+        },
+        "prefs": {
+          "hardware.screen_capture_allowed_by_origins": {
+            "value": [
+              "[*.]google.com",
+              "example.com",
+              "https://example2.com"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "WindowCaptureAllowedByOrigins": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WindowCaptureAllowedByOrigins": [
+            "[*.]google.com",
+            "example.com",
+            "https://example2.com"
+          ]
+        },
+        "prefs": {
+          "hardware.window_capture_allowed_by_origins": {
+            "value": [
+              "[*.]google.com",
+              "example.com",
+              "https://example2.com"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "TabCaptureAllowedByOrigins": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TabCaptureAllowedByOrigins": [
+            "[*.]google.com",
+            "example.com",
+            "https://example2.com"
+          ]
+        },
+        "prefs": {
+          "hardware.tab_capture_allowed_by_origins": {
+            "value": [
+              "[*.]google.com",
+              "example.com",
+              "https://example2.com"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "SameOriginTabCaptureAllowedByOrigins": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SameOriginTabCaptureAllowedByOrigins": [
+            "[*.]google.com",
+            "example.com",
+            "https://example2.com"
+          ]
+        },
+        "prefs": {
+          "hardware.same_origin_tab_capture_allowed_by_origins": {
+            "value": [
+              "[*.]google.com",
+              "example.com",
+              "https://example2.com"
+            ]
+          }
+        }
+      }
+    ]
+  },
   "DefaultWebBluetoothGuardSetting": {
     "os": [
       "win",

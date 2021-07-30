@@ -10,11 +10,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
@@ -100,9 +102,9 @@ void DisplayMediaAccessHandler::HandleRequest(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile->GetPrefs()->GetBoolean(prefs::kScreenCaptureAllowed)) {
+  if (capture_policy::GetAllowedCaptureLevel(request.security_origin,
+                                             web_contents) ==
+      AllowedScreenCaptureLevel::kDisallowed) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
@@ -153,6 +155,8 @@ void DisplayMediaAccessHandler::HandleRequest(
       return;
     }
 
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
     // The kDisplayCapturePermissionsPolicyEnabled preference controls whether
     // the display-capture permissions-policy is applied or skipped.
     if (profile->GetPrefs()->GetBoolean(
@@ -225,6 +229,23 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
 
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(
+          pending_request.request.security_origin, web_contents);
+
+  // If Capture is not allowed, then reject.
+  if (capture_level == AllowedScreenCaptureLevel::kDisallowed) {
+    auto it = pending_requests_.find(web_contents);
+    DCHECK(it != pending_requests_.end());
+    RequestsQueue& mutable_queue = it->second;
+    PendingAccessRequest& mutable_request = *mutable_queue.front();
+    std::move(mutable_request.callback)
+        .Run(blink::MediaStreamDevices(),
+             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+             nullptr);
+    mutable_queue.pop_front();
+    return;
+  }
 
   std::vector<DesktopMediaList::Type> media_types;
   if (pending_request.request.video_type ==
@@ -239,15 +260,22 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
                    DesktopMediaList::Type::kWebContents};
   }
 
+  capture_policy::FilterMediaList(media_types, capture_level);
+
   // Avoid offering window-capture as a separate source, since PipeWire's
   // content-picker will offer both screen and window sources.
   // See crbug.com/1157006.
-  if (content::desktop_capture::CanUsePipeWire()) {
+  if (content::desktop_capture::CanUsePipeWire() &&
+      base::Contains(media_types, DesktopMediaList::Type::kScreen)) {
     base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
-  auto source_lists =
-      picker_factory_->CreateMediaList(media_types, web_contents);
+  auto includable_web_contents_filter =
+      capture_policy::GetIncludableWebContentsFilter(
+          pending_request.request.security_origin, capture_level);
+
+  auto source_lists = picker_factory_->CreateMediaList(
+      media_types, web_contents, includable_web_contents_filter);
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DisplayMediaAccessHandler::OnPickerDialogResults,

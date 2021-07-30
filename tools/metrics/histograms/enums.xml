@@ -25910,6 +25910,10 @@ Called by update_document_policy_enum.py.-->
   <int value="879"
       label="RestrictedManagedGuestSessionExtensionCleanupExemptList"/>
   <int value="880" label="DisplayCapturePermissionsPolicy"/>
+  <int value="881" label="ScreenCaptureAllowedByOrigins"/>
+  <int value="882" label="WindowCaptureAllowedByOrigins"/>
+  <int value="883" label="TabCaptureAllowedByOrigins"/>
+  <int value="884" label="SameOriginTabCaptureAllowedByOrigins"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -65418,6 +65422,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="38" label="LegacySameSiteCookieBehaviorSettings"/>
   <int value="39" label="SensorsSettings"/>
   <int value="40" label="PrivateNetworkRequestSettings"/>
+  <int value="41" label="ScreenCaptureSettings"/>
 </enum>
 
 <enum name="PolicyLoadStatus">

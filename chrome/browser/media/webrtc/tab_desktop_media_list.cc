@@ -63,9 +63,12 @@ const int kDefaultTabDesktopMediaListUpdatePeriod = 1000;
 
 }  // namespace
 
-TabDesktopMediaList::TabDesktopMediaList()
+TabDesktopMediaList::TabDesktopMediaList(
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter)
     : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
-          kDefaultTabDesktopMediaListUpdatePeriod)) {
+          kDefaultTabDesktopMediaListUpdatePeriod)),
+      includable_web_contents_filter_(
+          std::move(includable_web_contents_filter)) {
   type_ = DesktopMediaList::Type::kWebContents;
   thumbnail_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -105,6 +108,8 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
       // Create id for tab.
       content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
       DCHECK(contents);
+      if (!includable_web_contents_filter_.Run(contents))
+        continue;
       content::RenderFrameHost* main_frame = contents->GetMainFrame();
       DCHECK(main_frame);
       DesktopMediaID media_id(

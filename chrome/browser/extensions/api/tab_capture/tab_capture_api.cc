@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/api/tab_capture/offscreen_tabs_owner.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -176,6 +177,23 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   if (!target_contents)
     return RespondNow(Error(kFindingTabError));
 
+  content::WebContents* const extension_web_contents = GetSenderWebContents();
+  EXTENSION_FUNCTION_VALIDATE(extension_web_contents);
+
+  const GURL& extension_origin =
+      extension_web_contents->GetLastCommittedURL().GetOrigin();
+  AllowedScreenCaptureLevel capture_level =
+      capture_policy::GetAllowedCaptureLevel(
+          extension_web_contents->GetLastCommittedURL().GetOrigin(),
+          extension_web_contents);
+
+  DesktopMediaList::WebContentsFilter includable_web_contents_filter =
+      capture_policy::GetIncludableWebContentsFilter(extension_origin,
+                                                     capture_level);
+  if (!includable_web_contents_filter.Run(target_contents)) {
+    return RespondNow(Error(kGrantError));
+  }
+
   const std::string& extension_id = extension()->id();
 
   // Make sure either we have been granted permission to capture through an
@@ -195,8 +213,6 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
 
   DesktopMediaID source =
       BuildDesktopMediaID(target_contents, &params->options);
-  content::WebContents* const extension_web_contents = GetSenderWebContents();
-  EXTENSION_FUNCTION_VALIDATE(extension_web_contents);
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
   std::string device_id = registry->AddRequest(
       target_contents, extension_id, false, extension()->url(), source,

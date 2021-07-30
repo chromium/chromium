@@ -15,13 +15,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -30,10 +30,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
@@ -123,6 +121,24 @@ gfx::NativeWindow FindParentWindowForWebContents(
   return NULL;
 }
 #endif
+
+bool IsMediaTypeAllowed(AllowedScreenCaptureLevel allowed_capture_level,
+                        content::DesktopMediaID::Type media_type) {
+  switch (media_type) {
+    case content::DesktopMediaID::TYPE_NONE:
+      NOTREACHED();
+      return false;
+    case content::DesktopMediaID::TYPE_SCREEN:
+      return allowed_capture_level >= AllowedScreenCaptureLevel::kDesktop;
+    case content::DesktopMediaID::TYPE_WINDOW:
+      return allowed_capture_level >= AllowedScreenCaptureLevel::kWindow;
+    case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+      // SameOrigin is more restrictive than just tabs; so as long as at least
+      // SameOrigin is allowed, then TYPE_WEB_CONTENTS can be included, and the
+      // origins will be filtered for the SameOrigin requirement later.
+      return allowed_capture_level >= AllowedScreenCaptureLevel::kSameOrigin;
+  }
+}
 
 }  // namespace
 
@@ -343,9 +359,11 @@ void DesktopCaptureAccessHandler::HandleRequest(
     return;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile->GetPrefs()->GetBoolean(prefs::kScreenCaptureAllowed)) {
+  AllowedScreenCaptureLevel allowed_capture_level =
+      capture_policy::GetAllowedCaptureLevel(request.security_origin,
+                                             web_contents);
+
+  if (allowed_capture_level == AllowedScreenCaptureLevel::kDisallowed) {
     std::move(callback).Run(
         devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         std::move(ui));
@@ -361,6 +379,12 @@ void DesktopCaptureAccessHandler::HandleRequest(
   // If the device id wasn't specified then this is a screen capture request
   // (i.e. chooseDesktopMedia() API wasn't used to generate device id).
   if (request.requested_video_device_id.empty()) {
+    if (allowed_capture_level < AllowedScreenCaptureLevel::kDesktop) {
+      std::move(callback).Run(
+          devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+          std::move(ui));
+      return;
+    }
 #if defined(OS_MAC)
     if (system_media_permissions::CheckSystemScreenCapturePermission() !=
         system_media_permissions::SystemPermission::kAllowed) {
@@ -400,6 +424,13 @@ void DesktopCaptureAccessHandler::HandleRequest(
   if (media_id.type == content::DesktopMediaID::TYPE_NONE) {
     std::move(callback).Run(
         devices, blink::mojom::MediaStreamRequestResult::INVALID_STATE,
+        std::move(ui));
+    return;
+  }
+
+  if (!IsMediaTypeAllowed(allowed_capture_level, media_id.type)) {
+    std::move(callback).Run(
+        devices, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
         std::move(ui));
     return;
   }
@@ -560,8 +591,15 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     }
   }
 
+  const GURL& request_origin = pending_request.request.security_origin;
+  auto includable_web_contents_filter =
+      capture_policy::GetIncludableWebContentsFilter(
+          request_origin,
+          capture_policy::GetAllowedCaptureLevel(request_origin, web_contents));
+
   auto source_lists = picker_factory_->CreateMediaList(
-      {DesktopMediaList::Type::kWebContents}, web_contents);
+      {DesktopMediaList::Type::kWebContents}, web_contents,
+      std::move(includable_web_contents_filter));
 
   DesktopMediaPicker::DoneCallback done_callback =
       base::BindOnce(&DesktopCaptureAccessHandler::OnPickerDialogResults,

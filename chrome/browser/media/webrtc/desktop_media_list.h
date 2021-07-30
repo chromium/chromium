@@ -14,6 +14,10 @@
 
 class DesktopMediaListObserver;
 
+namespace content {
+class WebContents;
+}
+
 // DesktopMediaList provides the list of desktop media source (screens, windows,
 // tabs), and their thumbnails, to the desktop media picker dialog. It
 // transparently updates the list in the background, and notifies the desktop
@@ -32,6 +36,12 @@ class DesktopMediaList {
     kWebContents,  // TYPE_WEB_CONTENTS
     kCurrentTab,   // TYPE_WEB_CONTENTS of the current tab.
   };
+
+  // A WebContents filter can be applied to DesktopMediaList::Type::kWebContents
+  // MediaList object in order to provide a way to filter out any WebContents
+  // that shouldn't be included.
+  using WebContentsFilter =
+      base::RepeatingCallback<bool(content::WebContents*)>;
 
   // Struct used to represent each entry in the list.
   struct Source {

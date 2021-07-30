@@ -709,6 +709,10 @@ extern const char kAudioCaptureAllowedUrls[];
 extern const char kVideoCaptureAllowed[];
 extern const char kVideoCaptureAllowedUrls[];
 extern const char kScreenCaptureAllowed[];
+extern const char kScreenCaptureAllowedByOrigins[];
+extern const char kWindowCaptureAllowedByOrigins[];
+extern const char kTabCaptureAllowedByOrigins[];
+extern const char kSameOriginTabCaptureAllowedByOrigins[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDemoModeConfig[];

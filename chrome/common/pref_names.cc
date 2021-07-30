@@ -2174,8 +2174,37 @@ const char kVideoCaptureAllowedUrls[] = "hardware.video_capture_allowed_urls";
 // A pref holding the value of the policy used to explicitly allow or deny
 // access to screen capture.  This includes all APIs that allow capturing
 // the desktop, a window or a tab. When disabled, access to screen capture
-// is not allowed and API calls will fail with an error.
+// is not allowed and API calls will fail with an error, unless overriden by one
+// of the "allowed" lists below.
 const char kScreenCaptureAllowed[] = "hardware.screen_capture_enabled";
+
+// The Origin Pattern lists below serve as an "override" to the standard screen
+// capture allowed pref. A given origin will be restricted to only capture the
+// most restricted list that it appears in. If an origin matches a pattern from
+// these lists, that origin will ignore any value set in kScreenCaptureAllowed.
+// These lists are listed from least restrictive to most restrictive.
+// e.g. If an origin would match patterns in both |kTabCaptureAllowedByOrigins|
+// and |kWindowCaptureAllowedByOrigins|, the site would only be allowed to
+// capture tabs, but would still be allowed to capture tabs if
+// |kScreenCaptureAllowed| was false.
+
+// Sites matching the Origin patterns in this list will be permitted to capture
+// the desktop, windows, and tabs.
+const char kScreenCaptureAllowedByOrigins[] =
+    "hardware.screen_capture_allowed_by_origins";
+// Sites matching the Origin patterns in this list will be permitted to capture
+// windows and tabs.
+const char kWindowCaptureAllowedByOrigins[] =
+    "hardware.window_capture_allowed_by_origins";
+// Sites matching the Origin patterns in this list will be permitted to capture
+// tabs. Note that this will also allow capturing Windowed Chrome Apps.
+const char kTabCaptureAllowedByOrigins[] =
+    "hardware.tab_capture_allowed_by_origins";
+// Sites matching the Origin patterns in this list will be permitted to capture
+// tabs that have the same origin as themselves. Note that this will also allow
+// capturing Windowed Chrome Apps with the same origin as the site.
+const char kSameOriginTabCaptureAllowedByOrigins[] =
+    "hardware.same_origin_tab_capture_allowed_by_origins";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // An integer pref that holds enum value of current demo mode configuration.

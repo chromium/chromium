@@ -181,7 +181,8 @@ class TabDesktopMediaListTest : public testing::Test {
   }
 
   void CreateDefaultList() {
-    list_ = std::make_unique<TabDesktopMediaList>();
+    list_ = std::make_unique<TabDesktopMediaList>(base::BindRepeating(
+        [](content::WebContents* contents) { return true; }));
     list_->SetThumbnailSize(gfx::Size(kThumbnailSize, kThumbnailSize));
 
     // Set update period to reduce the time it takes to run tests.

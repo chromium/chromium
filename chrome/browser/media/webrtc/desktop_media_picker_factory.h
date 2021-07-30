@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -25,7 +26,8 @@ class DesktopMediaPickerFactory {
 
   virtual std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
       const std::vector<DesktopMediaList::Type>& types,
-      content::WebContents* web_contents) = 0;
+      content::WebContents* web_contents,
+      DesktopMediaList::WebContentsFilter includable_web_contents_filter) = 0;
 
  protected:
   DesktopMediaPickerFactory();

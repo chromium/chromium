@@ -37,7 +37,8 @@ std::unique_ptr<DesktopMediaPicker> DesktopMediaPickerFactoryImpl::CreatePicker(
 std::vector<std::unique_ptr<DesktopMediaList>>
 DesktopMediaPickerFactoryImpl::CreateMediaList(
     const std::vector<DesktopMediaList::Type>& types,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter) {
   // Keep same order as the input |sources| and avoid duplicates.
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
   bool have_screen_list = false;
@@ -96,8 +97,12 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
       case DesktopMediaList::Type::kWebContents: {
         if (have_tab_list)
           continue;
+        // Since the TabDesktopMediaList is the only MediaList that uses the
+        // web contents filter, and we explicitly skip this if we already have
+        // one, the std::move here is safe.
         std::unique_ptr<DesktopMediaList> tab_list =
-            std::make_unique<TabDesktopMediaList>();
+            std::make_unique<TabDesktopMediaList>(
+                std::move(includable_web_contents_filter));
         have_tab_list = true;
         source_lists.push_back(std::move(tab_list));
         break;

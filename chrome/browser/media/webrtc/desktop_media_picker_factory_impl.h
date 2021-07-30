@@ -30,7 +30,9 @@ class DesktopMediaPickerFactoryImpl : public DesktopMediaPickerFactory {
 
   std::vector<std::unique_ptr<DesktopMediaList>> CreateMediaList(
       const std::vector<DesktopMediaList::Type>& types,
-      content::WebContents* web_contents) override;
+      content::WebContents* web_contents,
+      DesktopMediaList::WebContentsFilter includable_web_contents_filter)
+      override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DesktopMediaPickerFactoryImpl);

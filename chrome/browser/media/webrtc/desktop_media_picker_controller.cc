@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
@@ -44,6 +45,7 @@ DesktopMediaPickerController::~DesktopMediaPickerController() = default;
 void DesktopMediaPickerController::Show(
     const Params& params,
     const std::vector<DesktopMediaList::Type>& sources,
+    DesktopMediaList::WebContentsFilter includable_web_contents_filter,
     DoneCallback done_callback) {
   DCHECK(!base::Contains(sources, DesktopMediaList::Type::kNone));
   DCHECK(!done_callback_);
@@ -54,8 +56,8 @@ void DesktopMediaPickerController::Show(
   Observe(params.web_contents);
 
   // Keep same order as the input |sources| and avoid duplicates.
-  source_lists_ =
-      picker_factory_->CreateMediaList(sources, params.web_contents);
+  source_lists_ = picker_factory_->CreateMediaList(
+      sources, params.web_contents, std::move(includable_web_contents_filter));
   if (source_lists_.empty()) {
     OnPickerDialogResults("At least one source type must be specified.", {});
     return;
