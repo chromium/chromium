@@ -51,17 +51,17 @@
   {
     "name": "adaptive-button-in-top-toolbar",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 95
   },
   {
     "name": "adaptive-button-in-top-toolbar-customization",
     "owners": [ "bttk", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 96
   },
   {
     "name": "add-to-homescreen-iph",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 96
   },
   {
     "name": "aggregated-ml-app-ranking",
@@ -1225,17 +1225,17 @@
   {
     "name": "download-auto-resumption-native",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "download-later",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "download-later-debug-on-wifi",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "download-mobileconfig-file",
@@ -2254,7 +2254,7 @@
   {
     "name": "enable-new-download-backend",
     "owners": [ "shaktisahu", "dtrainor" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 97
   },
   {
     "name": "enable-new-mac-notification-api",
@@ -5271,7 +5271,7 @@
   {
     "name": "smart-suggestion-for-large-downloads",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 96
   },
   {
     "name": "smooth-scrolling",
@@ -5699,12 +5699,12 @@
   {
     "name": "video-tutorials",
     "owners": [ "shaktisahu"],
-    "expiry_milestone": 93
+    "expiry_milestone": 98
   },
   {
     "name": "video-tutorials-instant-fetch",
     "owners": [ "shaktisahu"],
-    "expiry_milestone": 93
+    "expiry_milestone": 98
   },
   {
     "name": "vm-status-page",
