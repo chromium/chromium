@@ -195,9 +195,12 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
       continue;
     }
 
-    DCHECK(it.second->container.has_value());
-    DCHECK(it.second->disposition.has_value());
-    DCHECK(it.second->display_id.has_value());
+    // Desk templates may have partial data. See http://crbug/1232520
+    if (!it.second->container.has_value() ||
+        !it.second->disposition.has_value() ||
+        !it.second->display_id.has_value()) {
+      continue;
+    }
     apps::mojom::IntentPtr intent;
     apps::AppLaunchParams params(
         app_id,
