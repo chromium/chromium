@@ -4036,6 +4036,19 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="FULLY_LOCKED"/>
 </enum>
 
+<enum name="ArcRestoreState">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success With Memory Pressure"/>
+  <int value="2" label="Success With CPU Usage Rate Limiting"/>
+  <int value="3"
+      label="Success With Memory Pressure and CPU Usage Rate Limiting"/>
+  <int value="4" label="Failed With Memory Pressure"/>
+  <int value="5" label="Failed With CPU Usage Rate Limiting"/>
+  <int value="6"
+      label="Failed With Memory Pressure and CPU Usage Rate Limiting"/>
+  <int value="7" label="Failed With Unknown Reason"/>
+</enum>
+
 <enum name="ArcSdkVersionUpgradeType">
   <summary>Defines the types of ARC SDK version upgrade</summary>
   <int value="0" label="NO_UPGRADE"/>

@@ -73,6 +73,8 @@ constexpr char kRestoredArcAppResultHistogram[] = "Apps.RestoreArcAppsResult";
 
 constexpr char kArcGhostWindowLaunchHistogram[] = "Apps.ArcGhostWindowLaunch";
 
+constexpr char kRestoreArcAppStates[] = "Apps.RestoreArcAppStates";
+
 }  // namespace
 
 namespace ash {
@@ -447,18 +449,22 @@ bool ArcAppLaunchHandler::HasRestoreData() {
 }
 
 bool ArcAppLaunchHandler::CanLaunchApp() {
-  if (should_apply_cpu_restirction_) {
-    int cpu_usage_rate = GetCpuUsageRate();
-    if (cpu_usage_rate >= kCpuUsageThreshold) {
-      LOG(WARNING) << "CPU usage rate is too high to restore Arc apps: "
-                   << cpu_usage_rate;
-      return false;
-    }
-  }
+  // Checks CPU usage limiting and memory pressure, make sure it can
+  // be recorded for UMA statistic data.
+  bool isUnderCPUUsageLimiting = IsUnderCPUUsageLimiting();
+  if (isUnderCPUUsageLimiting)
+    was_cpu_usage_limited_ = true;
+  bool isUnderMemoryPressure = IsUnderMemoryPressure();
+  if (isUnderMemoryPressure)
+    was_memory_pressured_ = true;
 
+  return !isUnderCPUUsageLimiting && !isUnderMemoryPressure;
+}
+
+bool ArcAppLaunchHandler::IsUnderMemoryPressure() {
   switch (pressure_level_) {
     case chromeos::ResourcedClient::PressureLevel::NONE:
-      return true;
+      return false;
     case chromeos::ResourcedClient::PressureLevel::MODERATE:
     case chromeos::ResourcedClient::PressureLevel::CRITICAL: {
       LOG(WARNING)
@@ -467,9 +473,22 @@ bool ArcAppLaunchHandler::CanLaunchApp() {
                       chromeos::ResourcedClient::PressureLevel::MODERATE
                   ? "MODERATE"
                   : "CRITICAL");
-      return false;
+      return true;
     }
   }
+  return false;
+}
+
+bool ArcAppLaunchHandler::IsUnderCPUUsageLimiting() {
+  if (should_apply_cpu_restirction_) {
+    int cpu_usage_rate = GetCpuUsageRate();
+    if (cpu_usage_rate >= kCpuUsageThreshold) {
+      LOG(WARNING) << "CPU usage rate is too high to restore Arc apps: "
+                   << cpu_usage_rate;
+      return true;
+    }
+  }
+  return false;
 }
 
 bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
@@ -485,7 +504,8 @@ bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
 }
 
 void ArcAppLaunchHandler::MaybeLaunchApp() {
-  if (!first_run_ && !CanLaunchApp()) {
+  // Check CanLaunchApp() first for record the system states.
+  if (CanLaunchApp() && !first_run_) {
     MaybeReStartTimer(kAppLaunchCheckingDelay);
     return;
   }
@@ -661,6 +681,7 @@ void ArcAppLaunchHandler::MaybeReStartTimer(const base::TimeDelta& delay) {
     app_launch_timer_->Stop();
 
   current_delay_ = delay;
+
   app_launch_timer_->Start(
       FROM_HERE, current_delay_,
       base::BindRepeating(&ArcAppLaunchHandler::MaybeLaunchApp,
@@ -678,11 +699,7 @@ void ArcAppLaunchHandler::StopRestore() {
 
   StopCpuUsageCount();
 
-  base::UmaHistogramEnumeration(
-      kRestoredArcAppResultHistogram,
-      windows_.empty() && no_stack_windows_.empty() && pending_windows_.empty()
-          ? RestoreResult::kFinish
-          : RestoreResult::kNotFinish);
+  RecordRestoreResult();
 }
 
 int ArcAppLaunchHandler::GetCpuUsageRate() {
@@ -744,6 +761,38 @@ void ArcAppLaunchHandler::OnProbeServiceDisconnect() {
 void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
   base::UmaHistogramBoolean(kArcGhostWindowLaunchHistogram,
                             is_arc_ghost_window);
+}
+
+void ArcAppLaunchHandler::RecordRestoreResult() {
+  bool isFinished = !HasRestoreData();
+
+  base::UmaHistogramEnumeration(
+      kRestoredArcAppResultHistogram,
+      isFinished ? RestoreResult::kFinish : RestoreResult::kNotFinish);
+
+  ArcRestoreState restore_state = ArcRestoreState::kFailedWithUnknown;
+  if (isFinished) {
+    if (was_cpu_usage_limited_ && was_memory_pressured_)
+      restore_state =
+          ArcRestoreState::kSuccessWithMemoryPressureAndCPUUsageRateLimiting;
+    else if (was_cpu_usage_limited_)
+      restore_state = ArcRestoreState::kSuccessWithCPUUsageRateLimiting;
+    else if (was_memory_pressured_)
+      restore_state = ArcRestoreState::kSuccessWithMemoryPressure;
+    else
+      restore_state = ArcRestoreState::kSuccess;
+  } else {
+    if (was_cpu_usage_limited_ && was_memory_pressured_)
+      restore_state =
+          ArcRestoreState::kFailedWithMemoryPressureAndCPUUsageRateLimiting;
+    else if (was_cpu_usage_limited_)
+      restore_state = ArcRestoreState::kFailedWithCPUUsageRateLimiting;
+    else if (was_memory_pressured_)
+      restore_state = ArcRestoreState::kFailedWithMemoryPressure;
+    // For other cases, mark the failed state as "unknown".
+  }
+
+  base::UmaHistogramEnumeration(kRestoreArcAppStates, restore_state);
 }
 
 }  // namespace full_restore

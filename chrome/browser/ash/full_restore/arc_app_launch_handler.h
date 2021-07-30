@@ -53,6 +53,22 @@ enum class RestoreResult {
   kMaxValue = kNotFinish,
 };
 
+// This is used for logging, so do not remove or reorder existing entries.
+enum class ArcRestoreState {
+  kSuccess = 0,
+  kSuccessWithMemoryPressure = 1,
+  kSuccessWithCPUUsageRateLimiting = 2,
+  kSuccessWithMemoryPressureAndCPUUsageRateLimiting = 3,
+  kFailedWithMemoryPressure = 4,
+  kFailedWithCPUUsageRateLimiting = 5,
+  kFailedWithMemoryPressureAndCPUUsageRateLimiting = 6,
+  kFailedWithUnknown = 7,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kFailedWithUnknown,
+};
+
 constexpr char kRestoredAppWindowCountHistogram[] =
     "Apps.RestoreArcWindowCount";
 
@@ -139,6 +155,11 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   // Returns true if the app can be launched. Otherwise, returns false.
   bool CanLaunchApp();
+  // Returns true if the memory under the pressure. Otherwise, returns false.
+  bool IsUnderMemoryPressure();
+  // Returns true if the CPU usage over the resourece limiting. Otherwise,
+  // returns false.
+  bool IsUnderCPUUsageLimiting();
 
   // Returns true if the app is ready to be launched. Otherwise, returns false.
   bool IsAppReady(const std::string& app_id);
@@ -172,6 +193,7 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   void OnProbeServiceDisconnect();
 
   void RecordArcGhostWindowLaunch(bool is_arc_ghost_window);
+  void RecordRestoreResult();
 
   FullRestoreAppLaunchHandler* handler_ = nullptr;
 
@@ -233,6 +255,10 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
       chromeos::ResourcedClient::PressureLevel::MODERATE;
 
   bool should_apply_cpu_restirction_ = false;
+
+  // Record if the restore process faced memory pressure or CPU usage limiting.
+  bool was_memory_pressured_ = false;
+  bool was_cpu_usage_limited_ = false;
 
   mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;

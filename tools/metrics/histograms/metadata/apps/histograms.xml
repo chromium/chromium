@@ -2375,6 +2375,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.RestoreArcAppStates" enum="ArcRestoreState"
+    expires_after="2021-12-30">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sstan@chromium.org</owner>
+  <summary>
+    Records restoration result states of Arc apps. This is logged when the
+    restoration process finishes during the system startup phase.
+  </summary>
+</histogram>
+
 <histogram name="Apps.RestoreArcWindowCount" units="units"
     expires_after="2021-12-30">
   <owner>nancylingwang@chromium.org</owner>
