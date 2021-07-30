@@ -73,7 +73,6 @@
 #include "components/favicon_base/select_favicon_frames.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/memories_features.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -129,7 +128,6 @@
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
-#include "chrome/browser/ui/webui/history_clusters/memories_ui.h"
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
 #include "chrome/browser/ui/webui/inspect_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
@@ -697,10 +695,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (base::FeatureList::IsEnabled(features::kWebUIFeedback)) {
     if (url.host_piece() == chrome::kChromeUIFeedbackHost)
       return &NewWebUI<FeedbackUI>;
-  }
-  if (base::FeatureList::IsEnabled(history_clusters::kMemories)) {
-    if (url.host_piece() == chrome::kChromeUIMemoriesHost)
-      return &NewWebUI<MemoriesUI>;
   }
   if (reading_list::switches::IsReadingListEnabled()) {
     if (url.host_piece() == chrome::kChromeUIReadLaterHost)

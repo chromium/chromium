@@ -1409,8 +1409,6 @@ static_library("ui") {
       "webui/history/navigation_handler.h",
       "webui/history_clusters/history_clusters_handler.cc",
       "webui/history_clusters/history_clusters_handler.h",
-      "webui/history_clusters/memories_ui.cc",
-      "webui/history_clusters/memories_ui.h",
       "webui/identity_internals_ui.cc",
       "webui/identity_internals_ui.h",
       "webui/inspect_ui.cc",

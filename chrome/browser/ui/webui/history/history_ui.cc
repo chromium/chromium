@@ -123,8 +123,11 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
                         ? "enable-branding-update"
                         : "");
 
+  // History clusters
   source->AddBoolean("isHistoryClustersEnabled",
                      base::FeatureList::IsEnabled(history_clusters::kMemories));
+  source->AddBoolean("isHistoryClustersDebug",
+                     base::FeatureList::IsEnabled(history_clusters::kDebug));
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
   source->AddString("headerTitle", u"Based on activity related to \"$1\"");

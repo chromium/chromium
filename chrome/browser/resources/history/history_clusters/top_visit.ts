@@ -4,7 +4,7 @@
 
 import './search_query.js';
 import './shared_style.js';
-import './visit_row.js';
+import './url_visit.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
@@ -119,7 +119,8 @@ class TopVisitElement extends PolymerElement {
         this.visit.relatedVisits.filter((visit: URLVisit) => {
           // 'Ghost' visits with scores of 0 (or below) are never to be shown,
           // unless the debug flag is switched on.
-          if (visit.score <= 0 && !loadTimeData.getBoolean('isDebug')) {
+          if (visit.score <= 0 &&
+              !loadTimeData.getBoolean('isHistoryClustersDebug')) {
             return false;
           }
           return visit.belowTheFold;
@@ -137,7 +138,8 @@ class TopVisitElement extends PolymerElement {
         this.visit.relatedVisits.filter((visit: URLVisit) => {
           // 'Ghost' visits with scores of 0 (or below) are never to be shown,
           // unless the debug flag is switched on.
-          if (visit.score <= 0 && !loadTimeData.getBoolean('isDebug')) {
+          if (visit.score <= 0 &&
+              !loadTimeData.getBoolean('isHistoryClustersDebug')) {
             return false;
           }
           return !visit.belowTheFold;
