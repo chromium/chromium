@@ -195,9 +195,6 @@ static_library("content_shell_lib") {
   configs += [
     ":content_shell_lib_warnings",
     "//build/config:precompiled_headers",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   defines = [

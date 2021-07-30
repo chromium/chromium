@@ -153,7 +153,6 @@ source_set("common") {
   configs += [
     "//content:content_implementation",
     "//build/config:precompiled_headers",
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   public_deps = [

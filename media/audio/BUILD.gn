@@ -317,8 +317,6 @@ source_set("audio") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 if (use_cras) {
@@ -415,7 +413,6 @@ source_set("unit_tests") {
 
   configs += [
     ":platform_config",
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//media:media_config",
   ]
 

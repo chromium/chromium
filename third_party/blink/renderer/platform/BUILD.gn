@@ -133,8 +133,8 @@ config("blink_platform_config") {
     "//third_party/blink/renderer:inside_blink",
     "//build/config/compiler:noshadowing",
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
+    # TODO(crbug.com/879657): Fix size_t to int truncations.
+    "//build/config/compiler:no_shorten_64_warnings",
   ]
 }
 
@@ -2362,8 +2362,8 @@ test("blink_platform_perftests") {
   ]
 
   configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
+    # TODO(crbug.com/879657): Fix size_t to int truncations.
+    "//build/config/compiler:no_shorten_64_warnings",
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
   ]

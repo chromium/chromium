@@ -209,8 +209,8 @@ component("wtf") {
   public_configs = [
     ":wtf_config",
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
+    # TODO(crbug.com/879657): Fix size_t to int truncations.
+    "//build/config/compiler:no_shorten_64_warnings",
     "//third_party/blink/renderer:features",
   ]
 
@@ -346,8 +346,8 @@ source_set("wtf_unittests_sources") {
     "vector_test.cc",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+  # TODO(crbug.com/879657): Fix size_t to int truncations.
+  configs += [ "//build/config/compiler:no_shorten_64_warnings" ]
 
   if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.

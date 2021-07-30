@@ -14,8 +14,6 @@ static_library("net") {
     "safe_search_util.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//base:i18n",

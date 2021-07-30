@@ -159,8 +159,6 @@ source_set("unit_tests") {
     sources += [ "bookmark_node_data_unittest.cc" ]
     deps += [ "//build:chromeos_buildflags" ]
   }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 # The fuzzer depends on code that is not built on Mac.

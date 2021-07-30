@@ -50,8 +50,6 @@ static_library("browser") {
     "signin_status_metrics_provider_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     "//base",
     "//components/content_settings/core/browser",

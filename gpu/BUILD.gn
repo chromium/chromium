@@ -381,8 +381,6 @@ test("gl_tests") {
 
   defines = [ "GL_GLEXT_PROTOTYPES" ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":gles2",
     ":gpu",
@@ -988,7 +986,6 @@ test("gpu_benchmark") {
   sources = [ "command_buffer/tests/gl_helper_benchmark.cc" ]
 
   configs += [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config:precompiled_headers",
     "//third_party/khronos:khronos_headers",
   ]

@@ -64,11 +64,6 @@ if (is_win) {
     }
 
     libs = [ "kernel32.lib" ]
-
-    configs += [
-      # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-      "//build/config/compiler:no_size_t_to_int_warning",
-    ]
   }
 
   # A source set for use by the module in a process that creates the

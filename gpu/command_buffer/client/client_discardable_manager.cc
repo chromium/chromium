@@ -6,7 +6,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/containers/flat_set.h"
-#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 
 namespace gpu {
@@ -109,17 +109,16 @@ void FreeOffsetSet::ReturnFreeOffset(uint32_t offset) {
 // Returns the size of the allocation which ClientDiscardableManager will
 // sub-allocate from. This should be at least as big as the minimum shared
 // memory allocation size.
-uint32_t AllocationSize() {
+size_t AllocationSize() {
 #if defined(OS_NACL)
   // base::SysInfo isn't available under NaCl.
   size_t system_allocation_size = getpagesize();
 #else
   size_t system_allocation_size = base::SysInfo::VMAllocationGranularity();
 #endif
-  DCHECK(base::CheckedNumeric<uint32_t>(system_allocation_size).IsValid());
 
   // If the allocation is small (less than 2K), round it up to at least 2K.
-  return std::max(2048u, static_cast<uint32_t>(system_allocation_size));
+  return std::max(size_t{2048}, system_allocation_size);
 }
 
 ClientDiscardableHandle::Id GetNextHandleId() {
@@ -155,8 +154,7 @@ ClientDiscardableHandle::Id ClientDiscardableManager::CreateHandle(
     return ClientDiscardableHandle::Id();
   }
 
-  DCHECK_LT(offset * element_size_, std::numeric_limits<uint32_t>::max());
-  uint32_t byte_offset = static_cast<uint32_t>(offset * element_size_);
+  uint32_t byte_offset = base::checked_cast<uint32_t>(offset * element_size_);
   ClientDiscardableHandle handle(std::move(buffer), byte_offset, shm_id);
   ClientDiscardableHandle::Id handle_id = GetNextHandleId();
   handles_.emplace(handle_id, handle);
@@ -238,7 +236,7 @@ bool ClientDiscardableManager::FindAllocation(CommandBuffer* command_buffer,
   // Allocate more space.
   auto allocation = std::make_unique<Allocation>(elements_per_allocation_);
   allocation->buffer = command_buffer->CreateTransferBuffer(
-      allocation_size_, &allocation->shm_id);
+      base::checked_cast<uint32_t>(allocation_size_), &allocation->shm_id);
   if (!allocation->buffer)
     return false;
 

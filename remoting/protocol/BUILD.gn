@@ -215,7 +215,6 @@ static_library("protocol") {
 
   configs += [
     "//build/config:precompiled_headers",
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:wexit_time_destructors",
   ]
 

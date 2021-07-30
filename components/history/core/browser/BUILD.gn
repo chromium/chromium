@@ -140,8 +140,6 @@ static_library("browser") {
       "android/visit_sql_handler.h",
     ]
   }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 bundle_data("unit_tests_bundle_data") {

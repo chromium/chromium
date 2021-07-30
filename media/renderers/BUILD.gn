@@ -91,9 +91,6 @@ source_set("renderers") {
 
   configs += [
     "//media:subcomponent_config",
-
-    # TODO(crbug.com/167187): Fix size_t to int trunctaions.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 }
 

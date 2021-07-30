@@ -17,9 +17,6 @@ component("content") {
     "refcounted_browser_context_keyed_service_factory.h",
   ]
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [ "KEYED_SERVICE_IMPLEMENTATION" ]
 
   public_deps = [

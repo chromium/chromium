@@ -14,11 +14,6 @@ source_set("metrics_private") {
     "metrics_private_delegate.h",
   ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//components/variations",
     "//extensions/browser/api",

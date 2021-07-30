@@ -147,7 +147,6 @@ source_set("gles2_sources") {
 
   configs += [
     "//gpu:gpu_gles2_implementation",
-    "//build/config/compiler:no_shorten_64_warnings",
   ]
 
   deps = [

@@ -183,8 +183,6 @@ test("jingle_unittests") {
     sources -= [ "glue/logging_unittest.cc" ]
   }
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":fake_ssl_socket",
     ":jingle_glue",

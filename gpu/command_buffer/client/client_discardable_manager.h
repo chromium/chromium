@@ -62,9 +62,9 @@ class GPU_EXPORT ClientDiscardableManager {
   bool CreateNewAllocation(CommandBuffer* command_buffer);
 
  private:
-  uint32_t allocation_size_;
+  size_t allocation_size_;
   size_t element_size_ = sizeof(base::subtle::Atomic32);
-  uint32_t elements_per_allocation_ = allocation_size_ / element_size_;
+  size_t elements_per_allocation_ = allocation_size_ / element_size_;
 
   struct Allocation;
   std::vector<std::unique_ptr<Allocation>> allocations_;

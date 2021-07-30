@@ -3,7 +3,8 @@
 # found in the LICENSE file.
 
 platform_config_add = [
-  "//build/config/compiler:no_size_t_to_int_warning",
+  # TODO(crbug.com/879657): Fix size_t to int truncations.
+  "//build/config/compiler:no_shorten_64_warnings",
   "//build/config/compiler:wexit_time_destructors",
   "//third_party/blink/renderer:config",
   "//third_party/blink/renderer:inside_blink",

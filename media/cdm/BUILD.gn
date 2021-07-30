@@ -67,9 +67,6 @@ source_set("cdm") {
     "supported_audio_codecs.h",
   ]
 
-  # TODO(crbug.com/167187): Fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//crypto",
     "//media/base",
@@ -181,8 +178,6 @@ source_set("unit_tests") {
   ]
 
   configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//media:media_config",
   ]
 

@@ -37,11 +37,6 @@ source_set("updater") {
     "update_service_factory.h",
   ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//components/crx_file",
     "//components/keyed_service/content",

@@ -359,9 +359,6 @@ static_library("browser") {
       "password_store_signin_notifier_impl.h",
     ]
   }
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 # TODO(crbug.com/974822): Ideally, all of the "import/" subdirectory would be

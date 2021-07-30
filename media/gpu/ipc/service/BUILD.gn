@@ -50,10 +50,6 @@ target(link_target_type, "service") {
     "//ui/gfx/ipc/color",
   ]
 
-  if (is_win) {
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-  }
-
   if (is_mac) {
     deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
   }

@@ -195,9 +195,6 @@ component("protobuf_lite") {
 
   public_configs = [
     ":protobuf_config",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   if (is_android) {
@@ -414,9 +411,6 @@ static_library("protobuf_full") {
   }
   public_configs = [
     ":protobuf_config",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   cflags = protobuf_lite_cflags

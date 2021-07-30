@@ -677,8 +677,6 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   if (enable_extensions) {
     sources += [
       "extensions/extension_test_util.cc",

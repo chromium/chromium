@@ -57,8 +57,6 @@ source_set("pipeline_integration_tests") {
   if (media_use_ffmpeg && !is_android) {
     sources = [ "pipeline_integration_test.cc" ]
 
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     deps = [
       ":pipeline_integration_test_base",
       "//base",

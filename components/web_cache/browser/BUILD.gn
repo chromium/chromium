@@ -8,8 +8,6 @@ static_library("browser") {
     "web_cache_manager.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//components/prefs",

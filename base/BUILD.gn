@@ -1990,9 +1990,6 @@ component("base") {
       defines += [ "COM_INIT_CHECK_HOOK_DISABLED" ]
     }
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     libs += [
       "cfgmgr32.lib",
       "powrprof.lib",
@@ -2599,9 +2596,6 @@ component("i18n") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   if (is_mac) {
     frameworks = [ "CoreFoundation.framework" ]
@@ -3666,10 +3660,8 @@ test("base_unittests") {
     sources += [ "allocator/partition_allocator/arm_bti_test_functions.S" ]
   }
 
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
   configs += [
     ":memory_tagging",
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//build/config/compiler:noshadowing",
   ]
 }

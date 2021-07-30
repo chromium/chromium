@@ -132,30 +132,30 @@ TEST_F(CompositorFrameReporterTest, MainFrameAbortedReportingTest) {
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
       Now());
-  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(0u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
-  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(1u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
       Now());
-  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::
           kSubmitCompositorFrameToPresentationCompositorFrame,
       Now());
-  EXPECT_EQ(3, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(3u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
-  EXPECT_EQ(4, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(4u, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount(
@@ -177,18 +177,18 @@ TEST_F(CompositorFrameReporterTest, ReplacedByNewReporterReportingTest) {
 
   pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
                                  Now());
-  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(0u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndCommitToActivation, Now());
-  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(1u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(2);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kReplacedByNewReporter,
       Now());
-  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount("CompositorLatency.Commit", 0);
@@ -201,18 +201,18 @@ TEST_F(CompositorFrameReporterTest, SubmittedFrameReportingTest) {
 
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kActivation, Now());
-  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(0u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
       Now());
-  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(1u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(2);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
-  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount("CompositorLatency.Activation", 1);
@@ -237,18 +237,18 @@ TEST_F(CompositorFrameReporterTest, SubmittedDroppedFrameReportingTest) {
 
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
-  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(0u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
                                  Now());
-  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(1u, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(2);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kDidNotPresentFrame,
       Now());
-  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
+  EXPECT_EQ(2u, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount(

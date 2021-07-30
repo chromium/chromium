@@ -256,7 +256,9 @@ class CC_EXPORT CompositorFrameReporter {
   void AddEventsMetrics(EventMetrics::List events_metrics);
   EventMetrics::List TakeEventsMetrics();
 
-  int stage_history_size_for_testing() const { return stage_history_.size(); }
+  size_t stage_history_size_for_testing() const {
+    return stage_history_.size();
+  }
 
   void OnFinishImplFrame(base::TimeTicks timestamp);
   void OnAbortBeginMainFrame(base::TimeTicks timestamp);

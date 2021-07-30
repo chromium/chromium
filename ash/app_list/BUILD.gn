@@ -258,8 +258,6 @@ source_set("unit_tests") {
     "views/search_result_tile_item_list_view_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":app_list",
     ":test_support",

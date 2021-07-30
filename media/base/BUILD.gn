@@ -386,9 +386,6 @@ source_set("base") {
   configs += [
     "//build/config:precompiled_headers",
 
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-
     "//media:subcomponent_config",
   ]
 
@@ -633,8 +630,6 @@ source_set("unit_tests") {
     "wall_clock_time_source_unittest.cc",
   ]
   configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//media:media_config",
   ]
   deps = [
@@ -681,8 +676,6 @@ source_set("perftests") {
     "vector_math_perftest.cc",
   ]
   configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//media:media_config",
   ]
   deps = [

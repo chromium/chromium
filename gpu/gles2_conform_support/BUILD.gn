@@ -407,7 +407,6 @@ if (internal_gles2_conform_tests) {
     ]
     configs += [
       "//build/config/compiler:no_incompatible_pointer_warnings",
-      "//build/config/compiler:no_shorten_64_warnings",
 
       # Must be done this way for warning flags to be ordered correctly.
       ":gles2_conform_test_warnings",

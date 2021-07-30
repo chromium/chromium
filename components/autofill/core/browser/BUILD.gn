@@ -499,8 +499,6 @@ static_library("browser") {
       "//ui/native_theme:native_theme_browser",
     ]
   }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 }
 
 static_library("test_support") {

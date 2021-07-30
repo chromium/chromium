@@ -19,8 +19,6 @@ component("proxy_config") {
     "proxy_prefs.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   defines = [ "PROXY_CONFIG_IMPLEMENTATION" ]
 
   deps = [

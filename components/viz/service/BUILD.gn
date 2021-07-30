@@ -591,7 +591,6 @@ viz_source_set("unit_tests") {
   }
 
   configs = [
-    "//build/config/compiler:no_size_t_to_int_warning",
     "//third_party/khronos:khronos_headers",
   ]
 

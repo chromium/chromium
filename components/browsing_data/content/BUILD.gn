@@ -32,8 +32,6 @@ static_library("content") {
     "shared_worker_helper.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//components/browsing_data/core",

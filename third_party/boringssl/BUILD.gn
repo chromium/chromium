@@ -28,11 +28,6 @@ config("internal_config") {
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
   ]
-  configs = [
-    # TODO(davidben): Fix size_t truncations in BoringSSL.
-    # https://crbug.com/boringssl/22
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
   if (is_posix || is_fuchsia) {
     defines += [ "_XOPEN_SOURCE=700" ]
   }

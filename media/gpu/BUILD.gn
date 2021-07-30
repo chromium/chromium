@@ -216,8 +216,6 @@ component("gpu") {
       "windows/supported_profile_helpers.h",
     ]
     configs += [
-      # TODO(https://crbug.com/167187): Fix size_t to int truncations.
-      "//build/config/compiler:no_size_t_to_int_warning",
       "//third_party/khronos:khronos_headers",
     ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
