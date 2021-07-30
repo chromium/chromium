@@ -22,7 +22,10 @@
 class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
  public:
   EcheAppIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kEcheSWA);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::kPhoneHubRecentApps},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -142,8 +145,10 @@ class EcheAppEnableResizingTest : public SystemWebAppIntegrationTest {
  public:
   EcheAppEnableResizingTest() {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kEcheSWA, chromeos::features::kEcheSWAResizing},
-        {});
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::kEcheSWAResizing,
+                              chromeos::features::kPhoneHubRecentApps},
+        /*disabled_features=*/{});
   }
 
  private:

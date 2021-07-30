@@ -5,12 +5,10 @@
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 
 #include "base/system/sys_info.h"
-#include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/system_info.h"
 #include "chromeos/components/eche_app_ui/system_info_provider.h"
-#include "chromeos/components/phonehub/notification_interaction_handler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
@@ -32,7 +30,9 @@ EcheAppManager::EcheAppManager(
     secure_channel::SecureChannelClient* secure_channel_client,
     EcheNotificationClickHandler::LaunchEcheAppFunction
         launch_eche_app_function,
-    EcheNotificationClickHandler::CloseEcheAppFunction close_eche_app_function)
+    EcheNotificationClickHandler::CloseEcheAppFunction close_eche_app_function,
+    EcheRecentAppClickHandler::LaunchEcheAppFunction
+        recent_app_launch_eche_app_function)
     : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
@@ -60,7 +60,12 @@ EcheAppManager::EcheAppManager(
                                                connection_manager_.get())),
       system_info_provider_(
           std::make_unique<SystemInfoProvider>(std::move(system_info))),
-      uid_(std::make_unique<EcheUidProvider>(pref_service)) {}
+      uid_(std::make_unique<EcheUidProvider>(pref_service)),
+      eche_recent_app_click_handler_(
+          std::make_unique<EcheRecentAppClickHandler>(
+              phone_hub_manager,
+              feature_status_provider_.get(),
+              recent_app_launch_eche_app_function)) {}
 
 EcheAppManager::~EcheAppManager() = default;
 
@@ -79,7 +84,10 @@ void EcheAppManager::BindUidGeneratorInterface(
   uid_->Bind(std::move(receiver));
 }
 
+// NOTE: These should be destroyed in the opposite order of how these objects
+// are initialized in the constructor.
 void EcheAppManager::Shutdown() {
+  eche_recent_app_click_handler_.reset();
   uid_.reset();
   system_info_provider_.reset();
   signaler_.reset();

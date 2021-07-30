@@ -30,6 +30,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
@@ -62,24 +63,41 @@ enum class NotificationInteraction {
   kMaxValue = kOpenAppStreaming,
 };
 
-void LaunchEcheApp(Profile* profile,
-                   int64_t notification_id,
-                   std::string package_name) {
-  double now_seconds = base::Time::Now().ToDoubleT();
-  int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
-
-  std::string url = "chrome://eche-app/#notification_id=";
-  url.append(base::NumberToString(notification_id));
-  url.append("&package_name=");
+void LaunchSystemWebApp(Profile* profile,
+                        std::string package_name,
+                        absl::optional<int64_t> notification_id) {
+  std::string url;
+  if (notification_id.has_value()) {
+    url = "chrome://eche-app/#notification_id=";
+    url.append(base::NumberToString(notification_id.value()));
+    url.append("&package_name=");
+  } else {
+    url = "chrome://eche-app/#package_name=";
+  }
   url.append(package_name);
   url.append("&timestamp=");
+
+  double now_seconds = base::Time::Now().ToDoubleT();
+  int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
   url.append(base::NumberToString(now_ms));
   web_app::SystemAppLaunchParams params;
   params.url = GURL(url);
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
                                    params);
+}
+
+// TODO(b/195070217): Convert |package_name| to const reference type.
+void LaunchEcheApp(Profile* profile,
+                   int64_t notification_id,
+                   std::string package_name) {
+  LaunchSystemWebApp(profile, package_name, notification_id);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
                                 NotificationInteraction::kOpenAppStreaming);
+}
+
+void LaunchEcheAppWithPackageName(Profile* profile,
+                                  const std::string& package_name) {
+  LaunchSystemWebApp(profile, package_name, /*notification_id=*/absl::nullopt);
 }
 
 }  // namespace
@@ -139,11 +157,12 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
   if (!secure_channel_client)
     return nullptr;
 
-  return new EcheAppManager(profile->GetPrefs(), GetSystemInfo(profile),
-                            phone_hub_manager, device_sync_client,
-                            multidevice_setup_client, secure_channel_client,
-                            base::BindRepeating(&LaunchEcheApp, profile),
-                            base::BindRepeating(&CloseEcheApp, profile));
+  return new EcheAppManager(
+      profile->GetPrefs(), GetSystemInfo(profile), phone_hub_manager,
+      device_sync_client, multidevice_setup_client, secure_channel_client,
+      base::BindRepeating(&LaunchEcheApp, profile),
+      base::BindRepeating(&CloseEcheApp, profile),
+      base::BindRepeating(&LaunchEcheAppWithPackageName, profile));
 }
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(

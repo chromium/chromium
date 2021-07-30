@@ -10,6 +10,7 @@
 #include "chromeos/components/eche_app_ui/eche_connector.h"
 #include "chromeos/components/eche_app_ui/eche_feature_status_provider.h"
 #include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
+#include "chromeos/components/eche_app_ui/eche_recent_app_click_handler.h"
 #include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -50,7 +51,8 @@ class EcheAppManager : public KeyedService {
                  multidevice_setup::MultiDeviceSetupClient*,
                  secure_channel::SecureChannelClient*,
                  EcheNotificationClickHandler::LaunchEcheAppFunction,
-                 EcheNotificationClickHandler::CloseEcheAppFunction);
+                 EcheNotificationClickHandler::CloseEcheAppFunction,
+                 EcheRecentAppClickHandler::LaunchEcheAppFunction);
   ~EcheAppManager() override;
 
   EcheAppManager(const EcheAppManager&) = delete;
@@ -76,6 +78,7 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<EcheSignaler> signaler_;
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
   std::unique_ptr<EcheUidProvider> uid_;
+  std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
 };
 
 }  // namespace eche_app
