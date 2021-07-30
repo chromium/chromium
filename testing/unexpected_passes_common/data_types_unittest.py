@@ -35,6 +35,10 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertNotEqual(e, other)
     other = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass', 'bug')
     self.assertNotEqual(e, other)
+    other = data_types.Expectation('test', ['tag1', 'tag2'],
+                                   'Pass',
+                                   variant='foo')
+    self.assertNotEqual(e, other)
     other = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
                               'build_id')
     self.assertNotEqual(e, other)
@@ -67,6 +71,13 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertTrue(e.AppliesToResult(r))
     e = data_types.Expectation('test', ['tag1', 'tag2'], ['RetryOnFailure'])
     self.assertTrue(e.AppliesToResult(r))
+    # Explicit variants match.
+    r = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
+                          'build_id', 'foo_variant')
+    e = data_types.Expectation('test', ['tag1', 'tag2'],
+                               'Pass',
+                               variant='foo_variant')
+    self.assertTrue(e.AppliesToResult(r))
 
   def testAppliesToResultDoesNotApply(self):
     r = data_types.Result('test', ['tag1', 'tag2'], 'Pass', 'pixel_tests',
@@ -79,6 +90,18 @@ class ExpectationUnittest(unittest.TestCase):
     self.assertFalse(e.AppliesToResult(r))
     # Tags subset mismatch.
     e = data_types.Expectation('test', ['tag3'], 'Pass')
+    self.assertFalse(e.AppliesToResult(r))
+    # Variants mismatch.
+    e = data_types.Expectation('test', ['tag1', 'tag2'],
+                               'Pass',
+                               variant='foo_variant')
+    self.assertFalse(e.AppliesToResult(r))
+    e = data_types.Expectation('test', ['tag1', 'tag2'], 'Pass')
+    r = data_types.Result('test', ['tag1', 'tag2'],
+                          'Pass',
+                          'pixel_tests',
+                          'build_id',
+                          variant='foo_variant')
     self.assertFalse(e.AppliesToResult(r))
 
 

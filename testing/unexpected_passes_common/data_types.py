@@ -26,10 +26,11 @@ class Expectation(object):
   expectation file.
   """
 
-  def __init__(self, test, tags, expected_results, bug=None):
+  def __init__(self, test, tags, expected_results, bug=None, variant=None):
     self.test = test
     self.tags = frozenset(tags)
     self.bug = bug or ''
+    self.variant = variant
     if isinstance(expected_results, str):
       self.expected_results = frozenset([expected_results])
     else:
@@ -47,13 +48,14 @@ class Expectation(object):
     return (isinstance(other, Expectation) and self.test == other.test
             and self.tags == other.tags
             and self.expected_results == other.expected_results
-            and self.bug == other.bug)
+            and self.bug == other.bug and self.variant == other.variant)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def __hash__(self):
-    return hash((self.test, self.tags, self.expected_results, self.bug))
+    return hash(
+        (self.test, self.tags, self.expected_results, self.bug, self.variant))
 
   def AppliesToResult(self, result):
     """Checks whether this expectation should have applied to |result|.
@@ -69,7 +71,13 @@ class Expectation(object):
       True if |self| applies to |result|, otherwise False.
     """
     assert isinstance(result, Result)
-    return (self._comp(result.test) and self.tags <= result.tags)
+    return (self._comp(result.test) and self.tags <= result.tags
+            and self._AppliesToResultVariant(result))
+
+  def _AppliesToResultVariant(self, result):
+    # Can be overridden, e.g. if the base/None variant's expectations also apply
+    # to specific variants.
+    return self.variant == result.variant
 
 
 class Result(object):
@@ -79,7 +87,7 @@ class Result(object):
   from ResultDB for the purposes of the unexpected pass finder.
   """
 
-  def __init__(self, test, tags, actual_result, step, build_id):
+  def __init__(self, test, tags, actual_result, step, build_id, variant=None):
     """
     Args:
       test: A string containing the name of the test. Cannot have wildcards.
@@ -88,6 +96,9 @@ class Result(object):
       step: A string containing the name of the step on the builder.
       build_id: A string containing the Buildbucket ID for the build this result
           came from.
+      variant: An optional string denoting the particular variant that the
+          result came from, e.g. if the test was run with a particular set of
+          flags.
     """
     # Results should not have any globs.
     assert '*' not in test
@@ -96,19 +107,21 @@ class Result(object):
     self.actual_result = actual_result
     self.step = step
     self.build_id = build_id
+    self.variant = variant
 
   def __eq__(self, other):
     return (isinstance(other, Result) and self.test == other.test
             and self.tags == other.tags
             and self.actual_result == other.actual_result
-            and self.step == other.step and self.build_id == other.build_id)
+            and self.step == other.step and self.build_id == other.build_id
+            and self.variant == other.variant)
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def __hash__(self):
-    return hash(
-        (self.test, self.tags, self.actual_result, self.step, self.build_id))
+    return hash((self.test, self.tags, self.actual_result, self.step,
+                 self.build_id, self.variant))
 
 
 class BuildStats(object):
