@@ -28,6 +28,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -180,9 +181,12 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   // Creates a new FileSystemAccessHandleHost for a given URL. If there is
   // already an access handle assigned to `url`, returns an invalid pending
-  // remote.
+  // remote. The `file_delegate_receiver` is only valid in incognito mode.
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-  CreateAccessHandleHost(const storage::FileSystemURL& url);
+  CreateAccessHandleHost(
+      const storage::FileSystemURL& url,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
+          file_delegate_receiver);
 
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(

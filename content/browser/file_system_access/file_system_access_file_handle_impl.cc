@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -173,6 +174,16 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     return;
   }
 
+  // Create a file delegate for use in incognito mode.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
+      file_delegate_host_remote;
+  mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
+      file_delegate_host_receiver = mojo::NullReceiver();
+  if (file_system_context()->is_incognito()) {
+    file_delegate_host_receiver =
+        file_delegate_host_remote.InitWithNewPipeAndPassReceiver();
+  }
+
   //  Attempt to grab an exclusive lock on the file and create the access
   //  handle host. This leads to slightly more complicated error handling,
   //  since we have to make sure that the lock is released if we cannot
@@ -180,7 +191,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
   //  one open file descriptor per URL as well as avoiding an unnecessary IO
   //  operation if there is a lock in place.
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-      access_handle_host_remote = manager()->CreateAccessHandleHost(url());
+      access_handle_host_remote = manager()->CreateAccessHandleHost(
+          url(), std::move(file_delegate_host_receiver));
   if (!access_handle_host_remote.is_valid()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kInvalidState,
@@ -195,7 +207,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
       file_system_context()->is_incognito()
           ? base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenIncognitoFile,
                            weak_factory_.GetWeakPtr(),
-                           std::move(access_handle_host_remote))
+                           std::move(access_handle_host_remote),
+                           std::move(file_delegate_host_remote))
           : base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
                            weak_factory_.GetWeakPtr(),
                            std::move(access_handle_host_remote));
@@ -214,16 +227,12 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
 void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
     mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
         access_handle_host_remote,
+    mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
+        file_delegate_host_remote,
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
-  // TODO(crbug.com/1225653): Actually do something with the receiver.
-  mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
-      file_delegate_host_remote;
-  mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
-      file_delegate_host_receiver =
-          file_delegate_host_remote.InitWithNewPipeAndPassReceiver();
 
   std::move(callback).Run(
       file_system_access_error::Ok(),

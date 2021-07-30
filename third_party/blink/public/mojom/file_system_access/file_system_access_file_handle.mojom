@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
@@ -22,9 +23,6 @@ union FileSystemAccessAccessHandleFile {
     mojo_base.mojom.File regular_file;
     pending_remote<FileSystemAccessFileDelegateHost> incognito_file_delegate;
 };
-
-// TODO(crbug.com/1225653): Implement this.
-interface FileSystemAccessFileDelegateHost {};
 
 // This interface represents a handle to a directory in the File System Access
 // API.

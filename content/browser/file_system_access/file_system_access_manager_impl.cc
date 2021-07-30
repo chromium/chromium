@@ -931,14 +931,17 @@ FileSystemAccessManagerImpl::CreateFileWriter(
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
 FileSystemAccessManagerImpl::CreateAccessHandleHost(
-    const storage::FileSystemURL& url) {
+    const storage::FileSystemURL& url,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
+        file_delegate_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();
   auto access_handle_host =
       std::make_unique<FileSystemAccessAccessHandleHostImpl>(
-          this, url, PassKey(), std::move(receiver));
+          this, url, PassKey(), std::move(receiver),
+          std::move(file_delegate_receiver));
   auto insert_result =
       access_handle_host_receivers_.emplace(url, std::move(access_handle_host));
   bool insert_success = insert_result.second;

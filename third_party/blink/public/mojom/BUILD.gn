@@ -68,6 +68,7 @@ mojom("mojom_platform") {
     "file_system_access/file_system_access_data_transfer_token.mojom",
     "file_system_access/file_system_access_directory_handle.mojom",
     "file_system_access/file_system_access_error.mojom",
+    "file_system_access/file_system_access_file_delegate_host.mojom",
     "file_system_access/file_system_access_file_handle.mojom",
     "file_system_access/file_system_access_file_writer.mojom",
     "file_system_access/file_system_access_manager.mojom",

@@ -5,9 +5,14 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ACCESS_HANDLE_HOST_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ACCESS_HANDLE_HOST_IMPL_H_
 
+#include <memory>
+
+#include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
 
 namespace content {
 
@@ -26,7 +31,9 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
       const storage::FileSystemURL& url,
       base::PassKey<FileSystemAccessManagerImpl> pass_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
-          receiver);
+          receiver,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
+          file_delegate_receiver);
   FileSystemAccessAccessHandleHostImpl(
       const FileSystemAccessAccessHandleHostImpl&) = delete;
   FileSystemAccessAccessHandleHostImpl& operator=(
@@ -51,6 +58,8 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   const storage::FileSystemURL url_;
 
   mojo::Receiver<blink::mojom::FileSystemAccessAccessHandleHost> receiver_;
+
+  std::unique_ptr<FileSystemAccessFileDelegateHostImpl> incognito_host_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

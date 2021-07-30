@@ -89,6 +89,8 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void DoOpenIncognitoFile(
       mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
           access_handle_host_remote,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
+          file_delegate_host_remote,
       OpenAccessHandleCallback callback);
   void DoOpenFile(
       mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>

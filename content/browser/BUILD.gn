@@ -890,6 +890,8 @@ source_set("browser") {
     "file_system_access/file_system_access_directory_handle_impl.h",
     "file_system_access/file_system_access_error.cc",
     "file_system_access/file_system_access_error.h",
+    "file_system_access/file_system_access_file_delegate_host_impl.cc",
+    "file_system_access/file_system_access_file_delegate_host_impl.h",
     "file_system_access/file_system_access_file_handle_impl.cc",
     "file_system_access/file_system_access_file_handle_impl.h",
     "file_system_access/file_system_access_file_writer_impl.cc",
