@@ -367,8 +367,10 @@ class AndroidTestCase(SymbolFetcherTestBase):
     for symbol in GCS_SYMBOLS:
       gcs_symbol_file = path_to_match + '/' + symbol
       symbol_zip_file = os.path.join(self.breakpad_output_dir, symbol)
+      unzip_output_dir = os.path.join(self.breakpad_output_dir,
+                                      symbol.split('.')[0])
       symbol_call = mock.call(self.cloud_storage_bucket, gcs_symbol_file,
-                              symbol_zip_file, self.breakpad_output_dir)
+                              symbol_zip_file, unzip_output_dir)
       expected_calls.append(symbol_call)
 
     return expected_calls
@@ -453,7 +455,7 @@ class AndroidTestCase(SymbolFetcherTestBase):
     self.assertIn(exception_msg, str(e.exception))
     self._ensureRunDumpSymsAndRenameNotCalled()
 
-  def testAndroidMissingDumpsymsPath(self):
+  def testMissingDumpsymsPath(self):
     metadata = self._createMetadataExtractor(version_number='123',
                                              os_name=OSName.ANDROID,
                                              architecture='x86_64',

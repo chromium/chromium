@@ -123,8 +123,9 @@ def _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
     # |os.path.join| to utilize the correct slash for the system.
     gcs_symbol_file = gcs_folder + '/' + symbol
     symbol_zip_file = os.path.join(breakpad_output_dir, symbol)
+    unzip_output_dir = os.path.join(breakpad_output_dir, symbol.split('.')[0])
     if not _FetchAndUnzipGCSFile(cloud_storage_bucket, gcs_symbol_file,
-                                 symbol_zip_file, breakpad_output_dir):
+                                 symbol_zip_file, unzip_output_dir):
       logging.warning('Failed to find symbols on GCS: ' + gcs_symbol_file)
     else:
       did_fetch_symbol_file = True
