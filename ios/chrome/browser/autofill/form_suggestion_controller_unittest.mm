@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -248,7 +249,7 @@ TEST_F(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotHtml) {
   EXPECT_FALSE(received_suggestions_.count);
 }
 
-// Tests that the suggestions are reset when a page is loaded.
+// Tests that the suggestions are reset when a navigation is finished.
 TEST_F(FormSuggestionControllerTest,
        PageLoadShouldRestoreKeyboardAccessoryViewAndInjectJavaScript) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
@@ -268,8 +269,9 @@ TEST_F(FormSuggestionControllerTest,
                                                         params);
   EXPECT_TRUE(received_suggestions_.count);
 
-  // Trigger another page load. The suggestions should not be present.
-  fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  // Trigger another navigation. The suggestions should not be present.
+  web::FakeNavigationContext navigation_context;
+  fake_web_state_.OnNavigationFinished(&navigation_context);
   EXPECT_FALSE(received_suggestions_.count);
 }
 

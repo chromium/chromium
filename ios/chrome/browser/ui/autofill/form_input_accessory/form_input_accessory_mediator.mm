@@ -342,7 +342,8 @@ using base::UmaHistogramEnumeration;
   [self reset];
 }
 
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(_webState, webState);
   [self reset];
 }
