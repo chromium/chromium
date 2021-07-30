@@ -30,14 +30,10 @@ if ((is_linux || is_chromeos || is_android || is_apple ||
 if (_default_use_allocator_shim && _is_partition_alloc_platform &&
     !_disable_partition_alloc) {
   _default_allocator = "partition"
-} else if (is_android || is_apple || _is_using_sanitizers || is_win ||
-           is_fuchsia || ((is_linux || is_chromeos) && target_cpu == "arm64") ||
-           (is_cast_audio_only && target_cpu == "arm")) {
-  # Temporarily disable tcmalloc on arm64 linux to get rid of compilation
-  # errors.
-  _default_allocator = "none"
-} else {
+} else if (is_chromeos && target_cpu != "arm64") {
   _default_allocator = "tcmalloc"
+} else {
+  _default_allocator = "none"
 }
 
 declare_args() {
@@ -93,11 +89,8 @@ if (!use_partition_alloc && use_allocator == "partition") {
 assert(use_allocator == "none" || use_allocator == "tcmalloc" ||
        use_allocator == "partition")
 
-assert(!is_win || use_allocator != "tcmalloc",
-       "Tcmalloc doesn't work on Windows.")
-assert(!is_mac || use_allocator != "tcmalloc",
-       "Tcmalloc doesn't work on macOS.")
-assert(!is_ios || use_allocator != "tcmalloc", "Tcmalloc doesn't work on iOS.")
+assert(!(use_allocator == "tcmalloc") || is_chromeos,
+       "tcmalloc is only supported on Chrome OS.")
 
 assert(
     !use_allocator_shim || is_linux || is_chromeos || is_android || is_win ||
