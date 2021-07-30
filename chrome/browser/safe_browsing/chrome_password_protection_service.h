@@ -246,13 +246,13 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Returns the PasswordReuseManager associated with this instance.
   password_manager::PasswordReuseManager* GetPasswordReuseManager() const;
 
-  // Returns the profile PasswordStoreInterface associated with this instance.
-  password_manager::PasswordStoreInterface* GetProfilePasswordStore() const;
+  // Returns the profile PasswordStore associated with this instance.
+  password_manager::PasswordStore* GetProfilePasswordStore() const;
 
-  // Returns the GAIA-account-scoped PasswordStoreInterface associated with this
+  // Returns the GAIA-account-scoped PasswordStore associated with this
   // instance. The account password store contains passwords stored in the
   // account and is accessible only when the user is signed in and non syncing.
-  password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
+  password_manager::PasswordStore* GetAccountPasswordStore() const;
 
   // Gets the type of sync account associated with current profile or
   // |NOT_SIGNED_IN|.
@@ -560,7 +560,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Code shared by both ctors.
   void Init();
 
-  password_manager::PasswordStoreInterface* GetStoreForReusedCredential(
+  password_manager::PasswordStore* GetStoreForReusedCredential(
       const password_manager::MatchingReusedCredential& reused_credential);
 
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
