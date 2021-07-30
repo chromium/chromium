@@ -1873,7 +1873,6 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @FlakyTest(message = "crbug.com/1232948")
     public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
