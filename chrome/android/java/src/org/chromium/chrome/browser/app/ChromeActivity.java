@@ -682,6 +682,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ViewGroup contentParent = (ViewGroup) placeHolderView.getParent();
                 warmupManager.transferViewHierarchyTo(contentParent);
                 contentParent.removeView(placeHolderView);
+                initializeToolbarShadow();
                 onInitialLayoutInflationComplete();
             } else {
                 warmupManager.clearViewHierarchy();
@@ -729,18 +730,22 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 int toolbarLayoutId = getToolbarLayoutId();
                 if (toolbarLayoutId != ActivityUtils.NO_RESOURCE_ID && controlContainer != null) {
                     controlContainer.initWithToolbar(toolbarLayoutId);
-
-                    ImageView shadowImage =
-                            controlContainer.getView().findViewById(R.id.toolbar_shadow);
-                    Drawable drawable = getDrawable(getToolbarShadowResource());
-                    shadowImage.setImageDrawable(drawable);
-                    LayoutParams layoutParams = shadowImage.getLayoutParams();
-                    layoutParams.height = getToolbarShadowLayoutHeight();
-                    shadowImage.setLayoutParams(layoutParams);
+                    initializeToolbarShadow();
                 }
             }
             onInitialLayoutInflationComplete();
         }
+    }
+
+    private void initializeToolbarShadow() {
+        ImageView shadowImage = findViewById(R.id.toolbar_shadow);
+        if (shadowImage == null) return;
+
+        Drawable drawable = getDrawable(getToolbarShadowResource());
+        shadowImage.setImageDrawable(drawable);
+        LayoutParams layoutParams = shadowImage.getLayoutParams();
+        layoutParams.height = getToolbarShadowLayoutHeight();
+        shadowImage.setLayoutParams(layoutParams);
     }
 
     @Override
