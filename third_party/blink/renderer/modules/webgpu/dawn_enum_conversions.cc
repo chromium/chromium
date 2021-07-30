@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

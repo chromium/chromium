@@ -51,4 +51,8 @@ specific_include_rules = {
     "web_ax_object.cc": [
         "+ui/accessibility/ax_action_data.h",
     ],
+
+    "tcp_writable_stream_wrapper.h": [
+        "+base/allocator/partition_allocator/partition_root.h",
+    ]
 }

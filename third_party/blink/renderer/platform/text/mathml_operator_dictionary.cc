@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {

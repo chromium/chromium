@@ -29,6 +29,11 @@ BASE_EXPORT void CheckThatSlotOffsetIsZero(void*);
 template <bool thread_safe>
 struct PartitionRoot;
 
+using ThreadSafePartitionRoot = PartitionRoot<internal::ThreadSafe>;
+using ThreadUnsafePartitionRoot = PartitionRoot<internal::NotThreadSafe>;
+
+class PartitionStatsDumper;
+
 }  // namespace base
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FORWARD_H_

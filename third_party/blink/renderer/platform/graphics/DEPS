@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/graphics",
 
     # Dependencies.
+    "+base/no_destructor.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
     "+base/strings/string_util.h",

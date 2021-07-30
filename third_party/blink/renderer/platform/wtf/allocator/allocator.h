@@ -7,7 +7,6 @@
 
 #include <atomic>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
