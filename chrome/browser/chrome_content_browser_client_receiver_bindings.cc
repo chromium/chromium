@@ -30,6 +30,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/metrics/call_stack_profile_collector.h"
+#include "components/offline_pages/buildflags/buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
@@ -95,6 +96,10 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
+#endif
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+#include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
 
 namespace {
@@ -389,6 +394,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  if (interface_name == offline_pages::mojom::MhtmlPageNotifier::Name_) {
+    offline_pages::OfflinePageTabHelper::BindHtmlPageNotifier(
+        mojo::PendingAssociatedReceiver<
+            offline_pages::mojom::MhtmlPageNotifier>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
 #if !defined(OS_ANDROID)
   if (interface_name == pdf::mojom::PdfService::Name_) {
     pdf::PDFWebContentsHelper::BindPdfService(

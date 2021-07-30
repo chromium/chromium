@@ -15,8 +15,8 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/common/mhtml_page_notifier.mojom.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-forward.h"
@@ -56,6 +56,11 @@ class OfflinePageTabHelper
       public content::WebContentsUserData<OfflinePageTabHelper>,
       public offline_pages::mojom::MhtmlPageNotifier {
  public:
+  static void BindHtmlPageNotifier(
+      mojo::PendingAssociatedReceiver<offline_pages::mojom::MhtmlPageNotifier>
+          receiver,
+      content::RenderFrameHost* rfh);
+
   ~OfflinePageTabHelper() override;
 
   // MhtmlPageNotifier overrides.
@@ -209,7 +214,7 @@ class OfflinePageTabHelper
 
   // TODO(crbug.com/827215): We only really want interface messages for the main
   // frame but this is not easily done with the current helper classes.
-  content::WebContentsFrameReceiverSet<mojom::MhtmlPageNotifier>
+  content::RenderFrameHostReceiverSet<mojom::MhtmlPageNotifier>
       mhtml_page_notifier_receivers_;
 
   base::WeakPtrFactory<OfflinePageTabHelper> weak_ptr_factory_{this};

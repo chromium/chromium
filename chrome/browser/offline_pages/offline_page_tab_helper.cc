@@ -79,6 +79,20 @@ OfflinePageTabHelper::LoadedOfflinePageInfo::operator=(
     OfflinePageTabHelper::LoadedOfflinePageInfo&& other) = default;
 
 // static
+void OfflinePageTabHelper::BindHtmlPageNotifier(
+    mojo::PendingAssociatedReceiver<offline_pages::mojom::MhtmlPageNotifier>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = OfflinePageTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->mhtml_page_notifier_receivers_.Bind(rfh, std::move(receiver));
+}
+
+// static
 OfflinePageTabHelper::LoadedOfflinePageInfo
 OfflinePageTabHelper::LoadedOfflinePageInfo::MakeUntrusted() {
   LoadedOfflinePageInfo untrusted_info;
@@ -101,10 +115,7 @@ bool OfflinePageTabHelper::LoadedOfflinePageInfo::IsValid() const {
 
 OfflinePageTabHelper::OfflinePageTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      mhtml_page_notifier_receivers_(
-          web_contents,
-          this,
-          content::WebContentsFrameReceiverSetPassKey()) {
+      mhtml_page_notifier_receivers_(web_contents, this) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
