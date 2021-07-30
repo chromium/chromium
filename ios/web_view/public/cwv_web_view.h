@@ -182,6 +182,8 @@ CWV_EXPORT
 // |*createdWKWebView| if |createdWKWebView| is not nil.
 // |*createdWKWebView| will be provided only if |wkConfiguration| is provided,
 // otherwise it will always be reset to nil.
+// IMPORTANT NOTE: Also create a new WKUserContentController and set it in the
+// |wkConfiguration| before calling this method.
 //
 // IMPORTANT: Use |*createdWKWebView| just as a return value of
 // -[WKNavigationDelegate

@@ -68,6 +68,9 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
 }  // namespace ios_web_view
 
 @interface WKUIDelegateForTest : NSObject <WKUIDelegate>
+
+@property(nonatomic, strong) CWVWebViewConfiguration* CWVConfiguration;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithTest:
@@ -93,11 +96,11 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
                forNavigationAction:(WKNavigationAction*)action
                     windowFeatures:(WKWindowFeatures*)windowFeatures {
   WKWebView* created_web_view = nil;
-  _test->SetWebView([[CWVWebView alloc]
-         initWithFrame:UIScreen.mainScreen.bounds
-         configuration:[CWVWebViewConfiguration defaultConfiguration]
-       WKConfiguration:configuration
-      createdWKWebView:&created_web_view]);
+  configuration.userContentController = [[WKUserContentController alloc] init];
+  _test->SetWebView([[CWVWebView alloc] initWithFrame:UIScreen.mainScreen.bounds
+                                        configuration:self.CWVConfiguration
+                                      WKConfiguration:configuration
+                                     createdWKWebView:&created_web_view]);
   _test->SetReturnedWKWebView(created_web_view);
   return created_web_view;
 }
@@ -165,35 +168,54 @@ TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
         return is_js_evaluated;
       }));
 
-  // Opens a new CWVWebView from the wk_web_view
-  NSString* url_string = net::NSURLWithGURL(window2_url_).absoluteString;
-  NSString* script =
-      [NSString stringWithFormat:@"window.open('%@')", url_string];
-  is_js_evaluated = NO;
-  [wk_web_view evaluateJavaScript:script
-                completionHandler:^(NSString* result, NSError* error) {
-                  is_js_evaluated = YES;
-                }];
-  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      kWaitForJSCompletionTimeout, ^{
-        return is_js_evaluated;
-      }));
-  ASSERT_TRUE(returned_wk_web_view_);
-  ASSERT_TRUE(web_view_);
+  // Opens multiple windows from the original wk_web_view for testing
+  for (int i = 0; i < 10; i++) {
+    // Tries different CWV configs.
+    switch (i % 3) {
+      case 0:
+        wk_ui_delegate_for_test.CWVConfiguration =
+            [CWVWebViewConfiguration defaultConfiguration];
+        break;
+      case 1:
+        wk_ui_delegate_for_test.CWVConfiguration =
+            [CWVWebViewConfiguration incognitoConfiguration];
+        break;
+      case 2:
+        wk_ui_delegate_for_test.CWVConfiguration =
+            [CWVWebViewConfiguration nonPersistentConfiguration];
+        break;
+    }
 
-  // Waits for the page in window2 (CWVWebView *web_view_) to be loaded
-  observer.navigationFinished = NO;
-  web_view_.navigationDelegate = observer;
-  ASSERT_TRUE(
-      base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-        return observer.navigationFinished;
-      }));
-  web_view_.navigationDelegate = nil;
+    // Opens a new CWVWebView from the wk_web_view
+    NSString* url_string = net::NSURLWithGURL(window2_url_).absoluteString;
+    NSString* script =
+        [NSString stringWithFormat:@"window.open('%@')", url_string];
+    is_js_evaluated = NO;
+    [wk_web_view evaluateJavaScript:script
+                  completionHandler:^(NSString* result, NSError* error) {
+                    is_js_evaluated = YES;
+                  }];
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        kWaitForJSCompletionTimeout, ^{
+          return is_js_evaluated;
+        }));
+    ASSERT_TRUE(returned_wk_web_view_);
+    ASSERT_TRUE(web_view_);
 
-  // Checks if the page in web_view_ is loaded successfully
-  NSString* inner_text =
-      test::EvaluateJavaScript(web_view_, @"document.body.innerText", nil);
-  EXPECT_NSEQ(@"page2", inner_text);
+    // Waits for the page in window2 (CWVWebView *web_view_) to be loaded
+    observer.navigationFinished = NO;
+    web_view_.navigationDelegate = observer;
+    ASSERT_TRUE(
+        base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+          return observer.navigationFinished;
+        }));
+    web_view_.navigationDelegate = nil;
+
+    // Checks if the page in web_view_ is loaded successfully
+    NSString* inner_text =
+        test::EvaluateJavaScript(web_view_, @"document.body.innerText", nil);
+    EXPECT_NSEQ(@"page2", inner_text);
+  }
 
   [wk_web_view removeFromSuperview];
 }

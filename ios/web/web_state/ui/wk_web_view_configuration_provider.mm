@@ -94,17 +94,19 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     WKWebViewConfiguration* configuration) {
   DCHECK([NSThread isMainThread]);
 
-  if (!configuration) {
-    configuration = [[WKWebViewConfiguration alloc] init];
-  } else {
-    configuration = [configuration copy];
-  }
   if (configuration_) {
     Purge();
   }
-  configuration_ = configuration;
 
-  if (browser_state_->IsOffTheRecord()) {
+  if (!configuration) {
+    configuration_ = [[WKWebViewConfiguration alloc] init];
+  } else {
+    configuration_ = [configuration copy];
+  }
+
+  if (browser_state_->IsOffTheRecord() && configuration == nil) {
+    // Set the data store only when configuration is nil because the data store
+    // in the configuration should be used.
     [configuration_
         setWebsiteDataStore:[WKWebsiteDataStore nonPersistentDataStore]];
   }
