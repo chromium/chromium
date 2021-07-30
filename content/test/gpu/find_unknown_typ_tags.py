@@ -51,7 +51,7 @@ def ParseArgs():
                       required=True,
                       help='The billing project to use for BigQuery queries. '
                       'Must have access to the ResultDB BQ tables, e.g. '
-                      '"luci-resultdb.chromium.gpu_ci_test_results".')
+                      '"chrome-luci-data.chromium.gpu_ci_test_results".')
   return parser.parse_args()
 
 
@@ -75,8 +75,8 @@ def main():
   # Get the list of all tags being generated on the bots.
   generated_tags = set()
   for table in [
-      'luci-resultdb.chromium.gpu_ci_test_results',
-      'luci-resultdb.chromium.gpu_try_test_results'
+      'chrome-luci-data.chromium.gpu_ci_test_results',
+      'chrome-luci-data.chromium.gpu_try_test_results'
   ]:
     query = BQ_QUERY_TEMPLATE.format(table=table)
     cmd = [

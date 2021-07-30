@@ -30,7 +30,7 @@ WITH
         SELECT value
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations
-    FROM `luci-resultdb.chromium.gpu_ci_test_results` tr
+    FROM `chrome-luci-data.chromium.gpu_ci_test_results` tr
     WHERE
       status = "FAIL"
       AND exported.realm = "chromium:ci"
