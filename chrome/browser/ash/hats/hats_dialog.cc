@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/hats/hats_dialog.h"
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -22,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
@@ -40,9 +43,10 @@ const int kDefaultHeight = 428;
 constexpr char kCrOSHaTSURL[] =
     "https://storage.googleapis.com/chromeos-hats-web-stable/index.html";
 
-// Keyword used to join the separate device info elements into a single string
-// to be used as site context.
+// Delimiters used to join the separate device info elements into a single
+// string to be used as site context.
 const char kDeviceInfoStopKeyword[] = "&";
+const char kDeviceInfoKeyValueDelimiter[] = "=";
 const char kDefaultProfileLocale[] = "en-US";
 
 enum class DeviceInfoKey : unsigned int {
@@ -70,32 +74,52 @@ const std::string KeyEnumToString(DeviceInfoKey key) {
   }
 }
 
-// Must be run on a blocking thread pool.
-// Gathers the browser version info, firmware info and platform info and returns
-// them in a single encoded string, the format of which is defined below.
-// Currently the format is "<key>=<value>&<key>=<value>&<key>=<value>".
-std::string GetFormattedSiteContext(const std::string& user_locale,
-                                    base::StringPiece join_keyword) {
-  std::vector<std::string> pairs;
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::BROWSER) + "=" +
-                  version_info::GetVersionNumber());
-
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::PLATFORM) + "=" +
-                  version_loader::GetVersion(version_loader::VERSION_FULL));
-
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::FIRMWARE) + "=" +
-                  version_loader::GetFirmware());
-
-  pairs.push_back(KeyEnumToString(DeviceInfoKey::LOCALE) + "=" + user_locale);
-
-  return base::JoinString(pairs, join_keyword);
-}
-
 }  // namespace
 
 // static
+std::string HatsDialog::GetFormattedSiteContext(
+    const std::string& user_locale,
+    const base::flat_map<std::string, std::string>& product_specific_data) {
+  base::flat_map<std::string, std::string> context;
+
+  context[KeyEnumToString(DeviceInfoKey::BROWSER)] =
+      version_info::GetVersionNumber();
+
+  context[KeyEnumToString(DeviceInfoKey::PLATFORM)] =
+      version_loader::GetVersion(version_loader::VERSION_FULL);
+
+  context[KeyEnumToString(DeviceInfoKey::FIRMWARE)] =
+      version_loader::GetFirmware();
+
+  context[KeyEnumToString(DeviceInfoKey::LOCALE)] = user_locale;
+
+  for (const auto& pair : context) {
+    if (product_specific_data.contains(pair.first)) {
+      LOG(WARNING) << "Product specific data contains reserved key "
+                   << pair.first << ". Value will be overwritten.";
+    }
+  }
+  context.insert(product_specific_data.begin(), product_specific_data.end());
+
+  std::stringstream stream;
+  bool first_iteration = true;
+  for (const auto& pair : context) {
+    if (!first_iteration)
+      stream << kDeviceInfoStopKeyword;
+
+    stream << net::EscapeQueryParamValue(pair.first, /*use_plus=*/false)
+           << kDeviceInfoKeyValueDelimiter
+           << net::EscapeQueryParamValue(pair.second, /*use_plus=*/false);
+
+    first_iteration = false;
+  }
+  return stream.str();
+}
+
+// static
 std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
-    const HatsConfig& hats_config) {
+    const HatsConfig& hats_config,
+    const base::flat_map<std::string, std::string>& product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -114,7 +138,7 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&GetFormattedSiteContext, user_locale,
-                     kDeviceInfoStopKeyword),
+                     product_specific_data),
       base::BindOnce(&HatsDialog::Show, base::Unretained(hats_dialog.get())));
 
   return hats_dialog;

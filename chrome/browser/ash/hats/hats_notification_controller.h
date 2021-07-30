@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_HATS_HATS_NOTIFICATION_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_HATS_HATS_NOTIFICATION_CONTROLLER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
@@ -30,8 +31,15 @@ class HatsNotificationController : public message_center::NotificationDelegate,
  public:
   static const char kNotificationId[];
 
-  explicit HatsNotificationController(Profile* profile,
-                                      const HatsConfig& config);
+  // |product_specific_data| is meant to allow attaching extra runtime data that
+  // is specific to the survey, e.g. a survey about the log-in experience might
+  // include the last used authentication method.
+  HatsNotificationController(
+      Profile* profile,
+      const HatsConfig& config,
+      const base::flat_map<std::string, std::string>& product_specific_data);
+
+  HatsNotificationController(Profile* profile, const HatsConfig& config);
 
   // Returns true if the survey needs to be displayed for the given |profile|.
   static bool ShouldShowSurveyToProfile(Profile* profile,
@@ -82,6 +90,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
   Profile* const profile_;
   const HatsConfig& hats_config_;
+  base::flat_map<std::string, std::string> product_specific_data_;
   std::unique_ptr<message_center::Notification> notification_;
   std::unique_ptr<HatsDialog> hats_dialog_;
 

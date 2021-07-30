@@ -96,8 +96,11 @@ const char HatsNotificationController::kNotificationId[] = "hats_notification";
 
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
-    const HatsConfig& hats_config)
-    : profile_(profile), hats_config_(hats_config) {
+    const HatsConfig& hats_config,
+    const base::flat_map<std::string, std::string>& product_specific_data)
+    : profile_(profile),
+      hats_config_(hats_config),
+      product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -106,6 +109,13 @@ HatsNotificationController::HatsNotificationController(
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
 }
+
+HatsNotificationController::HatsNotificationController(
+    Profile* profile,
+    const HatsConfig& hats_config)
+    : HatsNotificationController(profile,
+                                 hats_config,
+                                 base::flat_map<std::string, std::string>()) {}
 
 HatsNotificationController::~HatsNotificationController() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -197,7 +207,8 @@ void HatsNotificationController::Click(
 
   UpdateLastInteractionTime();
 
-  hats_dialog_ = HatsDialog::CreateAndShow(hats_config_);
+  hats_dialog_ =
+      HatsDialog::CreateAndShow(hats_config_, product_specific_data_);
 
   state_ = HatsState::kNotificationClicked;
 

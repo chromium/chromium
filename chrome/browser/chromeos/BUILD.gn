@@ -3879,6 +3879,7 @@ source_set("unit_tests") {
     "../ash/guest_os/guest_os_share_path_unittest.cc",
     "../ash/guest_os/guest_os_stability_monitor_unittest.cc",
     "../ash/guest_os/vm_sk_forwarding_native_message_host_unittest.cc",
+    "../ash/hats/hats_dialog_unittest.cc",
     "../ash/hats/hats_finch_helper_unittest.cc",
     "../ash/hats/hats_notification_controller_unittest.cc",
     "../ash/input_method/assistive_suggester_unittest.cc",

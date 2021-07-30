@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 class Profile;
@@ -21,15 +24,32 @@ struct HatsConfig;
 class HatsDialog : public ui::WebDialogDelegate {
  public:
   // Creates an instance of HatsDialog and posts a task to load all the relevant
-  // device info before displaying the dialog.
+  // device info before displaying the dialog. If |product_specific_data| is
+  // provided, the key-value pairs will be attached to the survey results.
   static std::unique_ptr<HatsDialog> CreateAndShow(
-      const HatsConfig& hats_config);
+      const HatsConfig& hats_config,
+      const base::flat_map<std::string, std::string>& product_specific_data =
+          base::flat_map<std::string, std::string>());
+
   ~HatsDialog() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HatsDialogTest, GetFormattedSiteContext);
+
   void Show(const std::string& site_context);
 
-  explicit HatsDialog(const std::string& trigger_id, Profile* user_profile);
+  HatsDialog(const std::string& trigger_id, Profile* user_profile);
+
+  // Must be run on a blocking thread pool.
+  // Gathers the browser version info, firmware info and platform info and
+  // returns them in a single encoded string, in the format
+  // "<key>=<value>&<key>=<value>&<key>=<value>" where the keys and values are
+  // url-escaped. Any key-value pairs in |product_specific_data| are also
+  // encoded and appended to the string, unless the keys collide with existing
+  // device info keys.
+  static std::string GetFormattedSiteContext(
+      const std::string& user_locale,
+      const base::flat_map<std::string, std::string>& product_specific_data);
 
   // ui::WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
