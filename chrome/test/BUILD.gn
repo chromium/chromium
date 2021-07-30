@@ -6941,6 +6941,7 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/connectors/device_trust/attestation_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/device_trust_key_pair_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/ec_signing_key_unittest.cc",
     ]
   }
 

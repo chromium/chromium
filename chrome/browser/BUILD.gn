@@ -5332,6 +5332,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/crypto_utility.h",
       "enterprise/connectors/device_trust/device_trust_key_pair.cc",
       "enterprise/connectors/device_trust/device_trust_key_pair.h",
+      "enterprise/connectors/device_trust/ec_signing_key.cc",
+      "enterprise/connectors/device_trust/ec_signing_key.h",
       "enterprise/connectors/device_trust/google_keys.cc",
       "enterprise/connectors/device_trust/google_keys.h",
     ]
