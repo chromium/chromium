@@ -599,8 +599,8 @@ struct Employee {
 
 *** note
 **NOTE:** Mojo object or handle types added with a `MinVersion` **MUST** be
-optional (nullable). See [Primitive Types](#Primitive-Types) for details on
-nullable values.
+optional (nullable) or primitive. See [Primitive Types](#Primitive-Types) for
+details on nullable values.
 ***
 
 By default, fields belong to version 0. New fields must be appended to the
