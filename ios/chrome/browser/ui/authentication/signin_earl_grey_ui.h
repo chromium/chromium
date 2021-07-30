@@ -52,10 +52,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // This method should be used only if SimplifySignOutIOS is turned on.
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;
 
-// Selects an identity when the identity chooser dialog is presented. The dialog
-// is confirmed, but it doesn't validated the user consent page.
-+ (void)selectIdentityWithEmail:(NSString*)userEmail;
-
 // Taps on the settings link in the sign-in view. The sign-in view has to be
 // opened before calling this method.
 + (void)tapSettingsLink;

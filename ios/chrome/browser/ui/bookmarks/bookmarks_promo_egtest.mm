@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
@@ -27,6 +28,7 @@
 
 using chrome_test_util::BookmarkHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
+using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::SecondarySignInButton;
 
@@ -197,7 +199,9 @@ using chrome_test_util::SecondarySignInButton;
       performAction:grey_tap()];
 
   // Select the identity to dismiss the identity chooser.
-  [SigninEarlGreyUI selectIdentityWithEmail:fakeIdentity.userEmail];
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
 
   // Tap the CANCEL button.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

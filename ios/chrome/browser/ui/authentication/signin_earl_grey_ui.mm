@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
@@ -36,6 +37,7 @@ using chrome_test_util::SecondarySignInButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SignOutAccountsButton;
+using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
@@ -71,7 +73,9 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kIdentityButtonControlIdentifier)]
       performAction:grey_tap()];
-  [self selectIdentityWithEmail:fakeIdentity.userEmail];
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
   [self tapSigninConfirmationDialog];
   CloseSigninManagedAccountDialogIfAny(fakeIdentity);
 
@@ -121,14 +125,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   }
   [self signOutWithButton:SignOutAccountsButton()
       confirmationLabelID:confirmationLabelID];
-}
-
-+ (void)selectIdentityWithEmail:(NSString*)userEmail {
-  // Assumes that the identity chooser is visible.
-  [[EarlGrey
-      selectElementWithMatcher:[SigninEarlGreyAppInterface
-                                   identityCellMatcherForEmail:userEmail]]
-      performAction:grey_tap()];
 }
 
 + (void)tapSettingsLink {

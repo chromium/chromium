@@ -47,9 +47,6 @@
 // Checks that no identity is signed in.
 + (BOOL)isSignedOut;
 
-// Returns a matcher for an identity picker cell for |email|.
-+ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email;
-
 // Checks whether there is a primary identity.
 + (BOOL)hasPrimaryIdentity;
 
@@ -59,6 +56,11 @@
 // Triggers the reauth dialog. This is done by sending ShowSigninCommand to
 // SceneController, without any UI interaction to open the dialog.
 + (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity;
+
+// Sign-in matchers
+
+// Returns a matcher for an identity picker cell for |email|.
++ (id<GREYMatcher>)identityCellMatcherForEmail:(NSString*)email;
 
 @end
 
