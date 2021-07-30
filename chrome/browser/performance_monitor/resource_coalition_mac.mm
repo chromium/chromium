@@ -10,7 +10,64 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_monitor/resource_coalition_internal_types_mac.h"
+
+// Comes from osfmk/mach/coalition.h
+
+#define COALITION_TYPE_RESOURCE (0)
+#define COALITION_TYPE_JETSAM (1)
+#define COALITION_TYPE_MAX (1)
+
+#define COALITION_NUM_TYPES (COALITION_TYPE_MAX + 1)
+
+#define COALITION_NUM_THREAD_QOS_TYPES 7
+
+// Comes from bsd/sys/coalition.h
+//
+// TODO(crbug.com/1229686): Report some data derived from the tasks_started and
+// tasks_exited counters.
+//
+// TODO(crbug.com/1230152): Report some QoS numbers.
+struct coalition_resource_usage {
+  uint64_t tasks_started;
+  uint64_t tasks_exited;
+  uint64_t time_nonempty;
+  uint64_t cpu_time;
+  uint64_t interrupt_wakeups;
+  uint64_t platform_idle_wakeups;
+  uint64_t bytesread;
+  uint64_t byteswritten;
+  uint64_t gpu_time;
+  uint64_t cpu_time_billed_to_me;
+  uint64_t cpu_time_billed_to_others;
+  uint64_t energy;
+  uint64_t logical_immediate_writes;
+  uint64_t logical_deferred_writes;
+  uint64_t logical_invalidated_writes;
+  uint64_t logical_metadata_writes;
+  uint64_t logical_immediate_writes_to_external;
+  uint64_t logical_deferred_writes_to_external;
+  uint64_t logical_invalidated_writes_to_external;
+  uint64_t logical_metadata_writes_to_external;
+  uint64_t energy_billed_to_me;
+  uint64_t energy_billed_to_others;
+  uint64_t cpu_ptime;
+  uint64_t cpu_time_eqos_len; /* Stores the number of thread QoS types */
+  uint64_t cpu_time_eqos[COALITION_NUM_THREAD_QOS_TYPES];
+  uint64_t cpu_instructions;
+  uint64_t cpu_cycles;
+  uint64_t fs_metadata_writes;
+  uint64_t pm_writes;
+};
+
+struct proc_pidcoalitioninfo {
+  uint64_t coalition_id[COALITION_NUM_TYPES];
+  uint64_t reserved1;
+  uint64_t reserved2;
+  uint64_t reserved3;
+};
+
+// Comes from bsd/sys/proc_info.h
+#define PROC_PIDCOALITIONINFO 20
 
 extern "C" int coalition_info_resource_usage(
     uint64_t cid,
@@ -135,16 +192,8 @@ absl::optional<ResourceCoalition::DataRate> GetCoalitionDataDiff(
     return diff / interval_length.InSecondsF();
   };
 
-  auto get_timedelta_rate_per_second =
-      [&interval_length](uint64_t new_sample, uint64_t old_sample) -> double {
-    DCHECK_GE(new_sample, old_sample);
-    base::TimeDelta time_delta =
-        base::TimeDelta::FromNanoseconds(new_sample - old_sample);
-    return time_delta.InSecondsF() / interval_length.InSecondsF();
-  };
-
   ret.cpu_time_per_second =
-      get_timedelta_rate_per_second(new_sample.cpu_time, old_sample.cpu_time);
+      get_rate_per_second(new_sample.cpu_time, old_sample.cpu_time);
   ret.interrupt_wakeups_per_second = get_rate_per_second(
       new_sample.interrupt_wakeups, old_sample.interrupt_wakeups);
   ret.platform_idle_wakeups_per_second = get_rate_per_second(
@@ -154,9 +203,9 @@ absl::optional<ResourceCoalition::DataRate> GetCoalitionDataDiff(
   ret.byteswritten_per_second =
       get_rate_per_second(new_sample.byteswritten, old_sample.byteswritten);
   ret.gpu_time_per_second =
-      get_timedelta_rate_per_second(new_sample.gpu_time, old_sample.gpu_time);
-  ret.power_nw = get_rate_per_second(new_sample.energy, old_sample.energy);
-
+      get_rate_per_second(new_sample.gpu_time, old_sample.gpu_time);
+  ret.energy_nj_per_second =
+      get_rate_per_second(new_sample.energy, old_sample.energy);
   return ret;
 }
 
@@ -181,19 +230,14 @@ absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRate() {
   DCHECK_EQ(GetProcessCoalitionId(base::GetCurrentProcId()).value(),
             coalition_id_.value());
   DCHECK(last_data_sample_);
-  return GetDataRateImpl(GetResourceUsageData(coalition_id_.value()),
-                         base::TimeTicks::Now());
-}
-
-absl::optional<ResourceCoalition::DataRate>
-ResourceCoalition::GetDataRateFromFakeDataForTesting(
-    std::unique_ptr<coalition_resource_usage> old_data_sample,
-    std::unique_ptr<coalition_resource_usage> recent_data_sample,
-    base::TimeDelta interval_length) {
-  last_data_sample_.swap(old_data_sample);
+  auto new_data = GetResourceUsageData(coalition_id_.value());
   auto now = base::TimeTicks::Now();
-  last_data_sample_timestamp_ = now - interval_length;
-  return GetDataRateImpl(std::move(recent_data_sample), now);
+  auto ret = GetCoalitionDataDiff(*new_data.get(), *last_data_sample_.get(),
+                                  now - last_data_sample_timestamp_);
+  last_data_sample_.swap(new_data);
+  last_data_sample_timestamp_ = now;
+
+  return ret;
 }
 
 void ResourceCoalition::SetCoalitionIDToCurrentProcessIdForTesting() {
@@ -206,18 +250,6 @@ void ResourceCoalition::SetCoalitionId(absl::optional<uint64_t> coalition_id) {
     last_data_sample_ = GetResourceUsageData(coalition_id_.value());
     last_data_sample_timestamp_ = base::TimeTicks::Now();
   }
-}
-
-absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRateImpl(
-    std::unique_ptr<coalition_resource_usage> new_data_sample,
-    base::TimeTicks now) {
-  auto ret =
-      GetCoalitionDataDiff(*new_data_sample.get(), *last_data_sample_.get(),
-                           now - last_data_sample_timestamp_);
-  last_data_sample_.swap(new_data_sample);
-  last_data_sample_timestamp_ = now;
-
-  return ret;
 }
 
 }  // namespace performance_monitor

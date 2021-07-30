@@ -47,7 +47,7 @@ class ResourceCoalition {
     double bytesread_per_second;
     double byteswritten_per_second;
     double gpu_time_per_second;
-    double power_nw;
+    double energy_nj_per_second;
   };
 
   // Note: The constructor will record whether or not coalition data are
@@ -68,20 +68,8 @@ class ResourceCoalition {
 
   void SetCoalitionIDToCurrentProcessIdForTesting();
 
-  // Compute the data change rate between |old_data_sample| and
-  // |recent_data_sample| over an interval of length |interval_length|.
-  absl::optional<DataRate> GetDataRateFromFakeDataForTesting(
-      std::unique_ptr<coalition_resource_usage> old_data_sample,
-      std::unique_ptr<coalition_resource_usage> recent_data_sample,
-      base::TimeDelta interval_length);
-
  private:
   void SetCoalitionId(absl::optional<uint64_t> coalition_id);
-
-  // Implementation details for GetDataRate;
-  absl::optional<DataRate> GetDataRateImpl(
-      std::unique_ptr<coalition_resource_usage> new_data_sample,
-      base::TimeTicks now);
 
   // The coalition ID for the current process or nullopt if this isn't
   // available.
