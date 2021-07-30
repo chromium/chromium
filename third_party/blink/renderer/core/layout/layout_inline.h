@@ -367,8 +367,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                  LayoutObject* new_child,
                  LayoutBoxModelObject* old_cont);
 
-  // Create an anoymous block for block children of this inline.
-  LayoutBlockFlow* CreateAnonymousContainerForBlockChildren();
+  // Create an anonymous block for block children of this inline.
+  LayoutBlockFlow* CreateAnonymousContainerForBlockChildren(bool split_flow);
 
   void UpdateLayout() final {
     NOT_DESTROYED();

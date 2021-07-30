@@ -37,8 +37,11 @@ namespace blink {
 namespace {
 
 bool IsAnonymousContainer(const LayoutObject* layout_object) {
-  return layout_object->IsAnonymousBlock() &&
-         layout_object->CanContainAbsolutePositionObjects();
+  const bool result = layout_object->IsAnonymousBlock() &&
+                      layout_object->CanContainAbsolutePositionObjects();
+  // There shouldn't be any anonymous container in `NGBlockInInline`.
+  DCHECK(!(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() && result));
+  return result;
 }
 
 // When the containing block is a split inline, Legacy and NG use different
