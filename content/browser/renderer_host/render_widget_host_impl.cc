@@ -2830,8 +2830,16 @@ void RenderWidgetHostImpl::StartDragging(
 
   float scale = GetScaleFactorForView(GetView());
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
-  view->StartDragging(filtered_data, drag_operations_mask, image,
-                      bitmap_offset_in_dip, *event_info, this);
+  gfx::Vector2d offset = bitmap_offset_in_dip;
+#if defined(OS_WIN)
+  // On Windows, scale the offset by device scale factor, otherwise the drag
+  // image location doesn't line up with the drop location (drag destination).
+  gfx::Vector2dF scaled_offset = gfx::Vector2dF(offset);
+  scaled_offset.Scale(scale);
+  offset = gfx::ToRoundedVector2d(scaled_offset);
+#endif
+  view->StartDragging(filtered_data, drag_operations_mask, image, offset,
+                      *event_info, this);
 }
 
 bool RenderWidgetHostImpl::IsAutoscrollInProgress() {
