@@ -169,7 +169,7 @@
 <translation id="2830077785865012357">中文注音</translation>
 <translation id="2843806747483486897">更改默认设置...</translation>
 <translation id="2850124913210091882">备份</translation>
-<translation id="2873951654529031587">垃圾箱</translation>
+<translation id="2873951654529031587">回收站</translation>
 <translation id="288024221176729610">捷克语</translation>
 <translation id="2887525882758501333">PDF 文档</translation>
 <translation id="2888807692577297075">找不到与&lt;b&gt;“<ph name="SEARCH_STRING" />”&lt;/b&gt;匹配的项</translation>
@@ -402,7 +402,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />暂时请不要取出您的设备！<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    取出使用中的设备可能会导致数据丢失。请等待操作完成，然后使用“文件”菜单弹出设备。</translation>
-<translation id="5159560892333415631">清空垃圾箱</translation>
+<translation id="5159560892333415631">清空回收站</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
 <translation id="5170477580121653719">Google 云端硬盘可用存储空间：<ph name="SPACE_AVAILABLE" />。</translation>
@@ -417,7 +417,7 @@
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>
 <translation id="5288441970121584418">汉堡包</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
-<translation id="5299998344490869684">确定要清空垃圾箱吗？</translation>
+<translation id="5299998344490869684">确定要清空回收站吗？</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">与 Linux 共享</translation>
 <translation id="5323213332664049067">拉丁美洲</translation>
@@ -752,7 +752,7 @@
 <translation id="872537912056138402">克罗地亚语</translation>
 <translation id="8750438273876807512">轻触并按住某个文件，点按 <ph name="ICON" />，然后选择“固定到任务栏”，即可在任务栏中快速访问您的文件。</translation>
 <translation id="8775404590947523323">系统会自动保存您所做的修改。<ph name="BREAKS" />要保留原始图像的副本，请取消选中“覆盖原始文件”。</translation>
-<translation id="8802459921616481935">移至垃圾箱</translation>
+<translation id="8802459921616481935">移至回收站</translation>
 <translation id="8808686172382650546">猫</translation>
 <translation id="8810671769985673465">压缩失败，已有此项内容：“<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">西班牙语（西班牙）</translation>
@@ -786,7 +786,7 @@
 <translation id="9154418932169119429">此图片无法在离线模式下显示。</translation>
 <translation id="9172592259078059678">古吉拉特语音译</translation>
 <translation id="9173120999827300720">英语（美国）国际键盘</translation>
-<translation id="9174050671906956834">移至垃圾箱 30 天后，所移动的内容将被永久删除。</translation>
+<translation id="9174050671906956834">移至回收站 30 天后，所移动的内容将被永久删除。</translation>
 <translation id="9189836632794948435">哈萨克语</translation>
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>
