@@ -135,6 +135,10 @@ source_set("tests") {
     "test_support/scoped_device_actions.cc",
     "test_support/scoped_device_actions.h",
   ]
+
+  if (enable_cros_libassistant) {
+    deps += [ "//chromeos/assistant/internal:tests" ]
+  }
 }
 
 static_library("test_support") {
