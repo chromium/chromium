@@ -768,6 +768,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.Startup.NumberOfCookiesDeleted" units="units"
     expires_after="2021-03-07">
+  <obsolete>
+    Removed July 2021, no longer needed and expired.
+  </obsolete>
   <owner>erikchen@chromium.org</owner>
   <summary>
     The number of session cookies deleted on startup. This metric is emitted
@@ -778,6 +781,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cookie.Startup.TimeSpentDeletingCookies" units="ms"
     expires_after="2020-03-08">
+  <obsolete>
+    Removed July 2021, no longer needed and expired.
+  </obsolete>
   <owner>erikchen@chromium.org</owner>
   <summary>
     The amount of time required to delete session cookies on startup. This

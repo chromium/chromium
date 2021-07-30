@@ -1474,14 +1474,8 @@ void SQLitePersistentCookieStore::Backend::DeleteAllInList(
 
 void SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup() {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  base::Time start_time = base::Time::Now();
   if (!db()->Execute("DELETE FROM cookies WHERE is_persistent != 1"))
     LOG(WARNING) << "Unable to delete session cookies.";
-
-  UMA_HISTOGRAM_TIMES("Cookie.Startup.TimeSpentDeletingCookies",
-                      base::Time::Now() - start_time);
-  UMA_HISTOGRAM_COUNTS_1M("Cookie.Startup.NumberOfCookiesDeleted",
-                          db()->GetLastChangeCount());
 }
 
 // TODO(crbug.com/1225444) Investigate including top_frame_site_key in the WHERE
