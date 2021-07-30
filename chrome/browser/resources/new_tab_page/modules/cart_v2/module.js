@@ -126,20 +126,6 @@ class ChromeCartModuleElement extends mixinBehaviors
   }
 
   /**
-   * @param {string} url
-   * @return {string}
-   * @private
-   */
-  getFaviconUrl_(url) {
-    const faviconUrl = new URL('chrome://favicon2/');
-    faviconUrl.searchParams.set('size', '24');
-    faviconUrl.searchParams.set('scale_factor', '1x');
-    faviconUrl.searchParams.set('show_fallback_monogram', '');
-    faviconUrl.searchParams.set('page_url', url);
-    return faviconUrl.href;
-  }
-
-  /**
    * @param {!Array<string>} imageUrls
    * @return {!Array<string>}
    * @private
@@ -320,14 +306,13 @@ class ChromeCartModuleElement extends mixinBehaviors
    */
   onLeftScrollClick_() {
     const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
-    let visibleRange = 0, firstVisibleIndex = 0;
+    let firstVisibleIndex = 0;
     for (let i = carts.length - 1; i >= 0; i--) {
       if (this.getVisibilityForIndex_(i)) {
-        visibleRange += 1;
         firstVisibleIndex = i;
       }
     }
-    this.scrollToIndex_(Math.max(0, firstVisibleIndex - visibleRange));
+    this.scrollToIndex_(Math.max(0, firstVisibleIndex - 1));
     chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.LeftScrollClick');
   }
 
@@ -337,14 +322,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    */
   scrollToIndex_(index) {
     const carts = this.$.cartCarousel.querySelectorAll('.cart-item');
-    // Calculate scroll shadow width as scroll offset.
-    const leftScrollShadow = this.shadowRoot.getElementById('leftScrollShadow');
-    const rightScrollShadow =
-        this.shadowRoot.getElementById('rightScrollShadow');
-    const scrollOffset = Math.max(
-        leftScrollShadow ? leftScrollShadow.offsetWidth : 0,
-        rightScrollShadow ? rightScrollShadow.offsetWidth : 0);
-    let leftPosition = carts[index].offsetLeft - scrollOffset;
+    let leftPosition = carts[index].offsetLeft;
     // TODO(crbug.com/1198632): This could make a left scroll jump over cart
     // items.
     if (index === 0) {
@@ -368,9 +346,8 @@ class ChromeCartModuleElement extends mixinBehaviors
   getVisibilityForIndex_(index) {
     const cartCarousel = this.$.cartCarousel;
     const cart = cartCarousel.querySelectorAll('.cart-item')[index];
-    return cart && (cart.offsetLeft > cartCarousel.scrollLeft) &&
-        (cartCarousel.scrollLeft + cartCarousel.clientWidth) >
-        (cart.offsetLeft + cart.offsetWidth);
+    return cart && (cart.offsetLeft === cartCarousel.scrollLeft) &&
+        (cartCarousel.clientWidth <= cart.offsetWidth);
   }
 
   /**
