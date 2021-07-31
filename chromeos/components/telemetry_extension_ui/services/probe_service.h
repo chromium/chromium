@@ -27,6 +27,7 @@ class ProbeService : public health::mojom::ProbeService {
   void ProbeTelemetryInfo(
       const std::vector<health::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
+  void GetOemData(GetOemDataCallback callback) override;
 
   // Ensures that |service_| created and connected to the
   // CrosHealthdProbeService.

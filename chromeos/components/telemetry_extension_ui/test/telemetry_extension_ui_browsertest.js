@@ -632,6 +632,13 @@ class TestProbeService {
 
     return Promise.resolve({ telemetryInfo });
   }
+
+  /**
+   * @override
+   */
+  getOemData() {
+    throw 'This method should not be called from telemetry extension';
+  }
 };
 
 // Tests with a testing Mojo probe service, so we can test for example strings

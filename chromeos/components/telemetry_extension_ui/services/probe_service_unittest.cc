@@ -12,6 +12,8 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,17 +22,32 @@ namespace chromeos {
 
 class ProbeServiceTest : public testing::Test {
  public:
-  void SetUp() override { CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    auto fake_debugd_client = std::make_unique<FakeDebugDaemonClient>();
+    fake_debugd_client_ = fake_debugd_client.get();
+
+    chromeos::DBusThreadManager::Initialize();
+    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
+        std::move(fake_debugd_client));
+
+    CrosHealthdClient::InitializeFake();
+  }
 
   void TearDown() override {
     CrosHealthdClient::Shutdown();
 
     // Wait for ServiceConnection to observe the destruction of the client.
     cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   health::mojom::ProbeServiceProxy* probe_service() const {
     return remote_probe_service_.get();
+  }
+
+  FakeDebugDaemonClient* fake_debugd_client() const {
+    return fake_debugd_client_;
   }
 
  private:
@@ -39,6 +56,8 @@ class ProbeServiceTest : public testing::Test {
   mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
   ProbeService probe_service_{
       remote_probe_service_.BindNewPipeAndPassReceiver()};
+
+  FakeDebugDaemonClient* fake_debugd_client_ = nullptr;
 };
 
 // Tests that ProbeTelemetryInfo requests telemetry info in cros_healthd and
@@ -69,6 +88,21 @@ TEST_F(ProbeServiceTest, ProbeTelemetryInfoSuccess) {
         ASSERT_TRUE(ptr->battery_result->get_battery_info()->cycle_count);
         EXPECT_EQ(ptr->battery_result->get_battery_info()->cycle_count->value,
                   kCycleCount);
+
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Tests that GetOemData requests OEM data in debugd and
+// forwards response via callback.
+TEST_F(ProbeServiceTest, GetOemDataSuccess) {
+  base::RunLoop run_loop;
+  probe_service()->GetOemData(
+      base::BindLambdaForTesting([&](health::mojom::OemDataPtr ptr) {
+        ASSERT_TRUE(ptr);
+        ASSERT_TRUE(ptr->oem_data.has_value());
+        EXPECT_EQ(ptr->oem_data.value(), "oemdata: response from GetLog");
 
         run_loop.Quit();
       }));
