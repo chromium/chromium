@@ -20,7 +20,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
   ~LowLatencyVideoRendererAlgorithmTest() override = default;
 
   scoped_refptr<media::VideoFrame> CreateFrame(
-      size_t maximum_composition_delay_in_frames) {
+      int maximum_composition_delay_in_frames) {
     const gfx::Size natural_size(8, 8);
     scoped_refptr<media::VideoFrame> frame = frame_pool_.CreateFrame(
         media::PIXEL_FORMAT_I420, natural_size, gfx::Rect(natural_size),

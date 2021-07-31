@@ -42,15 +42,15 @@ namespace cssvalue {
 class CSSGridTemplateAreasValue : public CSSValue {
  public:
   CSSGridTemplateAreasValue(const NamedGridAreaMap&,
-                            size_t row_count,
-                            size_t column_count);
+                            wtf_size_t row_count,
+                            wtf_size_t column_count);
   ~CSSGridTemplateAreasValue() = default;
 
   String CustomCSSText() const;
 
   const NamedGridAreaMap& GridAreaMap() const { return grid_area_map_; }
-  size_t RowCount() const { return row_count_; }
-  size_t ColumnCount() const { return column_count_; }
+  wtf_size_t RowCount() const { return row_count_; }
+  wtf_size_t ColumnCount() const { return column_count_; }
 
   bool Equals(const CSSGridTemplateAreasValue&) const;
 
@@ -60,8 +60,8 @@ class CSSGridTemplateAreasValue : public CSSValue {
 
  private:
   NamedGridAreaMap grid_area_map_;
-  size_t row_count_;
-  size_t column_count_;
+  wtf_size_t row_count_;
+  wtf_size_t column_count_;
 };
 
 }  // namespace cssvalue

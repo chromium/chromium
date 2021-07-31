@@ -70,6 +70,9 @@ String::String(const char* characters, unsigned length)
                 : nullptr) {}
 
 #if defined(ARCH_CPU_64_BITS)
+String::String(const UChar* characters, size_t length)
+    : String(characters, SafeCast<unsigned>(length)) {}
+
 String::String(const char* characters, size_t length)
     : String(characters, SafeCast<unsigned>(length)) {}
 #endif  // defined(ARCH_CPU_64_BITS)

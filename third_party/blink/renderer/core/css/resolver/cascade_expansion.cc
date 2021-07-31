@@ -56,7 +56,7 @@ CascadeFilter AmendFilter(CascadeFilter filter,
 CascadeExpansion::CascadeExpansion(const MatchedProperties& matched_properties,
                                    const Document& document,
                                    CascadeFilter filter,
-                                   size_t matched_properties_index)
+                                   wtf_size_t matched_properties_index)
     : document_(document),
       matched_properties_(matched_properties),
       size_(matched_properties.properties->PropertyCount()),
@@ -192,7 +192,7 @@ void CascadeExpansion::AdvanceAll() {
 }
 
 CSSPropertyValueSet::PropertyReference CascadeExpansion::PropertyAt(
-    size_t index) const {
+    wtf_size_t index) const {
   DCHECK(!AtEnd());
   return matched_properties_.properties->PropertyAt(index_);
 }

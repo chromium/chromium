@@ -1869,7 +1869,7 @@ bool ComputedStyle::HasVariables() const {
          HasInitialVariables(InitialDataInternal().get());
 }
 
-size_t ComputedStyle::GetVariableNamesCount() const {
+wtf_size_t ComputedStyle::GetVariableNamesCount() const {
   if (!HasVariables())
     return 0;
   return GetVariableNames().size();

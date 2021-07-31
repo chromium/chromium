@@ -22,7 +22,7 @@ namespace cssvalue {
 //                          [ <line-names>? <fixed-size> ]+ <line-names>? )
 class CSSGridIntegerRepeatValue : public CSSValueList {
  public:
-  CSSGridIntegerRepeatValue(size_t repetitions)
+  CSSGridIntegerRepeatValue(wtf_size_t repetitions)
       : CSSValueList(kGridIntegerRepeatClass, kSpaceSeparator),
         repetitions_(repetitions) {
     DCHECK_GT(repetitions, 0UL);
@@ -31,14 +31,14 @@ class CSSGridIntegerRepeatValue : public CSSValueList {
   String CustomCSSText() const;
   bool Equals(const CSSGridIntegerRepeatValue&) const;
 
-  size_t Repetitions() const { return repetitions_; }
+  wtf_size_t Repetitions() const { return repetitions_; }
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValueList::TraceAfterDispatch(visitor);
   }
 
  private:
-  const size_t repetitions_;
+  const wtf_size_t repetitions_;
 };
 
 }  // namespace cssvalue

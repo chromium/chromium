@@ -171,7 +171,7 @@ const Vector<AtomicString>* CSSComputedStyleDeclaration::GetVariableNames()
   return nullptr;
 }
 
-size_t CSSComputedStyleDeclaration::GetVariableNamesCount() const {
+wtf_size_t CSSComputedStyleDeclaration::GetVariableNamesCount() const {
   if (auto* style = ComputeComputedStyle())
     return style->GetVariableNamesCount();
   return 0;
@@ -314,7 +314,7 @@ unsigned CSSComputedStyleDeclaration::length() const {
   if (!node_ || !node_->InActiveDocument())
     return 0;
 
-  size_t variable_count = 0;
+  wtf_size_t variable_count = 0;
 
   if (RuntimeEnabledFeatures::CSSEnumeratedCustomPropertiesEnabled()) {
     UpdateStyleAndLayoutTreeIfNeeded(nullptr /* property_name */);

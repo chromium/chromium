@@ -2131,7 +2131,7 @@ void LayoutText::SecureText(UChar mask) {
   text_.Fill(mask);
   if (last_typed_character_offset_to_reveal >= 0) {
     text_.replace(last_typed_character_offset_to_reveal, 1,
-                  String(&revealed_text, 1));
+                  String(&revealed_text, 1u));
     // m_text may be updated later before timer fires. We invalidate the
     // lastTypedCharacterOffset to avoid inconsistency.
     secure_text_timer->Invalidate();

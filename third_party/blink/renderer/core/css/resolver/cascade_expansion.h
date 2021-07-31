@@ -21,11 +21,11 @@ inline uint32_t EncodeMatchResultPosition(uint16_t block,
   return (static_cast<uint32_t>(block) << 16) | declaration;
 }
 
-inline size_t DecodeMatchedPropertiesIndex(uint32_t position) {
+inline wtf_size_t DecodeMatchedPropertiesIndex(uint32_t position) {
   return (position >> 16) & 0xFFFF;
 }
 
-inline size_t DecodeDeclarationIndex(uint32_t position) {
+inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
   return position & 0xFFFF;
 }
 
@@ -69,15 +69,15 @@ class CORE_EXPORT CascadeExpansion {
 
  public:
   // CascadeExpansion objects which exceed these limits will emit nothing.
-  static constexpr size_t kMaxDeclarationIndex =
+  static constexpr wtf_size_t kMaxDeclarationIndex =
       std::numeric_limits<uint16_t>::max();
-  static constexpr size_t kMaxMatchedPropertiesIndex =
+  static constexpr wtf_size_t kMaxMatchedPropertiesIndex =
       std::numeric_limits<uint16_t>::max();
 
   CascadeExpansion(const MatchedProperties&,
                    const Document&,
                    CascadeFilter,
-                   size_t matched_properties_index);
+                   wtf_size_t matched_properties_index);
   // We need an explicit copy constructor, since CascadeExpansion has self-
   // pointers.
   CascadeExpansion(const CascadeExpansion& o);
@@ -111,7 +111,7 @@ class CORE_EXPORT CascadeExpansion {
   bool AdvanceVisited();
   void AdvanceAll();
 
-  CSSPropertyValueSet::PropertyReference PropertyAt(size_t) const;
+  CSSPropertyValueSet::PropertyReference PropertyAt(wtf_size_t) const;
 
   const Document& document_;
   State state_ = State::kInit;
@@ -128,11 +128,11 @@ class CORE_EXPORT CascadeExpansion {
   //
   // Note that this is initialized to ~0 such that the first call to Next()
   // (done by the constructor) will produce ~0+1 = 0.
-  size_t index_ = std::numeric_limits<size_t>::max();
-  size_t size_;
+  wtf_size_t index_ = std::numeric_limits<wtf_size_t>::max();
+  wtf_size_t size_;
 
   CascadeFilter filter_;
-  const size_t matched_properties_index_;
+  const wtf_size_t matched_properties_index_;
 
   // The id/property of the current "virtual" declaration. In other words,
   // the id/property will be updated when expanding 'all', etc.

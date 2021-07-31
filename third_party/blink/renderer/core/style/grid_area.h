@@ -59,13 +59,13 @@ struct GridSpan {
     return GridSpan(start_line, end_line, kUntranslatedDefinite);
   }
 
-  static GridSpan TranslatedDefiniteGridSpan(size_t start_line,
-                                             size_t end_line) {
+  static GridSpan TranslatedDefiniteGridSpan(wtf_size_t start_line,
+                                             wtf_size_t end_line) {
     return GridSpan(start_line, end_line, kTranslatedDefinite);
   }
 
-  static GridSpan IndefiniteGridSpan(size_t span_size = 1) {
-    return GridSpan(static_cast<size_t>(0), span_size, kIndefinite);
+  static GridSpan IndefiniteGridSpan(wtf_size_t span_size = 1) {
+    return GridSpan(wtf_size_t{0}, span_size, kIndefinite);
   }
 
   bool operator==(const GridSpan& o) const {
@@ -84,13 +84,13 @@ struct GridSpan {
     return *this < o || *this == o;
   }
 
-  size_t IntegerSpan() const {
+  wtf_size_t IntegerSpan() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GT(end_line_, start_line_);
     return end_line_ - start_line_;
   }
 
-  size_t IndefiniteSpanSize() const {
+  wtf_size_t IndefiniteSpanSize() const {
     DCHECK(IsIndefinite());
     DCHECK_EQ(start_line_, 0);
     DCHECK_GT(end_line_, 0);
@@ -107,28 +107,28 @@ struct GridSpan {
     return end_line_;
   }
 
-  size_t StartLine() const {
+  wtf_size_t StartLine() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GE(start_line_, 0);
     return start_line_;
   }
 
-  size_t EndLine() const {
+  wtf_size_t EndLine() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GT(end_line_, 0);
     return end_line_;
   }
 
   struct GridSpanIterator {
-    GridSpanIterator(size_t v) : value(v) {}
+    GridSpanIterator(wtf_size_t v) : value(v) {}
 
-    size_t operator*() const { return value; }
-    size_t operator++() { return value++; }
+    wtf_size_t operator*() const { return value; }
+    wtf_size_t operator++() { return value++; }
     bool operator!=(GridSpanIterator other) const {
       return value != other.value;
     }
 
-    size_t value;
+    wtf_size_t value;
   };
 
   GridSpanIterator begin() const {
@@ -145,7 +145,7 @@ struct GridSpan {
   bool IsTranslatedDefinite() const { return type_ == kTranslatedDefinite; }
   bool IsIndefinite() const { return type_ == kIndefinite; }
 
-  void Translate(size_t offset) {
+  void Translate(wtf_size_t offset) {
     DCHECK_EQ(type_, kUntranslatedDefinite);
 
     type_ = kTranslatedDefinite;

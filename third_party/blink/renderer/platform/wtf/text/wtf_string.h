@@ -89,8 +89,9 @@ class WTF_EXPORT String {
   String(const char* characters, unsigned length);
 
 #if defined(ARCH_CPU_64_BITS)
-  // Only define a size_t constructor if size_t is 64 bit otherwise
+  // Only define size_t constructors if size_t is 64 bit otherwise
   // we'd have a duplicate define.
+  String(const UChar* characters, size_t length);
   String(const char* characters, size_t length);
 #endif  // defined(ARCH_CPU_64_BITS)
 

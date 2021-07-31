@@ -26,12 +26,12 @@ class MatchResultTest : public PageTestBase {
     return result.GetMatchedProperties().size();
   }
 
-  CascadeOrigin OriginAt(const MatchResult& result, size_t index) const {
+  CascadeOrigin OriginAt(const MatchResult& result, wtf_size_t index) const {
     DCHECK_LT(index, LengthOf(result));
     return result.GetMatchedProperties()[index].types_.origin;
   }
 
-  const TreeScope& TreeScopeAt(const MatchResult& result, size_t index) {
+  const TreeScope& TreeScopeAt(const MatchResult& result, wtf_size_t index) {
     DCHECK_EQ(CascadeOrigin::kAuthor, OriginAt(result, index));
     return result.ScopeFromTreeOrder(
         result.GetMatchedProperties()[index].types_.tree_order);
@@ -204,8 +204,8 @@ TEST_F(MatchResultTest, ExpansionsRange) {
 
   CascadeFilter filter;
 
-  size_t i = 0;
-  size_t size = result.GetMatchedProperties().size();
+  wtf_size_t i = 0;
+  wtf_size_t size = result.GetMatchedProperties().size();
   for (auto actual : result.Expansions(GetDocument(), filter)) {
     ASSERT_LT(i, size);
     CascadeExpansion expected(result.GetMatchedProperties()[i], GetDocument(),

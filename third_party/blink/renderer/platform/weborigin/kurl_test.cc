@@ -261,7 +261,7 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   UChar invalid_expected_helper[6] = {0x00e4, 0x00a0, 0x00e5,
                                       0x00a5, 0x00bd, 0};
   String invalid_expected(
-      reinterpret_cast<const ::UChar*>(invalid_expected_helper), 5);
+      reinterpret_cast<const ::UChar*>(invalid_expected_helper), 5u);
   EXPECT_EQ(invalid_expected, invalid);
 }
 
@@ -299,7 +299,7 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
 
   // Also test that it gets converted to UTF-8 properly.
   UChar wide_input_helper[3] = {0x4f60, 0x597d, 0};
-  String wide_input(reinterpret_cast<const ::UChar*>(wide_input_helper), 2);
+  String wide_input(reinterpret_cast<const ::UChar*>(wide_input_helper), 2u);
   String wide_reference("%E4%BD%A0%E5%A5%BD");
   String wide_output = EncodeWithURLEscapeSequences(wide_input);
   EXPECT_EQ(wide_reference, wide_output);

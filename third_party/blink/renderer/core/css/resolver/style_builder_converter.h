@@ -233,7 +233,7 @@ class StyleBuilderConverter {
       Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
       NamedGridLinesMap&,
       OrderedNamedGridLines&,
-      size_t& auto_repeat_insertion_point,
+      wtf_size_t& auto_repeat_insertion_point,
       AutoRepeatType&,
       StyleResolverState&);
   static void CreateImplicitNamedGridLinesFromGridArea(

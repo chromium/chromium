@@ -12,13 +12,13 @@
 namespace blink {
 
 namespace {
-CascadePriority UaPriority(size_t position) {
+CascadePriority UaPriority(wtf_size_t position) {
   return CascadePriority(CascadeOrigin::kUserAgent, false, 0, position);
 }
-CascadePriority UserPriority(size_t position) {
+CascadePriority UserPriority(wtf_size_t position) {
   return CascadePriority(CascadeOrigin::kUser, false, 0, position);
 }
-CascadePriority AuthorPriority(size_t position) {
+CascadePriority AuthorPriority(wtf_size_t position) {
   return CascadePriority(CascadeOrigin::kAuthor, false, 0, position);
 }
 

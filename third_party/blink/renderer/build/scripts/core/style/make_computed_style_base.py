@@ -80,6 +80,7 @@ ALIGNMENT_ORDER = [
     'OutlineValue',
     'unsigned',
     'size_t',
+    'wtf_size_t',
     'int',
     # Aligns like short
     'unsigned short',

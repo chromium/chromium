@@ -94,7 +94,7 @@ void ContentCaptureTaskHistogramReporter::OnAllCapturedContentSent() {
 }
 
 void ContentCaptureTaskHistogramReporter::RecordsSentContentCountPerDocument(
-    size_t sent_content_count) {
+    int sent_content_count) {
   base::UmaHistogramCounts10000(kSentContentCount, sent_content_count);
 }
 

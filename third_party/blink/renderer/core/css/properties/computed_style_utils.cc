@@ -1306,18 +1306,17 @@ void PopulateGridTrackList(CSSValueList* list,
                            OrderedNamedLinesCollector& collector,
                            const Vector<T, 1>& tracks,
                            F getTrackSize,
-                           int start,
-                           int end,
+                           wtf_size_t start,
+                           wtf_size_t end,
                            int offset = 0) {
-  DCHECK_LE(0, start);
   DCHECK_LE(start, end);
-  DCHECK_LE((unsigned)end, tracks.size());
-  for (int i = start; i < end; ++i) {
-    if (i + offset >= 0)
+  DCHECK_LE(end, tracks.size());
+  for (wtf_size_t i = start; i < end; ++i) {
+    if (offset >= 0 || i >= static_cast<wtf_size_t>(-offset))
       AddValuesForNamedGridLinesAtIndex(collector, i + offset, *list);
     list->Append(*getTrackSize(tracks[i]));
   }
-  if (end + offset >= 0)
+  if (offset >= 0 || end >= static_cast<wtf_size_t>(-offset))
     AddValuesForNamedGridLinesAtIndex(collector, end + offset, *list);
 }
 
@@ -1374,7 +1373,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     // Named grid line indices are relative to the explicit grid, but we are
     // including all tracks. So we need to subtract the number of leading
     // implicit tracks in order to get the proper line index.
-    int offset = -grid->ExplicitGridStartForDirection(direction);
+    int offset = -base::checked_cast<int>(
+        grid->ExplicitGridStartForDirection(direction));
     PopulateGridTrackList(
         list, collector, grid->TrackSizesForComputedStyle(direction),
         [&](const LayoutUnit& v) { return ZoomAdjustedPixelValue(v, style); },
@@ -1395,7 +1395,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   }
 
   // Add the line names and track sizes that precede the auto repeat().
-  size_t auto_repeat_insertion_point =
+  wtf_size_t auto_repeat_insertion_point =
       is_row_axis ? style.GridAutoRepeatColumnsInsertionPoint()
                   : style.GridAutoRepeatRowsInsertionPoint();
   PopulateGridTrackList(list, collector, track_sizes, getTrackSize, 0,

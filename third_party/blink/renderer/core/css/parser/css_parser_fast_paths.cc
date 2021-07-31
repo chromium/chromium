@@ -366,7 +366,8 @@ static bool ParseColorNumberOrPercentage(const CharacterType*& string,
 }
 
 template <typename CharacterType>
-static inline bool IsTenthAlpha(const CharacterType* string, const int length) {
+static inline bool IsTenthAlpha(const CharacterType* string,
+                                const wtf_size_t length) {
   // "0.X"
   if (length == 3 && string[0] == '0' && string[1] == '.' &&
       IsASCIIDigit(string[2]))
@@ -396,7 +397,7 @@ static inline bool ParseAlphaValue(const CharacterType*& string,
 
   value = 0;
 
-  size_t length = end - string;
+  wtf_size_t length = static_cast<wtf_size_t>(end - string);
   if (length < 2)
     return false;
 

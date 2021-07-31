@@ -74,7 +74,7 @@ bool IsExtensionStableWorldId(const String& stable_world_id) {
     return false;
   if (stable_world_id.length() != 32)
     return false;
-  for (size_t i = 0; i < stable_world_id.length(); ++i) {
+  for (unsigned i = 0; i < stable_world_id.length(); ++i) {
     if (stable_world_id[i] < 'a' || stable_world_id[i] > 'p')
       return false;
   }

@@ -948,7 +948,7 @@ GridTrackSize StyleBuilderConverter::ConvertGridTrackSize(
 
 static void ConvertGridLineNamesList(
     const CSSValue& value,
-    size_t current_named_grid_line,
+    wtf_size_t current_named_grid_line,
     NamedGridLinesMap& named_grid_lines,
     OrderedNamedGridLines& ordered_named_grid_lines) {
   DCHECK(value.IsGridLineNamesValue());
@@ -957,7 +957,7 @@ static void ConvertGridLineNamesList(
     String named_grid_line =
         To<CSSCustomIdentValue>(*named_grid_line_value).Value();
     NamedGridLinesMap::AddResult result =
-        named_grid_lines.insert(named_grid_line, Vector<size_t>());
+        named_grid_lines.insert(named_grid_line, Vector<wtf_size_t>());
     result.stored_value->value.push_back(current_named_grid_line);
     OrderedNamedGridLines::AddResult ordered_insertion_result =
         ordered_named_grid_lines.insert(current_named_grid_line,
@@ -988,7 +988,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
     NamedGridLinesMap& auto_repeat_named_grid_lines,
     OrderedNamedGridLines& auto_repeat_ordered_named_grid_lines,
-    size_t& auto_repeat_insertion_point,
+    wtf_size_t& auto_repeat_insertion_point,
     AutoRepeatType& auto_repeat_type,
     StyleResolverState& state) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -996,7 +996,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     return;
   }
 
-  size_t current_named_grid_line = 0;
+  wtf_size_t current_named_grid_line = 0;
   auto convert_line_name_or_track_size = [&](const CSSValue& curr_value) {
     if (curr_value.IsGridLineNamesValue()) {
       ConvertGridLineNamesList(curr_value, current_named_grid_line,
@@ -1012,7 +1012,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     if (auto* grid_auto_repeat_value =
             DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value.Get())) {
       Vector<GridTrackSize, 1> repeated_track_sizes;
-      size_t auto_repeat_index = 0;
+      wtf_size_t auto_repeat_index = 0;
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
       DCHECK(auto_repeat_id == CSSValueID::kAutoFill ||
              auto_repeat_id == CSSValueID::kAutoFit);
@@ -1043,8 +1043,8 @@ void StyleBuilderConverter::ConvertGridTrackList(
 
     if (auto* repeated_values =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value.Get())) {
-      size_t repetitions = repeated_values->Repetitions();
-      for (size_t i = 0; i < repetitions; ++i) {
+      wtf_size_t repetitions = repeated_values->Repetitions();
+      for (wtf_size_t i = 0; i < repetitions; ++i) {
         for (auto curr_repeat_value : *repeated_values)
           convert_line_name_or_track_size(*curr_repeat_value);
       }
@@ -1085,14 +1085,14 @@ void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
                              : named_grid_area_entry.value.columns;
     {
       NamedGridLinesMap::AddResult start_result = named_grid_lines.insert(
-          named_grid_area_entry.key + "-start", Vector<size_t>());
+          named_grid_area_entry.key + "-start", Vector<wtf_size_t>());
       start_result.stored_value->value.push_back(area_span.StartLine());
       std::sort(start_result.stored_value->value.begin(),
                 start_result.stored_value->value.end());
     }
     {
       NamedGridLinesMap::AddResult end_result = named_grid_lines.insert(
-          named_grid_area_entry.key + "-end", Vector<size_t>());
+          named_grid_area_entry.key + "-end", Vector<wtf_size_t>());
       end_result.stored_value->value.push_back(area_span.EndLine());
       std::sort(end_result.stored_value->value.begin(),
                 end_result.stored_value->value.end());

@@ -288,8 +288,8 @@ bool ScrollTimeline::ScrollOffsetsEqual(
     const HeapVector<Member<ScrollTimelineOffset>>& other) const {
   if (scroll_offsets_.size() != other.size())
     return false;
-  size_t size = scroll_offsets_.size();
-  for (size_t i = 0; i < size; ++i) {
+  wtf_size_t size = scroll_offsets_.size();
+  for (wtf_size_t i = 0; i < size; ++i) {
     if (!DataEquivalent(scroll_offsets_.at(i), other.at(i)))
       return false;
   }

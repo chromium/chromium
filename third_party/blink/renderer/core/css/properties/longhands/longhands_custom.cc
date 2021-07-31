@@ -3333,8 +3333,8 @@ const CSSValue* GridTemplateAreas::ParseSingleValue(
     return css_parsing_utils::ConsumeIdent(range);
 
   NamedGridAreaMap grid_area_map;
-  size_t row_count = 0;
-  size_t column_count = 0;
+  wtf_size_t row_count = 0;
+  wtf_size_t column_count = 0;
 
   while (range.Peek().GetType() == kStringToken) {
     if (!css_parsing_utils::ParseGridTemplateAreasRow(

@@ -175,7 +175,7 @@ class ScriptStreamingTest : public testing::Test {
 
  protected:
   void AppendData(const char* data) {
-    uint32_t data_len = strlen(data);
+    uint32_t data_len = base::checked_cast<uint32_t>(strlen(data));
     MojoResult result = producer_handle_->WriteData(
         data, &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     EXPECT_EQ(result, MOJO_RESULT_OK);

@@ -384,8 +384,8 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenRange&,
                                TrackListType);
 bool ParseGridTemplateAreasRow(const WTF::String& grid_row_names,
                                NamedGridAreaMap&,
-                               const size_t row_count,
-                               size_t& column_count);
+                               const wtf_size_t row_count,
+                               wtf_size_t& column_count);
 CSSValue* ConsumeGridTemplatesRowsOrColumns(CSSParserTokenRange&,
                                             const CSSParserContext&);
 bool ConsumeGridItemPositionShorthand(bool important,

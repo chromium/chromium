@@ -73,7 +73,7 @@ void SegmentedString::Push(UChar c) {
   if (current_string_.PushIfPossible(c))
     return;
 
-  Prepend(SegmentedString(String(&c, 1)), PrependType::kUnconsume);
+  Prepend(SegmentedString(String(&c, 1u)), PrependType::kUnconsume);
 }
 
 void SegmentedString::Prepend(const SegmentedSubstring& s, PrependType type) {

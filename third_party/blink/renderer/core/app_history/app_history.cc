@@ -126,7 +126,7 @@ AppHistory::AppHistory(LocalDOMWindow& window)
 
 void AppHistory::PopulateKeySet() {
   DCHECK(keys_to_indices_.IsEmpty());
-  for (size_t i = 0; i < entries_.size(); i++)
+  for (wtf_size_t i = 0; i < entries_.size(); i++)
     keys_to_indices_.insert(entries_[i]->key(), i);
 }
 
@@ -138,13 +138,14 @@ void AppHistory::InitializeForNavigation(
 
   // Construct |entries_|. Any back entries are inserted, then the current
   // entry, then any forward entries.
-  entries_.ReserveCapacity(back_entries.size() + forward_entries.size() + 1);
+  entries_.ReserveCapacity(base::checked_cast<wtf_size_t>(
+      back_entries.size() + forward_entries.size() + 1));
   for (const auto& entry : back_entries) {
     entries_.emplace_back(
         MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), entry));
   }
 
-  current_index_ = back_entries.size();
+  current_index_ = base::checked_cast<wtf_size_t>(back_entries.size());
   entries_.emplace_back(
       MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &current));
 
@@ -158,7 +159,7 @@ void AppHistory::InitializeForNavigation(
 void AppHistory::CloneFromPrevious(AppHistory& previous) {
   DCHECK(entries_.IsEmpty());
   entries_.ReserveCapacity(previous.entries_.size());
-  for (size_t i = 0; i < previous.entries_.size(); i++) {
+  for (wtf_size_t i = 0; i < previous.entries_.size(); i++) {
     // It's possible that |old_item| is indirectly holding a reference to
     // the old Document. Also, it has a bunch of state we don't need for a
     // non-current entry. Clone a subset of its state to a |new_item|.
@@ -202,7 +203,7 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     // For a new back/forward entry, truncate any forward entries and prepare to
     // append.
     current_index_++;
-    for (size_t i = current_index_; i < entries_.size(); i++)
+    for (wtf_size_t i = current_index_; i < entries_.size(); i++)
       keys_to_indices_.erase(entries_[i]->key());
     entries_.resize(current_index_ + 1);
   }

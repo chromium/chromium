@@ -229,7 +229,7 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
   };
 
   if (number == 0)
-    return String(&table[kDigit0], 1);
+    return String(&table[kDigit0], 1u);
 
   const unsigned kGroupLength =
       9;  // 4 digits, 3 digit markers, group marker of size 2.
@@ -427,7 +427,7 @@ String HebrewAlgorithm(unsigned number) {
 
   if (number == 0) {
     static const UChar kHebrewZero[3] = {0x05D0, 0x05E4, 0x05E1};
-    return String(kHebrewZero, 3);
+    return String(kHebrewZero, 3u);
   }
 
   if (number <= 999)
@@ -498,7 +498,7 @@ String EthiopicNumericAlgorithm(unsigned value) {
   if (!value)
     return String();
   if (value < 10u)
-    return String(&units[value - 1], 1);
+    return String(&units[value - 1], 1u);
 
   // Generate characters in the reversed ordering
   Vector<UChar> result;

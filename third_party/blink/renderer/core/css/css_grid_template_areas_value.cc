@@ -37,8 +37,8 @@ namespace cssvalue {
 
 CSSGridTemplateAreasValue::CSSGridTemplateAreasValue(
     const NamedGridAreaMap& grid_area_map,
-    size_t row_count,
-    size_t column_count)
+    wtf_size_t row_count,
+    wtf_size_t column_count)
     : CSSValue(kGridTemplateAreasClass),
       grid_area_map_(grid_area_map),
       row_count_(row_count),
@@ -48,8 +48,8 @@ CSSGridTemplateAreasValue::CSSGridTemplateAreasValue(
 }
 
 static String StringForPosition(const NamedGridAreaMap& grid_area_map,
-                                size_t row,
-                                size_t column) {
+                                wtf_size_t row,
+                                wtf_size_t column) {
   for (const auto& item : grid_area_map) {
     const GridArea& area = item.value;
     if (row >= area.rows.StartLine() && row < area.rows.EndLine() &&
@@ -62,9 +62,9 @@ static String StringForPosition(const NamedGridAreaMap& grid_area_map,
 
 String CSSGridTemplateAreasValue::CustomCSSText() const {
   StringBuilder builder;
-  for (size_t row = 0; row < row_count_; ++row) {
+  for (wtf_size_t row = 0; row < row_count_; ++row) {
     builder.Append('"');
-    for (size_t column = 0; column < column_count_; ++column) {
+    for (wtf_size_t column = 0; column < column_count_; ++column) {
       builder.Append(StringForPosition(grid_area_map_, row, column));
       if (column != column_count_ - 1)
         builder.Append(' ');

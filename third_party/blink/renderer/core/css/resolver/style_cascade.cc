@@ -75,15 +75,15 @@ const CSSValue* Parse(const CSSProperty& property,
 }
 
 const CSSValue* ValueAt(const MatchResult& result, uint32_t position) {
-  size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
-  size_t declaration_index = DecodeDeclarationIndex(position);
+  wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
+  wtf_size_t declaration_index = DecodeDeclarationIndex(position);
   const MatchedPropertiesVector& vector = result.GetMatchedProperties();
   const CSSPropertyValueSet* set = vector[matched_properties_index].properties;
   return &set->PropertyAt(declaration_index).Value();
 }
 
 const TreeScope& TreeScopeAt(const MatchResult& result, uint32_t position) {
-  size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
+  wtf_size_t matched_properties_index = DecodeMatchedPropertiesIndex(position);
   const MatchedProperties& properties =
       result.GetMatchedProperties()[matched_properties_index];
   DCHECK_EQ(properties.types_.origin, CascadeOrigin::kAuthor);
@@ -301,7 +301,7 @@ void StyleCascade::AnalyzeMatchResult() {
 
 void StyleCascade::AnalyzeInterpolations() {
   const auto& entries = interpolations_.GetEntries();
-  for (size_t i = 0; i < entries.size(); ++i) {
+  for (wtf_size_t i = 0; i < entries.size(); ++i) {
     for (const auto& active_interpolation : *entries[i].map) {
       auto name = active_interpolation.key.GetCSSPropertyName();
       uint32_t position = EncodeInterpolationPosition(
@@ -423,7 +423,7 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
 
 void StyleCascade::ApplyInterpolations(CascadeResolver& resolver) {
   const auto& entries = interpolations_.GetEntries();
-  for (size_t i = 0; i < entries.size(); ++i) {
+  for (wtf_size_t i = 0; i < entries.size(); ++i) {
     const auto& entry = entries[i];
     ApplyInterpolationMap(*entry.map, entry.origin, i, resolver);
   }
@@ -562,7 +562,7 @@ void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,
   if (property.IsVisited())
     return;
   DCHECK(priority.GetOrigin() >= CascadeOrigin::kAnimation);
-  size_t index = DecodeInterpolationIndex(priority.GetPosition());
+  wtf_size_t index = DecodeInterpolationIndex(priority.GetPosition());
   DCHECK_LE(index, interpolations_.GetEntries().size());
   const ActiveInterpolationsMap& map = *interpolations_.GetEntries()[index].map;
   PropertyHandle handle = ToPropertyHandle(property, priority);

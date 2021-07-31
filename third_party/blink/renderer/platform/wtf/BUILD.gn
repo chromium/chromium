@@ -346,9 +346,6 @@ source_set("wtf_unittests_sources") {
     "vector_test.cc",
   ]
 
-  # TODO(crbug.com/879657): Fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_shorten_64_warnings" ]
-
   if (is_win) {
     cflags = [ "/wd4068" ]  # Unknown pragma.
   }

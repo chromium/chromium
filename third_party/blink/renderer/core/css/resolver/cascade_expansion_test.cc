@@ -47,7 +47,7 @@ const CSSPropertyID kVisitedPropertySamples[] = {
 class CascadeExpansionTest : public PageTestBase {
  public:
   CascadeExpansion ExpansionAt(const MatchResult& result,
-                               size_t i,
+                               wtf_size_t i,
                                CascadeFilter filter = CascadeFilter()) {
     return CascadeExpansion(result.GetMatchedProperties()[i], GetDocument(),
                             filter, i);
@@ -717,7 +717,7 @@ TEST_F(CascadeExpansionTest, Position) {
 }
 
 TEST_F(CascadeExpansionTest, MatchedPropertiesLimit) {
-  constexpr size_t max = std::numeric_limits<uint16_t>::max();
+  constexpr wtf_size_t max = std::numeric_limits<uint16_t>::max();
 
   static_assert(CascadeExpansion::kMaxMatchedPropertiesIndex == max,
                 "Unexpected max. If the limit increased, evaluate whether it "
@@ -726,12 +726,12 @@ TEST_F(CascadeExpansionTest, MatchedPropertiesLimit) {
   auto* set = ParseDeclarationBlock("left:1px");
 
   MatchResult result;
-  for (size_t i = 0; i < max + 3; ++i)
+  for (wtf_size_t i = 0; i < max + 3; ++i)
     result.AddMatchedProperties(set);
 
   ASSERT_EQ(max + 3u, result.GetMatchedProperties().size());
 
-  for (size_t i = 0; i < max + 1; ++i)
+  for (wtf_size_t i = 0; i < max + 1; ++i)
     EXPECT_FALSE(ExpansionAt(result, i).AtEnd());
 
   // The indices beyond the max should not yield anything.
@@ -740,7 +740,7 @@ TEST_F(CascadeExpansionTest, MatchedPropertiesLimit) {
 }
 
 TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
-  constexpr size_t max = std::numeric_limits<uint16_t>::max();
+  constexpr wtf_size_t max = std::numeric_limits<uint16_t>::max();
 
   static_assert(CascadeExpansion::kMaxDeclarationIndex == max,
                 "Unexpected max. If the limit increased, evaluate whether it "

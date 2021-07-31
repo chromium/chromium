@@ -201,7 +201,7 @@ float LayoutTextControl::GetAvgCharWidth(const ComputedStyle& style) {
   }
 
   const UChar kCh = '0';
-  const String str = String(&kCh, 1);
+  const String str = String(&kCh, 1u);
   TextRun text_run =
       ConstructTextRun(font, str, style, TextRun::kAllowTrailingExpansion);
   return font.Width(text_run);

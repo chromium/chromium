@@ -463,14 +463,14 @@ TEST(ProtocolParserTest, Reading) {
   EXPECT_EQ(Value::TypeString, root->type());
   EXPECT_TRUE(root->asString(&str_val));
   UChar tmp2[] = {0x20ac, 0x33, 0x2c, 0x31, 0x34};
-  EXPECT_EQ(String(tmp2, 5), str_val);
+  EXPECT_EQ(String(tmp2, 5u), str_val);
 
   root = ParseJSON("\"\\ud83d\\udca9\\ud83d\\udc6c\"");
   ASSERT_TRUE(root.get());
   EXPECT_EQ(Value::TypeString, root->type());
   EXPECT_TRUE(root->asString(&str_val));
   UChar tmp3[] = {0xd83d, 0xdca9, 0xd83d, 0xdc6c};
-  EXPECT_EQ(String(tmp3, 4), str_val);
+  EXPECT_EQ(String(tmp3, 4u), str_val);
 
   // Test literal root objects.
   root = ParseJSON("null");

@@ -80,7 +80,7 @@ class MatchedExpansionsIterator {
   MatchedExpansionsIterator(Iterator iterator,
                             const Document& document,
                             CascadeFilter filter,
-                            size_t index)
+                            wtf_size_t index)
       : iterator_(iterator),
         document_(document),
         filter_(filter),
@@ -105,7 +105,7 @@ class MatchedExpansionsIterator {
   Iterator iterator_;
   const Document& document_;
   CascadeFilter filter_;
-  size_t index_;
+  wtf_size_t index_;
 };
 
 class MatchedExpansionsRange {

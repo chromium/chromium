@@ -2084,7 +2084,7 @@ inline auto Vector<T, inlineCapacity, Allocator>::erase(iterator first,
     -> iterator {
   DCHECK_LE(first, last);
   const wtf_size_t index = static_cast<wtf_size_t>(first - begin());
-  const wtf_size_t diff = std::distance(first, last);
+  const wtf_size_t diff = static_cast<wtf_size_t>(std::distance(first, last));
   EraseAt(index, diff);
   return begin() + index;
 }
