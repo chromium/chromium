@@ -136,12 +136,15 @@ void DCOMPTexture::SetTextureSize(const gfx::Size& size) {
 }
 
 void DCOMPTexture::SetSurfaceHandle(const base::UnguessableToken& token) {
+  DVLOG(1) << __func__;
   bool succeeded = false;
   base::win::ScopedHandle surface_handle =
       gl::DCOMPSurfaceRegistry::GetInstance()->TakeDCOMPSurfaceHandle(token);
   if (surface_handle.IsValid()) {
     surface_handle_.Set(surface_handle.Take());
     succeeded = true;
+  } else {
+    DLOG(ERROR) << __func__ << ": No surface registered for token " << token;
   }
 
   if (client_)

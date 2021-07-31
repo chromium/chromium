@@ -15,6 +15,7 @@
 #include "media/base/video_renderer_sink.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
 #include "media/mojo/clients/mojo_renderer.h"
+#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -49,6 +50,8 @@ class MediaFoundationRendererClient
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
+      mojo::PendingRemote<mojom::DCOMPSurfaceRegistry>
+          pending_dcomp_surface_registry,
       media::VideoRendererSink* sink);
 
   ~MediaFoundationRendererClient() override;
@@ -115,6 +118,13 @@ class MediaFoundationRendererClient
   std::unique_ptr<media::MojoRenderer> mojo_renderer_;
 
   std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
+
+  // This class is constructed on the main thread and used exclusively on the
+  // media thread. This member is used to safely pass the PendingRemote from the
+  // main thread to the media thread.
+  mojo::PendingRemote<mojom::DCOMPSurfaceRegistry>
+      pending_dcomp_surface_registry_;
+  mojo::Remote<mojom::DCOMPSurfaceRegistry> dcomp_surface_registry_;
 
   RendererClient* client_ = nullptr;
 

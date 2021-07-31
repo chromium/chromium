@@ -63,7 +63,10 @@ mojom("mojom") {
   }
 
   if (is_win) {
-    sources += [ "media_foundation_service.mojom" ]
+    sources += [
+      "dcomp_surface_registry.mojom",
+      "media_foundation_service.mojom",
+    ]
   }
 
   public_deps = [

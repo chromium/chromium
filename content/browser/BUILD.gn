@@ -2599,6 +2599,13 @@ source_set("browser") {
     ]
   }
 
+  if (is_win) {
+    sources += [
+      "media/dcomp_surface_registry_broker.cc",
+      "media/dcomp_surface_registry_broker.h",
+    ]
+  }
+
   if (use_atk) {
     sources += [
       "accessibility/accessibility_event_recorder_auralinux.cc",

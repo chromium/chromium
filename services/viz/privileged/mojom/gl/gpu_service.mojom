@@ -33,6 +33,8 @@ import "ui/gl/mojom/gpu_preference.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+[EnableIf=is_win]
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 interface GpuService {
   // Tells the GPU service to create a new channel for communication with a
@@ -87,6 +89,13 @@ interface GpuService {
   [EnableIf=is_chromeos_ash]
   CreateJpegEncodeAccelerator(
       pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea);
+
+  // Registers a DirectComposition (DCOMP) surface handle and returns the
+  // corresponding token. See media/mojo/mojom/dcomp_surface_registry.mojom for
+  // details on why this is needed and how the returned token is used.
+  [EnableIf=is_win]
+  RegisterDCOMPSurfaceHandle(handle<platform> surface_handle)
+      => (mojo_base.mojom.UnguessableToken token);
 
   // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
   CreateVideoEncodeAcceleratorProvider(

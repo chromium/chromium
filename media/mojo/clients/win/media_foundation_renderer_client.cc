@@ -19,9 +19,13 @@ MediaFoundationRendererClient::MediaFoundationRendererClient(
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     std::unique_ptr<media::MojoRenderer> mojo_renderer,
     std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper,
+    mojo::PendingRemote<mojom::DCOMPSurfaceRegistry>
+        pending_dcomp_surface_registry,
     media::VideoRendererSink* sink)
     : mojo_renderer_(std::move(mojo_renderer)),
       dcomp_texture_wrapper_(std::move(dcomp_texture_wrapper)),
+      pending_dcomp_surface_registry_(
+          std::move(pending_dcomp_surface_registry)),
       sink_(sink),
       media_task_runner_(std::move(media_task_runner)),
       compositor_task_runner_(std::move(compositor_task_runner)),
@@ -95,6 +99,9 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
   }
 
   if (has_video_) {
+    DCHECK(!dcomp_surface_registry_.is_bound());
+    dcomp_surface_registry_.Bind(std::move(pending_dcomp_surface_registry_));
+
     using Self = MediaFoundationRendererClient;
     auto weak_ptr = weak_factory_.GetWeakPtr();
     dcomp_texture_wrapper_->Initialize(
@@ -143,23 +150,14 @@ void MediaFoundationRendererClient::OnReceivedRemoteDCOMPSurface(
 
 void MediaFoundationRendererClient::RegisterDCOMPSurfaceHandleInGPUProcess(
     base::win::ScopedHandle surface_handle) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationRendererClient::
-                           RegisterDCOMPSurfaceHandleInGPUProcess,
-                       weak_factory_.GetWeakPtr(), std::move(surface_handle)));
-    return;
-  }
-
   DVLOG_FUNC(1) << "surface_handle=" << surface_handle.Get();
   DCHECK(has_video_);
 
-  mojo::ScopedHandle mojo_surface_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(surface_handle)));
-
-  // TODO(frankli): Pass the |mojo_surface_handle| to Gpu process.
-  NOTIMPLEMENTED();
+  dcomp_surface_registry_->RegisterDCOMPSurfaceHandle(
+      mojo::PlatformHandle(std::move(surface_handle)),
+      base::BindOnce(
+          &MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess,
+          weak_factory_.GetWeakPtr()));
 }
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess(
@@ -167,7 +165,7 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceRegisteredInGPUProcess(
   DVLOG_FUNC(1);
   DCHECK(has_video_);
 
-  NOTIMPLEMENTED();
+  dcomp_texture_wrapper_->SetDCOMPSurface(token);
 }
 
 void MediaFoundationRendererClient::OnDCOMPTextureInitialized(bool success) {

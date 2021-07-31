@@ -88,6 +88,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
+#include "mojo/public/cpp/system/platform_handle.h"
+#include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #endif
 
@@ -754,6 +756,17 @@ void GpuServiceImpl::CreateJpegEncodeAccelerator(
       std::move(jea_receiver));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_WIN)
+void GpuServiceImpl::RegisterDCOMPSurfaceHandle(
+    mojo::PlatformHandle surface_handle,
+    RegisterDCOMPSurfaceHandleCallback callback) {
+  auto token =
+      gl::DCOMPSurfaceRegistry::GetInstance()->RegisterDCOMPSurfaceHandle(
+          surface_handle.TakeHandle());
+  std::move(callback).Run(token);
+}
+#endif  // defined(OS_WIN)
 
 void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>

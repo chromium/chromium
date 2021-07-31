@@ -145,6 +145,12 @@ class TestGpuService : public mojom::GpuService {
           jea_receiver) override {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_WIN)
+  void RegisterDCOMPSurfaceHandle(
+      mojo::PlatformHandle surface_handle,
+      RegisterDCOMPSurfaceHandleCallback callback) override {}
+#endif
+
   void CreateVideoEncodeAcceleratorProvider(
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}

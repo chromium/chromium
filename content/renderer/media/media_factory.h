@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -22,6 +23,10 @@
 #include "third_party/blink/public/platform/web_set_sink_id_callbacks.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
+
+#if defined(OS_WIN)
+#include "media/mojo/mojom/dcomp_surface_registry.mojom.h"
+#endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 // Needed by remoting sender.
@@ -53,7 +58,7 @@ class MediaLog;
 class MediaObserver;
 class RemotePlaybackClientWrapper;
 class RendererWebMediaPlayerDelegate;
-}
+}  // namespace media
 
 namespace content {
 
@@ -153,6 +158,11 @@ class MediaFactory {
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
 
   std::unique_ptr<media::MojoRendererFactory> CreateMojoRendererFactory();
+
+#if defined(OS_WIN)
+  mojo::PendingRemote<media::mojom::DCOMPSurfaceRegistry>
+  CreateDCOMPSurfaceRegistry();
+#endif
 
   // The render frame we're helping. RenderFrameImpl owns this factory, so the
   // pointer will always be valid.
