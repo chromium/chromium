@@ -144,6 +144,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   size_t bitstream_buffer_size_;
   uint32_t frame_rate_;
   Bitrate bitrate_;
+  bool low_latency_mode_;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.

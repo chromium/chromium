@@ -41,6 +41,8 @@ class MEDIA_EXPORT VideoEncoder {
     bool produce_annexb = false;
   };
 
+  enum class LatencyMode { Realtime, Quality };
+
   struct MEDIA_EXPORT Options {
     Options();
     Options(const Options&);
@@ -54,6 +56,8 @@ class MEDIA_EXPORT VideoEncoder {
 
     // Requested number of SVC temporal layers.
     int temporal_layers = 1;
+
+    LatencyMode latency_mode = LatencyMode::Realtime;
 
     // Only used for H264 encoding.
     AvcOptions avc;

@@ -251,10 +251,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates the inter layer prediction mode for SVC encoding.
     InterLayerPredMode inter_layer_pred;
 
-    // Currently it's Mac only! This flag forces Mac encoder to enforce low
-    // latency mode. Initialize() will fail if the system can't do it for some
-    // reason. See VTVideoEncodeAccelerator::require_low_delay_ for more
-    // details.
+    // This flag forces the encoder to use low latency mode, suitable for
+    // RTC use cases.
     bool require_low_delay = true;
   };
 

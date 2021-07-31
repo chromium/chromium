@@ -44,6 +44,13 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                  ('{ source_type : "%s", codec : "%s", acceleration : "%s" }' %
                   args))
 
+    for codec in codecs:
+      for acc in accelerations:
+        args = ("camera", codec, acc)
+        yield ('WebCodecs_Realtime_%s_%s_%s' % args, 'realtime.html',
+               ('{ source_type : "%s", codec : "%s", acceleration : "%s" }' %
+                args))
+
   def RunActualGpuTest(self, test_path, *args):
     url = self.UrlOfStaticFilePath(html_path + '/' + test_path)
     tab = self.tab

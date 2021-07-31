@@ -562,7 +562,9 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
   rv &=
       session_property_setter.Set(kVTCompressionPropertyKey_ProfileLevel,
                                   VideoCodecProfileToVTProfile(h264_profile_));
-  rv &= session_property_setter.Set(kVTCompressionPropertyKey_RealTime, true);
+  rv &= session_property_setter.Set(kVTCompressionPropertyKey_RealTime,
+                                    require_low_delay_);
+
   rv &= session_property_setter.Set(
       kVTCompressionPropertyKey_AllowFrameReordering, false);
   // Limit keyframe output to 4 minutes, see https://crbug.com/658429.
@@ -572,15 +574,16 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
       kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240);
   DLOG_IF(ERROR, !rv) << " Setting session property failed.";
 
-  // Setting MaxFrameDelayCount fails on low resolutions and arm64 macs,
-  // but we can use accelerated encoder anyway. See: crbug.com/1195177
   bool delay_count_rv =
       session_property_setter.Set(kVTCompressionPropertyKey_MaxFrameDelayCount,
                                   static_cast<int>(kNumInputBuffers));
   if (!delay_count_rv) {
     DLOG(ERROR) << " Setting frame delay count failed.";
-    if (require_low_delay_)
+    if (require_low_delay_) {
+      // Setting MaxFrameDelayCount fails on low resolutions and arm64 macs,
+      // but we can use accelerated encoder anyway. See: crbug.com/1195177
       return false;
+    }
   }
 
   return rv;

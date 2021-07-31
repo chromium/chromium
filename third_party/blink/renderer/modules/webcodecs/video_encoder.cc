@@ -202,10 +202,13 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return nullptr;
   }
 
+  result->options.latency_mode =
+      (config->latencyMode() == "quality")
+          ? media::VideoEncoder::LatencyMode::Quality
+          : media::VideoEncoder::LatencyMode::Realtime;
+
   if (config->hasBitrate()) {
-    uint32_t bps = static_cast<uint32_t>(base::clamp(
-        config->bitrate(), uint64_t{0},
-        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max())));
+    uint32_t bps = base::saturated_cast<uint32_t>(config->bitrate());
     if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
       result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
     } else {

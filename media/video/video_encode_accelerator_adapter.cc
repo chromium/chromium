@@ -61,8 +61,8 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     config.spatial_layers.push_back(layer);
   }
 
-  // We don't mind if Mac encoding will have higher latency on low resolutions.
-  config.require_low_delay = false;
+  config.require_low_delay =
+      opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
 
   const bool is_rgb =
       format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||

@@ -259,6 +259,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
   bitrate_ = config.bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   gop_length_ = config.gop_length;
+  low_latency_mode_ = config.require_low_delay;
 
   if (!SetEncoderModes()) {
     DLOG(ERROR) << "Failed setting encoder parameters.";
@@ -703,7 +704,7 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
       (is_async_mft_ &&
        S_OK == codec_api_->IsModifiable(&CODECAPI_AVLowLatencyMode))) {
     var.vt = VT_BOOL;
-    var.boolVal = VARIANT_TRUE;
+    var.boolVal = low_latency_mode_ ? VARIANT_TRUE : VARIANT_FALSE;
     hr = codec_api_->SetValue(&CODECAPI_AVLowLatencyMode, &var);
     if (!compatible_with_win7_) {
       RETURN_ON_HR_FAILURE(hr, "Couldn't set low latency mode", false);
