@@ -39,28 +39,3 @@ NSString* PasswordWithKeychainIdentifier(NSString* identifier) {
   DLOG(ERROR) << "Error retrieving password, OSStatus: " << status;
   return @"";
 }
-
-BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {
-  if (!identifier) {
-    return NO;
-  }
-
-  NSData* passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];
-
-  NSDictionary* query = @{
-    (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)
-    kSecAttrAccessible : (__bridge id)kSecAttrAccessibleWhenUnlocked,
-    (__bridge id)kSecValueData : passwordData,
-    (__bridge id)kSecAttrAccount : identifier,
-  };
-
-  OSStatus status = SecItemAdd((__bridge CFDictionaryRef)query, NULL);
-
-  if (status != errSecSuccess) {
-    UpdateUMACountForKey(
-        app_group::kCredentialExtensionKeychainSavePasswordFailureCount);
-  }
-
-  return status == errSecSuccess;
-}

@@ -7,18 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
-
-@class ASCredentialServiceIdentifier;
-
 // This mediator fetches requirements and saves new credentials for its
 // consumer.
-@interface NewPasswordMediator : NSObject <NewCredentialHandler>
-
-- (instancetype)initWithServiceIdentifier:
-    (ASCredentialServiceIdentifier*)serviceIdentifier NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+@interface NewPasswordMediator : NSObject
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_NEW_PASSWORD_MEDIATOR_H_

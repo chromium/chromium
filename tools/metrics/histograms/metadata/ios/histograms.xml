@@ -182,17 +182,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="IOS.CredentialExtension.KeychainSavePasswordFailureCount"
-    units="count" expires_after="2022-03-31">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>rkgibson@google.com</owner>
-  <summary>
-    The number of times the Credential Extension failed to save a
-    newly-generated password into the system Keychain since last Chrome
-    foregrounding. Reported when Chrome is put in foreground.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
     expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
@@ -223,17 +212,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The number of times the Credential Extension needed user reauthentication
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
     Note: events where the count is zero were removed in M91.
-  </summary>
-</histogram>
-
-<histogram name="IOS.CredentialExtension.SaveCredentialFailureCount"
-    units="count" expires_after="2022-03-31">
-  <owner>javierrobles@chromium.org</owner>
-  <owner>rkgibson@google.com</owner>
-  <summary>
-    The number of times the Credential Extension failed to save a
-    newly-generated credential to disk since last Chrome foregrounding. Reported
-    when Chrome is put in foreground.
   </summary>
 </histogram>
 
