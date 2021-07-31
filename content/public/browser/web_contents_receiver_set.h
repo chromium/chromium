@@ -26,9 +26,6 @@ class NetErrorTabHelper;
 namespace extensions {
 class ExtensionFrameHost;
 }  // namespace extensions
-namespace page_load_metrics {
-class MetricsWebContentsObserver;
-}
 namespace printing {
 class PrintManager;
 }
@@ -104,7 +101,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::EmbeddedSearchClientFactoryImpl;
   friend class ::chrome_browser_net::NetErrorTabHelper;
   friend class ::extensions::ExtensionFrameHost;
-  friend class ::page_load_metrics::MetricsWebContentsObserver;
   friend class ::printing::PrintManager;
   friend class ::subresource_redirect::SubresourceRedirectObserver;
   friend class ScreenOrientationProvider;

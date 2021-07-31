@@ -906,6 +906,13 @@ bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
+    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+        mojo::PendingAssociatedReceiver<
+            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
   if (interface_name ==
       security_interstitials::mojom::InterstitialCommands::Name_) {
     security_interstitials::SecurityInterstitialTabHelper::

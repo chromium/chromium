@@ -17,10 +17,10 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
@@ -102,6 +102,11 @@ class MetricsWebContentsObserver
       content::WebContents* web_contents,
       std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface);
   ~MetricsWebContentsObserver() override;
+
+  // Binds a Mojo receiver to the instance associated with the RenderFrameHost.
+  static void BindPageLoadMetrics(
+      mojo::PendingAssociatedReceiver<mojom::PageLoadMetrics> receiver,
+      content::RenderFrameHost* rfh);
 
   // Any visibility changes that occur after this method should be ignored since
   // they are just clean up prior to destroying the WebContents instance.
@@ -348,8 +353,8 @@ class MetricsWebContentsObserver
   bool has_navigated_;
 
   base::ObserverList<TestingObserver>::Unchecked testing_observers_;
-  content::WebContentsFrameReceiverSet<mojom::PageLoadMetrics>
-      page_load_metrics_receiver_;
+  content::RenderFrameHostReceiverSet<mojom::PageLoadMetrics>
+      page_load_metrics_receivers_;
 
   bool web_contents_will_soon_be_destroyed_ = false;
 

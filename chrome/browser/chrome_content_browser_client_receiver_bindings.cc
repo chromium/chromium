@@ -31,6 +31,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/metrics/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
@@ -411,6 +412,13 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     return true;
   }
 #endif
+  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
+    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+        mojo::PendingAssociatedReceiver<
+            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
 #if !defined(OS_ANDROID)
   if (interface_name == pdf::mojom::PdfService::Name_) {
     pdf::PDFWebContentsHelper::BindPdfService(
