@@ -984,7 +984,7 @@
       'android-12-x64-fyi-rel': {
         'mixins': [
           '12-x64-emulator',
-          'emulator-e2-4-cores',
+          'emulator-4-cores',
           'enable_resultdb',
           'linux-xenial-or-bionic',
           'x86-64',
@@ -1020,7 +1020,7 @@
         'mixins': [
           'enable_resultdb',
           'pie-x86-emulator',
-          'emulator-4-cores',
+          'emulator-8-cores',
           'linux-xenial-or-bionic',
           'x86-64',
         ],
@@ -1047,7 +1047,7 @@
         'mixins': [
           'enable_resultdb',
           'pie-x86-emulator',
-          'emulator-4-cores',
+          'emulator-8-cores',
           'linux-xenial-or-bionic',
           'x86-64',
         ],
@@ -1061,7 +1061,7 @@
         'mixins': [
           'enable_resultdb',
           'pie-x86-emulator',
-          'emulator-4-cores',
+          'emulator-8-cores',
           'linux-xenial-or-bionic',
           'x86-64',
         ],
@@ -1075,7 +1075,7 @@
         'mixins': [
           'enable_resultdb',
           'pie-x86-emulator',
-          'emulator-4-cores',
+          'emulator-8-cores',
           'linux-xenial-or-bionic',
           'x86-64',
         ],
