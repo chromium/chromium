@@ -132512,7 +132512,7 @@
       ]
      ],
      "block-ruby-003.html": [
-      "861ba8352ca5fb002935a24896a130c0d320eb9e",
+      "26b33a1f6affeff15c1ea836f24de93ef6d5b0fd",
       [
        null,
        [
@@ -132525,7 +132525,7 @@
       ]
      ],
      "block-ruby-004.html": [
-      "fcddc1dbda215eda2c3251174ecf439c92c02efa",
+      "33ab4207b15a90aae31c2400d53975128141ac52",
       [
        null,
        [
@@ -132544,32 +132544,6 @@
        [
         [
          "/css/css-ruby/block-ruby-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "empty-ruby-base-container-abs.html": [
-      "7968af0b256684c4b03dd06fa3748c1380150a6f",
-      [
-       null,
-       [
-        [
-         "/css/css-ruby/empty-ruby-base-container-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "empty-ruby-base-container-float.html": [
-      "b7c5d12963a4dd089efebdd4772a5bb5aa0c1862",
-      [
-       null,
-       [
-        [
-         "/css/css-ruby/empty-ruby-base-container-ref.html",
          "=="
         ]
        ],
@@ -132700,6 +132674,32 @@
        [
         [
          "/css/css-ruby/ruby-align-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-base-container-abs.html": [
+      "35baeda23e05a5f8b2a7adc0c96fe4753e055ad9",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/empty-ruby-base-container-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-base-container-float.html": [
+      "18ef9bb4ba50ae5b2c48c3b2ce7257ce10d0d874",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/empty-ruby-base-container-ref.html",
          "=="
         ]
        ],
@@ -242349,11 +242349,11 @@
       []
      ],
      "block-ruby-003-ref.html": [
-      "b89f33cfdaef9b2038bb65234500b53fcdb6abd0",
+      "05eb7dbb9957a80eb6eb5eae6bc736538d8d6bad",
       []
      ],
      "block-ruby-004-ref.html": [
-      "879609f4daf8654ae0f7821d48308dbb035b3dbe",
+      "be7e89658dd87c79848c8787667a048b1df794f8",
       []
      ],
      "block-ruby-005-ref.html": [
@@ -242361,7 +242361,7 @@
       []
      ],
      "empty-ruby-base-container-ref.html": [
-      "e849da271d4b6f9fd7694c771ace79e1de7757fe",
+      "e6119468c59af5581d9deeb6e20f60bb18f6aab6",
       []
      ],
      "empty-ruby-text-container-ref.html": [
