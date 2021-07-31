@@ -138,7 +138,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                                 if (lastFavicon.get() != null) {
                                     drawFaviconThenMaybeSendBack(lastFavicon.get(), index);
                                 } else {
-                                    mTabListFaviconProvider.getFaviconForUrlAsync(
+                                    mTabListFaviconProvider.getFaviconDrawableForUrlAsync(
                                             url, isIncognito, (Drawable favicon) -> {
                                                 lastFavicon.set(favicon);
                                                 drawFaviconThenMaybeSendBack(favicon, index);
