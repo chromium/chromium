@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"

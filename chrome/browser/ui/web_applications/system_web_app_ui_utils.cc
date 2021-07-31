@@ -6,14 +6,11 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -34,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/webui_url_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
