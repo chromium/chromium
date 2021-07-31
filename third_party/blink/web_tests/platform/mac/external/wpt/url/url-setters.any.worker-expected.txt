@@ -206,7 +206,7 @@ PASS URL: Setting <https://example.net?lang=en-US#nav>.search = ''
 PASS URL: Setting <https://example.net?lang=en-US>.search = ''
 PASS URL: Setting <https://example.net>.search = ''
 FAIL URL: Setting <a:/>.search = '\0	
-\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F !\"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
+\r !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~Éé' UTF-8 percent encoding with the query encode set. Tabs and newlines are removed. assert_equals: expected "a:/?%00%01%1F%20!%22%23$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "a:/?%00%01%1F%20!%22%23$%&%27()*+,-./09:;%3C=%3E?@AZ[\\]^_`az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 PASS URL: Setting <http://example.net>.search = '%c3%89té' Bytes already percent-encoded are left as-is
 PASS URL: Setting <https://example.net>.hash = 'main'
 PASS URL: Setting <https://example.net#nav>.hash = 'main'

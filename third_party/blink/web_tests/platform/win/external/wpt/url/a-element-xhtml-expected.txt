@@ -314,7 +314,7 @@ PASS Parsing: <https://@test@test@example:800/> against <http://doesnotmatter/>
 PASS Parsing: <https://@@@example> against <http://doesnotmatter/>
 PASS Parsing: <http://`{}:`{}@h/`{}?`{}> against <http://doesnotmatter/>
 PASS Parsing: <http://host/?'> against <about:blank>
-FAIL Parsing: <notspecial://host/?'> against <about:blank> assert_equals: host expected "host" but got ""
+FAIL Parsing: <notspecial://host/?'> against <about:blank> assert_equals: href expected "notspecial://host/?'" but got "notspecial://host/?%27"
 PASS Parsing: </some/path> against <http://user@example.org/smth>
 PASS Parsing: <> against <http://user:pass@example.org:21/smth>
 PASS Parsing: </some/path> against <http://user:pass@example.org:21/smth>
@@ -636,7 +636,7 @@ FAIL Parsing: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank> assert_equals:
 FAIL Parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: href expected "wss://!\"$&'()*+,-.;=_`{}~/" but got "wss://%21%22%24%26%27%28%29%2A+%2C-.%3B%3D_%60%7B%7D%7E/"
 FAIL Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\]^_%60%7B|%7D~" but got "foo://host/ !\"$%&'()*+,-./:;<=>@[\\]^_`{|}~"
 FAIL Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank> assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
-FAIL Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\]^_`{|}~" but got "foo://host/dir/? !\"$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+FAIL Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\]^_`{|}~"
 PASS Parsing: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 FAIL Parsing: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank> assert_equals: host expected "host" but got ""
 PASS Parsing: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
