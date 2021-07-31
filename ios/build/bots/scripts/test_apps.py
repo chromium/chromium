@@ -86,7 +86,11 @@ class GTestsApp(object):
     for env_var in kwargs.get('env_vars') or []:
       env_var = env_var.split('=', 1)
       self.env_vars[env_var[0]] = None if len(env_var) == 1 else env_var[1]
+    # Keep the initial included tests since creating target. Do not modify.
+    self.initial_included_tests = kwargs.get('included_tests') or []
+    # This may be modified between test launches.
     self.included_tests = kwargs.get('included_tests') or []
+    # This may be modified between test launches.
     self.excluded_tests = kwargs.get('excluded_tests') or []
     self.disabled_tests = []
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
@@ -229,10 +233,11 @@ class GTestsApp(object):
         enabled_tests_only=False):
       test_name = '%s/%s' % (test_class, test_method)
       if (test_name not in none_tests and
-          # inlcuded_tests contains the tests to execute, which may be a subset
-          # of all tests b/c of the iOS test sharding logic in run.py. Filter by
-          # self.included_tests if specified
-          (test_class in self.included_tests if self.included_tests else True)):
+          # |self.initial_included_tests| contains the tests to execute, which
+          # may be a subset of all tests b/c of the iOS test sharding logic in
+          # run.py. Filter by |self.initial_included_tests| if specified.
+          (test_class in self.initial_included_tests
+           if self.initial_included_tests else True)):
         if test_method.startswith('test'):
           all_tests.append(test_name)
         elif store_disabled_tests:

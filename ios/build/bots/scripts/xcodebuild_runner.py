@@ -183,6 +183,7 @@ class LaunchCommand(object):
     cancelled_statuses = {'TESTS_DID_NOT_START', 'BUILD_INTERRUPTED'}
     shards = self.shards
     running_tests = set(self.egtests_app.get_all_tests())
+    passed_tests = set()
     # total number of attempts is self.retries+1
     for attempt in range(self.retries + 1):
       # Erase all simulators per each attempt
@@ -217,12 +218,14 @@ class LaunchCommand(object):
         break
 
       # Exclude passed tests in next test attempt.
-      self.egtests_app.excluded_tests += self.test_results['attempts'][-1][
-          'passed']
+      passed_tests = passed_tests.union(
+          set(self.test_results['attempts'][-1]['passed']))
+      self.egtests_app.included_tests = list(running_tests - passed_tests)
+
       # crbug.com/987664 - for the case when
       # all tests passed but build was interrupted,
-      # excluded(passed) tests are equal to tests to run.
-      if set(self.egtests_app.excluded_tests) == running_tests:
+      # passed tests are equal to tests to run.
+      if passed_tests == running_tests:
         for status in cancelled_statuses:
           failure = self.test_results['attempts'][-1]['failed'].pop(
               status, None)
@@ -244,8 +247,9 @@ class LaunchCommand(object):
 
       if (not cancelled_attempt
           # If need to re-run less than 20 tests, 1 shard should be enough.
-          or (len(running_tests) - len(self.egtests_app.excluded_tests)
-              <= MAXIMUM_TESTS_PER_SHARD_FOR_RERUN)):
+          or (len(self.egtests_app.included_tests) <=
+              MAXIMUM_TESTS_PER_SHARD_FOR_RERUN)):
+
         shards = 1
 
     self.summary_log()
