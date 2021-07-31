@@ -58,18 +58,18 @@ export class AcceleratorEditDialogElement extends PolymerElement {
     this.$.editDialog.showModal();
   }
 
-  /** @private */
+  /** @protected */
   onDoneButtonClicked_() {
     this.$.editDialog.close();
   }
 
-  /** @private */
+  /** @protected */
   onDialogClose_() {
     this.dispatchEvent(new CustomEvent('edit-dialog-closed',
         {bubbles: true, composed: true}));
   }
 
-  /** @private */
+  /** @protected */
   onAddAcceleratorClicked_() {
     this.isAddingNewAccelerator_ = true;
 

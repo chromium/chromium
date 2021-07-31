@@ -122,7 +122,7 @@ export class AcceleratorViewElement extends PolymerElement {
     return modifiers;
   }
 
-  /** @private */
+  /** @protected */
   onIsEditableChanged_() {
     if (this.isEditable) {
       this.registerKeyEventListeners_();
@@ -253,7 +253,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * @return {string} The specified CSS state of the modifier key element.
-   * @private
+   * @protected
    */
   getCtrlState_() {
     return this.getModifierState_(Modifier.CONTROL);
@@ -261,7 +261,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * @return {string} The specified CSS state of the modifier key element.
-   * @private
+   * @protected
    */
   getAltState_() {
     return this.getModifierState_(Modifier.ALT);
@@ -269,7 +269,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * @return {string} The specified CSS state of the modifier key element.
-   * @private
+   * @protected
    */
   getShiftState_() {
     return this.getModifierState_(Modifier.SHIFT);
@@ -277,7 +277,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * @return {string} The specified CSS state of the modifier key element.
-   * @private
+   * @protected
    */
   getSearchState_() {
     return this.getModifierState_(Modifier.COMMAND);
@@ -297,7 +297,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * @return {string} The specified CSS state of the pending key element.
-   * @private
+   * @protected
    */
   getPendingKeyState_() {
     if (this.pendingAccelerator_.key != '') {
@@ -308,7 +308,7 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * @return {string} The specified key to display.
-   * @private
+   * @protected
    */
   getPendingKey_() {
     if (this.pendingAccelerator_.key != '') {

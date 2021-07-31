@@ -47,17 +47,17 @@ export class AcceleratorEditViewElement extends PolymerElement {
     }
   }
 
-  /** @private */
+  /** @protected */
   onEditButtonClicked_() {
     this.isEditView = true;
   }
 
-  /** @private */
+  /** @protected */
   onDeleteButtonClicked_() {
     // TODO(jimmyxgong): Implement this function
   }
 
-  /** @private  */
+  /** @protected  */
   onCancelButtonClicked_() {
     this.isEditView = false;
   }
