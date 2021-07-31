@@ -22,7 +22,6 @@ destination_search_test_chromeos.suiteName = 'DestinationSearchTest';
 destination_search_test_chromeos.TestNames = {
   ReceiveSuccessfulSetup: 'receive successful setup',
   ResolutionFails: 'resolution fails',
-  ReceiveFailedSetup: 'receive failed setup',
   CloudKioskPrinter: 'cloud kiosk printer',
   ReceiveSuccessfulSetupWithPolicies: 'receive successful setup with policies',
 };
@@ -113,7 +112,6 @@ suite(destination_search_test_chromeos.suiteName, function() {
         const response = {
           printerId: destId,
           capabilities: getCddTemplate(destId).capabilities,
-          success: true,
         };
         nativeLayerCros.setSetupPrinterResponse(response);
 
@@ -149,30 +147,6 @@ suite(destination_search_test_chromeos.suiteName, function() {
         return nativeLayerCros.whenCalled('setupPrinter')
             .then(function(actualId) {
               assertEquals(destId, actualId);
-              // The selected printer should not have changed, since a printer
-              // cannot be selected until setup succeeds.
-              assertEquals(
-                  originalDestination, destinationStore.selectedDestination);
-            });
-      });
-
-  // Test what happens when the setupPrinter request is resolved with a
-  // failed status. Chrome OS only.
-  test(
-      assert(destination_search_test_chromeos.TestNames.ReceiveFailedSetup),
-      function() {
-        const originalDestination = destinationStore.selectedDestination;
-        const destId = '00112233DEADBEEF';
-        const response = {
-          printerId: destId,
-          capabilities: getCddTemplate(destId).capabilities,
-          success: false,
-        };
-        nativeLayerCros.setSetupPrinterResponse(response);
-        requestSetup(destId);
-        return nativeLayerCros.whenCalled('setupPrinter')
-            .then(function(actualDestId) {
-              assertEquals(destId, actualDestId);
               // The selected printer should not have changed, since a printer
               // cannot be selected until setup succeeds.
               assertEquals(
@@ -218,7 +192,6 @@ suite(destination_search_test_chromeos.suiteName, function() {
             defaultDuplexMode: null,
             defaultPinMode: null,
           },
-          success: true,
         };
         nativeLayerCros.setSetupPrinterResponse(response);
         requestSetup(destId);

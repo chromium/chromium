@@ -298,17 +298,15 @@ Polymer({
         .then(
             response => {
               this.destinationInConfiguring_ = null;
-              listItem.onConfigureComplete(response.success);
-              if (response.success) {
-                destination.capabilities = response.capabilities;
-                if (response.policies) {
-                  destination.policies = response.policies;
-                }
-                this.selectDestination_(destination);
-                // After destination is selected, start fetching for the EULA
-                // URL.
-                this.destinationStore.fetchEulaUrl(destination.id);
+              listItem.onConfigureComplete(true);
+              destination.capabilities = response.capabilities;
+              if (response.policies) {
+                destination.policies = response.policies;
               }
+              this.selectDestination_(destination);
+              // After destination is selected, start fetching for the EULA
+              // URL.
+              this.destinationStore.fetchEulaUrl(destination.id);
             },
             () => {
               this.destinationInConfiguring_ = null;

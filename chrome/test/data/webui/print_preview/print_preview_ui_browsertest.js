@@ -987,13 +987,6 @@ TEST_F(
     });
 
 TEST_F(
-    'PrintPreviewDestinationSearchTestChromeOS', 'ReceiveFailedSetup',
-    function() {
-      this.runMochaTest(
-          destination_search_test_chromeos.TestNames.ReceiveFailedSetup);
-    });
-
-TEST_F(
     'PrintPreviewDestinationSearchTestChromeOS',
     'ReceiveSuccessfultSetupWithPolicies', function() {
       this.runMochaTest(

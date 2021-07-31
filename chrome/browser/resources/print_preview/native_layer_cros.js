@@ -13,7 +13,6 @@ import {PrinterStatus, PrinterStatusReason} from './data/printer_status_cros.js'
 /**
  * @typedef {{
  *   printerId: string,
- *   success: boolean,
  *   capabilities: !Cdd,
  *   policies: (DestinationPolicies | undefined),
  * }}

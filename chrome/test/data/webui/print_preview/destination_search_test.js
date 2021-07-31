@@ -100,11 +100,6 @@ suite(destination_search_test.suiteName, function() {
       assert(destination_search_test.TestNames.GetCapabilitiesSucceeds),
       function() {
         const destId = '00112233DEADBEEF';
-        const response = {
-          printerId: destId,
-          capabilities: getCddTemplate(destId).capabilities,
-          success: true,
-        };
         nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
 
         const waiter = eventToPromise(
