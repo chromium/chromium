@@ -261822,6 +261822,10 @@
       "response-stream-disturbed-by-pipe.any.worker-expected.txt": [
        "7ee0f33a4ef947aa168fb4334899a47e94eaff3a",
        []
+      ],
+      "response-stream-disturbed-util.js": [
+       "50bb586aa0743966e4d626a52e3051ba47b7768c",
+       []
       ]
      }
     },
@@ -382956,6 +382960,17 @@
         {}
        ]
       ],
+      "request-init-contenttype.any.js": [
+       "d8e048c4fc994a93644f67317fbcdd7dd48e140a",
+       [
+        "fetch/api/request/request-init-contenttype.any.html",
+        {}
+       ],
+       [
+        "fetch/api/request/request-init-contenttype.any.worker.html",
+        {}
+       ]
+      ],
       "request-init-stream.any.js": [
        "8c50c4929e75dacb61a3a74054a169ae2346bbd8",
        [
@@ -383860,6 +383875,17 @@
         }
        ]
       ],
+      "response-init-contenttype.any.js": [
+       "3a7744c28782c87f0a92cfaab17512ca0859b25c",
+       [
+        "fetch/api/response/response-init-contenttype.any.html",
+        {}
+       ],
+       [
+        "fetch/api/response/response-init-contenttype.any.worker.html",
+        {}
+       ]
+      ],
       "response-static-error.any.js": [
        "4097eab37b4c90e8c453027b99fbf4ed31a08b42",
        [
@@ -383987,7 +384013,7 @@
        ]
       ],
       "response-stream-disturbed-1.any.js": [
-       "d80049a2a455e1afc9a1df244319b164141f995f",
+       "64f65f16f23e7d797451c634a2f472a51d6955c0",
        [
         "fetch/api/response/response-stream-disturbed-1.any.html",
         {
@@ -383999,6 +384025,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384014,6 +384044,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384029,6 +384063,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384044,13 +384082,17 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
        ]
       ],
       "response-stream-disturbed-2.any.js": [
-       "ccff547556e724db0e1b62da36f7041e503391ee",
+       "c46a180a18d7941f1b716f45fba2f0d52d1278e3",
        [
         "fetch/api/response/response-stream-disturbed-2.any.html",
         {
@@ -384062,6 +384104,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384077,6 +384123,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384092,6 +384142,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384107,13 +384161,17 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
        ]
       ],
       "response-stream-disturbed-3.any.js": [
-       "32c11625eb454237f4296eaacd9c213192146f32",
+       "35fb086469b440f2e566978ba9a7aa8a14e5f7c6",
        [
         "fetch/api/response/response-stream-disturbed-3.any.html",
         {
@@ -384125,6 +384183,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384140,6 +384202,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384155,6 +384221,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384170,13 +384240,17 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
        ]
       ],
       "response-stream-disturbed-4.any.js": [
-       "58331ae1d0c8a7e52ecb71c8c5131818c17e10dc",
+       "490672febd025479b26bfe9ba85a5b7789f3ecc9",
        [
         "fetch/api/response/response-stream-disturbed-4.any.html",
         {
@@ -384188,6 +384262,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384203,6 +384281,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384218,6 +384300,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384233,13 +384319,17 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
        ]
       ],
       "response-stream-disturbed-5.any.js": [
-       "9be0c93f35a07bc8d2a3c8ca2a83dae35e926515",
+       "348fc3938314dc9fd065300be6d508a3d57fb11a",
        [
         "fetch/api/response/response-stream-disturbed-5.any.html",
         {
@@ -384251,6 +384341,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384266,6 +384360,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384281,6 +384379,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -384296,6 +384398,10 @@
           [
            "title",
            "Consuming Response body after getting a ReadableStream"
+          ],
+          [
+           "script",
+           "./response-stream-disturbed-util.js"
           ]
          ]
         }
@@ -493343,7 +493449,7 @@
    },
    "webrtc-svc": {
     "RTCRtpParameters-scalability.html": [
-     "3a732f0cf77ff336eb91062c1e8cb2d692246b82",
+     "fd2d1a574b2631933559ee9917c531cc341f1e1b",
      [
       null,
       {}
