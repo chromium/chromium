@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1016498331642356377">Ovoz bilan tezda qidiring. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" /> qurilmasiga yuborilmoqda...</translation>
+<translation id="1028699632127661925">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
 <translation id="103269572468856066">Bu sayt va ilovalarning maʼlumotlari ham tozalansinmi?</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> qo‘shilmoqda...</translation>

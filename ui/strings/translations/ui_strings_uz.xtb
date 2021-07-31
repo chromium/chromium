@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
-<translation id="1028699632127661925"><ph name="DEVICE_NAME" /> qurilmasiga yuborilmoqda...</translation>
+<translation id="1028699632127661925">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
 <translation id="111910763555783249">Bildirishnoma sozlamalari</translation>
 <translation id="1127811143501539442">{DAYS,plural, =1{1 kun oldin}other{# kun oldin}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 daqiqa oldin}other{# daqiqa oldin}}</translation>
