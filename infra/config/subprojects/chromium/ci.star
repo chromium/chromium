@@ -1729,7 +1729,8 @@ ci.chromiumos_builder(
                     "tags": {
                         "version": "{%chromium_version%}",
                     },
-                    "only_set_refs_on_tests_success": True,
+                    # Because we don't run any tests.
+                    "only_set_refs_on_tests_success": False,
                 },
             ],
         },
