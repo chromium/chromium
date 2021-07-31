@@ -951,6 +951,56 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
   ASSERT_EQ(app_browser->app_controller()->GetAppId(), app_id);
 }
 
+#if defined(OS_MAC) || defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
+  os_hooks_suppress_.reset();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::ScopedTempDir temp_dir;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath application_dir =
+      temp_dir.GetPath().AppendASCII("application_menu");
+  base::FilePath desktop_dir = temp_dir.GetPath().AppendASCII("desktop");
+
+  ShortcutOverrideForTesting shortcut_override;
+#if defined(OS_MAC)
+  shortcut_override.chrome_apps_folder = application_dir;
+#elif defined(OS_WIN)
+  shortcut_override.desktop = desktop_dir;
+  shortcut_override.application_menu = application_dir;
+#endif
+  SetShortcutOverrideForTesting(shortcut_override);
+  NavigateToURLAndWait(
+      browser(),
+      https_server()->GetURL(
+          "/banners/manifest_test_page.html?manifest=manifest_one_icon.json"));
+
+  // Wait for OS hooks and installation to complete and the app to launch.
+  base::RunLoop run_loop_install;
+  WebAppInstallObserver observer(profile());
+  observer.SetWebAppInstalledWithOsHooksDelegate(base::BindLambdaForTesting(
+      [&](const AppId& installed_app_id) { run_loop_install.Quit(); }));
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  const AppId app_id = InstallPwaForCurrentUrl();
+  run_loop_install.Run();
+  app_loaded_observer.Wait();
+
+  base::FilePath shortcut_path;
+  auto* provider = WebAppProvider::Get(profile());
+#if defined(OS_MAC)
+  shortcut_path = application_dir.Append(
+      provider->registrar().GetAppShortName(app_id) + ".app");
+#elif defined(OS_WIN)
+  shortcut_path = application_dir.AppendASCII(
+      provider->registrar().GetAppShortName(app_id) + ".lnk");
+#endif
+  SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
+  EXPECT_EQ(SkColorSetRGB(92, 92, 92), icon_pixel_color);
+}
+#endif
+
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
   os_hooks_suppress_.reset();

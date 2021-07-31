@@ -19,6 +19,10 @@ enum class InstallResultCode;
 
 // For InstallWebAppFromInfo see web_app_install_test_utils.h
 
+// Reads an icon file (.ico/.png/.icns) and returns the color at the
+// top left color.
+SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path);
+
 // Navigates to |app_url| and installs app without any installability checks.
 // Always selects to open app in its own window.
 AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url);
