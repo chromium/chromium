@@ -4,6 +4,12 @@
 
 #include "content/browser/font_access/font_enumeration_cache_win.h"
 
+#include <dwrite.h>
+#include <wrl/client.h>
+
+#include <string>
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -283,7 +289,7 @@ void FontEnumerationCacheWin::InitializeDirectWrite() {
   if (factory == nullptr) {
     // We won't be able to load fonts, but we should still return messages so
     // renderers don't hang.
-    status_ = FontEnumerationStatus::kUnexpectedError;
+    status_ = blink::mojom::FontEnumerationStatus::kUnexpectedError;
     return;
   }
 
@@ -294,7 +300,7 @@ void FontEnumerationCacheWin::InitializeDirectWrite() {
     base::UmaHistogramSparse(
         "Fonts.AccessAPI.EnumerationCache.Dwrite.GetSystemFontCollectionResult",
         hr);
-    status_ = FontEnumerationStatus::kUnexpectedError;
+    status_ = blink::mojom::FontEnumerationStatus::kUnexpectedError;
     return;
   }
 }

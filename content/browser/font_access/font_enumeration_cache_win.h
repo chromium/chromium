@@ -7,7 +7,7 @@
 
 #include <dwrite.h>
 #include <stdint.h>
-#include <wrl.h>
+#include <wrl/client.h>
 
 #include <map>
 #include <memory>
@@ -21,8 +21,6 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
-
-using blink::mojom::FontEnumerationStatus;
 
 namespace base {
 class ElapsedTimer;
@@ -51,9 +49,9 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
     std::vector<blink::FontEnumerationTable_FontMetadata> fonts;
     HRESULT exit_hresult{S_OK};
     FamilyDataResult();
+    FamilyDataResult(const FamilyDataResult&) = delete;
+    FamilyDataResult& operator=(const FamilyDataResult&) = delete;
     ~FamilyDataResult();
-
-    DISALLOW_COPY_AND_ASSIGN(FamilyDataResult);
   };
 
  protected:

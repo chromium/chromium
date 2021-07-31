@@ -13,8 +13,6 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using blink::mojom::FontEnumerationStatus;
-
 namespace content {
 
 // Mac implementation of FontEnumerationCache.
