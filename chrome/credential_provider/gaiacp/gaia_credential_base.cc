@@ -489,7 +489,6 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
       LOGFN(VERBOSE) << "Failed fetching Sid from email : " << putHR(hr);
   }
 
-  bool has_existing_user_sid = false;
   // Check if the machine is domain joined and get the domain name if domain
   // joined.
   if (SUCCEEDED(hr)) {
@@ -498,7 +497,15 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
     // GCPW.
     LOGFN(VERBOSE) << "Found existing SID created in GCPW registry entry = "
                    << sid;
-    has_existing_user_sid = true;
+
+    HRESULT hr = FindUserBySidWithRegistryFallback(
+        sid, username, username_length, domain, domain_length);
+    if (FAILED(hr)) {
+      *error_text =
+          CGaiaCredentialBase::AllocErrorString(IDS_INVALID_AD_UPN_BASE);
+    }
+    return hr;
+
   } else if (CGaiaCredentialBase::IsCloudAssociationEnabled()) {
     LOGFN(VERBOSE) << "Lookup cloud association.";
 
@@ -506,12 +513,18 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
     hr = FindExistingUserSidIfAvailable(refresh_token, email, sid, sid_length,
                                         error_text);
 
-    has_existing_user_sid = true;
-    if (hr == NTE_NOT_FOUND) {
+    if (SUCCEEDED(hr)) {
+      HRESULT hr = OSUserManager::Get()->FindUserBySID(
+          sid, username, username_length, domain, domain_length);
+      if (FAILED(hr)) {
+        *error_text =
+            CGaiaCredentialBase::AllocErrorString(IDS_INVALID_AD_UPN_BASE);
+      }
+      return hr;
+    } else if (hr == NTE_NOT_FOUND) {
       LOGFN(ERROR) << "No valid sid mapping found."
                    << "Fallback to create a new local user account. hr="
                    << putHR(hr);
-      has_existing_user_sid = false;
     } else if (FAILED(hr)) {
       LOGFN(ERROR) << "Failed finding existing user sid for GCPW user. hr="
                    << putHR(hr);
@@ -520,15 +533,6 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
 
   } else {
     LOGFN(VERBOSE) << "Fallback to create a new local user account";
-  }
-
-  if (has_existing_user_sid) {
-    HRESULT hr = OSUserManager::Get()->FindUserBySID(
-        sid, username, username_length, domain, domain_length);
-    if (FAILED(hr))
-      *error_text =
-          CGaiaCredentialBase::AllocErrorString(IDS_INTERNAL_ERROR_BASE);
-    return hr;
   }
 
   LOGFN(VERBOSE) << "No existing user found associated to gaia id:" << *gaia_id;
@@ -2180,6 +2184,8 @@ HRESULT
 RegisterAssociation(const std::wstring& sid,
                     const std::wstring& id,
                     const std::wstring& email,
+                    const std::wstring& domain,
+                    const std::wstring& username,
                     const std::wstring& token_handle) {
   // Save token handle.  This handle will be used later to determine if the
   // the user has changed their password since the account was created.
@@ -2198,6 +2204,18 @@ RegisterAssociation(const std::wstring& sid,
   hr = SetUserProperty(sid, kUserEmail, email);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "SetUserProperty(email) hr=" << putHR(hr);
+    return hr;
+  }
+
+  hr = SetUserProperty(sid, base::UTF8ToWide(kKeyDomain), domain);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "SetUserProperty(domain) hr=" << putHR(hr);
+    return hr;
+  }
+
+  hr = SetUserProperty(sid, base::UTF8ToWide(kKeyUsername), username);
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "SetUserProperty(user) hr=" << putHR(hr);
     return hr;
   }
 
@@ -2253,7 +2271,8 @@ HRESULT CGaiaCredentialBase::ReportResult(
     // forked process fails to save association, it will enforce re-auth due to
     // invalid token handle.
     std::wstring sid = OLE2CW(user_sid_);
-    HRESULT hr = RegisterAssociation(sid, gaia_id, email, L"");
+    HRESULT hr = RegisterAssociation(sid, gaia_id, email, (BSTR)domain_,
+                                     (BSTR)username_, /*token_handle*/ L"");
     if (FAILED(hr))
       return hr;
 

@@ -50,6 +50,7 @@
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/token_generator.h"
 #include "chrome/installer/launcher_support/chrome_launcher_support.h"
@@ -1372,6 +1373,33 @@ base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
       last_fetch_millis_int64;
 
   return base::TimeDelta::FromMilliseconds(time_delta_from_last_fetch_ms);
+}
+
+HRESULT FindUserBySidWithRegistryFallback(const wchar_t* sid,
+                                          wchar_t* username,
+                                          DWORD username_length,
+                                          wchar_t* domain,
+                                          DWORD domain_length) {
+  HRESULT hr = OSUserManager::Get()->FindUserBySID(
+      sid, username, username_length, domain, domain_length);
+
+  if (FAILED(hr)) {
+    // Although FindUserBySID is failed, we can still obtain the domain and
+    // username from the user properties. This is especially needed if an AD
+    // workstation can't reach domain controller to login an account which
+    // previously logged in on the same device.
+    if (SUCCEEDED(GetUserProperty(sid, base::UTF8ToWide(kKeyDomain), domain,
+                                  &domain_length)) &&
+        SUCCEEDED(GetUserProperty(sid, base::UTF8ToWide(kKeyUsername), username,
+                                  &username_length))) {
+      LOGFN(VERBOSE) << "Obtained domain: " << domain
+                     << " and user: " << username << " from registry!";
+      hr = S_OK;
+    } else {
+      hr = E_FAIL;
+    }
+  }
+  return hr;
 }
 
 }  // namespace credential_provider

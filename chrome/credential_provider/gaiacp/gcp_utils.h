@@ -426,6 +426,15 @@ std::unique_ptr<base::File> GetOpenedFileForUser(const std::wstring& sid,
 base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
                                            const std::wstring& flag);
 
+// Finds the username and domain for the provided user sid. Function uses the
+// user properties registries as a fallback if the user can't be found via a
+// network lookup call.
+HRESULT FindUserBySidWithRegistryFallback(const wchar_t* sid,
+                                          wchar_t* username,
+                                          DWORD username_length,
+                                          wchar_t* domain,
+                                          DWORD domain_length);
+
 }  // namespace credential_provider
 
 #endif  // CHROME_CREDENTIAL_PROVIDER_GAIACP_GCP_UTILS_H_
