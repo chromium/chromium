@@ -1379,7 +1379,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="2706708761587205154">Drucken nur mit PIN zulassen</translation>
 <translation id="2707873794476722903">Safe Browsing ist im Standardmodus aktiv.</translation>
-<translation id="2709516037105925701">AutoFill</translation>
+<translation id="2709516037105925701">Automatisches Ausfüllen</translation>
 <translation id="2714359695399346815">Wenn diese Richtlinie aktiviert wird oder nicht konfiguriert ist, wird der Einsatz von STUN-Servern aktiviert und Remote-Clients können diesen Computer finden und eine Verbindung herstellen, selbst wenn er sich hinter einer Firewall befindet.
 
       Ist diese Richtlinie deaktiviert und ausgehende UDP-Verbindungen werden von einer Firewall gefiltert, lässt dieser Computer Verbindungen von Client-Computern ausschließlich innerhalb des lokalen Netzwerks zu.</translation>

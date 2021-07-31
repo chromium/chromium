@@ -313,6 +313,7 @@
 <translation id="1336902454946927954">Bezpečnostní klíč je uzamčen, protože se nepodařilo rozpoznat váš otisk prstu. Chcete-li ho odemknout, zadejte PIN.</translation>
 <translation id="1338802252451106843">Tuto aplikaci chce otevřít web <ph name="ORIGIN" />.</translation>
 <translation id="1338950911836659113">Mazání...</translation>
+<translation id="1339009753652684748">Aktivovat Asistenta, když řeknete „Ok Google“. Pokud chcete ušetřit baterii, vyberte výchozí možnost Zapnout (doporučeno). Asistent vám odpoví jen v případě, že je zařízení připojené ke zdroji napájení nebo se nabíjí.</translation>
 <translation id="13392265090583506">Přístupnost</translation>
 <translation id="1340527397989195812">Zálohujte média ze zařízení pomocí aplikace Soubory.</translation>
 <translation id="1341988552785875222">Aktuální tapetu nastavila aplikace <ph name="APP_NAME" />. Je možné, že před výběrem jiné tapety bude nutné aplikaci <ph name="APP_NAME" /> odinstalovat.</translation>
@@ -447,6 +448,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.</translation>
 <translation id="1478340334823509079">Podrobnosti: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalace není povolena</translation>
+<translation id="1480571698637441426">Pokud na otázky chcete dostávat přizpůsobené odpovědi, poskytněte Asistentovi přístup ke snímkům obsahu na obrazovce. Mohou být zahrnuty i informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="1481537595330271162">Při změně velikosti disku došlo k chybě</translation>
 <translation id="1482626744466814421">Přidat tuto kartu do záložek...</translation>
 <translation id="1483272013430662157">Webové aplikace mohou žádat o oprávnění otevírat typy souborů</translation>
@@ -838,7 +840,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1865769994591826607">Pouze připojení ke stejnému webu</translation>
 <translation id="186612162884103683">Rozšíření <ph name="EXTENSION" /> může číst obrázky, video a zvukové soubory v povolených umístěních a zapisovat do nich.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> je připraven dokončit instalaci.</translation>
-<translation id="1868193363684582383">„Ok Google“</translation>
 <translation id="1868553836791672080">V prohlížeči Chromium není kontrola hesel k dispozici</translation>
 <translation id="1869433484041798909">Tlačítko záložky</translation>
 <translation id="1871098866036088250">Otevřít v prohlížeči Chrome</translation>
@@ -1118,7 +1119,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2163937499206714165">Zapnout tmavý režim</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> a 1 další přepínač</translation>
 <translation id="2165177462441582039">Vyberte, jak dlouho mají jednotlivé položky zůstat zvýrazněny</translation>
-<translation id="2165421703844373933">Aktivovat Asistenta, když řeknete „Ok Google“ Chcete-li ušetřit baterii, vyberte výchozí možnost Zapnout (doporučeno). Asistent vám odpoví jen v případě, že je zařízení připojené ke zdroji napájení nebo se nabíjí.</translation>
 <translation id="2166369534954157698">Příliš žluťoučký kůň úpěl ďábelské ódy</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Přesto se přihlásit</translation>
@@ -1249,6 +1249,15 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="23030561267973084">Aplikace <ph name="EXTENSION_NAME" /> požaduje další oprávnění.</translation>
 <translation id="23055578400314116">Zvolte uživatelské jméno</translation>
 <translation id="2307462900900812319">Konfigurovat síť</translation>
+<translation id="2307553512430195144">Pokud souhlasíte, bude Asistent Google čekat v pohotovostním režimu na příkaz „Ok Google“ a může pomocí funkce Voice Match rozpoznat, že mluví s uživatelem <ph name="SUPERVISED_USER_NAME" />.
+    <ph name="BR" />
+    Voice Match pomáhá Asistentovi Google identifikovat hlas uživatele <ph name="SUPERVISED_USER_NAME" /> na vašem zařízení <ph name="DEVICE_TYPE" /> a rozpoznat ho od ostatních.
+    <ph name="BR" />
+    Asistent na základě úryvků hlasu dítěte vytváří jedinečný hlasový model, který je uložen jen v jeho zařízeních. Kvůli lepšímu rozpoznání hlasu dítěte se může hlasový model dočasně odeslat do Googlu.
+    <ph name="BR" />
+    Pokud se později rozhodnete, že nechcete, aby dítě funkci Voice Match používalo, můžete ji v nastavení Asistenta jednoduše odstranit. Pokud chcete zobrazit nebo smazat zvukové úryvky, které dítě zaznamená během nastavování funkce Voice Match, přejděte v účtu dítěte na stránku <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Stránka chce instalovat obslužný nástroj služby.</translation>
 <translation id="2309620859903500144">Tomuto webu byl zablokován přístup k senzorům pohybu nebo osvětlení.</translation>
 <translation id="2312219318583366810">Adresa URL stránky</translation>
@@ -1378,6 +1387,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2450849356604136918">Žádná aktivní zobrazení</translation>
 <translation id="2451298179137331965">2×</translation>
 <translation id="245322989586167203">Weby se k sériovým portům obvykle připojují kvůli přenosu dat, například při nastavování sítě</translation>
+<translation id="2453706416476934374">Pokud chcete, aby uživatel <ph name="SUPERVISED_USER_NAME" /> dostával přizpůsobené odpovědi na otázky, poskytněte Asistentovi přístup ke snímkům obsahu na obrazovce uživatele <ph name="SUPERVISED_USER_NAME" />. Mohou být zahrnuty i informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="2453860139492968684">Dokončit</translation>
 <translation id="2454247629720664989">Klíčové slovo</translation>
 <translation id="2454264884354864965">Kamera je vypnutá</translation>
@@ -1599,9 +1609,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Změnit nastavení vstupu</translation>
 <translation id="2693176596243495071">Jejda! Došlo k neznámé chybě. Zkuste to znovu později, a pokud problém bude přetrvávat, kontaktujte administrátora.</translation>
-<translation id="2693640212062142966">Voice Match pomáhá Asistentovi Google identifikovat váš hlas v zařízení <ph name="DEVICE_TYPE" /> a rozpoznat vás od ostatních. Kvůli úspoře baterie je příkaz „Ok Google“ aktivní, jen když je zařízení připojeno ke zdroji napájení. Chcete-li provést změny, přejděte do Nastavení.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Upozornění:<ph name="END_BOLD" /> K osobním výsledkům může získat přístup i někdo s podobným hlasem nebo nahrávkou vašeho hlasu. Oprávnění k rozpoznávání hlasu Voice Match můžete později odebrat tím, že je vypnete v nastavení Asistenta.</translation>
 <translation id="2699911226086014512">Operace s kódem PIN selhala. Kód chyby: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Sdíleno ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Přihlásit se, <ph name="EMAIL" /></translation>
@@ -2088,6 +2095,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="32101887417650595">K tiskárně se nelze připojit</translation>
 <translation id="321084946921799184">Žlutá a bílá</translation>
 <translation id="321356136776075234">Organizační jednotka zařízení (např. OU=Chromebooky,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K osobním výsledkům uživatele <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu.</translation>
 <translation id="3216825226035747725">Administrátoři G Suite pro vzdělávání určují, ke kterým službám Google mají uživatelé přihlášení k účtu G Suite pro vzdělávání přístup. Mohou poskytovat přístup funkcím či službám, ke kterým vaše dítě dříve pomocí dozorovaného účtu přístup nemělo. Školní administrátoři mají povinnost poskytnout nebo získat k používání služeb nezletilými souhlas.</translation>
 <translation id="3217843140356091325">Vytvořit zástupce?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2265,6 +2273,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3417836307470882032">Armádní čas</translation>
 <translation id="3420501302812554910">Interní bezpečnostní klíč je potřeba resetovat</translation>
 <translation id="3421387094817716717">Veřejný klíč založený na eliptické křivce</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K vašim osobním výsledkům nebo Asistentovi by mohl získat přístup někdo s podobným hlasem nebo nahrávkou vašeho hlasu.</translation>
 <translation id="3422291238483866753">Zeptat se, když chce web vytvořit 3D mapu vašeho okolí nebo sledovat polohu kamery</translation>
 <translation id="3423463006624419153">V telefonu <ph name="PHONE_NAME_1" /> a <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Restartujte prosím <ph name="PRODUCT_NAME" /></translation>
@@ -2978,7 +2987,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4154664944169082762">Digitální otisky</translation>
 <translation id="4157869833395312646">Technologie Microsoft SGC (Server Gated Cryptography)</translation>
 <translation id="4158364720893025815">Úspěch</translation>
-<translation id="4159163871835771155">Pokud chcete, aby uživatel <ph name="SUPERVISED_USER_NAME" /> dostával na otázky přizpůsobené odpovědi, nechte Asistenta používat informace na obrazovce uživatele <ph name="SUPERVISED_USER_NAME" />. Mohou být zahrnuty i informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="4159681666905192102">Toto je dětský účet spravovaný uživateli <ph name="CUSTODIAN_EMAIL" /> a <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Neznámá klávesnice</translation>
 <translation id="4167686856635546851">Weby obvykle používají JavaScript k interaktivním funkcím, jako jsou videohry nebo webové formuláře</translation>
@@ -3616,7 +3624,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4884987973312178454">6×</translation>
 <translation id="4887424188275796356">Otevřít pomocí systémového prohlížeče</translation>
 <translation id="488785315393301722">Zobrazit podrobnosti</translation>
-<translation id="4889792122460431731">Pokud na otázky chcete dostávat přizpůsobené odpovědi, nechte Asistenta používat informace na obrazovce. Mohou být zahrnuty i informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="4890773143211625964">Zobrazit rozšířené možnosti tiskárny</translation>
 <translation id="4891089016822695758">Fórum beta</translation>
 <translation id="4892229439761351791">Web může používat Bluetooth</translation>
@@ -3831,7 +3838,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profil se nepodařilo stáhnout. Zkuste to znovu později nebo požádejte o pomoc operátora.</translation>
 <translation id="5131591206283983824">Přetažení klepnutím na touchpad</translation>
-<translation id="5135085122826131075">Aktivovat Asistenta, když řeknete „Ok Google“</translation>
 <translation id="5135533361271311778">Záložku nelze vytvořit.</translation>
 <translation id="5136343472380336530">Obě zařízení musí být odemknutá, blízko u sebe a musí v nich být zapnuto Bluetooth. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Smazat tuto položku</translation>
@@ -4249,7 +4255,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5585912436068747822">Formátování se nezdařilo</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Načítání aplikací...</translation>
-<translation id="5590265327628802792">Zdá se, že uživatel <ph name="SUPERVISED_USER_NAME" /> už si Asistenta Google nastavil na jiném zařízení. Když si uživatel <ph name="SUPERVISED_USER_NAME" /> zapne Kontext obrazovky, bude moci Asistenta využívat ještě lépe.</translation>
 <translation id="5592595402373377407">Zatím není k dispozici dostatek dat.</translation>
 <translation id="5595485650161345191">Upravit adresu</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
@@ -4656,6 +4661,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6059652578941944813">Hierarchie certifikátů</translation>
 <translation id="6059925163896151826">Zařízení USB</translation>
 <translation id="6061882183774845124">Odeslat odkaz do vašich zařízení</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K osobním výsledkům uživatele <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu. Pokud chcete šetřit baterii, můžete v nastavení Asistenta uživatele <ph name="SUPERVISED_USER_NAME" /> nastavit, aby příkaz „Ok Google“ fungoval, jen když je toto zařízení připojené ke zdroji napájení.</translation>
 <translation id="6064217302520318294">Zámek obrazovky</translation>
 <translation id="6065289257230303064">Atributy adresáře subjektu certifikátu</translation>
 <translation id="6066794465984119824">Není nastaven hash obrazu</translation>
@@ -4876,9 +4882,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6294759976468837022">Rychlost automatického prohledávání</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
 <translation id="6295855836753816081">Ukládání...</translation>
-<translation id="6298800237463568825">Voice Match pomáhá Asistentovi Google identifikovat váš hlas v zařízení <ph name="DEVICE_TYPE" /> a rozpoznat vás od ostatních.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Upozornění:<ph name="END_BOLD" /> K osobním výsledkům může získat přístup i někdo s podobným hlasem nebo nahrávkou vašeho hlasu. Oprávnění k rozpoznávání hlasu Voice Match můžete později odebrat tím, že je vypnete v nastavení Asistenta.</translation>
 <translation id="6298962879096096191">Používat Google Play k instalaci aplikací pro Android</translation>
 <translation id="6300177430812514606">Zákaz dokončovat odeslání a příjem dat</translation>
 <translation id="630065524203833229">Konec</translation>
@@ -4933,6 +4936,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6345878117466430440">Označit jako přečtené</translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Eliptická křivka SECG secp256r1 (neboli ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Experimentální prohlížeč (verze alfa)! Některé funkce chybí nebo nejsou úplné. Problémy hlaste v sekci Nápověda &gt; Nahlásit problém…</translation>
 <translation id="635609604405270300">Ponechat zařízení zapnuté</translation>
 <translation id="63566973648609420">Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, budete muset <ph name="BEGIN_LINK" />synchronizaci resetovat<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Drak</translation>
@@ -4998,6 +5002,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6434309073475700221">Zahodit</translation>
 <translation id="6434325376267409267">Aplikaci <ph name="APP_NAME" /> budete moci používat až poté, co zařízení aktualizujete.</translation>
 <translation id="6436164536244065364">Zobrazit v Internetovém obchodu</translation>
+<translation id="6436610005579237680">Pokud chcete dostávat lépe přizpůsobené odpovědi, umožněte Asistentovi Google přístup ke snímku obsahu na obrazovce, když se na něco zeptáte. Asistent také může používat informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="6438234780621650381">Reset nastavení</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – přehrává se zvuk</translation>
 <translation id="6442187272350399447">Paráda</translation>
@@ -5134,6 +5139,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6582274660680936615">Prohlížíte si web jako host</translation>
 <translation id="6584878029876017575">Životnost podepisování Microsoft</translation>
 <translation id="6586099239452884121">Prohlížení v roli hosta</translation>
+<translation id="6586213706115310390">Aktivovat Asistenta, když řeknete „Ok Google“.</translation>
 <translation id="6586451623538375658">Zaměnit primární tlačítko myši</translation>
 <translation id="6586604979641883411">K upgradování Linuxu je potřeba alespoň <ph name="REQUIRED_SPACE" /> volného místa na disku. Uvolněte v zařízení nějaké místo a zkuste to znovu.</translation>
 <translation id="6588043302623806746">Používat zabezpečené DNS</translation>
@@ -5153,6 +5159,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6602937173026466876">Přístup k vašim tiskárnám</translation>
 <translation id="6602956230557165253">K navigaci použijte šipky vlevo a vpravo.</translation>
 <translation id="6605847144724004692">Zatím neohodnoceno žádnými uživateli.</translation>
+<translation id="6606671997164410857">Zdá se, že už jste si Asistenta Google nastavili na jiném zařízení. Když si zapnete Kontext obrazovky, budete moci Asistenta využívat ještě lépe.</translation>
 <translation id="6607831829715835317">Další nástro&amp;je</translation>
 <translation id="6607890859198268021">Účet <ph name="USER_EMAIL" /> už spravuje doména <ph name="DOMAIN" />. Pokud chcete rodičovskou kontrolu použít s jiným účtem Google, po dokončení nastavení se odhlaste a potom na přihlašovací obrazovce vyberte Přidat uživatele.</translation>
 <translation id="6609478180749378879">Přihlašovací údaje zůstanou v tomto zařízení uložené i po ukončení anonymního režimu. Pomocí zařízení se k těmto webovým stránkám budete moci později opět přihlásit.</translation>
@@ -5332,6 +5339,13 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6808039367995747522">Chcete-li pokračovat, vložte bezpečnostní klíč a dotkněte se ho.</translation>
 <translation id="6808193438228982088">Liška</translation>
 <translation id="6809470175540814047">Otevřít v anonymním okně</translation>
+<translation id="6809656734323672573">Pokud souhlasíte, bude Asistent Google čekat v pohotovostním režimu na příkaz „Ok Google“ a může pomocí funkce Voice Match rozpoznat, že mluví s vámi.
+    <ph name="BR" />
+    S pomocí funkce Voice Match vás Asistent dokáže rozpoznat a odlišit od ostatních. Asistent na základě úryvků vašeho hlasu vytváří jedinečný hlasový model, který je uložen jen ve vašem zařízení. Kvůli lepšímu rozpoznání vašeho hlasu se může hlasový model dočasně odeslat do Googlu.
+    <ph name="BR" />
+    Pokud se později rozhodnete, že funkci Voice Match už nechcete používat, můžete ji v nastavení Asistenta jednoduše odstranit. Zvukové úryvky zaznamenané během nastavování funkce Voice Match můžete zobrazit nebo smazat na stránce <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Přihlašovat se na weby automaticky pomocí uložených identifikačních údajů. Když je tato funkce vypnutá, budete před každým přihlášením na web požádáni o potvrzení.</translation>
 <translation id="6810768462515084623">Jejda! Platnost vašeho hesla pravděpodobně vypršela. Obnovte jej na jiném zařízení a zkuste to znovu.</translation>
 <translation id="6811034713472274749">Stránka je připravená k zobrazení</translation>
@@ -5662,7 +5676,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7171559745792467651">Nainstalovat aplikace z vašich dalších zařízení</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
 <translation id="7173114856073700355">Otevřít nastavení</translation>
-<translation id="7173336557300642430">Pokud chcete dostávat lépe přizpůsobené odpovědi, nechte Asistenta Google používat informace na obrazovce, když se na něco zeptáte. Asistent také může používat informace o přehrávaných skladbách nebo videích.</translation>
 <translation id="7174199383876220879">Novinka! Ovládejte hudbu, videa a další obsah.</translation>
 <translation id="7175037578838465313">Konfigurace sítě <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Načteno z:</translation>
@@ -5693,13 +5706,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Opustit stránku}few{Opustit stránky}many{Opustit stránky}other{Opustit stránky}}</translation>
 <translation id="7207457272187520234">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google.</translation>
 <translation id="7207631048330366454">Hledat v aplikacích</translation>
-<translation id="7210488993538120146">Voice Match pomáhá Asistentovi Google identifikovat hlas uživatele <ph name="SUPERVISED_USER_NAME" /> na vašem zařízení <ph name="DEVICE_TYPE" /> a rozpoznat ho od ostatních.
-    <ph name="BR" />
-    Asistent na základě úryvků hlasu dítěte vytváří jedinečný hlasový model, který je uložen jen v jeho zařízeních. Kvůli lepšímu rozpoznání hlasu dítěte se může hlasový model dočasně odeslat do Googlu.
-    <ph name="BR" />
-    Pokud se později rozhodnete, že nechcete, aby dítě funkci Voice Match používalo, můžete ji v nastavení Asistenta jednoduše odstranit. Pokud chcete zobrazit nebo smazat zvukové úryvky, které dítě zaznamená během nastavování funkce Voice Match, přejděte na stránku g.co/assistant/match v účtu dítěte.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Poznámka:<ph name="END_BOLD" /> K osobním výsledkům dítěte <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu. Kvůli úspoře baterie je příkaz „Ok Google“ aktivní, jen když je zařízení připojeno ke zdroji napájení.</translation>
 <translation id="7210499381659830293">Rozšíření pro tiskárny</translation>
 <translation id="7211783048245131419">Zatím nebyl přiřazen žádný přepínač</translation>
 <translation id="7212097698621322584">Chcete-li změnit PIN, zadejte aktuální PIN. Pokud svůj PIN neznáte, budete bezpečnostní klíč muset resetovat a poté vytvořit nový PIN.</translation>
@@ -5911,7 +5917,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7434969625063495310">Přidání tiskového serveru se nezdařilo. Zkontrolujte konfiguraci serveru a zkuste to znovu.</translation>
 <translation id="7436921188514130341">Aj, chyba! Při přejmenovávání došlo k chybě.</translation>
 <translation id="7438495332316988804">Standardní prohlížeč najdete tak, že do spouštěče zadáte text „Chrome“.</translation>
-<translation id="7439446972050308922">Vaše uložené nastavení bude připraveno na každém zařízení se systémem Chrome OS, když se přihlásíte pomocí účtu Google. Položky, které chcete synchronizovat, můžete vybrat v Nastavení.</translation>
 <translation id="7439519621174723623">Pokud chcete pokračovat, přidejte název zařízení</translation>
 <translation id="7441736921018636843">Chcete-li toto nastavení změnit, <ph name="BEGIN_LINK" />resetováním synchronizace<ph name="END_LINK" /> odstraňte svou heslovou frázi pro synchronizaci</translation>
 <translation id="7441830548568730290">Ostatní uživatelé</translation>
@@ -6165,6 +6170,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7690853182226561458">Přidat &amp;složku...</translation>
 <translation id="7691073721729883399">Cryptohome pro aplikaci pro režim veřejného terminálu nelze připojit.</translation>
 <translation id="7691077781194517083">Tento bezpečnostní klíč nelze resetovat. Chyba <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">„Ok Google“</translation>
 <translation id="7691698019618282776">Upgradovat Crostini</translation>
 <translation id="7696063401938172191">Na telefonu <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Podrobnosti jsou při sdílení obrazovky skryty</translation>
@@ -6277,6 +6283,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7804072833593604762">Karta zavřena</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7807067443225230855">Vyhledávání a Asistent</translation>
+<translation id="7807117920154132308">Zdá se, že uživatel <ph name="SUPERVISED_USER_NAME" /> už si Asistenta Google nastavil na jiném zařízení. Když si uživatel <ph name="SUPERVISED_USER_NAME" /> zapne Kontext obrazovky, bude na tomto zařízení moci Asistenta využívat ještě lépe.</translation>
 <translation id="7807711621188256451">Vždy povolit webu <ph name="HOST" /> přístup ke kameře</translation>
 <translation id="7810202088502699111">Na této stránce byla zablokována vyskakovací okna.</translation>
 <translation id="781167124805380294">Odeslat soubor <ph name="FILE_NAME" /></translation>
@@ -6331,6 +6338,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7847212883280406910">Chcete-li přepnout na systém <ph name="IDS_SHORT_PRODUCT_OS_NAME" />, stiskněte klávesy Ctrl + Alt + S.</translation>
 <translation id="7849264908733290972">&amp;Otevřít obrázek v nové kartě</translation>
 <translation id="784934925303690534">Časové období</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K vašim osobním výsledkům nebo Asistentovi by mohl získat přístup někdo s podobným hlasem nebo nahrávkou vašeho hlasu. Pokud chcete šetřit baterii, můžete v nastavení Asistenta nastavit, aby příkaz „Ok Google“ fungoval, jen když je toto zařízení připojené ke zdroji napájení.</translation>
 <translation id="7851457902707056880">Přihlášení bylo omezeno pouze na účet vlastníka. Restartujte prosím zařízení a přihlaste se pomocí účtu vlastníka. Počítač se restartuje za 30 sekund.</translation>
 <translation id="7851716364080026749">Vždy blokovat přístup k webové kameře a mikrofonu</translation>
 <translation id="7851720427268294554">Analyzátor požadavků IPP</translation>
@@ -6908,7 +6916,6 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8480869669560681089">Neznámé zařízení od dodavatele <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potvrzení oprávnění USB</translation>
 <translation id="8481980314595922412">Zkušební funkce jsou zapnuté</translation>
-<translation id="8482860770919360244">Zdá se, že už jste si Asistenta Google nastavili na jiném zařízení. Když zapnete kontext obrazovky, bude Asistent ještě užitečnější.</translation>
 <translation id="848666842773560761">Aplikace se pokouší použít kameru. Pokud chcete povolit přístup, vypněte ochranu soukromí kamery.</translation>
 <translation id="8487678622945914333">Přiblížit</translation>
 <translation id="8489156414266187072">Osobní návrhy jsou zobrazovány jen ve vašem účtu</translation>
@@ -7566,6 +7573,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
       <ph name="LIST_ITEM" />Spustit Diagnostiku připojení Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="9166813363879986425">Vaše uložené nastavení a aktivita budou připraveny na každém zařízení se systémem Chrome OS, když se přihlásíte pomocí účtu Google. Položky, které chcete synchronizovat, můžete vybrat v Nastavení.</translation>
 <translation id="9167063903968449027">Zobrazit seznam četby</translation>
 <translation id="9167450455589251456">Profil není podporován</translation>
 <translation id="9168436347345867845">Později</translation>

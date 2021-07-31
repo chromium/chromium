@@ -312,6 +312,7 @@
 <translation id="1336902454946927954">የእርስዎ የደህነት ቁልፍ የእርስዎ የጣት አሻራ ተለይቶ ሊታወቅ ስለሚችል ተቆልፏል። ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ይህን መተግበሪያ መክፈት ይፈልጋል።</translation>
 <translation id="1338950911836659113">በመሰረዝ ላይ...</translation>
+<translation id="1339009753652684748">«Hey Google» ሲሉ ረዳትዎን ይድረሱ። ባትሪን ለመቆጠብ «በርቷል (የሚመከር።)»ን ይምረጡ። የእርስዎ ረዳት ምላሽ የሚሰጠው መሣሪያዎ ተሰክቶ ወይም ኃይል እየሞላ ከሆነ ብቻ ነው።</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">የፋይሎች መተግበሪያውን በመጠቀም በመሣሪያው ውስጥ ያለ የማህደረመረጃ ምትኬ ያስቀምጡ።</translation>
 <translation id="1341988552785875222">የአሁኑ የግድግዳ ወረቀት የተዋቀረው በ«<ph name="APP_NAME" />» ነው። የተለየ የግድግዳ ወረቀት ከመምረጥዎ በፊት «<ph name="APP_NAME" />» ማራገፍ ያስፈልግዎት ይሆናል።</translation>
@@ -446,6 +447,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> የእርስዎን ዘመናዊ ካርድ እንደገባ እንዲቆይ ይፈልግብዎታል።</translation>
 <translation id="1478340334823509079">ዝርዝሮች፦ <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">መጫን አልነቃም</translation>
+<translation id="1480571698637441426">ጥያቄዎችን በሚጠይቁበት ጊዜ የተበጁ ምላሾችን ለማግኘት ረዳትዎ በማያ ገጽዎ ላይ ያለው ቅጽበታዊ ገጽ እይታን እንዲደርስ ይፍቀዱለት። ይህ እንዲሁም በመጫወት ላይ ያሉ የዘፈኖች ወይም የቪዲዮዎች መረጃን ሊያካትት ይችላል።</translation>
 <translation id="1481537595330271162">የዲስክ መጠንን መቀየር ላይ ስሕተት</translation>
 <translation id="1482626744466814421">ይህን ትር ዕልባት ያድርጉት...</translation>
 <translation id="1483272013430662157">የድር መተግበሪያዎች የፋይሎችን አይነቶች እንዲከፍቱ መጠየቅ ይችላሉ</translation>
@@ -844,7 +846,6 @@
 <translation id="1865769994591826607">የተመሳሳይ-ጣቢያ ግንኙነቶች ብቻ</translation>
 <translation id="186612162884103683">«<ph name="EXTENSION" />» ምልክት በተደረገባቸው አካባቢዎች ውስጥ ምስሎችን፣ ቪዲዮ እና የድምጽ ፋይሎችን ማንበብ እና መጻፍ ይችላል።</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> ጭነትዎን ለማጠናቀቅ ዝግጁ ነው</translation>
-<translation id="1868193363684582383">«Ok Google»</translation>
 <translation id="1868553836791672080">የይለፍ ቃል ፍተሻ በChromium ውስጥ አይገኝም</translation>
 <translation id="1869433484041798909">የዕልባት አዝራር</translation>
 <translation id="1871098866036088250">በChrome አሳሽ ውስጥ ይክፈቱ</translation>
@@ -1125,7 +1126,6 @@
 <translation id="2163937499206714165">የጨለማ ሁነታን አብራ</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" />፣ <ph name="THIRD_SWITCH" /> እና 1 ተጨማሪ ማብሪያና ማጥፊያ</translation>
 <translation id="2165177462441582039">በእያንዳንዱ ንጥል ላይ ድምቀቱ ምን ያህል ጊዜ መቆየት እንዳለበት ይምረጡ</translation>
-<translation id="2165421703844373933">«Ok Google» ሲሉ ረዳትዎን ይድረሱ። ባትሪን ለመቆጠብ «በርቷል (የሚመከር።)»ን ይምረጡ። የእርስዎ ረዳት ምላሽ የሚሰጠው መሣሪያዎ ተሰክቶ ወይም ኃይል እየሞላ ከሆነ ብቻ ነው።</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">ለማንኛውም ግባ</translation>
@@ -1257,6 +1257,15 @@
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» ተጨማሪ ፍቃዶችን ጠይቋል።</translation>
 <translation id="23055578400314116">የተጠቃሚ ስም ይምረጡ</translation>
 <translation id="2307462900900812319">አውታረ መረብ አዋቅር</translation>
+<translation id="2307553512430195144">ከተስማሙ የGoogle ረዳቱ «Hey Google»ን ለመለየት በተጠባባቂ ሁነታ ይጠብቃል እና ከድምጽ ማዛመጃ ጋር እየተናገረ <ph name="SUPERVISED_USER_NAME" /> መሆኑን መገንዘብ ይችላል።
+    <ph name="BR" />
+    Voice Match Google ረዳት በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የ<ph name="SUPERVISED_USER_NAME" />ን ድምፅ ለይቶ እንዲያውቅ እና ከሌሎች ለይቶ እንዲነግራቸው ያግዛል።
+    <ph name="BR" />
+    ረዳቱ የልጅዎን ልዩ የድምፅ ሞዴል ለመፍጠር በመሣሪያ(ቸ)ው ላይ ብቻ የሚከማች የድምፅ ቅንጥቦቻቸውን ይወስዳል። የልጅዎን ድምፅ በተሻለ ለመለየት የድምጻቸው ሞዴል ለጊዜው ወደ Google ሊላክ ይችላል።
+    <ph name="BR" />
+    በኋላ ላይ Voice Match ለልጅዎ ትክክል አለመሆኑን ከወሰኑ በቀላሉ በረዳታቸው ቅንብሮች ውስጥ ያስወግዱት። Voice Matchን በሚያዋቅሩበት ጊዜ ልጅዎ የቀዱትን የኦዲዮ ቅንጥቦች ለመመልከት ወይም ለመሰረዝ ከልጅዎ መለያ ሆነው ወደ <ph name="VOICE_MATCH_SETTINGS_URL" /> ይሂዱ።
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">ይህ ገጽ የአገልግሎት ተቆጣጣሪ ለመጫን ይፈልጋል።</translation>
 <translation id="2309620859903500144">ይህ ጣቢያ የእርስዎን እንቅስቃሴ ወይም የብርሃን ዳሳሾችን እንዳይደርስ አግዷል።</translation>
 <translation id="2312219318583366810">የገጽ ዩ.አር.ኤል.</translation>
@@ -1386,6 +1395,7 @@
 <translation id="2450849356604136918">ምንም ገቢር እይታዎች የሉም</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">ጣቢያዎች አውታረ መረብዎን እንደማቀናበር ላሉ የውሂብ ማስተላለፊያ ባህሪዎች አብዛኛው ጊዜ ከተከታታይ ወደቦች ጋር ይገናኛሉ</translation>
+<translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" /> ጥያቄዎችን በሚጠይቅበት ጊዜ የተበጁ ምላሾችን ለማግኘት ረዳት በ<ph name="SUPERVISED_USER_NAME" /> ማያ ገጽ ላይ ያለው ቅጽበታዊ ገጽ እይታን እንዲደርስ ይፍቀዱለት። ይህ እንዲሁም በመጫወት ላይ ያሉ የዘፈኖች ወይም የቪዲዮዎች መረጃን ሊያካትት ይችላል።</translation>
 <translation id="2453860139492968684">ጨርስ</translation>
 <translation id="2454247629720664989">ቁልፍ ቃል</translation>
 <translation id="2454264884354864965">ካሜራ ጠፍቷል</translation>
@@ -1607,9 +1617,6 @@
 <translation id="2691385045260836588">ሞዴል</translation>
 <translation id="2691440343905273290">የግቤት ቅንብሮችን ይቀይሩ</translation>
 <translation id="2693176596243495071">ውይ! አንድ ያልታወቀ ስህተት ተከስቷል። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ችግሩ ከቀጠለ አስተዳዳሪዎን ያነጋግሩ።</translation>
-<translation id="2693640212062142966">Voice Match የGoogle ረዳትዎን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ድምጽዎን እንዲለይ እና ከሌሎች ለይቶ እንዲነግርዎት ያግዛል። ባትሪ ለመቆጠብ ሲባል «Hey Google» የሚበራው የእርስዎ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ ነው። ለውጦችን ለማድረግ ወደ ቅንብሮች ይሂዱ።
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ያስተውሉ፦<ph name="END_BOLD" /> እንዲሁም ተመሳሳይ ድምጽ ወይም ቀረጻ የእርስዎን የግል ውጤቶች ሊደርስበት ይችላል። በኋላ ላይ በረዳት ቅንብሮች ውስጥ የVoice Match ፈቃዱን በማጥፋት ሊያስወግዱት ይችላሉ።</translation>
 <translation id="2699911226086014512">ከኮድ <ph name="RETRIES" /> ጋር የፒን ሥርዓተ ክወና ተሰናክሏል።</translation>
 <translation id="2701330563083355633">በ <ph name="DEVICE_NAME" /> የተጋራ</translation>
 <translation id="2701737434167469065">ግባ፣ <ph name="EMAIL" /></translation>
@@ -2097,6 +2104,7 @@
 <translation id="32101887417650595">ወደ አታሚ ማገናኘት አይቻልም</translation>
 <translation id="321084946921799184">ቢጫ እና ነጭ</translation>
 <translation id="321356136776075234">የመሣሪያ OU (ለምሳሌ፦ OU=Chromebooks፣DC=example፣DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቀረጻ የ<ph name="SUPERVISED_USER_NAME" />ን የግል ውጤቶች ሊደርስበት ይችል ይሆናል።</translation>
 <translation id="3216825226035747725">የG Suite ለትምህርት አስተዳዳሪዎች ተጠቃሚዎቻቸው ወደ G Suite ለትምህርት መለያ ገብተው ሳለ የትኛዎቹን የGoogle አገልግሎቶች መድረስ እንደሚችሉ ይወስናሉ። ይህ የእርስዎ ልጅ ከዚህ ቀደም ይህን ክትትል የሚደረግበት መለያ በመጠቀም ለመድረስ ያሰናከላቸውን አንዳንድ ባህሪያት ወይም አገልግሎቶች ሊያካትት ይችላል። የትምህርት ቤት አስተዳዳሪዎች ከዐዋቂ ዕድሜ በታች የሆኑ ተጠቃሚዎቻቸው አገልግሎቶቹን እንዲጠቀሙ ፈቃድ መስጠት ወይም ማግኘት አለባቸው።</translation>
 <translation id="3217843140356091325">አቋራጭ ይፈጠር?</translation>
 <translation id="321799795901478485">የዚህ ማህደር ሰሪ</translation>
@@ -2274,6 +2282,7 @@
 <translation id="3417836307470882032">ወታደራዊ ሰዓት</translation>
 <translation id="3420501302812554910">ውስጣዊ ደህንነት ቅይልፍ ዳግም መቀናበር ይፈልጋል</translation>
 <translation id="3421387094817716717">ሞላላ ጥምዝ ይፋዊ ቁልፍ</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቅጂ የግል ውጤቶችዎን ወይም ረዳትዎን ሊደርስባቸው ይችላል።</translation>
 <translation id="3422291238483866753">አንድ ጣቢያ የዙሪያዎ የ3ል ካርታ መፍጠር ወይም የካሜራ ቦታ መከታተል ሲፈልግ ጠይቅ (የሚመከር)</translation>
 <translation id="3423463006624419153">በእርስዎ «<ph name="PHONE_NAME_1" />» እና «<ph name="PHONE_NAME_2" />» ላይ፦</translation>
 <translation id="3423858849633684918">እባክዎ <ph name="PRODUCT_NAME" />ን ዳግም ያስጀምሩት</translation>
@@ -2986,7 +2995,6 @@
 <translation id="4154664944169082762">የጣት አሻራዎች</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">እለፍ</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> ጥያቄዎችን በሚጠይቅበት ጊዜ የተበጁ ምላሾችን ለማግኘት ረዳት በ<ph name="SUPERVISED_USER_NAME" /> ማያ ገጽ ላይ መረጃውን እንዲጠቀም ይፍቀዱለት። ይህ በመጫወት ላይ ያሉ የዘፈኖች ወይም የቪዲዮዎች መረጃን ሊያካትት ይችላል።</translation>
 <translation id="4159681666905192102">ይህ የህጻናት መለያ በ<ph name="CUSTODIAN_EMAIL" /> እና <ph name="SECOND_CUSTODIAN_EMAIL" /> ነው የሚቀናበረው።</translation>
 <translation id="4163560723127662357">ያልታወቀ የቁልፍ ሰሌዳ</translation>
 <translation id="4167686856635546851">ጣቢያዎች እንደ ቪዲዮ ጨዋታዎች ወይም የድር ቅጾች ያሉ በይነተገናኝ ባህሪያትን ለማሳየት አብዛኛው ጊዜ ጃቫስክሪፕትን ይጠቀማሉ</translation>
@@ -3624,7 +3632,6 @@
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">በስርዓት መመልከቻ ክፈት</translation>
 <translation id="488785315393301722">ዝርዝሮችን አሳይ</translation>
-<translation id="4889792122460431731">ጥያቄዎችን በሚጠይቁበት ጊዜ የተበጁ ምላሾችን ለማግኘት የእርስዎ ረዳት በማያ ገጽዎ መረጃዎን ላይ እንዲጠቀም ይፍቀዱለት። ይህ በመጫወት ላይ ያሉ የዘፈኖች ወይም የቪዲዮዎች መረጃን ሊያካትት ይችላል።</translation>
 <translation id="4890773143211625964">የላቁ የአታሚ አማራጮችን አሳይ</translation>
 <translation id="4891089016822695758">የቅድመ-ይሁንታ ሙከራ መድረክ</translation>
 <translation id="4892229439761351791">ጣቢያ ብሉቱዝን መጠቀም ይችላል</translation>
@@ -3839,7 +3846,6 @@
 <translation id="5130080518784460891">ኢቴን</translation>
 <translation id="5130675701626084557">መገለጫ ሊውረድ አይችልም። እባክዎ ቆይተው እንደገና ይሞክሩ ወይም ለእርዳታ አገልግሎት አቅራቢን ያነጋግሩ።</translation>
 <translation id="5131591206283983824">የመዳሰሻ ሰሌዳን መታ አድርጎ መጎተት</translation>
-<translation id="5135085122826131075">«Ok Google» ሲሉ ረዳትዎን ይድረሱ።</translation>
 <translation id="5135533361271311778">የዕልባት ንጥል መፍጠር አልተቻለም።</translation>
 <translation id="5136343472380336530">ሁለቱም መሣሪያዎች እንደተከፈቱ፣ አጠገብ ለአጠገብ እንደሆኑ እና ብሉቱዝ መብራቱን ያረጋግጡ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">ይህን ንጥል ሰርዝ</translation>
@@ -4257,7 +4263,6 @@
 <translation id="5585912436068747822">ቅርጸት መስራት አልተሳካም</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">መተግበሪያዎችን በመጫን ላይ...</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> አስቀድመው በሌላ መሣሪያ ላይ Google ረዳትን ያቀናበሩ ይመስላሉ። የማያ ገጽ አውድን በማብራት <ph name="SUPERVISED_USER_NAME" /> ከረዳት የበለጠ ማግኘት ይችላል።</translation>
 <translation id="5592595402373377407">ገና ምንም በቂ ውሂብ የለም።</translation>
 <translation id="5595485650161345191">አድራሻ አርትዕ</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
@@ -4664,6 +4669,7 @@
 <translation id="6059652578941944813">የሰርቲፊኬት ተዋረድ</translation>
 <translation id="6059925163896151826">የዩኤስቢ መሣሪያዎች</translation>
 <translation id="6061882183774845124">አገናኝ ወደ የእርስዎ መሣሪያዎች ይላኩ</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቀረጻ የ<ph name="SUPERVISED_USER_NAME" />ን የግል ውጤቶች ሊደርስበት ይችል ይሆናል። ባትሪ ለመቆጠብ ይህ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ «Hey Google» እንዲበራ በ<ph name="SUPERVISED_USER_NAME" />ረዳት ቅንብሮች ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="6064217302520318294">ማያ ገጽ መቆለፊያ</translation>
 <translation id="6065289257230303064">የሰርቲፊኬት ርዕስ የማውጫ አይነታዎች</translation>
 <translation id="6066794465984119824">የምስል ሃሽ አልተዘጋጀም</translation>
@@ -4884,9 +4890,6 @@
 <translation id="6294759976468837022">የራስ-ቅኝት ፍጥነት</translation>
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
 <translation id="6295855836753816081">በማስቀመጥ ላይ...</translation>
-<translation id="6298800237463568825">Voice Match የGoogle ረዳትዎን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ድምጽዎን እንዲለይ እና ከሌሎች ለይቶ እንዲነግርዎት ያግዛል።
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ያስተውሉ፦<ph name="END_BOLD" /> እንዲሁም ተመሳሳይ ድምጽ ወይም ቀረጻ የእርስዎን የግል ውጤቶች ሊደርስበት ይችላል። በኋላ ላይ በረዳት ቅንብሮች ውስጥ የVoice Match ፈቃዱን በማጥፋት ሊያስወግዱት ይችላሉ።</translation>
 <translation id="6298962879096096191">የAndroid መተግበሪያዎችን ለመጫን Google Playን ይጠቀሙ</translation>
 <translation id="6300177430812514606">ውሂብ መላክ ወይም መቀበል ለማጠናቀቅ አልተፈቀደም</translation>
 <translation id="630065524203833229">ው&amp;ጣ</translation>
@@ -4941,6 +4944,7 @@
 <translation id="6345878117466430440">እንደተነበበ ምልክት አድርግ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />ን ይጫኑ</translation>
 <translation id="6354918092619878358">የSECG ሞላላ ጥምዝ secp256r1 (እንዲሁም ANSI X9.62 prime256v1, NIST P-256 በመባት የሚታወቅ)</translation>
+<translation id="6355789186038748882">የሙከራ (የአልፋ ጥራት) አሳሽ! አንዳንድ ገጽታዎች ይጎድላሉ ወይም አልተጠናቀቁም። ችግሮችን በሚከተለው ሪፖርት ያድርጉ፦ እገዛ &gt; «ችግርን ሪፖርት አድርግ...»።</translation>
 <translation id="635609604405270300">መሣሪያውን እንደበራ አቆየው</translation>
 <translation id="63566973648609420">የእርስዎን የይለፍ ሐረግ ያለው ሰው ብቻ ነው የተመሰጠረ ውሂብዎን ማየት የሚችለው። የይለፍ ሐረጉ ለGoogle አይላክም ወይም በእሱ አይከማችም። የይለፍ ሐረግዎን ከረሱት <ph name="BEGIN_LINK" />ስምረትን ዳግም ማስጀመር<ph name="END_LINK" /> ይኖርብዎታል።</translation>
 <translation id="6358884629796491903">ድራጎን</translation>
@@ -5006,6 +5010,7 @@
 <translation id="6434309073475700221">ጣለው</translation>
 <translation id="6434325376267409267">እርስዎ <ph name="APP_NAME" />ን መጠቀም ከመቻልዎ በፊት የእርስዎ መሣሪያ መዘመን አለበት።</translation>
 <translation id="6436164536244065364">በድር  መደብር  ውስጥ ይመልከቱ</translation>
+<translation id="6436610005579237680">ለእርስዎ ይበልጥ የተበጁ ምላሾችን ለማግኘት ጥያቄዎችን ሲጠይቁ የGoogle ረዳት በማያ ገጽዎ ላይ ያለውን ቅጽበታዊ ገጽ እይታ እንዲደርስ ይፍቀዱለት። የእርስዎ ረዳት እንዲሁም በመጫወት ላይ ያሉ የዘፈኖች ወይም የቪዲዮዎች መረጃን ሊጠቀም ይችላል።</translation>
 <translation id="6438234780621650381">ቅንብሮችን ዳግም አስጀምር</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ኦዲዮ በመጫወት ላይ ነው</translation>
 <translation id="6442187272350399447">ግሩም</translation>
@@ -5142,6 +5147,7 @@
 <translation id="6582274660680936615">እንደ እንግዳ እያሰሱ ነው</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
 <translation id="6586099239452884121">በእንግዳ አሰሳ</translation>
+<translation id="6586213706115310390">«Hey Google» ሲሉ ረዳትዎን ይድረሱ።</translation>
 <translation id="6586451623538375658">የዋና መዳፊት አዘራር ይቀይሩ</translation>
 <translation id="6586604979641883411">ቢያንስ <ph name="REQUIRED_SPACE" /> ከነጻ ዲስክ ባዶ ቦታ Linuxን ደረጃ ለማሻሻል ያስፈልጋል። በእርስዎ መሣሪያ ላይ እባክዎ የተወሰነ ባዶ ቦታ ያስለቅቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="6588043302623806746">ደህንነቱ የተጠበቀ ዲኤንኤስ የለም</translation>
@@ -5161,6 +5167,7 @@
 <translation id="6602937173026466876">የእርስዎን አታሚዎች ይድረሱባቸው</translation>
 <translation id="6602956230557165253">ለማሰስ የግራ እና ቀኝ የቀስት ቁልፎችን ይጠቀሙ።</translation>
 <translation id="6605847144724004692">እስካሁን በምንም ተጠቃሚዎች ደረጃ አልተሰጠውም።</translation>
+<translation id="6606671997164410857">በሌላ መሣሪያ ላይ የGoogle ረዳትን አስቀድመው ያቀናብሩ ይመስላል። በዚህ መሣሪያ ላይ የማያ ገጽ ሁኔታን በማብራት ከእርስዎ ረዳት የበለጠ ያግኙ።</translation>
 <translation id="6607831829715835317">&amp;ተጨማሪ መሣሪያዎች</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> አስቀድሞ በ<ph name="DOMAIN" /> የሚተዳደር ነው በተለየ የGoogle መለያ የወላጅ መቆጣጠሪያዎችን ለመጠቀም ከቅንብር በኋላ ዘግተው ይውጡ፣ ከዚያ በመለያ መግቢያ ገጹ ላይ «ሰው አክል» የሚለውን ይምረጡ።</translation>
 <translation id="6609478180749378879">ከማንነትን የማያሳውቅ ሁነታ ከወጡ በኋላ በዚህ መሣሪያ ውስጥ የመለያ መግቢያ ውሂብ ይከማቻል። ቆይተው እንደገና በመሣሪያዎ ወደዚህ ድር ጣቢያ ለመግባት ይችላሉ።</translation>
@@ -5340,6 +5347,13 @@
 <translation id="6808039367995747522">ለመቀጠል የደህንነት ቁልፍዎን አስገብተው ይንኩ</translation>
 <translation id="6808193438228982088">ቀበሮ</translation>
 <translation id="6809470175540814047">ማንነትን በማያሳውቅ መስኮት ክፈት</translation>
+<translation id="6809656734323672573">ከተስማሙ፣ Google ረዳት «Hey Google»ን ለመለየት በተጠባባቂ ሁነታ ይጠብቃል እና በVoice Match እየተነጋገሩ ያሉት እርስዎ መሆንዎን ሊገነዘብ ይችላል።
+    <ph name="BR" />
+    Voice Match ረዳትዎ እርስዎን እንዲለይ እና ከሌሎች ሰዎች እንዲለየዎት ያስችለዋል። ረዳቱ ልዩ የድምፅ ሞዴል ለመፍጠር የድምፅዎን ቅንጥቦች ይወስዳል፣ ይህም በመሣሪያዎ ላይ ብቻ የሚከማች ነው። ድምፅዎን በተሻለ ሁኔታ ለመለየት የእርስዎ የድምፅ ሞዴል በጊዜያዊነት ወደ Google ሊላክ ይችላል።
+    <ph name="BR" />
+    በኋላ ላይ Voice Match ለእርስዎ እንደማይሆን ከወሰኑ በቀላሉ በረዳት ቅንብሮች ውስጥ ያስወግዱት። Voice Matchን በሚያዋቅሩበት ጊዜ የቀዱትን የድምፅ ቅንጥቦች ለመመልከት ወይም ለመሰረዝ ወደ <ph name="VOICE_MATCH_SETTINGS_URL" /> ይሂዱ።
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">የተከማቹ ምስክርነቶችን በመጠቀም በራስ-ሰር ወደ ድር ጣቢያዎች ይግቡ። ባህሪው ሲሰናከል ወደ አንድ ድር ጣቢያ ከመግባትዎ በፊት ሁልጊዜ ማረጋገጫ እንዲሰጡ ይጠየቃሉ።</translation>
 <translation id="6810768462515084623">ውይ!  የይለፍ ቃዎ ጊዜው ያለፈበት ይመስላል። እባክዎ በሌላ መሣሪያ ላይ ያድሱትና እንደገና ይሞክሩ።</translation>
 <translation id="6811034713472274749">ገጽ ለመመልከት ዝግጁ ነው</translation>
@@ -5670,7 +5684,6 @@
 <translation id="7171559745792467651">መተግበሪያዎቹን ከሌሎች መሣሪያዎችዎ ይጫኑ</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{ትር ወደ አዲስ ቡድን ያክሉ}one{ትሮችን ወደ አዲስ ቡድን ያክሉ}other{ትሮችን ወደ አዲስ ቡድን ያክሉ}}</translation>
 <translation id="7173114856073700355">ቅንብሮችን ክፈት</translation>
-<translation id="7173336557300642430">ለእርስዎ ይበልጥ ተስማሚ የሆኑ ምላሾችን ለማግኘት ጥያቄዎችን ሲጠይቁ የGoogle ረዳት በማያ ገጽዎ ላይ መረጃን እንዲጠቀም ይፍቀዱለት። የእርስዎ ረዳት እንዲሁም በመጫወት ላይ ያሉ የዘፈኖች ወይም የቪዲዮዎች መረጃን ሊጠቀም ይችላል።</translation>
 <translation id="7174199383876220879">አዲስ! የእርስዎን ሙዚቃ፣ ቪዲዮዎች እና ተጨማሪ ነገሮች ይቆጣጠሩ።</translation>
 <translation id="7175037578838465313"><ph name="NAME" />ን አዋቅር</translation>
 <translation id="7175353351958621980">የተጫነው ከ፦</translation>
@@ -5701,13 +5714,6 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{ከገጽ ውጣ}one{ከገጾች ውጣ}other{ከገጾች ውጣ}}</translation>
 <translation id="7207457272187520234">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ ቅንብር በባለቤቱ ተፈጻሚ ይደረጋል። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="7207631048330366454">መተግበሪያዎችን ይፈልጉ</translation>
-<translation id="7210488993538120146">Voice Match Google ረዳት በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የ<ph name="SUPERVISED_USER_NAME" />ን ድምጽ ለይቶ እንዲያውቅ እና ከሌሎች ለይቶ እንዲነግረው ያግዛል።
-    <ph name="BR" />
-    ረዳቱ የልጅዎን ልዩ የድምፅ ሞዴል ለመፍጠር በመሣሪያ(ቸ)ው ላይ ብቻ የሚከማች የድምፅ ቅንጥቦቻቸውን ይወስዳል። የልጅዎን ድምጽ በተሻለ ለመለየት የድምጻቸው ሞዴል ለጊዜው ወደ Google ሊላክ ይችላል።
-    <ph name="BR" />
-    በኋላ ላይ Voice Match ለልጅዎ ትክክል አለመሆኑን ከወሰኑ በቀላሉ በረዳታቸው ቅንብሮች ውስጥ ያስወግዱት። Voice Matchን በሚያዋቅሩበት ጊዜ ልጅዎ የቀዱትን የኦዲዮ ቅንጥቦች ለመመልከት ወይም ለመሰረዝ ከልጅዎ መለያ ሆነው ወደ g.co/assistant/match ይሂዱ።
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቀረጻ የ<ph name="SUPERVISED_USER_NAME" />ን የግል ውጤቶች ሊደርስበት ይችል ይሆናል። ባትሪ ለመቆጠብ ሲባል «Hey Google» የሚበራው ይህ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ ነው።</translation>
 <translation id="7210499381659830293">የቅጥያ አታሚዎች</translation>
 <translation id="7211783048245131419">ገና ምንም ማብሪያ/ማጥፊያ አልተመደበም</translation>
 <translation id="7212097698621322584">ለመለወጥ የእርስዎን አሁን ያለውን ፒን ያስገቡ። የእርስዎን ፒን የማያውቁት ከሆነ፣ የእርስዎን የደህንነት ቁልፍ ዳግም ማቀናበር እና በመቀጠል አዲስ ፒን መፍጠር ይኖርብዎታል።</translation>
@@ -5919,7 +5925,6 @@
 <translation id="7434969625063495310">የህትመት አገልጋዩን ማከል አልተቻለም። እባክዎ የአገልጋዩን ውቅረት ይፈትሹና እንደገና ይሞክሩ።</translation>
 <translation id="7436921188514130341">ኧረ ቴች! ዳግም በሚሰየምበት ጊዜ የሆነ ስህተት ነበር።</translation>
 <translation id="7438495332316988804">መደበኛውን አሳሸ «Chrome» ብሎ ማስጀመሪያው ውስጥ በመተየብ ሊገኝ ይቻላል።</translation>
-<translation id="7439446972050308922">በGoogle መለያዎ ሲገቡ የተቀመጡ ምርጫዎችዎ በማንኛውም የChrome OS መሣሪያ ላይ ዝግጁ ይሆናሉ። በቅንብሮች ውስጥ ምን እንደሚያስምሩ መምረጥ ይችላሉ።</translation>
 <translation id="7439519621174723623">ለመቀጠል የመሣሪያ ስም ያክሉ</translation>
 <translation id="7441736921018636843">ይህን ቅንብር ለመቀየር፣ የእርስዎን የስምረት ይለፍ ሐረግ ለማስወገድ <ph name="BEGIN_LINK" />ስምረትን ዳግም ያቀናብሩ<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">ሌሎች ተጠቃሚዎች</translation>
@@ -6173,6 +6178,7 @@
 <translation id="7690853182226561458">&amp;አቃፊ አክል...</translation>
 <translation id="7691073721729883399">የኪዮስክ መተግበሪያው ክሪፕቶፎም ሊፈናጠጥ አልቻለም።</translation>
 <translation id="7691077781194517083">ይህን የደህንነት ቁልፍ ዳግም ማቀናበር አይቻልም። ስህተት <ph name="ERROR_CODE" />።</translation>
+<translation id="7691163173018300413">«Hey Google»</translation>
 <translation id="7691698019618282776">Crostiniን ማላቅ</translation>
 <translation id="7696063401938172191">በእርስዎ «<ph name="PHONE_NAME" />» ላይ፦</translation>
 <translation id="7697166915480294040">የእርስዎን ማያ ገጽ በሚያጋሩበት ጊዜ ዝርዝሮች ይደበቃሉ</translation>
@@ -6285,6 +6291,7 @@
 <translation id="7804072833593604762">ትር ተዘግቷል</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7807067443225230855">ፍለጋ እና ረዳት</translation>
+<translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> አስቀድመው በሌላ መሣሪያ ላይ Google ረዳትን ያቀናበሩ ይመስላሉ። <ph name="SUPERVISED_USER_NAME" /> በዚህ መሣሪያ ላይ የማያ ገጽ ሁኔታን በማብራት ከረዳት የበለጠ ማግኘት ይችላል።</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> ሁልጊዜ የእርስዎ ካሜራ መዳረሻ ይፈቀድለት</translation>
 <translation id="7810202088502699111">በዚህ ገጽ ብቅ-ባዮች ታግደዋል።</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" />ን Cast ያድርጉ</translation>
@@ -6339,6 +6346,7 @@
 <translation id="7847212883280406910">ወደ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ለመቀየር Ctrl + Alt + S ይጫኑ</translation>
 <translation id="7849264908733290972">&amp;ምስል በአዲስ ትር ውስጥ ክፈት</translation>
 <translation id="784934925303690534">የጊዜ ወሰን</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />ማስታወሻ፦<ph name="END_BOLD" /> ተመሳሳይ ድምፅ ወይም ቅጂ የግል ውጤቶችዎን ወይም ረዳትዎን ሊደርስባቸው ይችላል። ባትሪ ለመቆጠብ ይህ መሣሪያ ከኃይል ምንጭ ጋር ሲገናኝ ብቻ «Hey Google» እንዲበራ በረዳት ቅንብሮችዎ ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="7851457902707056880">በመለያ መግባት ለመለያው ባለቤት ብቻ ተገድቧል። እባክዎ ዳግም ያስነሱና በባለቤቱ መለያ ይግቡ። ማሽኑ በ30 ሰከንዶች ውስጥ ዳግም ይነሳል።</translation>
 <translation id="7851716364080026749">የካሜራ እና ማይክሮፎን መዳረሻ ሁልጊዜ አግድ</translation>
 <translation id="7851720427268294554">IPP ተንታኝ</translation>
@@ -6923,7 +6931,6 @@ nil</translation>
 <translation id="8480869669560681089">ያልታወቀው መሣሪያ ከ<ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">የዩኤስቢ ፈቃድን ያረጋግጡ</translation>
 <translation id="8481980314595922412">የሙከራ ባህሪዎች በርተዋል</translation>
-<translation id="8482860770919360244">በሌላ መሣሪያ ላይ የGoogle ረዳትን አስቀድመው ያቀናብሩ ይመስላል። የማያ ገጽ አውድን በማብራት ከረዳትዎ የበለጠ ያግኙ።</translation>
 <translation id="848666842773560761">አንድ መተግበሪያ ካሜራን ለመድረስ እየሞከረ ነው። መዳረሻ ለመፍቀድ የካሜራ ግላዊነት ማብሪያ/ማጥፊያውን ያጥፉት።</translation>
 <translation id="8487678622945914333">አጉላ</translation>
 <translation id="8489156414266187072">የግል የአስተያየት ጥቆማዎች በእርስዎ መለያ ላይ ብቻ ይታያሉ</translation>
@@ -7580,6 +7587,7 @@ nil</translation>
       <ph name="LIST_ITEM" />የChrome ተገናኝነት ምርመራን በማሄድ ላይ
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">በሥዕል ላይ ሥዕል</translation>
+<translation id="9166813363879986425">በGoogle መለያዎ ሲገቡ የተቀመጡ ምርጫዎችዎ እና እንቅስቃሴ በማንኛውም የChrome OS መሣሪያ ላይ ዝግጁ ይሆናሉ። በቅንብሮች ውስጥ ምን እንደሚያስምሩ መምረጥ ይችላሉ።</translation>
 <translation id="9167063903968449027">የንባብ ዝርዝርን አሳይ</translation>
 <translation id="9167450455589251456">መገለጫው አይደገፍም</translation>
 <translation id="9168436347345867845">በኋላ ያድርጉት</translation>

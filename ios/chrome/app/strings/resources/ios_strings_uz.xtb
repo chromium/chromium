@@ -151,7 +151,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2500374554657206846">Parollarni saqlash taklif qilinishi</translation>
 <translation id="2523363575747517183">Bu sayt tinimsiz boshqa ilovani ochishga urinmoqda.</translation>
 <translation id="2529021024822217800">Hammasini ochish</translation>
-<translation id="2562041823070056534"><ph name="DEVICE_NAME" /> qurilmasiga yuborilmoqda...</translation>
+<translation id="2562041823070056534">Bunga yuborilmoqda: <ph name="DEVICE_NAME" />...</translation>
 <translation id="2570206273416014374">Manzillar qatori va qidiruv oynasida kiritilgan soʻrovlar va ayrim cookie axborotlarini standart qidiruv tizimiga yuboradi.</translation>
 <translation id="2578571896248130439">Bu sahifani yuborish</translation>
 <translation id="2584132361465095047">Hisob kiritish…</translation>
@@ -475,6 +475,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5846482154967366008">Qidiruv tizimi</translation>
 <translation id="5854790677617711513">30 kundan oldin saqlanganlar</translation>
 <translation id="5857090052475505287">Yangi jild</translation>
+<translation id="5857675236236529683">Tayyor boʻlganingizda mutolaa roʻyxatingiz shu yerda chiqadi</translation>
 <translation id="5857770089550859117">Sinxronizatsiyani boshlash uchun kodli ibora zarur.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5869029295770560994">OK</translation>

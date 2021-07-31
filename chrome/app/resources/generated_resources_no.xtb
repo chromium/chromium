@@ -326,6 +326,7 @@
 <translation id="1354045473509304750">Fortsett å tillate <ph name="HOST" /> å bruke og bevege kameraet ditt</translation>
 <translation id="1355088139103479645">Vil du slette alle dataene?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> er blokkert</translation>
+<translation id="1356178530321889280">Høyreklikk og velg «Bruk Google Lens til å søke på en del av siden» for å søke i en valgfri region på nettstedet og finne ut mer om det visuelle innholdet du ser mens du surfer og handler på nettet.</translation>
 <translation id="1358741672408003399">Stavekontroll og grammatikk</translation>
 <translation id="1359923111303110318">Enheten kan låses opp med Smart Lock. Trykk på Enter for å låse opp.</translation>
 <translation id="1361164813881551742">Legg til manuelt</translation>
@@ -841,7 +842,6 @@
 <translation id="1865769994591826607">Bare tilkoblinger til samme nettsted</translation>
 <translation id="186612162884103683">«<ph name="EXTENSION" />» kan lese og redigere bilder, videofiler og lydfiler i de avmerkede mappene.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> er klar til å fullføre installasjonen</translation>
-<translation id="1868193363684582383">«Ok Google»</translation>
 <translation id="1868553836791672080">Passordsjekking er ikke tilgjengelig i Chromium</translation>
 <translation id="1869433484041798909">Bokmerkeknapp</translation>
 <translation id="1871098866036088250">Åpne i Chrome-nettleseren</translation>
@@ -1122,7 +1122,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
 <translation id="2165177462441582039">Velg hvor lenge hvert element skal fremheves</translation>
-<translation id="2165421703844373933">Få tilgang til assistenten når du sier «Ok Google». For å spare batteri, velg «På (anbefales)». Assistenten svarer bare når enheten er koblet til strøm eller står på lading.</translation>
 <translation id="2166369534954157698">Høvdingens kjære squaw får litt pizza i Mexico by</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Logg på likevel</translation>
@@ -1606,9 +1605,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2691385045260836588">Modell</translation>
 <translation id="2691440343905273290">Endre inndatainnstillinger</translation>
 <translation id="2693176596243495071">Beklager. En ukjent feil oppsto. Prøv på nytt senere, eller kontakt administratoren hvis problemet fortsetter.</translation>
-<translation id="2693640212062142966">Med Voice Match kan Google-assistenten identifisere stemmen din på <ph name="DEVICE_TYPE" /> og skille deg fra andre. For å spare batteri er «Hey Google» bare på når enheten er koblet til en strømkilde. For å gjøre endringer, gå til Innstillinger.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Husk:<ph name="END_BOLD" /> Det kan hende at lignende stemmer eller opptak av stemmen din også kan brukes for å få tilgang til de personlige resultatene dine. Du kan fjerne Voice Match-tillatelsen senere ved å slå den av i Assistent-innstillingene.</translation>
 <translation id="2699911226086014512">PIN-kodehandlingen mislyktes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Logg på, <ph name="EMAIL" /></translation>
@@ -2985,7 +2981,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4154664944169082762">Fingeravtrykk</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Bestått</translation>
-<translation id="4159163871835771155">For å få skreddersydde svar når <ph name="SUPERVISED_USER_NAME" /> stiller spørsmål, la assistenten bruke informasjon på skjermen til <ph name="SUPERVISED_USER_NAME" />. Dette kan inkludere informasjon om sanger eller videoer som spilles av.</translation>
 <translation id="4159681666905192102">Dette er en konto for barn som administreres av <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Ukjent tastatur</translation>
 <translation id="4167686856635546851">Nettsteder bruker vanligvis JavaScript for å kunne vise interaktive funksjoner, som spill eller nettskjemaer</translation>
@@ -3623,7 +3618,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Åpne med visningsprogrammet for systemet</translation>
 <translation id="488785315393301722">Vis detaljer</translation>
-<translation id="4889792122460431731">For å få skreddersydde svar når du stiller spørsmål, kan du la assistenten bruke informasjon på skjermen. Dette kan omfatte informasjon om sanger eller videoer som spilles av.</translation>
 <translation id="4890773143211625964">Vis avanserte skriveralternativer</translation>
 <translation id="4891089016822695758">Forumet for betaversjoner</translation>
 <translation id="4892229439761351791">Nettstedet kan bruke Bluetooth</translation>
@@ -3838,7 +3832,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profilen kunne ikke lastes ned. Prøv på nytt senere, eller kontakt operatøren for å få hjelp.</translation>
 <translation id="5131591206283983824">Trykk og dra med styreflaten</translation>
-<translation id="5135085122826131075">Få tilgang til assistenten når du sier «Ok Google».</translation>
 <translation id="5135533361271311778">Kan ikke opprette bokmerkeelement.</translation>
 <translation id="5136343472380336530">Kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Slett denne oppføringen</translation>
@@ -4256,7 +4249,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5585912436068747822">Formateringen mislyktes</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Laster inn apper …</translation>
-<translation id="5590265327628802792">Det ser ut til at <ph name="SUPERVISED_USER_NAME" /> allerede har konfigurert Google-assistenten på en annen enhet. <ph name="SUPERVISED_USER_NAME" /> kan få enda mer ut av assistenten ved å slå på Skjermkontekst.</translation>
 <translation id="5592595402373377407">Nok data er ikke tilgjengelig ennå.</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
@@ -4883,9 +4875,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6294759976468837022">Hastighet for automatisk skanning</translation>
 <translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="6295855836753816081">Lagrer …</translation>
-<translation id="6298800237463568825">Med Voice Match kan Google-assistenten identifisere stemmen din på <ph name="DEVICE_TYPE" /> og skille deg fra andre.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Husk:<ph name="END_BOLD" /> Det kan hende at lignende stemmer eller opptak av stemmen din også kan brukes for å få tilgang til de personlige resultatene dine. Du kan fjerne Voice Match-tillatelsen senere ved å slå den av i Assistent-innstillingene.</translation>
 <translation id="6298962879096096191">Bruk Google Play til å installere Android-apper</translation>
 <translation id="6300177430812514606">Nettsteder som ikke har lov til å fullføre sending eller mottak av data</translation>
 <translation id="630065524203833229">&amp;Avslutt</translation>
@@ -5669,7 +5658,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7171559745792467651">Installer apper fra de andre enhetene du bruker</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
-<translation id="7173336557300642430">For å få svar som er mer skreddersydd for deg, kan du la Google-assistenten bruke informasjon på skjermen din når du stiller spørsmål. Assistenten kan også bruke informasjon om sanger eller videoer som spilles av.</translation>
 <translation id="7174199383876220879">Nyhet! Styr musikk, video og mer.</translation>
 <translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Lastet fra:</translation>
@@ -5700,13 +5688,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="7207457272187520234">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="7207631048330366454">Søk etter apper</translation>
-<translation id="7210488993538120146">Med Voice Match kan Google-assistenten identifisere stemmen til <ph name="SUPERVISED_USER_NAME" /> på <ph name="DEVICE_TYPE" /> og skille den fra andre.
-    <ph name="BR" />
-    Assistenten bruker klipp av barnets stemme til å lage en unik stemmemodell, som bare lagres på barnets enhet(er). Stemmemodellen til barnet kan bli sendt til Google midlertidig for å kunne identifisere barnets stemme bedre.
-    <ph name="BR" />
-    Hvis du senere kommer frem til at barnet ikke skal ha Voice Match, kan du fjerne dette i barnets Assistent-innstillinger. For å se eller slette lydklippene barnet tar opp under Voice Match-konfigureringen, gå til g.co/assistant/match med barnets konto.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Det kan hende at lignende stemmer eller opptak av stemmen til barnet kan brukes for å få tilgang til de personlige resultatene til <ph name="SUPERVISED_USER_NAME" />. For å spare batteri er «Hey Google» bare på når enheten er koblet til en strømkilde.</translation>
 <translation id="7210499381659830293">Utvidelsesskrivere</translation>
 <translation id="7211783048245131419">Ingen bryter er tilordnet ennå</translation>
 <translation id="7212097698621322584">Skriv inn den nåværende PIN-koden for å endre den. Hvis du ikke kan PIN-koden, må du tilbakestille sikkerhetsnøkkelen og deretter opprette en ny PIN-kode.</translation>
@@ -5918,7 +5899,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7434969625063495310">Kunne ikke legge til utskriftstjeneren. Kontrollér tjenerens konfigurasjon, og prøv på nytt.</translation>
 <translation id="7436921188514130341">Æsj! Det oppsto en feil under navneendringen.</translation>
 <translation id="7438495332316988804">Du finner standardnettleseren ved å skrive inn «Chrome» i Appoversikt.</translation>
-<translation id="7439446972050308922">De lagrede preferansene dine er klare på alle Chrome OS-enheter når du logger på med Google-kontoen din. Du kan velge hva du vil synkronisere, i Innstillinger.</translation>
 <translation id="7439519621174723623">Legg til et enhetsnavn for å fortsette</translation>
 <translation id="7441736921018636843">For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronisering<ph name="END_LINK" /> for å fjerne passordfrasen din for synkronisering</translation>
 <translation id="7441830548568730290">Andre brukere</translation>
@@ -6916,7 +6896,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8480869669560681089">Ukjent enhet fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekreft USB-tillatelse</translation>
 <translation id="8481980314595922412">Prøvefunksjoner er påslått</translation>
-<translation id="8482860770919360244">Ser ut til at du allerede har konfigurert Google-assistenten på en annen enhet. Få enda mer ut av assistenten ved å slå på skjermkontekst.</translation>
 <translation id="848666842773560761">En app prøver å bruke kameraet. Slå av personvernbryteren for kamera for å gi tilgang.</translation>
 <translation id="8487678622945914333">Zoom inn</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på kontoen din</translation>

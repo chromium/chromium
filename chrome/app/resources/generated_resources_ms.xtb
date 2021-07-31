@@ -313,6 +313,7 @@
 <translation id="1336902454946927954">Kunci keselamatan anda dikunci kerana cap jari anda tidak dapat dikenal pasti. Untuk membuka kunci keselamatan itu, masukkan PIN anda.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ingin membuka aplikasi ini.</translation>
 <translation id="1338950911836659113">Memadamkan...</translation>
+<translation id="1339009753652684748">Akses Assistant anda apabila anda menyebut "Ok Google". Untuk menjimatkan bateri, pilih “Hidup (Disyorkan)”. Assistant anda hanya akan memberikan respons apabila peranti anda dipasang palam atau mengecas.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sandarkan media dari peranti menggunakan apl Fail.</translation>
 <translation id="1341988552785875222">Kertas dinding semasa ditetapkan oleh '<ph name="APP_NAME" />'. Anda mungkin perlu menyahpasang '<ph name="APP_NAME" />' sebelum memilih kertas dinding lain.</translation>
@@ -448,6 +449,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> menghendaki anda memastikan kad pintar anda tidak dikeluarkan.</translation>
 <translation id="1478340334823509079">Butiran: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Pemasangan tidak didayakan</translation>
+<translation id="1480571698637441426">Untuk mendapatkan respons yang disesuaikan apabila anda mengemukakan soalan, benarkan Assistant mengakses tangkapan skrin bagi paparan skrin anda. Paparan ini mungkin juga termasuk maklumat tentang lagu atau video yang sedang dimainkan.</translation>
 <translation id="1481537595330271162">Ralat semasa mengubah saiz cakera</translation>
 <translation id="1482626744466814421">Tanda Tab Ini...</translation>
 <translation id="1483272013430662157">Apl web boleh meminta untuk membuka jenis fail</translation>
@@ -848,7 +850,6 @@
 <translation id="1865769994591826607">Sambungan tapak yang sama sahaja</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" boleh membaca dan menulis fail imej, video dan bunyi di lokasi yang ditandai.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> sedia untuk melengkapkan pemasangan anda</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Semakan kata laluan tidak tersedia dalam Chromium</translation>
 <translation id="1869433484041798909">Butang penanda halaman</translation>
 <translation id="1871098866036088250">Buka dalam penyemak imbas Chrome</translation>
@@ -1129,7 +1130,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2163937499206714165">Hidupkan mod gelap</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dan 1 lagi suis</translation>
 <translation id="2165177462441582039">Pilih tempoh serlahan dipaparkan pada setiap item</translation>
-<translation id="2165421703844373933">Akses Assistant anda apabila anda menyebut "Ok Google". Untuk menjimatkan bateri, pilih “Hidup (Disyorkan)”. Assistant anda hanya akan memberikan respons apabila peranti anda dipasang palam atau mengecas.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Log masuk juga</translation>
@@ -1263,6 +1263,15 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" telah meminta kebenaran tambahan.</translation>
 <translation id="23055578400314116">Pilih nama pengguna</translation>
 <translation id="2307462900900812319">Konfigurasikan rangkaian</translation>
+<translation id="2307553512430195144">Jika anda bersetuju, dengan Voice Match, Google Assistant akan menunggu dalam mod tunggu sedia untuk mengesan “Ok Google” dan boleh mengecam <ph name="SUPERVISED_USER_NAME" /> yang bercakap.
+    <ph name="BR" />
+    Voice Match membantu Google Assistant mengenal pasti suara <ph name="SUPERVISED_USER_NAME" /> pada <ph name="DEVICE_TYPE" /> anda dan membezakan dia daripada orang lain.
+    <ph name="BR" />
+    Assistant mengambil klip suara anak anda untuk membentuk model suara yang unik, yang hanya disimpan pada peranti mereka. Model suara anak anda mungkin dihantar buat sementara waktu kepada Google untuk mengenal pasti suara mereka dengan lebih baik.
+    <ph name="BR" />
+    Jika nanti anda memutuskan bahawa Voice Match tidak sesuai untuk anak anda, hanya alih keluar ciri itu dalam Tetapan Assistant mereka. Untuk melihat atau memadamkan klip audio yang dirakam oleh anak anda semasa persediaan Voice Match, pergi ke <ph name="VOICE_MATCH_SETTINGS_URL" /> daripada akaun anak anda.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Halaman ini mahu memasang pengendali perkhidmatan.</translation>
 <translation id="2309620859903500144">Tapak ini telah disekat daripada mengakses penderia gerakan atau cahaya anda.</translation>
 <translation id="2312219318583366810">URL halaman</translation>
@@ -1392,6 +1401,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2450849356604136918">Tiada paparan aktif</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Laman biasanya menyambung kepada port bersiri untuk ciri pemindahan data, seperti menyediakan rangkaian anda</translation>
+<translation id="2453706416476934374">Untuk mendapatkan respons yang disesuaikan apabila <ph name="SUPERVISED_USER_NAME" /> mengemukakan soalan, benarkan Assistant mengakses tangkapan skrin bagi paparan skrin <ph name="SUPERVISED_USER_NAME" />. Paparan ini mungkin juga termasuk maklumat tentang lagu atau video yang sedang dimainkan.</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2454247629720664989">Kata kunci</translation>
 <translation id="2454264884354864965">Kamera dimatikan</translation>
@@ -1613,9 +1623,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Tukar tetapan masukan</translation>
 <translation id="2693176596243495071">Op! Ralat yang tidak diketahui telah berlaku. Sila cuba lagi nanti atau hubungi pentadbir anda jika isu ini berterusan.</translation>
-<translation id="2693640212062142966">Voice Match membantu Google Assistant mengenal pasti suara anda pada <ph name="DEVICE_TYPE" /> dan membezakan anda daripada orang lain. Untuk menjimatkan bateri, “Ok Google” hanya dihidupkan apabila peranti anda disambungkan kepada sumber kuasa. Untuk membuat perubahan, pergi ke Tetapan.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Perlu diingat:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian anda juga. Anda boleh mengalih keluar kebenaran Voice Match kemudian dengan mematikannya dalam Tetapan Assistant.</translation>
 <translation id="2699911226086014512">Operasi PIN gagal dengan kod <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Dikongsi daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log masuk, <ph name="EMAIL" /></translation>
@@ -2103,6 +2110,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="32101887417650595">Tidak dapat menyambungkan ke pencetak</translation>
 <translation id="321084946921799184">Kuning dan putih</translation>
 <translation id="321356136776075234">OU Peranti (mis. OU=Chromebooks,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" />Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3216825226035747725">Pentadbir G Suite for Education menentukan perkhidmatan Google yang boleh diakses oleh pengguna mereka semasa log masuk ke akaun G Suite for Education. Ini mungkin termasuk sesetengah ciri atau perkhidmatan yang sebelum ini tidak dapat diakses oleh anak anda menggunakan akaun yang diawasi ini. Pentadbir sekolah dikehendaki memberikan atau memperoleh persetujuan untuk penggunaan perkhidmatan tersebut oleh pengguna bawah umur mereka.</translation>
 <translation id="3217843140356091325">Buat pintasan?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2280,6 +2288,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3417836307470882032">Masa tentera</translation>
 <translation id="3420501302812554910">Kunci keselamatan dalaman memerlukan penetapan semula</translation>
 <translation id="3421387094817716717">Kunci Awam Lengkung Eliptik</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian atau Assistant anda.</translation>
 <translation id="3422291238483866753">Tanya apabila tapak mahu membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera (disyorkan)</translation>
 <translation id="3423463006624419153">Pada '<ph name="PHONE_NAME_1" />' dan '<ph name="PHONE_NAME_2" />' anda:</translation>
 <translation id="3423858849633684918">Sila Lancarkan Semula <ph name="PRODUCT_NAME" /></translation>
@@ -2994,7 +3003,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4154664944169082762">Cap jari</translation>
 <translation id="4157869833395312646">Kriptografi Berpintu Pelayan Microsoft</translation>
 <translation id="4158364720893025815">Pas</translation>
-<translation id="4159163871835771155">Untuk mendapatkan respons yang disesuaikan apabila <ph name="SUPERVISED_USER_NAME" /> mengemukakan soalan, benarkan Assistant menggunakan maklumat pada skrin <ph name="SUPERVISED_USER_NAME" />. Maklumat ini mungkin termasuk maklumat tentang lagu atau video yang sedang dimainkan.</translation>
 <translation id="4159681666905192102">Ini ialah akaun untuk kanak-kanak yang diurus oleh <ph name="CUSTODIAN_EMAIL" /> dan <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Papan kekunci yang tidak diketahui.</translation>
 <translation id="4167686856635546851">Tapak biasanya menggunakan JavaScript untuk memaparkan ciri interaktif, seperti permainan video atau borang web</translation>
@@ -3633,7 +3641,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Buka Dengan Pemapar Sistem</translation>
 <translation id="488785315393301722">Tunjukkan Butiran</translation>
-<translation id="4889792122460431731">Untuk mendapatkan respons yang disesuaikan apabila anda mengemukakan soalan, benarkan Assistant menggunakan maklumat pada skrin anda. Maklumat ini mungkin termasuk maklumat tentang lagu atau video yang sedang dimainkan.</translation>
 <translation id="4890773143211625964">Tunjukkan pilihan terperinci pencetak</translation>
 <translation id="4891089016822695758">Forum beta</translation>
 <translation id="4892229439761351791">Tapak boleh menggunakan Bluetooth</translation>
@@ -3848,7 +3855,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profil tidak dapat dimuat turun. Sila cuba sebentar lagi atau hubungi pembawa untuk mendapatkan bantuan.</translation>
 <translation id="5131591206283983824">Penyeretan ketikan pad sentuh</translation>
-<translation id="5135085122826131075">Akses Assistant anda apabila anda menyebut "Ok Google".</translation>
 <translation id="5135533361271311778">Tidak dapat mencipta item penanda halaman.</translation>
 <translation id="5136343472380336530">Pastikan kedua-dua peranti dibuka dikunci, berada rapat di antara satu sama lain dan Bluetooth telah dihidupkan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Padam item ini</translation>
@@ -4266,7 +4272,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5585912436068747822">Pemformatan gagal</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Memuatkan apl...</translation>
-<translation id="5590265327628802792">Nampaknya <ph name="SUPERVISED_USER_NAME" /> telah pun menyediakan Google Assistant pada peranti lain. <ph name="SUPERVISED_USER_NAME" /> boleh mendapatkan pelbagai lagi manfaat daripada Assistant dengan menghidupkan Konteks skrin.</translation>
 <translation id="5592595402373377407">Data yang mencukupi belum tersedia lagi.</translation>
 <translation id="5595485650161345191">Edit alamat</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
@@ -4673,6 +4678,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6059652578941944813">Hierarki Sijil</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
 <translation id="6061882183774845124">Hantar pautan ke peranti anda</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" />Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian <ph name="SUPERVISED_USER_NAME" />. Untuk menjimatkan bateri, dalam tetapan Assistant <ph name="SUPERVISED_USER_NAME" />, anda boleh memilih untuk menghidupkan “Ok Google” hanya semasa peranti ini disambungkan kepada sumber kuasa.</translation>
 <translation id="6064217302520318294">Kunci skrin</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sijil</translation>
 <translation id="6066794465984119824">Cincangan imej tidak ditetapkan</translation>
@@ -4893,9 +4899,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6294759976468837022">Kelajuan autoimbas</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
-<translation id="6298800237463568825">Voice Match membantu Google Assistant mengenal pasti suara anda pada <ph name="DEVICE_TYPE" /> dan membezakan anda daripada orang lain.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Perlu diingat:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian anda juga. Anda boleh mengalih keluar kebenaran Voice Match kemudian dengan mematikannya dalam Tetapan Assistant.</translation>
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
 <translation id="6300177430812514606">Tidak dibenarkan untuk menyelesaikan penghantaran atau penerimaan data</translation>
 <translation id="630065524203833229">K&amp;eluar</translation>
@@ -4950,6 +4953,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6345878117466430440">Tandai sebagai dibaca</translation>
 <translation id="6349101878882523185">Pasang <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Lengkung eliptik SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Penyemak imbas percubaan (kualiti alfa)! Sesetengah ciri tiada atau tidak lengkap. Laporkan isu pada: Bantuan &gt; "Laporkan isu...".</translation>
 <translation id="635609604405270300">Sentiasa hidupkan peranti</translation>
 <translation id="63566973648609420">Hanya orang yang tahu ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu <ph name="BEGIN_LINK" />menetapkan semula penyegerakan<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Naga</translation>
@@ -5015,6 +5019,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6434309073475700221">Buang</translation>
 <translation id="6434325376267409267">Peranti anda perlu dikemas kini sebelum anda boleh menggunakan <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Lihat di Kedai Web</translation>
+<translation id="6436610005579237680">Untuk mendapatkan respons yang lebih disesuaikan dengan anda, benarkan Google Assistant mengakses tangkapan skrin bagi paparan skrin anda apabila anda mengemukakan soalan. Assistant juga mungkin menggunakan maklumat tentang lagu atau video yang sedang dimainkan.</translation>
 <translation id="6438234780621650381">Tetapkan semula tetapan</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audio sedang dimainkan</translation>
 <translation id="6442187272350399447">Hebat</translation>
@@ -5151,6 +5156,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6582274660680936615">Anda sedang menyemak imbas sebagai Tetamu</translation>
 <translation id="6584878029876017575">Menandatangani Microsoft Sepanjang Hayat</translation>
 <translation id="6586099239452884121">Penyemakan imbas tetamu</translation>
+<translation id="6586213706115310390">Akses Assistant anda apabila anda menyebut "Ok Google".</translation>
 <translation id="6586451623538375658">Tukar butang tetikus utama</translation>
 <translation id="6586604979641883411">Sekurang-kurangnya <ph name="REQUIRED_SPACE" /> ruang cakera kosong diperlukan untuk meningkatkan Linux. Sila kosongkan sedikit ruang pada peranti anda dan cuba lagi.</translation>
 <translation id="6588043302623806746">Gunakan DNS selamat</translation>
@@ -5170,6 +5176,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6602937173026466876">Akses pencetak anda</translation>
 <translation id="6602956230557165253">Gunakan kekunci anak panah kiri dan kanan untuk menavigasi.</translation>
 <translation id="6605847144724004692">Belum dinilai oleh mana-mana pengguna.</translation>
+<translation id="6606671997164410857">Nampaknya anda telah pun menyediakan Google Assistant pada peranti lain. Dapatkan pelbagai lagi manfaat daripada Assistant anda dengan menghidupkan Konteks skrin pada peranti ini.</translation>
 <translation id="6607831829715835317">Lagi al&amp;at</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> sudah diurus oleh <ph name="DOMAIN" />. Untuk menggunakan kawalan ibu bapa dengan Akaun Google yang berbeza, log keluar selepas persediaan, kemudian pilih "Tambah orang" pada skrin log masuk.</translation>
 <translation id="6609478180749378879">Data log masuk akan disimpan pada peranti ini selepas anda keluar daripada mod Inkognito. Anda akan dapat log masuk ke laman web ini menggunakan peranti anda kemudian.</translation>
@@ -5349,6 +5356,13 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="6808039367995747522">Untuk meneruskan, masukkan dan sentuh kunci keselamatan anda</translation>
 <translation id="6808193438228982088">Rubah</translation>
 <translation id="6809470175540814047">Buka dalam tetingkap Inkognito</translation>
+<translation id="6809656734323672573">Jika anda bersetuju, dengan Voice Match, Google Assistant akan menunggu dalam mod tunggu sedia untuk mengesan “Ok Google” dan boleh mengecam anda yang bercakap.
+    <ph name="BR" />
+    Voice Match membolehkan Assistant mengecam anda dan membezakan anda daripada orang lain. Assistant mengambil klip suara anda untuk membentuk model suara yang unik, yang hanya disimpan pada peranti anda. Model suara anda mungkin dihantar kepada Google buat sementara untuk mengecam suara anda dengan lebih baik.
+    <ph name="BR" />
+    Jika pada bila-bila masa nanti anda memutuskan bahawa Voice Match tidak sesuai untuk anda, cuma alih keluar ciri ini dalam Tetapan Assistant. Untuk melihat atau memadamkan klip audio yang anda rakam semasa persediaan Voice Match, pergi ke <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Log masuk secara automatik ke tapak web menggunakan bukti kelayakan yang disimpan. Apabila ciri ini dilumpuhkan, anda akan diminta memberikan pengesahan setiap kali sebelum mengelog masuk ke tapak web.</translation>
 <translation id="6810768462515084623">Op! Nampaknya kata laluan anda telah tamat tempoh. Sila perbaharui kata laluan anda pada peranti lain dan cuba lagi.</translation>
 <translation id="6811034713472274749">Halaman sedia untuk dipaparkan</translation>
@@ -5679,7 +5693,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7171559745792467651">Pasang apl daripada peranti anda yang lain</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Tambahkan tab pada kumpulan baharu}other{Tambahkan tab pada kumpulan baharu}}</translation>
 <translation id="7173114856073700355">Buka Tetapan</translation>
-<translation id="7173336557300642430">Untuk mendapatkan respons yang lebih disesuaikan dengan anda, benarkan Google Assistant menggunakan maklumat pada skrin semasa anda mengemukakan soalan. Assistant juga mungkin menggunakan maklumat tentang lagu atau video yang sedang dimainkan.</translation>
 <translation id="7174199383876220879">Baharu! Kawal muzik, video anda dan banyak lagi.</translation>
 <translation id="7175037578838465313">Konfigurasikan <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Dimuatkan daripada:</translation>
@@ -5710,13 +5723,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Keluar daripada halaman}other{Keluar daripada halaman}}</translation>
 <translation id="7207457272187520234">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Tetapan ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda.</translation>
 <translation id="7207631048330366454">Cari apl</translation>
-<translation id="7210488993538120146">Voice Match membantu Google Assistant mengenal pasti suara <ph name="SUPERVISED_USER_NAME" /> pada <ph name="DEVICE_TYPE" /> anda dan membezakan suara itu daripada suara orang lain.
-    <ph name="BR" />
-    Assistant mengambil klip suara anak anda untuk membentuk model suara yang unik, yang hanya disimpan pada peranti mereka. Model suara anak anda mungkin dihantar buat sementara waktu kepada Google untuk mengenal pasti suara mereka dengan lebih baik.
-    <ph name="BR" />
-    Jika nanti anda memutuskan bahawa Voice Match tidak sesuai untuk anak anda, hanya alih keluar ciri itu dalam Tetapan Assistant mereka. Untuk melihat atau memadamkan klip audio yang dirakam oleh anak anda semasa persediaan Voice Match, pergi ke g.co/assistant/match daripada akaun anak anda.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian <ph name="SUPERVISED_USER_NAME" /> juga. Untuk menjimatkan bateri, “Ok Google” hanya dihidupkan apabila peranti ini disambungkan kepada sumber kuasa.</translation>
 <translation id="7210499381659830293">Pencetak sambungan</translation>
 <translation id="7211783048245131419">Belum ada suis yang telah ditetapkan</translation>
 <translation id="7212097698621322584">Masukkan PIN semasa anda untuk menukar PIN. Jika anda tidak tahu PIN anda, anda perlu menetapkan semula kunci keselamatan, kemudian buat PIN baharu.</translation>
@@ -5928,7 +5934,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7434969625063495310">Tidak dapat menambahkan pelayan cetak. Sila semak konfigurasi pelayan dan cuba lagi.</translation>
 <translation id="7436921188514130341">Oh, Tidak! Ralat berlaku semasa penamaan semula.</translation>
 <translation id="7438495332316988804">Penyemak imbas standard boleh ditemukan dengan menaip "Chrome" dalam Pelancar.</translation>
-<translation id="7439446972050308922">Pilihan anda yang disimpan akan sedia pada mana-mana peranti Chrome OS apabila anda log masuk dengan Akaun Google anda. Anda boleh memilih item yang hendak disegerakkan dalam Tetapan.</translation>
 <translation id="7439519621174723623">Tambah nama peranti untuk meneruskan proses ini</translation>
 <translation id="7441736921018636843">Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /> untuk mengalih keluar ungkapan laluan penyegerakan anda</translation>
 <translation id="7441830548568730290">Pengguna lain</translation>
@@ -6182,6 +6187,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7690853182226561458">Tambah &amp;folder...</translation>
 <translation id="7691073721729883399">Kriptohom untuk aplikasi kios tidak dapat dilekapkan.</translation>
 <translation id="7691077781194517083">Tidak dapat menetapkan semula kunci keselamatan ini. Ralat <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Peningkatan Crostini</translation>
 <translation id="7696063401938172191">Pada '<ph name="PHONE_NAME" />' anda:</translation>
 <translation id="7697166915480294040">Butiran disembunyikan semasa anda berkongsi skrin anda</translation>
@@ -6294,6 +6300,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7804072833593604762">Tab Ditutup</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Carian dan Pembantu</translation>
+<translation id="7807117920154132308">Nampaknya <ph name="SUPERVISED_USER_NAME" /> telah pun menyediakan Google Assistant pada peranti lain. <ph name="SUPERVISED_USER_NAME" /> boleh mendapatkan pelbagai lagi manfaat daripada Assistant dengan menghidupkan Konteks skrin pada peranti ini.</translation>
 <translation id="7807711621188256451">Sentiasa benarkan <ph name="HOST" /> mengakses kamera anda</translation>
 <translation id="7810202088502699111">Pop muncul disekat pada halaman ini.</translation>
 <translation id="781167124805380294">Hantar <ph name="FILE_NAME" /></translation>
@@ -6348,6 +6355,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7847212883280406910">Tekan Ctrl + Alt + S untuk beralih kepada <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Buka &amp;Imej dalam Tab Baharu</translation>
 <translation id="784934925303690534">Julat masa</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil persendirian atau Assistant anda. Untuk menjimatkan bateri, dalam tetapan Assistant, anda boleh memilih untuk menghidupkan “Ok Google” hanya semasa peranti ini disambungkan kepada sumber kuasa.</translation>
 <translation id="7851457902707056880">Log masuk telah dihadkan untuk akaun pemilik sahaja. Sila mulakan semula dan log masuk dengan akaun pemilik. Mesin akan mula semula secara automatik dalam 30 saat.</translation>
 <translation id="7851716364080026749">Sentiasa halang akses kamera dan mikrofon</translation>
 <translation id="7851720427268294554">Penghurai IPP</translation>
@@ -6928,7 +6936,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8480869669560681089">Peranti tidak diketahui daripada <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Sahkan Kebenaran USB</translation>
 <translation id="8481980314595922412">Ciri percubaan dihidupkan</translation>
-<translation id="8482860770919360244">Nampaknya anda telah pun menyediakan Google Assistant pada peranti lain. Dapatkan pelbagai lagi manfaat daripada Assistant anda dengan menghidupkan Konteks skrin.</translation>
 <translation id="848666842773560761">Satu apl sedang cuba mengakses kamera. Matikan suis privasi kamera untuk membenarkan akses.</translation>
 <translation id="8487678622945914333">Zum Masuk</translation>
 <translation id="8489156414266187072">Cadangan peribadi hanya dipaparkan pada akaun anda</translation>
@@ -7584,6 +7591,7 @@ Anda boleh menguntukkan berbilang suis kepada tindakan ini</translation>
       <ph name="LIST_ITEM" />Jalankan Diagnostik Kesambungan
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Gambar dalam Gambar</translation>
+<translation id="9166813363879986425">Pilihan dan aktiviti anda yang disimpan akan sedia pada mana-mana peranti Chrome OS apabila anda log masuk dengan Akaun Google anda. Anda boleh memilih item yang hendak disegerakkan dalam Tetapan.</translation>
 <translation id="9167063903968449027">Paparkan Senarai Bacaan</translation>
 <translation id="9167450455589251456">Profil tidak disokong</translation>
 <translation id="9168436347345867845">Lakukan kemudian</translation>

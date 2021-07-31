@@ -311,6 +311,7 @@
 <translation id="1336902454946927954">La clau de seguretat està bloquejada perquè la teva empremta digital no s'ha pogut reconèixer. Per desbloquejar-la, introdueix el PIN.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vol obrir aquesta aplicació.</translation>
 <translation id="1338950911836659113">S'està suprimint...</translation>
+<translation id="1339009753652684748">Accedeix a l'Assistent dient "Hey Google". Per estalviar bateria, escull “Activat (opció recomanada)”. El teu Assistent respondrà només quan es connecti o es carregui el dispositiu.</translation>
 <translation id="13392265090583506">Accessibilitat</translation>
 <translation id="1340527397989195812">Feu una còpia de seguretat dels fitxers multimèdia del dispositiu mitjançant l'aplicació Fitxers.</translation>
 <translation id="1341988552785875222"><ph name="APP_NAME" /> ha definit el fons de pantalla actual. És possible que hàgiu de desinstal·lar <ph name="APP_NAME" /> per poder seleccionar-ne un altre.</translation>
@@ -445,6 +446,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
 <translation id="1478340334823509079">Detalls: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">La instal·lació no està activada</translation>
+<translation id="1480571698637441426">Per obtenir respostes personalitzades quan facis preguntes, permet que l'Assistent tingui accés a una captura de la teva pantalla en aquell moment. També s'hi pot incloure informació sobre les cançons o els vídeos que s'estiguin reproduint.</translation>
 <translation id="1481537595330271162">S'ha produït un error en canviar la mida del disc</translation>
 <translation id="1482626744466814421">Afegeix aquesta pestanya a les adreces d'interès...</translation>
 <translation id="1483272013430662157">Les aplicacions web poden demanar-te permís per obrir certs tipus de fitxers</translation>
@@ -836,7 +838,6 @@
 <translation id="1865769994591826607">Només les connexions dins del mateix lloc</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" pot llegir imatges, vídeos i fitxers d'àudio de les ubicacions marcades, així com escriure-hi.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> està llest per completar la instal·lació</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">La comprovació de contrasenyes no està disponible a Chromium</translation>
 <translation id="1869433484041798909">Botó d'adreça d'interès</translation>
 <translation id="1871098866036088250">Obre al navegador Chrome</translation>
@@ -1116,7 +1117,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2163937499206714165">Activa el mode fosc</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i 1 interruptor més</translation>
 <translation id="2165177462441582039">Tria durant quant de temps ha d'estar marcat cada element</translation>
-<translation id="2165421703844373933">Accedeix a l'assistent quan diguis "Ok Google". Per estalviar bateria, escull “Activat (opció recomanada)”. El teu Assistent respondrà només quan es connecti o es carregui el dispositiu.</translation>
 <translation id="2166369534954157698">L'àgil guineu marró salta per sobre del gos mandrós</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Inicia la sessió de tota manera</translation>
@@ -1247,6 +1247,15 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha sol·licitat permisos addicionals.</translation>
 <translation id="23055578400314116">Selecciona un nom d'usuari</translation>
 <translation id="2307462900900812319">Configura la xarxa</translation>
+<translation id="2307553512430195144">Si ho acceptes, l'Assistent de Google es quedarà en mode d'espera, amb la capacitat de detectar "Hey Google" i reconèixer si <ph name="SUPERVISED_USER_NAME" /> hi parla mitjançant Voice Match.
+    <ph name="BR" />
+    Voice Match ajuda l'Assistent de Google a identificar la veu de <ph name="SUPERVISED_USER_NAME" /> a <ph name="DEVICE_TYPE" /> i a distingir-la d'altres veus.
+    <ph name="BR" />
+    L'Assistent grava clips de la veu del teu fill o filla per crear un model de veu únic, que només s'emmagatzema als seus dispositius. És possible que el model de veu del teu fill o filla s'enviï a Google temporalment per identificar millor la seva veu.
+    <ph name="BR" />
+    Si més tard decideixes que la funció Voice Match no és adequada per al teu fill o filla, només cal que la suprimeixis a la seva configuració de l'Assistent. Per veure o suprimir els clips d'àudio que gravi el teu fill o filla durant la configuració de Voice Match, ves a <ph name="VOICE_MATCH_SETTINGS_URL" /> des del seu compte.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Aquesta pàgina vol instal·lar un gestor de serveis.</translation>
 <translation id="2309620859903500144">Aquest lloc web no té permís per accedir als sensors de llum o moviment.</translation>
 <translation id="2312219318583366810">URL de la pàgina</translation>
@@ -1376,6 +1385,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2450849356604136918">No hi ha cap visualització activa</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Els llocs web solen connectar-se a ports en sèrie per a funcions de transferència de dades, com ara configurar la teva xarxa</translation>
+<translation id="2453706416476934374">Per obtenir respostes personalitzades quan <ph name="SUPERVISED_USER_NAME" /> faci preguntes, permet que l'Assistent accedeixi a una captura de la pantalla de: <ph name="SUPERVISED_USER_NAME" />. També s'hi pot incloure informació sobre les cançons o els vídeos que s'estiguin reproduint.</translation>
 <translation id="2453860139492968684">Finalitza</translation>
 <translation id="2454247629720664989">Paraula clau</translation>
 <translation id="2454264884354864965">La càmera està desactivada</translation>
@@ -1597,9 +1607,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Canvia la configuració de la introducció</translation>
 <translation id="2693176596243495071">S'ha produït un error desconegut. Torna-ho a provar més tard o contacta amb l'administrador si el problema no es resol.</translation>
-<translation id="2693640212062142966">Voice Match ajuda l'Assistent de Google a identificar la teva veu al dispositiu <ph name="DEVICE_TYPE" /> i a distingir-te d'altres persones. Per estalviar bateria, "Hey Google" només està activat quan el dispositiu està connectat a una font d'alimentació. Per fer canvis, ves a Configuració.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Important<ph name="END_BOLD" />: és possible que una veu o una gravació similars també tinguin accés als teus resultats personals. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
 <translation id="2699911226086014512">Ha fallat l'operació del PIN; codi: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">S'ha compartit des del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicia la sessió, <ph name="EMAIL" /></translation>
@@ -2087,6 +2094,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="32101887417650595">No es pot connectar amb la impressora</translation>
 <translation id="321084946921799184">Groc i blanc</translation>
 <translation id="321356136776075234">UO del dispositiu (per exemple, UO = dispositius Chromebook, CD = example, CD = com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que algú amb la veu semblant a la de <ph name="SUPERVISED_USER_NAME" /> o amb una gravació similar pugui accedir als seus resultats personals.</translation>
 <translation id="3216825226035747725">Els administradors de G Suite for Education determinen a quins serveis de Google poden accedir els usuaris mentre tenen la sessió iniciada en un compte d'aquest producte. Això pot incloure algunes funcions o serveis a què el teu fill no podia accedir anteriorment utilitzant aquest compte supervisat. Els administradors dels centres educatius han de proporcionar o obtenir consentiment perquè els usuaris menors d'edat puguin utilitzar els serveis.</translation>
 <translation id="3217843140356091325">Vols crear una drecera?</translation>
 <translation id="321799795901478485">ZIP Archiver</translation>
@@ -2264,6 +2272,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3417836307470882032">Hora militar</translation>
 <translation id="3420501302812554910">Cal restablir la clau de seguretat interna</translation>
 <translation id="3421387094817716717">Clau pública de la corba el·líptica</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que una veu o gravació similars puguin accedir als teus resultats personals o al teu Assistent.</translation>
 <translation id="3422291238483866753">Pregunta'm quan un lloc web vulgui crear un mapa en 3D del meu entorn o fer un seguiment de la posició de la càmera (opció recomanada)</translation>
 <translation id="3423463006624419153">A <ph name="PHONE_NAME_1" /> i <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Torneu a iniciar <ph name="PRODUCT_NAME" /></translation>
@@ -2977,7 +2986,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4154664944169082762">Empremtes</translation>
 <translation id="4157869833395312646">Xifratge activat per servidor de Microsoft</translation>
 <translation id="4158364720893025815">Superat</translation>
-<translation id="4159163871835771155">Per obtenir respostes personalitzades quan <ph name="SUPERVISED_USER_NAME" /> faci preguntes, permet que l'Assistent utilitzi la informació de la pantalla del teu fill o filla (<ph name="SUPERVISED_USER_NAME" />). Pot incloure informació sobre les cançons o els vídeos que s'estiguin reproduint.</translation>
 <translation id="4159681666905192102">Aquest és un compte infantil gestionat per <ph name="CUSTODIAN_EMAIL" /> i per <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclat desconegut</translation>
 <translation id="4167686856635546851">Els llocs web solen utilitzar JavaScript per mostrar funcions interactives, com ara els videojocs o els formularis web</translation>
@@ -3615,7 +3623,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Obre amb el lector del sistema</translation>
 <translation id="488785315393301722">Mostra els detalls</translation>
-<translation id="4889792122460431731">Per obtenir respostes personalitzades quan facis preguntes, permet que el teu Assistent utilitzi la informació de la pantalla. Pot incloure informació sobre les cançons o els vídeos que s'estiguin reproduint.</translation>
 <translation id="4890773143211625964">Mostra les opcions avançades de la impressora</translation>
 <translation id="4891089016822695758">Fòrum per a la versió beta</translation>
 <translation id="4892229439761351791">El lloc web pot fer servir Bluetooth</translation>
@@ -3830,7 +3837,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">No s'ha pogut baixar el perfil. Torna-ho a provar més tard o contacta amb l'operador per obtenir ajuda.</translation>
 <translation id="5131591206283983824">Toca i arrossega amb el ratolí tàctil</translation>
-<translation id="5135085122826131075">Accedeix a l'Assistent quan diguis "Ok Google".</translation>
 <translation id="5135533361271311778">No s'ha pogut crear l'element d'adreça d'interès.</translation>
 <translation id="5136343472380336530">Comprova que els dos dispositius estiguin desbloquejats, l'un a prop de l'altre i amb el Bluetooth activat. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Suprimeix aquest element</translation>
@@ -4249,7 +4255,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5585912436068747822">La formatació ha fallat</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">S'estan carregant les aplicacions...</translation>
-<translation id="5590265327628802792">Sembla que <ph name="SUPERVISED_USER_NAME" /> ja ha configurat l'Assistent de Google en un altre dispositiu. <ph name="SUPERVISED_USER_NAME" /> pot treure més profit de l'Assistent activant l'opció Context de la pantalla.</translation>
 <translation id="5592595402373377407">Encara no hi ha prou dades disponibles.</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -4657,6 +4662,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6059652578941944813">Jerarquia del certificat</translation>
 <translation id="6059925163896151826">Dispositius USB</translation>
 <translation id="6061882183774845124">Envia l'enllaç als teus dispositius</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que algú amb la veu semblant a la de <ph name="SUPERVISED_USER_NAME" /> o amb una gravació similar pugui accedir als seus resultats personals. Per estalviar bateria, pots seleccionar a la configuració de l'Assistent de <ph name="SUPERVISED_USER_NAME" /> que l'opció "Hey Google" només estigui activada quan aquest dispositiu estigui connectat a una font d'alimentació.</translation>
 <translation id="6064217302520318294">Bloqueig de pantalla</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
 <translation id="6066794465984119824">La funció resum de la imatge no està definida</translation>
@@ -4877,9 +4883,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6294759976468837022">Velocitat de cerca automàtica</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6295855836753816081">S'està desant…</translation>
-<translation id="6298800237463568825">Voice Match ajuda l'Assistent de Google a identificar la teva veu al dispositiu <ph name="DEVICE_TYPE" /> i a distingir-te d'altres persones.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Important<ph name="END_BOLD" />: és possible que una veu o una gravació similars també tinguin accés als teus resultats personals. Pots suprimir el permís de Voice Match més tard desactivant-lo a Configuració de l'Assistent.</translation>
 <translation id="6298962879096096191">Utilitza Google Play per instal·lar aplicacions per a Android</translation>
 <translation id="6300177430812514606">Sense permís per acabar d'enviar o de rebre dades</translation>
 <translation id="630065524203833229">S&amp;urt</translation>
@@ -4934,6 +4937,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6345878117466430440">Marca com a llegit</translation>
 <translation id="6349101878882523185">Instal·la <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Corba el·líptica secp256r1 d'SECG (també coneguda com a X9.62 prime256v1 d'ANSI o NIST P-256)</translation>
+<translation id="6355789186038748882">Navegador experimental (amb qualitat alfa). Pot ser que faltin algunes funcions o que no estiguin completes. Informa de qualsevol problema des d'Ajuda &gt; Informa d'un problema...</translation>
 <translation id="635609604405270300">Mantén el dispositiu activat</translation>
 <translation id="63566973648609420">Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptis. La frase de contrasenya no s'envia a Google, ni Google l'emmagatzema. Si l'oblides o vols canviar aquesta configuració, hauràs de <ph name="BEGIN_LINK" />restablir la sincronització<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Drac</translation>
@@ -4999,6 +5003,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6434309073475700221">Descarta els canvis</translation>
 <translation id="6434325376267409267">El dispositiu s'ha d'actualitzar perquè puguis utilitzar <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Mostra-ho a Web Store</translation>
+<translation id="6436610005579237680">Per obtenir respostes més personalitzades, permet que l'Assistent de Google accedeixi a una captura de la teva pantalla quan facis preguntes. El teu Assistent també pot utilitzar la informació sobre les cançons o els vídeos que s'estiguin reproduint.</translation>
 <translation id="6438234780621650381">Restablir la configuració</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: s'està reproduint àudio</translation>
 <translation id="6442187272350399447">Content</translation>
@@ -5135,6 +5140,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6582274660680936615">Estàs navegant com a convidat</translation>
 <translation id="6584878029876017575">Signatura de durada de Microsoft</translation>
 <translation id="6586099239452884121">Navegació com a convidat</translation>
+<translation id="6586213706115310390">Accedeix a l'Assistent dient "Hey Google".</translation>
 <translation id="6586451623538375658">Canvia el botó principal del ratolí</translation>
 <translation id="6586604979641883411">Cal tenir <ph name="REQUIRED_SPACE" /> d'espai lliure al disc per actualitzar Linux. Allibera espai al dispositiu i torna-ho a provar.</translation>
 <translation id="6588043302623806746">Fes servir DNS segur</translation>
@@ -5154,6 +5160,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6602937173026466876">Accedir a les teves impressores</translation>
 <translation id="6602956230557165253">Feu servir les tecles de fletxa a la dreta i a l'esquerra per navegar.</translation>
 <translation id="6605847144724004692">Encara no l'ha puntuat cap usuari.</translation>
+<translation id="6606671997164410857">Sembla que ja has configurat l'Assistent de Google en un altre dispositiu. Treu encara més partit de l'Assistent activant l'opció Context de la pantalla en aquest dispositiu.</translation>
 <translation id="6607831829715835317">Més eine&amp;s</translation>
 <translation id="6607890859198268021">El compte <ph name="USER_EMAIL" /> ja està gestionat per <ph name="DOMAIN" />. Per utilitzar controls parentals amb un Compte de Google diferent, has de tancar la sessió quan acabis la configuració i, a continuació, a la pantalla d'inici de sessió selecciona Afegeix una persona.</translation>
 <translation id="6609478180749378879">Les dades d'inici de sessió s'emmagatzemaran en aquest dispositiu quan surtis del mode d'incògnit. Podràs tornar a iniciar la sessió en aquest lloc web amb el teu dispositiu més endavant.</translation>
@@ -5333,6 +5340,13 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6808039367995747522">Per continuar, insereix i toca la clau de seguretat</translation>
 <translation id="6808193438228982088">Guineu</translation>
 <translation id="6809470175540814047">Obre en una finestra d'incògnit</translation>
+<translation id="6809656734323672573">Si ho acceptes, l'Assistent de Google es quedarà en mode d'espera, amb la capacitat de detectar "Hey Google" i reconèixer si hi parles mitjançant Voice Match.
+    <ph name="BR" />
+    Voice Match permet a l'Assistent identificar-te i distingir-te d'altres persones. L'Assistent grava fragments de la teva veu per crear un model de veu únic, que només s'emmagatzema al teu dispositiu. És possible que el teu model de veu s'enviï a Google temporalment per poder identificar millor la teva veu.
+    <ph name="BR" />
+    Si més tard decideixes que no t'agrada Voice Match, pots suprimir-lo a la configuració de l'Assistent. Per veure o suprimir els clips d'àudio que graves durant la configuració de Voice Match, ves a <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Inicieu la sessió automàticament als llocs web amb les credencials emmagatzemades. Si la funció està desactivada, se us demana sempre que confirmeu les credencials per iniciar la sessió en un lloc web.</translation>
 <translation id="6810768462515084623">Sembla que la contrasenya ha caducat. Renova-la en un altre dispositiu i torna-ho a provar.</translation>
 <translation id="6811034713472274749">Ja es pot veure la pàgina</translation>
@@ -5663,7 +5677,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7171559745792467651">Instal·la aplicacions des dels altres dispositius que tinguis</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="7173114856073700355">Obre Configuració</translation>
-<translation id="7173336557300642430">Per obtenir respostes més personalitzades, permet que l'Assistent de Google utilitzi la informació de la pantalla quan facis preguntes. El teu Assistent també pot utilitzar la informació sobre les cançons o els vídeos que s'estiguin reproduint.</translation>
 <translation id="7174199383876220879">Novetat! Controla la música, els vídeos i molt més.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Carregat des de:</translation>
@@ -5694,13 +5707,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Surt de la pàgina}other{Surt de les pàgines}}</translation>
 <translation id="7207457272187520234">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta opció de configuració. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google.</translation>
 <translation id="7207631048330366454">Cerca aplicacions</translation>
-<translation id="7210488993538120146">Voice Match ajuda l'Assistent de Google a identificar la veu del teu fill o filla (<ph name="SUPERVISED_USER_NAME" />) al dispositiu <ph name="DEVICE_TYPE" /> i a distingir-la d'altres veus.
-    <ph name="BR" />
-    L'Assistent grava clips de la veu del teu fill per crear un model de veu únic, que només s'emmagatzema als seus dispositius. És possible que el model de veu del teu fill s'enviï a Google temporalment per identificar millor la seva veu.
-    <ph name="BR" />
-    Si més tard decideixes que la funció Voice Match no és adequada per al teu fill, només cal que la suprimeixis a la seva configuració de l'Assistent. Per veure o suprimir els clips d'àudio que gravi el teu fill durant la configuració de Voice Match, ves a g.co/assistant/match des del seu compte.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que una veu o una gravació similars també tinguin accés als resultats personals del teu fill o filla (<ph name="SUPERVISED_USER_NAME" />). Per estalviar bateria, "Hey Google" només està activat quan el dispositiu està connectat a una font d'alimentació.</translation>
 <translation id="7210499381659830293">Impressores d'extensions</translation>
 <translation id="7211783048245131419">Encara no s'ha assignat cap interruptor</translation>
 <translation id="7212097698621322584">Introdueix el PIN actual per canviar-lo. Si no el saps, hauràs de restablir la clau de seguretat i, a continuació, crear un PIN nou.</translation>
@@ -5912,7 +5918,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7434969625063495310">No s'ha pogut afegir el servidor d'impressió. Comprova'n la configuració i torna-ho a provar.</translation>
 <translation id="7436921188514130341">S'ha produït un error durant el canvi de nom.</translation>
 <translation id="7438495332316988804">Per utilitzar el navegador estàndard, escriu "Chrome" al menú d'aplicacions.</translation>
-<translation id="7439446972050308922">Les teves preferències desades estaran preparades en qualsevol dispositiu Chrome OS quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
 <translation id="7439519621174723623">Afegeix el nom d'un dispositiu per continuar</translation>
 <translation id="7441736921018636843">Si vols canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" /> perquè se suprimeixi la frase de contrasenya de sincronització</translation>
 <translation id="7441830548568730290">Altres usuaris</translation>
@@ -6166,6 +6171,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7690853182226561458">Afegeix una &amp;carpeta...</translation>
 <translation id="7691073721729883399">No s'ha pogut activar el cryptohome de l'aplicació de quiosc.</translation>
 <translation id="7691077781194517083">Aquesta clau de seguretat no es pot restablir. Error <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Hey Google"</translation>
 <translation id="7691698019618282776">Actualització de Crostini</translation>
 <translation id="7696063401938172191">A <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Els detalls estan amagats mentre comparteixes la pantalla</translation>
@@ -6278,6 +6284,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7804072833593604762">Pestanya tancada</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7807067443225230855">Cerca i Assistent</translation>
+<translation id="7807117920154132308">Sembla que <ph name="SUPERVISED_USER_NAME" /> ja ha configurat l'Assistent de Google en un altre dispositiu. <ph name="SUPERVISED_USER_NAME" /> pot treure més profit de l'Assistent activant l'opció Context de la pantalla en aquest dispositiu.</translation>
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
 <translation id="781167124805380294">Emet <ph name="FILE_NAME" /></translation>
@@ -6332,6 +6339,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7847212883280406910">Premeu Ctrl + Alt + S per canviar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Obre la &amp;imatge en una pestanya nova</translation>
 <translation id="784934925303690534">Interval de temps</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: és possible que una veu o gravació similars puguin accedir als teus resultats personals o al teu Assistent. Per estalviar bateria, pots seleccionar a la configuració de l'Assistent que l'opció "Hey Google" només estigui activada quan aquest dispositiu estigui connectat a una font d'alimentació.</translation>
 <translation id="7851457902707056880">L'inici de sessió s'ha restringit a només el compte del propietari. Reinicieu l'ordinador i inicieu la sessió amb el compte del propietari. L'equip es reiniciarà automàticament d'aquí a 30 segons.</translation>
 <translation id="7851716364080026749">Bloqueja sempre l'accés a la càmera i al micròfon</translation>
 <translation id="7851720427268294554">Analitzador d'IPP</translation>
@@ -6912,7 +6920,6 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
 <translation id="8480869669560681089">Dispositiu desconegut de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirma el permís d'USB</translation>
 <translation id="8481980314595922412">Les funcions de prova estan activades</translation>
-<translation id="8482860770919360244">Sembla que ja has configurat l'Assistent de Google en un altre dispositiu. Treu encara més partit del teu Assistent activant el context de la pantalla.</translation>
 <translation id="848666842773560761">Una aplicació està provant d'accedir a la càmera. Desactiva l'interruptor de privadesa de la càmera per permetre-hi l'accés.</translation>
 <translation id="8487678622945914333">Amplia</translation>
 <translation id="8489156414266187072">Els suggeriments personals només es mostren al teu compte</translation>
@@ -7568,6 +7575,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
       <ph name="LIST_ITEM" />Executa Diagnòstic de connectivitat de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
+<translation id="9166813363879986425">Les teves preferències i activitat desades estaran preparades en qualsevol dispositiu amb Chrome OS quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
 <translation id="9167063903968449027">Mostra la Llista de lectura</translation>
 <translation id="9167450455589251456">El perfil no s'admet</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>

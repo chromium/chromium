@@ -313,6 +313,7 @@
 <translation id="1336902454946927954">Khóa bảo mật của bạn đã bị khóa do hệ thống không nhận dạng được vân tay của bạn. Để mở khóa, hãy nhập mã PIN của bạn.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> muốn mở ứng dụng này.</translation>
 <translation id="1338950911836659113">Đang xóa...</translation>
+<translation id="1339009753652684748">Nói "Ok Google" khi bạn muốn dùng Trợ lý. Để tiết kiệm pin, hãy chọn “Bật (Khuyên dùng)”. Trợ lý của bạn sẽ chỉ phản hồi khi thiết bị đã cắm điện hoặc đang sạc.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sao lưu phương tiện từ thiết bị bằng ứng dụng Tệp.</translation>
 <translation id="1341988552785875222">Hình nền hiện tại do '<ph name="APP_NAME" />' đặt. Bạn có thể cần phải gỡ cài đặt '<ph name="APP_NAME" />' trước khi chọn hình nền khác.</translation>
@@ -448,6 +449,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.</translation>
 <translation id="1478340334823509079">Chi tiết: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Cài đặt chưa được bật</translation>
+<translation id="1480571698637441426">Để nhận được các câu trả lời phù hợp khi bạn đặt câu hỏi, hãy cho phép Trợ lý truy cập vào ảnh chụp những thông tin có trên màn hình của bạn. Trợ lý cũng có thể dùng thông tin về các bài hát hoặc video đang phát.</translation>
 <translation id="1481537595330271162">Lỗi khi thay đổi dung lượng ổ đĩa</translation>
 <translation id="1482626744466814421">Đánh dấu thẻ này...</translation>
 <translation id="1483272013430662157">Các ứng dụng web có thể xin phép mở các loại tệp</translation>
@@ -848,7 +850,6 @@
 <translation id="1865769994591826607">Chỉ các kết nối cùng trang web</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" có thể đọc và ghi hình ảnh, video và tệp âm thanh trong các vị trí đã chọn.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> sẵn sàng hoàn tất việc cài đặt của bạn</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Tính năng kiểm tra mật khẩu không hoạt động trong Chromium</translation>
 <translation id="1869433484041798909">Nút dấu trang</translation>
 <translation id="1871098866036088250">Mở trong trình duyệt Chrome</translation>
@@ -1129,7 +1130,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2163937499206714165">Bật chế độ tối</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> và 1 công tắc khác</translation>
 <translation id="2165177462441582039">Chọn thời lượng đánh dấu cho từng mục</translation>
-<translation id="2165421703844373933">Nói "Ok Google" khi bạn muốn sử dụng Trợ lý. Để tiết kiệm pin, hãy chọn “Bật (Khuyên dùng)”. Trợ lý của bạn sẽ chỉ phản hồi khi thiết bị đã cắm điện hoặc đang sạc.</translation>
 <translation id="2166369534954157698">Lươn ngắn lại chê trạch dài</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Đăng nhập bằng mọi cách</translation>
@@ -1263,6 +1263,15 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
 <translation id="23055578400314116">Chọn tên người dùng</translation>
 <translation id="2307462900900812319">Định cấu hình mạng</translation>
+<translation id="2307553512430195144">Nếu bạn đồng ý, thì Trợ lý Google sẽ đợi ở chế độ chờ để phát hiện câu lệnh “Ok Google” và có thể nhận ra đó là giọng nói của <ph name="SUPERVISED_USER_NAME" /> bằng tính năng Voice Match.
+    <ph name="BR" />
+    Tính năng Voice Match giúp Trợ lý Google xác định giọng nói của <ph name="SUPERVISED_USER_NAME" /> trên <ph name="DEVICE_TYPE" /> của bạn và phân biệt những giọng nói đó với giọng nói của những người khác.
+    <ph name="BR" />
+    Trợ lý dùng các đoạn giọng nói của con bạn để tạo thành một mẫu giọng nói duy nhất. Mẫu này chỉ được lưu trên thiết bị của con bạn. Mẫu giọng nói của con bạn có thể tạm thời được gửi tới Google để nhận dạng giọng nói của con bạn tốt hơn.
+    <ph name="BR" />
+    Nếu sau này bạn quyết định rằng tính năng Voice Match không phù hợp với con mình, thì chỉ cần xóa tính năng này trong phần Cài đặt của Trợ lý trên thiết bị của con bạn. Để xem hoặc xóa các đoạn âm thanh mà con bạn ghi lại trong quá trình thiết lập tính năng Voice Match, hãy truy cập <ph name="VOICE_MATCH_SETTINGS_URL" /> bằng tài khoản của con bạn.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Trang này muốn cài đặt trình xử lý dịch vụ.</translation>
 <translation id="2309620859903500144">Trang web này đã bị chặn sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
 <translation id="2312219318583366810">URL của trang</translation>
@@ -1392,6 +1401,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2450849356604136918">Không có chế độ xem đang hoạt động nào</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Các trang web thường kết nối với cổng nối tiếp để hỗ trợ những tính năng chuyển dữ liệu, chẳng hạn như thiết lập mạng</translation>
+<translation id="2453706416476934374">Để nhận được các câu trả lời phù hợp khi <ph name="SUPERVISED_USER_NAME" /> đặt câu hỏi, hãy cho phép Trợ lý truy cập vào ảnh chụp những thông tin có trên màn hình của <ph name="SUPERVISED_USER_NAME" />. Trợ lý cũng có thể dùng thông tin về các bài hát hoặc video đang phát.</translation>
 <translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2454247629720664989">Từ khóa</translation>
 <translation id="2454264884354864965">Máy ảnh đang tắt</translation>
@@ -1613,9 +1623,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2691385045260836588">Kiểu</translation>
 <translation id="2691440343905273290">Thay đổi tùy chọn cài đặt phương thức nhập</translation>
 <translation id="2693176596243495071">Rất tiếc! Đã xảy ra lỗi không xác định. Vui lòng thử lại sau hoặc liên hệ với quản trị viên của bạn nếu sự cố vẫn tiếp diễn.</translation>
-<translation id="2693640212062142966">Tính năng Voice Match giúp Trợ lý Google nhận ra giọng nói của bạn trên <ph name="DEVICE_TYPE" /> và phân biệt bạn với người khác. Để tiết kiệm pin, tính năng “Ok Google” chỉ bật khi thiết bị của bạn được kết nối với nguồn điện. Để thay đổi, hãy chuyển đến phần Cài đặt.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của bạn cũng có thể truy cập vào các kết quả cá nhân của bạn. Bạn có thể thu hồi quyền cấp cho tính năng Voice Match vào thời điểm khác bằng cách tắt quyền đó trong phần Cài đặt của Trợ lý.</translation>
 <translation id="2699911226086014512">Thao tác mã PIN không thành công với mã <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Đăng nhập, <ph name="EMAIL" /></translation>
@@ -2103,6 +2110,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="32101887417650595">Không thể kết nối với máy in</translation>
 <translation id="321084946921799184">Vàng và trắng</translation>
 <translation id="321356136776075234">Đơn vị tổ chức của thiết bị (ví dụ: OU=Chromebooks,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của <ph name="SUPERVISED_USER_NAME" /> cũng có thể truy cập vào các kết quả cá nhân của con bạn.</translation>
 <translation id="3216825226035747725">Quản trị viên G Suite cho Giáo dục sẽ xác định người dùng có thể sử dụng dịch vụ nào của Google khi họ đăng nhập vào tài khoản G Suite cho Giáo dục. Việc sử dụng có thể bao gồm một số tính năng hoặc dịch vụ mà trước đây con bạn chưa thể sử dụng bằng tài khoản được giám sát này. Quản trị viên trường học phải đồng ý hoặc có được sự đồng ý nếu để người dùng là trẻ vị thành niên sử dụng các dịch vụ đó.</translation>
 <translation id="3217843140356091325">Tạo lối tắt?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2280,6 +2288,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3417836307470882032">Giờ quân đội</translation>
 <translation id="3420501302812554910">Cần phải đặt lại khóa bảo mật nội bộ</translation>
 <translation id="3421387094817716717">Khóa công khai đường cong elip</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của bạn có thể truy cập vào các kết quả cá nhân hoặc sử dụng Trợ lý của bạn.</translation>
 <translation id="3422291238483866753">Hỏi khi một trang web muốn tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
 <translation id="3423463006624419153">Trên '<ph name="PHONE_NAME_1" />' và '<ph name="PHONE_NAME_2" />' của bạn:</translation>
 <translation id="3423858849633684918">Vui lòng chạy lại <ph name="PRODUCT_NAME" /></translation>
@@ -2994,7 +3003,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4154664944169082762">Dấu vân tay</translation>
 <translation id="4157869833395312646">Mã hóa Cổng Máy chủ của Microsoft</translation>
 <translation id="4158364720893025815">Đạt</translation>
-<translation id="4159163871835771155">Để nhận được câu trả lời phù hợp khi <ph name="SUPERVISED_USER_NAME" /> đặt câu hỏi, hãy cho phép Trợ lý dùng thông tin trên màn hình của <ph name="SUPERVISED_USER_NAME" />. Trợ lý của bạn cũng có thể dùng thông tin về các bài hát hoặc video đang phát.</translation>
 <translation id="4159681666905192102">Đây là tài khoản cho trẻ em do <ph name="CUSTODIAN_EMAIL" /> và <ph name="SECOND_CUSTODIAN_EMAIL" /> quản lý.</translation>
 <translation id="4163560723127662357">Bàn phím không xác định</translation>
 <translation id="4167686856635546851">Các trang web thường sử dụng JavaScript để hiển thị những tính năng tương tác, như trò chơi điện tử hoặc biểu mẫu web</translation>
@@ -3633,7 +3641,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Mở bằng trình xem hệ thống</translation>
 <translation id="488785315393301722">Hiển thị chi tiết</translation>
-<translation id="4889792122460431731">Để nhận được câu trả lời phù hợp khi bạn đặt câu hỏi, hãy cho phép Trợ lý sử dụng thông tin trên màn hình. Trợ lý của bạn cũng có thể sử dụng thông tin về các bài hát hoặc video đang phát.</translation>
 <translation id="4890773143211625964">Hiển thị tùy chọn máy in nâng cao</translation>
 <translation id="4891089016822695758">Diễn đàn beta</translation>
 <translation id="4892229439761351791">Trang web có thể sử dụng Bluetooth</translation>
@@ -3848,7 +3855,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Không thể tải hồ sơ xuống. Vui lòng thử lại sau hoặc liên hệ với nhà mạng để được trợ giúp.</translation>
 <translation id="5131591206283983824">Kéo khi nhấn trên bàn di chuột</translation>
-<translation id="5135085122826131075">Nói "Ok Google" khi bạn muốn sử dụng Trợ lý.</translation>
 <translation id="5135533361271311778">Không thể tạo mục dấu trang.</translation>
 <translation id="5136343472380336530">Hãy đảm bảo cả hai thiết bị đã mở khóa, ở gần nhau và đã bật Bluetooth. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Xóa mục này</translation>
@@ -4266,7 +4272,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5585912436068747822">Định dạng không thành công</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Đang tải ứng dụng...</translation>
-<translation id="5590265327628802792">Có vẻ như <ph name="SUPERVISED_USER_NAME" /> đã thiết lập Trợ lý Google trên một thiết bị khác. <ph name="SUPERVISED_USER_NAME" /> có thể khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Ngữ cảnh trên màn hình.</translation>
 <translation id="5592595402373377407">Chưa có đủ dữ liệu.</translation>
 <translation id="5595485650161345191">Chỉnh sửa địa chỉ</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
@@ -4673,6 +4678,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6059652578941944813">Hệ thống cấp bậc của Chứng chỉ</translation>
 <translation id="6059925163896151826">Thiết bị USB</translation>
 <translation id="6061882183774845124">Gửi đường liên kết tới thiết bị của bạn</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của <ph name="SUPERVISED_USER_NAME" /> cũng có thể truy cập vào các kết quả cá nhân của con bạn. Để tiết kiệm pin, bạn có thể chọn chỉ bật tính năng "OK Google" khi thiết bị của <ph name="SUPERVISED_USER_NAME" /> được kết nối với nguồn điện trong phần cài đặt của Trợ lý.</translation>
 <translation id="6064217302520318294">Phương thức khóa màn hình</translation>
 <translation id="6065289257230303064">Các Thuộc tính Thư mục Đối tượng Chứng chỉ</translation>
 <translation id="6066794465984119824">Chưa đặt hàm băm hình ảnh</translation>
@@ -4893,9 +4899,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6294759976468837022">Tốc độ tự động quét</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6295855836753816081">Đang lưu...</translation>
-<translation id="6298800237463568825">Tính năng Voice Match giúp Trợ lý Google nhận ra giọng nói của bạn trên <ph name="DEVICE_TYPE" /> và phân biệt bạn với người khác.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của bạn cũng có thể truy cập vào các kết quả cá nhân của bạn. Bạn có thể thu hồi quyền cấp cho tính năng Voice Match vào thời điểm khác bằng cách tắt quyền đó trong phần Cài đặt của Trợ lý.</translation>
 <translation id="6298962879096096191">Sử dụng Google Play để cài đặt các ứng dụng Android</translation>
 <translation id="6300177430812514606">Không được phép kết thúc quá trình gửi hoặc nhận dữ liệu</translation>
 <translation id="630065524203833229">T&amp;hoát</translation>
@@ -4950,6 +4953,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6345878117466430440">Đánh dấu là đã đọc</translation>
 <translation id="6349101878882523185">Cài đặt <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Đường cong elip SECG secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Trình duyệt thử nghiệm (phiên bản alpha)! Một số tính năng bị thiếu hoặc không đầy đủ. Vui lòng báo cáo sự cố tại phần: Trợ giúp &gt; "Báo cáo sự cố...".</translation>
 <translation id="635609604405270300">Luôn bật thiết bị</translation>
 <translation id="63566973648609420">Chỉ người có cụm mật khẩu mới có thể đọc dữ liệu được mã hóa của bạn. Cụm mật khẩu không được gửi tới hoặc được lưu trữ bởi Google. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, bạn sẽ cần <ph name="BEGIN_LINK" />đặt lại đồng bộ hóa<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Rồng</translation>
@@ -5015,6 +5019,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6434309073475700221">Hủy</translation>
 <translation id="6434325376267409267">Bạn cần cập nhật thiết bị của mình để sử dụng <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Xem trong Cửa hàng trực tuyến</translation>
+<translation id="6436610005579237680">Để nhận được những câu trả lời phù hợp hơn với bạn, hãy cho phép Trợ lý Google sử dụng thông tin trên màn hình khi bạn đặt câu hỏi. Trợ lý của bạn cũng có thể sử dụng thông tin về các bài hát hoặc video đang phát.</translation>
 <translation id="6438234780621650381">Đặt lại chế độ cài đặt</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Phát âm thanh</translation>
 <translation id="6442187272350399447">Tuyệt vời</translation>
@@ -5151,6 +5156,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6582274660680936615">Bạn đang duyệt web với tư cách Khách</translation>
 <translation id="6584878029876017575">Ký Trọn đời của Microsoft</translation>
 <translation id="6586099239452884121">Duyệt với tư cách khách</translation>
+<translation id="6586213706115310390">Nói "Ok Google" khi bạn muốn dùng Trợ lý.</translation>
 <translation id="6586451623538375658">Hoán đổi nút chuột chính</translation>
 <translation id="6586604979641883411">Cần có tối thiểu <ph name="REQUIRED_SPACE" /> dung lượng ổ đĩa trống để nâng cấp Linux. Vui lòng giải phóng một số dung lượng trên thiết bị rồi thử lại.</translation>
 <translation id="6588043302623806746">Sử dụng hệ thống tên miền (DNS) bảo mật</translation>
@@ -5170,6 +5176,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6602937173026466876">Truy cập vào máy in của bạn</translation>
 <translation id="6602956230557165253">Sử dụng các phím mũi tên trái và phải để điều hướng.</translation>
 <translation id="6605847144724004692">Chưa có người dùng nào xếp hạng.</translation>
+<translation id="6606671997164410857">Có vẻ như bạn đã thiết lập Trợ lý Google trên một thiết bị khác. Hãy khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Ngữ cảnh trên màn hình cho thiết bị này.</translation>
 <translation id="6607831829715835317">Côn&amp;g cụ khác</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> vốn đang được <ph name="DOMAIN" /> quản lý. Để sử dụng các quyền kiểm soát của cha mẹ bằng một Tài khoản Google khác, hãy đăng xuất sau khi thiết lập rồi chọn "Thêm người" trên màn hình đăng nhập.</translation>
 <translation id="6609478180749378879">Dữ liệu đăng nhập sẽ được lưu trữ trên thiết bị này sau khi bạn thoát khỏi Chế độ ẩn danh. Bạn sẽ có thể đăng nhập lại vào trang web này vào lúc khác bằng thiết bị của mình.</translation>
@@ -5349,6 +5356,13 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6808039367995747522">Để tiếp tục, hãy cắm rồi chạm vào khóa bảo mật của bạn</translation>
 <translation id="6808193438228982088">Cáo</translation>
 <translation id="6809470175540814047">Mở trong cửa sổ Ẩn danh</translation>
+<translation id="6809656734323672573">Nếu bạn đồng ý, thì Trợ lý Google sẽ đợi ở chế độ chờ để phát hiện câu lệnh “Ok Google” và có thể nhận ra đó là giọng nói của bạn bằng tính năng Voice Match.
+    <ph name="BR" />
+    Tính năng Voice Match cho phép Trợ lý nhận ra bạn và phân biệt bạn với người khác. Trợ lý dùng các đoạn giọng nói của bạn để tạo một mẫu giọng nói duy nhất. Mẫu này sẽ chỉ lưu trên thiết bị của bạn. Mẫu giọng nói có thể tạm thời được gửi tới Google để nhận dạng giọng nói của bạn tốt hơn.
+    <ph name="BR" />
+    Khi bạn không muốn dùng tính năng Voice Match nữa, thì chỉ cần tắt tính năng này trong phần Cài đặt của Trợ lý. Để xem hoặc xóa các đoạn âm thanh bạn ghi lại trong quá trình thiết lập tính năng Voice Match, hãy truy cập <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác nhận trước khi đăng nhập vào trang web.</translation>
 <translation id="6810768462515084623">Rất tiếc! Có vẻ như mật khẩu của bạn đã hết hạn. Vui lòng gia hạn mật khẩu này trên thiết bị khác và thử lại.</translation>
 <translation id="6811034713472274749">Trang hiện đã sẵn sàng cho bạn xem</translation>
@@ -5679,7 +5693,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7171559745792467651">Cài đặt ứng dụng từ các thiết bị khác của bạn</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm các thẻ vào nhóm mới}}</translation>
 <translation id="7173114856073700355">Mở phần Cài đặt</translation>
-<translation id="7173336557300642430">Để nhận được những câu trả lời phù hợp hơn với bạn, hãy cho phép Trợ lý Google sử dụng thông tin trên màn hình khi bạn đặt câu hỏi. Trợ lý của bạn cũng có thể sử dụng thông tin về các bài hát hoặc video đang phát.</translation>
 <translation id="7174199383876220879">Mới! Điều khiển nhạc, video và nhiều nội dung khác.</translation>
 <translation id="7175037578838465313">Định cấu hình <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Được tải từ:</translation>
@@ -5710,13 +5723,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi các trang}}</translation>
 <translation id="7207457272187520234">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và mức sử dụng ứng dụng cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Tùy chọn cài đặt này do chủ sở hữu thực thi. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="7207631048330366454">Tìm kiếm ứng dụng</translation>
-<translation id="7210488993538120146">Tính năng Voice Match giúp Trợ lý Google xác định giọng nói của <ph name="SUPERVISED_USER_NAME" /> trên <ph name="DEVICE_TYPE" /> của bạn và phân biệt giọng nói đó với giọng nói của những người khác.
-    <ph name="BR" />
-    Trợ lý dùng các đoạn giọng nói của con bạn để tạo thành một mẫu giọng nói duy nhất. Mẫu này chỉ được lưu trên thiết bị của con bạn. Mẫu giọng nói của con bạn có thể tạm thời được gửi tới Google để nhận dạng giọng nói của con bạn tốt hơn.
-    <ph name="BR" />
-    Nếu sau này bạn quyết định rằng tính năng Voice Match không phù hợp với con mình, thì chỉ cần xóa tính năng này trong phần Cài đặt của Trợ lý trên thiết bị của con bạn. Để xem hoặc xóa các đoạn âm thanh mà con bạn ghi lại trong quá trình thiết lập tính năng Voice Match, hãy truy cập g.co/assistant/match qua tài khoản của con bạn.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của con bạn cũng có thể truy cập vào các kết quả cá nhân của <ph name="SUPERVISED_USER_NAME" />. Để tiết kiệm pin, tính năng “Ok Google” chỉ bật khi thiết bị này được kết nối với nguồn điện.</translation>
 <translation id="7210499381659830293">Máy in tiện ích</translation>
 <translation id="7211783048245131419">Bạn chưa gán công tắc nào</translation>
 <translation id="7212097698621322584">Nhập mã PIN hiện tại của bạn để thay đổi. Nếu không nhớ mã PIN, thì bạn cần đặt lại khóa bảo mật rồi tạo mã PIN mới.</translation>
@@ -5928,7 +5934,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7434969625063495310">Không thể thêm máy chủ máy in. Vui lòng kiểm tra cấu hình của máy chủ rồi thử lại.</translation>
 <translation id="7436921188514130341">Ôi, hỏng! Đã xảy ra lỗi trong khi đổi tên.</translation>
 <translation id="7438495332316988804">Bạn có thể tìm thấy trình duyệt thông thường bằng cách nhập "Chrome" vào Trình chạy.</translation>
-<translation id="7439446972050308922">Những chế độ ưu tiên mà bạn đã lưu sẽ được áp dụng trên mọi thiết bị Chrome OS khi bạn đăng nhập bằng Tài khoản Google của mình. Bạn có thể chọn nội dung bạn muốn đồng bộ hóa trong phần Cài đặt.</translation>
 <translation id="7439519621174723623">Hãy thêm tên thiết bị để tiếp tục</translation>
 <translation id="7441736921018636843">Để thay đổi mục cài đặt này, hãy <ph name="BEGIN_LINK" />đặt lại tính năng đồng bộ hóa<ph name="END_LINK" /> để xóa cụm mật khẩu đồng bộ hóa của bạn</translation>
 <translation id="7441830548568730290">Người dùng khác</translation>
@@ -6182,6 +6187,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7690853182226561458">Thêm &amp;thư mục...</translation>
 <translation id="7691073721729883399">Không thể gắn cryptohome dành cho ứng dụng kiosk.</translation>
 <translation id="7691077781194517083">Không thể đặt lại khóa bảo mật này. Lỗi <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Nâng cấp Crostini</translation>
 <translation id="7696063401938172191">Trên '<ph name="PHONE_NAME" />' của bạn:</translation>
 <translation id="7697166915480294040">Thông tin chi tiết bị ẩn trong khi bạn chia sẻ màn hình</translation>
@@ -6294,6 +6300,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7804072833593604762">Đã đóng thẻ</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7807067443225230855">Tìm kiếm và trợ lý</translation>
+<translation id="7807117920154132308">Có vẻ như <ph name="SUPERVISED_USER_NAME" /> đã thiết lập Trợ lý Google trên một thiết bị khác. <ph name="SUPERVISED_USER_NAME" /> có thể khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Ngữ cảnh trên màn hình cho thiết bị này.</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="781167124805380294">Truyền <ph name="FILE_NAME" /></translation>
@@ -6348,6 +6355,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7847212883280406910">Nhấn Ctrl + Alt + S để chuyển sang <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Mở &amp;Hình ảnh trong Thẻ Mới</translation>
 <translation id="784934925303690534">Phạm vi thời gian</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của bạn có thể truy cập vào các kết quả cá nhân hoặc sử dụng Trợ lý của bạn. Để tiết kiệm pin, bạn có thể chọn chỉ bật tính năng "OK Google" khi thiết bị được kết nối với nguồn điện trong phần cài đặt của Trợ lý.</translation>
 <translation id="7851457902707056880">Đăng nhập chỉ bị hạn chế đối với tài khoản chủ sở hữu. Hãy khởi động lại và đăng nhập bằng tài khoản chủ sở hữu. Máy sẽ tự động khởi động lại sau 30 giây.</translation>
 <translation id="7851716364080026749">Luôn chặn truy cập vào máy ảnh và micrô</translation>
 <translation id="7851720427268294554">Trình phân tích cú pháp IPP</translation>
@@ -6927,7 +6935,6 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8480869669560681089">Thiết bị không xác định từ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Xác nhận quyền đối với USB</translation>
 <translation id="8481980314595922412">Các tính năng dùng thử đang bật</translation>
-<translation id="8482860770919360244">Có vẻ như bạn đã thiết lập Trợ lý Google trên một thiết bị khác. Hãy khai thác thêm sức mạnh của Trợ lý bằng cách bật tính năng Ngữ cảnh trên màn hình.</translation>
 <translation id="848666842773560761">Một ứng dụng đang cố truy cập vào máy ảnh. Hãy tắt nút quyền riêng tư khi dùng máy ảnh để cho phép ứng dụng đó truy cập.</translation>
 <translation id="8487678622945914333">Phóng To</translation>
 <translation id="8489156414266187072">Nội dung đề xuất cá nhân chỉ hiển thị trên tài khoản của bạn</translation>
@@ -7583,6 +7590,7 @@ Bạn có thể gán thao tác này cho nhiều công tắc</translation>
       <ph name="LIST_ITEM" />Chạy công cụ Chẩn đoán kết nối dành cho Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
+<translation id="9166813363879986425">Những chế độ ưu tiên và hoạt động mà bạn đã lưu sẽ được áp dụng trên mọi thiết bị Chrome OS khi bạn đăng nhập bằng Tài khoản Google của mình. Bạn có thể chọn nội dung bạn muốn đồng bộ hóa trong phần Cài đặt.</translation>
 <translation id="9167063903968449027">Hiện Danh sách đọc</translation>
 <translation id="9167450455589251456">Hồ sơ này không được hỗ trợ</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>

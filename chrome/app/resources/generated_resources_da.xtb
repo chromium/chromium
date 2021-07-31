@@ -314,6 +314,7 @@
 <translation id="1336902454946927954">Din sikkerhedsnøgle er låst, fordi dit fingeraftryk ikke blev genkendt. Du kan låse den op ved at angive din pinkode.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vil gerne åbne denne app.</translation>
 <translation id="1338950911836659113">Sletter...</translation>
+<translation id="1339009753652684748">Få adgang til Google Assistent, når du siger "Hey Google". Du kan spare på batteriet ved at vælge "Til (anbefales)". Google Assistent svarer kun, når din enhed oplader eller er sluttet til en strømkilde.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
 <translation id="1341988552785875222">Den nuværende baggrund er konfigureret af "<ph name="APP_NAME" />". Det kan være nødvendigt at afinstallere "<ph name="APP_NAME" />", inden du vælger en anden baggrund.</translation>
@@ -449,6 +450,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> kræver, at chipkortet er indsat.</translation>
 <translation id="1478340334823509079">Detaljer: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installationen er ikke aktiveret</translation>
+<translation id="1480571698637441426">Få personligt tilpassede svar, når du stiller spørgsmål, ved at give Google Assistent adgang til et screenshot af oplysninger på din skærm. Dette screenshot kan også indeholde oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="1481537595330271162">Størrelsen på disken kunne ikke justeres</translation>
 <translation id="1482626744466814421">TIlføj denne fane som bogmærke...</translation>
 <translation id="1483272013430662157">Webapps kan anmode om at åbne typer af filer</translation>
@@ -849,7 +851,6 @@
 <translation id="1865769994591826607">Kun forbindelser på samme website</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" har læse- og skriverettigheder til billed-, video- og lydfiler på de markerede placeringer.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> er klar til at færdiggøre din installation</translation>
-<translation id="1868193363684582383">"Hey Google"</translation>
 <translation id="1868553836791672080">Kontrol af adgangskode er ikke tilgængelig i Chromium</translation>
 <translation id="1869433484041798909">Knappen Bogmærke</translation>
 <translation id="1871098866036088250">Åbn i Chrome-browseren</translation>
@@ -1130,7 +1131,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 anden kontakt</translation>
 <translation id="2165177462441582039">Vælg, hvor længe hvert element skal fremhæves</translation>
-<translation id="2165421703844373933">Få adgang til din Google-assistent, når du siger "Hey Google". Du kan spare på batteriet ved at vælge "Til (anbefales)". Google-assistenten svarer kun, når din enhed oplader eller er sluttet til en strømkilde.</translation>
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
@@ -1264,6 +1264,15 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" har anmodet om yderligere tilladelser.</translation>
 <translation id="23055578400314116">Vælg et brugernavn</translation>
 <translation id="2307462900900812319">Konfigurer netværk</translation>
+<translation id="2307553512430195144">Hvis du accepterer, venter Google Assistent i standbytilstand på at registrere "Hey Google", og den anvender Voice Match til at genkende stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" />.
+    <ph name="BR" />
+    Voice Match hjælper Google Assistent med at identificere stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" />, på din <ph name="DEVICE_TYPE" /> og skelne mellem den og andre stemmer.
+    <ph name="BR" />
+    Google Assistent optager klip af dit barns stemme for at registrere en unik stemmemodel, som kun gemmes på dit barns enheder. Dit barns stemmemodel sendes muligvis midlertidigt til Google for bedre at identificere barnets stemme.
+    <ph name="BR" />
+    Hvis du senere beslutter dig for, at dit barn ikke skal have Voice Match, kan du fjerne funktionen fra indstillingerne for Google Assistent. Du kan se eller slette lydklip, som dit barn optager under konfigurationen af Voice Match, ved at gå til <ph name="VOICE_MATCH_SETTINGS_URL" /> via dit barns konto.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Denne side ønsker at installere en tjenestehåndtering.</translation>
 <translation id="2309620859903500144">Dette website er blevet blokeret fra at få adgang til dine bevægelses- eller lyssensorer.</translation>
 <translation id="2312219318583366810">Webadresse</translation>
@@ -1393,6 +1402,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2450849356604136918">Ingen aktive visninger</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Websites opretter normalt forbindelse til serieporte for at kunne overføre data, f.eks. ved konfiguration af netværk</translation>
+<translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" /> kan få personligt tilpassede svar på egne spørgsmål ved at give Google Assistent adgang til et screenshot af oplysninger på skærmen, der tilhører <ph name="SUPERVISED_USER_NAME" />. Dette screenshot kan også indeholde oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2454247629720664989">Søgeord</translation>
 <translation id="2454264884354864965">Kameraet er slukket</translation>
@@ -1614,9 +1624,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Skift indstillinger for indtastning</translation>
 <translation id="2693176596243495071">Ups! Der opstod en ukendt fejl. Prøv igen senere, eller kontakt din administrator, hvis problemet fortsætter.</translation>
-<translation id="2693640212062142966">Voice Match hjælper Google Assistent med at identificere din stemme på din <ph name="DEVICE_TYPE" />, så den undgår at forveksle dig med andre. "Hey Google" er kun aktiveret, når din enhed er sluttet til en strømkilde, for at spare på batteriet. Gå til Indstillinger for at foretage ændringer.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis også bruges til at få adgang til dit personlige indhold. Du kan fjerne tilladelsen til Voice Match på et senere tidspunkt ved at deaktivere funktionen i indstillingerne for Google Assistent.</translation>
 <translation id="2699911226086014512">Pinkodehandlingen mislykkedes med koden <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log ind, <ph name="EMAIL" /></translation>
@@ -2104,6 +2111,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="32101887417650595">Der kan ikke oprettes forbindelse til printeren</translation>
 <translation id="321084946921799184">Gul og hvid</translation>
 <translation id="321356136776075234">Organisationsenhed (OU) (f.eks. OU=Chromebooks, DC=eksempel, DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af den kan muligvis bruges til at få adgang til det personlige indhold, der tilhører <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3216825226035747725">G Suite for Education-administratorerne bestemmer, hvilke Google-tjenester deres brugere kan få adgang til, mens brugerne er logget ind på en G Suite for Education-konto. Dette kan omfatte visse funktioner eller tjenester, som dit barn tidligere havde adgang til via denne forældrestyrede konto. Skoleadministratorer skal levere eller indhente samtykke for mindreårige brugeres brug af tjenesterne.</translation>
 <translation id="3217843140356091325">Vil du oprette en genvej?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2281,6 +2289,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3417836307470882032">24-timers format</translation>
 <translation id="3420501302812554910">Den interne sikkerhedsnøgle skal nulstilles</translation>
 <translation id="3421387094817716717">Offentlig nøgle med elliptisk kurve</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis bruges til at få adgang til dit personlige indhold eller Google Assistent.</translation>
 <translation id="3422291238483866753">Spørg, når et website gerne vil oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen (anbefales)</translation>
 <translation id="3423463006624419153">På din "<ph name="PHONE_NAME_1" />" og "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Genstart <ph name="PRODUCT_NAME" /></translation>
@@ -2995,7 +3004,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4154664944169082762">Fingeraftryk</translation>
 <translation id="4157869833395312646">Microsoft-kryptering via server</translation>
 <translation id="4158364720893025815">Bestået</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> kan få personligt tilpassede svar på egne spørgsmål ved at give Google Assistent tilladelse til at bruge oplysningerne på skærmen, der tilhører <ph name="SUPERVISED_USER_NAME" />. Det kan omfatte oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="4159681666905192102">Dette er en børnekonto, der administreres af <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Ukendt tastatur</translation>
 <translation id="4167686856635546851">Websites bruger normalt JavaScript til interaktive formål såsom videospil og webformularer</translation>
@@ -3634,7 +3642,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Åbn med standardvisningsprogram</translation>
 <translation id="488785315393301722">Se info</translation>
-<translation id="4889792122460431731">Få personligt tilpassede svar, når du stiller spørgsmål, ved at give Assistent tilladelse til at bruge oplysningerne på din skærm. Det kan omfatte oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="4890773143211625964">Vis avancerede printerindstillinger</translation>
 <translation id="4891089016822695758">Betaforum</translation>
 <translation id="4892229439761351791">Websitet kan anvende Bluetooth</translation>
@@ -3849,7 +3856,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profilen kunne ikke downloades. Prøv igen senere, eller kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="5131591206283983824">Tryk og træk på touchplade</translation>
-<translation id="5135085122826131075">Få adgang til din Google-assistent, når du siger "Hey Google".</translation>
 <translation id="5135533361271311778">Bogmærkeelementet blev ikke oprettet.</translation>
 <translation id="5136343472380336530">Sørg for, at begge enheder er låst op, er i nærheden af hinanden og har Bluetooth aktiveret. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Slet dette element</translation>
@@ -4267,7 +4273,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5585912436068747822">Formatering mislykkedes</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Indlæser apps...</translation>
-<translation id="5590265327628802792">Det ser ud til, at <ph name="SUPERVISED_USER_NAME" /> allerede har konfigureret Google Assistent på en anden enhed. <ph name="SUPERVISED_USER_NAME" /> kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst.</translation>
 <translation id="5592595402373377407">Der er ikke nok data til rådighed endnu.</translation>
 <translation id="5595485650161345191">Rediger adresse</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -4674,6 +4679,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6059652578941944813">Certifikathierarki</translation>
 <translation id="6059925163896151826">USB-enheder</translation>
 <translation id="6061882183774845124">Send linket til dine enheder</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af den kan muligvis bruges til at få adgang til det personlige indhold, der tilhører <ph name="SUPERVISED_USER_NAME" />. Du kan spare på batteriet ved at gå til Google Assistent-indstillingerne for <ph name="SUPERVISED_USER_NAME" /> og angive, at "Hey Google" kun skal aktiveres, når denne enhed er sluttet til en strømkilde.</translation>
 <translation id="6064217302520318294">Skærmlås</translation>
 <translation id="6065289257230303064">Indeksattributter for certifikatets emne</translation>
 <translation id="6066794465984119824">Systembilledets hash-værdi er ikke angivet</translation>
@@ -4894,9 +4900,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6294759976468837022">Hastighed for automatisk scanning</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
-<translation id="6298800237463568825">Voice Match hjælper Google Assistent med at identificere din stemme på din <ph name="DEVICE_TYPE" />, så den undgår at forveksle dig med andre.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis også bruges til at få adgang til dit personlige indhold. Du kan fjerne tilladelsen til Voice Match på et senere tidspunkt ved at deaktivere funktionen i indstillingerne for Google Assistent.</translation>
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
 <translation id="6300177430812514606">Har ikke tilladelse til at sende eller modtage data</translation>
 <translation id="630065524203833229">Af&amp;slut</translation>
@@ -4951,6 +4954,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6345878117466430440">Markér som læst</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kaldet ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Eksperimentel browser (i alfakvalitet). Nogle funktioner mangler eller er ufuldstændige. Du kan rapportere problemer ved at gå til Hjælp &gt; "Rapportér et problem...".</translation>
 <translation id="635609604405270300">Lad enheden være tændt</translation>
 <translation id="63566973648609420">Det er kun personer med din adgangssætning, der kan læse dine krypterede data. Adgangssætningen sendes ikke til og gemmes ikke af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Drage</translation>
@@ -5016,6 +5020,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6434325376267409267">Din enhed skal opdateres, før du kan bruge <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Vis i Webshop</translation>
+<translation id="6436610005579237680">Du kan få mere personligt tilpassede svar ved at give Google Assistent adgang til et screenshot af oplysningerne på din skærm, når du stiller spørgsmål. Google Assistent kan også bruge oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="6438234780621650381">Nulstil indstillinger</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – der afspilles lyd</translation>
 <translation id="6442187272350399447">Supernice</translation>
@@ -5152,6 +5157,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6582274660680936615">Du er logget ind som gæst</translation>
 <translation id="6584878029876017575">Microsoft-signering af levetid</translation>
 <translation id="6586099239452884121">Gæstesøgning</translation>
+<translation id="6586213706115310390">Få adgang til Google Assistent, når du siger "Hey Google".</translation>
 <translation id="6586451623538375658">Skift primær museknap</translation>
 <translation id="6586604979641883411">Der kræves mindst <ph name="REQUIRED_SPACE" /> ledig diskplads for at opgradere Linux. Frigør mere plads på din enhed, og prøv igen.</translation>
 <translation id="6588043302623806746">Brug et sikkert DNS</translation>
@@ -5171,6 +5177,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6602937173026466876">Adgang til dine printere</translation>
 <translation id="6602956230557165253">Brug venstre og højre piletast til at navigere.</translation>
 <translation id="6605847144724004692">Endnu ikke bedømt af nogen brugere.</translation>
+<translation id="6606671997164410857">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Du kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst på denne enhed.</translation>
 <translation id="6607831829715835317">F&amp;lere værktøjer</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> administreres allerede af <ph name="DOMAIN" />. Hvis du vil bruge forældreindstillinger med en anden Google-konto, skal du logge ud efter konfigurationen og derefter vælge "Tilføj person" på loginskærmen.</translation>
 <translation id="6609478180749378879">Dine logindata gemmes på denne enhed, når du afslutter inkognitotilstand. Det betyder, at du kan logge ind på dette website med din enhed igen på et senere tidspunkt.</translation>
@@ -5350,6 +5357,13 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6808039367995747522">Indsæt og tryk på din sikkerhedsnøgle for at fortsætte</translation>
 <translation id="6808193438228982088">Ræv</translation>
 <translation id="6809470175540814047">Åbn i inkognitovindue</translation>
+<translation id="6809656734323672573">Hvis du accepterer, venter Google Assistent i standbytilstand på at registrere "Hey Google", og den anvender Voice Match til at genkende din stemme.
+    <ph name="BR" />
+    Med Voice Match kan Google Assistent genkende dig og skelne mellem din og andres stemmer. Google Assistent optager klip af din stemme for at registrere en unik stemmemodel, som kun gemmes på dine enheder. Din stemmemodel kan dog blive sendt til Google, som opbevarer den midlertidigt for bedre at kunne identificere din stemme.
+    <ph name="BR" />
+    Hvis du senere beslutter dig for, at du ikke vil bruge Voice Match, kan du fjerne funktionen fra indstillingerne for Google Assistent. Du kan se eller slette lydklip, som du optager under konfigurationen af Voice Match, ved at gå til <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Log automatisk ind på websites ved hjælp af gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at bekræfte, hver gang du vil logge ind på et website.</translation>
 <translation id="6810768462515084623">Ups! Det ser ud til, at din adgangskode er udløbet. Forny den på en anden enhed, og prøv igen.</translation>
 <translation id="6811034713472274749">Siden kan nu ses</translation>
@@ -5680,7 +5694,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7171559745792467651">Installer apps fra dine andre enheder</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="7173114856073700355">Åbn Indstillinger</translation>
-<translation id="7173336557300642430">Du kan få mere personligt tilpassede svar ved at give Google Assistent tilladelse til at bruge oplysningerne på din skærm, når du stiller spørgsmål. Assistent kan også bruge oplysninger om sange eller videoer, der afspilles.</translation>
 <translation id="7174199383876220879">Nyhed! Styr din musik, dine videoer og meget mere.</translation>
 <translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Indlæst fra:</translation>
@@ -5711,13 +5724,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Forlad side}one{Forlad side}other{Forlad sider}}</translation>
 <translation id="7207457272187520234">Send brugs- og diagnosticeringsdata. Denne enhed sender i øjeblikket automatisk diagnosticerings- og enhedsdata samt data om brug af apps til Google. Dataene bruges til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret, gemmes disse data muligvis på din Google-konto.</translation>
 <translation id="7207631048330366454">Søg efter apps</translation>
-<translation id="7210488993538120146">Voice Match hjælper Google Assistent med at identificere stemmen, der tilhører <ph name="SUPERVISED_USER_NAME" />, på din <ph name="DEVICE_TYPE" /> og skelne mellem den og andre stemmer.
-    <ph name="BR" />
-    Google Assistent optager klip af dit barns stemme for at registrere en unik stemmemodel, som kun gemmes på dit barns enheder. Dit barns stemmemodel sendes muligvis midlertidigt til Google for bedre at identificere barnets stemme.
-    <ph name="BR" />
-    Hvis du senere beslutter dig for, at dit barn ikke skal have Voice Match, kan du fjerne funktionen fra indstillingerne i Google Assistent. Du kan se eller slette lydklip, som dit barn optager under konfigurationen af Voice Match, ved at gå til g.co/assistant/match via dit barns konto.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af den kan muligvis bruges til at få adgang til det personlige indhold, der tilhører <ph name="SUPERVISED_USER_NAME" />. "Hey Google" er kun aktiveret, når enheden er sluttet til en strømkilde, for at spare på batteriet.</translation>
 <translation id="7210499381659830293">Udvidelsesprintere</translation>
 <translation id="7211783048245131419">Der er endnu ikke blevet tildelt nogen kontakt</translation>
 <translation id="7212097698621322584">Angiv din aktuelle pinkode for at ændre den. Hvis du ikke kender din pinkode, skal du nulstille sikkerhedsnøglen og derefter oprette en ny pinkode.</translation>
@@ -5929,7 +5935,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7434969625063495310">Der kunne ikke tilføjes en printerserver. Tjek serverens konfiguration, og prøv igen.</translation>
 <translation id="7436921188514130341">Øv, surt! Der opstod en fejl under omdøbningen.</translation>
 <translation id="7438495332316988804">Du finder standardbrowseren ved at skrive "Chrome" i Appliste.</translation>
-<translation id="7439446972050308922">Dine gemte præferencer anvendes på enhver Chrome OS-enhed, når du logger ind med din Google-konto. Du kan vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="7439519621174723623">Tilføj en enhed for at fortsætte</translation>
 <translation id="7441736921018636843">Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /> for at fjerne din adgangssætning for synkronisering</translation>
 <translation id="7441830548568730290">Andre brugere</translation>
@@ -6183,6 +6188,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7690853182226561458">Tilføj &amp;mappe...</translation>
 <translation id="7691073721729883399">Cryptohome til terminalappen kunne ikke installeres.</translation>
 <translation id="7691077781194517083">Denne sikkerhedsnøgle kan ikke nulstilles. Fejl <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Hey Google"</translation>
 <translation id="7691698019618282776">Crostini-opgradering</translation>
 <translation id="7696063401938172191">På din "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Oplysningerne er skjulte, når du deler din skærm</translation>
@@ -6294,6 +6300,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7804072833593604762">Fanen er lukket</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Søgning og Assistent</translation>
+<translation id="7807117920154132308">Det ser ud til, at <ph name="SUPERVISED_USER_NAME" /> allerede har konfigureret Google Assistent på en anden enhed. <ph name="SUPERVISED_USER_NAME" /> kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst på denne enhed.</translation>
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
@@ -6348,6 +6355,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7847212883280406910">Tryk på Ctrl+Alt+S for at skifte til <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Åbn &amp;billede på ny fane</translation>
 <translation id="784934925303690534">Tidsinterval</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Bemærk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis bruges til at få adgang til dit personlige indhold eller Google Assistent. Du kan spare på batteriet ved at gå til indstillingerne for Google Assistent og angive, at "Hey Google" kun skal aktiveres, når denne enhed er sluttet til en strømkilde.</translation>
 <translation id="7851457902707056880">Login er begrænset til ejerens konto. Genstart, og log ind med ejerens konto. Maskinen genstartes automatisk om 30 sekunder.</translation>
 <translation id="7851716364080026749">Bloker altid adgang til kamera og mikrofon</translation>
 <translation id="7851720427268294554">IPP-parser</translation>
@@ -6927,7 +6935,6 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8480869669560681089">Ukendt enhed fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekræft USB-tilladelse</translation>
 <translation id="8481980314595922412">Prøvefunktioner er slået til</translation>
-<translation id="8482860770919360244">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Få endnu mere ud af Assistent ved at aktivere skærmkontekst.</translation>
 <translation id="848666842773560761">En app forsøger at få adgang til kameraet. Slå kameraets privatlivskontakt fra for at give appen adgang.</translation>
 <translation id="8487678622945914333">Zoom ind</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på din konto</translation>
@@ -7585,6 +7592,7 @@ Flere kontakter kan tildeles denne handling</translation>
       <ph name="LIST_ITEM" />Kør Chrome Forbindelsesdiagnose
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Integreret billede</translation>
+<translation id="9166813363879986425">Dine gemte præferencer og din aktivitet anvendes på alle de Chrome OS-enheder, hvor du logger ind med din Google-konto. Du kan vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="9167063903968449027">Vis læselisten</translation>
 <translation id="9167450455589251456">Profilen understøttes ikke</translation>
 <translation id="9168436347345867845">Gør det senere</translation>

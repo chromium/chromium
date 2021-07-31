@@ -313,6 +313,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1336902454946927954">Jūsu drošības atslēga ir bloķēta, jo nevarēja atpazīt jūsu pirksta nospiedumu. Lai atbloķētu drošības atslēgu, ievadiet PIN.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vēlas atvērt šo lietojumprogrammu.</translation>
 <translation id="1338950911836659113">Notiek dzēšana...</translation>
+<translation id="1339009753652684748">Piekļūt Asistentam, kad sakāt: “Ok Google.” Lai taupītu akumulatora enerģiju, izvēlieties vienumu “Ieslēgts (ieteicams)”. Asistents reaģēs tikai tad, kad ierīce būs pievienota strāvas avotam vai kad tiks veikta tās uzlāde.</translation>
 <translation id="13392265090583506">Pieejamības iestatījumi</translation>
 <translation id="1340527397989195812">Dublējiet multividi no savas ierīces, izmantojot lietotni “Faili”.</translation>
 <translation id="1341988552785875222">Pašreizējo fona tapeti iestatīja <ph name="APP_NAME" />. Iespējams, jums būs jāatinstalē <ph name="APP_NAME" />, lai varētu atlasīt citu fona tapeti.</translation>
@@ -447,6 +448,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1477446329585670721">Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievietotai.</translation>
 <translation id="1478340334823509079">Detalizēta informācija: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Instalēšana nav iespējota</translation>
+<translation id="1480571698637441426">Lai saņemtu pielāgotas atbildes, kad uzdodat jautājumus, ļaujiet Asistentam piekļūt ekrānā redzamās informācijas ekrānuzņēmumam. Ekrānuzņēmums var ietvert arī informāciju par atskaņotajām dziesmām vai videoklipiem.</translation>
 <translation id="1481537595330271162">Mainot diska lielumu, radās kļūda.</translation>
 <translation id="1482626744466814421">Saglabāt cilni kā grāmatzīmi...</translation>
 <translation id="1483272013430662157">Tīmekļa lietotnes var pieprasīt atļauju atvērt noteiktu tipu failus</translation>
@@ -838,7 +840,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1865769994591826607">Tikai vienas vietnes savienojumi</translation>
 <translation id="186612162884103683">“<ph name="EXTENSION" />” var lasīt un rakstīt attēlus, videoklipus un skaņu failus atzīmētajās vietās.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> var pabeigt instalēšanu</translation>
-<translation id="1868193363684582383">“Ok Google”</translation>
 <translation id="1868553836791672080">Paroļu pārbaude nav pieejama pārlūkā Chromium.</translation>
 <translation id="1869433484041798909">Grāmatzīmes poga</translation>
 <translation id="1871098866036088250">Atvērt pārlūkā Chrome</translation>
@@ -1119,7 +1120,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2163937499206714165">Ieslēgt tumšo režīmu</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> un vēl 1 slēdža taustiņš</translation>
 <translation id="2165177462441582039">Izvēlieties, cik ilgi katram vienumam jābūt izceltam</translation>
-<translation id="2165421703844373933">Piekļūt Asistentam, kad sakāt: “Ok Google.” Lai taupītu akumulatora enerģiju, izvēlieties vienumu “Ieslēgts (ieteicams)”. Asistents reaģēs tikai tad, kad ierīce būs pievienota strāvas avotam vai kad tiks veikta tās uzlāde.</translation>
 <translation id="2166369534954157698">Muļķa hipiji turpat brīvi mēģina nogaršot celofāna žņaudzējčūsku</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Tik un tā pierakstīties</translation>
@@ -1250,6 +1250,15 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> pieprasīja papildu atļaujas.</translation>
 <translation id="23055578400314116">Atlasiet lietotājvārdu.</translation>
 <translation id="2307462900900812319">Konfigurēt tīklu</translation>
+<translation id="2307553512430195144">Ja piekritīsiet, Google asistents gaidstāves režīmā gaidīs, līdz noteiks īsinājumvārdu “Ok Google”, un varēs izmantot funkciju Voice Match, lai atpazītu, ka runā <ph name="SUPERVISED_USER_NAME" />.
+    <ph name="BR" />
+    Funkcija Voice Match palīdz Google asistentam noteikt lietotāja <ph name="SUPERVISED_USER_NAME" /> balsi <ph name="DEVICE_TYPE" /> ierīcē un atšķirt to no citiem lietotājiem.
+    <ph name="BR" />
+    Asistents izmanto jūsu bērna balss paraugus, lai izveidotu unikālu balss modeli, kas tiek glabāts tikai bērna ierīcēs. Bērna balss modelis var tikt īslaicīgi nosūtīts uzņēmumam Google, lai uzlabotu balss atpazīšanu.
+    <ph name="BR" />
+    Ja vēlāk vairs nevēlēsieties, lai bērns izmanto funkciju Voice Match, varēsiet to vienkārši noņemt no Asistenta iestatījumiem. Lai skatītu vai dzēstu audioklipus, ko bērns ieraksta funkcijas Voice Match iestatīšanas laikā, atveriet vietni <ph name="VOICE_MATCH_SETTINGS_URL" />, izmantojot bērna kontu.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Šī lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="2309620859903500144">Šīs vietnes piekļuve kustību vai gaismas sensoriem ir bloķēta.</translation>
 <translation id="2312219318583366810">Lapas URL</translation>
@@ -1379,6 +1388,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2450849356604136918">Nav aktīvu skatījumu</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Parasti vietnēs savienojums ar seriālajiem portiem tiek veidots, lai nodrošinātu noteiktas datu pārsūtīšanas funkcijas, piemēram, tīkla iestatīšanu.</translation>
+<translation id="2453706416476934374">Lai <ph name="SUPERVISED_USER_NAME" />, uzdodot jautājumus, saņemtu pielāgotas atbildes, ļaujiet Asistentam piekļūt lietotāja <ph name="SUPERVISED_USER_NAME" /> ekrānā redzamās informācijas ekrānuzņēmumam. Ekrānuzņēmums var ietvert arī informāciju par atskaņotajām dziesmām vai videoklipiem.</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2454247629720664989">Atslēgvārds</translation>
 <translation id="2454264884354864965">Kamera ir izslēgta</translation>
@@ -1600,9 +1610,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2691385045260836588">Modelis</translation>
 <translation id="2691440343905273290">Mainīt ievades iestatījumus</translation>
 <translation id="2693176596243495071">Diemžēl radās nezināma kļūda. Vēlāk mēģiniet vēlreiz, vai sazinieties ar administratoru, ja problēma joprojām pastāv.</translation>
-<translation id="2693640212062142966">Izmantojot funkciju Voice Match, Google asistents var identificēt jūsu balsi ierīcē <ph name="DEVICE_TYPE" /> un atšķirt jūs no citiem. Lai taupītu akumulatora enerģiju, balss komanda “Ok Google” darbojas tikai tad, kad ierīce ir pievienota barošanas avotam. Lai veiktu izmaiņas, pārejiet uz iestatījumiem.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ņemiet vērā:<ph name="END_BOLD" /> kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu personīgajiem rezultātiem. Vēlāk varat noņemt Voice Match atļauju, izslēdzot to Asistenta iestatījumos.</translation>
 <translation id="2699911226086014512">PIN darbība neizdevās, kods: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Kopīgota no: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Pierakstīties (<ph name="EMAIL" />)</translation>
@@ -2090,6 +2097,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="32101887417650595">Nevar izveidot savienojumu ar printeri</translation>
 <translation id="321084946921799184">Dzeltena un balta</translation>
 <translation id="321356136776075234">Ierīces organizācijas vienība (piemēram, OU=Chromebooks,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu bērna (<ph name="SUPERVISED_USER_NAME" />) personīgajiem rezultātiem.</translation>
 <translation id="3216825226035747725">G Suite for Education administratori nosaka, kuriem Google pakalpojumiem lietotāji var piekļūt ar G Suite for Education kontu. Var būt ietvertas noteiktas funkcijas un pakalpojumi, kuriem jūsu bērns iepriekš nevarēja piekļūt, izmantojot uzraudzītu kontu. Skolu administratoriem ir jāsniedz vai jāiegūst piekrišana tam, ka nepilngadīgie lietotāji izmanto pakalpojumus.</translation>
 <translation id="3217843140356091325">Vai izveidot saīsni?</translation>
 <translation id="321799795901478485">Zip arhivētājs</translation>
@@ -2267,6 +2275,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3417836307470882032">24 stundu pulkstenis</translation>
 <translation id="3420501302812554910">Jāatiestata iekšējā drošības atslēga</translation>
 <translation id="3421387094817716717">Eliptiskas līknes publiskā atslēga</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Ir iespējams, ka persona ar līdzīgu balsi vai ar jūsu balss ierakstu var piekļūt jūsu personīgajiem rezultātiem vai Asistentam.</translation>
 <translation id="3422291238483866753">Vaicāt, ja vietne vēlas izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju (ieteicams)</translation>
 <translation id="3423463006624419153">Jūsu tālruņos “<ph name="PHONE_NAME_1" />” un “<ph name="PHONE_NAME_2" />”:</translation>
 <translation id="3423858849633684918">Restartējiet <ph name="PRODUCT_NAME" /></translation>
@@ -2981,7 +2990,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4154664944169082762">Pirkstu nospiedumi</translation>
 <translation id="4157869833395312646">Microsoft serverbāzēta šifrēšana</translation>
 <translation id="4158364720893025815">Pārbaude sekmīga</translation>
-<translation id="4159163871835771155">Lai saņemtu pielāgotas atbildes, kad lietotājs <ph name="SUPERVISED_USER_NAME" /> uzdod jautājumus, atļaujiet Asistentam izmantot lietotāja <ph name="SUPERVISED_USER_NAME" /> ekrānā redzamo informāciju. Tā var ietvert arī informāciju par atskaņotajām dziesmām vai videoklipiem.</translation>
 <translation id="4159681666905192102">Šis ir bērniem paredzēts konts, ko pārvalda <ph name="CUSTODIAN_EMAIL" /> un <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nezināma tastatūra</translation>
 <translation id="4167686856635546851">Parasti vietnēs JavaScript valoda tiek izmantota, lai rādītu interaktīvas funkcijas, piemēram, video spēles vai tīmekļa veidlapas.</translation>
@@ -3619,7 +3627,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Atvēršana, izmantojot sistēmas skatītāju</translation>
 <translation id="488785315393301722">Rādīt detaļas</translation>
-<translation id="4889792122460431731">Lai saņemtu pielāgotas atbildes, kad uzdodat jautājumus, ļaujiet Asistentam izmantot ekrānā redzamo informāciju. Tā var ietvert arī informāciju par atskaņotajām dziesmām vai videoklipiem.</translation>
 <translation id="4890773143211625964">Rādīt printera papildiespējas</translation>
 <translation id="4891089016822695758">Beta versijas forums</translation>
 <translation id="4892229439761351791">Vietne var izmantot Bluetooth savienojumu</translation>
@@ -3834,7 +3841,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profilu nevarēja lejupielādēt. Lūdzu, vēlāk mēģiniet vēlreiz vai sazinieties ar mobilo sakaru operatoru, lai saņemtu palīdzību.</translation>
 <translation id="5131591206283983824">Vilkšana, pieskaroties skārienpanelim</translation>
-<translation id="5135085122826131075">Piekļūt Asistentam, kad sakāt: “Ok Google.”</translation>
 <translation id="5135533361271311778">Nevarēja izveidot grāmatzīmes vienumu.</translation>
 <translation id="5136343472380336530">Abām ierīcēm ir jābūt atbloķētām un jāatrodas blakus, turklāt tajās jābūt ieslēgtai tehnoloģijai Bluetooth. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Dzēst šo vienumu</translation>
@@ -4252,7 +4258,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5585912436068747822">Formatēšana neizdevās</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Notiek lietotņu ielāde...</translation>
-<translation id="5590265327628802792">Šķiet, ka lietotājs <ph name="SUPERVISED_USER_NAME" /> jau iestatīja Google asistentu citā ierīcē. Ieslēdzot ekrāna kontekstu, lietotājs<ph name="SUPERVISED_USER_NAME" /> varēs izmantot vēl vairāk Asistenta iespēju.</translation>
 <translation id="5592595402373377407">Vēl nav pieejams pietiekami daudz datu.</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
@@ -4659,6 +4664,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6059652578941944813">Sertifikātu hierarhija</translation>
 <translation id="6059925163896151826">USB ierīces</translation>
 <translation id="6061882183774845124">Sūtīt saiti uz jūsu ierīcēm</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu bērna (<ph name="SUPERVISED_USER_NAME" />) personīgajiem rezultātiem. Lai taupītu akumulatora enerģiju, bērna (<ph name="SUPERVISED_USER_NAME" />) Asistenta iestatījumos varat atlasīt, ka īsinājumvārda “Ok Google” noteikšanai jādarbojas tikai tad, ja šī ierīce ir pievienota barošanas avotam.</translation>
 <translation id="6064217302520318294">Ekrāna bloķēšana</translation>
 <translation id="6065289257230303064">Sertifikāta subjekta kataloga atribūti</translation>
 <translation id="6066794465984119824">Nav iestatīta attēla jaucējvērtība</translation>
@@ -4879,9 +4885,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6294759976468837022">Automātiskās pārlūkošanas ātrums</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
 <translation id="6295855836753816081">Notiek saglabāšana...</translation>
-<translation id="6298800237463568825">Izmantojot funkciju Voice Match, Google asistents var identificēt jūsu balsi ierīcē <ph name="DEVICE_TYPE" /> un atšķirt jūs no citiem.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ņemiet vērā:<ph name="END_BOLD" /> kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu personīgajiem rezultātiem. Vēlāk varat noņemt Voice Match atļauju, izslēdzot to Asistenta iestatījumos.</translation>
 <translation id="6298962879096096191">Izmantojiet Google Play, lai instalētu Android lietotnes</translation>
 <translation id="6300177430812514606">Nedrīkst pabeigt datu sūtīšanu vai saņemšanu</translation>
 <translation id="630065524203833229">I&amp;ziet</translation>
@@ -4936,6 +4939,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6345878117466430440">Atzīmēt kā izlasītu</translation>
 <translation id="6349101878882523185">Instalēt <ph name="APP_NAME" /> lietotni</translation>
 <translation id="6354918092619878358">SECG eliptiskā līkne secp256r1 (jeb ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Šis ir eksperimentāls (alfa kvalitātes) pārlūks! Dažu funkciju nav vai tās nav pabeigtas. Ziņojiet par problēmām šeit: Palīdzība &gt; Ziņot par problēmu…</translation>
 <translation id="635609604405270300">Neizslēdziet ierīci</translation>
 <translation id="63566973648609420">Jūsu šifrētos datus var lasīt tikai personas, kurām ir zināma jūsu ieejas frāze. Ieejas frāze netiek sūtīta Google serveriem un netiek tajos glabāta. Ja aizmirsīsiet ieejas frāzi vai vēlēsieties mainīt šo iestatījumu, jums būs <ph name="BEGIN_LINK" />jāatiestata sinhronizācija<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Pūķis</translation>
@@ -5001,6 +5005,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6434309073475700221">Atmest</translation>
 <translation id="6434325376267409267">Lai varētu izmantot lietotni <ph name="APP_NAME" />, ierīce vispirms ir jāatjaunina.</translation>
 <translation id="6436164536244065364">Skatiet interneta veikalā</translation>
+<translation id="6436610005579237680">Lai saņemtu pielāgotākas atbildes, ļaujiet Google asistentam piekļūt ekrānā redzamās informācijas ekrānuzņēmumam, kad uzdodat jautājumus. Asistents var arī izmantot informāciju par atskaņotajām dziesmām vai videoklipiem.</translation>
 <translation id="6438234780621650381">Iestatījumu atiestatīšana</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> — audio atskaņošana</translation>
 <translation id="6442187272350399447">Smaidiņš</translation>
@@ -5137,6 +5142,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6582274660680936615">Jūs veicat pārlūkošanu viesa režīmā</translation>
 <translation id="6584878029876017575">Microsoft beztermiņa parakstīšana</translation>
 <translation id="6586099239452884121">Viesa režīms</translation>
+<translation id="6586213706115310390">Piekļūt Asistentam, kad sakāt: “Ok Google.”</translation>
 <translation id="6586451623538375658">Apmainīt galveno peles pogu</translation>
 <translation id="6586604979641883411">Lai jauninātu Linux, nepieciešama brīva vieta diskā vismaz <ph name="REQUIRED_SPACE" /> apjomā. Lūdzu, atbrīvojiet vietu savā ierīcē un mēģiniet vēlreiz.</translation>
 <translation id="6588043302623806746">Lietot drošu DNS serveri</translation>
@@ -5156,6 +5162,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6602937173026466876">Piekļūstiet saviem printeriem</translation>
 <translation id="6602956230557165253">Lai pārvietotos, izmantojiet kreiso un labo bulttaustiņu.</translation>
 <translation id="6605847144724004692">Vēl nav novērtējis neviens lietotājs.</translation>
+<translation id="6606671997164410857">Šķiet, ka jūs jau esat iestatījis Google asistentu citā ierīcē. Lai efektīvāk izmantotu Asistentu, ieslēdziet ekrāna kontekstu šajā ierīcē.</translation>
 <translation id="6607831829715835317">Vairā&amp;k rīku</translation>
 <translation id="6607890859198268021">Konts <ph name="USER_EMAIL" /> jau tiek pārvaldīts domēnā <ph name="DOMAIN" />. Lai izmantotu vecāku kontroli citā Google kontā, pēc iestatīšanas izrakstieties un pierakstīšanās ekrānā atlasiet “Pievienot personu”.</translation>
 <translation id="6609478180749378879">Pēc tam, kad iziesiet no inkognito režīma, pierakstīšanās dati tiks glabāti šajā ierīcē. Ierīcē varēsiet vēlāk atkal pierakstīties šajā tīmekļa vietnē.</translation>
@@ -5335,6 +5342,13 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6808039367995747522">Lai turpinātu, ievietojiet drošības atslēgu un pieskarieties tai.</translation>
 <translation id="6808193438228982088">Lapsa</translation>
 <translation id="6809470175540814047">Atvērt inkognito režīma logā</translation>
+<translation id="6809656734323672573">Ja piekritīsiet, Google asistents gaidstāves režīmā gaidīs, līdz noteiks īsinājumvārdu “Ok Google”, un varēs izmantot funkciju Voice Match, lai atpazītu, ka runājat jūs.
+    <ph name="BR" />
+    Funkcija Voice Match ļauj Asistentam atpazīt jūsu balsi un atšķirt jūs no citiem cilvēkiem. Asistents izmanto jūsu balss paraugus, lai izveidotu unikālu balss modeli, kas tiek glabāts tikai jūsu ierīcē. Jūsu balss modelis var tikt īslaicīgi nosūtīts uzņēmumam Google, lai uzlabotu jūsu balss atpazīšanas efektivitāti.
+    <ph name="BR" />
+    Ja vēlāk vairs nevēlēsieties izmantot funkciju Voice Match, varēsiet to vienkārši noņemt Asistenta iestatījumu sadaļā. Lai skatītu vai dzēstu audioklipus, ko ierakstāt funkcijas Voice Match iestatīšanas laikā, atveriet vietni <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Automātiski pierakstīties vietnēs, izmantojot saglabātos akreditācijas datus. Ja funkcija ir atspējota, apstiprināšana būs jāveic ikreiz, kad pierakstīsieties vietnē.</translation>
 <translation id="6810768462515084623">Šķiet, ka ir beidzies jūsu paroles derīguma termiņš. Lūdzu, atjaunojiet to citā ierīcē un mēģiniet vēlreiz.</translation>
 <translation id="6811034713472274749">Lapu var skatīt</translation>
@@ -5665,7 +5679,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7171559745792467651">Lietotņu instalēšana no citām ierīcēm</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
 <translation id="7173114856073700355">Atvērt iestatījumus</translation>
-<translation id="7173336557300642430">Lai saņemtu pielāgotākas atbildes, ļaujiet Google asistentam izmantot ekrānā redzamo informāciju, kad uzdodat jautājumus. Asistents var arī izmantot informāciju par atskaņotajām dziesmām vai videoklipiem.</translation>
 <translation id="7174199383876220879">Jaunums! Pārvaldiet savu mūziku, videoklipus un citu saturu.</translation>
 <translation id="7175037578838465313">Tīkla “<ph name="NAME" />” konfigurēšana</translation>
 <translation id="7175353351958621980">Ielādēts no:</translation>
@@ -5696,13 +5709,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Iziet no lapas}zero{Iziet no lapām}one{Iziet no lapām}other{Iziet no lapām}}</translation>
 <translation id="7207457272187520234">Lietojuma un diagnostikas datu sūtīšana. Pašlaik dati par šo ierīci un ierīces diagnostikas un lietotņu lietojuma dati tiek automātiski sūtīti uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo iestatījumu ir noteicis īpašnieks. Ja ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā.</translation>
 <translation id="7207631048330366454">Meklēt lietotnes</translation>
-<translation id="7210488993538120146">Funkcija Voice Match palīdz Google asistentam noteikt lietotāja <ph name="SUPERVISED_USER_NAME" /> balsi ierīcē <ph name="DEVICE_TYPE" /> un atšķirt to no citiem lietotājiem.
-    <ph name="BR" />
-    Asistents izmanto jūsu bērna balss paraugus, lai izveidotu unikālu balss modeli, kas tiek glabāts tikai bērna ierīcēs. Bērna balss modelis var tikt īslaicīgi nosūtīts uzņēmumam Google, lai uzlabotu balss atpazīšanu.
-    <ph name="BR" />
-    Ja vēlāk vairs nevēlēsieties, ka bērns izmanto funkciju Voice Match, varēsiet to vienkārši noņemt no Asistenta iestatījumiem. Lai skatītu vai dzēstu audioklipus, ko bērns ierakstīja funkcijas Voice Match iestatīšanas laikā, atveriet vietni g.co/assistant/match, izmantojot bērna kontu.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Ņemiet vērā:<ph name="END_BOLD" /> kāds ar līdzīgu balsi vai ierakstu, iespējams, arī varēs piekļūt jūsu bērna <ph name="SUPERVISED_USER_NAME" /> personīgajiem rezultātiem. Lai taupītu akumulatora enerģiju, balss komanda “Ok Google” darbojas tikai tad, kad ierīce ir pievienota barošanas avotam.</translation>
 <translation id="7210499381659830293">Paplašinājuma printeri</translation>
 <translation id="7211783048245131419">Vēl nav piešķirts neviens slēdzis</translation>
 <translation id="7212097698621322584">Ievadiet pašreizējo PIN, lai to mainītu. Ja nezināt savu PIN, būs jāatiestata drošības atslēga un pēc tam jāizveido jauns PIN.</translation>
@@ -5914,7 +5920,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7434969625063495310">Nevarēja pievienot drukas serveri. Lūdzu, pārbaudiet servera konfigurāciju un mēģiniet vēlreiz.</translation>
 <translation id="7436921188514130341">Diemžēl pārdēvēšanas laikā radās kļūda.</translation>
 <translation id="7438495332316988804">Lai atrastu standarta pārlūku, palaidējā ierakstiet “Chrome”.</translation>
-<translation id="7439446972050308922">Jūsu saglabātās preferences būs pieejamas jebkurā Chrome OS ierīcē, kad pierakstīsieties savā Google kontā. Iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="7439519621174723623">Lai turpinātu, pievienojiet ierīces nosaukumu</translation>
 <translation id="7441736921018636843">Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāciju<ph name="END_LINK" />, lai noņemtu sinhronizācijas ieejas frāzi.</translation>
 <translation id="7441830548568730290">Citi lietotāji</translation>
@@ -6168,6 +6173,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7690853182226561458">Pievienot &amp;mapi...</translation>
 <translation id="7691073721729883399">Nevarēja iekļaut kioska lietojumprogrammai paredzēto komponentu cryptohome.</translation>
 <translation id="7691077781194517083">Nevar atiestatīt šo drošības atslēgu. Kļūda: <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">“Ok Google”</translation>
 <translation id="7691698019618282776">Crostini jaunināšana</translation>
 <translation id="7696063401938172191">Jūsu tālrunī “<ph name="PHONE_NAME" />”:</translation>
 <translation id="7697166915480294040">Detalizēta informācija ir paslēpta uz ekrāna kopīgošanas laiku</translation>
@@ -6279,6 +6285,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7804072833593604762">Cilne ir aizvērta</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7807067443225230855">Meklēšana un Asistents</translation>
+<translation id="7807117920154132308">Šķiet, ka lietotājs <ph name="SUPERVISED_USER_NAME" /> jau iestatīja Google asistentu citā ierīcē. Šajā ierīcē ieslēdzot ekrāna kontekstu, <ph name="SUPERVISED_USER_NAME" /> varēs izmantot vēl vairāk Asistenta iespēju.</translation>
 <translation id="7807711621188256451">Vienmēr ļaut vietnei <ph name="HOST" /> piekļūt kamerai</translation>
 <translation id="7810202088502699111">Uznirstošie logi šajā lapā tika bloķēti.</translation>
 <translation id="781167124805380294">Faila <ph name="FILE_NAME" /> apraide</translation>
@@ -6333,6 +6340,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7847212883280406910">Nospiediet Ctrl+Alt+S, lai pārslēgtos uz <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7849264908733290972">Atvērt attēlu jaunā c&amp;ilnē</translation>
 <translation id="784934925303690534">Laika periods</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Piezīme.<ph name="END_BOLD" /> Ir iespējams, ka persona ar līdzīgu balsi vai ar jūsu balss ierakstu var piekļūt jūsu personīgajiem rezultātiem vai Asistentam. Lai taupītu akumulatora enerģiju, Asistenta iestatījumos varat atlasīt, ka īsinājumvārda “Ok Google” noteikšanai jādarbojas tikai tad, ja šī ierīce ir pievienota barošanas avotam.</translation>
 <translation id="7851457902707056880">Drīkst pierakstīties tikai īpašnieka kontā. Lūdzu, atsāknējiet ierīci un pierakstieties īpašnieka kontā. Ierīce tiks automātiski atsāknēta pēc 30 sekundēm.</translation>
 <translation id="7851716364080026749">Vienmēr bloķēt piekļuvi kamerai un mikrofonam</translation>
 <translation id="7851720427268294554">IPP parsētājs</translation>
@@ -6912,7 +6920,6 @@ Nospiediet piešķirtu slēdzi, lai noņemtu piešķiršanu.</translation>
 <translation id="8480869669560681089">Nezināma ierīce no: <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB ierīces atļaujas apstiprināšana</translation>
 <translation id="8481980314595922412">Izmēģinājuma versijas funkcijas ir ieslēgtas</translation>
-<translation id="8482860770919360244">Šķiet, ka jūs jau esat iestatījis Google asistentu citā ierīcē. Lai vēl efektīvāk izmantotu Asistentu, ieslēdziet iestatījumu “Ekrāna konteksts”.</translation>
 <translation id="848666842773560761">Lietotne mēģina piekļūt kamerai. Lai atļautu piekļuvi, izslēdziet kameras konfidencialitātes slēdzi.</translation>
 <translation id="8487678622945914333">Tuvināt</translation>
 <translation id="8489156414266187072">Personiski ieteikumi tiek rādīti tikai jūsu kontā</translation>
@@ -7569,6 +7576,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
       <ph name="LIST_ITEM" />Veiciet Chrome savienojamības diagnostiku.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Attēls attēlā</translation>
+<translation id="9166813363879986425">Jūsu saglabātās preferences un darbības būs pieejamas jebkurā Chrome OS ierīcē, kad pierakstīsieties savā Google kontā. Iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="9167063903968449027">Rādīt lasīšanas sarakstu</translation>
 <translation id="9167450455589251456">Profils netiek atbalstīts</translation>
 <translation id="9168436347345867845">Vēlāk</translation>

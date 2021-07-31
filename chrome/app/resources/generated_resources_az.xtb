@@ -309,6 +309,7 @@
 <translation id="1336902454946927954">Barmaq izinizi tanımaq mümkün olmadığı üçün təhlükəsizlik açarınız kilidləndi. Onu kiliddən çıxarmaq üçün PIN'nizi daxil edin.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> bu tətbiqi açmaq istəyir.</translation>
 <translation id="1338950911836659113">Silinir...</translation>
+<translation id="1339009753652684748">"Ok Google" dedikdə Assistentinizə daxil olun. Enerjiyə qənaət üçün “Aktiv (Tövsiyə olunur)” seçin. Assistentiniz yalnız cihazınız elektrik şəbəkəsinə qoşulduqda və ya batareya doldurulduqda cavab verəcək.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fayllar tətbiqini istifadə etməklə medianı cihazdan yedəkləyin.</translation>
 <translation id="1341988552785875222">Carı divar kağızı '<ph name="APP_NAME" />' tərəfindən ayarlanıb. Başqa divar kağızı seçmədən öncə '<ph name="APP_NAME" />' tətbiqini sistemdən silməli olacaqsınız.</translation>
@@ -443,6 +444,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.</translation>
 <translation id="1478340334823509079">Ətraflı: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Quraşdırma aktiv deyil</translation>
+<translation id="1480571698637441426">Suallar soruşduğunuz zaman uyğunlaşdırılmış cavablar almaq üçün Assistentinizə ekranınızda olan məzmunun ekran şəklinə giriş imkanı verin. Buraya oxudulan mahnı və ya videolar haqqında məlumatlar da daxil ola bilər.</translation>
 <translation id="1481537595330271162">Diskin ölçüsünü dəyişərkən xəta baş verdi</translation>
 <translation id="1482626744466814421">Bu tabı əlfəcinlərə əlavə edin...</translation>
 <translation id="1483272013430662157">Veb tətbiqlər fayl növlərinin açılmasını soruşa bilər</translation>
@@ -832,7 +834,6 @@
 <translation id="1865769994591826607">Yalnız eyni sayt bağlantıları</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" yoxlanmış məkanlarda şəkil, video və səs fayllarını oxuya və yaza bilər.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> quraşdırmanız tamamlamaq üçün hazırdır</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Parol yoxlaması Chromium'da əlçatan deyil</translation>
 <translation id="1869433484041798909">Əlfəcin düyməsi</translation>
 <translation id="1871098866036088250">Chrome brauzerində açın</translation>
@@ -1113,7 +1114,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2163937499206714165">Qaranlıq rejimi aktiv edin</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> və daha 1 dəyişdirici</translation>
 <translation id="2165177462441582039">Vurğulamanın hər element üzərində qalma müddətini seçin</translation>
-<translation id="2165421703844373933">"Ok Google" dedikdə Assistentinizə daxil olun. Enerjiyə qənaət üçün “Aktiv (Tövsiyə olunur)” seçin. Assistentiniz yalnız cihazınız elektrik şəbəkəsinə qoşulduqda və ya batareya doldurulduqda cavab verəcək.</translation>
 <translation id="2166369534954157698">Qəhvəyi tülkə tənbəl itin üzərindən qaçaraq hoppanır</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Hər bir halda daxil olun</translation>
@@ -1247,6 +1247,15 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" əlavə icazə istəyir.</translation>
 <translation id="23055578400314116">İstifadəçi adı seçin</translation>
 <translation id="2307462900900812319">Şəbəkəni konfiqurasiya edin</translation>
+<translation id="2307553512430195144">Razılaşsanız, Google Assistent "Ok Google" əmrini aşkarlamaq üçün gözləmə rejimində gözləyəcək və Voice Match ilə danışanın <ph name="SUPERVISED_USER_NAME" /> olduğunu tanıya biləcək.
+    <ph name="BR" />
+    Voice Match Google Assistentə <ph name="DEVICE_TYPE" /> cihazınızda <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin səsini tanımaqda və onu digərlərindən fərqləndirməkdə kömək edir.
+    <ph name="BR" />
+    Assistent yalnız övladınızın cihazında (cihazlarında) saxlanılan unikal səs modeli yaratmaq üçün onun səsini qeydə alır. Daha yaxşı müəyyən edilməsi üçün övladınızın səs modeli müvəqqəti olaraq Google'a göndərilə bilər.
+    <ph name="BR" />
+    Nə vaxtsa Voice Match'in övladınıza uyğun olmadığına qərar versəniz, Assistent Ayarlarında onu silə bilərsiniz. Voice Match'i ayarlayarkən övladınızın yazdığı səslərə baxmaq və ya silmək üçün övladınızın hesabından<ph name="VOICE_MATCH_SETTINGS_URL" /> ünvanına keçin.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Bu səhifə xidmət işləyici quraşdırmaq istəyir.</translation>
 <translation id="2309620859903500144">Bu saytın hərəkət və zəif sensorlarınıza girişi blok edilib.</translation>
 <translation id="2312219318583366810">Səhifə keçidi</translation>
@@ -1376,6 +1385,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2450849356604136918">Aktiv baxış yoxdur</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Saytlar adətən şəbəkəni ayarlamaq kimi datanın ötürülməsi funksiyaları üçün ardıcıl portlara qoşulur</translation>
+<translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" /> suallar soruşan zaman uyğunlaşdırılmış cavablar əldə etmək üçün Assistentə<ph name="SUPERVISED_USER_NAME" /> ekranında olan məzmunun ekran şəklinə daxil olmaq icazəsi verin. Buraya oxudulan mahnı və ya videolar haqqında məlumatlar da daxil ola bilər.</translation>
 <translation id="2453860139492968684">Son</translation>
 <translation id="2454247629720664989">Açar söz</translation>
 <translation id="2454264884354864965">Kamera deaktivdir</translation>
@@ -1597,9 +1607,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Daxiletmə ayarlarını dəyişin</translation>
 <translation id="2693176596243495071">Xəta oldu. Sonra cəhd edin və ya administratorla əlaqə saxlayın.</translation>
-<translation id="2693640212062142966">Voice Match Google Assistentə <ph name="DEVICE_TYPE" /> cihazında səsinizi tanımaq və sizi başqalarından fərqləndirmək imkanı verir. Batareyaya qənaət etmək üçün "Hey Google" yalnız cihazınız enerji mənbəyinə qoşulu olduğu zaman aktiv olur. Dəyişiklik etmək üçün Ayarlara keçin.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Unutmayın:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı da fərdi nəticələrinizə giriş edə bilər. Voice Match icazəsini daha sonra Assistent Ayarlarında deaktiv etməklə silə bilərsiniz.</translation>
 <translation id="2699911226086014512">PIN əməliyyatı <ph name="RETRIES" /> kodu ilə alınmadı.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> adlı cihazdan paylaşıldı</translation>
 <translation id="2701737434167469065">Daxil olun, <ph name="EMAIL" /></translation>
@@ -2086,6 +2093,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="32101887417650595">Printerə qoşulmaq mümkün deyil</translation>
 <translation id="321084946921799184">Sarı və ağ</translation>
 <translation id="321356136776075234">Cihaz OU (məs, OU=Chromebooks,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər.</translation>
 <translation id="3216825226035747725">İstifadəçilər G Suite for Education hesabına daxil olduqları zaman hansı Google xidmətlərinə giriş imkanlarının olacağını G Suite for Education administratorları müəyyənləşdirir. Buraya övladınızın bu nəzarət edilən hesabla daha əvvəl giriş edə bilmədiyi bəzi funksiyalar və ya xidmətlər daxil ola bilər. Məktəb administratorlarından azyaşlı istifadəçiləri tərəfindən xidmətlərin istifadəsi üçün razılıq vermək və ya razılıq əldə etmək tələb edilir.</translation>
 <translation id="3217843140356091325">Qısayol yaradılsın?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2263,6 +2271,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3417836307470882032">24 saat rejimi</translation>
 <translation id="3420501302812554910">Daxili təhlükəsizlik açarı sıfırlanma tələb edir</translation>
 <translation id="3421387094817716717">Oval Əyrisi İctimai Açarı</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazma şəxsi nəticələrinizə, yaxud Assistentinizə giriş edə bilər.</translation>
 <translation id="3422291238483866753">Sayt ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və ya kamera mövqeyini izləmək istədikdə icazə tələb edin (tövsiyə edilir)</translation>
 <translation id="3423463006624419153">"<ph name="PHONE_NAME_1" />" və "<ph name="PHONE_NAME_2" />" telefonlarınızda</translation>
 <translation id="3423858849633684918"><ph name="PRODUCT_NAME" /> məhsulunu yenidən işə salın</translation>
@@ -2975,7 +2984,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4154664944169082762">Barmaq izi</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Keçdiniz</translation>
-<translation id="4159163871835771155"><ph name="SUPERVISED_USER_NAME" /> sual verdiyi zaman uyğun cavablar əldə etmək üçün Assistentin <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin ekranındakı məlumatdan istifadə etməsinə icazə verin. Buraya oxudulan mahnı və ya videolar haqqında məlumat da daxil ola bilər.</translation>
 <translation id="4159681666905192102">Bu, <ph name="CUSTODIAN_EMAIL" /> və <ph name="SECOND_CUSTODIAN_EMAIL" /> tərəfindən idarə olunan uşaq hesabıdır.</translation>
 <translation id="4163560723127662357">Naməlum klaviatura</translation>
 <translation id="4167686856635546851">Saytlar adətən video oyunlar və ya veb-formalar kimi interaktiv xüsusiyyətləri göstərmək üçün Javascript'dən istifadə edir</translation>
@@ -3613,7 +3621,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Sistem İzləyici ilə Açın</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
-<translation id="4889792122460431731">Sual verdiyiniz zaman sizə uyğun cavablar almaq üçün Assistentinizin ekranınızdakı məlumatdan istifadə etməsinə icazə verin. Buraya oxudulan mahnı və ya videolar haqqında məlumat da daxil ola bilər.</translation>
 <translation id="4890773143211625964">Qabaqcıl printer seçimlərini göstərin</translation>
 <translation id="4891089016822695758">Beta forumu</translation>
 <translation id="4892229439761351791">Sayt Bluetooth istifadə edə bilər</translation>
@@ -3828,7 +3835,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profili endirmək mümkün olmadı. Sonra yenidən cəhd edin və ya yardım üçün operator ilə əlaqə saxlayın.</translation>
 <translation id="5131591206283983824">Taçpedin toxunub sürüşdürmə funksiyası</translation>
-<translation id="5135085122826131075">"Ok Google" dedikdə Assistentinizə daxil olun.</translation>
 <translation id="5135533361271311778">Əlfəcin elementini yaratmaq alınmadı.</translation>
 <translation id="5136343472380336530">Hər iki cihazın kiliddən çıxarılmış, bir-birinə yaxın və Bluetooth'un aktiv olmasına əmin olun. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Bu elementi silin</translation>
@@ -4246,7 +4252,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5585912436068747822">Formatlama alınmadı</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Tətbiqlər yüklənir...</translation>
-<translation id="5590265327628802792">Görünür, <ph name="SUPERVISED_USER_NAME" /> başqa cihazda artıq Google Assistenti ayarlayıb. <ph name="SUPERVISED_USER_NAME" /> Ekran kontekstini aktiv etməklə Assistentdən maksimum yararlana bilər.</translation>
 <translation id="5592595402373377407">Kifayət qədər əlçatan məlumat hələ yoxdur.</translation>
 <translation id="5595485650161345191">Ünvana düzəliş edin</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
@@ -4651,6 +4656,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6059652578941944813">Sertifikat İyerarxiyası</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6061882183774845124">Linki cihazlara göndərin</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər. Batareyaya qənaət etmək üçün <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin Assistentinin ayarlarında "Ok Google" seçiminin yalnız bu cihaz enerji mənbəyinə qoşulu olduqda yanılı olmasını seçə bilərsiniz.</translation>
 <translation id="6064217302520318294">Ekran kilidi</translation>
 <translation id="6065289257230303064">Sertifikat Subyekt Direktoriyası Atributları</translation>
 <translation id="6066794465984119824">Şəkil heşi ayarlanmayıb</translation>
@@ -4871,9 +4877,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6294759976468837022">Avtomatik skanlama sürəti</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
 <translation id="6295855836753816081">Yadda saxlanılır...</translation>
-<translation id="6298800237463568825">Voice Match Google Assistentə <ph name="DEVICE_TYPE" /> cihazında səsinizi tanımaq və sizi başqalarından fərqləndirmək imkanı verir.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Unutmayın:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı da fərdi nəticələrinizə giriş edə bilər. Voice Match icazəsini daha sonra Assistent Ayarlarında deaktiv etməklə silə bilərsiniz.</translation>
 <translation id="6298962879096096191">Android tətbiqlərini quraşdırmaq üçün Google Play istifadə edin</translation>
 <translation id="6300177430812514606">Verilənlərin qəbul edilməsini və ya qəbulunu tamamlamaq icazəsi verilməyib</translation>
 <translation id="630065524203833229">Çıxış</translation>
@@ -4928,6 +4931,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6345878117466430440">Oxunmuş kimi qeyd edin</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
 <translation id="6354918092619878358">SECG oval əyrisi secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Təcrübi (alfa keyfiyyəti) brauzer! Bəzi xüsusiyyətlər çatışmır, yaxud tam deyil. Problemlər barədə bildirin: Kömək &gt; "Problem barədə bildirin...".</translation>
 <translation id="635609604405270300">Cihazı aktiv saxlayın</translation>
 <translation id="63566973648609420">Yalnız parol sözünüzü bilən adam şifrələnmiş məlumatınızı oxuya bilər. Parol söz Google tərəfindən göndərilmir və yadda saxlanılmır. Əgər parol sözü unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlamalısınız<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
@@ -4993,6 +4997,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6434309073475700221">Ləğv edin</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> tətbiqindən istifadə etmək üçün cihaz güncəllənməlidir.</translation>
 <translation id="6436164536244065364">Veb dükanda baxın</translation>
+<translation id="6436610005579237680">Sizə daha çox uyğunlaşdırılmış cavablar əldə etmək üçün Google Assistentə suallar soruşduğunuz zaman ekranınızdakı məzmunun ekran şəklinə daxil olmaq icazəsi verin. Assistentiniz oxudulan mahnı və ya videolar haqqında məlumatdan da istifadə edə bilər.</translation>
 <translation id="6438234780621650381">Ayarları sıfırlayın</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audio oxudulur</translation>
 <translation id="6442187272350399447">Heybətli</translation>
@@ -5129,6 +5134,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6582274660680936615">Qonaq kimi baxırsınız</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
 <translation id="6586099239452884121">Qonaq axtarışı</translation>
+<translation id="6586213706115310390">"Ok Google" dedikdə Assistentinizə daxil olun.</translation>
 <translation id="6586451623538375658">Əsas siçan düyməsini Swap</translation>
 <translation id="6586604979641883411">Linux'u təkmilləşdirmək üçün yaddaşda minimum <ph name="REQUIRED_SPACE" /> boş yer tələb edilir. Cihazda yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="6588043302623806746">Güvənli DNS yoxdur</translation>
@@ -5148,6 +5154,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6602937173026466876">Printerlərinizə çıxış imkanı</translation>
 <translation id="6602956230557165253">Naviqasiya üçün sol və sağ ox düymələrini istifadə edin.</translation>
 <translation id="6605847144724004692">Hələ qiymətləndirilməyib.</translation>
+<translation id="6606671997164410857">Görünür, başqa cihazda artıq Google Assistenti ayarlamısınız. Bu cihazda Ekran kontekstini yandıraraq Assistentinizdən daha çox yararlanın.</translation>
 <translation id="6607831829715835317">Daha çox alətlər</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> hazırda <ph name="DOMAIN" /> tərəfindən idarə olunur. Başqa Google Hesabı ilə valideyn nəzarətini istifadə etmək üçün ayarlamadan sonra çıxın, sonra giriş ekranında "Şəxs əlavə edin" seçin.</translation>
 <translation id="6609478180749378879">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq. Bu veb sayta daha sonra cihazınızla yenidən daxil ola biləcəksiniz.</translation>
@@ -5327,6 +5334,13 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6808039367995747522">Davam etmək üçün təhlükəsizlik açarını daxil edib ona toxunun</translation>
 <translation id="6808193438228982088">Tülkü</translation>
 <translation id="6809470175540814047">Anonim pəncərədə açın</translation>
+<translation id="6809656734323672573">Razılaşsanız, Google Assistent "Ok Google" əmrini aşkarlamaq üçün gözləmə rejimində gözləyəcək və Voice Match ilə danışanın siz olduğunuzu tanıya biləcək.
+    <ph name="BR" />
+    Voice Match Assistentə kimliyinizi müəyyən etmək və sizi digərlərindən fərqləndirmək icazəsi verir. Assistent yalnız cihazınızda saxlanılan unikal səs modeli yaratmaq üçün səsinizi qeydə alır. Səsinizi daha yaxşı aşkarlamaq üçün səs modeli müvəqqəti olaraq Google'a göndərilə bilər.
+    <ph name="BR" />
+    Voice Match'in faydalı olmadığına qərar versəniz, Assistent Ayarlarından onu silə bilərsiniz. Voice Match'in ayarlanması zamanı qeydə aldığınız audio kliplərə baxmaq və ya onları silmək üçün <ph name="VOICE_MATCH_SETTINGS_URL" /> bölməsinə keçin.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Saxlanmış kredensialları istifadə edərək vebsaytlara avtomatik daxil olun. Xüsusiyyət deaktiv edildikdə, sayta hər dəfə girdiyinizdə təsdiqləmə tələb olunacaq.</translation>
 <translation id="6810768462515084623">Ups!  Parolunuzun vaxtı bitib. Fərqli cihazda onu yeniləyin və bir daha cəhd edin.</translation>
 <translation id="6811034713472274749">Səhifəyə baxa bilərsiniz</translation>
@@ -5657,7 +5671,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7171559745792467651">Digər cihazlardan tətbiqlər quraşdırın</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Yeni qrupa tab əlavə edin}other{Yeni qrupa tablar əlavə edin}}</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>
-<translation id="7173336557300642430">Sizə daha uyğun cavablar almaq üçün sual verdiyiniz zaman Google Assistentin ekranınızdakı məlumatdan istifadə etməsinə icazə verin. Assistentiniz oxudulan mahnı və ya videolar haqqında məlumatdan da istifadə edə bilər.</translation>
 <translation id="7174199383876220879">Yenilik! Musiqi, video və daha çoxuna nəzarət edin.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ünvanını konfiqurasiya edin</translation>
 <translation id="7175353351958621980">Buradan yüklənib:</translation>
@@ -5688,13 +5701,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Səhifədən Çıxın}other{Səhifələrdən Çıxın}}</translation>
 <translation id="7207457272187520234">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google'a göndərir. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu ayar sahibi tərəfindən tətbiq edilir. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="7207631048330366454">Tətbiqlərdə axtarın</translation>
-<translation id="7210488993538120146">Voice Match Google Assistentə <ph name="DEVICE_TYPE" /> cihazında <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin səsini tanımaq və onu başqalarından fərqləndirmək imkanı verir.
-    <ph name="BR" />
-    Assistent yalnız övladınızın cihazında saxlanılan unikal səs modeli yaratmaq üçün onun səsini qeydə alır. Daha yaxşı müəyyən edilməsi üçün övladınızın səs modeli müvəqqəti olaraq Google'a göndərilə bilər.
-    <ph name="BR" />
-    Nə vaxtsa Voice Match'in övladınıza uyğun olmadığına qərar versəniz, Assistent Ayarlarında onu silə bilərsiniz. Voice Match'i ayarlayarkən övladınızın yazdığı səslərə baxmaq və ya silmək üçün övladınızın hesabından g.co/assistant/match ünvanına keçin.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazısı <ph name="SUPERVISED_USER_NAME" /> adlı şəxsin fərdi nəticələrinə daxil ola bilər. Batareyaya qənaət etmək üçün "Hey Google" yalnız bu cihaz enerji mənbəyinə qoşulu olduğu zaman aktiv olur.</translation>
 <translation id="7210499381659830293">Artırma printerləri</translation>
 <translation id="7211783048245131419">Hələ heç bir düymə təyin edilməyib</translation>
 <translation id="7212097698621322584">Dəyişmək üçün cari PIN-i daxil edin. PIN-i bilmirsinizsə, güvənlik açarını sıfırlamalı, sonra isə yeni PIN yaratmalısınız.</translation>
@@ -5906,7 +5912,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7434969625063495310">Çap serverini əlavə etmək mümkün olmadı. Serverin konfiqurasiyasını yoxlayın və yenidən cəhd edin.</translation>
 <translation id="7436921188514130341">Yenidən adlandırarkən xəta baş verdi.</translation>
 <translation id="7438495332316988804">Standart brauzer Başladıcıya "Chrome" yazaraq tapıla bilər.</translation>
-<translation id="7439446972050308922">Google Hesabınızla daxil olduğunuz zaman yadda saxlanılan tərcihləriniz istənilən Chrome OS cihazında hazır olacaqdır. Sinxronizasiya ediləcəkləri Ayarlarda seçə bilərsiniz.</translation>
 <translation id="7439519621174723623">Davam etmək üçün cihaz adı əlavə edin</translation>
 <translation id="7441736921018636843">Bu ayarı dəyişmək və sinxronizasiya parolunu silmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlayın<ph name="END_LINK" /></translation>
 <translation id="7441830548568730290">Digər istifadəçilər</translation>
@@ -6160,6 +6165,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7690853182226561458">Qovluq əlavə edin...</translation>
 <translation id="7691073721729883399">Köşk tətbiqi üçün cryptohome quraşdırılmadı.</translation>
 <translation id="7691077781194517083">Bu güvənlik açarını sıfırlamaq mümkün deyil. Xəta <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Crostini'nin güncəllənməsi</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
 <translation id="7697166915480294040">Ekranınızı paylaşdığınız zaman detallar gizlədilir</translation>
@@ -6272,6 +6278,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7804072833593604762">Tab bağlanıb</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Axtarış və Assistent</translation>
+<translation id="7807117920154132308">Görünür, <ph name="SUPERVISED_USER_NAME" /> başqa cihazda artıq Google Assistenti ayarlayıb. <ph name="SUPERVISED_USER_NAME" /> bu cihazda Ekran kontekstini yandıraraq Assistentdən daha çox yararlana bilər.</translation>
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
 <translation id="7810202088502699111">Bu səhifədə popaplar bloklanıb.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> faylını yayımlayın</translation>
@@ -6326,6 +6333,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> məhsuluna keçmək üçün Ctrl + Alt + S basın</translation>
 <translation id="7849264908733290972">Şəkli yeni tabda açın</translation>
 <translation id="784934925303690534">Vaxt aralığı</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Oxşar səs və ya səsyazma şəxsi nəticələrinizə, yaxud Assistentinizə giriş edə bilər. Batareyaya qənaət etmək üçün Assistentinizin ayarlarında "Ok Google" seçiminin yalnız bu cihaz enerji mənbəyinə qoşulu olduqda yanılı olmasını seçə bilərsiniz.</translation>
 <translation id="7851457902707056880">Giriş yalnız sahib hesabı üçün məhdudlaşdırılıb. Lütfən, yenidən yükləyin və sahib hesabı ilə daxil olun. Maşın 30 saniyəyə avtomatik yenidən yüklənəcək.</translation>
 <translation id="7851716364080026749">Kamera və mikrofon girişini hər zaman blok edin</translation>
 <translation id="7851720427268294554">IPP Analizatoru</translation>
@@ -6903,7 +6911,6 @@ Təyinatı silmək üçün təyin edilmiş keçiriciyə basın</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> vendorundan naməlum cihaz</translation>
 <translation id="8481187309597259238">USB İcazəsini təsdiq edin</translation>
 <translation id="8481980314595922412">Sınaq funksiyaları aktivdir</translation>
-<translation id="8482860770919360244">Görünür, başqa cihazda artıq Google Assistenti ayarlamısınız. Ekran kontekstini aktiv edərək Assistentdən maksimum faydalanın.</translation>
 <translation id="848666842773560761">Tətbiq kameraya giriş etməyə çalışır. Girişə icazə vermək üçün kamera məxfilik dəyişdiricisini deaktiv edin.</translation>
 <translation id="8487678622945914333">Böyüdün</translation>
 <translation id="8489156414266187072">Şəxsi təkliflər yalnız hesabınızda göstərilir</translation>
@@ -7557,6 +7564,7 @@ Bu əməliyyata bir neçə keçirici təyin edə bilərsiniz</translation>
       <ph name="LIST_ITEM" />Chrome Bağlantı Diaqnostikasını icra edin
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Şəkil içində Şəkil</translation>
+<translation id="9166813363879986425">Google Hesabınızla daxil olduğunuz zaman yadda saxlanılan tərcihləriniz və fəaliyyətiniz istənilən Chrome OS cihazında hazır olacaq. Ayarlarda nələri sinxronlaşdıracağınızı seçə bilərsiniz.</translation>
 <translation id="9167063903968449027">Oxu Siyahısını göstərin</translation>
 <translation id="9167450455589251456">Profil dəstəklənmir</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>

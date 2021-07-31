@@ -313,6 +313,7 @@
 <translation id="1336902454946927954">Your security key is locked because your fingerprint couldn't be recognised. To unlock it, enter your PIN.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> wants to open this application.</translation>
 <translation id="1338950911836659113">Deleting...</translation>
+<translation id="1339009753652684748">Access your Assistant when you say ‘Hey Google’. To save battery, choose 'On (recommended)'. Your Assistant will respond only when your device is plugged in or charging.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Back up media from the device using the Files app.</translation>
 <translation id="1341988552785875222">The current wallpaper is set by '<ph name="APP_NAME" />'. You may need to uninstall '<ph name="APP_NAME" />' before selecting a different wallpaper.</translation>
@@ -448,6 +449,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Installation is not enabled</translation>
+<translation id="1480571698637441426">To get tailored responses when you ask questions, let your Assistant access a screenshot of what’s on your screen. This may also include info about songs or videos that are playing.</translation>
 <translation id="1481537595330271162">Error resizing disk</translation>
 <translation id="1482626744466814421">Bookmark This Tab...</translation>
 <translation id="1483272013430662157">Web apps can ask to open types of files</translation>
@@ -848,7 +850,6 @@
 <translation id="1865769994591826607">Same-site connections only</translation>
 <translation id="186612162884103683">"<ph name="EXTENSION" />" can read and write images, video and sound files in the ticked locations.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> is ready to complete your installation</translation>
-<translation id="1868193363684582383">"Ok Google"</translation>
 <translation id="1868553836791672080">Password check is not available in Chromium</translation>
 <translation id="1869433484041798909">Bookmark button</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
@@ -1129,7 +1130,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2163937499206714165">Turn dark mode on</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
-<translation id="2165421703844373933">Access your Assistant when you say "Ok Google". To save battery, choose 'On (Recommended)'. Your Assistant will respond only when your device is plugged in or charging.</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
@@ -1263,6 +1263,15 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" has requested additional permissions.</translation>
 <translation id="23055578400314116">Select a username</translation>
 <translation id="2307462900900812319">Configure network</translation>
+<translation id="2307553512430195144">If you agree, Google Assistant will wait in standby mode to detect ‘Hey Google’ and can recognise it is <ph name="SUPERVISED_USER_NAME" /> speaking with Voice Match.
+    <ph name="BR" />
+    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME" />’s voice on your <ph name="DEVICE_TYPE" /> and tell them apart from others.
+    <ph name="BR" />
+    Your Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to identify their voice better.
+    <ph name="BR" />
+    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips that your child records during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL" /> from your child’s account.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
 <translation id="2312219318583366810">Page URL</translation>
@@ -1392,6 +1401,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2450849356604136918">No active views</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Sites usually connect to serial ports for data transfer features, like setting up your network</translation>
+<translation id="2453706416476934374">To get tailored responses when <ph name="SUPERVISED_USER_NAME" /> asks questions, let Assistant access a screenshot of what’s on <ph name="SUPERVISED_USER_NAME" />’s screen. This may also include info about songs or videos that are playing.</translation>
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454264884354864965">Camera is off</translation>
@@ -1613,9 +1623,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Change input settings</translation>
 <translation id="2693176596243495071">Oops!  An unknown error occurred. Please try again later or contact your administrator if the issue persists.</translation>
-<translation id="2693640212062142966">Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE" /> and tell you apart from others. To save battery, 'Hey Google' is only on when your device is connected to a power source. To make changes, go to Settings.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Remember:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
 <translation id="2699911226086014512">PIN operation failed with code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Sign in, <ph name="EMAIL" /></translation>
@@ -2103,6 +2110,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="32101887417650595">Can’t connect to printer</translation>
 <translation id="321084946921799184">Yellow and white</translation>
 <translation id="321356136776075234">Device OU (e.g. OU=Chromebooks,DC=example,DC=com)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results.</translation>
 <translation id="3216825226035747725">G Suite for Education administrators determine which Google services their users can access while signed in to a G Suite for Education account. This may include some features or services that your child was previously unable to access using this supervised account. School administrators are required to provide or obtain consent for the use of the services by users who are minors.</translation>
 <translation id="3217843140356091325">Create shortcut?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2280,6 +2288,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3417836307470882032">Military time</translation>
 <translation id="3420501302812554910">Internal security key requires reset</translation>
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results or your Assistant.</translation>
 <translation id="3422291238483866753">Ask when a site wants to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="3423463006624419153">On your '<ph name="PHONE_NAME_1" />' and '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Please Relaunch <ph name="PRODUCT_NAME" /></translation>
@@ -2994,7 +3003,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Pass</translation>
-<translation id="4159163871835771155">To get tailored responses when <ph name="SUPERVISED_USER_NAME" /> asks questions, let Assistant use info on <ph name="SUPERVISED_USER_NAME" />’s screen. This may include info about songs or videos that are playing.</translation>
 <translation id="4159681666905192102">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" /> and <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Unknown keyboard</translation>
 <translation id="4167686856635546851">Sites usually use Javascript to display interactive features, like video games or web forms</translation>
@@ -3633,7 +3641,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Open With System Viewer</translation>
 <translation id="488785315393301722">Show details</translation>
-<translation id="4889792122460431731">To get tailored responses when you ask questions, let your Assistant use info on your screen. This may include info about songs or videos that are playing.</translation>
 <translation id="4890773143211625964">Show advanced printer options</translation>
 <translation id="4891089016822695758">Beta forum</translation>
 <translation id="4892229439761351791">Site can use Bluetooth</translation>
@@ -3848,7 +3855,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Profile could not be downloaded. Please try again later or contact operator for help.</translation>
 <translation id="5131591206283983824">Touchpad tap dragging</translation>
-<translation id="5135085122826131075">Access your Assistant when you say "Ok Google".</translation>
 <translation id="5135533361271311778">Could not create bookmark item.</translation>
 <translation id="5136343472380336530">Make sure that both devices are unlocked, close together and have Bluetooth turned on. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Delete this item</translation>
@@ -4266,7 +4272,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5585912436068747822">Formatting failed</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Loading apps...</translation>
-<translation id="5590265327628802792">It looks like <ph name="SUPERVISED_USER_NAME" /> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME" /> can get even more out of Assistant by turning on 'Screen context'.</translation>
 <translation id="5592595402373377407">Not enough data available yet.</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -4673,6 +4678,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6059652578941944813">Certificate Hierarchy</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6061882183774845124">Send link to your devices</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME" />’s Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
 <translation id="6064217302520318294">Screen lock</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
 <translation id="6066794465984119824">Image hash is not set</translation>
@@ -4893,9 +4899,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
-<translation id="6298800237463568825">Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE" /> and tell you apart from others.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Remember:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
 <translation id="6300177430812514606">Not allowed to finish sending or receiving data</translation>
 <translation id="630065524203833229">E&amp;xit</translation>
@@ -4950,6 +4953,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6345878117466430440">Mark as read</translation>
 <translation id="6349101878882523185">Install <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Experimental (alpha-quality) browser! Some features are missing or incomplete. Report issues with: Help &gt; ‘Report an issue…’</translation>
 <translation id="635609604405270300">Keep device turned on</translation>
 <translation id="63566973648609420">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Dragon</translation>
@@ -5015,6 +5019,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6434309073475700221">Discard</translation>
 <translation id="6434325376267409267">Your device needs to be updated before you can use <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">View in Web Store</translation>
+<translation id="6436610005579237680">To get responses that are more tailored to you, let Google Assistant access a screenshot of what’s on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.</translation>
 <translation id="6438234780621650381">Reset settings</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audio playing</translation>
 <translation id="6442187272350399447">Happy</translation>
@@ -5151,6 +5156,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6582274660680936615">You're browsing as a guest</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
 <translation id="6586099239452884121">Guest browsing</translation>
+<translation id="6586213706115310390">Access your Assistant when you say ‘Hey Google’.</translation>
 <translation id="6586451623538375658">Swap the primary mouse button</translation>
 <translation id="6586604979641883411">At least <ph name="REQUIRED_SPACE" /> of free disk space is required to upgrade Linux. Please free some space on your device and try again.</translation>
 <translation id="6588043302623806746">Use secure DNS</translation>
@@ -5170,6 +5176,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6602937173026466876">Access your printers</translation>
 <translation id="6602956230557165253">Use left and right arrow keys to navigate.</translation>
 <translation id="6605847144724004692">Not yet rated by any users.</translation>
+<translation id="6606671997164410857">Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on screen context on this device.</translation>
 <translation id="6607831829715835317">More too&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> is already being managed by <ph name="DOMAIN" />. To use parental controls with a different Google Account, sign out after setup, then select 'Add person' on the sign-in screen.</translation>
 <translation id="6609478180749378879">Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.</translation>
@@ -5349,6 +5356,13 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6808039367995747522">To continue, insert and touch your security key</translation>
 <translation id="6808193438228982088">Fox</translation>
 <translation id="6809470175540814047">Open in Incognito window</translation>
+<translation id="6809656734323672573">If you agree, Google Assistant will wait in standby mode to detect ‘Hey Google’ and can recognise that it is you speaking with Voice Match.
+    <ph name="BR" />
+    Voice Match allows your Assistant to identify you and tell you apart from others. Your Assistant takes clips of your voice to form a unique voice model, which is only stored on your device. Your voice model may be sent temporarily to Google to identify your voice better.
+    <ph name="BR" />
+    If you decide later that Voice Match isn’t for you, simply remove it in Assistant settings. To view or delete the audio clips that you record during Voice Match setup, go to <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Automatically sign in to websites using stored credentials. When the feature is disabled, you will be asked for confirmation every time before signing in to a website.</translation>
 <translation id="6810768462515084623">Oops! Looks like your password has expired. Please renew it on another device and try again.</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
@@ -5679,7 +5693,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7171559745792467651">Install apps from your other devices</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="7173114856073700355">Open settings</translation>
-<translation id="7173336557300642430">To get responses that are more tailored to you, let Google Assistant use info on your screen when you ask questions. Your Assistant may also use info about songs or videos that are playing.</translation>
 <translation id="7174199383876220879">New! Control your music, videos and more.</translation>
 <translation id="7175037578838465313">Configure <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Loaded from:</translation>
@@ -5710,13 +5723,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
-<translation id="7210488993538120146">Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME" />’s voice on your <ph name="DEVICE_TYPE" /> and tell it apart from others.
-    <ph name="BR" />
-    The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to identify their voice better.
-    <ph name="BR" />
-    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips your child records during Voice Match setup, go to g.co/assistant/match from your child’s account.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, 'Hey Google' is only on when this device is connected to a power source.</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
@@ -5928,7 +5934,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7434969625063495310">Couldn't add the print server. Please check the server's configuration and try again.</translation>
 <translation id="7436921188514130341">Oh no! There was an error during renaming.</translation>
 <translation id="7438495332316988804">The standard browser can be found by typing 'Chrome' into Launcher.</translation>
-<translation id="7439446972050308922">Your saved preferences will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.</translation>
 <translation id="7439519621174723623">Add a device name to continue</translation>
 <translation id="7441736921018636843">To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /> to remove your sync passphrase</translation>
 <translation id="7441830548568730290">Other users</translation>
@@ -6182,6 +6187,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7690853182226561458">Add &amp;folder...</translation>
 <translation id="7691073721729883399">The cryptohome for the kiosk application could not be mounted.</translation>
 <translation id="7691077781194517083">Can’t reset this security key. Error <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">‘Hey Google’</translation>
 <translation id="7691698019618282776">Crostini upgrade</translation>
 <translation id="7696063401938172191">On your '<ph name="PHONE_NAME" />':</translation>
 <translation id="7697166915480294040">Details are hidden while you share your screen</translation>
@@ -6294,6 +6300,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7804072833593604762">Tab closed</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
+<translation id="7807117920154132308">It looks like <ph name="SUPERVISED_USER_NAME" /> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME" /> can get even more out of Assistant by turning on screen context on this device.</translation>
 <translation id="7807711621188256451">Always allow <ph name="HOST" /> to access your camera</translation>
 <translation id="7810202088502699111">Pop-ups were blocked on this page.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
@@ -6348,6 +6355,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7847212883280406910">Press Ctrl + Alt + S to switch to <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Open &amp;Image in New Tab</translation>
 <translation id="784934925303690534">Time range</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results or your Assistant. To save battery, you can select in your Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
 <translation id="7851457902707056880">Sign-in has been restricted to the owner account only. Please reboot and sign in with the owner account. The machine will auto reboot in 30 seconds.</translation>
 <translation id="7851716364080026749">Always block camera and microphone access</translation>
 <translation id="7851720427268294554">IPP Parser</translation>
@@ -6927,7 +6935,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8480869669560681089">Unknown device from <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirm USB Permission</translation>
 <translation id="8481980314595922412">Trial features are on</translation>
-<translation id="8482860770919360244">Looks like you’ve already set up Google Assistant on another device. Get even more out of your Assistant by turning on Screen context.</translation>
 <translation id="848666842773560761">An app is trying to access the camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="8487678622945914333">Zoom In</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>
@@ -7583,6 +7590,7 @@ You can assign multiple switches to this action</translation>
       <ph name="LIST_ITEM" />Running Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
+<translation id="9166813363879986425">Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.</translation>
 <translation id="9167063903968449027">Show reading list</translation>
 <translation id="9167450455589251456">The profile is not supported</translation>
 <translation id="9168436347345867845">Do it later</translation>

@@ -314,6 +314,7 @@
 <translation id="1336902454946927954">Öryggislykillinn þinn er læstur vegna þess að fingrafarið þitt þekktist ekki. Sláðu inn PIN-númerið þitt til að opna hann.</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> vill opna þetta forrit.</translation>
 <translation id="1338950911836659113">Eyðir...</translation>
+<translation id="1339009753652684748">Opnaðu hjálparann með því að segja „Ok Google“. Veldu „Kveikt (mælt með)“ til að spara rafhlöðuna. Hjálparinn svarar aðeins þegar tækið er í sambandi eða í hleðslu.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Afrita efni tækisins með forritinu Skrár.</translation>
 <translation id="1341988552785875222">„<ph name="APP_NAME" />“ valdi núverandi veggfóður. Þú gætir þurft að fjarlægja „<ph name="APP_NAME" />“ áður en nýtt veggfóður er valið.</translation>
@@ -449,6 +450,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> krefst þess að snjallkortið sé haft í.</translation>
 <translation id="1478340334823509079">Upplýsingar: <ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">Uppsetning er ekki leyfð</translation>
+<translation id="1480571698637441426">Leyfðu Hjálparanum að fá aðgang að skjámynd af því sem er á skjánum þínum til að fá sérsniðin svör. Þetta kann að fela í sér upplýsingar um lög eða myndskeið sem eru í spilun.</translation>
 <translation id="1481537595330271162">Villa við að breyta diskstærð</translation>
 <translation id="1482626744466814421">Setja þennan flipa í bókamerki...</translation>
 <translation id="1483272013430662157">Vefforrit geta beðið um að opna skráargerðir</translation>
@@ -849,7 +851,6 @@
 <translation id="1865769994591826607">Aðeins tengingar á sama vefsvæði</translation>
 <translation id="186612162884103683">„<ph name="EXTENSION" />“ getur lesið og skrifað myndir, myndskeið og hljóðskrár á stöðunum sem merkt er við.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> er tilbúið til að ljúka uppsetningunni</translation>
-<translation id="1868193363684582383">„Ok Google“</translation>
 <translation id="1868553836791672080">Ekki er hægt að athuga aðgangsorð í Chromium</translation>
 <translation id="1869433484041798909">Bókamerkishnappur</translation>
 <translation id="1871098866036088250">Opna í Chrome vafra</translation>
@@ -1130,7 +1131,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2163937499206714165">Kveikja á dökku þema</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 rofi í viðbót</translation>
 <translation id="2165177462441582039">Veldu hversu lengi merking á að vera á hverju atriði</translation>
-<translation id="2165421703844373933">Opnaðu hjálparann með því að segja „Ok Google“. Veldu „Kveikt (mælt með)“ til að spara rafhlöðuna. Hjálparinn svarar aðeins þegar tækið er í sambandi eða í hleðslu.</translation>
 <translation id="2166369534954157698">Kæmi ný öxi hér ykist þjófum nú bæði víl og ádrepa</translation>
 <translation id="2167276631610992935">JavaScript</translation>
 <translation id="2169062631698640254">Skrá samt inn</translation>
@@ -1264,6 +1264,15 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ hefur óskað eftir frekari heimildum.</translation>
 <translation id="23055578400314116">Velja notandanafn</translation>
 <translation id="2307462900900812319">Stilla net</translation>
+<translation id="2307553512430195144">Ef þú samþykkir verður Google hjálparinn í biðstöðu þar til hann greinir „Ok, Google“ og greinir þegar <ph name="SUPERVISED_USER_NAME" /> talar með Voice Match.
+    <ph name="BR" />
+    Voice Match aðstoðar Google hjálpara við að þekkja rödd <ph name="SUPERVISED_USER_NAME" /> í <ph name="DEVICE_TYPE" /> og aðgreina hana frá öðrum röddum.
+    <ph name="BR" />
+    Hjálparinn tekur upp búta af rödd barnsins til að búa til einstakt raddlíkan sem er aðeins vistað í tækjum barnsins. Raddlíkan barnsins gæti verið sent tímabundið til Google til að bera kennsl á rödd þess.
+    <ph name="BR" />
+    Ef þú ákveður síðar að Voice Match sé ekki fyrir barnið skaltu einfaldlega fjarlægja raddlíkanið í stillingum Hjálparans. Til að skoða eða eyða hljóðbútum sem eru teknir upp af rödd barnsins við uppsetningu Voice Match skaltu fara á <ph name="VOICE_MATCH_SETTINGS_URL" /> á reikningi barnsins.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">Þessi síða vill setja upp þjónustuhjálparforrit.</translation>
 <translation id="2309620859903500144">Lokað hefur verið á aðgang þessa vefsvæðis að hreyfi- eða birtuskynjara.</translation>
 <translation id="2312219318583366810">Vefslóð síðu</translation>
@@ -1393,6 +1402,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2450849356604136918">Engin virk yfirlit</translation>
 <translation id="2451298179137331965">2x</translation>
 <translation id="245322989586167203">Vefsvæði tengjast yfirleitt raðtengjum fyrir gagnaflutninga, líkt og þegar net er sett upp</translation>
+<translation id="2453706416476934374">Leyfðu Hjálparanum að nota skjámynd af því sem er á skjá <ph name="SUPERVISED_USER_NAME" /> þegar <ph name="SUPERVISED_USER_NAME" /> spyr spurninga til að fá sérsniðin svör. Þetta kann að fela í sér upplýsingar um lög eða myndskeið sem eru í spilun.</translation>
 <translation id="2453860139492968684">Ljúka</translation>
 <translation id="2454247629720664989">Leitarorð</translation>
 <translation id="2454264884354864965">Slökkt er á myndavélinni</translation>
@@ -1614,9 +1624,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2691385045260836588">Gerð</translation>
 <translation id="2691440343905273290">Breyta innsláttarstillingum</translation>
 <translation id="2693176596243495071">Úbbs! Óþekkt villa kom upp. Reyndu aftur síðar eða hafðu samband við kerfisstjórann þinn ef vandamálið er viðvarandi.</translation>
-<translation id="2693640212062142966">Google hjálparinn notar Voice Match til að bera kennsl á röddina í þér í <ph name="DEVICE_TYPE" /> og þekkja þig frá öðrum. Aðeins er kveikt á „Ok Google“ þegar tækið er tengt við aflgjafa til að spara rafhlöðuna. Þú getur breytt þessu í stillingunum.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Hafðu eftirfarandi í huga:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að persónulegum niðurstöðum þínum. Þú getur fjarlægt heimildina fyrir Voice Match síðar með því að gera hana óvirka í stillingum Hjálparans.</translation>
 <translation id="2699911226086014512">PIN-aðgerð með kóðanum <ph name="RETRIES" /> mistókst.</translation>
 <translation id="2701330563083355633">Deilt úr <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Skrá inn, <ph name="EMAIL" /></translation>
@@ -2103,6 +2110,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="32101887417650595">Ekki tókst að tengjast við prentara</translation>
 <translation id="321084946921799184">Gulur og hvítur</translation>
 <translation id="321356136776075234">Skipulagseiningar tækis (OU) (til dæmis OU=Chromebook,DC=dæmi,DC=is)</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="3216825226035747725">Stjórnendur G Suite fyrir skóla ákveða hvaða þjónustu Google notendur hafa aðgang að þegar þeir eru skráðir inn á reikning G Suite fyrir skóla. Þar á meðal geta verið einhverjir eiginleikar eða þjónusta sem barnið þitt hafði ekki aðgang að áður með þessum reikningi undir eftirliti. Skólastjórnendur þurfa að samþykkja eða afla samþykkis fyrir notendur undir lögaldri sem nýta sér þessa þjónustu.</translation>
 <translation id="3217843140356091325">Búa til flýtileið?</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2280,6 +2288,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3417836307470882032">24 klukkustunda tímasetningar</translation>
 <translation id="3420501302812554910">Endurstilla þarf innbyggðan öryggislykil</translation>
 <translation id="3421387094817716717">Opinber lykill með sporgerum ferli</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Svipuð rödd eða upptaka gæti fengið aðgang að persónulegum niðurstöðum eða Hjálparanum.</translation>
 <translation id="3422291238483866753">Spyrja þegar vefsvæði vill búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar (ráðlagt)</translation>
 <translation id="3423463006624419153">Í „<ph name="PHONE_NAME_1" />“ og „<ph name="PHONE_NAME_2" />“:</translation>
 <translation id="3423858849633684918">Endurræstu <ph name="PRODUCT_NAME" /></translation>
@@ -2994,7 +3003,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4154664944169082762">Fingraför</translation>
 <translation id="4157869833395312646">Microsoft-dulritun með hliðvörð frá þjóni</translation>
 <translation id="4158364720893025815">Stóðst</translation>
-<translation id="4159163871835771155">Leyfðu Hjálparanum að nota upplýsingar á skjánum sem <ph name="SUPERVISED_USER_NAME" /> er að nota þegar <ph name="SUPERVISED_USER_NAME" /> spyr spurninga til að fá svör sem eru sérsniðin að barninu. Þetta kann að fela í sér upplýsingar um lög eða myndskeið sem eru í spilun.</translation>
 <translation id="4159681666905192102">Þetta er reikningur fyrir börn sem <ph name="CUSTODIAN_EMAIL" /> og <ph name="SECOND_CUSTODIAN_EMAIL" /> stjórna.</translation>
 <translation id="4163560723127662357">Óþekkt lyklaborð</translation>
 <translation id="4167686856635546851">Vefsvæði nota yfirleitt JavaScript til að sýna gagnvirka eiginleika eins og tölvuleiki eða vefeyðublöð</translation>
@@ -3633,7 +3641,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4884987973312178454">6x</translation>
 <translation id="4887424188275796356">Opna með skoðara kerfis</translation>
 <translation id="488785315393301722">Sýna upplýsingar</translation>
-<translation id="4889792122460431731">Leyfðu Hjálparanum að nota upplýsingar á skjánum þegar þú spyrð spurninga til að fá svör sem eru sérsniðin að þér. Þetta kann að fela í sér upplýsingar um lög eða myndskeið sem eru í spilun.</translation>
 <translation id="4890773143211625964">Sýna ítarlegar stillingar prentara</translation>
 <translation id="4891089016822695758">Beta-umræðusvæði</translation>
 <translation id="4892229439761351791">Vefsvæði getur notað Bluetooth</translation>
@@ -3848,7 +3855,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Ekki var hægt að sækja prófíl. Reyndu aftur síðar eða leitaðu aðstoðar hjá símafyrirtækinu.</translation>
 <translation id="5131591206283983824">Draga með snertingu á snertifleti</translation>
-<translation id="5135085122826131075">Opnaðu hjálparann með því að segja „Ok Google“.</translation>
 <translation id="5135533361271311778">Ekki var hægt að búa til bókamerkjaatriði.</translation>
 <translation id="5136343472380336530">Gakktu úr skugga um að hvorugt tækið sé læst, settu þau nálægt hvort öðru og hafðu kveikt á Bluetooth. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Eyða þessu atriði</translation>
@@ -4266,7 +4272,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5585912436068747822">Mistókst að sníða</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Hleður forrit...</translation>
-<translation id="5590265327628802792"><ph name="SUPERVISED_USER_NAME" /> virðist þegar hafa sett upp Google hjálpara í öðru tæki. <ph name="SUPERVISED_USER_NAME" /> getur fengið enn meira út úr Hjálparanum með því að kveikja á skjáumhverfi.</translation>
 <translation id="5592595402373377407">Ekki næg gögn komin enn.</translation>
 <translation id="5595485650161345191">Breyta heimilisfangi</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
@@ -4673,6 +4678,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6059652578941944813">Stigveldi vottorða</translation>
 <translation id="6059925163896151826">USB-tæki</translation>
 <translation id="6061882183774845124">Senda tengil í tækin þín</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />. Þú getur valið í stillingum Hjálpara <ph name="SUPERVISED_USER_NAME" /> að kveikja eingöngu á „Ok, Google“ þegar þetta tæki er tengt við aflgjafa til að spara rafhlöðuna.</translation>
 <translation id="6064217302520318294">Skjálás</translation>
 <translation id="6065289257230303064">Skráasafnseigindir vottorðsviðfangs</translation>
 <translation id="6066794465984119824">Tæti myndar er ekki stillt</translation>
@@ -4893,9 +4899,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6294759976468837022">Hraði sjálfvirkrar skönnunar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6295855836753816081">Vistar...</translation>
-<translation id="6298800237463568825">Google hjálparinn notar Voice Match til að bera kennsl á röddina í þér í <ph name="DEVICE_TYPE" /> og þekkja þig frá öðrum.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Hafðu eftirfarandi í huga:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að persónulegum niðurstöðum þínum. Þú getur fjarlægt heimildina fyrir Voice Match síðar með því að gera hana óvirka í stillingum Hjálparans.</translation>
 <translation id="6298962879096096191">Notaðu Google Play til að setja upp Android forrit</translation>
 <translation id="6300177430812514606">Mega ekki ljúka við að senda eða móttaka gögn</translation>
 <translation id="630065524203833229">Hætta</translation>
@@ -4950,6 +4953,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6345878117466430440">Merkja sem lesið</translation>
 <translation id="6349101878882523185">Setja upp <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG sporger ferill secp256r1 (e.þ.s. ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355789186038748882">Tilraunaútgáfa (í tilraunagæðum) vafra! Sumir eiginleikar eru ekki til staðar eða eru óvirkir. Tilkynntu vandamál með: Hjálp &gt; „Tilkynna vandamál…“.</translation>
 <translation id="635609604405270300">Hafðu kveikt á tækinu</translation>
 <translation id="63566973648609420">Aðeins þeir sem vita aðgangsorðið geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er ekki sent til Google eða vistað þar. Ef þú gleymir aðgangsorðinu eða þig langar að breyta þessari stillingu þarftu að <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" />.</translation>
 <translation id="6358884629796491903">Dreki</translation>
@@ -5015,6 +5019,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6434309073475700221">Fleygja</translation>
 <translation id="6434325376267409267">Uppfæra þarf tækið áður en hægt er að nota <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Skoða í vefverslun</translation>
+<translation id="6436610005579237680">Leyfðu Google hjálpara að nota skjámynd af því sem er á skjánum þegar þú spyrð spurninga til að fá svör sem eru sérsniðin að þér. Hjálparinn kann einnig að nota upplýsingar um lög og myndskeið sem eru í spilun.</translation>
 <translation id="6438234780621650381">Núllstilla</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – hljóð í spilun</translation>
 <translation id="6442187272350399447">Hressi</translation>
@@ -5151,6 +5156,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6582274660680936615">Þú ert að vafra sem gestur</translation>
 <translation id="6584878029876017575">Microsoft-lífstíðarundirritun</translation>
 <translation id="6586099239452884121">Gestastilling</translation>
+<translation id="6586213706115310390">Opnaðu hjálparann með því að segja „Ok Google“.</translation>
 <translation id="6586451623538375658">Víxla aðalmúsarhnappi</translation>
 <translation id="6586604979641883411">Að lágmarki <ph name="REQUIRED_SPACE" /> af geymsluplássi þarf til að uppfæra Linux. Losaðu pláss á tækinu og reyndu aftur.</translation>
 <translation id="6588043302623806746">Nota öruggt DNS</translation>
@@ -5170,6 +5176,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6602937173026466876">Aðgangur að prenturunum þínum</translation>
 <translation id="6602956230557165253">Notaðu vinstri og hægri örvatakkana til að fletta.</translation>
 <translation id="6605847144724004692">Enginn notandi hefur gefið einkunn.</translation>
+<translation id="6606671997164410857">Þú virðist þegar hafa sett Google hjálparann upp í öðru tæki. Fáðu enn meira út úr Hjálparanum með því að kveikja á skjáumhverfi í þessu tæki.</translation>
 <translation id="6607831829715835317">F&amp;leiri verkfæri</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> er þegar stjórnað af <ph name="DOMAIN" />. Skráðu þig út eftir uppsetningu og veldu „Bæta notanda við“ á innskráningarskjánum til að nota barnalæsingar á öðrum Google reikningi.</translation>
 <translation id="6609478180749378879">Innskráningargögn verða geymd í þessu tæki eftir að þú lokar huliðsstillingu. Þú getur skráð þig aftur inn á þetta vefsvæði með tækinu þínu síðar.</translation>
@@ -5349,6 +5356,13 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6808039367995747522">Til að halda áfram skaltu setja inn og snerta öryggislykilinn þinn</translation>
 <translation id="6808193438228982088">Refur</translation>
 <translation id="6809470175540814047">Opna í huliðsglugga</translation>
+<translation id="6809656734323672573">Ef þú samþykkir verður Google hjálpari í biðstöðu þar til hann greinir „Ok, Google“ og greinir þegar þú talar með Voice Match.
+    <ph name="BR" />
+    Voice Match gerir Hjálparanum kleift að þekkja þig og aðgreina þig frá öðrum. Hjálparinn notar upptökur af rödd þinni til að búa til einstakt raddlíkan sem er aðeins vistað í tækinu þínu. Raddlíkanið þitt verður hugsanlega sent tímabundið til Google til að bera betur kennsl á röddina í þér.
+    <ph name="BR" />
+    Ef þú ákveður síðar að Voice Match sé ekki fyrir þig geturðu einfaldlega fjarlægt það í stillingum Hjálparans. Til að skoða eða eyða hljóðbútum sem þú tekur upp við uppsetningu Voice Match skaltu fara á <ph name="VOICE_MATCH_SETTINGS_URL" />.
+    <ph name="BR" />
+    <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Skrá þig sjálfkrafa inn á vefsvæði með vistuðum skilríkjum. Þegar slökkt er á þessum eiginleika biðjum við þig um staðfestingu í hvert sinn sem þú skráir þig inn á vefsvæði.</translation>
 <translation id="6810768462515084623">Úbbs! Aðgangsorðið þitt virðist vera útrunnið. Endurnýjaðu það í öðru tæki og reyndu aftur.</translation>
 <translation id="6811034713472274749">Hægt er að skoða síðuna</translation>
@@ -5679,7 +5693,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7171559745792467651">Setja upp forrit úr öðrum tækjum</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
 <translation id="7173114856073700355">Opna stillingar</translation>
-<translation id="7173336557300642430">Leyfðu Google hjálparanum að nota upplýsingarnar á skjánum þegar þú spyrð spurninga til að fá svör sem eru sérsniðin að þér. Hjálparinn kann einnig að nota upplýsingar um lög og myndskeið sem eru í spilun.</translation>
 <translation id="7174199383876220879">Nýtt! Stjórnaðu tónlistinni, myndskeiðunum og fleiru.</translation>
 <translation id="7175037578838465313">Stilla <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Hlaðið frá:</translation>
@@ -5710,13 +5723,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Loka síðu}one{Loka síðum}other{Loka síðum}}</translation>
 <translation id="7207457272187520234">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa stillingu. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum.</translation>
 <translation id="7207631048330366454">Leita í forritum</translation>
-<translation id="7210488993538120146">Voice Match aðstoðar Google hjálparann við að þekkja rödd <ph name="SUPERVISED_USER_NAME" /> í <ph name="DEVICE_TYPE" /> og aðgreina hana frá öðrum röddum.
-    <ph name="BR" />
-    Hjálparinn tekur upp búta af rödd barnsins til að búa til einstakt raddlíkan sem er aðeins vistað í tækjum barnsins. Raddlíkan barnsins gæti verið sent tímabundið til Google til að bera kennsl á rödd þess.
-    <ph name="BR" />
-    Ef þú ákveður síðar að Voice Match sé ekki fyrir barnið skaltu bara fjarlægja raddlíkanið í stillingum hjálparans. Til að skoða eða eyða hljóðbútum sem eru teknir upp af rödd barnsins við uppsetningu Voice Match skaltu fara á g.co/assistant/match á reikningi barnsins.
-    <ph name="BR" />
-    <ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Einhver með svipaða rödd eða upptöku gæti fengið aðgang að sérsniðnum niðurstöðum <ph name="SUPERVISED_USER_NAME" />. Aðeins er kveikt á „Ok Google“ þegar tækið er tengt við aflgjafa til að spara rafhlöðuna.</translation>
 <translation id="7210499381659830293">Prentaraviðbætur</translation>
 <translation id="7211783048245131419">Ekki er búið að úthluta neinum rofa</translation>
 <translation id="7212097698621322584">Sláðu inn núverandi PIN-númer til að breyta því. Ef þú veist ekki PIN-númerið þitt þarftu að endurstilla öryggislykilinn og búa svo til nýtt PIN-númer.</translation>
@@ -5928,7 +5934,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7434969625063495310">Ekki var hægt að bæta við prentþjóni. Athugaðu stillingar þjónsins og reyndu aftur.</translation>
 <translation id="7436921188514130341">Úbbs! Villa kom upp við að breyta heiti.</translation>
 <translation id="7438495332316988804">Hægt er að finna venjulega vafrann með því að slá „Chrome“ inn í ræsiforritið.</translation>
-<translation id="7439446972050308922">Vistaðar kjörstillingar verða til reiðu í öllum Chrome OS tækjum þegar þú skráir þig inn á Google reikninginn þinn. Þú getur alltaf valið hvað á að samstilla í stillingunum.</translation>
 <translation id="7439519621174723623">Bættu við heiti tækis til að halda áfram</translation>
 <translation id="7441736921018636843">Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /> til að fjarlægja aðgangsorð samstillingar</translation>
 <translation id="7441830548568730290">Aðrir notendur</translation>
@@ -6182,6 +6187,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7690853182226561458">Bæta við möppu...</translation>
 <translation id="7691073721729883399">Ekki var hægt að tengjast dulkóðunarupphafsstað sjálfsalaforritsins.</translation>
 <translation id="7691077781194517083">Ekki er hægt að endurstilla þennan öryggislykil. Villa <ph name="ERROR_CODE" />.</translation>
+<translation id="7691163173018300413">„Ok Google“</translation>
 <translation id="7691698019618282776">Uppfærsla á Crostini</translation>
 <translation id="7696063401938172191">Í „<ph name="PHONE_NAME" />“:</translation>
 <translation id="7697166915480294040">Upplýsingar eru faldar á meðan þú deilir skjánum</translation>
@@ -6294,6 +6300,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7804072833593604762">Flipa lokað</translation>
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7807067443225230855">Leit og aðstoðarmaður</translation>
+<translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> virðist þegar hafa sett upp Google hjálpara í öðru tæki. <ph name="SUPERVISED_USER_NAME" /> getur fengið enn meira út úr Hjálparanum með því að kveikja á skjáumhverfi í þessu tæki.</translation>
 <translation id="7807711621188256451">Veita <ph name="HOST" /> alltaf aðgang að myndavélinni</translation>
 <translation id="7810202088502699111">Sprettigluggar voru útilokaðir á þessari síðu.</translation>
 <translation id="781167124805380294">Senda út <ph name="FILE_NAME" /></translation>
@@ -6348,6 +6355,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7847212883280406910">Ýttu á Ctrl + Alt + S til að skipta yfir í <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">Opna mynd í nýjum fl&amp;ipa</translation>
 <translation id="784934925303690534">Tímabil</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Athugaðu:<ph name="END_BOLD" /> Svipuð rödd eða upptaka gæti fengið aðgang að persónulegum niðurstöðum eða Hjálparanum. Þú getur valið í stillingum Hjálparans að kveikja eingöngu á „Ok, Google“ þegar þetta tæki er tengt við aflgjafa til að spara rafhlöðuna.</translation>
 <translation id="7851457902707056880">Innskráning hefur verið takmörkuð við reikning eigandans eingöngu. Endurræstu og skráðu þig inn með reikningi eiganda. Tækið endurræsir sig sjálfkrafa eftir 30 sekúndur.</translation>
 <translation id="7851716364080026749">Loka alltaf á aðgang að myndavél og hljóðnema</translation>
 <translation id="7851720427268294554">IPP-þáttari</translation>
@@ -6926,7 +6934,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8480869669560681089">Óþekkt tæki frá <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Staðfesta USB-heimild</translation>
 <translation id="8481980314595922412">Kveikt er á prufueiginleikum</translation>
-<translation id="8482860770919360244">Þú virðist þegar hafa sett Google hjálparann upp í öðru tæki. Fáðu enn meira út úr Hjálparanum með því að kveikja á skjáumhverfi.</translation>
 <translation id="848666842773560761">Forrit er að reyna að opna myndavélina. Slökktu á persónuverndarrofa myndavélarinnar til að heimila aðgang.</translation>
 <translation id="8487678622945914333">Auka aðdrátt</translation>
 <translation id="8489156414266187072">Persónulegar tillögur eru eingöngu birtar á reikningnum þínum</translation>
@@ -7583,6 +7590,7 @@ Hægt er að úthluta mörgum rofum á þessa aðgerð</translation>
       <ph name="LIST_ITEM" />Keyra tengingargreiningu Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Mynd í mynd</translation>
+<translation id="9166813363879986425">Vistaðar kjörstillingar og virkni verða til reiðu í öllum Chrome OS tækjum þegar þú skráir þig inn með Google reikningnum þínum. Þú getur alltaf valið hvað á að samstilla í stillingunum.</translation>
 <translation id="9167063903968449027">Sýna leslista</translation>
 <translation id="9167450455589251456">Prófíllinn er ekki studdur</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>
