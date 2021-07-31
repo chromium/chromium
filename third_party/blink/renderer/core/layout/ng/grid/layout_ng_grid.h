@@ -24,11 +24,11 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
 
-  size_t ExplicitGridStartForDirection(
+  wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const final;
-  size_t ExplicitGridEndForDirection(
+  wtf_size_t ExplicitGridEndForDirection(
       GridTrackSizingDirection direction) const final;
-  size_t AutoRepeatCountForDirection(
+  wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const final;
   LayoutUnit GridGap(GridTrackSizingDirection) const final;
   LayoutUnit GridItemOffset(GridTrackSizingDirection) const final;

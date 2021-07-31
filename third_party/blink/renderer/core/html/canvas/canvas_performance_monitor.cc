@@ -176,8 +176,9 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
   TRACE_EVENT0("blink", "CanvasPerformanceMonitor::RecordMetrics");
   TimeDelta elapsed_time = end_time - start_time;
   constexpr size_t kKiloByte = 1024;
-  int partition_alloc_kb = WTF::Partitions::TotalActiveBytes() / kKiloByte;
-  int blink_gc_alloc_kb = ProcessHeap::TotalAllocatedObjectSize() / kKiloByte;
+  size_t partition_alloc_kb = WTF::Partitions::TotalActiveBytes() / kKiloByte;
+  size_t blink_gc_alloc_kb =
+      ProcessHeap::TotalAllocatedObjectSize() / kKiloByte;
 
   while (!rendering_context_descriptions_.IsEmpty()) {
     RenderingContextDescriptionCodec desc(
@@ -272,7 +273,8 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
       WTF::String histogram_name = histogram_name_prefix +
                                    kMeasurementName_PartitionAlloc +
                                    histogram_name_radical;
-      base::UmaHistogramMemoryKB(histogram_name.Latin1(), partition_alloc_kb);
+      base::UmaHistogramMemoryKB(histogram_name.Latin1(),
+                                 static_cast<int>(partition_alloc_kb));
     }
 
     // Blink garbage collected heap size metric
@@ -280,7 +282,8 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
       WTF::String histogram_name = histogram_name_prefix +
                                    kMeasurementName_BlinkGC +
                                    histogram_name_radical;
-      base::UmaHistogramMemoryKB(histogram_name.Latin1(), blink_gc_alloc_kb);
+      base::UmaHistogramMemoryKB(histogram_name.Latin1(),
+                                 static_cast<int>(blink_gc_alloc_kb));
     }
   }
 

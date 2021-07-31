@@ -240,7 +240,8 @@ void WebDocument::WatchCSSSelectors(const WebVector<WebString>& web_selectors) {
   if (!watch && web_selectors.empty())
     return;
   Vector<String> selectors;
-  selectors.Append(web_selectors.Data(), web_selectors.size());
+  selectors.Append(web_selectors.Data(),
+                   base::checked_cast<wtf_size_t>(web_selectors.size()));
   CSSSelectorWatch::From(*document).WatchCSSSelectors(selectors);
 }
 
@@ -250,7 +251,7 @@ WebVector<WebDraggableRegion> WebDocument::DraggableRegions() const {
   if (document->HasAnnotatedRegions()) {
     const Vector<AnnotatedRegionValue>& regions = document->AnnotatedRegions();
     draggable_regions = WebVector<WebDraggableRegion>(regions.size());
-    for (size_t i = 0; i < regions.size(); i++) {
+    for (wtf_size_t i = 0; i < regions.size(); i++) {
       const AnnotatedRegionValue& value = regions[i];
       draggable_regions[i].draggable = value.draggable;
       draggable_regions[i].bounds = PixelSnappedIntRect(value.bounds);

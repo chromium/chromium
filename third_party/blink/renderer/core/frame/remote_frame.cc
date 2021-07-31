@@ -795,7 +795,7 @@ void RemoteFrame::DidSetFramePolicyHeaders(
   // ParsedPermissionsPolicy to operate over Vector
   ParsedPermissionsPolicy parsed_permissions_policy_copy(
       parsed_permissions_policy.size());
-  for (size_t i = 0; i < parsed_permissions_policy.size(); ++i)
+  for (wtf_size_t i = 0; i < parsed_permissions_policy.size(); ++i)
     parsed_permissions_policy_copy[i] = parsed_permissions_policy[i];
   SetReplicatedPermissionsPolicyHeader(parsed_permissions_policy_copy);
 }

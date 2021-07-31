@@ -202,7 +202,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       std::unique_ptr<TokenizedChunk> last_chunk,
       std::unique_ptr<HTMLToken>,
       std::unique_ptr<HTMLTokenizer>);
-  size_t ProcessTokenizedChunkFromBackgroundParser(
+  wtf_size_t ProcessTokenizedChunkFromBackgroundParser(
       std::unique_ptr<TokenizedChunk>,
       bool*);
   void PumpPendingSpeculations();

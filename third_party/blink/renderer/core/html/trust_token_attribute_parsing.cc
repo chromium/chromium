@@ -110,7 +110,7 @@ network::mojom::blink::TrustTokenParamsPtr TrustTokenParamsFromJson(
 
     // Because of the characteristics of the Trust Tokens protocol, we expect
     // under 5 elements in this array.
-    for (size_t i = 0; i < issuers_array->size(); ++i) {
+    for (wtf_size_t i = 0; i < issuers_array->size(); ++i) {
       String str_issuer;
       if (!issuers_array->at(i)->AsString(&str_issuer))
         return nullptr;
@@ -136,7 +136,7 @@ network::mojom::blink::TrustTokenParamsPtr TrustTokenParamsFromJson(
 
     // Because of the characteristics of the Trust Tokens protocol, we expect
     // roughly 2-5 elements in this array.
-    for (size_t i = 0; i < signed_headers_array->size(); ++i) {
+    for (wtf_size_t i = 0; i < signed_headers_array->size(); ++i) {
       String next;
       if (!signed_headers_array->at(i)->AsString(&next))
         return nullptr;

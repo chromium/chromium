@@ -60,12 +60,12 @@ void InspectorIssueStorage::Clear() {
   issues_.clear();
 }
 
-size_t InspectorIssueStorage::size() const {
+wtf_size_t InspectorIssueStorage::size() const {
   return issues_.size();
 }
 
 protocol::Audits::InspectorIssue* InspectorIssueStorage::at(
-    size_t index) const {
+    wtf_size_t index) const {
   return issues_[index].get();
 }
 

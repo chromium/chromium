@@ -1705,7 +1705,8 @@ void InspectorPageAgent::ApplyCompilationModeOverride(
   }
   const protocol::Binary& data = it->value;
   *cached_data = new v8::ScriptCompiler::CachedData(
-      data.data(), data.size(), v8::ScriptCompiler::CachedData::BufferNotOwned);
+      data.data(), base::checked_cast<int>(data.size()),
+      v8::ScriptCompiler::CachedData::BufferNotOwned);
 }
 
 void InspectorPageAgent::DidProduceCompilationCache(

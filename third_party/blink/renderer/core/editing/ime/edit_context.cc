@@ -420,7 +420,7 @@ bool EditContext::SetComposition(
   selection_end_ = composition_range_start_ + selection_end;
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
                           selection_start_, selection_end_);
-  composition_range_end_ = composition_range_start_ + text.length();
+  composition_range_end_ = composition_range_start_ + update_text.length();
   DispatchTextFormatEvent(ime_text_spans);
   return true;
 }
@@ -466,7 +466,7 @@ bool EditContext::InsertText(const WebString& text) {
           text_.Substring(selection_end_);
   uint32_t update_range_start = selection_start_;
   uint32_t update_range_end = selection_end_;
-  selection_start_ = selection_start_ + text.length();
+  selection_start_ = selection_start_ + update_text.length();
   selection_end_ = selection_start_;
 
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
@@ -554,8 +554,8 @@ bool EditContext::CommitText(const WebString& text,
   if (has_composition_) {
     text_ = text_.Substring(0, composition_range_start_) + update_text +
             text_.Substring(composition_range_end_);
-    selection_start_ = composition_range_start_ + text.length();
-    selection_end_ = composition_range_start_ + text.length();
+    selection_start_ = composition_range_start_ + update_text.length();
+    selection_end_ = composition_range_start_ + update_text.length();
     update_range_start = composition_range_start_;
     update_range_end = composition_range_end_;
   } else {
@@ -563,8 +563,8 @@ bool EditContext::CommitText(const WebString& text,
             text_.Substring(selection_end_);
     update_range_start = selection_start_;
     update_range_end = selection_end_;
-    selection_start_ = selection_start_ + text.length();
-    selection_end_ = selection_end_ + text.length();
+    selection_start_ = selection_start_ + update_text.length();
+    selection_end_ = selection_end_ + update_text.length();
   }
   new_selection_start = selection_start_;
   new_selection_end = selection_end_;
@@ -582,7 +582,7 @@ bool EditContext::CommitText(const WebString& text,
 
 bool EditContext::FinishComposingText(
     ConfirmCompositionBehavior selection_behavior) {
-  WebString text;
+  String text;
   if (has_composition_) {
     text = text_.Substring(composition_range_start_, composition_range_end_);
     // Fire composition end event.

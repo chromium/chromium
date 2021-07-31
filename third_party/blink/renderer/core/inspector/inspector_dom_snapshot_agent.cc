@@ -466,8 +466,11 @@ void InspectorDOMSnapshotAgent::VisitDocument(Document* document) {
   }
 
   auto* node_names = document_->getNodes()->getNodeName(nullptr);
-  for (DOMTreeIterator it(document, node_names->size()); it.CurrentNode();
-       it.Advance(node_names->size())) {
+  // Note: node_names->size() changes as the loop runs.
+  for (DOMTreeIterator it(document,
+                          base::checked_cast<int>(node_names->size()));
+       it.CurrentNode();
+       it.Advance(base::checked_cast<int>(node_names->size()))) {
     DCHECK(!it.CurrentNode()->IsInUserAgentShadowRoot());
     VisitNode(it.CurrentNode(), it.ParentNodeId(), contrast);
   }

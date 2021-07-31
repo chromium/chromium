@@ -96,14 +96,14 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
     return grid_->Cell(row, column);
   }
 
-  size_t AutoRepeatCountForDirection(
+  wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const final {
-    return grid_->AutoRepeatTracks(direction);
+    return base::checked_cast<wtf_size_t>(grid_->AutoRepeatTracks(direction));
   }
 
-  size_t ExplicitGridStartForDirection(
+  wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const final {
-    return grid_->ExplicitGridStart(direction);
+    return base::checked_cast<wtf_size_t>(grid_->ExplicitGridStart(direction));
   }
 
   LayoutUnit TranslateRTLCoordinate(LayoutUnit) const;
@@ -134,7 +134,7 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
 
   StyleContentAlignmentData ContentAlignment(GridTrackSizingDirection) const;
 
-  size_t ExplicitGridEndForDirection(GridTrackSizingDirection) const final;
+  wtf_size_t ExplicitGridEndForDirection(GridTrackSizingDirection) const final;
 
   // Exposed for testing *ONLY*.
   Grid* InternalGrid() const {

@@ -170,7 +170,8 @@ void MediaFragmentURIParser::ParseTimeFragment() {
 
     double start = std::numeric_limits<double>::quiet_NaN();
     double end = std::numeric_limits<double>::quiet_NaN();
-    if (ParseNPTFragment(fragment.second.data(), fragment.second.length(),
+    if (ParseNPTFragment(fragment.second.data(),
+                         base::checked_cast<unsigned>(fragment.second.length()),
                          start, end)) {
       start_time_ = start;
       end_time_ = end;

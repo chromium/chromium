@@ -230,7 +230,7 @@ class CC_EXPORT SnapContainerData {
 
   void AddSnapAreaData(SnapAreaData snap_area_data);
   size_t size() const { return snap_area_list_.size(); }
-  const SnapAreaData& at(int index) const { return snap_area_list_[index]; }
+  const SnapAreaData& at(size_t index) const { return snap_area_list_[index]; }
 
   void set_scroll_snap_type(ScrollSnapType type) { scroll_snap_type_ = type; }
   ScrollSnapType scroll_snap_type() const { return scroll_snap_type_; }

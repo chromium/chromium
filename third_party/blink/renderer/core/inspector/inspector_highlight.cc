@@ -290,7 +290,7 @@ void AppendStyleInfo(Node* node,
   properties.push_back(CSSPropertyID::kMargin);
   properties.push_back(CSSPropertyID::kBackgroundColor);
 
-  for (size_t i = 0; i < properties.size(); ++i) {
+  for (wtf_size_t i = 0; i < properties.size(); ++i) {
     const CSSValue* value = style->GetPropertyCSSValue(properties[i]);
     if (!value)
       continue;
@@ -562,7 +562,7 @@ LayoutUnit TranslateRTLCoordinate(const LayoutObject* layout_object,
 }
 
 LayoutUnit GetPositionForTrackAt(const LayoutObject* layout_object,
-                                 size_t index,
+                                 wtf_size_t index,
                                  GridTrackSizingDirection direction,
                                  const Vector<LayoutUnit>& positions) {
   if (direction == kForRows)
@@ -583,7 +583,7 @@ LayoutUnit GetPositionForFirstTrack(const LayoutObject* layout_object,
 LayoutUnit GetPositionForLastTrack(const LayoutObject* layout_object,
                                    GridTrackSizingDirection direction,
                                    const Vector<LayoutUnit>& positions) {
-  size_t index = positions.size() - 1;
+  wtf_size_t index = positions.size() - 1;
   return GetPositionForTrackAt(layout_object, index, direction, positions);
 }
 
@@ -665,14 +665,14 @@ std::unique_ptr<protocol::ListValue> BuildGridTrackSizes(
   bool is_rtl = !layout_object->StyleRef().IsLeftToRightDirection();
 
   std::unique_ptr<protocol::ListValue> sizes = protocol::ListValue::create();
-  size_t track_count = positions.size();
+  wtf_size_t track_count = positions.size();
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
       layout_object, direction == kForRows ? kForColumns : kForRows,
       alt_axis_positions);
   if (is_rtl && direction == kForRows)
     alt_axis_pos += rtl_offset;
 
-  for (size_t i = 1; i < track_count; i++) {
+  for (wtf_size_t i = 1; i < track_count; i++) {
     LayoutUnit current_position =
         GetPositionForTrackAt(layout_object, i, direction, positions);
     LayoutUnit prev_position =
@@ -717,7 +717,7 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
   std::unique_ptr<protocol::ListValue> number_positions =
       protocol::ListValue::create();
 
-  size_t track_count = positions.size();
+  wtf_size_t track_count = positions.size();
   LayoutUnit alt_axis_pos = GetPositionForFirstTrack(
       layout_object, direction == kForRows ? kForColumns : kForRows,
       alt_axis_positions);
@@ -726,12 +726,12 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
     alt_axis_pos += rtl_offset;
 
   // Find index of the first explicit Grid Line.
-  size_t first_explicit_index =
+  wtf_size_t first_explicit_index =
       grid_interface->ExplicitGridStartForDirection(direction);
 
   // Go line by line, calculating the offset to fall in the middle of gaps
   // if needed.
-  for (size_t i = first_explicit_index; i < track_count; ++i) {
+  for (wtf_size_t i = first_explicit_index; i < track_count; ++i) {
     LayoutUnit gapOffset = grid_gap / 2;
     if (is_rtl && direction == kForColumns)
       gapOffset *= -1;
@@ -769,7 +769,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
   std::unique_ptr<protocol::ListValue> number_positions =
       protocol::ListValue::create();
 
-  size_t track_count = positions.size();
+  wtf_size_t track_count = positions.size();
   LayoutUnit alt_axis_pos = GetPositionForLastTrack(
       layout_object, direction == kForRows ? kForColumns : kForRows,
       alt_axis_positions);
@@ -799,7 +799,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
 
   // Then go line by line, calculating the offset to fall in the middle of gaps
   // if needed.
-  for (size_t i = 1; i <= explicit_grid_end_track_count; i++) {
+  for (wtf_size_t i = 1; i <= explicit_grid_end_track_count; i++) {
     LayoutUnit gapOffset = grid_gap / 2;
     if (is_rtl && direction == kForColumns)
       gapOffset *= -1;
@@ -912,7 +912,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
   for (const auto& item : named_lines_map) {
     const String& name = item.key;
 
-    for (const size_t index : item.value) {
+    for (const wtf_size_t index : item.value) {
       LayoutUnit track =
           GetPositionForTrackAt(layout_object, index, direction, positions);
 
@@ -1276,7 +1276,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
     row_left += rtl_offset;
   }
   LayoutUnit row_width = columns.back() - columns.front();
-  for (size_t i = 1; i < rows.size(); ++i) {
+  for (wtf_size_t i = 1; i < rows.size(); ++i) {
     // Rows
     PhysicalOffset position(row_left, rows.at(i - 1));
     PhysicalSize size(row_width, rows.at(i) - rows.at(i - 1));
@@ -1304,7 +1304,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   PathBuilder column_gap_builder;
   LayoutUnit column_top = rows.front();
   LayoutUnit column_height = rows.back() - rows.front();
-  for (size_t i = 1; i < columns.size(); ++i) {
+  for (wtf_size_t i = 1; i < columns.size(); ++i) {
     PhysicalSize size(columns.at(i) - columns.at(i - 1), column_height);
     if (i != columns.size() - 1)
       size.width -= column_gap;
@@ -1730,7 +1730,7 @@ void InspectorHighlight::AppendDistanceInfo(Node* node) {
 
   CSSComputedStyleDeclaration* style =
       MakeGarbageCollected<CSSComputedStyleDeclaration>(node, true);
-  for (size_t i = 0; i < style->length(); ++i) {
+  for (unsigned i = 0; i < style->length(); ++i) {
     AtomicString name(style->item(i));
     const CSSValue* value = style->GetPropertyCSSValue(
         CssPropertyID(node->GetExecutionContext(), name));

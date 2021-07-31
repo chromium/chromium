@@ -231,11 +231,11 @@ bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
   if (range.IsEmpty())
     return false;
 
-  size_t character_count = range.length();
-  size_t offset = range.StartOffset();
-  WebVector<gfx::Rect> result(character_count);
+  int character_count = range.length();
+  int offset = range.StartOffset();
+  WebVector<gfx::Rect> result(static_cast<size_t>(character_count));
   gfx::Rect rect;
-  for (size_t i = 0; i < character_count; ++i) {
+  for (int i = 0; i < character_count; ++i) {
     if (!web_frame_->FirstRectForCharacterRange(offset + i, 1, rect)) {
       DLOG(ERROR) << "Could not retrieve character rectangle at " << i;
       return false;

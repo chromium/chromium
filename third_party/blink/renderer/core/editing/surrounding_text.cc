@@ -51,14 +51,15 @@ EphemeralRange ComputeRangeFromFrameSelection(LocalFrame* frame) {
 
 }  // namespace
 
-SurroundingText::SurroundingText(LocalFrame* frame, size_t max_length)
+SurroundingText::SurroundingText(LocalFrame* frame, wtf_size_t max_length)
     : SurroundingText(ComputeRangeFromFrameSelection(frame), max_length) {}
 
-SurroundingText::SurroundingText(const EphemeralRange& range, size_t max_length)
+SurroundingText::SurroundingText(const EphemeralRange& range,
+                                 wtf_size_t max_length)
     : start_offset_in_text_content_(0), end_offset_in_text_content_(0) {
   const Position start_position = range.StartPosition();
   const Position end_position = range.EndPosition();
-  const unsigned half_max_length = max_length / 2;
+  const wtf_size_t half_max_length = max_length / 2;
 
   Document* document = start_position.GetDocument();
 
@@ -126,11 +127,11 @@ String SurroundingText::TextContent() const {
   return text_content_;
 }
 
-size_t SurroundingText::StartOffsetInTextContent() const {
+wtf_size_t SurroundingText::StartOffsetInTextContent() const {
   return start_offset_in_text_content_;
 }
 
-size_t SurroundingText::EndOffsetInTextContent() const {
+wtf_size_t SurroundingText::EndOffsetInTextContent() const {
   return end_offset_in_text_content_;
 }
 

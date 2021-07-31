@@ -866,7 +866,7 @@ void HTMLDocumentParser::DiscardSpeculationsAndResumeFrom(
                            background_parser_, std::move(checkpoint)));
 }
 
-size_t HTMLDocumentParser::ProcessTokenizedChunkFromBackgroundParser(
+wtf_size_t HTMLDocumentParser::ProcessTokenizedChunkFromBackgroundParser(
     std::unique_ptr<TokenizedChunk> pop_chunk,
     bool* reached_end_of_file) {
   TRACE_EVENT_WITH_FLOW0(
@@ -888,7 +888,7 @@ size_t HTMLDocumentParser::ProcessTokenizedChunkFromBackgroundParser(
 
   std::unique_ptr<TokenizedChunk> chunk(std::move(pop_chunk));
   const CompactHTMLTokenStream& tokens = chunk->tokens;
-  size_t element_token_count = 0;
+  wtf_size_t element_token_count = 0;
 
   loading_task_runner_->PostTask(
       FROM_HERE, WTF::Bind(&BackgroundHTMLParser::StartedChunkWithCheckpoint,
@@ -979,7 +979,7 @@ void HTMLDocumentParser::PumpPendingSpeculations() {
   bool reached_end_of_file = false;
   while (!speculations_.IsEmpty()) {
     DCHECK(!IsScheduledForUnpause());
-    size_t element_token_count = ProcessTokenizedChunkFromBackgroundParser(
+    wtf_size_t element_token_count = ProcessTokenizedChunkFromBackgroundParser(
         speculations_.TakeFirst(), &reached_end_of_file);
     session.AddedElementTokens(element_token_count);
 

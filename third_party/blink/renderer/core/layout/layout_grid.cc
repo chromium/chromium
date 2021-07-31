@@ -2635,18 +2635,20 @@ size_t LayoutGrid::NumTracks(GridTrackSizingDirection direction,
                    StyleRef(), grid.AutoRepeatTracks(kForColumns));
 }
 
-size_t LayoutGrid::ExplicitGridEndForDirection(
+wtf_size_t LayoutGrid::ExplicitGridEndForDirection(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
-  size_t leading = ExplicitGridStartForDirection(direction);
+  wtf_size_t leading = ExplicitGridStartForDirection(direction);
 
   if (direction == kForRows) {
-    return leading + GridPositionsResolver::ExplicitGridRowCount(
-                         StyleRef(), grid_->AutoRepeatTracks(direction));
+    return base::checked_cast<wtf_size_t>(
+        leading + GridPositionsResolver::ExplicitGridRowCount(
+                      StyleRef(), grid_->AutoRepeatTracks(direction)));
   }
 
-  return leading + GridPositionsResolver::ExplicitGridColumnCount(
-                       StyleRef(), grid_->AutoRepeatTracks(direction));
+  return base::checked_cast<wtf_size_t>(
+      leading + GridPositionsResolver::ExplicitGridColumnCount(
+                    StyleRef(), grid_->AutoRepeatTracks(direction)));
 }
 
 LayoutUnit LayoutGrid::GridItemOffset(

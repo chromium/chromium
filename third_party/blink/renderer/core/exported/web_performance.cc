@@ -75,13 +75,13 @@ WebPerformance::BackForwardCacheRestore() const {
       private_->timing()->BackForwardCacheRestore();
 
   WebVector<BackForwardCacheRestoreTiming> timings(restore_timings.size());
-  for (size_t i = 0; i < restore_timings.size(); i++) {
+  for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     timings[i].navigation_start =
         MillisecondsToSeconds(restore_timings[i].navigation_start);
     timings[i].first_paint =
         MillisecondsToSeconds(restore_timings[i].first_paint);
-    for (size_t j = 0; j < restore_timings[i].request_animation_frames.size();
-         j++) {
+    for (wtf_size_t j = 0;
+         j < restore_timings[i].request_animation_frames.size(); j++) {
       timings[i].request_animation_frames[j] =
           MillisecondsToSeconds(restore_timings[i].request_animation_frames[j]);
     }

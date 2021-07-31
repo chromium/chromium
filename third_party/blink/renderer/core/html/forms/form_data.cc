@@ -313,7 +313,9 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
       }
     } else {
       std::string encoded_value = Encode(entry->Value());
-      form_data->AppendData(encoded_value.c_str(), encoded_value.length());
+      form_data->AppendData(
+          encoded_value.c_str(),
+          base::checked_cast<wtf_size_t>(encoded_value.length()));
     }
     form_data->AppendData("\r\n", 2);
   }

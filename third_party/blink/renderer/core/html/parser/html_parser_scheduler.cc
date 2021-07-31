@@ -40,7 +40,7 @@ SpeculationsPumpSession::SpeculationsPumpSession(unsigned& nesting_level)
 
 SpeculationsPumpSession::~SpeculationsPumpSession() = default;
 
-void SpeculationsPumpSession::AddedElementTokens(size_t count) {
+void SpeculationsPumpSession::AddedElementTokens(wtf_size_t count) {
   processed_element_tokens_ += count;
 }
 

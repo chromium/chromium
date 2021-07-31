@@ -662,8 +662,9 @@ Vector<TextCheckingResult> SpellChecker::FindMisspellings(const String& text) {
       DCHECK_LE(misspelling_location + misspelling_length, word_length);
       TextCheckingResult misspelling;
       misspelling.decoration = kTextDecorationTypeSpelling;
-      misspelling.location = word_start + misspelling_location;
-      misspelling.length = misspelling_length;
+      misspelling.location =
+          base::checked_cast<int>(word_start + misspelling_location);
+      misspelling.length = base::checked_cast<int>(misspelling_length);
       results.push_back(misspelling);
     }
     word_start = word_end;

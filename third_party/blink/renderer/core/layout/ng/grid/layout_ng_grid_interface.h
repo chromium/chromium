@@ -16,12 +16,12 @@ class LayoutUnit;
 // to avoid forking behavior elsewhere.
 class LayoutNGGridInterface {
  public:
-  virtual size_t ExplicitGridStartForDirection(
+  virtual wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const = 0;
-  virtual size_t ExplicitGridEndForDirection(
+  virtual wtf_size_t ExplicitGridEndForDirection(
       GridTrackSizingDirection direction) const = 0;
 
-  virtual size_t AutoRepeatCountForDirection(
+  virtual wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const = 0;
   virtual Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection direction) const = 0;

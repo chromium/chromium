@@ -27,7 +27,7 @@ const LayoutNGGridInterface* LayoutNGGrid::ToLayoutNGGridInterface() const {
   return this;
 }
 
-size_t LayoutNGGrid::ExplicitGridStartForDirection(
+wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
   const auto* grid_data = GetGridData();
@@ -37,7 +37,7 @@ size_t LayoutNGGrid::ExplicitGridStartForDirection(
                                  : grid_data->column_start;
 }
 
-size_t LayoutNGGrid::ExplicitGridEndForDirection(
+wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
   const auto* grid_data = GetGridData();
@@ -47,7 +47,7 @@ size_t LayoutNGGrid::ExplicitGridEndForDirection(
                                  : grid_data->column_geometry.total_track_count;
 }
 
-size_t LayoutNGGrid::AutoRepeatCountForDirection(
+wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();
   const auto* grid_data = GetGridData();
