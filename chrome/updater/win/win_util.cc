@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <wtsapi32.h>
 
+#include <cstdlib>
+#include <memory>
 #include <string>
 
 #include "base/callback_helpers.h"
@@ -18,9 +20,11 @@
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/free_deleter.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -29,6 +33,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -38,6 +43,16 @@ const unsigned int kMaxProcessQueryIterations = 50;
 
 // The sleep time in ms between each poll.
 const unsigned int kProcessQueryWaitTimeMs = 100;
+
+class ProcessFilterExplorer : public base::ProcessFilter {
+ public:
+  ~ProcessFilterExplorer() override = default;
+
+  // Overrides for base::ProcessFilter.
+  bool Includes(const base::ProcessEntry& entry) const override {
+    return base::EqualsCaseInsensitiveASCII(entry.exe_file(), L"EXPLORER.EXE");
+  }
+};
 
 HRESULT IsUserRunningSplitToken(bool& is_split_token) {
   HANDLE token = NULL;
@@ -55,6 +70,72 @@ HRESULT IsUserRunningSplitToken(bool& is_split_token) {
                    elevation_type == TokenElevationTypeLimited;
   DCHECK(is_split_token || elevation_type == TokenElevationTypeDefault);
   return S_OK;
+}
+
+HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
+  if (!::IsValidSid(sid))
+    return E_FAIL;
+  SID_IDENTIFIER_AUTHORITY* authority = ::GetSidIdentifierAuthority(sid);
+  if (!authority)
+    return E_FAIL;
+  static const SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
+      SECURITY_MANDATORY_LABEL_AUTHORITY;
+  if (std::memcmp(authority, &kMandatoryLabelAuth,
+                  sizeof(SID_IDENTIFIER_AUTHORITY))) {
+    return E_FAIL;
+  }
+  PUCHAR count = ::GetSidSubAuthorityCount(sid);
+  if (!count || *count != 1)
+    return E_FAIL;
+  DWORD* rid = ::GetSidSubAuthority(sid, 0);
+  if (!rid)
+    return E_FAIL;
+  if ((*rid & 0xFFF) != 0 || *rid > SECURITY_MANDATORY_PROTECTED_PROCESS_RID)
+    return E_FAIL;
+  *level = static_cast<MANDATORY_LEVEL>(*rid >> 12);
+  return S_OK;
+}
+
+// Gets the mandatory integrity level of a process.
+// TODO(crbug.com/1233748): consider reusing
+// base::GetCurrentProcessIntegrityLevel().
+HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
+  HANDLE process = ::OpenProcess(PROCESS_QUERY_INFORMATION, false, process_id);
+  if (!process)
+    return HRESULTFromLastError();
+  base::win::ScopedHandle process_holder(process);
+  HANDLE token = NULL;
+  if (!::OpenProcessToken(process_holder.Get(),
+                          TOKEN_QUERY | TOKEN_QUERY_SOURCE, &token)) {
+    return HRESULTFromLastError();
+  }
+  base::win::ScopedHandle token_holder(token);
+  DWORD label_size = 0;
+  if (::GetTokenInformation(token_holder.Get(), TokenIntegrityLevel, nullptr, 0,
+                            &label_size) ||
+      ::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    return E_FAIL;
+  }
+  std::unique_ptr<TOKEN_MANDATORY_LABEL, base::FreeDeleter> label(
+      static_cast<TOKEN_MANDATORY_LABEL*>(std::malloc(label_size)));
+  if (!::GetTokenInformation(token_holder.Get(), TokenIntegrityLevel,
+                             label.get(), label_size, &label_size)) {
+    return HRESULTFromLastError();
+  }
+  return GetSidIntegrityLevel(label->Label.Sid, level);
+}
+
+bool IsExplorerRunningAtMediumOrLower() {
+  ProcessFilterExplorer filter;
+  base::ProcessIterator iter(&filter);
+  while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
+    MANDATORY_LEVEL level = MandatoryLevelUntrusted;
+    if (SUCCEEDED(GetProcessIntegrityLevel(process_entry->pid(), &level)) &&
+        level <= MandatoryLevelMedium) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -421,9 +502,7 @@ HRESULT IsUACOn(bool& is_uac_on) {
     return S_OK;
   }
 
-  // TODO(crbug.com/1233748) - enumerate processes, find an Explorer process,
-  // and inspect its integrity level.
-  is_uac_on = false;
+  is_uac_on = IsExplorerRunningAtMediumOrLower();
   return S_OK;
 }
 
