@@ -1067,6 +1067,39 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
 
+    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+              crosapi::mojom::SessionType::kPublicSession);
+    EXPECT_TRUE(profile->IsMainProfile());
+
+    // Creating a profile causes an implicit connection attempt to a Mojo
+    // service, which occurs as part of a new task. Before deleting |profile|,
+    // ensure this task runs to prevent a crash.
+    FlushIoTaskRunnerAndSpinThreads();
+  }
+  FlushIoTaskRunnerAndSpinThreads();
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
+                       IsMainProfileReturnsTrueForWebKioskSession) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  {
+    base::FilePath profile_path =
+        temp_dir.GetPath().Append(chrome::kInitialProfile);
+    std::unique_ptr<Profile> profile(
+        CreateProfile(profile_path, /* delegate= */ nullptr,
+                      Profile::CREATE_MODE_SYNCHRONOUS));
+
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        crosapi::mojom::BrowserInitParams::New();
+    init_params->session_type = crosapi::mojom::SessionType::kWebKioskSession;
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+
+    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+              crosapi::mojom::SessionType::kWebKioskSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
     // Creating a profile causes an implicit connection attempt to a Mojo
@@ -1099,6 +1132,8 @@ IN_PROC_BROWSER_TEST_F(
     chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
 
+    EXPECT_EQ(chromeos::LacrosService::Get()->init_params()->session_type,
+              crosapi::mojom::SessionType::kRegularSession);
     EXPECT_TRUE(profile->IsMainProfile());
 
     // Creating a profile causes an implicit connection attempt to a Mojo
