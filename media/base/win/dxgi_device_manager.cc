@@ -95,6 +95,15 @@ HRESULT DXGIDeviceManager::ResetDevice() {
                                  kDeviceFlags, nullptr, 0, D3D11_SDK_VERSION,
                                  &d3d_device, nullptr, nullptr);
   RETURN_ON_HR_FAILURE(hr, "D3D11 device creation failed", hr);
+  // Since FrameServerClient background threads in the video capture process
+  // call EnqueueSetEvent on Chromium's D3D11 device at the same time that
+  // Chromium is actively using it in a worker thread, we need to protect access
+  // via ID3D10Multithreaded::SetMultithreadedProtect. Unfortunately, leaving
+  // off the CREATE_DEVICE_SINGLETHREADED creation flag is not enough to protect
+  // us.
+  Microsoft::WRL::ComPtr<ID3D10Multithread> d3d_device_multithread;
+  RETURN_IF_FAILED(d3d_device.As(&d3d_device_multithread));
+  RETURN_IF_FAILED(d3d_device_multithread->SetMultithreadProtected(TRUE));
   hr = mf_dxgi_device_manager_->ResetDevice(d3d_device.Get(),
                                             d3d_device_reset_token_);
   RETURN_ON_HR_FAILURE(hr, "Failed to reset device on MF DXGI device manager",
