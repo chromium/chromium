@@ -12,11 +12,16 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -56,13 +61,14 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If there isn't a BrowserContext/Profile for this, then just allow it.
-  if (!browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile) {
     std::move(callback).Run({});
     return;
   }
 
   // Don't upgrade if the HTTPS-Only Mode setting isn't enabled.
-  auto* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+  auto* prefs = profile->GetPrefs();
   if (!prefs || !prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled)) {
     std::move(callback).Run({});
     return;
@@ -75,12 +81,16 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
     std::move(callback).Run({});
     return;
   }
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!profile) {
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // If this is a GuestView (e.g., Chrome Apps <webview>) then HTTPS-First Mode
+  // should not apply. See crbug.com/1233889 for more details.
+  if (guest_view::GuestViewBase::IsGuest(web_contents)) {
     std::move(callback).Run({});
     return;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   // TODO(crbug.com/1228188) There might be a race condition where we
   // get here before there is a tab. If the issue was caused by web
   // contents, profile or tab helper being null, try to determine the

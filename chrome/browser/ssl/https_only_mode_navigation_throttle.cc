@@ -44,6 +44,13 @@ HttpsOnlyModeNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
+  // Ensure that the HttpsOnlyModeTabHelper has been created (this does nothing
+  // if it has already been created for the WebContents). There are cases where
+  // the tab helper won't get created by the initialization in
+  // chrome/browser/ui/tab_helpers.cc but the criteria for adding the throttle
+  // are still met (see crbug.com/1233889 for one example).
+  HttpsOnlyModeTabHelper::CreateForWebContents(handle->GetWebContents());
+
   return std::make_unique<HttpsOnlyModeNavigationThrottle>(
       handle, std::move(blocking_page_factory));
 }

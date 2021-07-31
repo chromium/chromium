@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -50,7 +51,9 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -61,6 +64,7 @@
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/version_info/channel.h"
@@ -2181,6 +2185,85 @@ IN_PROC_BROWSER_TEST_F(WebViewSafeBrowsingTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
   AddDangerousUrl(embedded_test_server()->GetURL("evil.com", "/title1.html"));
   TestHelper("testLoadAbortSafeBrowsing", "web_view/shim", NO_TEST_SERVER);
+}
+
+class WebViewHttpsFirstModeTest : public WebViewTest {
+ public:
+  WebViewHttpsFirstModeTest() = default;
+  ~WebViewHttpsFirstModeTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kHttpsOnlyMode);
+    WebViewTest::SetUp();
+  }
+
+  void LoadUrlInGuest(const GURL& guest_url) {
+    // Create the guest.
+    auto* embedder_web_contents = GetFirstAppWindowWebContents();
+    ExtensionTestMessageListener guest_added("GuestAddedToDom", false);
+    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents,
+                                       base::StringPrintf("createGuest();\n")));
+    ASSERT_TRUE(guest_added.WaitUntilSatisfied());
+
+    // Now load the guest.
+    content::TestNavigationObserver observer(guest_url);
+    ExtensionTestMessageListener guest_loaded("GuestLoaded", false);
+    std::string command =
+        base::StringPrintf("loadGuestUrl('%s');\n", guest_url.spec().c_str());
+    EXPECT_TRUE(content::ExecuteScript(embedder_web_contents, command));
+    ASSERT_TRUE(guest_loaded.WaitUntilSatisfied());
+
+    // Wait for guest navigation to complete.
+    auto* guest_web_contents =
+        GetGuestViewManager()->WaitForSingleGuestCreated();
+    ASSERT_TRUE(
+        guest_web_contents->GetMainFrame()->GetProcess()->IsForGuestsOnly());
+    observer.WatchExistingWebContents();
+    observer.WaitForNavigationFinished();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that loading an HTTPS page in a guest <webview> with HTTPS-First Mode
+// enabled doesn't crash and doesn't trigger the interstitial.
+// Regression test for crbug.com/1233889
+IN_PROC_BROWSER_TEST_F(WebViewHttpsFirstModeTest, GuestLoadsHttpsWithoutError) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               true);
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  GURL guest_url = https_server.GetURL("/simple.html");
+  LoadAndLaunchPlatformApp("web_view/interstitial_teardown", "EmbedderLoaded");
+  LoadUrlInGuest(guest_url);
+
+  // Page should load without any interstitial (and no crashing).
+  auto* embedder_web_contents = GetFirstAppWindowWebContents();
+  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  EXPECT_FALSE(IsShowingInterstitial(guest_web_contents));
+  EXPECT_FALSE(IsShowingInterstitial(embedder_web_contents));
+}
+
+// Tests that loading an HTTP page in a guest <webview> with HTTPS-First Mode
+// enabled doesn't crash and doesn't trigger the interstitial.
+// Regression test for crbug.com/1233889
+IN_PROC_BROWSER_TEST_F(WebViewHttpsFirstModeTest, GuestLoadsHttpWithoutError) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                               true);
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL guest_url = embedded_test_server()->GetURL("/simple.html");
+  LoadAndLaunchPlatformApp("web_view/interstitial_teardown", "EmbedderLoaded");
+  LoadUrlInGuest(guest_url);
+
+  // Page should load without any interstitial (and no crashing).
+  auto* embedder_web_contents = GetFirstAppWindowWebContents();
+  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  EXPECT_FALSE(IsShowingInterstitial(guest_web_contents));
+  EXPECT_FALSE(IsShowingInterstitial(embedder_web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, ShimSrcAttribute) {
