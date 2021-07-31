@@ -38,7 +38,7 @@ typedef struct {
 // This function is derived from third_party/minizip/iowin32.c.
 // Its only difference is that it treats the char* as UTF8 and
 // uses the Unicode version of CreateFile.
-void* ZipOpenFunc(void *opaque, const char* filename, int mode) {
+void* ZipOpenFunc(void* opaque, const char* filename, int mode) {
   DWORD desired_access = 0, creation_disposition = 0;
   DWORD share_mode = 0, flags_and_attributes = 0;
   HANDLE file = 0;
@@ -105,7 +105,7 @@ void* FdOpenFileFunc(void* opaque, const char* filename, int mode) {
 
 int FdCloseFileFunc(void* opaque, void* stream) {
   fclose(static_cast<FILE*>(stream));
-  free(opaque); // malloc'ed in FillFdOpenFileFunc()
+  free(opaque);  // malloc'ed in FillFdOpenFileFunc()
   return 0;
 }
 
@@ -138,7 +138,7 @@ void* HandleOpenFileFunc(void* opaque, const char* filename, int mode) {
 }
 
 int HandleCloseFileFunc(void* opaque, void* stream) {
-  free(stream); // malloc'ed in HandleOpenFileFunc()
+  free(stream);  // malloc'ed in HandleOpenFileFunc()
   return 0;
 }
 #endif
@@ -208,8 +208,8 @@ long SeekZipBuffer(void* opaque, void* /*stream*/, uLong offset, int origin) {
   if (!buffer)
     return -1;
   if (origin == ZLIB_FILEFUNC_SEEK_CUR) {
-    buffer->offset = std::min(buffer->offset + static_cast<size_t>(offset),
-                              buffer->length);
+    buffer->offset =
+        std::min(buffer->offset + static_cast<size_t>(offset), buffer->length);
     return 0;
   }
   if (origin == ZLIB_FILEFUNC_SEEK_END) {
@@ -330,8 +330,7 @@ zipFile OpenForZipping(const std::string& file_name_utf8, int append_flag) {
   zip_funcs.zopen_file = ZipOpenFunc;
   zip_func_ptrs = &zip_funcs;
 #endif
-  return zipOpen2(file_name_utf8.c_str(),
-                  append_flag,
+  return zipOpen2(file_name_utf8.c_str(), append_flag,
                   NULL,  // global comment
                   zip_func_ptrs);
 }
@@ -352,28 +351,34 @@ bool ZipOpenNewFileInZip(zipFile zip_file,
   // Setting the Language encoding flag so the file is told to be in utf-8.
   const uLong LANGUAGE_ENCODING_FLAG = 0x1 << 11;
 
-  zip_fileinfo file_info = TimeToZipFileInfo(last_modified_time);
-  if (ZIP_OK != zipOpenNewFileInZip4(zip_file,          // file
-                                     str_path.c_str(),  // filename
-                                     &file_info,        // zip_fileinfo
-                                     NULL,              // extrafield_local,
-                                     0u,                // size_extrafield_local
-                                     NULL,              // extrafield_global
-                                     0u,          // size_extrafield_global
-                                     NULL,        // comment
-                                     Z_DEFLATED,  // method
-                                     Z_DEFAULT_COMPRESSION,  // level
-                                     0,                      // raw
-                                     -MAX_WBITS,             // windowBits
-                                     DEF_MEM_LEVEL,          // memLevel
-                                     Z_DEFAULT_STRATEGY,     // strategy
-                                     NULL,                   // password
-                                     0,                      // crcForCrypting
-                                     0,                      // versionMadeBy
-                                     LANGUAGE_ENCODING_FLAG)) {  // flagBase
-    DLOG(ERROR) << "Could not open zip file entry " << str_path;
+  const zip_fileinfo file_info = TimeToZipFileInfo(last_modified_time);
+  const int err = zipOpenNewFileInZip4_64(
+      /*file=*/zip_file,
+      /*filename=*/str_path.c_str(),
+      /*zip_fileinfo=*/&file_info,
+      /*extrafield_local=*/nullptr,
+      /*size_extrafield_local=*/0u,
+      /*extrafield_global=*/nullptr,
+      /*size_extrafield_global=*/0u,
+      /*comment=*/nullptr,
+      /*method=*/Z_DEFLATED,
+      /*level=*/Z_DEFAULT_COMPRESSION,
+      /*raw=*/0,
+      /*windowBits=*/-MAX_WBITS,
+      /*memLevel=*/DEF_MEM_LEVEL,
+      /*strategy=*/Z_DEFAULT_STRATEGY,
+      /*password=*/nullptr,
+      /*crcForCrypting=*/0,
+      /*versionMadeBy=*/0,
+      /*flagBase=*/LANGUAGE_ENCODING_FLAG,
+      /*zip64=*/1);
+
+  if (err != ZIP_OK) {
+    DLOG(ERROR) << "Cannot open ZIP file entry '" << str_path
+                << "': zipOpenNewFileInZip4_64 returned " << err;
     return false;
   }
+
   return true;
 }
 

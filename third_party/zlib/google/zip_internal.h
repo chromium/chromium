@@ -60,7 +60,7 @@ zipFile OpenForZipping(const std::string& file_name_utf8, int append_flag);
 zipFile OpenFdForZipping(int zip_fd, int append_flag);
 #endif
 
-// Wrapper around zipOpenNewFileInZip4 which passes most common options.
+// Adds a file (or directory) entry to the ZIP archive.
 bool ZipOpenNewFileInZip(zipFile zip_file,
                          const std::string& str_path,
                          base::Time last_modified_time);
