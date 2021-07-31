@@ -600,6 +600,17 @@ source_set("browser_sources") {
     frameworks = [ "CoreServices.framework" ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/login/login_state" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
@@ -690,6 +701,7 @@ source_set("browser_tests") {
       "//ash/components/audio",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/audio",
+      "//chromeos/dbus/cec_service",
       "//chromeos/dbus/media_analytics",
       "//chromeos/dbus/media_analytics:media_perception_proto",
       "//chromeos/dbus/permission_broker",
@@ -880,6 +892,7 @@ source_set("unit_tests") {
     "//components/cast_certificate",
     "//components/cast_certificate:test_support",
     "//components/crx_file",
+    "//components/feedback",
     "//components/keyed_service/content",
     "//components/onc",
     "//components/pref_registry:pref_registry",
@@ -903,6 +916,7 @@ source_set("unit_tests") {
     "//extensions/common:mojom",
     "//extensions/common:test_support",
     "//extensions/common/api",
+    "//extensions/shell:app_shell_lib",
     "//extensions/strings",
     "//ipc:test_support",
     "//net:test_support",
@@ -942,6 +956,7 @@ source_set("unit_tests") {
       "//chromeos/dbus/audio",
       "//chromeos/dbus/media_analytics",
       "//chromeos/dbus/media_analytics:media_perception_proto",
+      "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//chromeos/dbus/upstart",
       "//chromeos/login/login_state",

@@ -63,7 +63,6 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 28 errors
   "//headless:*",  # 107 errors
   "//ppapi/proxy:ipc_sources",  # 13 errors

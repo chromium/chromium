@@ -110,6 +110,8 @@ source_set("api") {
       "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
     ]
   }
+
+  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }
 
 group("api_implementations") {
