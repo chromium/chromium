@@ -43,7 +43,7 @@ class MouseEvent;
 enum class DomCode;
 
 // Key used to store keyboard 'state' values in Event::Properties.
-constexpr char kPropertyKeyboardState[] = "_keyevebt_kbd_state_";
+constexpr char kPropertyKeyboardState[] = "_keyevent_kbd_state_";
 
 // Key used to store keyboard 'group' values in Event::Properties.
 constexpr char kPropertyKeyboardGroup[] = "_keyevent_kbd_group_";
