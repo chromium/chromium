@@ -192,9 +192,8 @@ Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
 Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
 }
 
-Mp2tStreamParser::Mp2tStreamParser(
-    const std::vector<std::string>& allowed_codecs,
-    bool sbr_in_mimetype)
+Mp2tStreamParser::Mp2tStreamParser(base::span<const std::string> allowed_codecs,
+                                   bool sbr_in_mimetype)
     : sbr_in_mimetype_(sbr_in_mimetype),
       selected_audio_pid_(-1),
       selected_video_pid_(-1),
@@ -240,7 +239,7 @@ Mp2tStreamParser::Mp2tStreamParser(
   }
 }
 
-Mp2tStreamParser::~Mp2tStreamParser() {}
+Mp2tStreamParser::~Mp2tStreamParser() = default;
 
 void Mp2tStreamParser::Init(
     InitCB init_cb,

@@ -176,7 +176,8 @@ class Mp2tStreamParserTest : public testing::Test {
         current_video_config_(),
         capture_buffers(false) {
     bool has_sbr = false;
-    parser_.reset(new Mp2tStreamParser({"avc1.64001e", "mp3", "aac"}, has_sbr));
+    const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
+    parser_ = std::make_unique<Mp2tStreamParser>(codecs, has_sbr);
   }
 
  protected:
@@ -473,7 +474,8 @@ TEST_F(Mp2tStreamParserTest, AudioInPrivateStream1) {
 // Checks the allowed_codecs argument filters streams using disallowed codecs.
 TEST_F(Mp2tStreamParserTest, DisableAudioStream) {
   // Reset the parser with no audio codec allowed.
-  parser_.reset(new Mp2tStreamParser({"avc1.64001e"}, true));
+  const std::string codecs[] = {"avc1.64001e"};
+  parser_ = std::make_unique<Mp2tStreamParser>(codecs, true);
   has_audio_ = false;
 
   InitializeParser();
@@ -511,7 +513,8 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
     decrypted_audio_buffers.push_back(decrypted_audio_buffer);
   }
 
-  parser_.reset(new Mp2tStreamParser({"avc1.64001e", "mp3", "aac"}, false));
+  const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
+  parser_ = std::make_unique<Mp2tStreamParser>(codecs, false);
   ResetStats();
   InitializeParser();
   video_buffer_capture_.clear();

@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/audio_decoder_config.h"
@@ -35,7 +36,7 @@ class PidState;
 
 class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
  public:
-  explicit Mp2tStreamParser(const std::vector<std::string>& allowed_codecs,
+  explicit Mp2tStreamParser(base::span<const std::string> allowed_codecs,
                             bool sbr_in_mimetype);
   ~Mp2tStreamParser() override;
 

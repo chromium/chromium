@@ -460,16 +460,17 @@ bool CheckMseSupport(const String& mime_type, const String& codec) {
   // Media MIME API expects a vector of codec strings. We query audio and video
   // separately, so |codec_string|.size() should always be 1 or 0 (when no
   // codecs parameter is required for the given mime type).
-  std::vector<std::string> codec_vector;
+  base::span<const std::string> codecs;
 
+  const std::string codec_ascii = codec.Ascii();
   if (!codec.Ascii().empty())
-    codec_vector.push_back(codec.Ascii());
+    codecs = base::make_span(&codec_ascii, 1);
 
-  if (media::IsSupported != media::StreamParserFactory::IsTypeSupported(
-                                mime_type.Ascii(), codec_vector)) {
+  if (media::IsSupported !=
+      media::StreamParserFactory::IsTypeSupported(mime_type.Ascii(), codecs)) {
     DVLOG(2) << __func__
              << " MSE does not support the content type: " << mime_type.Ascii()
-             << " " << (codec_vector.empty() ? "" : codec_vector[0]);
+             << " " << (codecs.empty() ? "" : codecs.front());
     return false;
   }
 

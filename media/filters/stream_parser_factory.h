@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/mime_util.h"
@@ -30,7 +31,7 @@ class MEDIA_EXPORT StreamParserFactory {
   // MayBeSupported indicates the mime type is supported, but the mime type
   // requires a codecs parameter that is missing.
   static SupportsType IsTypeSupported(const std::string& type,
-                                      const std::vector<std::string>& codecs);
+                                      base::span<const std::string> codecs);
 
   // Creates a new StreamParser object if the specified |type| and |codecs| list
   // are supported. |media_log| can be used to report errors if there is
@@ -54,7 +55,7 @@ class MEDIA_EXPORT StreamParserFactory {
   // attempted decode.
   static std::unique_ptr<StreamParser> Create(
       const std::string& type,
-      const std::vector<std::string>& codecs,
+      base::span<const std::string> codecs,
       MediaLog* media_log);
   static std::unique_ptr<StreamParser> Create(
       std::unique_ptr<AudioDecoderConfig> audio_config);
