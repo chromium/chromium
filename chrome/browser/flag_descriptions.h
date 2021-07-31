@@ -528,9 +528,6 @@ extern const char kEnhancedNetworkVoicesDescription[];
 extern const char kPostQuantumCECPQ2Name[];
 extern const char kPostQuantumCECPQ2Description[];
 
-extern const char kMacCoreLocationImplementationName[];
-extern const char kMacCoreLocationImplementationDescription[];
-
 extern const char kMacCoreLocationBackendName[];
 extern const char kMacCoreLocationBackendDescription[];
 

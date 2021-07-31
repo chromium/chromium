@@ -117,8 +117,7 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
 #if defined(OS_MAC)
-  if (!is_system_permission_granted_ &&
-      base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
+  if (!is_system_permission_granted_) {
     if (!is_awaiting_initial_permission_status_) {
       mojom::Geoposition error_position;
       error_position.error_code =
@@ -206,8 +205,7 @@ void NetworkLocationProvider::RequestPosition() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
 #if defined(OS_MAC)
-  if (!is_system_permission_granted_ &&
-      base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
+  if (!is_system_permission_granted_) {
     return;
   }
 #endif

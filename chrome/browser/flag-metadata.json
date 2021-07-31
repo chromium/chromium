@@ -1565,11 +1565,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-core-location-implementation",
-    "owners": [ "jameshollyer@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "enable-critical-persisted-tab-data",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 94

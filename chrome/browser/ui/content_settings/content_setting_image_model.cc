@@ -510,59 +510,51 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     return false;
 
 #if defined(OS_MAC)
-
-  if (base::FeatureList::IsEnabled(
-          ::features::kMacCoreLocationImplementation)) {
-    set_explanatory_string_id(0);
-    if (is_allowed) {
-      if (!IsGeolocationAllowedOnASystemLevel()) {
-        set_icon(vector_icons::kLocationOnIcon,
-                 vector_icons::kBlockedBadgeIcon);
-        base::RecordAction(base::UserMetricsAction(
-            "ContentSettings.Geolocation.BlockedIconShown"));
-        set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-        if (content_settings->geolocation_was_just_granted_on_site_level())
-          set_should_auto_open_bubble(true);
-        // At this point macOS may not have told us whether location permission
-        // has been allowed or blocked. Wait until the permission state is
-        // determined before displaying this message since it triggers an
-        // animation that cannot be cancelled
-        if (IsGeolocationPermissionDetermined()) {
-          if (base::FeatureList::IsEnabled(
-                  features::kLocationPermissionsExperiment)) {
-            PrefService* prefs = g_browser_process->local_state();
-            int count = prefs->GetInteger(
-                prefs::kMacRestoreLocationPermissionsExperimentCount);
-            if (count <
-                features::GetLocationPermissionsExperimentBubblePromptLimit()) {
-              // Show the bubble when the location is denied.
-              set_should_auto_open_bubble(true);
-              prefs->SetInteger(
-                  prefs::kMacRestoreLocationPermissionsExperimentCount,
-                  ++count);
-              prefs->CommitPendingWrite();
-            } else if (
-                count <
-                (features::GetLocationPermissionsExperimentBubblePromptLimit() +
-                 features::
-                     GetLocationPermissionsExperimentLabelPromptLimit())) {
-              // Show a persistent label without a bubble when the location is
-              // denied.
-              set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-              prefs->SetInteger(
-                  prefs::kMacRestoreLocationPermissionsExperimentCount,
-                  ++count);
-              prefs->CommitPendingWrite();
-            } else {
-              // Return to normal behavior.
-              set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-            }
+  set_explanatory_string_id(0);
+  if (is_allowed) {
+    if (!IsGeolocationAllowedOnASystemLevel()) {
+      set_icon(vector_icons::kLocationOnIcon, vector_icons::kBlockedBadgeIcon);
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSettings.Geolocation.BlockedIconShown"));
+      set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
+      if (content_settings->geolocation_was_just_granted_on_site_level())
+        set_should_auto_open_bubble(true);
+      // At this point macOS may not have told us whether location permission
+      // has been allowed or blocked. Wait until the permission state is
+      // determined before displaying this message since it triggers an
+      // animation that cannot be cancelled
+      if (IsGeolocationPermissionDetermined()) {
+        if (base::FeatureList::IsEnabled(
+                features::kLocationPermissionsExperiment)) {
+          PrefService* prefs = g_browser_process->local_state();
+          int count = prefs->GetInteger(
+              prefs::kMacRestoreLocationPermissionsExperimentCount);
+          if (count <
+              features::GetLocationPermissionsExperimentBubblePromptLimit()) {
+            // Show the bubble when the location is denied.
+            set_should_auto_open_bubble(true);
+            prefs->SetInteger(
+                prefs::kMacRestoreLocationPermissionsExperimentCount, ++count);
+            prefs->CommitPendingWrite();
+          } else if (
+              count <
+              (features::GetLocationPermissionsExperimentBubblePromptLimit() +
+               features::GetLocationPermissionsExperimentLabelPromptLimit())) {
+            // Show a persistent label without a bubble when the location is
+            // denied.
+            set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
+            prefs->SetInteger(
+                prefs::kMacRestoreLocationPermissionsExperimentCount, ++count);
+            prefs->CommitPendingWrite();
           } else {
+            // Return to normal behavior.
             set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
           }
+        } else {
+          set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
         }
-        return true;
       }
+      return true;
     }
   }
 #endif  // defined(OS_MAC)

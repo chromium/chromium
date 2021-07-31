@@ -286,7 +286,6 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
   auto test_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
@@ -344,7 +343,6 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
   auto test_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   test_geolocation_manager->SetSystemPermission(
@@ -392,9 +390,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kMacCoreLocationImplementation,
-                                 features::kLocationPermissionsExperiment},
-                                {});
+  feature_list.InitWithFeatures({features::kLocationPermissionsExperiment}, {});
   auto test_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =

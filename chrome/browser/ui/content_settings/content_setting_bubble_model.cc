@@ -1228,25 +1228,22 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
                                      ContentSettingsType::GEOLOCATION) {
   SetCustomLink();
 #if defined(OS_MAC)
-  if (base::FeatureList::IsEnabled(
-          ::features::kMacCoreLocationImplementation)) {
-    PageSpecificContentSettings* content_settings =
-        PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
-    if (!content_settings)
-      return;
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+  if (!content_settings)
+    return;
 
-    bool is_allowed =
-        content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
+  bool is_allowed =
+      content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION);
 
-    device::GeolocationManager* geolocation_manager =
-        g_browser_process->platform_part()->geolocation_manager();
-    LocationSystemPermissionStatus permission =
-        geolocation_manager->GetSystemPermission();
-    if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
-      // If the permission is turned off in MacOS system preferences, overwrite
-      // the bubble to enable the user to trigger the system dialog.
-      InitializeSystemGeolocationPermissionBubble();
-    }
+  device::GeolocationManager* geolocation_manager =
+      g_browser_process->platform_part()->geolocation_manager();
+  LocationSystemPermissionStatus permission =
+      geolocation_manager->GetSystemPermission();
+  if (permission != LocationSystemPermissionStatus::kAllowed && is_allowed) {
+    // If the permission is turned off in MacOS system preferences, overwrite
+    // the bubble to enable the user to trigger the system dialog.
+    InitializeSystemGeolocationPermissionBubble();
   }
 #endif  // defined(OS_MAC)
 }
