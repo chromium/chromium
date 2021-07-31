@@ -322,11 +322,6 @@ const base::Feature kCdmProcessSiteIsolation{"CdmProcessSiteIsolation",
 const base::Feature kMemoryPressureBasedSourceBufferGC{
     "MemoryPressureBasedSourceBufferGC", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable binding multiple shared images to a single GpuMemoryBuffer for
-// software decoded video frames created by the GpuMemoryBufferVideoFramePool.
-const base::Feature kMultiPlaneSoftwareVideoSharedImages{
-    "MultiPlaneSoftwareVideoSharedImages", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable binding multiple shared images to a single GpuMemoryBuffer for video
 // frames created by video capture.
 const base::Feature kMultiPlaneVideoCaptureSharedImages {

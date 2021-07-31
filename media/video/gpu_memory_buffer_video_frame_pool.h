@@ -61,6 +61,10 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
   // Allows injection of a base::SimpleTestClock for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
+  // Returns true if SharedImages should be bound for each individual plane
+  // of a multiplanar GpuMemoryBuffer. Exposed externally for testing.
+  static bool MultiPlaneVideoSharedImagesEnabled();
+
  private:
   class PoolImpl;
   scoped_refptr<PoolImpl> pool_impl_;

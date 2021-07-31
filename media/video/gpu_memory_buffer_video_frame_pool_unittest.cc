@@ -308,7 +308,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareNV12Frame) {
 
   EXPECT_NE(software_frame.get(), frame.get());
   EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
-  if (base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages)) {
+  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
     EXPECT_EQ(2u, frame->NumTextures());
     EXPECT_EQ(2u, sii_->shared_image_count());
   } else {

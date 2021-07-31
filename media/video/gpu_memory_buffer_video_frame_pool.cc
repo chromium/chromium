@@ -48,13 +48,13 @@
 
 namespace media {
 
-namespace {
-
-bool MultiPlaneVideoSharedImagesEnabled() {
-  return base::FeatureList::IsEnabled(kMultiPlaneSoftwareVideoSharedImages);
+bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
+#if defined(OS_MAC)
+  return base::mac::IsAtMostOS10_13();
+#else
+  return false;
+#endif
 }
-
-}  // namespace
 
 // Implementation of a pool of GpuMemoryBuffers used to back VideoFrames.
 class GpuMemoryBufferVideoFramePool::PoolImpl
@@ -366,7 +366,7 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
 // The number of shared images for a given format. Note that a single
 // GpuMemoryBuffer can be mapped to several SharedImages (one for each plane).
 size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
-  if (MultiPlaneVideoSharedImagesEnabled()) {
+  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
     if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
       return 2;
     }
@@ -380,7 +380,7 @@ size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
 size_t GpuMemoryBufferPlaneResourceIndexForPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
-  if (MultiPlaneVideoSharedImagesEnabled()) {
+  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
     if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
       return 0;
     }
@@ -393,7 +393,7 @@ size_t GpuMemoryBufferPlaneResourceIndexForPlane(
 gfx::BufferPlane GetSharedImageBufferPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
-  if (MultiPlaneVideoSharedImagesEnabled()) {
+  if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
     if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
       switch (plane) {
         case 0:
