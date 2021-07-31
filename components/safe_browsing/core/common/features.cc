@@ -69,7 +69,8 @@ const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kOmitNonUserGesturesFromReferrerChain{
-    "kOmitNonUserGesturesFromReferrerChain", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPasswordProtectionForSignedInUsers {
   "SafeBrowsingPasswordProtectionForSignedInUsers",
