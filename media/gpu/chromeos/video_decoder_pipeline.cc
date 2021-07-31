@@ -208,18 +208,21 @@ bool VideoDecoderPipeline::IsPlatformDecoder() const {
 int VideoDecoderPipeline::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
+  // TODO(mcasas): query |decoder_| instead.
   return 4;
 }
 
 bool VideoDecoderPipeline::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
+  // TODO(mcasas): also query |decoder_|.
   return needs_bitstream_conversion_;
 }
 
 bool VideoDecoderPipeline::CanReadWithoutStalling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
+  // TODO(mcasas): also query |decoder_|.
   return main_frame_pool_ && !main_frame_pool_->IsExhausted();
 }
 

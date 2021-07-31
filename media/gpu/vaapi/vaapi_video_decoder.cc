@@ -832,12 +832,34 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       base::BindOnce(&VaapiVideoDecoder::HandleDecodeTask, weak_this_));
 }
 
-bool VaapiVideoDecoder::NeedsTranscryption() {
-  return transcryption_;
+bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
+  DCHECK(output_cb_) << "VaapiVideoDecoder hasn't been initialized";
+  NOTREACHED();
+  return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
+         (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX);
+}
+
+bool VaapiVideoDecoder::CanReadWithoutStalling() const {
+  NOTIMPLEMENTED();
+  NOTREACHED();
+  return true;
+}
+
+int VaapiVideoDecoder::GetMaxDecodeRequests() const {
+  NOTREACHED();
+  return 4;
 }
 
 VideoDecoderType VaapiVideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kVaapi;
+}
+
+bool VaapiVideoDecoder::IsPlatformDecoder() const {
+  return true;
+}
+
+bool VaapiVideoDecoder::NeedsTranscryption() {
+  return transcryption_;
 }
 
 void VaapiVideoDecoder::ReleaseVideoFrame(VASurfaceID surface_id) {

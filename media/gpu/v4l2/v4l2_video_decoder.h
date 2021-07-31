@@ -49,17 +49,22 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
 
   static SupportedVideoDecoderConfigs GetSupportedConfigs();
 
-  // VideoDecoderMixin implementation.
+  // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Reset(base::OnceClosure closure) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
-  void ApplyResolutionChange() override;
+  void Reset(base::OnceClosure reset_cb) override;
+  bool NeedsBitstreamConversion() const override;
+  bool CanReadWithoutStalling() const override;
+  int GetMaxDecodeRequests() const override;
   VideoDecoderType GetDecoderType() const override;
+  bool IsPlatformDecoder() const override;
+  // VideoDecoderMixin implementation, specific part.
+  void ApplyResolutionChange() override;
 
   // V4L2VideoDecoderBackend::Client implementation
   void OnBackendError() override;

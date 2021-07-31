@@ -189,8 +189,30 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   std::move(init_cb).Run(::media::OkStatus());
 }
 
+bool V4L2VideoDecoder::NeedsBitstreamConversion() const {
+  DCHECK(output_cb_) << "V4L2VideoDecoder hasn't been initialized";
+  NOTREACHED();
+  return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
+         (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX);
+}
+
+bool V4L2VideoDecoder::CanReadWithoutStalling() const {
+  NOTIMPLEMENTED();
+  NOTREACHED();
+  return true;
+}
+
+int V4L2VideoDecoder::GetMaxDecodeRequests() const {
+  NOTREACHED();
+  return 4;
+}
+
 VideoDecoderType V4L2VideoDecoder::GetDecoderType() const {
   return VideoDecoderType::kV4L2;
+}
+
+bool V4L2VideoDecoder::IsPlatformDecoder() const {
+  return true;
 }
 
 StatusCode V4L2VideoDecoder::InitializeBackend() {
