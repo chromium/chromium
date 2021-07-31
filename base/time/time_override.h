@@ -5,6 +5,8 @@
 #ifndef BASE_TIME_TIME_OVERRIDE_H_
 #define BASE_TIME_TIME_OVERRIDE_H_
 
+#include <atomic>
+
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
