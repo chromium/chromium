@@ -313,6 +313,11 @@ bool IsDrDcEnabled() {
   if (IsUsingVulkan())
     return false;
 
+  // DrDc is supported on android MediaPlayer and MCVD path only when
+  // AImageReader is enabled.
+  if (!IsAImageReaderEnabled())
+    return false;
+
   return base::FeatureList::IsEnabled(kEnableDrDc);
 #else
   return false;
