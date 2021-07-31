@@ -75,6 +75,10 @@ class ExtensionApiTest : public ExtensionBrowserTest {
                         const RunOptions& run_options,
                         const LoadOptions& load_options) WARN_UNUSED_RESULT;
 
+  bool RunExtensionTest(const base::FilePath& extension_path,
+                        const RunOptions& run_options,
+                        const LoadOptions& load_options) WARN_UNUSED_RESULT;
+
   // Opens the given |url| and waits for the next result from the
   // chrome.test API. If |open_in_incognito| is true, the URL is opened
   // in an off-the-record browser profile. This API is different from

@@ -35,6 +35,7 @@
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
@@ -303,11 +304,11 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       extension_scheme);
 
-  // TODO(crbug.com/1184892): This is a temporary hack to allow
-  // SharedArrayBuffer access in extension processes. Remove once we add support
-  // for extension opt-in into cross-origin isolation.
-  WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
-      extension_scheme);
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kAllowSharedArrayBuffersUnconditionally)) {
+    WebSecurityPolicy::RegisterURLSchemeAsAllowingSharedArrayBuffers(
+        extension_scheme);
+  }
 
   // chrome-extension: resources should be allowed to register ServiceWorkers.
   WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
