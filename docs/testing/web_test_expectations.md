@@ -150,13 +150,82 @@ depends on its arguments.
   `--patchset=n` to specify the patchset. This is very useful when the CL has
   'trivial' patchsets that are created e.g. by editing the CL descrpition.
 
+### Rebaseline script in results.html
+
+Web test results.html linked from bot job result page provides an alternative
+way to rebaseline tests for a particular platform.
+
+* In the bot job result page, find the web test results.html link and click it.
+* Choose "Rebaseline script" from the dropdown list after "Test shown ... in format".
+* Click "Copy report" (or manually copy part of the script for the tests you want
+  to rebaseline).
+* In local console, change directory into `third_party/blink/web_tests/platform/<platform>`.
+* Paste.
+* Add files into git and commit.
+
+Unlike other rebaseline methods, the above process may create redundant baselines,
+so optionally you may want to run the following to optimize the baselines before
+the last step above:
+* In the result page, click "Copy test names"
+* In local console, run `third_party/blink/tools/blink_tools.py optimize-baselines <paste>`.
+
 ### Local manual rebaselining
 
-This is often useful for rebaselining flag-specific results, or rebaselining
-just for the local platform.
-See [Rebaselining Web Tests](./web_tests.md#Rebaselining-Web-Tests) for more
-details.
+```bash
+third_party/blink/tools/run_web_tests.py --reset-results foo/bar/test.html
+```
 
+If there are current expectation files for `web_tests/foo/bar/test.html`,
+the above command will overwrite the current baselines at their original
+locations with the actual results. The current baseline means the `-expected.*`
+file used to compare the actual result when the test is run locally, i.e. the
+first file found in the [baseline search path](https://cs.chromium.org/search/?q=port/base.py+baseline_search_path).
+
+If there are no current baselines, the above command will create new baselines
+in the platform-independent directory, e.g.
+`web_tests/foo/bar/test-expected.{txt,png}`.
+
+When you rebaseline a test, make sure your commit description explains why the
+test is being re-baselined.
+
+### Rebaselining flag-specific expectations
+
+See [Testing Runtime Flags](./web_tests.md#Testing-Runtime-Flags) for details
+about flag-specific expectations.
+
+Though we prefer the [Rebaseline Tool](#How-to-rebaseline) to local rebaselining,
+the Rebaseline Tool doesn't support rebaselining flag-specific expectations except
+highdpi.
+
+```bash
+third_party/blink/tools/run_web_tests.py --flag-specific=config --reset-results foo/bar/test.html
+```
+
+New baselines will be created in the flag-specific baselines directory, e.g.
+`web_tests/flag-specific/config/foo/bar/test-expected.{txt,png}`
+
+Then you can commit the new baselines and upload the patch for review.
+
+Sometimes it's difficult for reviewers to review the patch containing only new
+files. You can follow the steps below for easier review.
+
+1. Copy existing baselines to the flag-specific baselines directory for the
+   tests to be rebaselined:
+   ```bash
+   third_party/blink/tools/run_web_tests.py --flag-specific=config --copy-baselines foo/bar/test.html
+   ```
+   Then add the newly created baseline files, commit and upload the patch.
+   Note that the above command won't copy baselines for passing tests.
+
+2. Rebaseline the test locally:
+   ```bash
+   third_party/blink/tools/run_web_tests.py --flag-specific=config --reset-results foo/bar/test.html
+   ```
+   Commit the changes and upload the patch.
+
+3. Request review of the CL and tell the reviewer to compare the patch sets that
+   were uploaded in step 1 and step 2 to see the differences of the rebaselines.
+   
 ## Kinds of expectations files
 
 * [TestExpectations](../../third_party/blink/web_tests/TestExpectations): The
@@ -200,6 +269,11 @@ file, this will reduce the chance of merge conflicts when landing your patch.
 
 ### Syntax
 
+*** promo
+Please see [The Chromium Test List Format](http://bit.ly/chromium-test-list-format)
+for a more complete and up-to-date description of the syntax.
+***
+
 The syntax of the file is roughly one expectation per line. An expectation can
 apply to either a directory of tests, or a specific tests. Lines prefixed with
 `# ` are treated as comments, and blank lines are allowed as well.
@@ -207,14 +281,17 @@ apply to either a directory of tests, or a specific tests. Lines prefixed with
 The syntax of a line is roughly:
 
 ```
-[ bugs ] [ "[" modifiers "]" ] test_name [ "[" expectations "]" ]
+[ bugs ] [ "[" modifiers "]" ] test_name_or_directory [ "[" expectations "]" ]
 ```
 
 * Tokens are separated by whitespace.
 * **The brackets delimiting the modifiers and expectations from the bugs and the
-  test_name are not optional**; however the modifiers component is optional. In
+  test_name_or_directory are not optional**; however the modifiers component is optional. In
   other words, if you want to specify modifiers or expectations, you must
   enclose them in brackets.
+* If test_name_or_directory is a directory, it should be ended with '/*', and all
+  tests under the directory will have the expectations, unless overridden by
+  more specific expectation lines.
 * Lines are expected to have one or more bug identifiers, and the linter will
   complain about lines missing them. Bug identifiers are of the form
   `crbug.com/12345`, `code.google.com/p/v8/issues/detail?id=12345` or
@@ -296,6 +373,15 @@ You would expect:
   match).
 * `fast/html/section-element.html` to either crash or produce a text (or image
   and text) failure, but not time out or pass.
+
+Test expectation can also apply to all tests under a directory (specified with a
+name ending with `/*`). A more specific expectation can override a less
+specific expectation. For example:
+```
+crbug.com/12345 virtual/composite-after-paint/* [ Skip ]
+crbug.com/12345 virtual/composite-after-paint/compositing/backface-visibility/* [ Pass ]
+crbug.com/12345 virtual/composite-after-paint/compositing/backface-visibility/test.html [ Failure ]
+```
 
 *** promo
 Duplicate expectations are not allowed within the file and will generate

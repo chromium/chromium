@@ -114,19 +114,19 @@ As a final quick-but-less-robust alternative, you can also just use the
 content_shell executable to run specific tests by using (example on Windows):
 
 ```bash
-out\\Default\\content_shell.exe --run-web-tests <url>|<full_test_source_path>|<relative_test_path>
+out\Default\content_shell.exe --run-web-tests <url>|<full_test_source_path>|<relative_test_path>
 ```
 
 as in:
 
 ```bash
-out\\Default\\content_shell.exe --run-web-tests \
-    c:\\chrome\\src\\third_party\\blink\\web_tests\\fast\\forms\\001.html
+out\Default\content_shell.exe --run-web-tests \
+    c:\chrome\src\third_party\blink\web_tests\fast\forms\001.html
 ```
 or
 
 ```bash
-out\\Default\\content_shell.exe --run-web-tests fast\\forms\\001.html
+out\Default\content_shell.exe --run-web-tests fast\forms\001.html
 ```
 
 but this requires a manual diff against expected results, because the shell
@@ -209,90 +209,99 @@ on this.
 
 There are two ways to run web tests with additional command-line arguments:
 
-* Using `--additional-driver-flag` or `--flag-specific`:
+### `--flag-specific` or `--additional-driver-flag`:
 
-  ```bash
-  third_party/blink/tools/run_web_tests.py --additional-driver-flag=--blocking-repaint
-  ```
+```bash
+# Actually we prefer --flag-specific in some cases. See below for details.
+third_party/blink/tools/run_web_tests.py --additional-driver-flag=--blocking-repaint
+```
 
-  This tells the test harness to pass `--blocking-repaint` to the
-  content_shell binary.
+This tells the test harness to pass `--blocking-repaint` to the
+content_shell binary.
 
-  It will also look for flag-specific expectations in
-  `web_tests/FlagExpectations/blocking-repaint`, if this file exists. The
-  suppressions in this file override the main TestExpectations files.
-  However, `[ Slow ]` in either flag-specific expectations or base expectations
-  is always merged into the used expectations.
+It will also look for flag-specific expectations in
+`web_tests/FlagExpectations/blocking-repaint`, if this file exists. The
+suppressions in this file override the main TestExpectations files.
+However, `[ Slow ]` in either flag-specific expectations or base expectations
+is always merged into the used expectations.
 
-  It will also look for baselines in `web_tests/flag-specific/blocking-repaint`.
-  The baselines in this directory override the fallback baselines.
+It will also look for baselines in `web_tests/flag-specific/blocking-repaint`.
+The baselines in this directory override the fallback baselines.
 
-  By default, name of the expectation file name under
-  `web_tests/FlagExpectations` and name of the baseline directory under
-  `web_tests/flag-specific` uses the first flag of --additional-driver-flag
-  with leading '-'s stripped.
+By default, name of the expectation file name under
+`web_tests/FlagExpectations` and name of the baseline directory under
+`web_tests/flag-specific` uses the first flag of --additional-driver-flag
+with leading '-'s stripped.
 
-  You can also customize the name in `web_tests/FlagSpecificConfig` when
-  the name is too long or when we need to match multiple additional args:
+You can also customize the name in `web_tests/FlagSpecificConfig` when
+the name is too long or when we need to match multiple additional args:
 
-  ```json
-  {
-    "name": "short-name",
-    "args": ["--blocking-repaint", "--another-flag"]
-  }
-  ```
+```json
+{
+  "name": "short-name",
+  "args": ["--blocking-repaint", "--another-flag"]
+}
+```
+  
+`web_tests/FlagSpecificConfig` is preferred when you need multiple flags,
+or the flag is long.
 
-  When at least `--additional-driver-flag=--blocking-repaint` and
-  `--additional-driver-flag=--another-flag` are specified, `short-name` will
-  be used as name of the flag specific expectation file and the baseline directory.
+With the config, you can use `--flag-specific=short-name` as a shortcut
+of `--additional-driver-flag=--blocking-repaint --additional-driver-flag=--another-flag`.
+  
+`--additional-driver-flags` still works with `web_tests/FlagSpecificConfig`.
+For example, when at least `--additional-driver-flag=--blocking-repaint` and
+`--additional-driver-flag=--another-flag` are specified, `short-name` will
+be used as name of the flag specific expectation file and the baseline directory.
 
-  With the config, you can also use `--flag-specific=short-name` as a shortcut
-  of `--additional-driver-flag=--blocking-repaint --additional-driver-flag=--another-flag`.
+### Virtual test suites
 
-* Using a *virtual test suite* defined in
-  [web_tests/VirtualTestSuites](../../third_party/blink/web_tests/VirtualTestSuites).
-  A virtual test suite runs a subset of web tests with additional flags, with
-  `virtual/<prefix>/...` in their paths. The tests can be virtual tests that
-  map to real base tests (directories or files) whose paths match any of the
-  specified bases, or any real tests under `web_tests/virtual/<prefix>/`
-  directory. For example, you could test a (hypothetical) new mode for
-  repainting using the following virtual test suite:
+A *virtual test suite* can be defined in
+[web_tests/VirtualTestSuites](../../third_party/blink/web_tests/VirtualTestSuites),
+to run a subset of web tests with additional flags, with
+`virtual/<prefix>/...` in their paths. The tests can be virtual tests that
+map to real base tests (directories or files) whose paths match any of the
+specified bases, or any real tests under `web_tests/virtual/<prefix>/`
+directory. For example, you could test a (hypothetical) new mode for
+repainting using the following virtual test suite:
 
-  ```json
-  {
-    "prefix": "blocking_repaint",
-    "bases": ["compositing", "fast/repaint"],
-    "args": ["--blocking-repaint"]
-  }
-  ```
+```json
+{
+  "prefix": "blocking_repaint",
+  "bases": ["compositing", "fast/repaint"],
+  "args": ["--blocking-repaint"]
+}
+```
 
-  This will create new "virtual" tests of the form
-  `virtual/blocking_repaint/compositing/...` and
-  `virtual/blocking_repaint/fast/repaint/...` which correspond to the files
-  under `web_tests/compositing` and `web_tests/fast/repaint`, respectively,
-  and pass `--blocking-repaint` to `content_shell` when they are run.
+This will create new "virtual" tests of the form
+`virtual/blocking_repaint/compositing/...` and
+`virtual/blocking_repaint/fast/repaint/...` which correspond to the files
+under `web_tests/compositing` and `web_tests/fast/repaint`, respectively,
+and pass `--blocking-repaint` to `content_shell` when they are run.
 
-  These virtual tests exist in addition to the original `compositing/...` and
-  `fast/repaint/...` tests. They can have their own expectations in
-  `web_tests/TestExpectations`, and their own baselines. The test harness will
-  use the non-virtual expectations and baselines as a fallback. If a virtual
-  test has its own expectations, they will override all non-virtual
-  expectations. otherwise the non-virtual expectations will be used. However,
-  `[ Slow ]` in either virtual or non-virtual expectations is always merged
-  into the used expectations. If a virtual test is expected to pass while the
-  non-virtual test is expected to fail, you need to add an explicit `[ Pass ]`
-  entry for the virtual test.
+These virtual tests exist in addition to the original `compositing/...` and
+`fast/repaint/...` tests. They can have their own expectations in
+`web_tests/TestExpectations`, and their own baselines. The test harness will
+use the non-virtual expectations and baselines as a fallback. If a virtual
+test has its own expectations, they will override all non-virtual
+expectations. otherwise the non-virtual expectations will be used. However,
+`[ Slow ]` in either virtual or non-virtual expectations is always merged
+into the used expectations. If a virtual test is expected to pass while the
+non-virtual test is expected to fail, you need to add an explicit `[ Pass ]`
+entry for the virtual test.
 
-  This will also let any real tests under `web_tests/virtual/blocking_repaint`
-  directory run with the `--blocking-repaint` flag.
+This will also let any real tests under `web_tests/virtual/blocking_repaint`
+directory run with the `--blocking-repaint` flag.
 
-  The "prefix" value should be unique. Multiple directories with the same flags
-  should be listed in the same "bases" list. The "bases" list can be empty,
-  in case that we just want to run the real tests under `virtual/<prefix>`
-  with the flags without creating any virtual tests.
+The "prefix" value should be unique. Multiple directories with the same flags
+should be listed in the same "bases" list. The "bases" list can be empty,
+in case that we just want to run the real tests under `virtual/<prefix>`
+with the flags without creating any virtual tests.
 
-For flags whose implementation is still in progress, virtual test suites and
-flag-specific expectations represent two alternative strategies for testing both
+### Choosing between flag-specific and virtual test suite
+
+For flags whose implementation is still in progress, flag-specific expectations
+and virtual test suites represent two alternative strategies for testing both
 the enabled code path and not-enabled code path. They are preferred to only
 setting a [runtime enabled feature](../../third_party/blink/renderer/platform/RuntimeEnabledFeatures.md)
 to `status: "test"` if the feature has substantially different code path from
@@ -320,8 +329,9 @@ flag-specific expectations:
   architectural changes that potentially impact all of the tests.
 
 * Note that using wildcards in virtual test path names (e.g.
-  `virtual/blocking_repaint/fast/repaint/*`) is not supported, but you can
-  still use `virtual/blocking_repaint` to run all real and virtual tests
+  `virtual/blocking_repaint/fast/repaint/*`) is not supported in
+  `run_web_tests.py` command line , but you can still use
+  `virtual/blocking_repaint` to run all real and virtual tests
   in the suite or `virtual/blocking_repaint/fast/repaint/dir` to run real
   or virtual tests in the suite under a specific directory.
 
@@ -534,70 +544,7 @@ git bisect reset  # quit the bisect session
 
 ## Rebaselining Web Tests
 
-*** promo
-To automatically re-baseline tests across all Chromium platforms, using the
-buildbot results, see [How to rebaseline](./web_test_expectations.md#How-to-rebaseline).
-Alternatively, to manually run and test and rebaseline it on your workstation,
-read on.
-***
-
-```bash
-third_party/blink/tools/run_web_tests.py --reset-results foo/bar/test.html
-```
-
-If there are current expectation files for `web_tests/foo/bar/test.html`,
-the above command will overwrite the current baselines at their original
-locations with the actual results. The current baseline means the `-expected.*`
-file used to compare the actual result when the test is run locally, i.e. the
-first file found in the [baseline search path](https://cs.chromium.org/search/?q=port/base.py+baseline_search_path).
-
-If there are no current baselines, the above command will create new baselines
-in the platform-independent directory, e.g.
-`web_tests/foo/bar/test-expected.{txt,png}`.
-
-When you rebaseline a test, make sure your commit description explains why the
-test is being re-baselined.
-
-### Rebaselining flag-specific expectations
-
-Though we prefer the [Rebaseline Tool](./web_test_expectations.md#How-to-rebaseline) to local rebaselining, the Rebaseline Tool
-doesn't support rebaselining flag-specific expectations except highdpi.
-
-```bash
-third_party/blink/tools/run_web_tests.py --additional-driver-flag=--enable-flag --reset-results foo/bar/test.html
-```
-*** promo
-You can use `--flag-specific=config` as a shorthand of
-`--additional-driver-flag=--enable-flag` if `config` is defined in
-`web_tests/FlagSpecificConfig`.
-***
-
-New baselines will be created in the flag-specific baselines directory, e.g.
-`web_tests/flag-specific/enable-flag/foo/bar/test-expected.{txt,png}`
-or
-`web_tests/flag-specific/config/foo/bar/test-expected.{txt,png}`
-
-Then you can commit the new baselines and upload the patch for review.
-
-However, it's difficult for reviewers to review the patch containing only new
-files. You can follow the steps below for easier review.
-
-1. Copy existing baselines to the flag-specific baselines directory for the
-   tests to be rebaselined:
-   ```bash
-   third_party/blink/tools/run_web_tests.py --additional-driver-flag=--enable-flag --copy-baselines foo/bar/test.html
-   ```
-   Then add the newly created baseline files, commit and upload the patch.
-   Note that the above command won't copy baselines for passing tests.
-
-2. Rebaseline the test locally:
-   ```bash
-   third_party/blink/tools/run_web_tests.py --additional-driver-flag=--enable-flag --reset-results foo/bar/test.html
-   ```
-   Commit the changes and upload the patch.
-
-3. Request review of the CL and tell the reviewer to compare the patch sets that
-   were uploaded in step 1 and step 2 to see the differences of the rebaselines.
+See [How to rebaseline](./web_test_expectations.md#How-to-rebaseline).
 
 ## Known Issues
 
