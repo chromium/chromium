@@ -12,6 +12,10 @@
 #include "ui/events/event_handler.h"
 #include "ui/views/focus/focus_manager.h"
 
+namespace ash {
+class AssistantWebView;
+}  // namespace ash
+
 namespace chromeos {
 namespace quick_answers {
 struct QuickAnswer;
@@ -65,6 +69,7 @@ class ASH_EXPORT QuickAnswersView : public views::View {
   void AddContentView();
   void AddDogfoodButton();
   void AddSettingsButton();
+  void AddPhoneticsAudioButton(const GURL& phonetics_audio, View* container);
   void AddAssistantIcon();
   void AddGoogleIcon();
   void ResetContentView();
@@ -75,6 +80,9 @@ class ASH_EXPORT QuickAnswersView : public views::View {
   // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently
   // focusable views.
   std::vector<views::View*> GetFocusableViews();
+
+  // Invoked when user clicks the phonetics audio button.
+  void OnPhoneticsAudioButtonPressed(const GURL& phonetics_audio);
 
   gfx::Rect anchor_view_bounds_;
   QuickAnswersUiController* const controller_;
@@ -89,6 +97,10 @@ class ASH_EXPORT QuickAnswersView : public views::View {
   views::LabelButton* retry_label_ = nullptr;
   views::ImageButton* dogfood_button_ = nullptr;
   views::ImageButton* settings_button_ = nullptr;
+  views::ImageButton* phonetics_audio_button_ = nullptr;
+
+  // Invisible web view to play phonetics audio for definition results.
+  AssistantWebView* phonetics_audio_web_view_ = nullptr;
 
   std::unique_ptr<QuickAnswersPreTargetHandler> quick_answers_view_handler_;
   std::unique_ptr<QuickAnswersFocusSearch> focus_search_;

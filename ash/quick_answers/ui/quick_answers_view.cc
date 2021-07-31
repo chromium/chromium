@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
+#include "ash/public/cpp/assistant/assistant_web_view_factory.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -45,6 +46,7 @@ using chromeos::quick_answers::QuickAnswer;
 using chromeos::quick_answers::QuickAnswerText;
 using chromeos::quick_answers::QuickAnswerUiElement;
 using chromeos::quick_answers::QuickAnswerUiElementType;
+using chromeos::quick_answers::ResultType;
 using views::Button;
 using views::Label;
 using views::View;
@@ -86,6 +88,12 @@ constexpr int kSettingsButtonMarginDip = 8;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr SkColor kSettingsButtonColor = gfx::kGoogleGrey500;
 constexpr SkColor kSettingsButtonInkDropColor = gfx::kGoogleGrey500;
+
+// Phonetics audio button.
+constexpr int kPhoneticsAudioButtonMarginDip = 4;
+constexpr int kPhoneticsAudioButtonSizeDip = 14;
+constexpr SkColor kPhoneticsAudioButtonColor = gfx::kGoogleBlue600;
+constexpr SkColor kPhoneticsAudioButtonInkDropColor = gfx::kGoogleGrey500;
 
 // ReportQueryView.
 constexpr char kGoogleSansFont[] = "Google Sans";
@@ -489,6 +497,41 @@ void QuickAnswersView::AddSettingsButton() {
   views::InstallCircleHighlightPathGenerator(settings_button_);
 }
 
+void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
+                                               View* container) {
+  auto* phonetics_audio_view =
+      container->AddChildView(std::make_unique<views::View>());
+
+  // Setup an invisible web view to play phonetics audio.
+  AssistantWebView::InitParams contents_params;
+  contents_params.suppress_navigation = true;
+  phonetics_audio_web_view_ = container->AddChildView(
+      AssistantWebViewFactory::Get()->Create(contents_params));
+  phonetics_audio_web_view_->SetVisible(false);
+
+  auto* layout = phonetics_audio_view->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetInteriorMargin(gfx::Insets(kPhoneticsAudioButtonMarginDip))
+      .SetCrossAxisAlignment(views::LayoutAlignment::kEnd);
+  phonetics_audio_button_ =
+      phonetics_audio_view->AddChildView(std::make_unique<views::ImageButton>(
+          base::BindRepeating(&QuickAnswersView::OnPhoneticsAudioButtonPressed,
+                              base::Unretained(this), phonetics_audio)));
+  phonetics_audio_button_->SetImage(
+      views::Button::ButtonState::STATE_NORMAL,
+      gfx::CreateVectorIcon(kSystemMenuVolumeHighIcon,
+                            kPhoneticsAudioButtonSizeDip,
+                            kPhoneticsAudioButtonColor));
+
+  views::InkDropHost* const ink_drop =
+      views::InkDrop::Get(phonetics_audio_button_);
+  ink_drop->SetBaseColor(kPhoneticsAudioButtonInkDropColor);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  phonetics_audio_button_->SetHasInkDropActionOnClick(true);
+  views::InstallCircleHighlightPathGenerator(phonetics_audio_button_);
+}
+
 void QuickAnswersView::AddAssistantIcon() {
   // Add Assistant icon.
   auto* assistant_icon =
@@ -550,7 +593,13 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   ResetContentView();
 
   // Add title.
-  AddHorizontalUiElements(quick_answer.title, content_view_);
+  View* title_view = AddHorizontalUiElements(quick_answer.title, content_view_);
+
+  // Add phonetics audio button for definition results.
+  if (quick_answer.result_type == ResultType::kDefinitionResult &&
+      !quick_answer.phonetics_audio.is_empty()) {
+    AddPhoneticsAudioButton(quick_answer.phonetics_audio, title_view);
+  }
 
   // Add first row answer.
   View* first_answer_view = nullptr;
@@ -607,6 +656,11 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   if (dogfood_button_ && dogfood_button_->GetVisible())
     focusable_views.push_back(dogfood_button_);
   return focusable_views;
+}
+
+void QuickAnswersView::OnPhoneticsAudioButtonPressed(
+    const GURL& phonetics_audio) {
+  phonetics_audio_web_view_->Navigate(phonetics_audio);
 }
 
 }  // namespace ash
