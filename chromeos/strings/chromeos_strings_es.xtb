@@ -226,7 +226,6 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Errores de solicitud TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="5332948983412042822">Selecciona otra ahora</translation>
 <translation id="5333530671332546086">Estado del portal desconocido</translation>
 <translation id="5372659122375744710">La red Wi-Fi no es segura</translation>
@@ -398,6 +397,7 @@
 <translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>
 <translation id="8576249514688522074">No inicializado</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
+<translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>

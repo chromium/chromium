@@ -227,7 +227,6 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318334351163689047">‏בקשות TCP נכשלו</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">שם</translation>
 <translation id="5332948983412042822">יש לבחור סיסמה חדשה עכשיו</translation>
 <translation id="5333530671332546086">מצב הפורטל לא ידוע</translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
@@ -400,6 +399,7 @@
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>
 <translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
+<translation id="8655295600908251630">ערוץ</translation>
 <translation id="8660881923941176839">פאונד</translation>
 <translation id="8675354002693747642">מפתח משותף מראש</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>

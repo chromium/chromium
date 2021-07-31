@@ -227,7 +227,6 @@
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5318334351163689047">Не виконано запити за протоколом TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Ім’я</translation>
 <translation id="5332948983412042822">Виберіть новий зараз</translation>
 <translation id="5333530671332546086">Невідомий стан порталу</translation>
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
@@ -400,6 +399,7 @@
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
 <translation id="8620617069779373398">Статус роумінгу</translation>
+<translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунт.</translation>
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>

@@ -227,7 +227,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318334351163689047">Fehlgeschlagene TCP-Anfragen</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Name</translation>
 <translation id="5332948983412042822">Bitte legen Sie jetzt ein neues fest</translation>
 <translation id="5333530671332546086">Unbekannter Portal-Status</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
@@ -270,6 +269,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6106186594183574873">Geben Sie zum Schluss Ihr altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
 <translation id="6122191549521593678">Online</translation>
+<translation id="6125438912510167220">Verbindungsgeschwindigkeit</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -399,6 +399,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8575298406870537639">Ihr Mobilfunkanbieter verlangt möglicherweise diese Option, damit Sie sich mit seinem Netzwerk verbinden können. Weitere Informationen erhalten Sie bei Ihrem Mobilfunkanbieter.</translation>
 <translation id="8576249514688522074">Noch nicht initialisiert</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
+<translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">Pfund</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>

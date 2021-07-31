@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">發生未預期的錯誤，請向開發人員報告這個問題。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
 <translation id="1742469581923031760">連線中…</translation>
+<translation id="177040763384871009">如要允許系統在用戶端瀏覽器開啟在遠端裝置上點擊的連結，您需要將系統的網絡瀏覽器變更為「<ph name="URL_FORWARDER_NAME" />」。</translation>
 <translation id="177096447311351977">客戶端的版本 IP：<ph name="CLIENT_GAIA_IDENTIFIER" /> ip=「<ph name="CLIENT_IP_ADDRESS_AND_PORT" />」
 host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL_TYPE" />」
 連線=「<ph name="CONNECTION_TYPE" />」。</translation>
@@ -56,6 +57,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="369442766917958684">離線。</translation>
 <translation id="3695446226812920698">瞭解詳情</translation>
 <translation id="3776024066357219166">您的 Chrome 遠端桌面工作階段已結束。</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3905196214175737742">主機擁有者網域無效。</translation>
 <translation id="3931191050278863510">主機已停止。</translation>
@@ -97,7 +99,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="5222676887888702881">登出</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5308380583665731573">連線</translation>
-<translation id="5327248766486351172">名稱</translation>
 <translation id="533625276787323658">沒有可供連線的電腦</translation>
 <translation id="5397086374758643919">Chrome 遠端桌面主機端解除安裝程式</translation>
 <translation id="5419418238395129586">上次上網日期：<ph name="DATE" /></translation>
@@ -142,6 +143,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="7434397035092923453">用戶端被拒絕存取：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="7444276978508498879">已連線至用戶端：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="7526139040829362392">變更帳戶</translation>
+<translation id="7535110896613603182">開啟預設應用程式設定</translation>
 <translation id="7628469622942688817">在此裝置上記住我的 PIN。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>

@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">大約尚餘 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="3540383942695635079">MAC 位址</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
+<translation id="3582041541988388905">未偵測到<ph name="NETWORK_NAME" />連線</translation>
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3838338534323494292">新密碼</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池經過完整充電循環的次數</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
@@ -227,7 +229,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318334351163689047">TCP 要求失敗</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">名稱</translation>
 <translation id="5332948983412042822">立即選擇新密碼</translation>
 <translation id="5333530671332546086">入口網站狀態不明</translation>
 <translation id="5372659122375744710">Wi-Fi 網絡不安全</translation>
@@ -376,6 +377,7 @@
 <translation id="8214184102975786227">掃瞄多個頁面，並儲存為單一 PDF 檔案</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網絡閘道</translation>
 <translation id="8246209727385807362">不明流動網絡供應商</translation>
+<translation id="8286154143153872371">如要查看桌布，請連線至網絡，然後重新整理頁面。</translation>
 <translation id="8291967909914612644">家庭網絡供應商的國家/地區</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -400,6 +402,7 @@
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
+<translation id="8655295600908251630">版本</translation>
 <translation id="8660881923941176839">磅</translation>
 <translation id="8675354002693747642">預先共用密鑰</translation>
 <translation id="871560550817059752">失敗 - 墨水已用完</translation>

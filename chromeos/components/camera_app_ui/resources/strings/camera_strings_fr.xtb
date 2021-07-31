@@ -3,6 +3,8 @@
 <translationbundle lang="fr">
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Images de la galerie</translation>
+<translation id="1300209025925956156">Scanner votre document</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche+Flèche vers la gauche pour y accéder.</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuteur de 3 secondes</translation>
@@ -31,7 +33,6 @@
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2599796128805996109">Caméra arrière</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
-<translation id="2912439424121107408">Le mode Expert n'est pas compatible avec cet appareil</translation>
 <translation id="2968794441791257519">Les photos et les vidéos prises avec l'appareil photo seront déplacées vers le dossier "Téléchargements". Vous pouvez y accéder via l'application Fichiers.
 
         Les applications disposant d'autorisations d'accès à l'espace de stockage pourront accéder à vos photos et vidéos.</translation>
@@ -64,8 +65,10 @@
 <translation id="5057360777601936059">Votre appareil photo est actuellement indisponible.
         Vérifiez qu'il est bien connecté.</translation>
 <translation id="5152121255775685072">Accéder à la galerie</translation>
+<translation id="520537883758714667">Numérisation de documents désormais disponible</translation>
 <translation id="5268823927180092501">Activer le mode document sur toutes les caméras</translation>
 <translation id="5422455049771430511">Nouveau dossier pour vos photos et vidéos</translation>
+<translation id="5444515100983837161">Placez le document dans le cadre. L'image scannée sera de meilleure qualité si les couleurs du document et de l'arrière-plan sont différentes.</translation>
 <translation id="5671277269877808209">Carré</translation>
 <translation id="5753488212459587150">Activer le mode Expert</translation>
 <translation id="5759254179196327752">Analyse de document</translation>

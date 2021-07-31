@@ -227,7 +227,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5317780077021120954">Vista</translation>
 <translation id="5318334351163689047">TCP-beiðnir mistókust</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Heiti</translation>
 <translation id="5332948983412042822">Veldu nýtt núna</translation>
 <translation id="5333530671332546086">Óþekkt staða gáttar</translation>
 <translation id="5372659122375744710">Wi-Fi net er ekki öruggt</translation>
@@ -400,6 +399,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8575298406870537639">Símafyrirtæki kunna að biðja þig um slíkt til að tengjast neti þeirra. Hafðu samband við símafyrirtækið til að fá frekari upplýsingar.</translation>
 <translation id="8576249514688522074">Ekki frumstillt</translation>
 <translation id="8620617069779373398">Reikistaða</translation>
+<translation id="8655295600908251630">Rás</translation>
 <translation id="8660881923941176839">pund</translation>
 <translation id="8675354002693747642">PSK-lykill</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>

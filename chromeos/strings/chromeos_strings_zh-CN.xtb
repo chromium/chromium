@@ -227,7 +227,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318334351163689047">TCP 请求失败</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">名称</translation>
 <translation id="5332948983412042822">请立即设置一个新密码</translation>
 <translation id="5333530671332546086">门户状态不明</translation>
 <translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
@@ -399,6 +398,7 @@
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫游状态</translation>
+<translation id="8655295600908251630">版本</translation>
 <translation id="8660881923941176839">磅</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>

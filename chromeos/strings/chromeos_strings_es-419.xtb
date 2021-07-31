@@ -227,7 +227,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Fallos de solicitudes de TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Nombre</translation>
 <translation id="5332948983412042822">Elige una nueva ahora</translation>
 <translation id="5333530671332546086">Estado desconocido del portal</translation>
 <translation id="5372659122375744710">la red Wi-Fi no es segura</translation>
@@ -400,6 +399,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8575298406870537639">Es posible que tu proveedor necesite que esta opción esté habilitada para que puedas conectarte a su red. Comunícate con el proveedor para obtener más detalles.</translation>
 <translation id="8576249514688522074">No se inicializó</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
+<translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>

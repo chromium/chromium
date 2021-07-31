@@ -3,6 +3,8 @@
 <translationbundle lang="de">
 <translation id="1175958423215084756">Link erkannt. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galeriebilder</translation>
+<translation id="1300209025925956156">Dokument scannen</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. „Suchtaste + Linkspfeil“ drücken, um darauf zuzugreifen.</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1467231725790366244">Verbindung zu <ph name="CAMERA" /> wurde getrennt.</translation>
 <translation id="1473110567575736769">3-Sekunden-Timer</translation>
@@ -31,7 +33,6 @@
 <translation id="2549985041256363841">Aufnahme starten</translation>
 <translation id="2599796128805996109">Kamera auf der Rückseite</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ist angeschlossen.</translation>
-<translation id="2912439424121107408">Einstellungen für Fortgeschrittene werden auf diesem Gerät nicht unterstützt</translation>
 <translation id="2968794441791257519">Mit der Kamera aufgenommene Fotos und Videos werden in den Ordner "Downloads" verschoben. Sie können sie in der App "Dateien" ansehen.
 
         Apps mit Speicherberechtigungen haben Zugriff auf Ihre Fotos und Videos.</translation>
@@ -64,8 +65,10 @@
 <translation id="5057360777601936059">Ihre Kamera ist zurzeit nicht verfügbar.
         Bitte überprüfen Sie, ob die Kamera richtig verbunden ist.</translation>
 <translation id="5152121255775685072">Zur Galerie</translation>
+<translation id="520537883758714667">Scannen von Dokumenten jetzt verfügbar</translation>
 <translation id="5268823927180092501">Dokumentmodus auf allen Kameras aktivieren</translation>
 <translation id="5422455049771430511">Ihre Fotos und Videos sind umgezogen</translation>
+<translation id="5444515100983837161">Alle Ränder des Dokuments müssen sich innerhalb des Rahmens befinden. Die besten Ergebnisse erzielen Sie, wenn das Dokument und der Hintergrund unterschiedliche Farben haben.</translation>
 <translation id="5671277269877808209">Quadrat</translation>
 <translation id="5753488212459587150">Einstellungen für Fortgeschrittene aktivieren</translation>
 <translation id="5759254179196327752">Dokument scannen</translation>

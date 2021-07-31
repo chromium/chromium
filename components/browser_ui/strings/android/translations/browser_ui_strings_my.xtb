@@ -157,7 +157,6 @@
 <translation id="5335288049665977812">ဆိုက်များကို JavaScript အားဖွင့်ခွင့်ပေးပါ (အကြံပြုထားသည်)</translation>
 <translation id="534295439873310000">NFC စက်များ</translation>
 <translation id="5354152178998424783">၎င်းက ဒေတာ <ph name="DATASIZE" /> နှင့် ဝဘ်ဆိုက်များက သိမ်းထားသည့် ကွတ်ကီးများကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
-<translation id="5391532827096253100">ဤဝဘ်ဆိုက်သို့ သင်၏ချိတ်ဆက်မှုသည် လုံခြုံမှုမရှိပါ။ ဝဘ်ဆိုက် အချက်အလက်</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ နောက်ထပ် ၁ ခု)}other{(+ နောက်ထပ် # ခု)}}</translation>
 <translation id="5403592356182871684">အမည်များ</translation>
 <translation id="5489227211564503167">ကုန်လွန်သွားချိန် <ph name="TOTAL_TIME" /> အနက် <ph name="ELAPSED_TIME" />။</translation>
@@ -190,10 +189,10 @@
 <translation id="6064125863973209585">ပြီးသွားသည့် ဒေါင်းလုဒ်များ</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6177111841848151710">လက်ရှိရှာဖွေမှု အင်ဂျင်အတွက် ပိတ်ဆို့ထားသည်</translation>
+<translation id="6177128806592000436">ဤဝဘ်ဆိုက်သို့ သင်၏ချိတ်ဆက်ထားမှုသည် လုံခြုံမှုမရှိပါ</translation>
 <translation id="6181444274883918285">ခြွင်းချက်စာရင်းသို့ ဆိုက်ကိုထည့်ရန်</translation>
 <translation id="6192792657125177640">ခြွင်းချက်များ</translation>
 <translation id="6196640612572343990">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို ပိတ်ဆို့မည်</translation>
-<translation id="6206551242102657620">ချိတ်ဆက်မှုသည် လုံခြုံပါသည်။ ဝဘ်ဆိုက် အချက်အလက်</translation>
 <translation id="6216432067784365534">ရွေးစရာ <ph name="NAME_OF_LIST_ITEM" /> ခု</translation>
 <translation id="6231752747840485235">‘<ph name="APP_NAME" />’ ဖယ်ရှားမလား။</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> နှင့် <ph name="PERMISSION_2" /> ပိတ်ထားသည်</translation>
@@ -224,7 +223,6 @@
 <translation id="6910211073230771657">ဖျက်ပြီး</translation>
 <translation id="6912998170423641340">ကလစ်ဘုတ်ရှိ စာနှင့် ပုံများအား မကြည့်နိုင်ရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
-<translation id="6963642900430330478">ဤစာမျက်နှာသည် အန္တရာယ်ရှိသည်။ ဝဘ်ဆိုက် အချက်အလက်</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6992289844737586249">ဆိုက်များကို သင့်မိုခရိုဖုန်းအား အသုံးပြုခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="7000754031042624318">Android ဆက်တင်များတွင် ပိတ်ထားသည်</translation>
@@ -268,10 +266,12 @@
 <translation id="8068648041423924542">လက်မှတ်ကို မရွေးနိုင်ပါ။</translation>
 <translation id="8087000398470557479">ဤအကြောင်းအရာသည် Google မှနေ၍ပံ့ပိုးပေးထားသည့် <ph name="DOMAIN_NAME" /> မှဖြစ်သည်။</translation>
 <translation id="8116925261070264013">ဖျောက်ထားသည်</translation>
+<translation id="813082847718468539">ဆိုက် အချက်အလက်များကို ကြည့်ရန်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ခွင့်ပြုထားသည်</translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="8206354486702514201">ဤဆက်တင်အား သင့်ကြီးကြပ်သူမှ တွန်းအားပေးထားခြင်း ဖြစ်သည်။</translation>
+<translation id="8211406090763984747">ချိတ်ဆက်မှုသည် လုံခြုံပါသည်</translation>
 <translation id="8249310407154411074">အပေါ်ဆုံးသို့ ရွှေ့ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8300705686683892304">အက်ပ်က စီမံခန့်ခွဲထားသည်</translation>

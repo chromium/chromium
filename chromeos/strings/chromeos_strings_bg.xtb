@@ -227,7 +227,6 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318334351163689047">Неуспешни заявки през TCP</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Име</translation>
 <translation id="5332948983412042822">Изберете нова сега</translation>
 <translation id="5333530671332546086">Състоянието на портала е неизвестно</translation>
 <translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
@@ -400,6 +399,7 @@
 <translation id="8575298406870537639">Тази опция може да е необходима за свързване с мрежата на оператора ви. За подробности се обърнете към него.</translation>
 <translation id="8576249514688522074">Неинициализирана</translation>
 <translation id="8620617069779373398">Състояние на роуминга</translation>
+<translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунта</translation>
 <translation id="8675354002693747642">Предварително споделен ключ</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>

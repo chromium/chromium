@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">ເກີດ​ຄວາມ​ຜິດ​ພາດ​ທີ່​ບໍ່​ຄາດ​ຄິດ​ຂຶ້ນ​. ກະ​ລຸ​ນາ​ລາຍ​ງານ​ບັນ​ຫາ​ນີ້ໃຫ້ຜູ້​ພັດ​ທະ​ນາ​.</translation>
 <translation id="1697532407822776718">ທ່ານຕັ້ງຮຽບຮ້ອຍໝົດແລ້ວ!</translation>
 <translation id="1742469581923031760">ການ​ເຊື່ອມ​ຕໍ່...</translation>
+<translation id="177040763384871009">ເພື່ອອະນຸຍາດໃຫ້ລິ້ງທີ່ຄລິກຢູ່ອຸປະກອນທາງໄກຖືກເປີດຢູ່ໂປຣແກຣມທ່ອງເວັບລູກຂ່າຍ, ທ່ານຈະຕ້ອງປ່ຽນໂປຣແກຣມທ່ອງເວັບຂອງລະບົບໃຫ້ເປັນ "<ph name="URL_FORWARDER_NAME" />" ກ່ອນ.</translation>
 <translation id="177096447311351977">IP ຊ່ອງສໍາລັບລູກຂ່າຍ: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ຊ່ອງ='<ph name="CHANNEL_TYPE" />' ການເຊື່ອມຕໍ່='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ລຶບ</translation>
 <translation id="2009755455353575666">ການ​ເຊື່ອມ​ຕໍ່​ບໍ່ສໍາເລັດ</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">ອອບລາຍ</translation>
 <translation id="3695446226812920698">ສຶກສາວິທີການ</translation>
 <translation id="3776024066357219166">ໝົດໄລຍະເວລາ Chrome Remote Desktop ຂອງທ່ານແລ້ວ.</translation>
+<translation id="3858860766373142691">ຊື່</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
 <translation id="3905196214175737742">ໂດ​ເມນ​ເຈົ້າ​ຂອງ​ແມ່​ຂ່າຍ​ໃຊ້​ບໍ່​ໄດ້.</translation>
 <translation id="3931191050278863510">ແມ່​ຂ່າຍ​ຢຸ​ດ​ແລ້ວ.</translation>
@@ -97,7 +99,6 @@
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
-<translation id="5327248766486351172">ຊື່</translation>
 <translation id="533625276787323658">ບໍ່​ມີ​ຫຍັງ​ໃຫ້​ເຊື່ອ​ມຕໍ່​ກັບ</translation>
 <translation id="5397086374758643919">ຕົວຖອນຕິດຕັ້ງແມ່ຂ່າຍ Chrome Remote Desktop</translation>
 <translation id="5419418238395129586">ອອນລາຍຫຼ້າສຸດ: <ph name="DATE" /></translation>
@@ -143,6 +144,7 @@ Desktop</translation>
 <translation id="7434397035092923453">ປະຕິເສດການເຂົ້າຫາສໍາລັບລູກຂ່າຍ​: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7444276978508498879">ເຊື່ອມ​ຕໍ່​ລູກຂ່າຍແລ້ວ: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7526139040829362392">ປ່ຽນບັນຊີ</translation>
+<translation id="7535110896613603182">ເປີດການຕັ້ງຄ່າແອັບເລີ່ມຕົ້ນ</translation>
 <translation id="7628469622942688817">ຈື່ PIN ຂອງຂ້ອຍໃນອຸປະກອນນີ້.</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>

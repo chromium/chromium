@@ -157,7 +157,6 @@
 <translation id="5335288049665977812">साइटहरूलाई JavaScript सञ्चालन गर्न अनुमति दिने (सिफारिस गरिएको)</translation>
 <translation id="534295439873310000">NFC यन्त्रहरू</translation>
 <translation id="5354152178998424783">यस कार्यले साइटहरूले भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटाउने छ।</translation>
-<translation id="5391532827096253100">यस साइटमा तपाईंको जडान सुरक्षित छैन। साइटसम्बन्धी जानकारी</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
 <translation id="5403592356182871684">नामहरू</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> मध्ये <ph name="ELAPSED_TIME" /> समय बित्यो।</translation>
@@ -190,10 +189,10 @@
 <translation id="6064125863973209585">पूरा भएका डाउनलोडहरू</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6177111841848151710">हालको खोज इन्जिनका लागि रोक लगाइएको</translation>
+<translation id="6177128806592000436">यस साइटमा तपाईँको जडान सुरक्षित छैन</translation>
 <translation id="6181444274883918285">साइटको अपवाद थप्नुुहोस्</translation>
 <translation id="6192792657125177640">अपवाद</translation>
 <translation id="6196640612572343990">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
-<translation id="6206551242102657620">जडान सुरक्षित छ। साइटसम्बन्धी जानकारी</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> विकल्पहरू</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइन्स्टल गर्ने हो?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> र <ph name="PERMISSION_2" /> ब्लक गरियो</translation>
@@ -224,7 +223,6 @@
 <translation id="6910211073230771657">मेटाइएको</translation>
 <translation id="6912998170423641340">साइटहरूलाई क्लिपबोर्डका पाठ तथा फोटो पढ्नबाट रोक लगाउनुहोस्</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
-<translation id="6963642900430330478">यो पृष्ठ खतरनाक छ। साइटसम्बन्धी जानकारी</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6992289844737586249">साइटहरूलाई तपाईँको माइक्रोफोन प्रयोग गर्न अनुमति दिनुभन्दा पहिले तपाईँलाई सोध्ने (सिफारिस गरिएको)</translation>
 <translation id="7000754031042624318">Android का सेटिङहरूमा अनुमति निष्क्रिय पारिएको छ</translation>
@@ -268,10 +266,12 @@
 <translation id="8068648041423924542">प्रमाणपत्र चयन गर्न असमर्थ।</translation>
 <translation id="8087000398470557479">यो Google द्वारा डेलिभर गरिएको <ph name="DOMAIN_NAME" /> को सामग्री हो।</translation>
 <translation id="8116925261070264013">म्युट गरियो</translation>
+<translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> सम्बन्धी अनुमति दिइएको छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8206354486702514201">यो सेटिङ तपाईंको प्रशासकद्वारा जोड दिएको छ।</translation>
+<translation id="8211406090763984747">जडान सुरक्षित छ</translation>
 <translation id="8249310407154411074">शीर्षभागमा सार्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8300705686683892304">अनुप्रयोगले व्यवस्थापन गरेको</translation>

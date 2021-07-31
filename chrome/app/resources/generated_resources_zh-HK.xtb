@@ -314,7 +314,7 @@
 <translation id="1336902454946927954">無法辨識您的指紋，因此安全密鑰已被鎖定。如要解鎖，請輸入您的 PIN。</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想開啟此應用程式。</translation>
 <translation id="1338950911836659113">刪除中…</translation>
-<translation id="1339009753652684748">只要說出「Ok Google」就能存取 Google 助理。如要節省電力，請選擇「啟用 (建議設定)」。這樣一來，你的 Google 助理就只會在裝置插上電源或充電時回應你的指令。</translation>
+<translation id="1339009753652684748">只要說出「Ok Google」，就能存取「Google 助理」。如要節省電力，請選擇「啟用 (建議設定)」。這樣，「Google 助理」只會在裝置連接電源或充電時才會回應。</translation>
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">透過「檔案」應用程式備份裝置中的媒體。</translation>
 <translation id="1341988552785875222">目前使用的桌布由「<ph name="APP_NAME" />」設定。在選擇其他桌布時，您可能需要先解除安裝「<ph name="APP_NAME" />」。</translation>
@@ -450,7 +450,7 @@
 <translation id="1477446329585670721"><ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
 <translation id="1478340334823509079">詳情：<ph name="FILE_NAME" /></translation>
 <translation id="1478607704480248626">未啟用安裝功能</translation>
-<translation id="1480571698637441426">如要在提問後取得更貼近個人需求的回覆，請允許 Google 助理存取畫面內容的螢幕截圖，這也包括當下所播放歌曲或影片的相關資訊。</translation>
+<translation id="1480571698637441426">如要在提問後取得更貼近需要的回覆，請允許「Google 助理」存取包含畫面上資料的螢幕截圖，這亦包括正在播放歌曲或影片的相關資料。</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
 <translation id="1482626744466814421">將此分頁加入書籤…</translation>
 <translation id="1483272013430662157">網絡應用程式可要求開啟特定類型的檔案</translation>
@@ -1268,13 +1268,13 @@
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
 <translation id="23055578400314116">請選取使用者名稱</translation>
 <translation id="2307462900900812319">設定網絡</translation>
-<translation id="2307553512430195144">如果你同意，Google 助理會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能辨識<ph name="SUPERVISED_USER_NAME" />是否正在說話。
+<translation id="2307553512430195144">如果您同意，「Google 助理」會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能識別<ph name="SUPERVISED_USER_NAME" />是否正在說話。
     <ph name="BR" />
-    Voice Match 可協助 Google 助理在 <ph name="DEVICE_TYPE" /> 上辨識<ph name="SUPERVISED_USER_NAME" />的聲音，區分孩子和其他人。
+    「Google 助理」可透過 Voice Match 在 <ph name="DEVICE_TYPE" /> 上辨認<ph name="SUPERVISED_USER_NAME" />的聲音，以分辨使用者和其他人。
     <ph name="BR" />
-    Google 助理會錄製孩子的聲音片段以建立專屬的語音模型，而且這個模型只會儲存在他們的裝置上。為提升辨識準確度，系統可能會暫時將孩子的語音模型傳送到 Google 進行處理。
+    「Google 助理」會利用您子女的聲音製作獨一無二的語音模型，並只會在子女的裝置上儲存。子女的語音模型可能會暫時傳送至 Google，以更準確識別子女的聲音。
     <ph name="BR" />
-    如果你稍後決定不讓孩子使用 Voice Match，只要從他們的 Google 助理設定中移除這項功能即可。如要查看或刪除孩子設定 Voice Match 時錄製的語音片段，請登入孩子的帳戶並前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
+    如果之後您不想子女使用 Voice Match，只需在「Google 助理」設定中移除即可。如要查看或刪除子女設定 Voice Match 時的錄音，請從子女的帳戶前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
@@ -1406,7 +1406,7 @@
 <translation id="2450849356604136918">沒有運作中的檢視</translation>
 <translation id="2451298179137331965">2 倍</translation>
 <translation id="245322989586167203">網站通常會連接序列連接埠，以提供設定網路等資料傳輸功能</translation>
-<translation id="2453706416476934374">如要讓<ph name="SUPERVISED_USER_NAME" />在提問後取得更貼近個人需求的回覆，請允許 Google 助理存取<ph name="SUPERVISED_USER_NAME" />畫面內容的螢幕截圖，這也包括當下所播放歌曲或影片的相關資訊。</translation>
+<translation id="2453706416476934374">如要讓<ph name="SUPERVISED_USER_NAME" />在提問後取得更貼近需要的回覆，請允許「Google 助理」存取包含<ph name="SUPERVISED_USER_NAME" />畫面上資料的螢幕截圖，這亦包括正在播放歌曲或影片的相關資料。</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454247629720664989">關鍵字</translation>
 <translation id="2454264884354864965">攝錄機已關閉</translation>
@@ -2118,7 +2118,7 @@
 <translation id="32101887417650595">無法連線至打印機</translation>
 <translation id="321084946921799184">黃色和白色</translation>
 <translation id="321356136776075234">裝置 OU (例如 OU=Chromebook、DC=example、DC=com)</translation>
-<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。</translation>
+<translation id="3214531106883826119"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與<ph name="SUPERVISED_USER_NAME" />的聲音相似，或有該人的錄音，便有可能存取該人的個人化結果。</translation>
 <translation id="3216825226035747725">「G Suite 教育版」管理員可決定使用者在登入「G Suite 教育版」帳戶後可使用的 Google 服務。這可能包括您的子女之前使用此受監管帳戶時無法存取的某些功能或服務。學校管理員需要提供或取得同意，才能讓未成年使用者使用服務。</translation>
 <translation id="3217843140356091325">要建立捷徑嗎？</translation>
 <translation id="321799795901478485">Zip Archiver</translation>
@@ -2297,7 +2297,7 @@
 <translation id="3417836307470882032">24 小時制</translation>
 <translation id="3420501302812554910">必須重設內部安全密鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
-<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果或 Google 助理。</translation>
+<translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。</translation>
 <translation id="3422291238483866753">在網站要求建立您身處環境的 3D 地圖或追蹤攝錄機位置時詢問您 (建議)</translation>
 <translation id="3423463006624419153">在您的「<ph name="PHONE_NAME_1" />」和「<ph name="PHONE_NAME_2" />」上：</translation>
 <translation id="3423858849633684918">請重新啟動 <ph name="PRODUCT_NAME" /></translation>
@@ -2673,6 +2673,7 @@
 <translation id="3799128412641261490">「按鈕控制」設定</translation>
 <translation id="3799903419983101749">繼續進行還原程序。您可在「設定」中將應用程式設定為自動還原。</translation>
 <translation id="3800806661949714323">顯示全部 (推薦)</translation>
+<translation id="380329542618494757">名稱</translation>
 <translation id="3803345858388753269">影片品質</translation>
 <translation id="380408572480438692">啟用效能數據收集功能可協助 Google 持續改善系統。除非您提交意見反映報告 (Alt-Shift-I) 並在其中包含效能數據，否則 Google 不會收到任何相關數據。您可以隨時返回這個螢幕停用收集功能。</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (擴充程式 ID：「<ph name="EXTENSION_ID" />」) 無法在登入畫面使用。</translation>
@@ -2734,6 +2735,7 @@
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3856800405688283469">選取時區</translation>
 <translation id="3857807444929313943">提起手指，然後再次輕觸</translation>
+<translation id="3858860766373142691">名稱</translation>
 <translation id="3861638017150647085">使用者名稱「<ph name="USERNAME" />」無法使用</translation>
 <translation id="3861977424605124250">啟動時顯示</translation>
 <translation id="386239283124269513">還原群組</translation>
@@ -4147,6 +4149,7 @@
 <translation id="5442550868130618860">開啟自動更新功能</translation>
 <translation id="5445400788035474247">10 倍</translation>
 <translation id="5446983216438178612">顯示機構的憑證</translation>
+<translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> 個項目</translation>
 <translation id="5448293924669608770">糟糕，登入帳戶時發生錯誤</translation>
 <translation id="5449551289610225147">密碼無效</translation>
 <translation id="5449588825071916739">將所有分頁加入書籤</translation>
@@ -4473,7 +4476,7 @@
 <translation id="5805697420284793859">視窗管理員</translation>
 <translation id="5806773519584576205">0° (預設)</translation>
 <translation id="5810809306422959727">此帳戶不符合家長監控設定的資格</translation>
-<translation id="581120508026692647">如要查看網站通知，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" /></translation>
+<translation id="581120508026692647">如要取得網站通知，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" /></translation>
 <translation id="5812674658566766066">全部展開</translation>
 <translation id="5815645614496570556">X.400 地址</translation>
 <translation id="5816434091619127343">要求的打印機變更會讓此打印機無法使用。</translation>
@@ -4652,6 +4655,7 @@
 <translation id="6007240208646052708">無法使用您的語言執行語音搜尋。</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011449291337289699">清除網站資料</translation>
+<translation id="6011908034087870826">傳送緊連結去 <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">取得音訊和影片的字幕</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
@@ -4700,7 +4704,7 @@
 <translation id="6059652578941944813">憑證階層</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6061882183774845124">將連結傳送至裝置</translation>
-<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與<ph name="SUPERVISED_USER_NAME" />相似或擁有其聲音錄音檔，或許就能存取孩子的個人化搜尋結果。為了節省電池電量，你可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理設定中進行選取，讓系統只有在裝置接上充電器時才會啟動「Ok Google」。</translation>
+<translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與<ph name="SUPERVISED_USER_NAME" />的聲音相似，或有該人的錄音，便有可能存取該人的個人化結果。為節省電量，您可在<ph name="SUPERVISED_USER_NAME" />的「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
 <translation id="6064217302520318294">螢幕鎖定</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
 <translation id="6066794465984119824">未設定圖片雜湊</translation>
@@ -4975,7 +4979,7 @@
 <translation id="6345878117466430440">標示為已閱讀</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
-<translation id="6355789186038748882">這是實驗性質 (Alpha 版) 的瀏覽器！部分功能可能遺失或不完整。如有問題，請依序按一下 [說明] &gt; [回報問題…] 進行回報。</translation>
+<translation id="6355789186038748882">這是實驗性質 (Alpha 版) 的瀏覽器！部分功能可能遺失或不完整。請按一下 [說明] &gt; [報告問題…] 以報告問題。</translation>
 <translation id="635609604405270300">保持裝置開啟</translation>
 <translation id="63566973648609420">只有知道密碼短語的使用者才能讀取您的加密資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
 <translation id="6358884629796491903">龍</translation>
@@ -5041,7 +5045,7 @@
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>
-<translation id="6436610005579237680">如要取得更貼近個人需求的回覆，請讓 Google 助理在你提問時存取畫面內容的螢幕截圖，Google 助理可能也會使用當下所播放歌曲或影片的相關資訊。</translation>
+<translation id="6436610005579237680">如要取得更貼近您需要的回覆，請讓「Google 助理」在您問問題時存取包含畫面上資料的螢幕截圖，包括正在播放歌曲或影片的相關資料。</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
 <translation id="6442187272350399447">太棒了</translation>
@@ -5179,7 +5183,7 @@
 <translation id="6582274660680936615">您目前是以訪客身分瀏覽</translation>
 <translation id="6584878029876017575">Microsoft 永久簽署</translation>
 <translation id="6586099239452884121">訪客瀏覽</translation>
-<translation id="6586213706115310390">只要說出「Ok Google」就能存取 Google 助理。</translation>
+<translation id="6586213706115310390">只要說出「Ok Google」，就能存取「Google 助理」。</translation>
 <translation id="6586451623538375658">調換滑鼠主按鈕</translation>
 <translation id="6586604979641883411">升級 Linux 需要至少 <ph name="REQUIRED_SPACE" /> 的可用磁碟空間。請在裝置上釋出儲存空間，然後再試一次。</translation>
 <translation id="6588043302623806746">使用安全 DNS</translation>
@@ -5199,7 +5203,7 @@
 <translation id="6602937173026466876">存取打印機</translation>
 <translation id="6602956230557165253">使用向左鍵和向右鍵瀏覽。</translation>
 <translation id="6605847144724004692">尚未有使用者評分。</translation>
-<translation id="6606671997164410857">你似乎已在其他裝置上設定 Google 助理。只要在這部裝置上開啟 [畫面內容] 設定，就能運用 Google 助理的更多功能。</translation>
+<translation id="6606671997164410857">您似乎已在其他裝置上設定「Google 助理」。只要在此裝置上開啟 [畫面內容] 設定，就能充分運用「Google 助理」的各項功能。</translation>
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 目前已由 <ph name="DOMAIN" /> 管理。如要以其他 Google 帳戶使用家長監護功能，請在設定後登出，然後在登入畫面上選取「新增使用者」。</translation>
 <translation id="6609478180749378879">離開無痕模式後，登入資料會儲存在此裝置中。您可在日後透過裝置再次登入此網站。</translation>
@@ -5377,11 +5381,11 @@
 <translation id="6808039367995747522">如要繼續，請插入並輕觸安全密鑰</translation>
 <translation id="6808193438228982088">狐狸</translation>
 <translation id="6809470175540814047">在無痕式視窗中開啟</translation>
-<translation id="6809656734323672573">如果你同意，Google 助理會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能辨識是你否正在說話。
+<translation id="6809656734323672573">如果您同意，「Google 助理」會處於待機模式，以便偵測「Ok Google」指令，並透過 Voice Match 功能識別您是否正在說話。
     <ph name="BR" />
-    Voice Match 可讓 Google 助理辨識你的聲音，進而區分你與其他人。Google 助理會錄製你的聲音片段以建立專屬的語音模型，而且這個模型只會儲存在你的裝置上。為提升辨識準確度，系統可能會暫時將你的語音模型傳送到 Google 進行處理。
+    Voice Match 讓「Google 助理」可以識別您的身分。「Google 助理」會利用您的聲音製作獨一無二的語音模型，並只會在您的裝置上儲存。您的語音模型可能會暫時傳送給 Google 以更準確識別您的身分。
     <ph name="BR" />
-    如果你日後不想再使用 Voice Match，只要在 Google 助理的設定中移除這項功能即可。如要查看或刪除設定 Voice Match 時錄製的語音片段，請前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
+    如果您之後不想使用 Voice Match，只需在「Google 助理」設定中移除即可。如要查看或刪除設定 Voice Match 時的音訊片段，請前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">使用儲存的憑證自動登入網站。停用功能時，每次登入網站之前都會要求您確認。</translation>
@@ -5668,6 +5672,7 @@
 <translation id="7109543803214225826">已移除捷徑</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="7111822978084196600">命名此視窗</translation>
+<translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> 個項目</translation>
 <translation id="7113502843173351041">存取您的電郵地址</translation>
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請前往 [設定] &gt; [已連接的裝置] &gt; [您的手機] &gt; [Smart Lock]。</translation>
@@ -6322,7 +6327,7 @@
 <translation id="7804072833593604762">閂咗分頁</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7807067443225230855">搜尋和助理功能</translation>
-<translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />似乎已在其他裝置上設定 Google 助理。只要在這部裝置上開啟 [畫面內容] 設定，<ph name="SUPERVISED_USER_NAME" />就能運用 Google 助理的更多功能。</translation>
+<translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" />似乎已在其他裝置上設定「Google 助理」。只要開啟 [畫面內容] 設定，<ph name="SUPERVISED_USER_NAME" />就能運用「Google 助理」的更多功能。</translation>
 <translation id="7807711621188256451">永遠允許 <ph name="HOST" /> 存取您的相機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="781167124805380294">投放 <ph name="FILE_NAME" /></translation>
@@ -6378,7 +6383,7 @@
 <translation id="7847212883280406910">按下 Ctrl + Alt + S 鍵切換至 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">在新分頁中開啟圖片(&amp;I)</translation>
 <translation id="784934925303690534">時間範圍</translation>
-<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果或 Google 助理。為了節省電池電量，你可以在 Google 助理設定中進行選取，讓系統只有在裝置接上充電器時才會啟動「Ok Google」。</translation>
+<translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。為節省電量，您可在「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
 <translation id="7851457902707056880">只有使用擁有者帳戶才能登入。請重新啟動並使用擁有者帳戶登入。電腦會在 30 秒後自動重新啟動。</translation>
 <translation id="7851716364080026749">永遠封鎖存取相機和麥克風</translation>
 <translation id="7851720427268294554">IPP 剖析器</translation>
@@ -7618,7 +7623,7 @@
       <ph name="LIST_ITEM" />執行 Chrome 連線診斷工具
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">畫中畫</translation>
-<translation id="9166813363879986425">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 Chrome OS 裝置。你可以在設定中選擇要同步處理的資料。</translation>
+<translation id="9166813363879986425">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 Chrome 作業系統裝置。您可在「設定」中選擇要同步處理的資料。</translation>
 <translation id="9167063903968449027">顯示閱讀清單</translation>
 <translation id="9167450455589251456">不支援此設定檔</translation>
 <translation id="9168436347345867845">稍後再說</translation>

@@ -227,7 +227,6 @@
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318334351163689047">წარუმატებელი TCP მოთხოვნები</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">სახელი</translation>
 <translation id="5332948983412042822">ახლავე აირჩიეთ ახალი</translation>
 <translation id="5333530671332546086">პორტალის მდგომარეობა უცნობია</translation>
 <translation id="5372659122375744710">Wi-Fi ქსელი არ არის დაცული</translation>
@@ -400,6 +399,7 @@
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>
 <translation id="8576249514688522074">არაინიცირებული</translation>
 <translation id="8620617069779373398">როუმინგის სტატუსი</translation>
+<translation id="8655295600908251630">არხი</translation>
 <translation id="8660881923941176839">ფუნტი</translation>
 <translation id="8675354002693747642">წინასწარ გაზიარებული გასაღები</translation>
 <translation id="871560550817059752">ვერ მოხერხდა — მელანი გაუთავდა</translation>

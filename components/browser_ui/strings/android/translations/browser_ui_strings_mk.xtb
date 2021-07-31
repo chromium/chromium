@@ -157,7 +157,6 @@
 <translation id="5335288049665977812">Дозволи сајтовите да извршуваат JavaScript (се препорачува)</translation>
 <translation id="534295439873310000">NFC-уреди</translation>
 <translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
-<translation id="5391532827096253100">Врската со сајтов не е безбедна. Информации за сајтот</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
 <translation id="5403592356182871684">Имиња</translation>
 <translation id="5489227211564503167">Изминато време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
@@ -190,10 +189,10 @@
 <translation id="6064125863973209585">Преземањата завршија</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6177111841848151710">Блокирано за тековниот пребарувач</translation>
+<translation id="6177128806592000436">Врската со овој сајт не е безбедна</translation>
 <translation id="6181444274883918285">Додај исклучок за сајт</translation>
 <translation id="6192792657125177640">Исклучоци</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
-<translation id="6206551242102657620">Врската е безбедна. Информации за сајтот</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Да се деинсталира „<ph name="APP_NAME" />“?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се блокирани</translation>
@@ -224,7 +223,6 @@
 <translation id="6910211073230771657">Избришано</translation>
 <translation id="6912998170423641340">Блокирај го читањето текст и слики од привремената меморија за сајтовите</translation>
 <translation id="6945221475159498467">Избери</translation>
-<translation id="6963642900430330478">Страницава е опасна. Информации за сајтот</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6992289844737586249">Прво прашај пред да дозволиш сајтовите да го користат микрофонот (се препорачува)</translation>
 <translation id="7000754031042624318">Исклучена во поставките за Android</translation>
@@ -268,10 +266,12 @@
 <translation id="8068648041423924542">Сертификатот не може да се избере.</translation>
 <translation id="8087000398470557479">Оваа содржина е од <ph name="DOMAIN_NAME" />, овозможена од Google.</translation>
 <translation id="8116925261070264013">Со исклучен звук</translation>
+<translation id="813082847718468539">Прикажи информации за локација</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> е одобрена</translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8206354486702514201">Поставката ја наметнува администраторот.</translation>
+<translation id="8211406090763984747">Врската е безбедна</translation>
 <translation id="8249310407154411074">Премести најгоре</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8300705686683892304">Управувани од апликација</translation>

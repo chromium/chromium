@@ -3,6 +3,8 @@
 <translationbundle lang="fr-CA">
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Galerie d'images</translation>
+<translation id="1300209025925956156">Numériser votre document</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche+flèche vers la gauche pour y accéder.</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuterie de trois secondes</translation>
@@ -31,7 +33,6 @@
 <translation id="2549985041256363841">Commencer l'enregistrement</translation>
 <translation id="2599796128805996109">Appareil photo arrière</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
-<translation id="2912439424121107408">Le mode Expert n'est pas pris en charge sur cet appareil</translation>
 <translation id="2968794441791257519">Les photos que vous prenez et les vidéos que vous enregistrez avec l'appareil photo seront déplacées dans le dossier des téléchargements. Vous pourrez y accéder dans Fichiers.
 
         Les applications disposant d'autorisations d'accès à l'espace de stockage pourront accéder à vos photos et à vos vidéos.</translation>
@@ -64,8 +65,10 @@
 <translation id="5057360777601936059">Votre appareil photo n'est pas accessible pour le moment.
         Veuillez vérifier si l'appareil photo est connecté correctement.</translation>
 <translation id="5152121255775685072">Accéder à la galerie</translation>
+<translation id="520537883758714667">Numérisation de documents désormais disponible</translation>
 <translation id="5268823927180092501">Activer le mode document sur tous les appareils photo</translation>
 <translation id="5422455049771430511">Nouveau répertoire pour les photos et les vidéos</translation>
+<translation id="5444515100983837161">Placez l'intégralité du document dans le cadre. La numérisation sera de meilleure qualité si les couleurs du document et de l'arrière-plan sont différentes.</translation>
 <translation id="5671277269877808209">Carré</translation>
 <translation id="5753488212459587150">Activer le mode Expert</translation>
 <translation id="5759254179196327752">Numérisation de document</translation>

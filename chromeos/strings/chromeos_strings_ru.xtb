@@ -227,7 +227,6 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318334351163689047">Невыполненные запросы TCP.</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
-<translation id="5327248766486351172">Имя</translation>
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
 <translation id="5333530671332546086">Неизвестное состояние сетевого портала.</translation>
 <translation id="5372659122375744710">Сеть Wi-Fi недостаточно безопасна.</translation>
@@ -400,6 +399,7 @@
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
 <translation id="8576249514688522074">Без инициализации</translation>
 <translation id="8620617069779373398">Статус роуминга</translation>
+<translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунта</translation>
 <translation id="8675354002693747642">Общий ключ</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>

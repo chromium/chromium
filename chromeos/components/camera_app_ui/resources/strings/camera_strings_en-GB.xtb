@@ -3,6 +3,8 @@
 <translationbundle lang="en-GB">
 <translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
 <translation id="1276998909102132017">Gallery images</translation>
+<translation id="1300209025925956156">Scan your document</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + left arrow to access.</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
 <translation id="1473110567575736769">Three seconds timer</translation>
@@ -31,7 +33,6 @@
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="2599796128805996109">Back camera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
-<translation id="2912439424121107408">Expert mode is not supported on this device</translation>
 <translation id="2968794441791257519">Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
 
         Apps with storage permissions will have access to your photos and videos.</translation>
@@ -64,8 +65,10 @@
 <translation id="5057360777601936059">Your camera is currently unavailable.
         Please check if the camera is properly connected.</translation>
 <translation id="5152121255775685072">Go to gallery</translation>
+<translation id="520537883758714667">Document scanning now available</translation>
 <translation id="5268823927180092501">Enable document mode on all cameras</translation>
 <translation id="5422455049771430511">Your photos and videos have a new home</translation>
+<translation id="5444515100983837161">Place all edges of the document within the frame. Scanning works best if the document and background are different colours.</translation>
 <translation id="5671277269877808209">Square</translation>
 <translation id="5753488212459587150">Enable expert mode</translation>
 <translation id="5759254179196327752">Scan document</translation>

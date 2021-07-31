@@ -425,6 +425,7 @@
 <translation id="3813387282697781382">淺珊瑚紅色</translation>
 <translation id="3816633764618089385">下一個媒體</translation>
 <translation id="3840823741487267909">縮寫</translation>
+<translation id="3841319830220785495">預設自然語音</translation>
 <translation id="385383972552776628">開啟選項頁面</translation>
 <translation id="3856075812838139784">唯讀</translation>
 <translation id="3857141338659865495">中綠松石色</translation>
@@ -688,7 +689,7 @@
 <translation id="5748623122140342504">上一個第 5 級標題</translation>
 <translation id="5760594853119905566">附錄</translation>
 <translation id="5761219715606611783">做得好！您已順利學完 ChromeVox 的基礎觸控操作。您可從頭再學一次，或使用下方的按鈕結束此教學課程。</translation>
-<translation id="5776001898637896684">Google 加強型網路文字轉語音擴充功能</translation>
+<translation id="5776001898637896684">Google 強化網絡文字轉語音擴充程式</translation>
 <translation id="5805940204952508776">以兩隻手指輕按</translation>
 <translation id="5819072574982403430">樹狀目錄項目</translation>
 <translation id="5822819874379903994">深綠松石色</translation>
@@ -981,6 +982,7 @@
 <translation id="7968340748835037139">深綠色</translation>
 <translation id="7972507042926081808">朱古力色</translation>
 <translation id="7974390230414479278">選單項目</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 語音 <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">字詞</translation>
 <translation id="8004512796067398576">增加</translation>
 <translation id="8007540374018858731">標題 3</translation>
