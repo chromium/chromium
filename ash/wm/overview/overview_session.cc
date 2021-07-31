@@ -144,7 +144,11 @@ OverviewSession::OverviewSession(OverviewDelegate* delegate)
       active_window_before_overview_(window_util::GetActiveWindow()),
       overview_start_time_(base::Time::Now()),
       highlight_controller_(
-          std::make_unique<OverviewHighlightController>(this)) {
+          std::make_unique<OverviewHighlightController>(this)),
+      chromevox_enabled_(Shell::Get()
+                             ->accessibility_controller()
+                             ->spoken_feedback()
+                             .enabled()) {
   DCHECK(delegate_);
   Shell::Get()->AddPreTargetHandler(this);
 }
@@ -1111,6 +1115,29 @@ void OverviewSession::OnSplitViewStateChanged(
 
 void OverviewSession::OnSplitViewDividerPositionChanged() {
   RefreshNoWindowsWidgetBounds(/*animate=*/false);
+}
+
+void OverviewSession::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
+  // Don't make any change if |root_window| is not the primary root window.
+  // Because ChromveVox is only shown on the primary window.
+  if (root_window != Shell::GetPrimaryRootWindow())
+    return;
+
+  const bool new_chromevox_enabled =
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
+  // Don't make any change if ChromeVox status remains the same.
+  if (new_chromevox_enabled == chromevox_enabled_)
+    return;
+
+  // Make ChromeVox status up to date.
+  chromevox_enabled_ = new_chromevox_enabled;
+
+  for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
+    // Do not handle work area insets change in |overview_grid| if its root
+    // window doesn't match |root_window|.
+    if (root_window == overview_grid->root_window())
+      overview_grid->OnUserWorkAreaInsetsChanged(root_window);
+  }
 }
 
 void OverviewSession::Move(bool reverse) {

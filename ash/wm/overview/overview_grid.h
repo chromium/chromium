@@ -213,6 +213,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // with this grid.
   void OnDisplayMetricsChanged();
 
+  // Called by |OverviewSession::OnUserWorkAreaInsetsChanged|.
+  void OnUserWorkAreaInsetsChanged(aura::Window* root_window);
+
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;

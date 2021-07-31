@@ -1058,6 +1058,47 @@ TEST_F(OverviewSessionTest, FullscreenWindowTabletMode) {
                                   {0, 0, 3, 0, 0}, {0, 0, 3, 0, 0});
 }
 
+// Tests that when disabling ChromeVox, desks widget bounds on overview mode
+// should be updated. Desks widget will be moved to the top of the screen.
+TEST_F(OverviewSessionTest, DesksWidgetBoundsChangeWhenDisableChromeVox) {
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+
+  // Enable ChromeVox.
+  const int kAccessibilityPanelHeight = 45;
+  // ChromeVox layout manager relies on the widget to validate ChromaVox panel's
+  // exist. Check AccessibilityPanelLayoutManager::SetPanelBounds.
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+  SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
+  accessibility_controller->SetSpokenFeedbackEnabled(true,
+                                                     A11Y_NOTIFICATION_NONE);
+  // Enable overview mode.
+  ToggleOverview();
+
+  const views::Widget* desks_widget =
+      overview_session()->grid_list()[0].get()->desks_widget();
+
+  const gfx::Rect desks_widget_bounds = desks_widget->GetWindowBoundsInScreen();
+  // Desks widget should lay out right below ChromeVox panel.
+  EXPECT_EQ(desks_widget_bounds.y(), kAccessibilityPanelHeight);
+
+  // Disable ChromeVox panel.
+  accessibility_controller->SetSpokenFeedbackEnabled(false,
+                                                     A11Y_NOTIFICATION_NONE);
+  SetAccessibilityPanelHeight(0);
+
+  const gfx::Rect desks_widget_bounds_after_disable_chromeVox =
+      desks_widget->GetWindowBoundsInScreen();
+  // Desks widget should be moved to the top of the screen after
+  // disabling ChromeVox panel.
+  EXPECT_EQ(desks_widget_bounds_after_disable_chromeVox.y(), 0);
+
+  EXPECT_NE(desks_widget_bounds, desks_widget_bounds_after_disable_chromeVox);
+}
+
 TEST_F(OverviewSessionTest, SkipOverviewWindow) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
@@ -4657,7 +4698,7 @@ TEST_F(SplitViewOverviewSessionTest, NoClippingWhenSplitviewDisabled) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
 
-  // Splitview is disabled when chromeVox is enabled.
+  // Splitview is disabled when ChromeVox is enabled.
   Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
       true, A11Y_NOTIFICATION_NONE);
   ASSERT_FALSE(ShouldAllowSplitView());

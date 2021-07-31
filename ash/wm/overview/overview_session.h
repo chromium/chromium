@@ -276,10 +276,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  // ShelObserver:
+  // ShellObserver:
   void OnShellDestroying() override;
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
+  void OnUserWorkAreaInsetsChanged(aura::Window* root_window) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
@@ -411,6 +412,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  // Boolean to indicate whether chromeVox is enabled or not.
+  bool chromevox_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(OverviewSession);
 };

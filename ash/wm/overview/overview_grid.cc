@@ -8,7 +8,6 @@
 #include <functional>
 #include <memory>
 #include <utility>
-
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -757,6 +756,15 @@ bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
     return true;
   }
   return false;
+}
+
+void OverviewGrid::OnUserWorkAreaInsetsChanged(aura::Window* root_window) {
+  DCHECK_EQ(root_window, root_window_);
+  if (!desks_widget_)
+    return;
+
+  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
+                              /*ignored_items=*/{}, /*animate=*/false);
 }
 
 void OverviewGrid::UpdateDropTargetBackgroundVisibility(
