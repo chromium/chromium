@@ -147,7 +147,7 @@ void DrawPlatformFocusRing(const PrimitiveType&,
                            cc::PaintCanvas*,
                            SkColor,
                            float width,
-                           float border_radius);
+                           float corner_radius);
 
 inline SkCanvas::SrcRectConstraint WebCoreClampingModeToSkiaRectConstraint(
     Image::ImageClampingMode clamp_mode) {

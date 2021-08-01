@@ -2329,24 +2329,41 @@ int ComputedStyle::OutlineOutsetExtent() const {
   if (!HasOutline())
     return 0;
   if (OutlineStyleIsAuto()) {
-    return GraphicsContext::FocusRingOutsetExtent(
-        OutlineOffsetInt(), std::ceil(GetOutlineStrokeWidthForFocusRing()));
+    // Unlike normal outlines (whole width is outside of the offset), focus
+    // rings are drawn with only part of it outside of the offset.
+    return FocusRingOffset() + std::ceil(FocusRingStrokeWidth() / 3.f) * 2;
   }
   return base::ClampAdd(OutlineWidthInt(), OutlineOffsetInt()).Max(0);
 }
 
-float ComputedStyle::GetOutlineStrokeWidthForFocusRing() const {
-  if (OutlineStyleIsAuto()) {
-    return std::max(EffectiveZoom(), 3.f);
-  }
+float ComputedStyle::FocusRingOuterStrokeWidth() const {
+  // The focus ring is made of two rings which have a 2:1 ratio.
+  return FocusRingStrokeWidth() / 3.f * 2;
+}
 
-#if defined(OS_MAC)
-  return OutlineWidthInt();
-#else
-  // Draw an outline with thickness in proportion to the zoom level, but never
+float ComputedStyle::FocusRingInnerStrokeWidth() const {
+  return FocusRingStrokeWidth() / 3.f;
+}
+
+float ComputedStyle::FocusRingStrokeWidth() const {
+  DCHECK(OutlineStyleIsAuto());
+  // Draw focus ring with thickness in proportion to the zoom level, but never
   // so narrow that it becomes invisible.
-  return std::max(EffectiveZoom(), 1.f);
-#endif
+  return std::max(EffectiveZoom(), 3.f);
+}
+
+int ComputedStyle::FocusRingOffset() const {
+  DCHECK(OutlineStyleIsAuto());
+  // How much space the focus ring would like to take from the actual border.
+  constexpr float kMaxInsideBorderWidth = 1;
+  int offset = OutlineOffsetInt();
+  // Focus ring is dependent on whether the border is large enough to have an
+  // inset outline. Use the smallest border edge for that test.
+  float min_border_width = std::min({BorderTopWidth(), BorderBottomWidth(),
+                                     BorderLeftWidth(), BorderRightWidth()});
+  if (min_border_width >= kMaxInsideBorderWidth)
+    offset -= kMaxInsideBorderWidth;
+  return offset;
 }
 
 bool ComputedStyle::StrokeDashArrayDataEquivalent(

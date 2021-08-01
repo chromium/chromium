@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -128,11 +129,8 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   PhysicalRect focus_rect = layout_image_.PhysicalContentBoxRect();
   focus_rect.Move(paint_offset);
   paint_info.context.Clip(PixelSnappedIntRect(focus_rect));
-  paint_info.context.DrawFocusRing(
-      path, area_element_style->GetOutlineStrokeWidthForFocusRing(),
-      area_element_style->OutlineOffsetInt(),
-      layout_image_.ResolveColor(*area_element_style,
-                                 GetCSSPropertyOutlineColor()));
+  OutlinePainter::PaintFocusRingPath(paint_info.context, path,
+                                     *area_element_style);
   paint_info.context.Restore();
 }
 

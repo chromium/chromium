@@ -12,6 +12,7 @@ namespace blink {
 
 class ComputedStyle;
 class GraphicsContext;
+class Path;
 struct PhysicalRect;
 
 class OutlinePainter {
@@ -21,6 +22,10 @@ class OutlinePainter {
   static void PaintOutlineRects(GraphicsContext&,
                                 const Vector<PhysicalRect>&,
                                 const ComputedStyle&);
+
+  static void PaintFocusRingPath(GraphicsContext&,
+                                 const Path&,
+                                 const ComputedStyle&);
 };
 
 }  // namespace blink

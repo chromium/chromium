@@ -144,7 +144,7 @@ static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
   // only 2/3 of the width is outside of the offset.
   const int outline_drawn_inside =
       style.OutlineStyleIsAuto()
-          ? std::ceil(style.GetOutlineStrokeWidthForFocusRing() / 3.f) + 1
+          ? std::ceil(style.FocusRingInnerStrokeWidth()) + 1
           : 0;
 
   return could_obscure_decorations && style.HasOutline() &&

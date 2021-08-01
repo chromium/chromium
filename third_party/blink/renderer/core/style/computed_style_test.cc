@@ -95,10 +95,12 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
 TEST_F(ComputedStyleTest, FocusRingWidth) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
-  EXPECT_EQ(3, style->GetOutlineStrokeWidthForFocusRing());
+  EXPECT_EQ(3, style->FocusRingStrokeWidth());
+  EXPECT_EQ(2, style->FocusRingOuterStrokeWidth());
+  EXPECT_EQ(1, style->FocusRingInnerStrokeWidth());
   style->SetEffectiveZoom(3.5);
   style->SetOutlineWidth(4);
-  EXPECT_EQ(3.5, style->GetOutlineStrokeWidthForFocusRing());
+  EXPECT_EQ(3.5, style->FocusRingStrokeWidth());
 }
 
 TEST_F(ComputedStyleTest, FocusRingOutset) {

@@ -8,11 +8,11 @@
     },
     {
       "name": "LayoutNGTextControlSingleLine INPUT id='root'",
-      "position": [-2, -2],
-      "bounds": [99, 36],
+      "position": [-1, -1],
+      "bounds": [97, 34],
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [0, 0, 99, 36]
+        [0, 0, 97, 34]
       ],
       "transform": 1
     }

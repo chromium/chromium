@@ -388,14 +388,14 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void SetDrawLooper(sk_sp<SkDrawLooper>);
 
-  void DrawFocusRing(const Vector<IntRect>&,
-                     float width,
-                     int offset,
-                     float border_radius,
-                     float min_border_width,
-                     const Color&,
-                     mojom::blink::ColorScheme color_scheme);
-  void DrawFocusRing(const Path&, float width, int offset, const Color&);
+  void DrawFocusRingPath(const SkPath&,
+                         const Color&,
+                         float width,
+                         float corner_radius);
+  void DrawFocusRingRect(const SkRect&,
+                         const Color&,
+                         float width,
+                         float corner_radius);
 
   const PaintFlags& FillFlags() const { return ImmutableState()->FillFlags(); }
   // If the length of the path to be stroked is known, pass it in for correct
@@ -448,8 +448,6 @@ class PLATFORM_EXPORT GraphicsContext {
                                  StrokeStyle);
   static bool ShouldUseStrokeForTextLine(StrokeStyle);
 
-  static int FocusRingOutsetExtent(int offset, int width);
-
   void SetInDrawingRecorder(bool);
   bool InDrawingRecorder() const { return in_drawing_recorder_; }
 
@@ -489,22 +487,6 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void SaveLayer(const SkRect* bounds, const PaintFlags*);
   void RestoreLayer();
-
-  // Helpers for drawing a focus ring (drawFocusRing)
-  void DrawFocusRingPath(const SkPath&,
-                         const Color&,
-                         float width,
-                         float border_radius);
-  void DrawFocusRingRect(const SkRect&,
-                         const Color&,
-                         float width,
-                         float border_radius);
-
-  void DrawFocusRingInternal(const Vector<IntRect>&,
-                             float width,
-                             int offset,
-                             float border_radius,
-                             const Color&);
 
   // SkCanvas wrappers.
   void ClipRRect(const SkRRect&,

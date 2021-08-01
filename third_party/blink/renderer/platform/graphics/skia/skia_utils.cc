@@ -413,14 +413,14 @@ void DrawPlatformFocusRing(const PrimitiveType& primitive,
                            cc::PaintCanvas* canvas,
                            SkColor color,
                            float width,
-                           float border_radius) {
+                           float corner_radius) {
   PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(PaintFlags::kStroke_Style);
   flags.setColor(color);
   flags.setStrokeWidth(width);
 
-  DrawFocusRingPrimitive(primitive, canvas, flags, border_radius);
+  DrawFocusRingPrimitive(primitive, canvas, flags, corner_radius);
 }
 
 template void PLATFORM_EXPORT
@@ -428,13 +428,13 @@ DrawPlatformFocusRing<SkRect>(const SkRect&,
                               cc::PaintCanvas*,
                               SkColor,
                               float width,
-                              float border_radius);
+                              float corner_radius);
 template void PLATFORM_EXPORT
 DrawPlatformFocusRing<SkPath>(const SkPath&,
                               cc::PaintCanvas*,
                               SkColor,
                               float width,
-                              float border_radius);
+                              float corner_radius);
 
 sk_sp<SkData> TryAllocateSkData(size_t size) {
   void* buffer = WTF::Partitions::BufferPartition()->AllocFlags(

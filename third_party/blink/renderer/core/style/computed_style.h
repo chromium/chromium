@@ -1933,7 +1933,10 @@ class ComputedStyle : public ComputedStyleBase,
     return OutlineWidth() > 0 && OutlineStyle() > EBorderStyle::kHidden;
   }
   CORE_EXPORT int OutlineOutsetExtent() const;
-  CORE_EXPORT float GetOutlineStrokeWidthForFocusRing() const;
+  CORE_EXPORT float FocusRingOuterStrokeWidth() const;
+  CORE_EXPORT float FocusRingInnerStrokeWidth() const;
+  CORE_EXPORT float FocusRingStrokeWidth() const;
+  CORE_EXPORT int FocusRingOffset() const;
   bool HasOutlineWithCurrentColor() const {
     return HasOutline() && OutlineColor().IsCurrentColor();
   }
