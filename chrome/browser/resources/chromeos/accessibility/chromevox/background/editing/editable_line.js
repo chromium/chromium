@@ -659,7 +659,13 @@ editing.EditableLine = class {
   createCharRange() {
     const start = this.start_;
     let end = start.move(Unit.CHARACTER, Movement.DIRECTIONAL, Dir.FORWARD);
-    if (start.node !== end.node) {
+
+    // The following conditions detect when|start|moves across a node boundary
+    // to|end|.
+    if (start.node !== end.node ||
+        // When |start| and |end| are equal, that means we've reached
+        // the end of the document. This is a node boundary as well.
+        start.equals(end)) {
       end = new cursors.Cursor(start.node, start.index + 1);
     }
     return new Range(start, end);

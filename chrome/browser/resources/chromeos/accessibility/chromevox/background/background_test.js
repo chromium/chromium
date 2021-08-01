@@ -3638,9 +3638,7 @@ TEST_F('ChromeVoxBackgroundTest', 'EndOfText', function() {
       mockFeedback.call(press(KeyCode.RIGHT))
           .expectSpeech('2')
           .call(press(KeyCode.RIGHT))
-
-          // This should just read '3'; http://crbug.com/1234807.
-          .expectSpeech('123')
+          .expectSpeech('3')
           .call(press(KeyCode.RIGHT))
           .expectSpeech('End of text')
           .replay();

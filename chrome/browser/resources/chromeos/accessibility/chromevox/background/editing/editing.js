@@ -462,9 +462,9 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     }
 
     // End of document announcements are special because it's the only situation
-    // in which, on the last line, there's no more content to the right of the
-    // cursor. This condition has to detect a precise state change where a user
-    // moves (not changes) within the last line.
+    // in which there's no more content to the right of the  on the last
+    // linecursor. This condition has to detect a precise state change where a
+    // user moves (not changes) within the last line.
     if (this.isSelectionOnLastLine() && cur.hasCollapsedSelection() &&
         cur.text.length === cur.endOffset && prev.isSameLine(cur) &&
         cur.text === prev.text) {
