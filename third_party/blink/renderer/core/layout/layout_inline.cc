@@ -521,7 +521,8 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
   if (!before_child && IsAfterContent(LastChild()))
     before_child = LastChild();
 
-  if (!new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned()) {
+  if (!new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned() &&
+      !new_child->IsTablePart()) {
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())) {
       // TODO(crbug.com/716930): This logic is still at the prototype level and
       // to be re-written, but landed under the runtime flag to allow us working
@@ -537,15 +538,13 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
       anonymous_box->AddChild(new_child);
       return;
     }
-    if (!new_child->IsTablePart()) {
-      LayoutBlockFlow* new_box =
-          CreateAnonymousContainerForBlockChildren(/* split_flow */ true);
-      LayoutBoxModelObject* old_continuation = Continuation();
-      SetContinuation(new_box);
+    LayoutBlockFlow* new_box =
+        CreateAnonymousContainerForBlockChildren(/* split_flow */ true);
+    LayoutBoxModelObject* old_continuation = Continuation();
+    SetContinuation(new_box);
 
-      SplitFlow(before_child, new_box, new_child, old_continuation);
-      return;
-    }
+    SplitFlow(before_child, new_box, new_child, old_continuation);
+    return;
   }
 
   LayoutBoxModelObject::AddChild(new_child, before_child);
