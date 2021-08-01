@@ -461,6 +461,22 @@ const AutomationRichEditableText = class extends AutomationEditableText {
       return;
     }
 
+    // End of document announcements are special because it's the only situation
+    // in which, on the last line, there's no more content to the right of the
+    // cursor. This condition has to detect a precise state change where a user
+    // moves (not changes) within the last line.
+    if (this.isSelectionOnLastLine() && cur.hasCollapsedSelection() &&
+        cur.text.length === cur.endOffset && prev.isSameLine(cur) &&
+        cur.text === prev.text) {
+      // Omit announcements if the document is completely empty.
+      if (!this.isSelectionOnFirstLine() || cur.text.length > 0) {
+        ChromeVox.tts.speak(
+            Msgs.getMsg('end_of_text_verbose'), QueueMode.CATEGORY_FLUSH);
+      }
+      this.updateIntraLineState_(cur);
+      return;
+    }
+
     // Before entering into our state machine below, use selected intents to
     // decipher ambiguous cases.
     if (this.maybeSpeakUsingIntents_(intents, cur, prev)) {

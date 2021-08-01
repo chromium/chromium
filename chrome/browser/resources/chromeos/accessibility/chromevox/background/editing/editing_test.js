@@ -512,7 +512,7 @@ TEST_F('ChromeVoxEditingTest', 'RichTextMoveByCharacterEndOfLine', function() {
               .expectSpeech('t')
               .expectBraille(lineText, {startIndex: 3, endIndex: 3})
               .call(moveByChar)
-              .expectSpeech('\n')
+              .expectSpeech('End of text')
               .expectBraille(lineText, {startIndex: 4, endIndex: 4})
 
               .replay();
