@@ -392,10 +392,7 @@ class PLATFORM_EXPORT GraphicsContext {
                          const Color&,
                          float width,
                          float corner_radius);
-  void DrawFocusRingRect(const SkRect&,
-                         const Color&,
-                         float width,
-                         float corner_radius);
+  void DrawFocusRingRect(const SkRRect&, const Color&, float width);
 
   const PaintFlags& FillFlags() const { return ImmutableState()->FillFlags(); }
   // If the length of the path to be stroked is known, pass it in for correct

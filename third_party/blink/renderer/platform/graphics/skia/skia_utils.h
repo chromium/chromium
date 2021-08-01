@@ -142,12 +142,15 @@ inline float BlurRadiusToStdDev(float radius) {
   return radius * 0.5f;
 }
 
-template <typename PrimitiveType>
-void DrawPlatformFocusRing(const PrimitiveType&,
-                           cc::PaintCanvas*,
-                           SkColor,
-                           float width,
-                           float corner_radius);
+void PLATFORM_EXPORT DrawPlatformFocusRing(const SkRRect&,
+                                           cc::PaintCanvas*,
+                                           SkColor,
+                                           float width);
+void PLATFORM_EXPORT DrawPlatformFocusRing(const SkPath&,
+                                           cc::PaintCanvas*,
+                                           SkColor,
+                                           float width,
+                                           float corner_radius);
 
 inline SkCanvas::SrcRectConstraint WebCoreClampingModeToSkiaRectConstraint(
     Image::ImageClampingMode clamp_mode) {

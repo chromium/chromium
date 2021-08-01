@@ -52,6 +52,25 @@ FloatRoundedRect::FloatRoundedRect(const FloatRect& rect,
                                    const FloatSize& bottom_right)
     : rect_(rect), radii_(top_left, top_right, bottom_left, bottom_right) {}
 
+void FloatRoundedRect::Radii::SetMinimumRadius(float minimum_radius) {
+  top_left_.SetWidth(std::max(minimum_radius, top_left_.Width()));
+  top_left_.SetHeight(std::max(minimum_radius, top_left_.Height()));
+  top_right_.SetWidth(std::max(minimum_radius, top_right_.Width()));
+  top_right_.SetHeight(std::max(minimum_radius, top_right_.Height()));
+  bottom_left_.SetWidth(std::max(minimum_radius, bottom_left_.Width()));
+  bottom_left_.SetHeight(std::max(minimum_radius, bottom_left_.Height()));
+  bottom_right_.SetWidth(std::max(minimum_radius, bottom_right_.Width()));
+  bottom_right_.SetHeight(std::max(minimum_radius, bottom_right_.Height()));
+}
+
+absl::optional<float> FloatRoundedRect::Radii::UniformRadius() const {
+  if (top_left_.Width() == top_left_.Height() && top_left_ == top_right_ &&
+      top_left_ == bottom_left_ && top_left_ == bottom_right_) {
+    return top_left_.Width();
+  }
+  return absl::nullopt;
+}
+
 void FloatRoundedRect::Radii::Scale(float factor) {
   if (factor == 1)
     return;

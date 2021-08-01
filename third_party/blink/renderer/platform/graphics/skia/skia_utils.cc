@@ -378,63 +378,34 @@ SkRect LayoutRectToSkRect(const blink::LayoutRect& rect) {
                           SkFloatToScalar(rect.Height()));
 }
 
-template <typename PrimitiveType>
-void DrawFocusRingPrimitive(const PrimitiveType&,
-                            cc::PaintCanvas*,
-                            const PaintFlags&,
-                            float corner_radius) {
-  NOTREACHED();  // Missing an explicit specialization?
-}
-
-template <>
-void DrawFocusRingPrimitive<SkRect>(const SkRect& rect,
-                                    cc::PaintCanvas* canvas,
-                                    const PaintFlags& flags,
-                                    float corner_radius) {
-  SkRRect rrect;
-  rrect.setRectXY(rect, SkFloatToScalar(corner_radius),
-                  SkFloatToScalar(corner_radius));
-  canvas->drawRRect(rrect, flags);
-}
-
-template <>
-void DrawFocusRingPrimitive<SkPath>(const SkPath& path,
-                                    cc::PaintCanvas* canvas,
-                                    const PaintFlags& flags,
-                                    float corner_radius) {
-  PaintFlags path_flags = flags;
-  path_flags.setPathEffect(
-      SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));
-  canvas->drawPath(path, path_flags);
-}
-
-template <typename PrimitiveType>
-void DrawPlatformFocusRing(const PrimitiveType& primitive,
-                           cc::PaintCanvas* canvas,
-                           SkColor color,
-                           float width,
-                           float corner_radius) {
+static PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
   PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(PaintFlags::kStroke_Style);
   flags.setColor(color);
   flags.setStrokeWidth(width);
-
-  DrawFocusRingPrimitive(primitive, canvas, flags, corner_radius);
+  return flags;
 }
 
-template void PLATFORM_EXPORT
-DrawPlatformFocusRing<SkRect>(const SkRect&,
-                              cc::PaintCanvas*,
-                              SkColor,
-                              float width,
-                              float corner_radius);
-template void PLATFORM_EXPORT
-DrawPlatformFocusRing<SkPath>(const SkPath&,
-                              cc::PaintCanvas*,
-                              SkColor,
-                              float width,
-                              float corner_radius);
+void DrawPlatformFocusRing(const SkRRect& rrect,
+                           cc::PaintCanvas* canvas,
+                           SkColor color,
+                           float width) {
+  canvas->drawRRect(rrect, PaintFlagsForFocusRing(color, width));
+}
+
+void DrawPlatformFocusRing(const SkPath& path,
+                           cc::PaintCanvas* canvas,
+                           SkColor color,
+                           float width,
+                           float corner_radius) {
+  PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
+  if (corner_radius) {
+    path_flags.setPathEffect(
+        SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));
+  }
+  canvas->drawPath(path, path_flags);
+}
 
 sk_sp<SkData> TryAllocateSkData(size_t size) {
   void* buffer = WTF::Partitions::BufferPartition()->AllocFlags(

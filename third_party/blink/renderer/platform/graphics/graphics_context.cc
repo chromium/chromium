@@ -343,15 +343,14 @@ void GraphicsContext::DrawFocusRingPath(const SkPath& path,
       width, corner_radius);
 }
 
-void GraphicsContext::DrawFocusRingRect(const SkRect& rect,
+void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
                                         const Color& color,
-                                        float width,
-                                        float corner_radius) {
+                                        float width) {
   DrawPlatformFocusRing(
-      rect, canvas_,
+      rrect, canvas_,
       DarkModeFilterHelper::ApplyToColorIfNeeded(
           this, color.Rgb(), DarkModeFilter::ElementRole::kBackground),
-      width, corner_radius);
+      width);
 }
 
 static void EnforceDotsAtEndpoints(GraphicsContext& context,

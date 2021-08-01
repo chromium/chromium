@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_ROUNDED_RECT_H_
 
 #include <iosfwd>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -57,6 +58,11 @@ class PLATFORM_EXPORT FloatRoundedRect {
           top_right_(top_right),
           bottom_left_(bottom_left),
           bottom_right_(bottom_right) {}
+    explicit constexpr Radii(float radius)
+        : Radii(FloatSize(radius, radius),
+                FloatSize(radius, radius),
+                FloatSize(radius, radius),
+                FloatSize(radius, radius)) {}
 
     constexpr Radii(const Radii&) = default;
     constexpr Radii& operator=(const Radii&) = default;
@@ -69,6 +75,9 @@ class PLATFORM_EXPORT FloatRoundedRect {
     constexpr const FloatSize& TopRight() const { return top_right_; }
     constexpr const FloatSize& BottomLeft() const { return bottom_left_; }
     constexpr const FloatSize& BottomRight() const { return bottom_right_; }
+
+    void SetMinimumRadius(float);
+    absl::optional<float> UniformRadius() const;
 
     constexpr bool IsZero() const {
       return top_left_.IsZero() && top_right_.IsZero() &&

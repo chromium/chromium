@@ -222,8 +222,9 @@ float DefaultFocusRingCornerRadius(const ComputedStyle& style) {
   return style.FocusRingStrokeWidth();
 }
 
-float GetFocusRingCornerRadius(const ComputedStyle& style,
-                               const PhysicalRect& reference_border_rect) {
+FloatRoundedRect::Radii GetFocusRingCornerRadii(
+    const ComputedStyle& style,
+    const PhysicalRect& reference_border_rect) {
   if (style.HasBorderRadius() &&
       (!style.HasEffectiveAppearance() || style.HasAuthorBorderRadius())) {
     int outset = style.OutlineOffsetInt();
@@ -231,17 +232,9 @@ float GetFocusRingCornerRadius(const ComputedStyle& style,
         RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
             style, reference_border_rect,
             LayoutRectOutsets(outset, outset, outset, outset));
-    // For now we only support uniform border radius for all corners of the
-    // focus ring. Use the minimum radius of all corners to prevent the focus
-    // ring from overlapping with the element, but not smaller than the default
-    // border radius.
-    const auto& radii = rect.GetRadii();
-    return std::max(
-        DefaultFocusRingCornerRadius(style),
-        std::min({radii.TopLeft().Width(), radii.TopLeft().Height(),
-                  radii.TopRight().Width(), radii.TopRight().Height(),
-                  radii.BottomRight().Width(), radii.BottomRight().Height(),
-                  radii.BottomLeft().Width(), radii.BottomLeft().Height()}));
+    auto radii = rect.GetRadii();
+    radii.SetMinimumRadius(DefaultFocusRingCornerRadius(style));
+    return radii;
   }
 
   if (!style.HasAuthorBorder() && style.HasEffectiveAppearance()) {
@@ -277,18 +270,18 @@ float GetFocusRingCornerRadius(const ComputedStyle& style,
       corner_radius =
           ui::NativeTheme::GetInstanceForWeb()->AdjustBorderRadiusByZoom(
               part.value(), corner_radius, style.EffectiveZoom());
-      return corner_radius;
+      return FloatRoundedRect::Radii(corner_radius);
     }
   }
 
-  return DefaultFocusRingCornerRadius(style);
+  return FloatRoundedRect::Radii(DefaultFocusRingCornerRadius(style));
 }
 
 void PaintSingleFocusRing(GraphicsContext& context,
                           const Vector<IntRect>& rects,
                           float width,
                           int offset,
-                          float corner_radius,
+                          const FloatRoundedRect::Radii& corner_radii,
                           const Color& color) {
   unsigned rect_count = rects.size();
   if (!rect_count)
@@ -307,19 +300,36 @@ void PaintSingleFocusRing(GraphicsContext& context,
     return;
 
   if (focus_ring_region.isRect()) {
-    context.DrawFocusRingRect(SkRect::Make(focus_ring_region.getBounds()),
-                              color, width, corner_radius);
-  } else {
-    SkPath path;
-    if (focus_ring_region.getBoundaryPath(&path))
-      context.DrawFocusRingPath(path, color, width, corner_radius);
+    context.DrawFocusRingRect(
+        FloatRoundedRect(IntRect(focus_ring_region.getBounds()), corner_radii),
+        color, width);
+    return;
   }
+
+  SkPath path;
+  if (!focus_ring_region.getBoundaryPath(&path))
+    return;
+  absl::optional<float> corner_radius = corner_radii.UniformRadius();
+  if (corner_radius.has_value()) {
+    context.DrawFocusRingPath(path, color, width, *corner_radius);
+    return;
+  }
+
+  // TODO(wangxianzhu): Bake non-uniform radii into the path. For now use the
+  // minimum radius.
+  float radius = std::min(
+      {corner_radii.TopLeft().Width(), corner_radii.TopLeft().Height(),
+       corner_radii.TopRight().Width(), corner_radii.TopRight().Height(),
+       corner_radii.BottomLeft().Width(), corner_radii.BottomLeft().Height(),
+       corner_radii.BottomRight().Width(),
+       corner_radii.BottomRight().Height()});
+  context.DrawFocusRingPath(path, color, width, radius);
 }
 
 void PaintFocusRing(GraphicsContext& context,
                     const Vector<IntRect>& rects,
                     const ComputedStyle& style,
-                    float corner_radius) {
+                    const FloatRoundedRect::Radii& corner_radii) {
   Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
 #if !defined(OS_MAC)
   if (style.DarkColorScheme())
@@ -332,13 +342,13 @@ void PaintFocusRing(GraphicsContext& context,
   Color outer_color =
       style.DarkColorScheme() ? Color(0x10, 0x10, 0x10) : Color::kWhite;
   PaintSingleFocusRing(context, rects, outer_ring_width,
-                       offset + std::ceil(inner_ring_width), corner_radius,
+                       offset + std::ceil(inner_ring_width), corner_radii,
                        outer_color);
   // Draw the inner ring using |outer_ring_width| (which should be wider than
   // the additional offset of the outer ring) over the outer ring to ensure no
   // gaps or AA artifacts.
   DCHECK_GE(outer_ring_width, std::ceil(inner_ring_width));
-  PaintSingleFocusRing(context, rects, outer_ring_width, offset, corner_radius,
+  PaintSingleFocusRing(context, rects, outer_ring_width, offset, corner_radii,
                        inner_color);
 }
 
@@ -353,8 +363,8 @@ void OutlinePainter::PaintOutlineRects(
     pixel_snapped_outline_rects.push_back(PixelSnappedIntRect(r));
 
   if (style.OutlineStyleIsAuto()) {
-    float corner_radius = GetFocusRingCornerRadius(style, outline_rects[0]);
-    PaintFocusRing(context, pixel_snapped_outline_rects, style, corner_radius);
+    auto corner_radii = GetFocusRingCornerRadii(style, outline_rects[0]);
+    PaintFocusRing(context, pixel_snapped_outline_rects, style, corner_radii);
     return;
   }
 
