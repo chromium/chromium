@@ -1292,7 +1292,8 @@ void TaskQueueImpl::MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(
         ShouldReportIpcTaskQueuedFromAnyThreadLocked(&time_since_disabled);
   }
 
-  ReportIpcTaskQueued(pending_task, task_queue_name, time_since_disabled);
+  if (should_report)
+    ReportIpcTaskQueued(pending_task, task_queue_name, time_since_disabled);
 }
 
 void TaskQueueImpl::ReportIpcTaskQueued(

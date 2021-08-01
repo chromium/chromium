@@ -12,6 +12,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -190,6 +191,7 @@ TEST_F(CheckedPtrTest, BoolOpNotCast) {
   bool is_not_valid = !ptr;
   if (!ptr)
     is_not_valid = true;
+  ALLOW_UNUSED_LOCAL(is_not_valid);
   std::ignore = IsValidNoCast(ptr);
   std::ignore = IsValidNoCast2(ptr);
   FuncThatAcceptsBool(!ptr);
@@ -211,6 +213,7 @@ TEST_F(CheckedPtrTest, CastNotBoolOp) {
   CountingCheckedPtr<int> ptr = nullptr;
   bool is_valid = ptr;
   is_valid = IsValidWithCast(ptr);
+  ALLOW_UNUSED_LOCAL(is_valid);
   FuncThatAcceptsBool(ptr);
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
   EXPECT_EQ(g_get_for_extraction_cnt, 3);
