@@ -48,7 +48,8 @@ def fake_sys(platform_str='darwin', windows_version_tuple=None):
 
 def fake_platform(mac_version_string='10.12.3',
                   release_string='bar',
-                  linux_version='trusty'):
+                  linux_version='trusty',
+                  win_version_string=None):
     class FakePlatformModule(object):
         def mac_ver(self):
             return tuple([mac_version_string, tuple(['', '', '']), 'i386'])
@@ -61,6 +62,9 @@ def fake_platform(mac_version_string='10.12.3',
 
         def release(self):
             return release_string
+
+        def win32_ver(self):
+            return tuple([None, win_version_string])
 
     return FakePlatformModule()
 
@@ -119,7 +123,8 @@ class TestPlatformInfo(unittest.TestCase):
         self.assertFalse(info.is_win())
         self.assertFalse(info.is_freebsd())
 
-        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])))
+        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])),
+                              fake_platform(win_version_string="6.1.7600"))
         self.assertEqual(info.os_name, 'win')
         self.assertFalse(info.is_linux())
         self.assertFalse(info.is_mac())
@@ -182,33 +187,49 @@ class TestPlatformInfo(unittest.TestCase):
                 fake_platform('', '9.0-RELEASE')).os_version, '9.0-RELEASE')
 
         with self.assertRaises(AssertionError):
-            self.make_info(fake_sys('win32', tuple([5, 0, 1234])))
+            self.make_info(fake_sys('win32', tuple([5, 0, 1234])),
+                           fake_platform(win_version_string="5.0.1234"))
         with self.assertRaises(AssertionError):
-            self.make_info(fake_sys('win32', tuple([6, 1, 1234])))
+            self.make_info(fake_sys('win32', tuple([6, 1, 1234])),
+                           fake_platform(win_version_string="6.1.1234"))
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([10, 1, 1234]))).os_version,
+            self.make_info(
+                fake_sys('win32', tuple([10, 1, 1234])),
+                fake_platform(win_version_string="10.1.1234")).os_version,
             'future')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([10, 0, 1234]))).os_version,
+            self.make_info(
+                fake_sys('win32', tuple([10, 0, 1234])),
+                fake_platform(win_version_string="10.0.1234")).os_version,
             '10')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([6, 3, 1234]))).os_version,
+            self.make_info(
+                fake_sys('win32', tuple([6, 3, 1234])),
+                fake_platform(win_version_string="6.3.1234")).os_version,
             '8.1')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([6, 2, 1234]))).os_version,
-            '8')
+            self.make_info(
+                fake_sys('win32', tuple([6, 2, 1234])),
+                fake_platform(win_version_string="6.2.1234")).os_version, '8')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([6, 1, 7601]))).os_version,
+            self.make_info(
+                fake_sys('win32', tuple([6, 1, 7601])),
+                fake_platform(win_version_string="6.1.7601")).os_version,
             '7sp1')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([6, 1, 7600]))).os_version,
+            self.make_info(
+                fake_sys('win32', tuple([6, 1, 7600])),
+                fake_platform(win_version_string="6.1.7600")).os_version,
             '7sp0')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([6, 0, 1234]))).os_version,
+            self.make_info(
+                fake_sys('win32', tuple([6, 0, 1234])),
+                fake_platform(win_version_string="6.0.1234")).os_version,
             'vista')
         self.assertEqual(
-            self.make_info(fake_sys('win32', tuple([5, 1, 1234]))).os_version,
-            'xp')
+            self.make_info(
+                fake_sys('win32', tuple([5, 1, 1234])),
+                fake_platform(win_version_string="5.1.1234")).os_version, 'xp')
 
         with self.assertRaises(AssertionError):
             self.make_info(
@@ -241,7 +262,8 @@ class TestPlatformInfo(unittest.TestCase):
         info = self.make_info(fake_sys('darwin'))
         self.assertNotEquals(info.display_name(), '')
 
-        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])))
+        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])),
+                              fake_platform(win_version_string="6.1.7600"))
         self.assertNotEquals(info.display_name(), '')
 
         info = self.make_info(fake_sys('linux2'))
@@ -257,7 +279,8 @@ class TestPlatformInfo(unittest.TestCase):
             executive=fake_executive('1234'))
         self.assertEqual(info.total_bytes_memory(), 1234)
 
-        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])))
+        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])),
+                              fake_platform(win_version_string="6.1.7600"))
         self.assertIsNone(info.total_bytes_memory())
 
         info = self.make_info(fake_sys('linux2'))

@@ -58,7 +58,7 @@ class PlatformInfo(object):
                 platform_module.mac_ver()[0])
         if self.os_name.startswith('win'):
             self.os_version = self._determine_win_version(
-                self._win_version_tuple(sys_module))
+                self._win_version_tuple())
         assert sys.platform != 'cygwin', 'Cygwin is not supported.'
 
     def is_mac(self):
@@ -210,9 +210,11 @@ class PlatformInfo(object):
                     (win_version_tuple, ))
         return 'future'
 
-    def _win_version_tuple(self, sys_module):
-        if hasattr(sys_module, 'getwindowsversion'):
-            return sys_module.getwindowsversion()
+    def _win_version_tuple(self):
+        version_str = self._platform_module.win32_ver()[1]
+        if version_str:
+            return tuple(map(int, version_str.split('.')))
+
         return self._win_version_tuple_from_cmd()
 
     def _win_version_tuple_from_cmd(self):
