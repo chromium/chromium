@@ -235,50 +235,49 @@ void RasterInvalidator::GenerateRasterInvalidations(
         !new_chunk.properties.GetPropertyTreeState().Unalias().Changed(
             PaintPropertyChangeType::kChangedOnlySimpleValues, layer_state)) {
       new_chunks_info.emplace_back(old_chunk_info, it);
-      continue;
-    }
-
-    mapper.SwitchToChunk(new_chunk);
-    auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
-
-    if (reason == PaintInvalidationReason::kNone) {
-      reason = ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
-                                      old_chunk_info, layer_state);
-    }
-
-    if (IsFullPaintInvalidationReason(reason)) {
-      // Invalidate both old and new bounds of the chunk if the chunk's paint
-      // properties changed, or is moved backward and may expose area that was
-      // previously covered by it.
-      AddRasterInvalidation(function, old_chunk_info.bounds_in_layer,
-                            new_chunk.id.client, reason, kClientIsNew);
-      if (old_chunk_info.bounds_in_layer != new_chunk_info.bounds_in_layer) {
-        AddRasterInvalidation(function, new_chunk_info.bounds_in_layer,
-                              new_chunk.id.client, reason, kClientIsNew);
-      }
-      // Ignore the display item raster invalidations because we have fully
-      // invalidated the chunk.
     } else {
-      // We may have ignored tiny changes of transform, in which case we should
-      // use the old chunk_to_layer_transform for later comparison to correctly
-      // invalidate animating transform in tiny increments when the accumulated
-      // change exceeds the tolerance.
-      new_chunk_info.chunk_to_layer_transform =
-          old_chunk_info.chunk_to_layer_transform;
+      mapper.SwitchToChunk(new_chunk);
+      auto& new_chunk_info = new_chunks_info.emplace_back(*this, mapper, it);
 
-      if (reason == PaintInvalidationReason::kIncremental) {
-        IncrementallyInvalidateChunk(function, old_chunk_info, new_chunk_info,
-                                     new_chunk.id.client);
+      if (reason == PaintInvalidationReason::kNone) {
+        reason = ChunkPropertiesChanged(new_chunk, old_chunk, new_chunk_info,
+                                        old_chunk_info, layer_state);
       }
 
-      if (&new_chunks.GetPaintArtifact() != old_paint_artifact_ &&
-          !new_chunk.is_moved_from_cached_subsequence) {
-        DisplayItemRasterInvalidator(
-            *this, function,
-            old_paint_artifact_->DisplayItemsInChunk(
-                old_chunk_info.index_in_paint_artifact),
-            it.DisplayItems(), mapper)
-            .Generate();
+      if (IsFullPaintInvalidationReason(reason)) {
+        // Invalidate both old and new bounds of the chunk if the chunk's paint
+        // properties changed, or is moved backward and may expose area that was
+        // previously covered by it.
+        AddRasterInvalidation(function, old_chunk_info.bounds_in_layer,
+                              new_chunk.id.client, reason, kClientIsNew);
+        if (old_chunk_info.bounds_in_layer != new_chunk_info.bounds_in_layer) {
+          AddRasterInvalidation(function, new_chunk_info.bounds_in_layer,
+                                new_chunk.id.client, reason, kClientIsNew);
+        }
+        // Ignore the display item raster invalidations because we have fully
+        // invalidated the chunk.
+      } else {
+        // We may have ignored tiny changes of transform, in which case we
+        // should use the old chunk_to_layer_transform for later comparison to
+        // correctly invalidate animating transform in tiny increments when the
+        // accumulated change exceeds the tolerance.
+        new_chunk_info.chunk_to_layer_transform =
+            old_chunk_info.chunk_to_layer_transform;
+
+        if (reason == PaintInvalidationReason::kIncremental) {
+          IncrementallyInvalidateChunk(function, old_chunk_info, new_chunk_info,
+                                       new_chunk.id.client);
+        }
+
+        if (&new_chunks.GetPaintArtifact() != old_paint_artifact_ &&
+            !new_chunk.is_moved_from_cached_subsequence) {
+          DisplayItemRasterInvalidator(
+              *this, function,
+              old_paint_artifact_->DisplayItemsInChunk(
+                  old_chunk_info.index_in_paint_artifact),
+              it.DisplayItems(), mapper)
+              .Generate();
+        }
       }
     }
 
