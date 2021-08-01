@@ -13,11 +13,10 @@
 <script>
 t.step(function() {
   var s = document.querySelector("svg > script");
-  s.src = "scripts/include-1.js";
+  s.setAttribute("href", "scripts/include-1.js");
 });
 onload = t.step_func(function() {
-  // SVG <script> element uses href attribute, so src attribute is ignored.
-  assert_array_equals(eventOrder, []);
+  assert_array_equals(eventOrder, ["external script #1"]);
   t.done();
 });
 </script>
