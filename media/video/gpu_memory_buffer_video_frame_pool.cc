@@ -50,7 +50,7 @@ namespace media {
 
 bool GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled() {
 #if defined(OS_MAC)
-  return base::mac::IsAtMostOS10_13();
+  return base::mac::IsAtMostOS10_15();
 #else
   return false;
 #endif
