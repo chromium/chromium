@@ -36,9 +36,9 @@ typedef struct {
 } WIN32FILE_IOWIN;
 
 // This function is derived from third_party/minizip/iowin32.c.
-// Its only difference is that it treats the char* as UTF8 and
+// Its only difference is that it treats the filename as UTF-8 and
 // uses the Unicode version of CreateFile.
-void* ZipOpenFunc(void* opaque, const char* filename, int mode) {
+void* ZipOpenFunc(void* opaque, const void* filename, int mode) {
   DWORD desired_access = 0, creation_disposition = 0;
   DWORD share_mode = 0, flags_and_attributes = 0;
   HANDLE file = 0;
@@ -56,10 +56,11 @@ void* ZipOpenFunc(void* opaque, const char* filename, int mode) {
     creation_disposition = CREATE_ALWAYS;
   }
 
-  std::wstring filenamew = base::UTF8ToWide(filename);
-  if ((filename != NULL) && (desired_access != 0)) {
-    file = CreateFile(filenamew.c_str(), desired_access, share_mode, NULL,
-                      creation_disposition, flags_and_attributes, NULL);
+  if (filename != nullptr && desired_access != 0) {
+    file = CreateFileW(
+        base::UTF8ToWide(static_cast<const char*>(filename)).c_str(),
+        desired_access, share_mode, nullptr, creation_disposition,
+        flags_and_attributes, nullptr);
   }
 
   if (file == INVALID_HANDLE_VALUE)
@@ -83,7 +84,7 @@ void* ZipOpenFunc(void* opaque, const char* filename, int mode) {
 // Callback function for zlib that opens a file stream from a file descriptor.
 // Since we do not own the file descriptor, dup it so that we can fdopen/fclose
 // a file stream.
-void* FdOpenFileFunc(void* opaque, const char* filename, int mode) {
+void* FdOpenFileFunc(void* opaque, const void* filename, int mode) {
   FILE* file = NULL;
   const char* mode_fopen = NULL;
 
@@ -111,9 +112,9 @@ int FdCloseFileFunc(void* opaque, void* stream) {
 
 // Fills |pzlib_filecunc_def| appropriately to handle the zip file
 // referred to by |fd|.
-void FillFdOpenFileFunc(zlib_filefunc_def* pzlib_filefunc_def, int fd) {
-  fill_fopen_filefunc(pzlib_filefunc_def);
-  pzlib_filefunc_def->zopen_file = FdOpenFileFunc;
+void FillFdOpenFileFunc(zlib_filefunc64_def* pzlib_filefunc_def, int fd) {
+  fill_fopen64_filefunc(pzlib_filefunc_def);
+  pzlib_filefunc_def->zopen64_file = FdOpenFileFunc;
   pzlib_filefunc_def->zclose_file = FdCloseFileFunc;
   int* ptr_fd = static_cast<int*>(malloc(sizeof(fd)));
   *ptr_fd = fd;
@@ -124,7 +125,7 @@ void FillFdOpenFileFunc(zlib_filefunc_def* pzlib_filefunc_def, int fd) {
 #if defined(OS_WIN)
 // Callback function for zlib that opens a file stream from a Windows handle.
 // Does not take ownership of the handle.
-void* HandleOpenFileFunc(void* opaque, const char* filename, int mode) {
+void* HandleOpenFileFunc(void* opaque, const void* /*filename*/, int mode) {
   WIN32FILE_IOWIN file_ret;
   file_ret.hf = static_cast<HANDLE>(opaque);
   file_ret.error = 0;
@@ -148,8 +149,8 @@ int HandleCloseFileFunc(void* opaque, void* stream) {
 // expect their opaque parameters refer to this struct.
 struct ZipBuffer {
   const char* data;  // weak
-  size_t length;
-  size_t offset;
+  ZPOS64_T length;
+  ZPOS64_T offset;
 };
 
 // Opens the specified file. When this function returns a non-NULL pointer, zlib
@@ -158,7 +159,7 @@ struct ZipBuffer {
 // given opaque parameter and returns it because this parameter stores all
 // information needed for uncompressing data. (This function does not support
 // writing compressed data and it returns NULL for this case.)
-void* OpenZipBuffer(void* opaque, const char* /*filename*/, int mode) {
+void* OpenZipBuffer(void* opaque, const void* /*filename*/, int mode) {
   if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER) != ZLIB_FILEFUNC_MODE_READ) {
     NOTREACHED();
     return NULL;
@@ -175,10 +176,11 @@ void* OpenZipBuffer(void* opaque, const char* /*filename*/, int mode) {
 uLong ReadZipBuffer(void* opaque, void* /*stream*/, void* buf, uLong size) {
   ZipBuffer* buffer = static_cast<ZipBuffer*>(opaque);
   DCHECK_LE(buffer->offset, buffer->length);
-  size_t remaining_bytes = buffer->length - buffer->offset;
+  ZPOS64_T remaining_bytes = buffer->length - buffer->offset;
   if (!buffer || !buffer->data || !remaining_bytes)
     return 0;
-  size = std::min(size, static_cast<uLong>(remaining_bytes));
+  if (size > remaining_bytes)
+    size = remaining_bytes;
   memcpy(buf, &buffer->data[buffer->offset], size);
   buffer->offset += size;
   return size;
@@ -195,21 +197,23 @@ uLong WriteZipBuffer(void* /*opaque*/,
 }
 
 // Returns the offset from the beginning of the data.
-long GetOffsetOfZipBuffer(void* opaque, void* /*stream*/) {
+ZPOS64_T GetOffsetOfZipBuffer(void* opaque, void* /*stream*/) {
   ZipBuffer* buffer = static_cast<ZipBuffer*>(opaque);
   if (!buffer)
     return -1;
-  return static_cast<long>(buffer->offset);
+  return buffer->offset;
 }
 
 // Moves the current offset to the specified position.
-long SeekZipBuffer(void* opaque, void* /*stream*/, uLong offset, int origin) {
+long SeekZipBuffer(void* opaque,
+                   void* /*stream*/,
+                   ZPOS64_T offset,
+                   int origin) {
   ZipBuffer* buffer = static_cast<ZipBuffer*>(opaque);
   if (!buffer)
     return -1;
   if (origin == ZLIB_FILEFUNC_SEEK_CUR) {
-    buffer->offset =
-        std::min(buffer->offset + static_cast<size_t>(offset), buffer->length);
+    buffer->offset = std::min(buffer->offset + offset, buffer->length);
     return 0;
   }
   if (origin == ZLIB_FILEFUNC_SEEK_END) {
@@ -217,7 +221,7 @@ long SeekZipBuffer(void* opaque, void* /*stream*/, uLong offset, int origin) {
     return 0;
   }
   if (origin == ZLIB_FILEFUNC_SEEK_SET) {
-    buffer->offset = std::min(buffer->length, static_cast<size_t>(offset));
+    buffer->offset = std::min(buffer->length, offset);
     return 0;
   }
   NOTREACHED();
@@ -268,33 +272,33 @@ namespace zip {
 namespace internal {
 
 unzFile OpenForUnzipping(const std::string& file_name_utf8) {
-  zlib_filefunc_def* zip_func_ptrs = NULL;
+  zlib_filefunc64_def* zip_func_ptrs = nullptr;
 #if defined(OS_WIN)
-  zlib_filefunc_def zip_funcs;
-  fill_win32_filefunc(&zip_funcs);
-  zip_funcs.zopen_file = ZipOpenFunc;
+  zlib_filefunc64_def zip_funcs;
+  fill_win32_filefunc64(&zip_funcs);
+  zip_funcs.zopen64_file = ZipOpenFunc;
   zip_func_ptrs = &zip_funcs;
 #endif
-  return unzOpen2(file_name_utf8.c_str(), zip_func_ptrs);
+  return unzOpen2_64(file_name_utf8.c_str(), zip_func_ptrs);
 }
 
 #if defined(OS_POSIX)
 unzFile OpenFdForUnzipping(int zip_fd) {
-  zlib_filefunc_def zip_funcs;
+  zlib_filefunc64_def zip_funcs;
   FillFdOpenFileFunc(&zip_funcs, zip_fd);
   // Passing dummy "fd" filename to zlib.
-  return unzOpen2("fd", &zip_funcs);
+  return unzOpen2_64("fd", &zip_funcs);
 }
 #endif
 
 #if defined(OS_WIN)
 unzFile OpenHandleForUnzipping(HANDLE zip_handle) {
-  zlib_filefunc_def zip_funcs;
-  fill_win32_filefunc(&zip_funcs);
-  zip_funcs.zopen_file = HandleOpenFileFunc;
+  zlib_filefunc64_def zip_funcs;
+  fill_win32_filefunc64(&zip_funcs);
+  zip_funcs.zopen64_file = HandleOpenFileFunc;
   zip_funcs.zclose_file = HandleCloseFileFunc;
   zip_funcs.opaque = zip_handle;
-  return unzOpen2("fd", &zip_funcs);
+  return unzOpen2_64("fd", &zip_funcs);
 }
 #endif
 
@@ -310,37 +314,36 @@ unzFile PrepareMemoryForUnzipping(const std::string& data) {
   buffer->length = data.length();
   buffer->offset = 0;
 
-  zlib_filefunc_def zip_functions;
-  zip_functions.zopen_file = OpenZipBuffer;
+  zlib_filefunc64_def zip_functions;
+  zip_functions.zopen64_file = OpenZipBuffer;
   zip_functions.zread_file = ReadZipBuffer;
   zip_functions.zwrite_file = WriteZipBuffer;
-  zip_functions.ztell_file = GetOffsetOfZipBuffer;
-  zip_functions.zseek_file = SeekZipBuffer;
+  zip_functions.ztell64_file = GetOffsetOfZipBuffer;
+  zip_functions.zseek64_file = SeekZipBuffer;
   zip_functions.zclose_file = CloseZipBuffer;
   zip_functions.zerror_file = GetErrorOfZipBuffer;
-  zip_functions.opaque = static_cast<void*>(buffer);
-  return unzOpen2(NULL, &zip_functions);
+  zip_functions.opaque = buffer;
+  return unzOpen2_64(nullptr, &zip_functions);
 }
 
 zipFile OpenForZipping(const std::string& file_name_utf8, int append_flag) {
-  zlib_filefunc_def* zip_func_ptrs = NULL;
+  zlib_filefunc64_def* zip_func_ptrs = nullptr;
 #if defined(OS_WIN)
-  zlib_filefunc_def zip_funcs;
-  fill_win32_filefunc(&zip_funcs);
-  zip_funcs.zopen_file = ZipOpenFunc;
+  zlib_filefunc64_def zip_funcs;
+  fill_win32_filefunc64(&zip_funcs);
+  zip_funcs.zopen64_file = ZipOpenFunc;
   zip_func_ptrs = &zip_funcs;
 #endif
-  return zipOpen2(file_name_utf8.c_str(), append_flag,
-                  NULL,  // global comment
-                  zip_func_ptrs);
+  return zipOpen2_64(file_name_utf8.c_str(), append_flag, nullptr,
+                     zip_func_ptrs);
 }
 
 #if defined(OS_POSIX)
 zipFile OpenFdForZipping(int zip_fd, int append_flag) {
-  zlib_filefunc_def zip_funcs;
+  zlib_filefunc64_def zip_funcs;
   FillFdOpenFileFunc(&zip_funcs, zip_fd);
   // Passing dummy "fd" filename to zlib.
-  return zipOpen2("fd", append_flag, NULL, &zip_funcs);
+  return zipOpen2_64("fd", append_flag, nullptr, &zip_funcs);
 }
 #endif
 
