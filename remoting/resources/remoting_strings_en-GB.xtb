@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">An unexpected error occurred. Please report this problem to the developers.</translation>
 <translation id="1697532407822776718">You're all set!</translation>
 <translation id="1742469581923031760">Connecting…</translation>
+<translation id="177040763384871009">To allow links clicked on the remote device to be opened on the client browser, you need to change the system's web browser to "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">Channel IP for client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Delete</translation>
 <translation id="2009755455353575666">Connection failed</translation>
@@ -56,6 +57,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Find out how</translation>
 <translation id="3776024066357219166">Your Chrome Remote Desktop session has ended.</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Invalid host owner domain.</translation>
 <translation id="3931191050278863510">Host stopped.</translation>
@@ -141,6 +143,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="7434397035092923453">Access denied for client: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Client connected: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Change account</translation>
+<translation id="7535110896613603182">Open default apps settings</translation>
 <translation id="7628469622942688817">Remember my PIN on this device.</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>

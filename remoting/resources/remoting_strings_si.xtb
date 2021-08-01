@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">අනපේක්ෂිත දෝෂයක් හට ගැනිණි. කරුණාකර මෙම ගැටලුව සංවර්ධකයන් වෙත වාර්තා කරන්න.</translation>
 <translation id="1697532407822776718">ඔබ මුළුමනින් සුදානම්ය!</translation>
 <translation id="1742469581923031760">සම්බන්ධ වෙමින්…</translation>
+<translation id="177040763384871009">සේවාලාභී බ්‍රව්සරයේ දුරස්ථ උපාංගයේ ක්ලික් කළ සබැඳි විවෘත කිරීමට ඉඩ දීම සඳහා, ඔබ පද්ධතියේ වෙබ් බ්‍රව්සරය "<ph name="URL_FORWARDER_NAME" />" ලෙස වෙනස් කිරීම අවශ්‍යය.</translation>
 <translation id="177096447311351977">සේවාදායකයා සඳහා නාලිකාl IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">මකන්න</translation>
 <translation id="2009755455353575666">සම්බන්ධතාව අසාර්ථක</translation>
@@ -56,6 +57,7 @@
 <translation id="369442766917958684">නොබැඳි</translation>
 <translation id="3695446226812920698">කෙසේදැයි දැන ගන්න</translation>
 <translation id="3776024066357219166">ඔබේ  Chrome දුරස්ථ වැඩබිම් වාරය අවසන් විය.</translation>
+<translation id="3858860766373142691">නම</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3905196214175737742">අවලංගු සත්කාරක හිමිකරු වසම.</translation>
 <translation id="3931191050278863510">ධාරකය නතර කළා.</translation>
@@ -141,6 +143,7 @@
 <translation id="7434397035092923453">සෙවාලාභියා සඳහා ප්‍රවේශය ප්‍රතික්ෂේප විය: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">සේවාලාභියා සබඳවී ඇත: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ගිණුම වෙනස් කරන්න</translation>
+<translation id="7535110896613603182">පෙරනිමි යෙදුම් සැකසීම් විවෘත කරන්න</translation>
 <translation id="7628469622942688817">මෙම උපාංගයෙහි මගේ PIN අංකය මතක තබා ගන්න.</translation>
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>

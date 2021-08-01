@@ -120,6 +120,7 @@
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
 <translation id="3540383942695635079">MAC address</translation>
 <translation id="357889014807611375">metered Wi-Fi</translation>
+<translation id="3582041541988388905">No <ph name="NETWORK_NAME" /> connection detected</translation>
 <translation id="3595596368722241419">Battery full</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
@@ -130,6 +131,7 @@
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="3838338534323494292">New password</translation>
+<translation id="3858860766373142691">Name</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
@@ -375,6 +377,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8214184102975786227">Scan multiple pages to one PDF</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8246209727385807362">Unknown operator</translation>
+<translation id="8286154143153872371">Please connect to a network and reload the page to view wallpaper.</translation>
 <translation id="8291967909914612644">Home provider country</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297006494302853456">Weak</translation>
