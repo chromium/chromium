@@ -943,11 +943,11 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
   // supported.
   if (IsColorSpaceSupportedByPCVR(image)) {
     // Create temporary frame wrapping the YUVA planes.
-    scoped_refptr<media::VideoFrame> frame;
     auto pixel_format = AvifToVideoPixelFormat(image->yuvFormat, image->depth);
     if (pixel_format == media::PIXEL_FORMAT_UNKNOWN)
       return false;
     auto size = gfx::Size(image->width, image->height);
+    scoped_refptr<media::VideoFrame> frame;
     if (image->alphaPlane) {
       DCHECK_EQ(pixel_format, media::PIXEL_FORMAT_I420);
       pixel_format = media::PIXEL_FORMAT_I420A;
@@ -962,6 +962,8 @@ bool AVIFImageDecoder::RenderImage(const avifImage* image, ImageFrame* buffer) {
           image->yuvRowBytes[1], image->yuvRowBytes[2], image->yuvPlanes[0],
           image->yuvPlanes[1], image->yuvPlanes[2], base::TimeDelta());
     }
+    if (!frame)
+      return false;
     frame->set_color_space(frame_cs);
 
     // Really only handles 709, 601, 2020, JPEG 8-bit conversions and uses
