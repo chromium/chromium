@@ -2786,6 +2786,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+
+  // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
+  auto iterator = _ntpCoordinatorsForWebStates.find(webState);
+  if (iterator != _ntpCoordinatorsForWebStates.end()) {
+    [iterator->second stop];
+    _ntpCoordinatorsForWebStates.erase(iterator);
+  }
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
@@ -4743,12 +4750,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   webState->SetKeepRenderProcessAlive(false);
 
   [self uninstallDelegatesForWebState:webState];
-
-  auto iterator = _ntpCoordinatorsForWebStates.find(webState);
-  if (iterator != _ntpCoordinatorsForWebStates.end()) {
-    [iterator->second stop];
-    _ntpCoordinatorsForWebStates.erase(iterator);
-  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -5356,6 +5357,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                 forWebState:(web::WebState*)webState {
   if (NTPHelper->IsActive()) {
     DCHECK(![self ntpCoordinatorForWebState:webState]);
+    // Checks for leaks in |_ntpCoordinatorsForWebStates|.
+    DCHECK_LE(static_cast<int>(_ntpCoordinatorsForWebStates.size()),
+              self.browser->GetWebStateList()->count() - 1);
     // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
     NewTabPageCoordinator* newTabPageCoordinator =
         [[NewTabPageCoordinator alloc] initWithBrowser:self.browser];
