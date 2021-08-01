@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,6 +64,7 @@ class FileSearchProvider : public SearchProvider {
       last_tokenized_query_;
 
   Profile* const profile_;
+  ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
 
   SEQUENCE_CHECKER(sequence_checker_);

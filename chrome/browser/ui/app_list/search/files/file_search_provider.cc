@@ -91,6 +91,7 @@ std::vector<FileSearchProvider::PathInfo> SearchFilesByPattern(
 
 FileSearchProvider::FileSearchProvider(Profile* profile)
     : profile_(profile),
+      thumbnail_loader_(profile),
       root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
@@ -156,9 +157,11 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const double relevance) {
   const auto type = path.is_directory ? FileResult::Type::kDirectory
                                       : FileResult::Type::kFile;
-  return std::make_unique<FileResult>(kFileSearchSchema, path.path,
-                                      ash::AppListSearchResultType::kFileSearch,
-                                      last_query_, relevance, type, profile_);
+  auto result = std::make_unique<FileResult>(
+      kFileSearchSchema, path.path, ash::AppListSearchResultType::kFileSearch,
+      last_query_, relevance, type, profile_);
+  result->RequestThumbnail(&thumbnail_loader_);
+  return result;
 }
 
 }  // namespace app_list

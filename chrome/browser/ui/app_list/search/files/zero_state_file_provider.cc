@@ -61,7 +61,7 @@ bool IsSuggestedContentEnabled(Profile* profile) {
 }  // namespace
 
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
-    : profile_(profile) {
+    : profile_(profile), thumbnail_loader_(profile) {
   DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
@@ -125,10 +125,12 @@ void ZeroStateFileProvider::SetSearchResults(
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (const auto& filepath_score : results.first) {
-    new_results.emplace_back(std::make_unique<FileResult>(
+    auto result = std::make_unique<FileResult>(
         kZeroStateFileSchema, filepath_score.first,
         ash::AppListSearchResultType::kZeroStateFile,
-        ash::SearchResultDisplayType::kList, filepath_score.second, profile_));
+        ash::SearchResultDisplayType::kList, filepath_score.second, profile_);
+    result->RequestThumbnail(&thumbnail_loader_);
+    new_results.push_back(std::move(result));
 
     // Add suggestion chip file results
     if (app_list_features::IsSuggestedFilesEnabled() &&
