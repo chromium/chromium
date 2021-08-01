@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.os.Build;
 import android.util.Pair;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -54,7 +56,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (selectorAssignment == null) {
             mTabModelSelector = null;
         } else {
-            mTabModelSelector = (TabModelSelectorImpl) selectorAssignment.second;
+            mTabModelSelector = (TabModelSelectorBase) selectorAssignment.second;
         }
 
         if (mTabModelSelector == null) {
@@ -99,5 +101,15 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             == 0;
         }
         return mergeTabs;
+    }
+
+    @Override
+    public void cleanupInstance(int instanceId) {
+        mTabPersistentStore.cleanupStateFile(instanceId);
+    }
+
+    @VisibleForTesting
+    public TabPersistentStore getTabPersistentStoreForTesting() {
+        return mTabPersistentStore;
     }
 }

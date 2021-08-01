@@ -17,6 +17,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.TaskRunner;
@@ -319,8 +320,65 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     public void cleanupUnusedFiles(Callback<List<String>> filesToDelete) {
         synchronized (CLEAN_UP_TASK_LOCK) {
             if (sCleanupTask != null) sCleanupTask.cancel(true);
-            sCleanupTask = new CleanUpTabStateDataTask(filesToDelete);
+            sCleanupTask = new CleanUpTabStateDataTask(
+                    filesToDelete, () -> getOtherTabsId(mSelectorIndex));
             sCleanupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    @Override
+    public void cleanupInstanceState(int index, Callback<List<String>> filesToDelete) {
+        TabModelSelector selector =
+                TabWindowManagerSingleton.getInstance().getTabModelSelectorById(index);
+        if (selector != null) {
+            // Remove all the tabs from the instance if it is in running state to be able to
+            // delete the corresponding tab state file.
+            for (int i = 0; i < selector.getModels().size(); i++) {
+                TabModel tabModel = selector.getModels().get(i);
+                while (tabModel.getCount() > 0) tabModel.removeTab(tabModel.getTabAt(0));
+            }
+        }
+        synchronized (CLEAN_UP_TASK_LOCK) {
+            if (sCleanupTask != null) sCleanupTask.cancel(true);
+            sCleanupTask = new CleanUpTabStateDataTask(filesToDelete, () -> getOtherTabsId(index));
+            sCleanupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    /**
+     * Gets the IDs of all tabs in the instances other than the specified one. IDs for custom tabs
+     * are excluded.
+     * @param index Index of the instance whose tabs are being deleted.
+     */
+    private SparseBooleanArray getOtherTabsId(int index) {
+        SparseBooleanArray tabIds = new SparseBooleanArray();
+        for (int i = 0; i < mMaxSelectors; ++i) {
+            // Although we check all selectors before deleting, we can only be sure that our own
+            // selector will not go away between now and then. So, we read from disk all other
+            // state files, even if they are already loaded by another selector.
+            if (i != index) getTabsFromStateFiles(tabIds, i);
+        }
+        return tabIds;
+    }
+
+    /**
+     * Gets the IDs of all tabs in TabModelSelectors of a given instance.
+     * @param tabIds SparseBooleanArray to populate with TabIds.
+     * @param index Index for the corresponding instance.
+     */
+    private void getTabsFromStateFiles(SparseBooleanArray tabIds, int index) {
+        File metadataFile = new File(getOrCreateStateDirectory(), getStateFileName(index));
+        if (metadataFile.exists()) {
+            DataInputStream stream = null;
+            try {
+                stream = new DataInputStream(
+                        new BufferedInputStream(new FileInputStream(metadataFile)));
+                TabPersistentStore.readSavedStateFile(stream, null, tabIds, false);
+            } catch (Exception e) {
+                Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
+            } finally {
+                StreamUtil.closeQuietly(stream);
+            }
         }
     }
 
@@ -345,10 +403,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
         private String[] mTabFileNames;
         private String[] mThumbnailFileNames;
-        private SparseBooleanArray mOtherTabIds;
+        private Supplier<SparseBooleanArray> mOtherTabSupplier;
+        private SparseBooleanArray mOtherTabIds; // Tab in use by other selectors, not be deleted.
 
-        CleanUpTabStateDataTask(Callback<List<String>> filesToDelete) {
+        CleanUpTabStateDataTask(Callback<List<String>> filesToDelete,
+                Supplier<SparseBooleanArray> otherTabsSupplier) {
             mFilesToDeleteCallback = filesToDelete;
+            mOtherTabSupplier = otherTabsSupplier;
         }
 
         @Override
@@ -358,9 +419,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             mTabFileNames = getOrCreateStateDirectory().list();
             String thumbnailDirectory = PathUtils.getThumbnailCacheDirectory();
             mThumbnailFileNames = new File(thumbnailDirectory).list();
-
-            mOtherTabIds = new SparseBooleanArray();
-            getTabsFromOtherStateFiles(mOtherTabIds);
+            mOtherTabIds = mOtherTabSupplier.get();
             return null;
         }
 
@@ -369,8 +428,8 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
             if (mDestroyed) return;
             TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
 
+            List<String> filesToDelete = new ArrayList<>();
             if (mTabFileNames != null) {
-                List<String> filesToDelete = new ArrayList<>();
                 for (String fileName : mTabFileNames) {
                     Pair<Integer, Boolean> data =
                             TabStateFileManager.parseInfoFromFilename(fileName);
@@ -381,8 +440,11 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
                         }
                     }
                 }
-                mFilesToDeleteCallback.onResult(filesToDelete);
             }
+            // Invoke the callback even if filesToDelete is empty since it could perform other
+            // cleanups.
+            mFilesToDeleteCallback.onResult(filesToDelete);
+
             if (mTabContentManager != null && mThumbnailFileNames != null) {
                 for (String fileName : mThumbnailFileNames) {
                     try {
@@ -403,34 +465,6 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
         private boolean shouldDeleteTabFile(int tabId, TabWindowManager tabWindowManager) {
             return tabWindowManager.getTabById(tabId) == null && !mOtherTabIds.get(tabId);
-        }
-
-        /**
-         * Gets the IDs of all tabs in TabModelSelectors other than the currently selected one. IDs
-         * for custom tabs are excluded.
-         * @param tabIds SparseBooleanArray to populate with TabIds.
-         */
-        private void getTabsFromOtherStateFiles(SparseBooleanArray tabIds) {
-            for (int i = 0; i < mMaxSelectors; i++) {
-                // Although we check all selectors before deleting, we can only be sure that our own
-                // selector will not go away between now and then. So, we read from disk all other
-                // state files, even if they are already loaded by another selector.
-                if (i == mSelectorIndex) continue;
-
-                File metadataFile = new File(getOrCreateStateDirectory(), getStateFileName(i));
-                if (metadataFile.exists()) {
-                    DataInputStream stream = null;
-                    try {
-                        stream = new DataInputStream(
-                                new BufferedInputStream(new FileInputStream(metadataFile)));
-                        TabPersistentStore.readSavedStateFile(stream, null, tabIds, false);
-                    } catch (Exception e) {
-                        Log.e(TAG, "Unable to read state for " + metadataFile.getName() + ": " + e);
-                    } finally {
-                        StreamUtil.closeQuietly(stream);
-                    }
-                }
-            }
         }
 
         @Override

@@ -24,8 +24,10 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -64,6 +66,10 @@ public class MultiInstanceManagerApi31UnitTest {
     private TestMultiInstanceManagerApi31 mMultiInstanceManager;
     @Mock
     MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock
+    ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
+    @Mock
+    TabModelOrchestrator mTabModelOrchestrator;
     @Mock
     ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock
@@ -106,11 +112,12 @@ public class MultiInstanceManagerApi31UnitTest {
         private Activity mAdjacentInstance;
 
         private TestMultiInstanceManagerApi31(Activity activity,
+                ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
                 MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
                 MenuOrKeyboardActionController menuOrKeyboardActionController) {
-            super(activity, null, multiWindowModeStateDispatcher, activityLifecycleDispatcher,
-                    menuOrKeyboardActionController);
+            super(activity, tabModelOrchestratorSupplier, multiWindowModeStateDispatcher,
+                    activityLifecycleDispatcher, menuOrKeyboardActionController);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -170,6 +177,8 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mActivityTask59.getTaskId()).thenReturn(TASK_ID_59);
         when(mActivityTask60.getTaskId()).thenReturn(TASK_ID_60);
         when(mActivityTask61.getTaskId()).thenReturn(TASK_ID_61);
+        when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
+
         mActivityPool = new Activity[] {
                 mActivityTask56,
                 mActivityTask57,
@@ -180,9 +189,9 @@ public class MultiInstanceManagerApi31UnitTest {
         };
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
-        mMultiInstanceManager =
-                new TestMultiInstanceManagerApi31(mCurrentActivity, mMultiWindowModeStateDispatcher,
-                        mActivityLifecycleDispatcher, mMenuOrKeyboardActionController);
+        mMultiInstanceManager = new TestMultiInstanceManagerApi31(mCurrentActivity,
+                mTabModelOrchestratorSupplier, mMultiWindowModeStateDispatcher,
+                mActivityLifecycleDispatcher, mMenuOrKeyboardActionController);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
     }

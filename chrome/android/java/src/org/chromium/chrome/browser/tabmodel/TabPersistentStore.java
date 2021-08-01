@@ -1532,6 +1532,24 @@ public class TabPersistentStore {
     }
 
     /**
+     * Clean up persistent state for a given instance.
+     * @param instanceId Instance ID.
+     */
+    public void cleanupStateFile(int instanceId) {
+        mPersistencePolicy.cleanupInstanceState(instanceId, new Callback<List<String>>() {
+            @Override
+            public void onResult(List<String> result) {
+                // Delete the instance state file (tab_stateX) as well.
+                deleteFileAsync(TabbedModeTabPersistencePolicy.getStateFileName(instanceId), true);
+
+                // |result| can be null if the task gets cancelled.
+                if (result == null) return;
+                for (int i = 0; i < result.size(); i++) deleteFileAsync(result.get(i), true);
+            }
+        });
+    }
+
+    /**
      * File mutations (e.g. saving & deleting) are explicitly serialized to ensure that they occur
      * in the correct order.
      *
@@ -1779,5 +1797,10 @@ public class TabPersistentStore {
     @VisibleForTesting
     void addTabToRestoreForTesting(TabRestoreDetails tabDetails) {
         mTabsToRestore.add(tabDetails);
+    }
+
+    @VisibleForTesting
+    public TabPersistencePolicy getTabPersistencePolicyForTesting() {
+        return mPersistencePolicy;
     }
 }

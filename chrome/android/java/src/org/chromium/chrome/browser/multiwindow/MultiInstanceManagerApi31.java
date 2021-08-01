@@ -339,7 +339,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected void closeInstance(int instanceId, int taskId) {
         removeInstanceInfo(instanceId);
-        // TODO: Delete persistent instance/tab state files too.
+        mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);
         if (activity != null) ApiCompatibilityUtils.finishAndRemoveTask(activity);
     }

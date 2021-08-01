@@ -104,6 +104,12 @@ public abstract class TabModelOrchestrator {
     }
 
     /**
+     * Clean up persistent state for a given instance.
+     * @param instanceId Instance ID.
+     */
+    public void cleanupInstance(int instanceId) {}
+
+    /**
      * If there is an asynchronous session restore in-progress, try to synchronously restore
      * the state of a tab with the given url as a frozen tab. This method has no effect if
      * there isn't a tab being restored with this url, or the tab has already been restored.
