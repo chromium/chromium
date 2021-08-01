@@ -160,7 +160,7 @@
     <style name="AppMenuItem">
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
-        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+        <item name="android:background">@color/menu_item_bg_color</item>
     </style>
 
     <!-- Checkbox styles. -->

@@ -193,7 +193,7 @@ public class MessageCardViewBinderTest extends DummyUiChromeActivityTestCase {
                         mItemView.getResources(), R.color.default_text_color_link_light)));
         assertThat(closeButton.getImageTintList(),
                 equalTo(AppCompatResources.getColorStateList(
-                        getActivity(), R.color.default_icon_color_inverse)));
+                        getActivity(), R.color.default_icon_color_light)));
     }
 
     @Override

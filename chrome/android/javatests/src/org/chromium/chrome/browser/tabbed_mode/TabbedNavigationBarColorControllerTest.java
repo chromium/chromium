@@ -51,7 +51,7 @@ public class TabbedNavigationBarColorControllerTest {
         mLightNavigationColor =
                 ApiCompatibilityUtils.getColor(resources, R.color.default_bg_color_light);
         mDarkNavigationColor =
-                ApiCompatibilityUtils.getColor(resources, R.color.default_bg_color_dark_elev_3);
+                ApiCompatibilityUtils.getColor(resources, R.color.default_bg_color_dark);
     }
 
     @Test

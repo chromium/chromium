@@ -224,7 +224,6 @@ android_resources("java_resources") {
     "java/res/layout/tile_view_modern.xml",
     "java/res/layout/tile_view_modern_condensed.xml",
     "java/res/values-ldrtl/values.xml",
-    "java/res/values-night/colors.xml",
     "java/res/values-night/drawables.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/attrs.xml",
