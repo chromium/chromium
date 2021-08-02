@@ -82,17 +82,13 @@ function getErrorDescription(error) {
 /**
  * Gets formatted string stack from error.
  * @param {!Error} error
+ * @param {?Array<!StackFrame>} frames
  * @return {string}
  */
-function formatErrorStack(error) {
-  if (typeof error.stack === 'string') {
-    return error.stack;
-  }
-  const frames = error.stack || /** @type {!Array<!StackFrame>} */ ([]);
-
+function formatErrorStack(error, frames) {
   const errorDesc = getErrorDescription(error);
   return errorDesc +
-      frames
+      (frames || [])
           .map(({fileName, funcName, lineNo, colNo}) => {
             let position = '';
             if (lineNo !== -1) {
@@ -159,7 +155,7 @@ export function reportError(type, level, error) {
   }
   triggeredErrorSet.add(hash);
 
-  const stackStr = formatErrorStack(error);
+  const stackStr = formatErrorStack(error, frames);
   if (appWindow !== null) {
     appWindow.reportError({
       type,
