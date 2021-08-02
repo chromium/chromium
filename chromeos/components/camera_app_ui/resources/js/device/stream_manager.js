@@ -176,7 +176,7 @@ export class StreamManager {
   /**
    * Registers listener to be called when state of available real devices
    * changes.
-   * @param {function(!Array<!DeviceInfo>)} listener
+   * @param {function(!Array<!DeviceInfo>): !Promise} listener
    */
   addRealDeviceChangeListener(listener) {
     this.realListeners_.push(listener);
