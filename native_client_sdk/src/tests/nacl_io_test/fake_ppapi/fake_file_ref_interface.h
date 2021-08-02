@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_TEST_FAKE_FILE_REF_INTERFACE_H_
-#define LIBRARIES_NACL_IO_TEST_FAKE_FILE_REF_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_REF_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_REF_INTERFACE_H_
 
 #include "fake_ppapi/fake_core_interface.h"
 #include "fake_ppapi/fake_var_interface.h"
@@ -39,4 +39,4 @@ class FakeFileRefInterface : public nacl_io::FileRefInterface {
   DISALLOW_COPY_AND_ASSIGN(FakeFileRefInterface);
 };
 
-#endif  // LIBRARIES_NACL_IO_TEST_FAKE_FILE_REF_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_REF_INTERFACE_H_

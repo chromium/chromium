@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_H_
-#define TESTS_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_H_
 
 #include "fake_ppapi/fake_core_interface.h"
 #include "fake_ppapi/fake_host_resolver_interface.h"
@@ -52,4 +52,4 @@ class FakePepperInterface : public nacl_io::PepperInterfaceDummy {
   DISALLOW_COPY_AND_ASSIGN(FakePepperInterface);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_PEPPER_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_PEPPER_INTERFACE_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_STREAM_STREAM_H_
-#define LIBRARIES_NACL_IO_STREAM_STREAM_H_
+#ifndef LIBRARIES_NACL_IO_STREAM_STREAM_FS_H_
+#define LIBRARIES_NACL_IO_STREAM_STREAM_FS_H_
 
 #include "nacl_io/filesystem.h"
 
@@ -75,4 +75,4 @@ class StreamFs : public Filesystem {
 
 }  // namespace nacl_io
 
-#endif  // LIBRARIES_NACL_IO_STREAM_STREAM_H_
+#endif  // LIBRARIES_NACL_IO_STREAM_STREAM_FS_H_

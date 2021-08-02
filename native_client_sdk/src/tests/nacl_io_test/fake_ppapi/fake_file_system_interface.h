@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_TEST_FAKE_FILE_SYSTEM_INTERFACE_H_
-#define LIBRARIES_NACL_IO_TEST_FAKE_FILE_SYSTEM_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_SYSTEM_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_SYSTEM_INTERFACE_H_
 
 #include "fake_ppapi/fake_core_interface.h"
 #include "sdk_util/macros.h"
@@ -24,4 +24,4 @@ class FakeFileSystemInterface : public nacl_io::FileSystemInterface {
   DISALLOW_COPY_AND_ASSIGN(FakeFileSystemInterface);
 };
 
-#endif  // LIBRARIES_NACL_IO_TEST_FAKE_FILE_SYSTEM_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_SYSTEM_INTERFACE_H_

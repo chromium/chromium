@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_FIFO_PACKET_H_
-#define LIBRARIES_NACL_IO_FIFO_PACKET_H_
+#ifndef LIBRARIES_NACL_IO_SOCKET_FIFO_PACKET_H_
+#define LIBRARIES_NACL_IO_SOCKET_FIFO_PACKET_H_
 
 #include <stdint.h>
 #include <string.h>
@@ -62,4 +62,4 @@ class FIFOPacket : public FIFOInterface {
 
 }  // namespace nacl_io
 
-#endif  // LIBRARIES_NACL_IO_FIFO_PACKET_H_
+#endif  // LIBRARIES_NACL_IO_SOCKET_FIFO_PACKET_H_

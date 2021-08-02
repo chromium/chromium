@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_VAR_MANAGER_H_
-#define TESTS_NACL_IO_TEST_FAKE_VAR_MANAGER_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_MANAGER_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_MANAGER_H_
 
 #include <map>
 #include <ppapi/c/pp_var.h>
@@ -56,4 +56,4 @@ class FakeVarManager {
   DISALLOW_COPY_AND_ASSIGN(FakeVarManager);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_VAR_MANAGER_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_MANAGER_H_

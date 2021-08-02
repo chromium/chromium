@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LIBRARIES_NACL_IO_TEST_FAKE_NODE_H_
-#define LIBRARIES_NACL_IO_TEST_FAKE_NODE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NODE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NODE_H_
 
 #include <string>
 #include <vector>
@@ -37,4 +37,4 @@ class FakeNode {
   std::vector<uint8_t> contents_;
 };
 
-#endif  // LIBRARIES_NACL_IO_TEST_FAKE_NODE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NODE_H_

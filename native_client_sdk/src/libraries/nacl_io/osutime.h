@@ -11,4 +11,4 @@
 
 struct utimbuf;
 
-#endif  /* LIBRARIES_NACL_IO_OSUTIME_H_ */
+#endif  // LIBRARIES_NACL_IO_OSUTIME_H_

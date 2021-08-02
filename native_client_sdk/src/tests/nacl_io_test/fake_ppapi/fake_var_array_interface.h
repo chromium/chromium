@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_VAR_ARRAY_INTERFACE_H_
-#define TESTS_NACL_IO_TEST_FAKE_VAR_ARRAY_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_ARRAY_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_ARRAY_INTERFACE_H_
 
 #include "nacl_io/pepper_interface.h"
 #include "sdk_util/macros.h"
@@ -26,4 +26,4 @@ class FakeVarArrayInterface : public nacl_io::VarArrayInterface {
   DISALLOW_COPY_AND_ASSIGN(FakeVarArrayInterface);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_VAR_ARRAY_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_ARRAY_INTERFACE_H_

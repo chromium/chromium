@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_HOST_RESOLVER_INTERFACE_H_
-#define TESTS_NACL_IO_TEST_FAKE_HOST_RESOLVER_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_
 
 #include <ppapi/c/ppb_host_resolver.h>
 
@@ -42,4 +42,4 @@ class FakeHostResolverInterface : public nacl_io::HostResolverInterface {
   DISALLOW_COPY_AND_ASSIGN(FakeHostResolverInterface);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_HOST_RESOLVER_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_

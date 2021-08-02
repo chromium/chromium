@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef PPAPI_SIMPLE_PS_H_
-#define PPAPI_SIMPLE_PS_H_
+#ifndef LIBRARIES_PPAPI_SIMPLE_PS_H_
+#define LIBRARIES_PPAPI_SIMPLE_PS_H_
 
 #include "ppapi/c/pp_instance.h"
 #include "sdk_util/macros.h"
@@ -55,4 +55,4 @@ const void* PSGetInterface(const char *name);
 
 EXTERN_C_END
 
-#endif  /* PPAPI_SIMPLE_PS_H_ */
+#endif  // LIBRARIES_PPAPI_SIMPLE_PS_H_

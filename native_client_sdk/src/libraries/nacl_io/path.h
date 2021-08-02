@@ -61,4 +61,4 @@ class Path {
 
 }  // namespace nacl_io
 
-#endif  // PACKAGES_LIBRARIES_NACL_IO_PATH_H_
+#endif  // LIBRARIES_NACL_IO_PATH_H_

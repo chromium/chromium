@@ -106,4 +106,4 @@ inline Atomic32 AtomicXorFetch(volatile Atomic32* ptr, Atomic32 value) {
 
 #endif  // ifndef WIN32
 
-#endif  /* LIBRARIES_SDK_UTIL_ATOMICOPS_H_ */
+#endif  // LIBRARIES_SDK_UTIL_ATOMICOPS_H_
