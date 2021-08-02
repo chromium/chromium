@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +37,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/core/top_host_provider.h"
@@ -59,41 +61,6 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace {
-
-// Fetch and calculate the total number of samples from all the bins for
-// |histogram_name|. Note: from some browertests run (such as chromeos) there
-// might be two profiles created, and this will return the total sample count
-// across profiles.
-int GetTotalHistogramSamples(const base::HistogramTester* histogram_tester,
-                             const std::string& histogram_name) {
-  std::vector<base::Bucket> buckets =
-      histogram_tester->GetAllSamples(histogram_name);
-  int total = 0;
-  for (const auto& bucket : buckets)
-    total += bucket.count;
-
-  return total;
-}
-
-// Retries fetching |histogram_name| until it contains at least |count| samples.
-int RetryForHistogramUntilCountReached(
-    const base::HistogramTester* histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  int total = 0;
-  while (true) {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-
-    total = GetTotalHistogramSamples(histogram_tester, histogram_name);
-    if (total >= count)
-      return total;
-
-    content::FetchHistogramsFromChildProcesses();
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::RunLoop().RunUntilIdle();
-  }
-}
 
 enum class HintsFetcherRemoteResponseType {
   kSuccessful = 0,
@@ -217,7 +184,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
         ->MaybeUpdateHintsComponent(component_info);
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
   }
@@ -244,7 +211,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     // histogram) prior to the navigation that tests functionality.
     ui_test_utils::NavigateToURL(browser(), url);
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
   }
@@ -488,12 +455,12 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherEnabled) {
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -526,16 +493,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1),
             1);
@@ -561,14 +528,14 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
   // Wait until histograms have been updated before performing checks for
   // correct behavior based on the response.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -592,14 +559,14 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
   // Wait until histograms have been updated before performing checks for
   // correct behavior based on the response.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -622,14 +589,14 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
   // Wait until histograms have been updated before performing checks for
   // correct behavior based on the response.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -655,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   ui_test_utils::NavigateToURL(browser(), GURL("https://unsuccessful.com/"));
 
   // We expect that we requested hints for 1 URL.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1),
             1);
@@ -691,16 +658,16 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as OnePlatform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1),
             1);
@@ -746,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as OnePlatform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
@@ -755,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 2, 1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -801,12 +768,12 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as hints fetching is enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -830,19 +797,19 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // Allowlist NoScript for https_url()'s' host.
     SetUpComponentUpdateHints(https_url());
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
 
     // Expect that the browser initialization will record at least one sample
     // in each of the following histograms as One Platform Hints are enabled.
     EXPECT_GE(
-        RetryForHistogramUntilCountReached(
+        optimization_guide::RetryForHistogramUntilCountReached(
             &histogram_tester,
             "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
         1);
 
-    EXPECT_GE(RetryForHistogramUntilCountReached(
+    EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                   &histogram_tester,
                   "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
               1);
@@ -876,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     ui_test_utils::NavigateToURL(browser(), GURL(host_online));
 
     EXPECT_EQ(1u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
     // Navigate away so metrics are recorded.
@@ -916,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     ui_test_utils::NavigateToURL(browser(), GURL(host_network_offline));
 
     EXPECT_EQ(0u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
 
@@ -966,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     ui_test_utils::NavigateToURL(browser(), GURL(host_3g));
 
     EXPECT_EQ(1u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
 
@@ -1015,7 +982,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
     EXPECT_EQ(1u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
     // Navigate away so metrics are recorded.
@@ -1050,18 +1017,18 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       histogram_tester,
       optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -1088,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     ui_test_utils::NavigateToURL(browser(), GURL(full_url));
 
     EXPECT_EQ(2u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
     histogram_tester->ExpectUniqueSample(
@@ -1109,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
     EXPECT_EQ(2u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         2);
 
@@ -1134,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     ui_test_utils::NavigateToURL(otr_browser, GURL(full_url));
 
     // Make sure no additional hints requests were received.
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &incognito_histogram_tester,
         optimization_guide::kLoadedHintLocalHistogramString, 1);
     EXPECT_EQ(2u, count_hints_requests_received());
@@ -1153,18 +1120,18 @@ IN_PROC_BROWSER_TEST_F(
   // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       histogram_tester,
       optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -1192,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(
     ui_test_utils::NavigateToURL(browser(), GURL(full_url));
 
     EXPECT_EQ(2u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
     histogram_tester->ExpectUniqueSample(
@@ -1223,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
     EXPECT_EQ(3u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         2);
 
@@ -1244,18 +1211,18 @@ IN_PROC_BROWSER_TEST_F(
   // Allowlist NoScript for https_url()'s' host.
   SetUpComponentUpdateHints(https_url());
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       histogram_tester,
       optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);
@@ -1282,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(
     ui_test_utils::NavigateToURL(browser(), GURL(full_url));
 
     EXPECT_EQ(2u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         1);
     histogram_tester->ExpectUniqueSample(
@@ -1311,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
     EXPECT_EQ(2u, count_hints_requests_received());
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
         2);
 
@@ -1345,12 +1312,12 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
 
   // Expect that the browser initialization will record at least one sample
   // in each of the following histograms as One Platform Hints are enabled.
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
             1);
 
-  EXPECT_GE(RetryForHistogramUntilCountReached(
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
                 histogram_tester,
                 "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
             1);

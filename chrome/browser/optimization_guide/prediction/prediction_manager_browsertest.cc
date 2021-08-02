@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
@@ -46,39 +46,6 @@
 #endif
 
 namespace {
-
-// Fetch and calculate the total number of samples from all the bins for
-// |histogram_name|. Note: from some browertests run (such as chromeos) there
-// might be two profiles created, and this will return the total sample count
-// across profiles.
-int GetTotalHistogramSamples(const base::HistogramTester* histogram_tester,
-                             const std::string& histogram_name) {
-  std::vector<base::Bucket> buckets =
-      histogram_tester->GetAllSamples(histogram_name);
-  int total = 0;
-  for (const auto& bucket : buckets)
-    total += bucket.count;
-
-  return total;
-}
-
-// Retries fetching |histogram_name| until it contains at least |count| samples.
-void RetryForHistogramUntilCountReached(
-    const base::HistogramTester* histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  while (true) {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-
-    content::FetchHistogramsFromChildProcesses();
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-    int total = GetTotalHistogramSamples(histogram_tester, histogram_name);
-    if (total >= count)
-      return;
-  }
-}
 
 std::unique_ptr<optimization_guide::proto::PredictionModel>
 GetValidDecisionTreePredictionModel() {

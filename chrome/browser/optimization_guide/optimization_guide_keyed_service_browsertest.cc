@@ -7,12 +7,12 @@
 #include "base/base64.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/core/test_hints_component_creator.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -45,37 +46,6 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 namespace {
-
-// Fetch and calculate the total number of samples from all the bins for
-// |histogram_name|. Note: from some browertests run, there might be two
-// profiles created, and this will return the total sample count across
-// profiles.
-int GetTotalHistogramSamples(const base::HistogramTester& histogram_tester,
-                             const std::string& histogram_name) {
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples(histogram_name);
-  int total = 0;
-  for (const auto& bucket : buckets)
-    total += bucket.count;
-
-  return total;
-}
-
-// Retries fetching |histogram_name| until it contains at least |count| samples.
-int RetryForHistogramUntilCountReached(
-    const base::HistogramTester& histogram_tester,
-    const std::string& histogram_name,
-    int count) {
-  int total = 0;
-  while (true) {
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
-
-    total = GetTotalHistogramSamples(histogram_tester, histogram_name);
-    if (total >= count)
-      return total;
-  }
-}
 
 // A WebContentsObserver that asks whether an optimization type can be applied.
 class OptimizationGuideConsumerWebContentsObserver
@@ -407,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), url_with_hints());
 
-  EXPECT_GT(RetryForHistogramUntilCountReached(
-                histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
+  EXPECT_GT(optimization_guide::RetryForHistogramUntilCountReached(
+                &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
             0);
   // There is a hint that matches this URL, so there should be an attempt to
   // load a hint that succeeds.
@@ -445,8 +415,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), url_with_hints());
 
-  EXPECT_GT(RetryForHistogramUntilCountReached(
-                histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
+  EXPECT_GT(optimization_guide::RetryForHistogramUntilCountReached(
+                &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
             0);
   // There is a hint that matches this URL, so there should be an attempt to
   // load a hint that succeeds.
@@ -483,8 +453,8 @@ IN_PROC_BROWSER_TEST_F(
 
   ui_test_utils::NavigateToURL(browser(), url_that_redirects_to_hints());
 
-  EXPECT_EQ(RetryForHistogramUntilCountReached(
-                histogram_tester, "OptimizationGuide.LoadedHint.Result", 2),
+  EXPECT_EQ(optimization_guide::RetryForHistogramUntilCountReached(
+                &histogram_tester, "OptimizationGuide.LoadedHint.Result", 2),
             2);
   // Should attempt and succeed to load a hint once for the initial navigation
   // and redirect.
@@ -504,8 +474,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   ui_test_utils::NavigateToURL(browser(), GURL("https://nohints.com/"));
 
-  EXPECT_EQ(RetryForHistogramUntilCountReached(
-                histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
+  EXPECT_EQ(optimization_guide::RetryForHistogramUntilCountReached(
+                &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
             1);
   // There were no hints that match this URL, but there should still be an
   // attempt to load a hint but still fail.
@@ -535,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
         {optimization_guide::proto::FAST_HOST_HINTS});
     // Wait until filter is loaded. This histogram will record twice: once when
     // the config is found and once when the filter is created.
-    RetryForHistogramUntilCountReached(
-        histogram_tester,
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester,
         "OptimizationGuide.OptimizationFilterStatus.FastHostHints", 2);
 
     EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
@@ -557,8 +527,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
         {optimization_guide::proto::LITE_PAGE_REDIRECT});
     // Wait until filter is loaded. This histogram will record twice: once when
     // the config is found and once when the filter is created.
-    RetryForHistogramUntilCountReached(
-        histogram_tester,
+    optimization_guide::RetryForHistogramUntilCountReached(
+        &histogram_tester,
         "OptimizationGuide.OptimizationFilterStatus.LitePageRedirect", 2);
 
     // The previously loaded filter should still be loaded and give the same
@@ -643,8 +613,8 @@ IN_PROC_BROWSER_TEST_F(
   // to have loaded.
   base::HistogramTester histogram_tester;
   ui_test_utils::NavigateToURL(otr_browser, url_with_hints());
-  RetryForHistogramUntilCountReached(histogram_tester,
-                                     "OptimizationGuide.LoadedHint.Result", 1);
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1);
 
   EXPECT_EQ(
       optimization_guide::OptimizationGuideDecision::kTrue,
@@ -672,8 +642,8 @@ IN_PROC_BROWSER_TEST_F(
       {optimization_guide::proto::FAST_HOST_HINTS});
   // Wait until filter is loaded. This histogram will record twice: once when
   // the config is found and once when the filter is created.
-  RetryForHistogramUntilCountReached(
-      histogram_tester,
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester,
       "OptimizationGuide.OptimizationFilterStatus.FastHostHints", 2);
 
   EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
