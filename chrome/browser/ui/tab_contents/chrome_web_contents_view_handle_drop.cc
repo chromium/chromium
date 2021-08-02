@@ -6,6 +6,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,7 +40,6 @@ void CompletionCallback(
 }
 
 enterprise_connectors::ContentAnalysisDelegate::Data GetPathsToScan(
-    content::WebContents* web_contents,
     const content::DropData& drop_data,
     enterprise_connectors::ContentAnalysisDelegate::Data data) {
   for (const auto& file : drop_data.filenames) {
@@ -48,7 +49,7 @@ enterprise_connectors::ContentAnalysisDelegate::Data GetPathsToScan(
     if (!base::GetFileInfo(file.path, &info) || info.is_symbolic_link)
       continue;
 
-    // If the file is a directory, recursively add the files it holds to |data|.
+    // If the file is a directory, recursively add the files it holds to `data`.
     if (info.is_directory) {
       base::FileEnumerator file_enumerator(file.path, /*recursive=*/true,
                                            base::FileEnumerator::FILES);
@@ -60,18 +61,44 @@ enterprise_connectors::ContentAnalysisDelegate::Data GetPathsToScan(
       data.paths.push_back(file.path);
     }
   }
-
   return data;
 }
 
-void ScanData(content::WebContents* web_contents,
-              content::WebContentsViewDelegate::DropCompletionCallback callback,
-              enterprise_connectors::ContentAnalysisDelegate::Data data) {
-  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-      web_contents, std::move(data),
-      base::BindOnce(&CompletionCallback, std::move(callback)),
-      safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
-}
+// Helper class to handle WebContents being destroyed while files are opened in
+// the threadpool. This class deletes itself either when it's no longer needed
+// when ScanData is called, or when its corresponding web contents is destroyed
+// so its weak ptrs are invalidated.
+class HandleDropScanData : public content::WebContentsObserver {
+ public:
+  HandleDropScanData(
+      content::WebContents* web_contents,
+      content::WebContentsViewDelegate::DropCompletionCallback callback)
+      : content::WebContentsObserver(web_contents),
+        callback_(std::move(callback)) {}
+
+  void ScanData(
+      enterprise_connectors::ContentAnalysisDelegate::Data analysis_data) {
+    DCHECK(web_contents());
+
+    enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+        web_contents(), std::move(analysis_data),
+        base::BindOnce(&CompletionCallback, std::move(callback_)),
+        safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP);
+
+    delete this;
+  }
+
+  void WebContentsDestroyed() override { delete this; }
+
+  base::WeakPtr<HandleDropScanData> GetWeakPtr() {
+    return weakptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  content::WebContentsViewDelegate::DropCompletionCallback callback_;
+
+  base::WeakPtrFactory<HandleDropScanData> weakptr_factory_{this};
+};
 
 }  // namespace
 
@@ -103,13 +130,15 @@ void HandleOnPerformDrop(
   if (!drop_data.file_contents.empty())
     data.text.push_back(drop_data.file_contents);
 
+  auto* handle_drop_scan_data =
+      new HandleDropScanData(web_contents, std::move(callback));
   if (drop_data.filenames.empty()) {
-    ScanData(web_contents, std::move(callback), std::move(data));
+    handle_drop_scan_data->ScanData(std::move(data));
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&GetPathsToScan, web_contents, std::move(drop_data),
-                       std::move(data)),
-        base::BindOnce(&ScanData, web_contents, std::move(callback)));
+        base::BindOnce(&GetPathsToScan, drop_data, std::move(data)),
+        base::BindOnce(&HandleDropScanData::ScanData,
+                       handle_drop_scan_data->GetWeakPtr()));
   }
 }
