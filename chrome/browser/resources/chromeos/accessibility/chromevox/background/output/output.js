@@ -646,10 +646,10 @@ Output = class {
       if (parent.role === RoleType.WINDOW) {
         break;
       }
-      if (Output.ROLE_INFO_[parent.role] &&
-          Output.ROLE_INFO_[parent.role].contextOrder) {
+      if (Output.ROLE_INFO[parent.role] &&
+          Output.ROLE_INFO[parent.role].contextOrder) {
         this.contextOrder_ =
-            Output.ROLE_INFO_[parent.role].contextOrder || this.contextOrder_;
+            Output.ROLE_INFO[parent.role].contextOrder || this.contextOrder_;
         break;
       }
     }
@@ -1195,7 +1195,7 @@ Output = class {
   formatRole_(node, token, buff, options, ruleStr) {
     options.annotation.push(token);
     let msg = node.role;
-    const info = Output.ROLE_INFO_[node.role];
+    const info = Output.ROLE_INFO[node.role];
     if (node.roleDescription) {
       msg = node.roleDescription;
     } else if (info) {
@@ -1709,8 +1709,8 @@ Output = class {
       return;
     }
 
-    if (Output.ROLE_INFO_[node.role] &&
-        Output.ROLE_INFO_[node.role].ignoreAncestry) {
+    if (Output.ROLE_INFO[node.role] &&
+        Output.ROLE_INFO[node.role].ignoreAncestry) {
       return;
     }
 
@@ -1726,7 +1726,7 @@ Output = class {
           contextFirst = [];
           rest = [];
         }
-        if ((Output.ROLE_INFO_[node.role] || {}).contextOrder ===
+        if ((Output.ROLE_INFO[node.role] || {}).contextOrder ===
             OutputContextOrder.FIRST) {
           contextFirst.push(node);
         } else {
@@ -1860,7 +1860,7 @@ Output = class {
 
       const secondaryRole = secondaryFormatNode.role;
       const parentRole =
-          (Output.ROLE_INFO_[secondaryFormatNode.role] || {}).inherits;
+          (Output.ROLE_INFO[secondaryFormatNode.role] || {}).inherits;
       if (secondaryRole && eventBlock[secondaryRole] &&
           eventBlock[secondaryRole][secondaryFormatName]) {
         rule.role = secondaryRole;
@@ -1897,7 +1897,7 @@ Output = class {
         continue;
       }
 
-      const parentRole = (Output.ROLE_INFO_[formatNode.role] || {}).inherits;
+      const parentRole = (Output.ROLE_INFO[formatNode.role] || {}).inherits;
       if (eventBlock[formatNode.role] &&
           eventBlock[formatNode.role][formatName]) {
         rule.role = formatNode.role;
@@ -1963,7 +1963,7 @@ Output = class {
     // Navigate is the default event.
     rule.event = Output.RULES[type] ? type : 'navigate';
     const eventBlock = Output.RULES[rule.event];
-    const parentRole = (Output.ROLE_INFO_[node.role] || {}).inherits || '';
+    const parentRole = (Output.ROLE_INFO[node.role] || {}).inherits || '';
     /**
      * Use Output.RULES for node.role if exists.
      * If not, use Output.RULES for parentRole if exists.
@@ -2451,7 +2451,7 @@ Output = class {
       }
 
       while (earconFinder = ancestors.pop()) {
-        const info = Output.ROLE_INFO_[earconFinder.role];
+        const info = Output.ROLE_INFO[earconFinder.role];
         if (info && info.earconId) {
           return new OutputEarconAction(
               info.earconId, node.location || undefined);
@@ -2540,9 +2540,8 @@ Output.SPACE = ' ';
  * inherits: inherits rules from this role.
  * contextOrder: where to place the context output.
  * ignoreAncestry: ignores ancestry (context) output for this role.
- * @private
  */
-Output.ROLE_INFO_ = {
+Output.ROLE_INFO = {
   abbr: {msgId: 'tag_abbr', inherits: 'abstractContainer'},
   alert: {msgId: 'role_alert'},
   alertDialog:
@@ -2706,7 +2705,7 @@ Output.ROLE_INFO_ = {
     inherits: 'abstractRange',
     earconId: 'LISTBOX'
   },
-  splitter: {msgId: 'role_separator'},
+  splitter: {msgId: 'role_separator', inherits: 'abstractSpan'},
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
   suggestion: {
     msgId: 'role_suggestion',

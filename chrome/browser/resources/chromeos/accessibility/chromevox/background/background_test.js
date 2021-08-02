@@ -3349,8 +3349,8 @@ TEST_F('ChromeVoxBackgroundTest', 'Separator', function() {
         .call(doCmd('nextObject'))
         .expectSpeech('Hello')
         .call(doCmd('nextObject'))
-        .expectSpeech('Separator content should be read')
-        .expectBraille('Separator content should be read')
+        .expectSpeech('Separator content should be read', 'Separator')
+        .expectBraille('Separator content should be read seprtr')
         .call(doCmd('nextObject'))
         .expectSpeech('World')
         .replay();
@@ -3629,18 +3629,42 @@ TEST_F('ChromeVoxBackgroundTest', 'EndOfText', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>
-    <div tabindex=0 role="textbox" contenteditable>123</div>
+    <div tabindex=0 role="textbox" contenteditable><p>abc</p><p>123</p></div>
   `;
   this.runWithLoadedTree(site, function(root) {
     const contentEditable = root.find({role: RoleType.TEXT_FIELD});
 
     this.listenOnce(contentEditable, EventType.FOCUS, function() {
       mockFeedback.call(press(KeyCode.RIGHT))
+          .expectSpeech('b')
+          .call(press(KeyCode.RIGHT))
+          .expectSpeech('c')
+          .call(press(KeyCode.RIGHT))
+          .expectSpeech('\n')
+          .call(press(KeyCode.RIGHT))
+          .expectSpeech('1')
+          .call(press(KeyCode.RIGHT))
           .expectSpeech('2')
           .call(press(KeyCode.RIGHT))
           .expectSpeech('3')
           .call(press(KeyCode.RIGHT))
           .expectSpeech('End of text')
+
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('3')
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('2')
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('1')
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('\n')
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('c')
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('b')
+          .call(press(KeyCode.LEFT))
+          .expectSpeech('a')
+
           .replay();
     }.bind(this));
     contentEditable.focus();

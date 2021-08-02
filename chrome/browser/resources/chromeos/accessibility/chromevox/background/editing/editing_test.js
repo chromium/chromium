@@ -1768,11 +1768,13 @@ TEST_F('ChromeVoxEditingTest', 'Separator', function() {
       mockFeedback.call(this.press(KeyCode.DOWN))
           .expectSpeech('Hello')
           .call(this.press(KeyCode.DOWN))
-          .expectSpeech('Separator content should be read')
+          .expectSpeech('Separator content should be read', 'Separator')
           .call(this.press(KeyCode.DOWN))
-          .expectSpeech('World')
+          .expectSpeech('World', 'Exited Separator.')
           .call(this.press(KeyCode.LEFT))
-          .expectSpeech('\n')
+          .expectNextSpeechUtteranceIsNot('\n')
+          .expectSpeech('Separator content should be read', 'Separator')
+
           .replay();
     });
     input.focus();
