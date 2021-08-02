@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
@@ -43,6 +44,10 @@ namespace {
 constexpr base::TimeDelta kSyncConsentSettingsShowDelay =
     base::TimeDelta::FromSeconds(3);
 
+constexpr base::TimeDelta kWaitTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kWaitTimeoutForTest =
+    base::TimeDelta::FromMilliseconds(1);
+
 syncer::SyncService* GetSyncService(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
@@ -66,6 +71,14 @@ bool IsMinorMode(Profile* profile, const user_manager::User* user) {
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   return account_info.capabilities.can_offer_extended_chrome_sync_promos() !=
          signin::Tribool::kTrue;
+}
+
+base::TimeDelta GetWaitTimeout() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOobeTriggerSyncTimeoutForTests)) {
+    return kWaitTimeoutForTest;
+  }
+  return kWaitTimeout;
 }
 
 }  // namespace
@@ -166,6 +179,9 @@ void SyncConsentScreen::ShowImpl() {
     syncer::SyncService* service = GetSyncService(profile_);
     if (service)
       sync_service_observation_.Observe(service);
+    timeout_waiter_.Start(FROM_HERE, GetWaitTimeout(),
+                          base::BindOnce(&SyncConsentScreen::OnTimeout,
+                                         weak_factory_.GetWeakPtr()));
   }
   PrepareScreenBasedOnCapability();
   // Show the entire screen.
@@ -176,6 +192,7 @@ void SyncConsentScreen::ShowImpl() {
 
 void SyncConsentScreen::HideImpl() {
   sync_service_observation_.Reset();
+  timeout_waiter_.AbandonAndStop();
   view_->Hide();
 }
 
@@ -283,6 +300,11 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
   }
 }
 
+void SyncConsentScreen::OnTimeout() {
+  is_timed_out_ = true;
+  UpdateScreen();
+}
+
 void SyncConsentScreen::SetDelegateForTesting(
     SyncConsentScreen::SyncConsentScreenTestDelegate* delegate) {
   test_delegate_ = delegate;
@@ -326,7 +348,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior()
   if (IsProfileSyncDisabledByPolicy())
     return SyncScreenBehavior::kSkipPermissionsPolicy;
 
-  if (IsProfileSyncEngineInitialized())
+  if (IsProfileSyncEngineInitialized() || is_timed_out_)
     return SyncScreenBehavior::kShow;
 
   return SyncScreenBehavior::kUnknown;
@@ -347,6 +369,7 @@ void SyncConsentScreen::UpdateScreen() {
     PrepareScreenBasedOnCapability();
     view_->SetThrobberVisible(false /*visible*/);
     GetSyncService(profile_)->RemoveObserver(this);
+    timeout_waiter_.AbandonAndStop();
   } else {
     MaybeEnableSyncForSkip();
     Finish(Result::NEXT);

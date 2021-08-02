@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
@@ -103,6 +104,9 @@ class SyncConsentScreen : public BaseScreen,
   // Enables sync if required when skipping the dialog.
   void MaybeEnableSyncForSkip();
 
+  // Called when sync engine initialization timed out.
+  void OnTimeout();
+
   // Sets internal condition "Sync disabled by policy" for tests.
   void SetProfileSyncDisabledByPolicyForTesting(bool value);
 
@@ -173,11 +177,17 @@ class SyncConsentScreen : public BaseScreen,
   Profile* profile_ = nullptr;
   bool is_initialized_ = false;
 
+  // Used to record whether sync engine initialization is timed out.
+  base::OneShotTimer timeout_waiter_;
+  bool is_timed_out_ = false;
+
   absl::optional<bool> test_sync_disabled_by_policy_;
   absl::optional<bool> test_sync_engine_initialized_;
 
   // Notify tests.
   SyncConsentScreenTestDelegate* test_delegate_ = nullptr;
+
+  base::WeakPtrFactory<SyncConsentScreen> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncConsentScreen);
 };

@@ -685,6 +685,10 @@ const char kOobeTimerInterval[] = "oobe-timer-interval";
 // Allows the timezone to be overridden on the marketing opt-in screen.
 const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 
+// Trigger sync engine initialziation timeout in OOBE for testing.
+const char kOobeTriggerSyncTimeoutForTests[] =
+    "oobe-trigger-sync-timeout-for-tests";
+
 // If set to "true", the profile requires policy during restart (policy load
 // must succeed, otherwise session restart should fail).
 const char kProfileRequiresPolicy[] = "profile-requires-policy";

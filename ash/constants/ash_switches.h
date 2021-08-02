@@ -218,6 +218,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipToLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeTimerInterval[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeTimezoneOverrideForTests[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOobeTriggerSyncTimeoutForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kProfileRequiresPolicy[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPublicAccountsSamlAclUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRegulatoryLabelDir[];

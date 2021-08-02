@@ -199,6 +199,12 @@ class SyncConsentTest : public OobeBaseTest {
     OobeBaseTest::TearDownOnMainThread();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::chromeos::switches::kOobeTriggerSyncTimeoutForTests);
+    OobeBaseTest::SetUpCommandLine(command_line);
+  }
+
   void SwitchLanguage(const std::string& language) {
     WelcomeScreen* welcome_screen =
         WizardController::default_controller()->GetScreen<WelcomeScreen>();
@@ -337,6 +343,16 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
   // user action.
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncConsentTest, SyncEngineInitializationTimeout) {
+  GetSyncConsentScreen()->SetProfileSyncEngineInitializedForTesting(false);
+  auto syncWaiter = test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent});
+  auto overviewDialogWaiter =
+      test::OobeJS().CreateVisibilityWaiter(true, {kOverviewDialog});
+  LoginToSyncConsentScreen();
+  syncWaiter->Wait();
+  overviewDialogWaiter->Wait();
 }
 
 // Tests of the consent recorder with SplitSettingsSync disabled. The
