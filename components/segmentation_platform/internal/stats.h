@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_STATS_H_
 
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using optimization_guide::proto::OptimizationTarget;
@@ -39,6 +40,12 @@ void RecordModelScore(OptimizationTarget segment_id, float score);
 void RecordSegmentSelectionComputed(
     OptimizationTarget new_selection,
     absl::optional<OptimizationTarget> previous_selection);
+
+// Records the number of unique user action and histogram signals that we are
+// currently tracking.
+void RecordSignalsListeningCount(
+    const std::set<uint64_t>& user_actions,
+    const std::set<std::pair<std::string, proto::SignalType>>& histograms);
 
 }  // namespace stats
 }  // namespace segmentation_platform
