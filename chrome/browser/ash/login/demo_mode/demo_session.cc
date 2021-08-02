@@ -389,7 +389,13 @@ bool DemoSession::ShouldIgnorePinPolicy(const std::string& app_id_or_package) {
   if (!content::GetNetworkConnectionTracker()->IsOffline())
     return false;
 
-  return base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package);
+  const GURL app_id_as_url(app_id_or_package);
+
+  // Ignore for specified chrome/android apps, all PWAs ("https://") and any
+  // other "http://" web apps as a catchall (although we don't expect any of
+  // these)
+  return base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package) ||
+         app_id_as_url.SchemeIsHTTPOrHTTPS();
 }
 
 void DemoSession::SetExtensionsExternalLoader(

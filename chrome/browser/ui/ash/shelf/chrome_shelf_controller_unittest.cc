@@ -4607,6 +4607,7 @@ TEST_F(ChromeShelfControllerTest, InternalAppWindowPropertyChanged) {
   EXPECT_FALSE(shelf_controller_->GetItem(shelf_id));
 }
 
+// TODO(b/194627475): Move these tests to chrome_shelf_controller_browsertest.cc
 class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTest {
  protected:
   ChromeShelfControllerDemoModeTest() { auto_start_arc_test_ = true; }
@@ -4631,6 +4632,18 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTest {
     demo_mode_test_helper_.reset();
 
     ChromeShelfControllerTest::TearDown();
+  }
+
+  web_app::AppId InstallExternalWebApp(std::string start_url) {
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = GURL(start_url);
+    web_app::AppId web_app_id =
+        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
+        browser()->profile()->GetPrefs());
+    web_app_prefs.Insert(GURL(start_url), web_app_id,
+                         web_app::ExternalInstallSource::kExternalPolicy);
+    return web_app_id;
   }
 
  private:
@@ -4662,7 +4675,13 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   AppendPrefValue(&policy_value, appinfo.package_name);
   AppendPrefValue(&policy_value, online_only_appinfo.package_name);
 
-  // If the device is offline, extension2 and onlineonly should be unpinned.
+  constexpr char kWebAppUrl[] = "https://test-pwa.com/";
+  web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
+  AppendPrefValue(&policy_value, kWebAppUrl);
+
+  // If the device is offline, extension2, onlineonly, and TestPWA should
+  // be unpinned. Since the device is online here, these apps should still be
+  // pinned, even though we're ignoring them here.
   ash::DemoSession::Get()->OverrideIgnorePinPolicyAppsForTesting(
       {extension2_->id(), online_only_appinfo.package_name});
 
@@ -4688,6 +4707,10 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(online_only_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(online_only_app_id, profile()));
+
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app_id));
+  EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
+            GetPinnableForAppID(web_app_id, profile()));
 }
 
 TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
@@ -4715,7 +4738,12 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   AppendPrefValue(&policy_value, appinfo.package_name);
   AppendPrefValue(&policy_value, online_only_appinfo.package_name);
 
-  // If the device is offline, extension2 and onlineonly should be unpinned.
+  constexpr char kWebAppUrl[] = "https://test-pwa.com/";
+  web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
+  AppendPrefValue(&policy_value, kWebAppUrl);
+
+  // If the device is offline, extension2 and onlineonly, and TestPWA should be
+  // unpinned.
   ash::DemoSession::Get()->OverrideIgnorePinPolicyAppsForTesting(
       {extension2_->id(), online_only_appinfo.package_name});
 
@@ -4724,8 +4752,8 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
       base::Value::ToUniquePtrValue(policy_value.Clone()));
   app_service_test().FlushMojoCalls();
 
-  // Since the device is online, the policy pinned apps that shouldn't be pinned
-  // in Demo Mode are unpinned.
+  // Since the device is offline, the policy pinned apps that shouldn't be
+  // pinned in Demo Mode are unpinned.
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(extension1_->id(), profile()));
@@ -4742,6 +4770,10 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
             GetPinnableForAppID(online_only_app_id, profile()));
 
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app_id));
+  EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
+            GetPinnableForAppID(web_app_id, profile()));
+
   // Pin a Chrome app that would have been pinned by policy but was suppressed
   // for Demo Mode.
   shelf_controller_->PinAppWithID(extension2_->id());
@@ -4752,9 +4784,16 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
   // Pin an ARC app that would have been pinned by policy but was suppressed
   // for Demo Mode.
   shelf_controller_->PinAppWithID(online_only_app_id);
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(app_id));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(online_only_app_id));
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
             GetPinnableForAppID(online_only_app_id, profile()));
+
+  // Pin a web app that would have been pinned by policy but was suppressed for
+  // Demo Mode
+  shelf_controller_->PinAppWithID(web_app_id);
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app_id));
+  EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
+            GetPinnableForAppID(web_app_id, profile()));
 }
 
 TEST_F(ChromeShelfControllerTest, CrostiniTerminalPinUnpin) {
