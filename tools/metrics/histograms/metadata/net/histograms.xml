@@ -5063,6 +5063,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Socket connected status in SpdySession::CreateStream.</summary>
 </histogram>
 
+<histogram name="Net.SpdySession.GoAwayReceived" enum="Http2WireErrorCodes"
+    expires_after="2022-07-22">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the error code value received in each HTTP/2 GOAWAY frame.
+  </summary>
+</histogram>
+
 <histogram name="Net.SpdySession.PushedAndUnclaimedBytes" units="count"
     expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>

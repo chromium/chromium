@@ -40859,6 +40859,27 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
              scheduled."/>
 </enum>
 
+<enum name="Http2WireErrorCodes">
+  <summary>
+    Error codes defined at
+    https://www.iana.org/assignments/http2-parameters/http2-parameters.xhtml#error-code
+  </summary>
+  <int value="0" label="NO_ERROR"/>
+  <int value="1" label="PROTOCOL_ERROR"/>
+  <int value="2" label="INTERNAL_ERROR"/>
+  <int value="3" label="FLOW_CONTROL_ERROR"/>
+  <int value="4" label="SETTINGS_TIMEOUT"/>
+  <int value="5" label="STREAM_CLOSED"/>
+  <int value="6" label="FRAME_SIZE_ERROR"/>
+  <int value="7" label="REFUSED_STREAM"/>
+  <int value="8" label="CANCEL"/>
+  <int value="9" label="COMPRESSION_ERROR"/>
+  <int value="10" label="CONNECT_ERROR"/>
+  <int value="11" label="ENHANCE_YOUR_CALM"/>
+  <int value="12" label="INADEQUATE_SECURITY"/>
+  <int value="13" label="HTTP_1_1_REQUIRED"/>
+</enum>
+
 <enum name="HttpAuthCount">
   <int value="0" label="Basic Start"/>
   <int value="1" label="Basic Reject"/>
