@@ -3757,6 +3757,16 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
+    name = "win10-updater-tester-dbg-uac",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|win (64)",
+        short_name = "UAC",
+    ),
+    tree_closing = False,
+    triggered_by = ["win-updater-builder-dbg"],
+)
+
+ci.updater_builder(
     name = "win10-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|win (64)",

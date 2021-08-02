@@ -5763,6 +5763,22 @@
           ]
         },
       },
+      'win10-updater-tester-dbg-uac': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.win.uac',
+            }
+          ]
+        },
+      },
       'win10-updater-tester-rel': {
         'mixins': [
           'win10',
