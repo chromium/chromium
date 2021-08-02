@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
@@ -13,6 +14,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -30,8 +32,10 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/resource_load_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -815,19 +819,72 @@ class FencedFrameTreeBrowserTest : public FrameTreeBrowserTest {
     // as well, once the supporting code lands.
   }
 
+  void SetUpOnMainThread() override {
+    // Set up the host resolver to allow serving separate sites, so we can
+    // perform cross-process navigation.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Fenced frames require potentially trustworthy URLs so creating an https
+    // server.
+    https_server_.RegisterRequestMonitor(
+        base::BindRepeating(&FencedFrameTreeBrowserTest::ObserveRequestHeaders,
+                            base::Unretained(this)));
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  // Invoked on "EmbeddedTestServer IO Thread".
+  void ObserveRequestHeaders(const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(requests_lock_);
+    std::string val = request.headers.find("Cookie") != request.headers.end()
+                          ? request.headers.at("Cookie").c_str()
+                          : "";
+    cookie_headers_map_.insert(std::make_pair(request.GetURL().path(), val));
+  }
+
+  // Returns true if the cookie header was present in the last request received
+  // by the server with the same `url.path()`. Also asserts that the cookie
+  // header value matches that given in `expected_value`, if it exists. Also
+  // clears the value that was just checked by the method invocation.
+  bool CheckAndClearCookieHeader(
+      const GURL& url,
+      const std::string expected_value = "",
+      base::Location from_here = base::Location::Current()) {
+    base::AutoLock auto_lock(requests_lock_);
+    SCOPED_TRACE(from_here.ToString());
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    std::string file_name = url.path();
+    CHECK(cookie_headers_map_.find(file_name) != cookie_headers_map_.end());
+    std::string header = cookie_headers_map_[file_name];
+    EXPECT_EQ(expected_value, header);
+    cookie_headers_map_.erase(file_name);
+    return !header.empty();
+  }
+
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  ~FencedFrameTreeBrowserTest() override {
+    // Shutdown the server explicitly so that there is no race with the
+    // destruction of cookie_headers_map_ and invocation of RequestMonitor.
+    EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::Lock requests_lock_;
+  std::map<std::string, std::string> cookie_headers_map_
+      GUARDED_BY(requests_lock_);
   net::EmbeddedTestServer https_server_;
 };
 
 // Tests that the fenced frame gets navigated to an actual url given a urn:uuid.
 IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
                        CheckFencedFrameNavigationWithUUID) {
-  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+  // Create an a.test main page and set a cookie. Then create a same-origin
+  // fenced frame. It's request should not carry the cookie that was set.
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
@@ -842,10 +899,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
 
   EXPECT_TRUE(root->child_at(0)->IsFencedFrame());
   EXPECT_TRUE(root->child_at(0)->IsInFencedFrameTree());
-
-  https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
-  https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(https_server()->Start());
 
   GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
   FencedFrameURLMapping& url_mapping =
@@ -875,10 +928,100 @@ IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest,
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckFencedFrameNoCookies) {
+  // Create an a.test main page and set cookies. Then create a same-origin
+  // fenced frame. Its request should not carry the cookies that were set.
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  RenderFrameHostImpl* root_rfh =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetFrameTree()
+          ->root()
+          ->current_frame_host();
+
+  // Set SameSite=Lax and SameSite=None cookies and retrieve them.
+  EXPECT_TRUE(ExecJs(root_rfh,
+                     "document.cookie = 'B=2; SameSite=Lax';"
+                     "document.cookie = 'C=2; SameSite=None; Secure';"));
+  EXPECT_EQ("B=2; C=2", EvalJs(root_rfh, "document.cookie;"));
+
+  // Test the fenced frame.
+  EXPECT_TRUE(ExecJs(root_rfh,
+                     "var f = document.createElement('fencedframe');"
+                     "document.body.appendChild(f);"));
+  EXPECT_EQ(1U, root_rfh->child_count());
+
+  FrameTreeNode* fenced_frame = root_rfh->child_at(0);
+
+  EXPECT_TRUE(fenced_frame->IsFencedFrame());
+  EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root_rfh->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid.spec());
+
+  {
+    // Navigate the fenced frame.
+    TestFrameNavigationObserver observer(root_rfh->child_at(0));
+    EXPECT_EQ(urn_uuid.spec(), EvalJs(root_rfh, navigate_urn_script));
+    observer.Wait();
+  }
+
+  EXPECT_EQ(https_url,
+            fenced_frame->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(https_url),
+            fenced_frame->current_frame_host()->GetLastCommittedOrigin());
+
+  EXPECT_FALSE(CheckAndClearCookieHeader(https_url));
+
+  // Run the same test for an iframe inside the fenced frame. It shouldn't be
+  // able to send cookies either.
+  // Add a nested iframe inside the fenced frame.
+  EXPECT_TRUE(ExecJs(fenced_frame,
+                     "var f1 = document.createElement('iframe');"
+                     "document.body.appendChild(f1);"));
+  EXPECT_EQ(1U, fenced_frame->child_count());
+  EXPECT_FALSE(fenced_frame->child_at(0)->IsFencedFrame());
+  EXPECT_TRUE(fenced_frame->child_at(0)->IsInFencedFrameTree());
+  std::string navigate_script = JsReplace("f1.src = $1;", main_url.spec());
+
+  {
+    TestFrameNavigationObserver observer(fenced_frame->child_at(0));
+    EXPECT_EQ(main_url.spec(), EvalJs(fenced_frame, navigate_script));
+    observer.Wait();
+  }
+  EXPECT_EQ(
+      main_url,
+      fenced_frame->child_at(0)->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(main_url), fenced_frame->child_at(0)
+                                               ->current_frame_host()
+                                               ->GetLastCommittedOrigin());
+  EXPECT_FALSE(CheckAndClearCookieHeader(main_url));
+
+  // Check that a subresource request from the main document should have the
+  // cookies since that is outside the fenced frame tree.
+  ResourceLoadObserver observer(shell());
+  GURL image_url = https_server()->GetURL("a.test", "/image.jpg");
+  EXPECT_TRUE(
+      ExecJs(root_rfh, JsReplace("var img = document.createElement('img');"
+                                 "document.body.appendChild(img);",
+                                 image_url)));
+  std::string load_script = JsReplace("img.src = $1;", image_url.spec());
+  EXPECT_EQ(image_url.spec(), EvalJs(root_rfh, load_script));
+  observer.WaitForResourceCompletion(image_url);
+  EXPECT_TRUE(CheckAndClearCookieHeader(image_url, "B=2; C=2"));
+}
+
 // Tests when a frame is considered a fenced frame or being inside a fenced
 // frame tree.
 IN_PROC_BROWSER_TEST_F(FencedFrameTreeBrowserTest, CheckIsFencedFrame) {
-  GURL main_url(embedded_test_server()->GetURL("/hello.html"));
+  GURL main_url(https_server()->GetURL("a.test", "/hello.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.

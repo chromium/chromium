@@ -287,15 +287,22 @@ void UnknownSchemeCallback(
           handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
 }
 
-uint32_t GetURLLoaderOptions(bool is_main_frame) {
+uint32_t GetURLLoaderOptions(bool is_main_frame, bool is_in_fenced_frame_tree) {
   uint32_t options = network::mojom::kURLLoadOptionNone;
 
   // Ensure that Mime sniffing works.
   options |= network::mojom::kURLLoadOptionSniffMimeType;
 
-  if (is_main_frame) {
-    // SSLInfo is not needed on subframe responses because users can inspect
-    // only the certificate for the main frame when using the info bubble.
+  if (is_in_fenced_frame_tree) {
+    // Fenced frames cannot have any credentialed requests.
+    // TODO(crbug.com/1229638): Once cookies partitioning is in place, consider
+    // using a unique partition for those cookies instead of blocking. For
+    // unpartitioned cookies though, we will continue to block them.
+    options |= network::mojom::kURLLoadOptionBlockAllCookies;
+  } else if (is_main_frame) {
+    // SSLInfo is not needed on subframe or fenced frame responses because users
+    // can inspect only the certificate for the main frame when using the info
+    // bubble.
     options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
   }
 
@@ -684,7 +691,9 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   url_chain_.push_back(resource_request_->url);
   *out_options = GetURLLoaderOptions(
       resource_request_->resource_type ==
-      static_cast<int>(blink::mojom::ResourceType::kMainFrame));
+          static_cast<int>(blink::mojom::ResourceType::kMainFrame),
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_)
+          ->IsInFencedFrameTree());
   return factory;
 }
 
@@ -1062,8 +1071,11 @@ NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
   // unretained |this|, because the passed callback will be used by a
   // SignedExchangeHandler which is indirectly owned by |this| until its
   // header is verified and parsed, that's where the getter is used.
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   return std::make_unique<SignedExchangeRequestHandler>(
-      GetURLLoaderOptions(request_info.is_main_frame),
+      GetURLLoaderOptions(request_info.is_main_frame,
+                          frame_tree_node->IsInFencedFrameTree()),
       request_info.frame_tree_node_id, request_info.devtools_navigation_token,
       std::move(url_loader_factory),
       base::BindRepeating(&NavigationURLLoaderImpl::CreateURLLoaderThrottles,
