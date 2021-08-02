@@ -195,7 +195,8 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
         params.timeout_no_interaction ? *params.timeout_no_interaction
                                       : kDelayDefault,
         params.timeout_after_interaction ? *params.timeout_after_interaction
-                                         : kDelayShort);
+                                         : kDelayShort,
+        params.timeout_callback);
   }
 
   const std::u16string body_text = std::move(params.body_text);
@@ -366,6 +367,10 @@ FeaturePromoBubbleView::CreateParams::operator=(
 // static
 FeaturePromoBubbleView* FeaturePromoBubbleView::Create(CreateParams params) {
   return new FeaturePromoBubbleView(std::move(params));
+}
+
+FeaturePromoBubbleTimeout* FeaturePromoBubbleView::GetTimeoutForTesting() {
+  return feature_promo_bubble_timeout_.get();
 }
 
 void FeaturePromoBubbleView::CloseBubble() {

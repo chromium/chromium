@@ -6,13 +6,18 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 FeaturePromoBubbleTimeout::FeaturePromoBubbleTimeout(
     base::TimeDelta delay_no_interaction,
-    base::TimeDelta delay_after_interaction)
+    base::TimeDelta delay_after_interaction,
+    base::RepeatingClosure timeout_callback)
     : delay_no_interaction_(delay_no_interaction),
-      delay_after_interaction_(delay_after_interaction) {}
+      delay_after_interaction_(delay_after_interaction),
+      timeout_callback_(timeout_callback) {}
+FeaturePromoBubbleTimeout::~FeaturePromoBubbleTimeout() = default;
 
 void FeaturePromoBubbleTimeout::OnBubbleShown(
     FeaturePromoBubbleView* feature_promo_bubble_view) {
@@ -38,6 +43,12 @@ void FeaturePromoBubbleTimeout::OnMouseExited() {
 
 void FeaturePromoBubbleTimeout::StartAutoCloseTimer(
     base::TimeDelta auto_close_duration) {
-  timer_.Start(FROM_HERE, auto_close_duration, feature_promo_bubble_view_,
-               &FeaturePromoBubbleView::CloseBubble);
+  timer_.Start(FROM_HERE, auto_close_duration, this,
+               &FeaturePromoBubbleTimeout::OnTimeout);
+}
+
+void FeaturePromoBubbleTimeout::OnTimeout() {
+  if (timeout_callback_)
+    timeout_callback_.Run();
+  feature_promo_bubble_view_->CloseBubble();
 }

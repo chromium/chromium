@@ -74,9 +74,12 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     absl::optional<int> tutorial_progress_current;
     absl::optional<int> tutorial_progress_max;
 
-    // Changes the bubble timeout. Intended for tests, avoid use.
+    // Changes the bubble timeout.
     absl::optional<base::TimeDelta> timeout_no_interaction;
     absl::optional<base::TimeDelta> timeout_after_interaction;
+
+    // Used to call feature specific logic on timeout.
+    base::RepeatingClosure timeout_callback;
   };
 
   // NOTE: Please read comment above class. This method shouldn't be
@@ -90,6 +93,8 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   void CloseBubble();
 
   views::Button* GetButtonForTesting(int index) const;
+
+  FeaturePromoBubbleTimeout* GetTimeoutForTesting();
 
  private:
   explicit FeaturePromoBubbleView(CreateParams params);

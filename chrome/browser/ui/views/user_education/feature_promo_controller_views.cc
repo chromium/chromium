@@ -331,6 +331,11 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
         weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
     create_params.buttons.push_back(std::move(dismiss_button));
 
+    // Snooze should dismiss the feature promo if it times out.
+    create_params.timeout_callback = base::BindRepeating(
+        &FeaturePromoControllerViews::OnUserDismiss,
+        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
+
     if (views::PlatformStyle::kIsOkButtonLeading)
       std::swap(create_params.buttons[0], create_params.buttons[1]);
   }

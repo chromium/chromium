@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_TIMEOUT_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_TIMEOUT_H_
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FeaturePromoBubbleView;
 
@@ -15,15 +17,21 @@ class FeaturePromoBubbleView;
 class FeaturePromoBubbleTimeout {
  public:
   FeaturePromoBubbleTimeout(base::TimeDelta delay_no_interaction,
-                            base::TimeDelta delay_after_interaction);
+                            base::TimeDelta delay_after_interaction,
+                            base::RepeatingClosure timeout_callback);
+  ~FeaturePromoBubbleTimeout();
 
   void OnBubbleShown(FeaturePromoBubbleView* feature_promo_bubble_view);
   void OnMouseEntered();
   void OnMouseExited();
 
+  // Initiates callback on timeout of the timer and closes the bubble.
+  void OnTimeout();
+
  private:
   // Starts a timer to close the promo bubble.
   void StartAutoCloseTimer(base::TimeDelta auto_close_duration);
+
   // Timer used to auto close the bubble.
   base::OneShotTimer timer_;
 
@@ -31,6 +39,8 @@ class FeaturePromoBubbleTimeout {
 
   const base::TimeDelta delay_no_interaction_;
   const base::TimeDelta delay_after_interaction_;
+
+  base::RepeatingClosure timeout_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(FeaturePromoBubbleTimeout);
 };

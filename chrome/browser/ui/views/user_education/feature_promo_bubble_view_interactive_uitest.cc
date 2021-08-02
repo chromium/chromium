@@ -11,6 +11,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
 
@@ -68,4 +69,39 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
 
   // Browser view should lose activation.
   EXPECT_FALSE(browser_view->GetWidget()->IsActive());
+}
+
+namespace {
+struct MockTimeoutTarget {
+  int count = 0;
+
+  void OnTimeout() { count++; }
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
+                       FeaturePromoBubbleTimeout) {
+  auto params = GetBubbleParams();
+
+  base::TimeDelta interaction_time = base::TimeDelta::FromMilliseconds(1);
+  params.timeout_no_interaction = interaction_time;
+  params.timeout_after_interaction = interaction_time;
+
+  MockTimeoutTarget timeout_target;
+  params.timeout_callback = base::BindRepeating(
+      &MockTimeoutTarget::OnTimeout, base::Unretained(&timeout_target));
+
+  auto* const bubble = FeaturePromoBubbleView::Create(std::move(params));
+  views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
+
+  // Check that the timeout exists in the bubble.
+  FeaturePromoBubbleTimeout* timeout = bubble->GetTimeoutForTesting();
+  EXPECT_NE(nullptr, timeout);
+  EXPECT_EQ(0, timeout_target.count);
+
+  // Force the timeout codepath to be called
+  timeout->OnTimeout();
+
+  // Check that the timeout has occurred
+  EXPECT_EQ(1, timeout_target.count);
 }
