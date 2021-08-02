@@ -7,11 +7,19 @@
 This executable script symbolizes proto perfetto traces.
 """
 
+import os
 import optparse
 import sys
 
 import symbolize_trace
 import flag_utils
+import display_in_browser
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__),
+                                os.pardir, os.pardir, 'third_party',
+                                'catapult', 'systrace'))
+
+from profile_chrome import flags
 
 
 def _CreateOptionParser():
@@ -23,6 +31,7 @@ def _CreateOptionParser():
 
   parser = flag_utils.AddLoggingOptions(parser)
   parser.add_option_group(flag_utils.SymbolizeOptions(parser))
+  parser.add_option_group(flags.OutputOptions(parser))
 
   return parser
 
@@ -43,6 +52,9 @@ def main():
 
   # Symbolize Trace
   symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
+
+  if options.view:
+    display_in_browser.DisplayInBrowser(options.output_file, options)
 
 if __name__ == '__main__':
   sys.exit(main())

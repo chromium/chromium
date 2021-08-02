@@ -15,6 +15,7 @@ import optparse
 import adb_profile_chrome_startup
 import symbolize_trace
 import flag_utils
+import display_in_browser
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__),
                                 os.pardir, os.pardir, 'third_party',
@@ -116,13 +117,13 @@ def main():
     raise Exception('Platform "%s" is not supported. '
                     'Specify platform with the --platform flag.' % (options.platform))
 
-  # TODO(rhuckleberry): Make --view flag show the trace after symbolization, instead
-  # of after finishing tracing.
-
   # Symbolize Trace
   if options.trace_format is None or options.trace_format.lower() != 'proto':
     raise Exception('Symbolization is currently only supported for protos.')
   symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
+
+  if options.view:
+    display_in_browser.DisplayInBrowser(options.output_file, options)
 
 if __name__ == '__main__':
   sys.exit(main())

@@ -5,8 +5,12 @@
 This script provides the necessary flags to symbolize proto traces.
 """
 
+import os
+import sys
 import optparse
 import logging
+import webbrowser
+import subprocess
 
 
 def SymbolizeOptions(parser):
