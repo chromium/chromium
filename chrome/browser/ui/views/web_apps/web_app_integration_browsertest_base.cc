@@ -68,6 +68,10 @@ constexpr char kPlatformName[] =
     "Mac";
 #elif defined(OS_WIN)
     "Win";
+#elif defined(OS_FUCHSIA)
+    "Fuchsia";
+#else
+#error "Unknown platform"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Command-line switch that overrides test case input. Takes a comma

@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 
+#include <memory>
+
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 
 // static
 extensions::NativeAppWindow* ChromeAppWindowClient::CreateNativeAppWindowImpl(
     extensions::AppWindow* app_window,
     const extensions::AppWindow::CreateParams& params) {
-  ChromeNativeAppWindowViewsAura* window = new ChromeNativeAppWindowViewsAura;
+  auto window = std::make_unique<ChromeNativeAppWindowViewsAura>();
   window->Init(app_window, params);
-  return window;
+  return window.release();
 }

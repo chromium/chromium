@@ -439,7 +439,6 @@ static_library("ui") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/country_codes",
-    "//components/crash/core/app",
     "//components/crash/core/browser",
     "//components/crx_file",
     "//components/data_reduction_proxy/core/browser",
@@ -641,6 +640,10 @@ static_library("ui") {
       "webui/sandbox/sandbox_internals_ui.cc",
       "webui/sandbox/sandbox_internals_ui.h",
     ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [ "//components/crash/core/app" ]
   }
 
   if (is_android) {
@@ -2971,7 +2974,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
     sources += [
       "autofill/payments/virtual_card_selection_dialog_controller.h",
       "autofill/payments/virtual_card_selection_dialog_controller_impl.cc",
@@ -3049,7 +3052,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+  if (is_win || is_mac || is_fuchsia || (is_linux || is_chromeos_lacros)) {
     sources += [
       "profile_picker.cc",
       "profile_picker.h",
@@ -3411,7 +3414,7 @@ static_library("ui") {
       "views/frame/glass_browser_frame_view.h",
       "views/frame/minimize_button_metrics_win.cc",
       "views/frame/minimize_button_metrics_win.h",
-      "views/frame/native_browser_frame_factory_aurawin.cc",
+      "views/frame/native_browser_frame_factory_aura.cc",
       "views/frame/system_menu_insertion_delegate_win.cc",
       "views/frame/system_menu_insertion_delegate_win.h",
       "views/frame/windows_10_caption_button.cc",
@@ -3522,9 +3525,12 @@ static_library("ui") {
     ]
   }
 
+  if (is_linux || is_chromeos_lacros || is_fuchsia) {
+    sources += [ "views/apps/chrome_app_window_client_views_aura.cc" ]
+  }
+
   if (is_linux || is_chromeos_lacros) {
     sources += [
-      "views/apps/chrome_app_window_client_views_linux.cc",
       "views/frame/browser_desktop_window_tree_host.h",
       "webui/help/version_updater_basic.cc",
       "webui/help/version_updater_basic.h",
@@ -4606,6 +4612,19 @@ static_library("ui") {
     if (is_chromeos) {
       sources += [ "views/status_icons/status_tray_chromeos.cc" ]
     }
+    if (is_fuchsia) {
+      sources += [
+        "views/certificate_viewer_fuchsia.cc",
+        "views/chrome_views_delegate_fuchsia.cc",
+        "views/frame/browser_desktop_window_tree_host.h",
+        "views/frame/browser_desktop_window_tree_host_fuchsia.cc",
+        "views/frame/native_browser_frame_factory_aura.cc",
+        "views/status_icons/status_tray_fuchsia.cc",
+        "webui/help/version_updater_basic.cc",
+        "webui/help/version_updater_basic.h",
+        "webui/settings/settings_utils_fuchsia.cc",
+      ]
+    }
 
     if (is_mac) {
       sources += [
@@ -4636,7 +4655,7 @@ static_library("ui") {
       ]
     }
 
-    if (is_win || (is_linux || is_chromeos_lacros)) {
+    if (is_win || is_fuchsia || (is_linux || is_chromeos_lacros)) {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
