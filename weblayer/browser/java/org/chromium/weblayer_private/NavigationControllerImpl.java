@@ -303,7 +303,7 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
 
     @CalledByNative
     private void onPageLanguageDetermined(PageImpl page, String language) throws RemoteException {
-        if (WebLayerFactoryImpl.getClientMajorVersion() < 94) return;
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 93) return;
 
         mNavigationControllerClient.onPageLanguageDetermined(page.getClientPage(), language);
     }

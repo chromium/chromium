@@ -651,7 +651,7 @@ public class NavigationTest {
                 curRedirectedCount, Arrays.asList(Uri.parse(url), Uri.parse(finalUrl)));
     }
 
-    @MinWebLayerVersion(94)
+    @MinWebLayerVersion(93)
     @Test
     @SmallTest
     public void testGetPageInOnNavigationCompletedForIncompleteNavigation() throws Exception {
@@ -1629,7 +1629,7 @@ public class NavigationTest {
         assertEquals(2, mCallback.onCompletedCallback.getNavigationEntryOffset());
     }
 
-    @MinWebLayerVersion(94)
+    @MinWebLayerVersion(93)
     @Test
     @SmallTest
     public void testOnPageLanguageDetermined() throws Exception {
