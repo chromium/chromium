@@ -88,7 +88,16 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   DecodeProtoFields(*(validator.payload()), external_data_manager,
                     PolicySource::POLICY_SOURCE_CLOUD_FROM_ASH,
                     PolicyScope::POLICY_SCOPE_USER, &policy_map, per_profile_);
-  SetEnterpriseUsersSystemWideDefaults(&policy_map);
+  switch (per_profile_) {
+    case PolicyPerProfileFilter::kTrue:
+      SetEnterpriseUsersProfileDefaults(&policy_map);
+      break;
+    case PolicyPerProfileFilter::kFalse:
+      SetEnterpriseUsersSystemWideDefaults(&policy_map);
+      break;
+    case PolicyPerProfileFilter::kAny:
+      NOTREACHED();
+  }
   bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .MergeFrom(policy_map);
   return bundle;
