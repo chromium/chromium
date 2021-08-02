@@ -5,7 +5,7 @@
 import {RepairComponentChipElement} from 'chrome://shimless-rma/repair_component_chip.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 export function repairComponentChipElementTest() {
   /** @type {?RepairComponentChipElement} */
@@ -61,17 +61,25 @@ export function repairComponentChipElementTest() {
   test('ComponentToggleChecked', async () => {
     await initializeRepairComponentChip('cpu');
 
+    const checkIcon = component.shadowRoot.querySelector('#checkedIcon');
+
     await clickChip();
     assertTrue(component.checked);
+    assertTrue(isVisible(checkIcon));
 
     await clickChip();
     assertFalse(component.checked);
+    assertFalse(isVisible(checkIcon));
   });
 
   test('ComponentNoToggleOnDisabled', async () => {
     await initializeRepairComponentChip('cpu');
     component.disabled = true;
     await flushTasks();
+
+    const infoIcon = component.shadowRoot.querySelector('#infoIcon');
+    assertTrue(isVisible(infoIcon));
+
     await clickChip();
 
     assertFalse(component.checked);

@@ -8,29 +8,43 @@
     background-color: lightskyblue;
   }
 
+  #condtainerDiv {
+    width: 180px;
+    height: 40px;
+  }
+
   #containerButton {
-    width:  180px;
+    width: 180px;
     height: 40px;
     border-radius: 10px;
     box-shadow: 0px 2px 2px 2px #bbb;
   }
 
-  .checkedBox {
-    background-color: lightblue;
-    position: absolute;
-    top: 5px;
-    right: 5px;
+  .icon-top-right {
+    position: relative;
+    top: -5px;
+    right: 20px;
     width: 15px;
-    height:  15px;
+    height: 15px;
   }
-
 </style>
 
-<div>
+<div id="containerDiv">
   <cr-button disabled$="[[disabled]]"
       id="containerButton" on-click="onComponentButtonClicked_">
     <span id="componentName">[[componentName]]</span>
-    <!-- TODO(joonbug): replace with iron-icon -->
-    <span hidden$="[[!checked]]" class="checkedBox"></span>
   </cr-button>
+
+  <!-- TODO(joonbug): Replace icon with checked icon -->
+  <iron-icon id="checkedIcon" icon="shimless-icon:wifi"
+    hidden$="[[!checked]]" class="icon-top-right">
+  </iron-icon>
+  <iron-icon id="infoIcon" icon="shimless-icon:info"
+    hidden$="[[!disabled]]" class="icon-top-right">
+  </iron-icon>
+
+  <!-- TODO(joonbug): i18n message -->
+  <paper-tooltip for="infoIcon" aria-hidden="true" id="additionalMessage">
+    This component couldn't be detected. Check that it's installed correctly.
+  </paper-tooltip>
 </div>
