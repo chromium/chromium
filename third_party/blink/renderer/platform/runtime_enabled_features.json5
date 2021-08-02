@@ -495,7 +495,7 @@
     },
     {
       name: "CSSAccentColor",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Whether <image> values are allowed as counter style <symbol>
