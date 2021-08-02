@@ -807,9 +807,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(keys_cleared_checker.Wait());
 }
 
+// Failing on Mac 10.11 (See http://crbug.com/1235658)
+#if defined(OS_MAC)
+#define MAYBE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared \
+    DISABLED_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared
+#else
+#define MAYBE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared \
+    ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared
+#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
+    MAYBE_ShouldClearEncryptionKeysFromTheWebWhenSigninCookiesCleared) {
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
 
   // Mimic the account being already using a trusted vault passphrase.
