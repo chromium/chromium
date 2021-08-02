@@ -151,7 +151,7 @@ class AuctionV8Helper
   // In case of an error or console output sets `error_out`.
   v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
                                       v8::Local<v8::UnboundScript> script,
-                                      base::StringPiece script_name,
+                                      base::StringPiece function_name,
                                       base::span<v8::Local<v8::Value>> args,
                                       std::vector<std::string>& error_out);
 

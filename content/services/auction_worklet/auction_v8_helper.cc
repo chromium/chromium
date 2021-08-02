@@ -331,7 +331,7 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
 v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     v8::Local<v8::Context> context,
     v8::Local<v8::UnboundScript> script,
-    base::StringPiece script_name,
+    base::StringPiece function_name,
     base::span<v8::Local<v8::Value>> args,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -340,8 +340,8 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   ScopedConsoleTarget direct_console(
       this, FormatValue(isolate(), script->GetScriptName()), &error_out);
 
-  v8::Local<v8::String> v8_script_name;
-  if (!CreateUtf8String(script_name).ToLocal(&v8_script_name))
+  v8::Local<v8::String> v8_function_name;
+  if (!CreateUtf8String(function_name).ToLocal(&v8_function_name))
     return v8::MaybeLocal<v8::Value>();
 
   v8::Local<v8::Script> local_script = script->BindToCurrentContext();
@@ -367,17 +367,17 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     return v8::MaybeLocal<v8::Value>();
 
   v8::Local<v8::Value> function;
-  if (!context->Global()->Get(context, v8_script_name).ToLocal(&function)) {
+  if (!context->Global()->Get(context, v8_function_name).ToLocal(&function)) {
     error_out.push_back(
         base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                      " function `", script_name, "` not found."}));
+                      " function `", function_name, "` not found."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
   if (!function->IsFunction()) {
     error_out.push_back(
         base::StrCat({FormatValue(isolate(), script->GetScriptName()), " `",
-                      script_name, "` is not a function."}));
+                      function_name, "` is not a function."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
@@ -386,7 +386,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   if (try_catch.HasTerminated()) {
     error_out.push_back(
         base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                      " execution of `", script_name, "` timed out."}));
+                      " execution of `", function_name, "` timed out."}));
     return v8::MaybeLocal<v8::Value>();
   }
   if (try_catch.HasCaught()) {
