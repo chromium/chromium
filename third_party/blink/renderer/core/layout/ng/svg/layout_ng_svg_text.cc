@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
@@ -85,6 +86,7 @@ void LayoutNGSVGText::SubtreeStructureChanged(
     return;
 
   SetNeedsTextMetricsUpdate();
+  LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);
 }
 
 void LayoutNGSVGText::UpdateFont() {
