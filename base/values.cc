@@ -1367,20 +1367,6 @@ bool DictionaryValue::GetListWithoutPathExpansion(StringPiece key,
       key, const_cast<const ListValue**>(out_value));
 }
 
-bool DictionaryValue::RemoveWithoutPathExpansion(
-    StringPiece key,
-    std::unique_ptr<Value>* out_value) {
-  DCHECK(IsStringUTF8AllowingNoncharacters(key));
-  auto entry_iterator = dict().find(key);
-  if (entry_iterator == dict().end())
-    return false;
-
-  if (out_value)
-    *out_value = std::move(entry_iterator->second);
-  dict().erase(entry_iterator);
-  return true;
-}
-
 std::unique_ptr<DictionaryValue> DictionaryValue::DeepCopyWithoutEmptyChildren()
     const {
   std::unique_ptr<DictionaryValue> copy =

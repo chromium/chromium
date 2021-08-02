@@ -749,13 +749,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindListKey(key)` instead.
   bool GetListWithoutPathExpansion(StringPiece key, ListValue** out_value);
 
-  // Like Remove(), but without special treatment of '.'.  This allows e.g. URLs
-  // to be used as paths.
-  // DEPRECATED, use `Value::RemoveKey(key)` or `Value::ExtractKey(key)`
-  // instead.
-  bool RemoveWithoutPathExpansion(StringPiece key,
-                                  std::unique_ptr<Value>* out_value);
-
   // Makes a copy of `this` but doesn't include empty dictionaries and lists in
   // the copy.  This never returns NULL, even if `this` itself is empty.
   std::unique_ptr<DictionaryValue> DeepCopyWithoutEmptyChildren() const;
