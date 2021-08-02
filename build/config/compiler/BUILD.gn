@@ -1927,37 +1927,15 @@ config("wexit_time_destructors") {
 # Note that this can be applied regardless of platform and architecture to
 # clean up the call sites. This will only apply the flag when necessary.
 #
-# This config is just an alias to no_shorten_64_warnings and will
-# suppress a superset of warning 4267 and any 64-bit -> 32-bit implicit
-# conversions. Having both for a time means not having to go through and
-# update all references to no_size_t_to_int_warning throughout the codebase
-# atomically.
-#
-# Any new warning suppressions should use the no_shorten_64_warnings
-# config below and not this.
-#
-# TODO(jschuh): crbug.com/167187 fix this and delete this config.
-config("no_size_t_to_int_warning") {
-  configs = [ ":no_shorten_64_warnings" ]
-}
-
-# As part of re-enabling -Wconversion (see issue 588506) some code
-# will continue to generate warnings.
-# The first warning to be enabled will be -Wshorten-64-to-32.
-#
-# Code that currently generates warnings for this can include this
-# config to disable them.
+# TODO(crbug.com/879657): Fix all instances and delete this.
 config("no_shorten_64_warnings") {
   if (current_cpu == "x64" || current_cpu == "arm64") {
     if (is_clang) {
       cflags = [ "-Wno-shorten-64-to-32" ]
-    } else {
-      if (is_win) {
-        # MSVC does not have an explicit warning equivalent to
-        # -Wshorten-64-to-32 but 4267 warns for size_t -> int
-        # on 64-bit builds, so is the closest.
-        cflags = [ "/wd4267" ]
-      }
+    } else if (is_win) {
+      # MSVC does not have an explicit warning equivalent to -Wshorten-64-to-32
+      # but 4267 warns for size_t -> int on 64-bit builds, so is the closest.
+      cflags = [ "/wd4267" ]
     }
   }
 }
