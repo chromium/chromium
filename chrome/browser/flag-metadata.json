@@ -4449,12 +4449,12 @@
   {
     "name": "page-info-discoverability",
     "owners": [ "eokoyomon", "dullweber" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "page-info-history",
-    "owners": [ "oroshiba", "dullweber" ],
-    "expiry_milestone": 93
+    "owners": [ "eokoyomon", "dullweber" ],
+    "expiry_milestone": 95
   },
   {
     "name": "page-info-performance-hints",
