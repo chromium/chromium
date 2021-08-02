@@ -606,14 +606,12 @@ void TracingSamplerProfiler::MangleModuleIDIfNeeded(std::string* module_id) {
     module_id->resize(32, '0');
   }
 
-  if (module_id->size() >= 32) {
-    *module_id =
-        base::StrCat({module_id->substr(6, 2), module_id->substr(4, 2),
-                      module_id->substr(2, 2), module_id->substr(0, 2),
-                      module_id->substr(10, 2), module_id->substr(8, 2),
-                      module_id->substr(14, 2), module_id->substr(12, 2),
-                      module_id->substr(16, 16), "0"});
-  }
+  *module_id =
+      base::StrCat({module_id->substr(6, 2), module_id->substr(4, 2),
+                    module_id->substr(2, 2), module_id->substr(0, 2),
+                    module_id->substr(10, 2), module_id->substr(8, 2),
+                    module_id->substr(14, 2), module_id->substr(12, 2),
+                    module_id->substr(16, 16), "0"});
 #endif
 }
 
