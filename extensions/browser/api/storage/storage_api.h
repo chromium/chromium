@@ -49,6 +49,9 @@ class SettingsFunction : public ExtensionFunction {
   void OnSessionSettingsChanged(
       std::vector<SessionStorageManager::ValueChange> changes);
 
+  // Returns whether the caller's context has access to the storage or not.
+  bool IsAccessToStorageAllowed();
+
  private:
   // Called via PostTask from Run. Calls RunWithStorage and then
   // SendResponse with its success value.
@@ -130,6 +133,23 @@ class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {
 
  protected:
   ~StorageStorageAreaGetBytesInUseFunction() override {}
+
+  // SettingsFunction:
+  ResponseValue RunWithStorage(ValueStore* storage) override;
+  ResponseValue RunInSession() override;
+};
+
+class StorageStorageAreaSetAccessLevelFunction : public SettingsFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("storage.setAccessLevel", STORAGE_SETACCESSLEVEL)
+  StorageStorageAreaSetAccessLevelFunction() = default;
+  StorageStorageAreaSetAccessLevelFunction(
+      const StorageStorageAreaSetAccessLevelFunction&) = delete;
+  StorageStorageAreaSetAccessLevelFunction& operator=(
+      const StorageStorageAreaSetAccessLevelFunction&) = delete;
+
+ protected:
+  ~StorageStorageAreaSetAccessLevelFunction() override = default;
 
   // SettingsFunction:
   ResponseValue RunWithStorage(ValueStore* storage) override;

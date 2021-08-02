@@ -1167,6 +1167,42 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptUrls) {
   load_page_and_check_error("inject-script.example");
 }
 
+// Verifies how the storage API works with content scripts with default access
+// level.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, StorageApiDefaultAccessTest) {
+  // The extension verifies expectations in its background context and
+  // initializes state, which will be used by the content script below.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("content_scripts/storage_api_default_access"))
+      << message_;
+
+  // Open a url to run the content script. The content script
+  // then continues the test, so we need a separate ResultCatcher.
+  ResultCatcher catcher;
+  GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Verifies how the storage API works with content scripts with untrusted access
+// level.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       StorageApiAllowUntrustedAccessTest) {
+  // The extension verifies expectations in its background context and
+  // initializes state, which will be used by the content script below.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(
+      RunExtensionTest("content_scripts/storage_api_allow_untrusted_access"))
+      << message_;
+
+  // Open a url to run the content script. The content script
+  // then continues the test, so we need a separate ResultCatcher.
+  ResultCatcher catcher;
+  GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 // A test suite designed for exercising the behavior of content script
 // injection into opaque URLs (like about:blank).
 class ContentScriptRelatedFrameTest : public ContentScriptApiTest {

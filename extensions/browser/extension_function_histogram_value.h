@@ -1627,6 +1627,7 @@ enum HistogramValue {
   SCRIPTING_GETREGISTEREDCONTENTSCRIPTS = 1564,
   OS_TELEMETRY_GETVPDINFO = 1565,
   ACCESSIBILITY_PRIVATE_MAGNIFIERCENTERONPOINT = 1566,
+  STORAGE_SETACCESSLEVEL = 1567,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

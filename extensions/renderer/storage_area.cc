@@ -192,12 +192,19 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
         .SetMethod("remove", &SessionStorageArea::Remove)
         .SetMethod("clear", &SessionStorageArea::Clear)
         .SetMethod("getBytesInUse", &SessionStorageArea::GetBytesInUse)
+        // TODO(crbug.com/1227410): Only expose `setAccessLevel` in privileged
+        // contexts.
+        .SetMethod("setAccessLevel", &SessionStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &SessionStorageArea::GetOnChangedEvent)
         .SetValue("QUOTA_BYTES", api::storage::session::QUOTA_BYTES);
   }
 
  private:
   DEFINE_STORAGE_AREA_HANDLERS()
+
+  void SetAccessLevel(gin::Arguments* arguments) {
+    storage_area_.HandleFunctionCall("setAccessLevel", arguments);
+  }
 
   StorageArea storage_area_;
 

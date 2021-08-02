@@ -19,9 +19,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/api/storage.h"
+#include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 
 namespace extensions {
@@ -32,6 +34,9 @@ namespace {
 
 constexpr char kSessionStorageManagerKeyName[] =
     "StorageAPI SessionStorageManager";
+constexpr PrefMap kPrefSessionStorageAccessLevel = {
+    "storage_session_access_level", PrefType::kInteger,
+    PrefScope::kExtensionSpecific};
 
 // Returns a vector of any strings within the given list.
 std::vector<std::string> GetKeysFromList(const base::Value& list) {
@@ -152,6 +157,12 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
   // Session is the only storage area that does not use ValueStore, and will
   // return synchronously.
   if (storage_area_ == StorageAreaNamespace::kSession) {
+    // Currently only `session` can restrict the storage access. This call will
+    // be moved after the other storage areas allow it.
+    if (!IsAccessToStorageAllowed()) {
+      return RespondNow(
+          Error("Access to storage is not allowed from this context."));
+    }
     return RespondNow(RunInSession());
   }
 
@@ -228,6 +239,23 @@ void SettingsFunction::OnSessionSettingsChanged(
                       extension_id(), storage_area_,
                       ValueChangeToValue(std::move(changes)));
   }
+}
+
+bool SettingsFunction::IsAccessToStorageAllowed() {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  // Default access level is only secure contexts.
+  int access_level = api::storage::ACCESS_LEVEL_TRUSTED_CONTEXTS;
+  prefs->ReadPrefAsInteger(extension()->id(), kPrefSessionStorageAccessLevel,
+                           &access_level);
+
+  // Only a blessed extension context is considered trusted.
+  if (access_level == api::storage::ACCESS_LEVEL_TRUSTED_CONTEXTS)
+    return source_context_type() == Feature::BLESSED_EXTENSION_CONTEXT;
+
+  // All contexts are allowed.
+  DCHECK_EQ(api::storage::ACCESS_LEVEL_TRUSTED_AND_UNTRUSTED_CONTEXTS,
+            access_level);
+  return true;
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
@@ -489,6 +517,36 @@ StorageStorageAreaClearFunction::RunInSession() {
 void StorageStorageAreaClearFunction::GetQuotaLimitHeuristics(
     QuotaLimitHeuristics* heuristics) const {
   GetModificationQuotaLimitHeuristics(heuristics);
+}
+
+ExtensionFunction::ResponseValue
+StorageStorageAreaSetAccessLevelFunction::RunWithStorage(ValueStore* storage) {
+  // Not supported. Should return error.
+  return Error("This StorageArea is not available for setting access level");
+}
+
+ExtensionFunction::ResponseValue
+StorageStorageAreaSetAccessLevelFunction::RunInSession() {
+  if (source_context_type() != Feature::BLESSED_EXTENSION_CONTEXT)
+    return Error("Context cannot set the storage access level");
+
+  std::unique_ptr<api::storage::StorageArea::SetAccessLevel::Params> params(
+      api::storage::StorageArea::SetAccessLevel::Params::Create(*args_));
+
+  if (!params)
+    return BadMessage();
+
+  // The parsing code ensures `access_level` is sane.
+  DCHECK(params->access_options.access_level ==
+             api::storage::ACCESS_LEVEL_TRUSTED_CONTEXTS ||
+         params->access_options.access_level ==
+             api::storage::ACCESS_LEVEL_TRUSTED_AND_UNTRUSTED_CONTEXTS);
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context());
+  prefs->SetIntegerPref(extension_id(), kPrefSessionStorageAccessLevel,
+                        params->access_options.access_level);
+
+  return NoArguments();
 }
 
 }  // namespace extensions
