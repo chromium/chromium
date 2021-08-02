@@ -238,7 +238,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                 setLastUpdatedMs(System.currentTimeMillis());
                                 mPriceDropMetricsLogger = new PriceDropMetricsLogger(this);
                                 mPriceDropMetricsLogger.logPriceDropMetrics(
-                                        METRICS_IDENTIFIER_PREFIX);
+                                        METRICS_IDENTIFIER_PREFIX,
+                                        getTimeSinceTabLastOpenedMs(tab));
                             } catch (InvalidProtocolBufferException e) {
                                 Log.i(TAG,
                                         String.format(Locale.US,
@@ -262,7 +263,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public void logPriceDropMetrics(String locationIdentifier) {
         if (mPriceDropMetricsLogger != null) {
-            mPriceDropMetricsLogger.logPriceDropMetrics(locationIdentifier);
+            mPriceDropMetricsLogger.logPriceDropMetrics(
+                    locationIdentifier, getTimeSinceTabLastOpenedMs(mTab));
         }
     }
 

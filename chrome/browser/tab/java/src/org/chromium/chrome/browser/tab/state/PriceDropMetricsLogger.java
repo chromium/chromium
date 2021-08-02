@@ -11,12 +11,33 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Records metrics to better understand and enhance our price drops feature
  */
 public class PriceDropMetricsLogger {
+    private static final long NINETY_DAYS_MS = TimeUnit.DAYS.toMillis(90);
+    private static final long ONE_DAY_MS = TimeUnit.DAYS.toMillis(1);
+
     private MetricsResult mMetrics;
+    @VisibleForTesting
+    protected enum TabUsageStatus {
+        ABANDONED("AbandonedTab"),
+        STALE("StaleTab"),
+        ACTIVE("ActiveTab");
+
+        private final String mTabUsageStatus;
+
+        TabUsageStatus(String tabUsageStatus) {
+            mTabUsageStatus = tabUsageStatus;
+        }
+
+        @Override
+        public String toString() {
+            return mTabUsageStatus;
+        }
+    }
 
     /**
      * Log metrics related to our price drops feature.
@@ -30,20 +51,27 @@ public class PriceDropMetricsLogger {
     /**
      * Log metrics related to the price drops feature
      * @param locationIdentifier to be placed in the metric name (these metrics are recorded in
-     *         different places in the user experience)
+     *         different places in the user experience).
+     * @param timeSinceTabLastOpenedMs time since the tab was last opened in milliseconds.
      */
-    public void logPriceDropMetrics(String locationIdentifier) {
+    public void logPriceDropMetrics(String locationIdentifier, long timeSinceTabLastOpenedMs) {
+        TabUsageStatus tabUsageStatus = getTabUsageStatus(timeSinceTabLastOpenedMs);
+        // Tabs greater than 90 days old are not included in price drops, so the following shouldn't
+        // happen but is included as a safeguard.
+        if (tabUsageStatus == TabUsageStatus.ABANDONED) {
+            return;
+        }
         RecordHistogram.recordBooleanHistogram(
-                String.format(Locale.US, "Commerce.PriceDrops.%s.IsProductDetailPage",
-                        locationIdentifier),
+                String.format(Locale.US, "Commerce.PriceDrops.%s%s.IsProductDetailPage",
+                        tabUsageStatus, locationIdentifier),
                 mMetrics.isProductDetailPage);
         RecordHistogram.recordBooleanHistogram(
-                String.format(
-                        Locale.US, "Commerce.PriceDrops.%s.ContainsPrice", locationIdentifier),
+                String.format(Locale.US, "Commerce.PriceDrops.%s%s.ContainsPrice", tabUsageStatus,
+                        locationIdentifier),
                 mMetrics.containsPrice);
         RecordHistogram.recordBooleanHistogram(
-                String.format(
-                        Locale.US, "Commerce.PriceDrops.%s.ContainsPriceDrop", locationIdentifier),
+                String.format(Locale.US, "Commerce.PriceDrops.%s%s.ContainsPriceDrop",
+                        tabUsageStatus, locationIdentifier),
                 mMetrics.containsPriceDrop);
     }
 
@@ -57,6 +85,14 @@ public class PriceDropMetricsLogger {
                 shoppingPersistedTabData.hasPriceMicros(),
                 shoppingPersistedTabData.hasPriceMicros()
                         && shoppingPersistedTabData.hasPreviousPriceMicros());
+    }
+
+    @VisibleForTesting
+    protected static TabUsageStatus getTabUsageStatus(long timeSinceTabLastOpenedMs) {
+        if (timeSinceTabLastOpenedMs >= NINETY_DAYS_MS) {
+            return TabUsageStatus.ABANDONED;
+        }
+        return timeSinceTabLastOpenedMs < ONE_DAY_MS ? TabUsageStatus.ACTIVE : TabUsageStatus.STALE;
     }
 
     @VisibleForTesting
