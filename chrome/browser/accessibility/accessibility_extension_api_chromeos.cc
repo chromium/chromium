@@ -460,6 +460,21 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateMagnifierCenterOnPointFunction::Run() {
+  std::unique_ptr<accessibility_private::MagnifierCenterOnPoint::Params>
+      params =
+          accessibility_private::MagnifierCenterOnPoint::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+  gfx::Point point_in_screen(params->point.x, params->point.y);
+
+  auto* magnification_manager = ash::MagnificationManager::Get();
+  DCHECK(magnification_manager);
+  magnification_manager->HandleMagnifierCenterOnPointIfEnabled(point_in_screen);
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateToggleDictationFunction::Run() {
   ash::DictationToggleSource source = ash::DictationToggleSource::kChromevox;
   if (extension()->id() == extension_misc::kSwitchAccessExtensionId)

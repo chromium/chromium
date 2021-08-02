@@ -34,6 +34,15 @@ chrome.accessibilityPrivate.AlertInfo;
 chrome.accessibilityPrivate.ScreenRect;
 
 /**
+ * Point in global screen coordinates.
+ * @typedef {{
+ *   x: number,
+ *   y: number
+ * }}
+ */
+chrome.accessibilityPrivate.ScreenPoint;
+
+/**
  * @enum {string}
  */
 chrome.accessibilityPrivate.Gesture = {
@@ -414,6 +423,12 @@ chrome.accessibilityPrivate.handleScrollableBoundsForPointFound = function(rect)
  *     in the magnified viewport.
  */
 chrome.accessibilityPrivate.moveMagnifierToRect = function(rect) {};
+
+/**
+ * Called by the Accessibility Common extension to center magnifier at |point|.
+ * @param {!chrome.accessibilityPrivate.ScreenPoint} point
+ */
+chrome.accessibilityPrivate.magnifierCenterOnPoint = function(point) {};
 
 /**
  * Toggles dictation between active and inactive states.

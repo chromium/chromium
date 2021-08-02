@@ -109,8 +109,20 @@ void MagnificationManager::HandleMoveMagnifierToRectIfEnabled(
         rect);
     return;
   }
-  if (IsDockedMagnifierEnabled()) {
+  if (IsDockedMagnifierEnabled())
     Shell::Get()->docked_magnifier_controller()->MoveMagnifierToRect(rect);
+}
+
+void MagnificationManager::HandleMagnifierCenterOnPointIfEnabled(
+    const gfx::Point& point_in_screen) {
+  // Fullscreen magnifier and docked magnifier are mutually exclusive.
+  if (fullscreen_magnifier_enabled_) {
+    Shell::Get()->fullscreen_magnifier_controller()->CenterOnPoint(
+        point_in_screen);
+    return;
+  }
+  if (IsDockedMagnifierEnabled()) {
+    Shell::Get()->docked_magnifier_controller()->CenterOnPoint(point_in_screen);
   }
 }
 

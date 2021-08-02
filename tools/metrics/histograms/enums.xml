@@ -28820,6 +28820,7 @@ Called by update_extension_histograms.py.-->
   <int value="1563" label="AUTOTESTPRIVATE_SETSHELFICONPIN"/>
   <int value="1564" label="SCRIPTING_GETREGISTEREDCONTENTSCRIPTS"/>
   <int value="1565" label="OS_TELEMETRY_GETVPDINFO"/>
+  <int value="1566" label="ACCESSIBILITY_PRIVATE_MAGNIFIERCENTERONPOINT"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -34,6 +34,15 @@
         }
       },
       {
+        "id": "ScreenPoint",
+        "type": "object",
+        "description": "Point in global screen coordinates.",
+        "properties": {
+          "x": {"type": "integer", "description": "X coordinate in global screen coordinates."},
+          "y": {"type": "integer", "description": "Y coordinate in global screen coordinates."}
+        }
+      },
+      {
         "id": "Gesture",
         "type": "string",
         "enum": [ "click", "swipeLeft1", "swipeUp1", "swipeRight1", "swipeDown1", "swipeLeft2", "swipeUp2", "swipeRight2", "swipeDown2", "swipeLeft3", "swipeUp3", "swipeRight3", "swipeDown3", "swipeLeft4", "swipeUp4", "swipeRight4", "swipeDown4", "tap2", "tap3", "tap4", "touchExplore" ],
@@ -486,6 +495,17 @@
             "name": "rect",
             "$ref": "ScreenRect",
             "description": "Rect to ensure visible in the magnified viewport."
+          }
+        ]
+      },
+      {
+        "name": "magnifierCenterOnPoint",
+        "type": "function",
+        "description": "Called by the Accessibility Common extension to center magnifier at |point|.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "ScreenPoint"
           }
         ]
       },

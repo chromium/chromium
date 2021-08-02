@@ -67,6 +67,9 @@ class MagnificationManager
   // Move magnifier to ensure rect is within viewport if a magnifier is enabled.
   void HandleMoveMagnifierToRectIfEnabled(const gfx::Rect& rect);
 
+  // Move magnified region to center on point if a magnifier is enabled.
+  void HandleMagnifierCenterOnPointIfEnabled(const gfx::Point& point_in_screen);
+
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
