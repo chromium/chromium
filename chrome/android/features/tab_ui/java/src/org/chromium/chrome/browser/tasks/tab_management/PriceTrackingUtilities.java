@@ -62,8 +62,7 @@ public class PriceTrackingUtilities {
         if (sIsSignedInAndSyncEnabledForTesting != null) {
             return isPriceTrackingEnabled() && sIsSignedInAndSyncEnabledForTesting;
         }
-        return isPriceTrackingEnabled() && isSignedIn() && isAnonymizedUrlDataCollectionEnabled()
-                && isOpenTabsSyncEnabled();
+        return isPriceTrackingEnabled() && isSignedIn() && isAnonymizedUrlDataCollectionEnabled();
     }
 
     /**

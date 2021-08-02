@@ -43,7 +43,7 @@ public final class TabHelpers {
         if (!tab.isIncognito() && !((TabImpl) tab).isCustomTab()
                 && PriceTrackingUtilities.isPriceTrackingEligible()
                 && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
-            ShoppingPersistedTabData.from(tab);
+            ShoppingPersistedTabData.from(tab, (res) -> {});
         }
 
         // TODO(jinsukkim): Do this by having something observe new tab creation.
