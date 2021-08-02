@@ -4485,7 +4485,14 @@
 
     'mac_specific_chromium_gtests': {
       'sandbox_mac_unittests': {},
-      'updater_tests': {},
+      'updater_tests': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+      },
       'xr_browser_tests': {
         'test': 'xr_browser_tests',
       },
@@ -5141,11 +5148,24 @@
     },
 
     'updater_gtests': {
-      'updater_tests': {},
+      'updater_tests': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+      },
     },
 
     'updater_system_gtests': {
       'updater_tests_system': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
         'swarming': {
           'dimension_sets': [
             {
@@ -5520,7 +5540,14 @@
           ],
         },
       },
-      'updater_tests': {},
+      'updater_tests': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+      },
       'zucchini_unittests': {},
     },
 

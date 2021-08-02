@@ -4,6 +4,11 @@
   "mac-arm64-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -27,6 +32,11 @@
   "mac-arm64-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -50,6 +60,11 @@
   "mac10.11-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73,6 +88,11 @@
   "mac10.11-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -96,6 +116,11 @@
   "mac10.12-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -119,6 +144,11 @@
   "mac10.12-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -142,6 +172,11 @@
   "mac10.13-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -165,6 +200,11 @@
   "mac10.13-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -188,6 +228,11 @@
   "mac10.14-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -211,6 +256,11 @@
   "mac10.14-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -234,6 +284,11 @@
   "mac10.15-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -257,6 +312,11 @@
   "mac10.15-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -276,6 +336,11 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests/"
       },
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -299,6 +364,11 @@
   "mac11.0-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -322,6 +392,11 @@
   "mac11.0-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -345,6 +420,11 @@
   "win10-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -368,6 +448,11 @@
   "win10-updater-tester-dbg-uac": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -391,6 +476,11 @@
   "win10-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -414,6 +504,11 @@
   "win7(32)-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -437,6 +532,11 @@
   "win7(32)-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -460,6 +560,11 @@
   "win7-updater-tester-dbg": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -483,6 +588,11 @@
   "win7-updater-tester-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--test-launcher-timeout=90000",
+          "--ui-test-action-max-timeout=45000",
+          "--ui-test-action-timeout=40000"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
