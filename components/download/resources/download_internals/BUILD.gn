@@ -21,8 +21,6 @@ generate_grd("build_grd") {
 }
 
 grit("resources") {
-  defines = chrome_grit_defines
-
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
@@ -34,7 +32,7 @@ grit("resources") {
     "grit/download_internals_resources_map.h",
     "download_internals_resources.pak",
   ]
-  output_dir = "$root_gen_dir/chrome"
+  output_dir = "$root_gen_dir/components"
 }
 
 js_type_check("closure_compile") {

@@ -302,7 +302,7 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2065],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/download_internals/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/download/resources/download_internals/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2070],
   },
