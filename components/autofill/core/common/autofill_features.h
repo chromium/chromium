@@ -148,6 +148,8 @@ extern const base::Feature kAutofillUseImprovedLabelDisambiguation;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillUseNewSectioningMethod;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillUseNewFormExtraction;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature
     kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval;
 

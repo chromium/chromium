@@ -384,6 +384,12 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
     "AutofillUseImprovedLabelDisambiguation",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to use new form extraction function that does not leak
+// memory and uses comparison based on the FormRendererIds.
+// TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
+const base::Feature kAutofillUseNewFormExtraction{
+    "AutofillUseNewFormExtraction", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to use the combined heuristic and the autocomplete section
 // implementation for section splitting or not. See https://crbug.com/1076175.
 const base::Feature kAutofillUseNewSectioningMethod{

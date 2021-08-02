@@ -241,7 +241,8 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAcrossIframes,
-                              features::kAutofillShowTypePredictions},
+                              features::kAutofillShowTypePredictions,
+                              features::kAutofillUseNewFormExtraction},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
@@ -259,9 +260,9 @@ class AutofillCapturedSitesInteractiveTest
     return recipe_replayer_.get();
   }
 
-  const CreditCard credit_card() { return card_; }
+  const CreditCard& credit_card() { return card_; }
 
-  const AutofillProfile profile() { return profile_; }
+  const AutofillProfile& profile() { return profile_; }
 
  private:
   bool ShowAutofillSuggestion(const std::string& target_element_xpath,

@@ -41,6 +41,12 @@ class FormCache {
   std::vector<FormData> ExtractNewForms(
       const FieldDataManager* field_data_manager);
 
+  // Modified version of ExtractNewForms(). It is used only if
+  // `AutofillUseNewFormExtraction` feature is enabled. Remove after the feature
+  // is deleted.
+  std::vector<FormData> ModifiedExtractNewForms(
+      const FieldDataManager* field_data_manager);
+
   // Resets the forms.
   void Reset();
 
@@ -67,13 +73,16 @@ class FormCache {
       const std::vector<FieldRendererId>& fields_eligible_for_manual_filling);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, FreeDataOnElementRemoval);
+  FRIEND_TEST_ALL_PREFIXES(ParameterizedFormCacheBrowserTest,
+                           FreeDataOnElementRemoval);
   FRIEND_TEST_ALL_PREFIXES(
-      FormCacheBrowserTest,
+      ParameterizedFormCacheBrowserTest,
       RemoveReextractedModifiedNonSyntheticFormsWithSameRendererID);
   FRIEND_TEST_ALL_PREFIXES(
-      FormCacheBrowserTest,
+      ParameterizedFormCacheBrowserTest,
       RemoveReextractedModifiedSyntheticFormsWithSameRendererID);
+  FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, FormCacheSizeUpperBound);
+  FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, DoNotStoreEmptyForms);
 
   // Scans |control_elements| and returns the number of editable elements.
   // Also logs warning messages for deprecated attribute if
@@ -100,6 +109,11 @@ class FormCache {
   // The cached forms. Used to prevent re-extraction of forms.
   // TODO(crbug/896689) Move to std::map<unique_rederer_id, FormData>.
   std::set<FormData, FormData::IdentityComparator> parsed_forms_;
+
+  // Same as |parsed_forms_|, but moved to a different type. It is used only if
+  // `AutofillUseNewFormExtraction` feature is enabled. Remove after the feature
+  // is deleted.
+  std::map<FormRendererId, FormData> parsed_forms_rendererid_;
 
   // The synthetic FormData is for all the fieldsets in the document without a
   // form owner.

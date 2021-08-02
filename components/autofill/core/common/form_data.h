@@ -54,6 +54,8 @@ struct FrameTokenWithPredecessor {
 struct FormData {
   // Less-than relation for STL containers. Compares only members needed to
   // uniquely identify a form.
+  // TODO(crbug.com/1215333): Remove once `AutofillUseNewFormExtraction` is
+  // launched.
   struct IdentityComparator {
     bool operator()(const FormData& a, const FormData& b) const;
   };
