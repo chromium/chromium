@@ -375,6 +375,12 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kEmpty,
       /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
 
   // Blocks `kExampleHost0`.
   {
@@ -389,6 +395,12 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kBlockedListOnly,
       /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
 
   // Approves `kExampleHost0`.
   {
@@ -403,6 +415,12 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kApprovedListOnly,
       /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/2);
 
   // Blocks `kExampleURL1`.
   {
@@ -417,9 +435,21 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
       /*sample=*/
       SupervisedUserURLFilter::ManagedSiteList::kBoth,
       /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
+  histogram_tester_.ExpectBucketCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
+      /*sample=*/1, /*expected_count=*/2);
 
   histogram_tester_.ExpectTotalCount(
       SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest(),
+      /*expected_count=*/4);
+  histogram_tester_.ExpectTotalCount(
+      SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest(),
+      /*expected_count=*/4);
+  histogram_tester_.ExpectTotalCount(
+      SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest(),
       /*expected_count=*/4);
 }
 

@@ -137,6 +137,18 @@ constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
 // Reports ManualSiteListType which indicates approved list and blocked list
 // usage for current Family Link user on Chrome OS.
 constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
+
+// UMA histogram FamilyUser.ManagedSiteListCount.Approved
+// Reports the number of approved urls and domains for current Family Link user
+// on Chrome OS.
+constexpr char kApprovedSitesCountHistogramName[] =
+    "FamilyUser.ManagedSiteListCount.Approved";
+
+// UMA histogram FamilyUser.ManagedSiteListCount.Blocked
+// Reports the number of blocked urls and domains for current Family Link user
+// on Chrome OS.
+constexpr char kBlockedSitesCountHistogramName[] =
+    "FamilyUser.ManagedSiteListCount.Blocked";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // This class encapsulates all the state that is required during construction of
@@ -264,6 +276,18 @@ const char* SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest() {
 // static
 const char* SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest() {
   return kManagedSiteListHistogramName;
+}
+
+// static
+const char*
+SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest() {
+  return kApprovedSitesCountHistogramName;
+}
+
+// static
+const char*
+SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest() {
+  return kBlockedSitesCountHistogramName;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -737,39 +761,41 @@ void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
   if (url_map_.empty() && host_map_.empty()) {
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
                                   ManagedSiteList::kEmpty);
+    base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName, 0);
+    base::UmaHistogramCounts1000(kBlockedSitesCountHistogramName, 0);
     return;
   }
 
   ManagedSiteList managed_site_list = ManagedSiteList::kMaxValue;
-  bool approved_list = false;
-  bool blocked_list = false;
+  int approved_count = 0;
+  int blocked_count = 0;
   for (const auto& it : url_map_) {
-    if (approved_list && blocked_list)
-      break;
     if (it.second) {
-      approved_list = true;
+      approved_count++;
     } else {
-      blocked_list = true;
+      blocked_count++;
     }
   }
 
   for (const auto& it : host_map_) {
-    if (approved_list && blocked_list)
-      break;
     if (it.second) {
-      approved_list = true;
+      approved_count++;
     } else {
-      blocked_list = true;
+      blocked_count++;
     }
   }
 
-  if (approved_list && blocked_list) {
+  if (approved_count > 0 && blocked_count > 0) {
     managed_site_list = ManagedSiteList::kBoth;
-  } else if (approved_list) {
+  } else if (approved_count > 0) {
     managed_site_list = ManagedSiteList::kApprovedListOnly;
   } else {
     managed_site_list = ManagedSiteList::kBlockedListOnly;
   }
+
+  base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName,
+                               approved_count);
+  base::UmaHistogramCounts1000(kBlockedSitesCountHistogramName, blocked_count);
 
   base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
                                 managed_site_list);

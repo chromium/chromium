@@ -131,6 +131,8 @@ class SupervisedUserURLFilter {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static const char* GetWebFilterTypeHistogramNameForTest();
   static const char* GetManagedSiteListHistogramNameForTest();
+  static const char* GetApprovedSitesCountHistogramNameForTest();
+  static const char* GetBlockedSitesCountHistogramNameForTest();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns true if the parental allowlist/blocklist should be skipped in
