@@ -552,9 +552,17 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  DISABLED_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#else
+#define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcVideoCaptureServiceBrowserTest,
-    FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
+    MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
   Initialize();
   auto device_exerciser = std::make_unique<SharedMemoryDeviceExerciser>();
   device_exerciser->Initialize();
@@ -569,9 +577,17 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  DISABLED_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#else
+#define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
+  PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebRtcVideoCaptureServiceBrowserTest,
-    PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
+    MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage) {
   Initialize();
   auto device_exerciser = std::make_unique<SharedMemoryDeviceExerciser>(
       media::mojom::PlaneStrides::New(

@@ -62,8 +62,16 @@ class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(WebRtcVideoCaptureBrowserTest);
 };
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_RecoverFromCrashInVideoCaptureProcess \
+  DISABLED_RecoverFromCrashInVideoCaptureProcess
+#else
+#define MAYBE_RecoverFromCrashInVideoCaptureProcess \
+  RecoverFromCrashInVideoCaptureProcess
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcVideoCaptureBrowserTest,
-                       RecoverFromCrashInVideoCaptureProcess) {
+                       MAYBE_RecoverFromCrashInVideoCaptureProcess) {
   // This test only makes sense if the video capture service runs in a
   // separate process.
   if (!features::IsVideoCaptureServiceEnabledForOutOfProcess())
