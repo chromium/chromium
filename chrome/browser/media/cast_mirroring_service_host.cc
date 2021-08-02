@@ -465,14 +465,6 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-void CastMirroringServiceHost::RequestMediaAccessPermission(
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback) {
-  // This should not be called when mirroring an OffscreenTab through the
-  // mirroring service.
-  NOTREACHED();
-}
-
 void CastMirroringServiceHost::DestroyTab(OffscreenTab* tab) {
   if (offscreen_tab_ && (offscreen_tab_.get() == tab))
     offscreen_tab_.reset();

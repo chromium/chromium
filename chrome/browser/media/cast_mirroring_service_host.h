@@ -127,9 +127,6 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // OffscreenTab::Owner implementation.
-  void RequestMediaAccessPermission(
-      const content::MediaStreamRequest& request,
-      content::MediaResponseCallback callback) override;
   void DestroyTab(OffscreenTab* tab) override;
 
   // Creates and starts a new OffscreenTab.

@@ -47,14 +47,11 @@ class OffscreenTab final : public ProfileObserver,
                            protected content::WebContentsDelegate,
                            protected content::WebContentsObserver {
  public:
+  // TODO(crbug.com/1234929): Hold the OffscreenTab by a WeakPtr, then Owner can
+  // be deleted.
   class Owner {
    public:
     virtual ~Owner() {}
-
-    // Checks whether capturing the |contents| is permitted.
-    virtual void RequestMediaAccessPermission(
-        const content::MediaStreamRequest& request,
-        content::MediaResponseCallback callback) = 0;
 
     // |tab| is no longer valid after this call.
     virtual void DestroyTab(OffscreenTab* tab) = 0;

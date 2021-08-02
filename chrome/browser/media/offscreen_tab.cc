@@ -17,6 +17,7 @@
 #include "content/public/browser/presentation_receiver_flags.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 #if defined(USE_AURA)
 #include "base/threading/thread_task_runner_handle.h"
@@ -331,18 +332,16 @@ void OffscreenTab::RequestMediaAccessPermission(
     WebContents* contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
-  owner_->RequestMediaAccessPermission(request, std::move(callback));
+  std::move(callback).Run(blink::MediaStreamDevices(),
+                          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+                          nullptr);
 }
 
 bool OffscreenTab::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(),
-            content::WebContents::FromRenderFrameHost(render_frame_host));
-  return type == blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
-         type == blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
+  return false;
 }
 
 void OffscreenTab::DidStartNavigation(

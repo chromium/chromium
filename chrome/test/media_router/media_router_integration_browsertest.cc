@@ -105,6 +105,7 @@ void MediaRouterIntegrationBrowserTest::SetUp() {
 
 void MediaRouterIntegrationBrowserTest::TearDownOnMainThread() {
   test_ui_->TearDown();
+  test_provider_->TearDown();
   InProcessBrowserTest::TearDownOnMainThread();
   test_navigation_observer_.reset();
 }

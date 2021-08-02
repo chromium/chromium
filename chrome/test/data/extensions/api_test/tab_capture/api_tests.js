@@ -209,38 +209,6 @@ var testsToRun = [
     });
   },
 
-  function offscreenTabsDoNotShowUpAsCapturedTabs() {
-    tabCapture.getCapturedTabs(function(tab_list_before) {
-      tabCapture.captureOffscreenTab(
-          helloWorldPageUri,
-          {video: true},
-          function(stream) {
-            chrome.test.assertTrue(!!stream);
-            tabCapture.getCapturedTabs(function(tab_list_after) {
-              assertIsSameSetOfTabs(tab_list_before, tab_list_after, 'tabId');
-              stream.getVideoTracks()[0].stop();
-              succeedOnCaptureStopped();
-            });
-          });
-    });
-  },
-
-  function offscreenTabsDoNotShowUpInTabsQuery() {
-    chrome.tabs.query({/* all tabs */}, function(tab_list_before) {
-      tabCapture.captureOffscreenTab(
-          helloWorldPageUri,
-          {video: true},
-          function(stream) {
-            chrome.test.assertTrue(!!stream);
-            chrome.tabs.query({/* all tabs */}, function(tab_list_after) {
-              assertIsSameSetOfTabs(tab_list_before, tab_list_after, 'id');
-              stream.getVideoTracks()[0].stop();
-              succeedOnCaptureStopped();
-            });
-          });
-    });
-  },
-
   function getMediaStreamIdWithCallerTab() {
     chrome.tabs.getCurrent(function(tab) {
       tabCapture.getMediaStreamId({consumerTabId: tab.id}, function(streamId) {
