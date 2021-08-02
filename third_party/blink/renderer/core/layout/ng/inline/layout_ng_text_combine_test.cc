@@ -783,6 +783,39 @@ LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http;//crbug.com/1233432
+TEST_F(LayoutNGTextCombineTest, RemoveBlockChild) {
+  InsertStyleElement(
+      "div { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>ab<p id=block>XY</p>de</div>");
+  auto& root = *GetElementById("root");
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "ab"
+  +--LayoutNGBlockFlow P id="block"
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "XY"
+  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutText #text "de"
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()));
+
+  GetElementById("block")->remove();
+  RunDocumentLifecycle();
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text "ab"
+  |  +--LayoutText #text "de"
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()));
+}
+
 TEST_F(LayoutNGTextCombineTest, RemoveChildCombine) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"

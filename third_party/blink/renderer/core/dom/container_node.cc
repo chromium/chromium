@@ -674,6 +674,36 @@ void ContainerNode::Trace(Visitor* visitor) const {
   Node::Trace(visitor);
 }
 
+static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
+  DCHECK(!old_child.parentNode()->GetForceReattachLayoutTree());
+
+  auto* const layout_object = old_child.GetLayoutObject();
+  if (!layout_object)
+    return false;
+
+  // Request to merge previous and next |LayoutNGTextCombine| of |child|.
+  // See http:://crbug.com/1227066
+  auto* const previous_sibling = layout_object->PreviousSibling();
+  if (!previous_sibling)
+    return false;
+  auto* const next_sibling = layout_object->NextSibling();
+  if (!next_sibling)
+    return false;
+  if (UNLIKELY(IsA<LayoutNGTextCombine>(previous_sibling)) &&
+      UNLIKELY(IsA<LayoutNGTextCombine>(next_sibling)))
+    return true;
+
+  // Request to merge combined texts in anonymous block.
+  // See http://crbug.com/1233432
+  if (!previous_sibling->IsAnonymousBlock() ||
+      !next_sibling->IsAnonymousBlock())
+    return false;
+
+  return UNLIKELY(
+             IsA<LayoutNGTextCombine>(previous_sibling->SlowLastChild())) &&
+         UNLIKELY(IsA<LayoutNGTextCombine>(next_sibling->SlowFirstChild()));
+}
+
 Node* ContainerNode::RemoveChild(Node* old_child,
                                  ExceptionState& exception_state) {
   // NotFoundError: Raised if oldChild is not a child of this node.
@@ -719,13 +749,9 @@ Node* ContainerNode::RemoveChild(Node* old_child,
     return nullptr;
   }
 
-  if (auto* layout_object = child->GetLayoutObject()) {
-    // Request to merge previous and next |LayoutNGTextCombine| of |child|.
-    // See http:://crbug.com/1227066
-    if (UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->PreviousSibling())) &&
-        UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->NextSibling())))
-      SetForceReattachLayoutTree();
-  }
+  if (!GetForceReattachLayoutTree() &&
+      UNLIKELY(ShouldMergeCombinedTextAfterRemoval(*child)))
+    SetForceReattachLayoutTree();
 
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
