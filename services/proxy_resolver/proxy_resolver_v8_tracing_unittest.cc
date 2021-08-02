@@ -189,9 +189,7 @@ TEST_F(ProxyResolverV8TracingTest, Simple) {
   EXPECT_TRUE(mock_bindings.GetErrors().empty());
 }
 
-// TODO(pthier, v8:11365): Update error message and re-enable test once
-// https://crrev.com/c/2979599 is rolled into chromium.
-TEST_F(ProxyResolverV8TracingTest, DISABLED_JavascriptError) {
+TEST_F(ProxyResolverV8TracingTest, JavascriptError) {
   MockProxyHostResolver host_resolver;
   MockBindings mock_bindings(&host_resolver);
 
@@ -215,8 +213,9 @@ TEST_F(ProxyResolverV8TracingTest, DISABLED_JavascriptError) {
   EXPECT_EQ("Prepare to DIE!", mock_bindings.GetAlerts()[0]);
   ASSERT_EQ(1u, mock_bindings.GetErrors().size());
   EXPECT_EQ(5, mock_bindings.GetErrors()[0].first);
-  EXPECT_EQ("Uncaught TypeError: Cannot read property 'split' of null",
-            mock_bindings.GetErrors()[0].second);
+  EXPECT_EQ(
+      "Uncaught TypeError: Cannot read properties of null (reading 'split')",
+      mock_bindings.GetErrors()[0].second);
 }
 
 TEST_F(ProxyResolverV8TracingTest, TooManyAlerts) {

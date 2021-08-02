@@ -352,10 +352,8 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
 
 // Load an extension which, upon visiting any page, first sends out a console
 // log, and then crashes with a JS TypeError.
-// TODO(pthier, v8:11365): Update error message and re-enable test once
-// https://crrev.com/c/2979599 is rolled into chromium.
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
-                       DISABLED_ContentScriptLogAndRuntimeError) {
+                       ContentScriptLogAndRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "content_script_log_and_runtime_error",
@@ -398,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   CheckRuntimeError(errors[1].get(), extension->id(), script_url,
                     false,  // not from incognito
                     "Uncaught TypeError: "
-                    "Cannot set property 'foo' of undefined",
+                    "Cannot set properties of undefined (setting 'foo')",
                     logging::LOG_ERROR,  // JS errors are always ERROR level.
                     GetTestURL(), 1u);
 
@@ -468,10 +466,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 
 // Test that we catch an error when we try to call an API method without
 // permission.
-// TODO(pthier, v8:11365): Update error message and re-enable test once
-// https://crrev.com/c/2979599 is rolled into chromium.
-IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
-                       DISABLED_BadAPIPermissionsRuntimeError) {
+IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "bad_api_permissions_runtime_error", {.ignore_manifest_warnings = false},
@@ -484,11 +479,12 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
 
-  CheckRuntimeError(
-      errors[0].get(), extension->id(), script_url,
-      false,  // not incognito
-      "Uncaught TypeError: Cannot read property 'addUrl' of undefined",
-      logging::LOG_ERROR, extension->GetResourceURL(kBackgroundPageName), 1u);
+  CheckRuntimeError(errors[0].get(), extension->id(), script_url,
+                    false,  // not incognito
+                    "Uncaught TypeError: Cannot read properties of undefined "
+                    "(reading 'addUrl')",
+                    logging::LOG_ERROR,
+                    extension->GetResourceURL(kBackgroundPageName), 1u);
 
   const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
   ASSERT_EQ(1u, stack_trace.size());
