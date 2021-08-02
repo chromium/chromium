@@ -8,9 +8,13 @@
 #include <string.h>
 
 #include <algorithm>
+#include <unordered_set>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 #if defined(USE_SYSTEM_MINIZIP)
@@ -349,7 +353,8 @@ zipFile OpenFdForZipping(int zip_fd, int append_flag) {
 
 bool ZipOpenNewFileInZip(zipFile zip_file,
                          const std::string& str_path,
-                         base::Time last_modified_time) {
+                         base::Time last_modified_time,
+                         Compression compression) {
   // Section 4.4.4 http://www.pkware.com/documents/casestudies/APPNOTE.TXT
   // Setting the Language encoding flag so the file is told to be in utf-8.
   const uLong LANGUAGE_ENCODING_FLAG = 0x1 << 11;
@@ -364,7 +369,7 @@ bool ZipOpenNewFileInZip(zipFile zip_file,
       /*extrafield_global=*/nullptr,
       /*size_extrafield_global=*/0u,
       /*comment=*/nullptr,
-      /*method=*/Z_DEFLATED,
+      /*method=*/compression,
       /*level=*/Z_DEFAULT_COMPRESSION,
       /*raw=*/0,
       /*windowBits=*/-MAX_WBITS,
@@ -383,6 +388,81 @@ bool ZipOpenNewFileInZip(zipFile zip_file,
   }
 
   return true;
+}
+
+Compression GetCompressionMethod(const base::FilePath& path) {
+  // Get the filename extension in lower case.
+  const base::FilePath::StringType ext =
+      base::ToLowerASCII(path.FinalExtension());
+
+  if (ext.empty())
+    return kDeflated;
+
+  using StringPiece = base::FilePath::StringPieceType;
+
+  // Skip the leading dot.
+  StringPiece ext_without_dot = ext;
+  DCHECK_EQ(ext_without_dot.front(), FILE_PATH_LITERAL('.'));
+  ext_without_dot.remove_prefix(1);
+
+  // Well known filename extensions of files that a likely to be already
+  // compressed. The extensions are in lower case without the leading dot.
+  static const base::NoDestructor<
+      std::unordered_set<StringPiece, base::StringPieceHashImpl<StringPiece>>>
+      exts(std::initializer_list<StringPiece>{
+          FILE_PATH_LITERAL("3g2"),   //
+          FILE_PATH_LITERAL("3gp"),   //
+          FILE_PATH_LITERAL("7z"),    //
+          FILE_PATH_LITERAL("7zip"),  //
+          FILE_PATH_LITERAL("aac"),   //
+          FILE_PATH_LITERAL("avi"),   //
+          FILE_PATH_LITERAL("bz"),    //
+          FILE_PATH_LITERAL("bz2"),   //
+          FILE_PATH_LITERAL("crx"),   //
+          FILE_PATH_LITERAL("gif"),   //
+          FILE_PATH_LITERAL("gz"),    //
+          FILE_PATH_LITERAL("jar"),   //
+          FILE_PATH_LITERAL("jpeg"),  //
+          FILE_PATH_LITERAL("jpg"),   //
+          FILE_PATH_LITERAL("lz"),    //
+          FILE_PATH_LITERAL("m2v"),   //
+          FILE_PATH_LITERAL("m4p"),   //
+          FILE_PATH_LITERAL("m4v"),   //
+          FILE_PATH_LITERAL("mng"),   //
+          FILE_PATH_LITERAL("mov"),   //
+          FILE_PATH_LITERAL("mp2"),   //
+          FILE_PATH_LITERAL("mp3"),   //
+          FILE_PATH_LITERAL("mp4"),   //
+          FILE_PATH_LITERAL("mpe"),   //
+          FILE_PATH_LITERAL("mpeg"),  //
+          FILE_PATH_LITERAL("mpg"),   //
+          FILE_PATH_LITERAL("mpv"),   //
+          FILE_PATH_LITERAL("ogg"),   //
+          FILE_PATH_LITERAL("ogv"),   //
+          FILE_PATH_LITERAL("png"),   //
+          FILE_PATH_LITERAL("qt"),    //
+          FILE_PATH_LITERAL("rar"),   //
+          FILE_PATH_LITERAL("taz"),   //
+          FILE_PATH_LITERAL("tb2"),   //
+          FILE_PATH_LITERAL("tbz"),   //
+          FILE_PATH_LITERAL("tbz2"),  //
+          FILE_PATH_LITERAL("tgz"),   //
+          FILE_PATH_LITERAL("tlz"),   //
+          FILE_PATH_LITERAL("tz"),    //
+          FILE_PATH_LITERAL("tz2"),   //
+          FILE_PATH_LITERAL("vob"),   //
+          FILE_PATH_LITERAL("webm"),  //
+          FILE_PATH_LITERAL("wma"),   //
+          FILE_PATH_LITERAL("wmv"),   //
+          FILE_PATH_LITERAL("xz"),    //
+          FILE_PATH_LITERAL("z"),     //
+          FILE_PATH_LITERAL("zip"),   //
+      });
+
+  if (exts->count(ext_without_dot))
+    return kStored;
+
+  return kDeflated;
 }
 
 }  // namespace internal

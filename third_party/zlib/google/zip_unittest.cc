@@ -26,7 +26,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/zlib/google/zip.h"
+#include "third_party/zlib/google/zip_internal.h"
 #include "third_party/zlib/google/zip_reader.h"
+
+// Convenience macro to create a file path from a string literal.
+#define FP(path) base::FilePath(FILE_PATH_LITERAL(path))
 
 namespace {
 
@@ -708,6 +712,90 @@ TEST_F(ZipTest, ZipCancel) {
 
     EXPECT_EQ(j, i);
   }
+}
+
+// Tests zip::internal::GetCompressionMethod()
+TEST_F(ZipTest, GetCompressionMethod) {
+  using zip::internal::GetCompressionMethod;
+  using zip::internal::kDeflated;
+  using zip::internal::kStored;
+
+  EXPECT_EQ(GetCompressionMethod(FP("")), kDeflated);
+  EXPECT_EQ(GetCompressionMethod(FP("NoExtension")), kDeflated);
+  EXPECT_EQ(GetCompressionMethod(FP("Folder.zip").Append(FP("NoExtension"))),
+            kDeflated);
+  EXPECT_EQ(GetCompressionMethod(FP("Name.txt")), kDeflated);
+  EXPECT_EQ(GetCompressionMethod(FP("Name.zip")), kStored);
+  EXPECT_EQ(GetCompressionMethod(FP("Name....zip")), kStored);
+  EXPECT_EQ(GetCompressionMethod(FP("Name.zip")), kStored);
+  EXPECT_EQ(GetCompressionMethod(FP("NAME.ZIP")), kStored);
+  EXPECT_EQ(GetCompressionMethod(FP("Name.gz")), kStored);
+  EXPECT_EQ(GetCompressionMethod(FP("Name.tar.gz")), kStored);
+  EXPECT_EQ(GetCompressionMethod(FP("Name.tar")), kDeflated);
+
+  // This one is controversial.
+  EXPECT_EQ(GetCompressionMethod(FP(".zip")), kStored);
+}
+
+// Tests that files put inside a ZIP are effectively compressed.
+TEST_F(ZipTest, Compressed) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath src_dir = temp_dir.GetPath().AppendASCII("input");
+  EXPECT_TRUE(base::CreateDirectory(src_dir));
+
+  // Create some dummy source files.
+  for (const base::StringPiece s : {"foo", "bar.txt", ".hidden"}) {
+    base::File f(src_dir.AppendASCII(s),
+                 base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(f.SetLength(5000));
+  }
+
+  // Zip the source files.
+  const base::FilePath dest_file = temp_dir.GetPath().AppendASCII("dest.zip");
+  EXPECT_TRUE(zip::Zip({.src_dir = src_dir,
+                        .dest_file = dest_file,
+                        .include_hidden_files = true}));
+
+  // Since the source files compress well, the destination ZIP file should be
+  // smaller than the source files.
+  int64_t dest_file_size;
+  ASSERT_TRUE(base::GetFileSize(dest_file, &dest_file_size));
+  EXPECT_GT(dest_file_size, 300);
+  EXPECT_LT(dest_file_size, 1000);
+}
+
+// Tests that a ZIP put inside a ZIP is simply stored instead of being
+// compressed.
+TEST_F(ZipTest, NestedZip) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath src_dir = temp_dir.GetPath().AppendASCII("input");
+  EXPECT_TRUE(base::CreateDirectory(src_dir));
+
+  // Create a dummy ZIP file. This is not a valid ZIP file, but for the purpose
+  // of this test, it doesn't really matter.
+  const int64_t src_size = 5000;
+
+  {
+    base::File f(src_dir.AppendASCII("src.zip"),
+                 base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(f.SetLength(src_size));
+  }
+
+  // Zip the dummy ZIP file.
+  const base::FilePath dest_file = temp_dir.GetPath().AppendASCII("dest.zip");
+  EXPECT_TRUE(zip::Zip({.src_dir = src_dir, .dest_file = dest_file}));
+
+  // Since the dummy source (inner) ZIP file should simply be stored in the
+  // destination (outer) ZIP file, the destination file should be bigger than
+  // the source file, but not much bigger.
+  int64_t dest_file_size;
+  ASSERT_TRUE(base::GetFileSize(dest_file, &dest_file_size));
+  EXPECT_GT(dest_file_size, src_size + 100);
+  EXPECT_LT(dest_file_size, src_size + 300);
 }
 
 }  // namespace
