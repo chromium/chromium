@@ -45,9 +45,11 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
@@ -109,179 +111,6 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 
-namespace {
-
-// Toggles fullscreen mode and waits for the notification.
-void ToggleFullscreenModeAndWait(Browser* browser) {
-  FullscreenNotificationObserver waiter(browser);
-  chrome::ToggleFullscreenMode(browser);
-  waiter.Wait();
-}
-
-// Enters fullscreen mode for tab and waits for the notification.
-void EnterFullscreenModeForTabAndWait(Browser* browser,
-                                      content::WebContents* web_contents) {
-  FullscreenNotificationObserver waiter(browser);
-  static_cast<content::WebContentsDelegate*>(browser)
-      ->EnterFullscreenModeForTab(web_contents->GetMainFrame(), {});
-  waiter.Wait();
-}
-
-// Exits fullscreen mode for tab and waits for the notification.
-void ExitFullscreenModeForTabAndWait(Browser* browser,
-                                     content::WebContents* web_contents) {
-  FullscreenNotificationObserver waiter(browser);
-  browser->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->ExitFullscreenModeForTab(web_contents);
-  waiter.Wait();
-}
-
-void StartOverview() {
-  ash::Shell::Get()->overview_controller()->StartOverview(
-      ash::OverviewStartAction::kTests);
-}
-
-void EndOverview() {
-  ash::Shell::Get()->overview_controller()->EndOverview(
-      ash::OverviewEndAction::kTests);
-}
-
-bool IsShelfVisible() {
-  return ash::ShelfTestApi().IsVisible();
-}
-
-BrowserNonClientFrameViewChromeOS* GetFrameViewAsh(BrowserView* browser_view) {
-  // We know we're using Ash, so static cast.
-  auto* frame_view = static_cast<BrowserNonClientFrameViewChromeOS*>(
-      browser_view->GetWidget()->non_client_view()->frame_view());
-  DCHECK(frame_view);
-  return frame_view;
-}
-
-// Template to be used as a base class for touch-optimized UI parameterized test
-// fixtures.
-template <class BaseTest>
-class TopChromeMdParamTest : public BaseTest,
-                             public ::testing::WithParamInterface<bool> {
- public:
-  TopChromeMdParamTest() : touch_ui_scoper_(GetParam()) {}
-  ~TopChromeMdParamTest() override = default;
-
- private:
-  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
-};
-
-// Template used as a base class for touch-optimized UI test fixtures.
-template <class BaseTest>
-class TopChromeTouchTest : public BaseTest {
- public:
-  TopChromeTouchTest() : touch_ui_scoper_(true) {}
-  ~TopChromeTouchTest() override = default;
-
- private:
-  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
-};
-
-// Template to be used when a test does not work with the webUI tabstrip.
-template <bool kEnabled, class BaseTest>
-class WebUiTabStripOverrideTest : public BaseTest {
- public:
-  WebUiTabStripOverrideTest() {
-    if (kEnabled)
-      feature_override_.InitAndEnableFeature(features::kWebUITabStrip);
-    else
-      feature_override_.InitAndDisableFeature(features::kWebUITabStrip);
-  }
-  ~WebUiTabStripOverrideTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_override_;
-};
-
-// A helper class for immersive mode tests.
-class ImmersiveModeTester : public ImmersiveModeController::Observer {
- public:
-  explicit ImmersiveModeTester(Browser* browser) : browser_(browser) {
-    scoped_observation_.Observe(GetBrowserView()->immersive_mode_controller());
-  }
-  ~ImmersiveModeTester() override = default;
-
-  BrowserView* GetBrowserView() {
-    return BrowserView::GetBrowserViewForBrowser(browser_);
-  }
-
-  // Runs the given command, verifies that a reveal happens and the expected tab
-  // is active.
-  void RunCommand(int command, int expected_index) {
-    reveal_started_ = reveal_ended_ = false;
-    browser_->command_controller()->ExecuteCommand(command);
-    VerifyTabIndexAfterReveal(expected_index);
-  }
-
-  // Verifies a reveal has happened and the expected tab is active.
-  void VerifyTabIndexAfterReveal(int expected_index) {
-    if (!reveal_ended_) {
-      reveal_loop_ = std::make_unique<base::RunLoop>();
-      reveal_loop_->Run();
-    }
-    EXPECT_TRUE(reveal_ended_);
-    EXPECT_EQ(expected_index, browser_->tab_strip_model()->active_index());
-  }
-
-  // Waits for the immersive fullscreen to end (or returns immediately if
-  // immersive fullscreen already ended).
-  void WaitForFullscreenToExit() {
-    if (GetBrowserView()->immersive_mode_controller()->IsEnabled()) {
-      fullscreen_loop_ = std::make_unique<base::RunLoop>();
-      fullscreen_loop_->Run();
-    }
-    ASSERT_FALSE(GetBrowserView()->immersive_mode_controller()->IsEnabled());
-  }
-
-  // ImmersiveModeController::Observer:
-  void OnImmersiveRevealStarted() override {
-    EXPECT_FALSE(reveal_started_);
-    EXPECT_FALSE(reveal_ended_);
-    reveal_started_ = true;
-    EXPECT_TRUE(GetBrowserView()->immersive_mode_controller()->IsRevealed());
-  }
-
-  void OnImmersiveRevealEnded() override {
-    EXPECT_TRUE(reveal_started_);
-    EXPECT_FALSE(reveal_ended_);
-    reveal_started_ = false;
-    reveal_ended_ = true;
-    EXPECT_FALSE(GetBrowserView()->immersive_mode_controller()->IsRevealed());
-    if (reveal_loop_ && reveal_loop_->running())
-      reveal_loop_->Quit();
-  }
-
-  void OnImmersiveModeControllerDestroyed() override {
-    DCHECK(scoped_observation_.IsObserving());
-    scoped_observation_.Reset();
-  }
-
-  void OnImmersiveFullscreenExited() override {
-    if (fullscreen_loop_ && fullscreen_loop_->running())
-      fullscreen_loop_->Quit();
-  }
-
- private:
-  Browser* browser_ = nullptr;
-  base::ScopedObservation<ImmersiveModeController,
-                          ImmersiveModeController::Observer>
-      scoped_observation_{this};
-  bool reveal_started_ = false;
-  bool reveal_ended_ = false;
-  std::unique_ptr<base::RunLoop> reveal_loop_;
-  std::unique_ptr<base::RunLoop> fullscreen_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeTester);
-};
-
-}  // namespace
-
 using views::Widget;
 
 using BrowserNonClientFrameViewChromeOSTest =
@@ -301,7 +130,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                        NonClientHitTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   Widget* widget = browser_view->GetWidget();
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
 
   // Click on the top edge of a restored window hits the top edge resize handle.
   const int kWindowWidth = 300;
@@ -325,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(
     BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip,
     TabletSplitViewNonClientHitTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
   EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
 
   Widget* widget = browser_view->GetWidget();
@@ -343,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(
     BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip,
     TabletSplitViewSwipeDownFromEdgeOpensWebUiTabStrip) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
   EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
 
   Widget* widget = browser_view->GetWidget();
@@ -373,7 +205,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                        NonImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
 
   // Frame paints by default.
   EXPECT_TRUE(frame_view->GetShouldPaint());
@@ -400,7 +233,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
                        AvatarDisplayOnTeleportedWindow) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
   aura::Window* window = browser()->window()->GetNativeWindow();
 
   EXPECT_FALSE(MultiUserWindowManagerHelper::ShouldShowAvatar(window));
@@ -437,10 +271,10 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
       BrowserView::GetBrowserViewForBrowser(browser());
 
   StartOverview();
-  EXPECT_EQ(0, GetFrameViewAsh(browser_view)->GetTopInset(false));
+  EXPECT_EQ(0, GetFrameViewChromeOS(browser_view)->GetTopInset(false));
 
   EndOverview();
-  EXPECT_EQ(0, GetFrameViewAsh(browser_view)->GetTopInset(false));
+  EXPECT_EQ(0, GetFrameViewChromeOS(browser_view)->GetTopInset(false));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
@@ -455,7 +289,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        FrameMinSizeIsUpdated) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
 
   BookmarkBarView* bookmark_bar = browser_view->GetBookmarkBarView();
   EXPECT_FALSE(bookmark_bar->GetVisible());
@@ -575,7 +410,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                        ImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
 
   ImmersiveModeController* immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -954,7 +790,7 @@ class WebAppNonClientFrameViewAshTest
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
     BrowserNonClientFrameViewChromeOS* frame_view =
-        GetFrameViewAsh(browser_view_);
+        GetFrameViewChromeOS(browser_view_);
     frame_header_ = static_cast<chromeos::DefaultFrameHeader*>(
         frame_view->frame_header_.get());
 
@@ -1082,7 +918,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, FrameThemeColorIsSet) {
 // height of the caption buttons.
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, FrameSize) {
   SetUpWebApp();
-  const int inset = GetFrameViewAsh(browser_view_)->GetTopInset(false);
+  const int inset = GetFrameViewChromeOS(browser_view_)->GetTopInset(false);
   EXPECT_EQ(inset, views::GetCaptionButtonLayoutSize(
                        views::CaptionButtonLayoutSize::kNonBrowserCaption)
                        .height());
@@ -1296,7 +1132,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
                        ActiveStateOfButtonMatchesWidget) {
   SetUpWebApp();
   chromeos::FrameCaptionButtonContainerView::TestApi test(
-      GetFrameViewAsh(browser_view_)->caption_button_container_);
+      GetFrameViewChromeOS(browser_view_)->caption_button_container_);
   EXPECT_TRUE(test.size_button()->GetPaintAsActive());
   EXPECT_TRUE(GetPaintingAsActive());
 
@@ -1321,7 +1157,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, PopupHasNoToolbar) {
   Browser* popup_browser = BrowserList::GetInstance()->GetLastActive();
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(popup_browser);
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
   EXPECT_FALSE(frame_view->web_app_frame_toolbar_for_testing());
 }
 
@@ -1360,7 +1197,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   Widget* widget = browser_view->GetWidget();
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
 
   widget->GetNativeWindow()->SetProperty(
       aura::client::kResizeBehaviorKey,
@@ -1399,7 +1237,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
   Widget* widget2 = browser_view2->GetWidget();
   BrowserNonClientFrameViewChromeOS* frame_view2 =
-      GetFrameViewAsh(browser_view2);
+      GetFrameViewChromeOS(browser_view2);
   widget2->GetNativeWindow()->SetProperty(
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize |
@@ -1513,7 +1351,8 @@ class HomeLauncherBrowserNonClientFrameViewChromeOSTest
 IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                        TabletModeBrowserCaptionButtonVisibility) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
 
   EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
   ASSERT_NO_FATAL_FAILURE(
@@ -1539,8 +1378,8 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
                        CaptionButtonVisibilityForBrowserLaunchedInTabletMode) {
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
-  EXPECT_FALSE(GetFrameViewAsh(BrowserView::GetBrowserViewForBrowser(
-                                   CreateBrowser(browser()->profile())))
+  EXPECT_FALSE(GetFrameViewChromeOS(BrowserView::GetBrowserViewForBrowser(
+                                        CreateBrowser(browser()->profile())))
                    ->caption_button_container_->GetVisible());
 }
 
@@ -1558,7 +1397,8 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   browser->window()->Show();
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
   EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
 
   // Tablet mode doesn't affect app's caption button's visibility.
@@ -1604,7 +1444,8 @@ class TabSearchFrameCaptionButtonTest
 IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
                        TabSearchBubbleHostTest) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  BrowserNonClientFrameViewChromeOS* frame_view = GetFrameViewAsh(browser_view);
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
   ASSERT_TRUE(browser()->is_type_normal());
 
   chromeos::FrameCaptionButtonContainerView::TestApi test(

@@ -441,6 +441,12 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
+    sources += [
+      "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.cc",
+      "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h",
+      "../browser/ui/views/frame/immersive_mode_tester.cc",
+      "../browser/ui/views/frame/immersive_mode_tester.h",
+    ]
     deps += [ "//chromeos/dbus/constants" ]
   }
 
