@@ -370,6 +370,31 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToChartsWebApp) {
   EXPECT_EQ(NumRecentFiles(web_contents), 0U);
 }
 
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/multimedia.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  sharesheet::SharesheetService::SetSelectedAppForTesting(
+      base::UTF8ToUTF16(app_id));
+
+  content::WebContents* web_contents = ShareToTarget("share_single_file()");
+  EXPECT_EQ(std::string(12, '*'), ReadTextContent(web_contents, "image"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareMultimedia) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/multimedia.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  sharesheet::SharesheetService::SetSelectedAppForTesting(
+      base::UTF8ToUTF16(app_id));
+
+  content::WebContents* web_contents = ShareToTarget("share_multiple_files()");
+  EXPECT_EQ(std::string(345, '*'), ReadTextContent(web_contents, "audio"));
+  EXPECT_EQ(std::string(67890, '*'), ReadTextContent(web_contents, "video"));
+}
+
 IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToPartialWild) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =

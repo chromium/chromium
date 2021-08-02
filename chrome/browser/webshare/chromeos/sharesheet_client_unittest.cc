@@ -67,6 +67,7 @@ class SharesheetClientUnitTest : public ChromeRenderViewHostTestHarness {
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
       const std::vector<std::string>& content_types,
+      const std::vector<uint64_t>& file_sizes,
       const std::string& text,
       const std::string& title,
       sharesheet::DeliveredCallback delivered_callback) {

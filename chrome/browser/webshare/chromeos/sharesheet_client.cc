@@ -137,8 +137,8 @@ void SharesheetClient::Share(
   if (current_share_->files.empty()) {
     GetSharesheetCallback().Run(
         web_contents(), current_share_->file_paths,
-        current_share_->content_types, current_share_->text,
-        current_share_->title,
+        current_share_->content_types, current_share_->file_sizes,
+        current_share_->text, current_share_->title,
         base::BindOnce(&SharesheetClient::OnShowSharesheet,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -173,6 +173,7 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
     current_share_->content_types.push_back(file->blob->content_type);
     current_share_->file_paths.push_back(
         GenerateFileName(current_share_->directory, file->name));
+    current_share_->file_sizes.push_back(file->blob->size);
   }
 
   std::unique_ptr<StoreFilesTask> store_files_task =
@@ -201,7 +202,7 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
 
   GetSharesheetCallback().Run(
       web_contents(), current_share_->file_paths, current_share_->content_types,
-      current_share_->text, current_share_->title,
+      current_share_->file_sizes, current_share_->text, current_share_->title,
       base::BindOnce(&SharesheetClient::OnShowSharesheet,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -222,9 +223,12 @@ void SharesheetClient::ShowSharesheet(
     content::WebContents* web_contents,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& content_types,
+    const std::vector<uint64_t>& file_sizes,
     const std::string& text,
     const std::string& title,
     DeliveredCallback delivered_callback) {
+  DCHECK_EQ(file_paths.size(), content_types.size());
+  DCHECK_EQ(file_paths.size(), file_sizes.size());
   if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
     std::move(delivered_callback).Run(sharesheet::SharesheetResult::kCancel);
     return;
@@ -241,6 +245,12 @@ void SharesheetClient::ShowSharesheet(
       file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
                          : apps_util::CreateShareIntentFromFiles(
                                profile, file_paths, content_types, text, title);
+  if (intent->files.has_value() && intent->files->size() == file_paths.size()) {
+    for (size_t index = 0; index < file_paths.size(); ++index) {
+      (*intent->files)[index]->mime_type = content_types[index];
+      (*intent->files)[index]->file_size = file_sizes[index];
+    }
+  }
   sharesheet_service->ShowBubble(
       web_contents, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kWebShare,

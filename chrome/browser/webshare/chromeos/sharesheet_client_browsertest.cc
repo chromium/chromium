@@ -70,6 +70,7 @@ class SharesheetClientBrowserTest : public InProcessBrowserTest {
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& file_paths,
                 const std::vector<std::string>& content_types,
+                const std::vector<uint64_t>& file_sizes,
                 const std::string& text, const std::string& title,
                 SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(text, expected_text);
@@ -102,7 +103,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, ShareTwoFiles) {
           content::WebContents* in_contents,
           const std::vector<base::FilePath>& in_file_paths,
           const std::vector<std::string>& content_types,
-          const std::string& text, const std::string& title,
+          const std::vector<uint64_t>& file_sizes, const std::string& text,
+          const std::string& title,
           SharesheetClient::DeliveredCallback delivered_callback) {
         EXPECT_EQ(contents, in_contents);
 
@@ -145,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, RepeatedShare) {
                 content::WebContents* in_contents,
                 const std::vector<base::FilePath>& in_file_paths,
                 const std::vector<std::string>& content_types,
+                const std::vector<uint64_t>& file_sizes,
                 const std::string& text, const std::string& title,
                 SharesheetClient::DeliveredCallback delivered_callback) {
               EXPECT_EQ(contents, in_contents);
@@ -174,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(SharesheetClientBrowserTest, CancelledShare) {
   SharesheetClient::SetSharesheetCallbackForTesting(base::BindLambdaForTesting(
       [](content::WebContents* in_contents,
          const std::vector<base::FilePath>& file_paths,
-         const std::vector<std::string>& content_types, const std::string& text,
+         const std::vector<std::string>& content_types,
+         const std::vector<uint64_t>& file_sizes, const std::string& text,
          const std::string& title,
          SharesheetClient::DeliveredCallback delivered_callback) {
         std::move(delivered_callback)

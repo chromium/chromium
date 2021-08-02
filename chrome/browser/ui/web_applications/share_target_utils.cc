@@ -92,67 +92,69 @@ NavigateParams NavigateParamsForShareTarget(
       data_pipe_getters;
 
   if (intent.mime_type.has_value() && intent.files.has_value()) {
-    const std::string& mime_type = intent.mime_type.value();
-    std::string name;
-    for (const apps::ShareTarget::Files& files : share_target.params.files) {
-      // Filter on MIME types. Chrome OS does not filter on file extensions.
-      // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
-      if (base::ranges::any_of(
-              files.accept, [&mime_type](const auto& criteria) {
-                return !base::StartsWith(criteria, ".") &&
-                       net::MatchesMimeType(criteria, mime_type);
-              })) {
-        name = files.name;
-        break;
+    // Files for Web Share intents are created by the browser in
+    // a .WebShare directory, with generated file names and file urls - see
+    // //chrome/browser/webshare/chromeos/sharesheet_client.cc
+    for (const auto& file : intent.files.value()) {
+      const std::string& mime_type = file->mime_type.has_value()
+                                         ? file->mime_type.value()
+                                         : intent.mime_type.value();
+      std::string name;
+      for (const apps::ShareTarget::Files& files : share_target.params.files) {
+        // Filter on MIME types. Chrome OS does not filter on file extensions.
+        // https://w3c.github.io/web-share-target/level-2/#dfn-accepted
+        if (base::ranges::any_of(
+                files.accept, [&mime_type](const auto& criteria) {
+                  return !base::StartsWith(criteria, ".") &&
+                         net::MatchesMimeType(criteria, mime_type);
+                })) {
+          name = files.name;
+          break;
+        }
       }
-    }
-    if (!name.empty()) {
-      // Files for Web Share intents are created by the browser in
-      // a .WebShare directory, with generated file names and file urls - see
-      // //chrome/browser/webshare/chromeos/sharesheet_client.cc
-      for (const auto& file : intent.files.value()) {
-        storage::FileSystemContext* file_system_context =
-            file_manager::util::GetFileManagerFileSystemContext(
-                browser->profile());
-        storage::FileSystemURL file_system_url =
-            file_system_context->CrackURLInFirstPartyContext(file->url);
+      if (name.empty())
+        continue;
 
-        mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
+      storage::FileSystemContext* file_system_context =
+          file_manager::util::GetFileManagerFileSystemContext(
+              browser->profile());
+      storage::FileSystemURL file_system_url =
+          file_system_context->CrackURLInFirstPartyContext(file->url);
+
+      mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter;
+      if (!file_system_url.is_valid()) {
+        // TODO(crbug.com/1166982): We could be more intelligent here and
+        // decide which cracking method to use based on the scheme.
+        auto file_system_url_and_handle =
+            arc::ShareInfoFileHandler::GetFileSystemURL(browser->profile(),
+                                                        file->url);
+        file_system_url = file_system_url_and_handle.url;
         if (!file_system_url.is_valid()) {
-          // TODO(crbug.com/1166982): We could be more intelligent here and
-          // decide which cracking method to use based on the scheme.
-          auto file_system_url_and_handle =
-              arc::ShareInfoFileHandler::GetFileSystemURL(browser->profile(),
-                                                          file->url);
-          file_system_url = file_system_url_and_handle.url;
-          if (!file_system_url.is_valid()) {
-            LOG(WARNING) << "Received unexpected file URL: "
-                         << file->url.spec();
-            continue;
-          }
-
-          mojo::MakeSelfOwnedReceiver(
-              std::make_unique<FileStreamDataPipeGetter>(
-                  /*context=*/file_system_context,
-                  /*url=*/file_system_url,
-                  /*offset=*/0,
-                  /*file_size=*/file->file_size,
-                  /*buf_size=*/kBufSize),
-              data_pipe_getter.InitWithNewPipeAndPassReceiver());
+          LOG(WARNING) << "Received unexpected file URL: " << file->url.spec();
+          continue;
         }
 
-        const std::string filename =
-            (file->file_name.has_value() && !file->file_name->empty())
-                ? (*file->file_name)
-                : file_system_url.path().BaseName().AsUTF8Unsafe();
-
-        names.push_back(name);
-        values.push_back(file_system_url.path().AsUTF8Unsafe());
-        is_value_file_uris.push_back(true);
-        filenames.push_back(filename);
-        types.push_back(mime_type);
-        data_pipe_getters.push_back(std::move(data_pipe_getter));
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<FileStreamDataPipeGetter>(
+                /*context=*/file_system_context,
+                /*url=*/file_system_url,
+                /*offset=*/0,
+                /*file_size=*/file->file_size,
+                /*buf_size=*/kBufSize),
+            data_pipe_getter.InitWithNewPipeAndPassReceiver());
       }
+
+      const std::string filename =
+          (file->file_name.has_value() && !file->file_name->empty())
+              ? (*file->file_name)
+              : file_system_url.path().BaseName().AsUTF8Unsafe();
+
+      names.push_back(name);
+      values.push_back(file_system_url.path().AsUTF8Unsafe());
+      is_value_file_uris.push_back(true);
+      filenames.push_back(filename);
+      types.push_back(mime_type);
+      data_pipe_getters.push_back(std::move(data_pipe_getter));
     }
   }
 
