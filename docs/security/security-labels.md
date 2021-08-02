@@ -33,10 +33,10 @@ that.)
 * **FoundIn-#**: Designates which milestones of Chrome are
 impacted by the bug. Multiple labels may be set, but the most important one
 is the earliest affected milestone.
-* **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Derived
-from **FoundIn**, this label specifies the earliest affected release channel.
-Should not normally be set by humans, except in the case of **None** which
-means that the bug is in a disabled feature, or otherwise doesn't impact
+* **Security_Impact-**{**Head**, **Beta**, **Stable**, **Extended**, **None**}:
+Derived from **FoundIn**, this label specifies the earliest affected release
+channel. Should not normally be set by humans, except in the case of **None**
+which means that the bug is in a disabled feature, or otherwise doesn't impact
 Chrome: see the section below for more details.
     * Note that **Security_Severity** should still be set on
       **Security_Impact-None** issues, as if the feature were enabled or the
@@ -215,8 +215,8 @@ release labels that are set on bugs not affecting stable.
 ### Remove Invalid **Security_Impact-X** Labels
 
 There should be exactly one **Security_Impact-X** label and it should be one of
-the 4 valid impact labels (None, Stable, Beta, Head). This rule removes any
-invalid and excess impact labels.
+the 5 valid impact labels (None, Extended, Stable, Beta, Head). This rule
+removes any invalid and excess impact labels.
 
 ### Adjust **Security_Impact-X** To Match FoundIn Labels
 
@@ -228,7 +228,7 @@ Based on **FoundIn-#** milestone labels this rule assigns corresponding
 
 Bugs that are labelled with milestones earlier than the current milestone will
 be relabeled to set the label for the current milestone and
-**Security_Impact-Stable**.
+**Security_Impact-Extended**.
 
 Bugs that carry a **Security_Impact-X** label but are missing a milestone label
 will be assigned the **M-#** label corresponding to the respective milestone.
@@ -300,8 +300,8 @@ usually add it automatically. The stack trace provided by ClusterFuzz suggests
 that the bug is in the component **Blink>DOM**, and such bugs should be labeled
 as applying to all OSs except iOS (where Blink is not used): **OS-**{**Linux**,
 **Windows**, **Android**, **Chrome**, **Fuchsia**}. Sheriffbot will check
-whether 27 is the current stable, beta or head milestone; let's assume
-**Security_Impact-Stable** is applied by Sheriffbot this time.
+whether 27 is the current extended stable, stable, beta or head milestone; let's
+assume **Security_Impact-Stable** is applied by Sheriffbot this time.
 1. Within a day or two, the sheriff was able to get the bug assigned and — oh
 joy! — fixed very quickly. When the bug's status changes to **Fixed**,
 Sheriffbot will add the **Merge-Requested** label, and will change
