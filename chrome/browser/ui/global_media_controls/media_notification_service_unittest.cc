@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -38,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using media_router::MediaRoute;
+using media_router::StartPresentationContext;
 using media_session::mojom::AudioFocusRequestState;
 using media_session::mojom::AudioFocusRequestStatePtr;
 using media_session::mojom::MediaSessionInfo;
@@ -91,45 +93,6 @@ class MockOverlayMediaNotification : public OverlayMediaNotification {
 
  private:
   OverlayMediaNotificationsManager* manager_ = nullptr;
-};
-
-class MockWebContentsPresentationManager
-    : public media_router::WebContentsPresentationManager {
- public:
-  void NotifyMediaRoutesChanged(
-      const std::vector<media_router::MediaRoute>& routes) {
-    for (auto& observer : observers_) {
-      observer.OnMediaRoutesChanged(routes);
-    }
-  }
-
-  void AddObserver(media_router::WebContentsPresentationManager::Observer*
-                       observer) override {
-    observers_.AddObserver(observer);
-  }
-
-  void RemoveObserver(media_router::WebContentsPresentationManager::Observer*
-                          observer) override {
-    observers_.RemoveObserver(observer);
-  }
-
-  MOCK_CONST_METHOD0(HasDefaultPresentationRequest, bool());
-  MOCK_CONST_METHOD0(GetDefaultPresentationRequest,
-                     const content::PresentationRequest&());
-  MOCK_METHOD3(OnPresentationResponse,
-               void(const content::PresentationRequest&,
-                    media_router::mojom::RoutePresentationConnectionPtr,
-                    const media_router::RouteRequestResult&));
-  MOCK_METHOD0(GetMediaRoutes, std::vector<media_router::MediaRoute>());
-
-  base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::ObserverList<media_router::WebContentsPresentationManager::Observer>
-      observers_;
-  base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
 };
 
 }  // anonymous namespace
@@ -434,19 +397,29 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
     return media_route;
   }
 
+  content::PresentationRequest CreatePresentationRequest() {
+    return content::PresentationRequest(main_rfh()->GetGlobalId(),
+                                        {GURL(), GURL()},
+                                        url::Origin::Create(GURL()));
+  }
+
+  std::unique_ptr<StartPresentationContext> CreateStartPresentationContext(
+      content::PresentationRequest presentation_request,
+      StartPresentationContext::PresentationConnectionCallback success_cb =
+          base::DoNothing(),
+      StartPresentationContext::PresentationConnectionErrorCallback error_cb =
+          base::DoNothing()) {
+    return std::make_unique<StartPresentationContext>(
+        presentation_request, std::move(success_cb), std::move(error_cb));
+  }
+
   // Simulate a supplementalNotification for |web_contents()|.
   std::string SimulateSupplementalNotification() {
-    auto presentation_request = content::PresentationRequest(
-        main_rfh()->GetGlobalId(),
-        {GURL("http://example.com"), GURL("http://example2.com")},
-        url::Origin::Create(GURL("http://google.com")));
-
-    auto start_presentation_context =
-        GetStartPresentationContext(presentation_request);
+    auto presentation_request = CreatePresentationRequest();
 
     // Create a PresentationRequestNotificationItem.
     service()->OnStartPresentationContextCreated(
-        std::move(start_presentation_context));
+        CreateStartPresentationContext(presentation_request));
     auto notification_id = GetSupplementalNotification()->id();
     EXPECT_FALSE(notification_id.empty());
     auto item =
@@ -472,25 +445,12 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
         ->presentation_request_notification_producer_->GetNotificationItem();
   }
 
-  MOCK_METHOD3(RequestSuccess,
-               void(const blink::mojom::PresentationInfo&,
-                    media_router::mojom::RoutePresentationConnectionPtr,
-                    const MediaRoute&));
-  MOCK_METHOD1(RequestError,
-               void(const blink::mojom::PresentationError& error));
-
- private:
-  std::unique_ptr<media_router::StartPresentationContext>
-  GetStartPresentationContext(
-      content::PresentationRequest presentation_request) {
-    return std::make_unique<media_router::StartPresentationContext>(
-        presentation_request,
-        base::BindOnce(&MediaNotificationServiceCastTest::RequestSuccess,
-                       base::Unretained(this)),
-        base::BindOnce(&MediaNotificationServiceCastTest::RequestError,
-                       base::Unretained(this)));
+  MockWebContentsPresentationManager* GetMockPresentationManager() {
+    return static_cast<MockWebContentsPresentationManager*>(
+        presentation_manager_.get());
   }
 
+ private:
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -968,6 +928,64 @@ TEST_F(MediaNotificationServiceCastTest, HideSupplementalNotifications) {
               ShowMediaSession(media_route.media_route_id(), _));
   SimulateDialogOpened(&dialog_delegate);
   testing::Mock::VerifyAndClearExpectations(&observer());
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       OnStartPresentationContextCreated_ForPresentationRequestNotifications) {
+  // If there does not exist an active notification, pass the
+  // StartPresentationContext to PresentationRequestNotificationProducer.
+  service()->OnStartPresentationContextCreated(
+      CreateStartPresentationContext(CreatePresentationRequest()));
+  auto supplemental_notification = GetSupplementalNotification();
+  EXPECT_TRUE(supplemental_notification);
+  EXPECT_FALSE(supplemental_notification->is_default_presentation_request());
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       OnStartPresentationContextCreated_ForMediaSessionNotifications) {
+  SimulatePlayingControllableMediaForWebContents(web_contents());
+  base::MockCallback<content::PresentationConnectionErrorCallback>
+      mock_error_cb;
+  auto context = CreateStartPresentationContext(
+      CreatePresentationRequest(), base::DoNothing(), mock_error_cb.Get());
+  auto* context_ptr = context.get();
+
+  // If there only exists a media session notification, pass |context| to
+  // MediaSessionNotificationProducer.
+  EXPECT_CALL(mock_error_cb, Run).Times(0);
+  service()->OnStartPresentationContextCreated(std::move(context));
+
+  // Invoke callback before |mock_error_cb| is deleted.
+  testing::Mock::VerifyAndClearExpectations(&mock_error_cb);
+  context_ptr->InvokeErrorCallback(blink::mojom::PresentationError(
+      blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED, ""));
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       OnStartPresentationContextCreated_ForCastNotifications) {
+  auto media_route = CreateMediaRoute("route_id");
+  SetMediaRoutesManagedByPresentationManager({media_route});
+
+  // If there exists cast notifications, |context| will not be passed to any
+  // notification producer and its error callback should be evoked.
+  base::MockCallback<content::PresentationConnectionErrorCallback>
+      mock_error_cb;
+  EXPECT_CALL(mock_error_cb, Run);
+  service()->OnStartPresentationContextCreated(CreateStartPresentationContext(
+      CreatePresentationRequest(), base::DoNothing(), mock_error_cb.Get()));
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       OnStartPresentationContextCreated_ForRemovedWebContents) {
+  // If the StartPresentationContext is from a WebContents that has been
+  // removed, its error callback should be evoked.
+  base::MockCallback<content::PresentationConnectionErrorCallback>
+      mock_error_cb;
+  auto context = CreateStartPresentationContext(
+      CreatePresentationRequest(), base::DoNothing(), mock_error_cb.Get());
+  EXPECT_CALL(mock_error_cb, Run);
+  DeleteContents();
+  service()->OnStartPresentationContextCreated(std::move(context));
 }
 
 // Regression test for https://crbug.com/1015903: we could end up in a

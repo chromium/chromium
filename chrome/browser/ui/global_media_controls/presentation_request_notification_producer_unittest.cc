@@ -28,43 +28,7 @@ using testing::AtLeast;
 using testing::NiceMock;
 
 namespace {
-class MockWebContentsPresentationManager
-    : public media_router::WebContentsPresentationManager {
- public:
-  bool HasDefaultPresentationRequest() const override {
-    return default_presentation_request_.has_value();
-  }
 
-  const content::PresentationRequest& GetDefaultPresentationRequest()
-      const override {
-    return *default_presentation_request_;
-  }
-
-  void SetDefaultPresentationRequest(
-      const content::PresentationRequest& request) {
-    default_presentation_request_ = request;
-  }
-
-  MOCK_METHOD1(
-      AddObserver,
-      void(media_router::WebContentsPresentationManager::Observer* observer));
-  MOCK_METHOD1(
-      RemoveObserver,
-      void(media_router::WebContentsPresentationManager::Observer* observer));
-  MOCK_METHOD3(OnPresentationResponse,
-               void(const content::PresentationRequest&,
-                    media_router::mojom::RoutePresentationConnectionPtr,
-                    const media_router::RouteRequestResult&));
-  MOCK_METHOD0(GetMediaRoutes, std::vector<media_router::MediaRoute>());
-
-  base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  absl::optional<content::PresentationRequest> default_presentation_request_;
-  base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
-};
 
 media_router::MediaRoute CreateMediaRoute(
     media_router::MediaRoute::Id route_id) {

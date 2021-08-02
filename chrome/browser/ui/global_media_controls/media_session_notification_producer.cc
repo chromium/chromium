@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
@@ -252,6 +253,12 @@ base::CallbackListSubscription MediaSessionNotificationProducer::Session::
   callback.Run(is_audio_device_switching_supported_);
   return is_audio_device_switching_supported_callback_list_.Add(
       std::move(callback));
+}
+
+void MediaSessionNotificationProducer::OnStartPresentationContextCreated(
+    std::unique_ptr<media_router::StartPresentationContext> context) {
+  DCHECK(context);
+  context_ = std::move(context);
 }
 
 void MediaSessionNotificationProducer::Session::
@@ -585,13 +592,16 @@ std::unique_ptr<media_router::CastDialogController>
 MediaSessionNotificationProducer::CreateCastDialogControllerForSession(
     const std::string& session_id) {
   auto it = sessions_.find(session_id);
-  if (it != sessions_.end()) {
-    auto ui = std::make_unique<media_router::MediaRouterUI>(
-        it->second.web_contents());
+  if (it == sessions_.end())
+    return nullptr;
+  auto ui =
+      std::make_unique<media_router::MediaRouterUI>(it->second.web_contents());
+  if (context_) {
+    ui->InitWithStartPresentationContext(std::move(context_));
+  } else {
     ui->InitWithDefaultMediaSource();
-    return ui;
   }
-  return nullptr;
+  return ui;
 }
 
 bool MediaSessionNotificationProducer::

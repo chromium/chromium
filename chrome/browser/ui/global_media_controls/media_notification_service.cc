@@ -32,6 +32,16 @@
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
+namespace {
+void CancelRequest(
+    std::unique_ptr<media_router::StartPresentationContext> context,
+    const std::string& message) {
+  context->InvokeErrorCallback(blink::mojom::PresentationError(
+      blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+      message));
+}
+}  // namespace
+
 MediaNotificationService::MediaNotificationService(
     Profile* profile,
     bool show_from_all_profiles) {
@@ -207,15 +217,11 @@ bool MediaNotificationService::HasActiveNotifications() const {
 
 bool MediaNotificationService::HasActiveNotificationsForWebContents(
     content::WebContents* web_contents) const {
-  bool has_cast_session =
-      !media_router::WebContentsPresentationManager::Get(web_contents)
-           ->GetMediaRoutes()
-           .empty();
   bool has_media_session =
       media_session_notification_producer_ &&
       media_session_notification_producer_
           ->HasActiveControllableSessionForWebContents(web_contents);
-  return has_cast_session || has_media_session;
+  return HasCastNotificationsForWebContents(web_contents) || has_media_session;
 }
 
 bool MediaNotificationService::HasFrozenNotifications() const {
@@ -260,13 +266,33 @@ MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
 
 void MediaNotificationService::OnStartPresentationContextCreated(
     std::unique_ptr<media_router::StartPresentationContext> context) {
-  if (presentation_request_notification_producer_) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(
+          context->presentation_request().render_frame_host_id));
+  if (!web_contents) {
+    CancelRequest(std::move(context), "The web page is closed.");
+    return;
+  }
+
+  // If there exists a cast notification associated with |web_contents|,
+  // delete |context| because users should not start a new presentation at
+  // this time.
+  if (HasCastNotificationsForWebContents(web_contents)) {
+    CancelRequest(std::move(context), "A presentation has already started.");
+  } else if (media_session_notification_producer_
+                 ->HasActiveControllableSessionForWebContents(web_contents)) {
+    // If there exists a media session notification associated with
+    // |web_contents|, pass |context| to |media_session_notification_producer_|.
+    media_session_notification_producer_->OnStartPresentationContextCreated(
+        std::move(context));
+  } else if (presentation_request_notification_producer_) {
+    // If there do not exist active notifications, pass |context| to
+    // |presentation_request_notification_producer_| to create a dummy
+    // notification.
     presentation_request_notification_producer_
         ->OnStartPresentationContextCreated(std::move(context));
   } else {
-    context->InvokeErrorCallback(blink::mojom::PresentationError(
-        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
-        "Unable to start presentation."));
+    CancelRequest(std::move(context), "Unable to start presentation.");
   }
 }
 
@@ -343,4 +369,11 @@ MediaNotificationProducer* MediaNotificationService::GetNotificationProducer(
     }
   }
   return nullptr;
+}
+
+bool MediaNotificationService::HasCastNotificationsForWebContents(
+    content::WebContents* web_contents) const {
+  return !media_router::WebContentsPresentationManager::Get(web_contents)
+              ->GetMediaRoutes()
+              .empty();
 }

@@ -111,9 +111,6 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback);
 
-  void OnPresentationRequestCreated(
-      std::unique_ptr<media_router::StartPresentationContext> context);
-
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
 
@@ -162,6 +159,10 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   // True if there is an open MediaDialogView and the dialog is opened for a
   // PresentationRequest.
   bool HasOpenDialogForPresentationRequest() const;
+
+  // True if there are cast notifications associated with |web_contents|.
+  bool HasCastNotificationsForWebContents(
+      content::WebContents* web_contents) const;
 
   MediaDialogDelegate* dialog_delegate_ = nullptr;
 

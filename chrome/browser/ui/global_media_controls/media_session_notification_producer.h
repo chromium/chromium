@@ -25,6 +25,7 @@ class WebContents;
 
 namespace media_router {
 class CastDialogController;
+class StartPresentationContext;
 }  // namespace media_router
 
 class MediaNotificationContainerImpl;
@@ -107,6 +108,9 @@ class MediaSessionNotificationProducer
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback);
+
+  void OnStartPresentationContextCreated(
+      std::unique_ptr<media_router::StartPresentationContext> context);
 
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
@@ -288,6 +292,8 @@ class MediaSessionNotificationProducer
 
   std::unique_ptr<MediaNotificationDeviceProvider> device_provider_;
 
+  // Used to initialize a MediaRouterUI.
+  std::unique_ptr<media_router::StartPresentationContext> context_;
   base::WeakPtrFactory<MediaSessionNotificationProducer> weak_ptr_factory_{
       this};
 };

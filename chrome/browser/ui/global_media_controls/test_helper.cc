@@ -59,3 +59,44 @@ void MockMediaDialogDelegate::HideMediaDialog() {
 MockMediaItemsManager::MockMediaItemsManager() = default;
 
 MockMediaItemsManager::~MockMediaItemsManager() = default;
+
+MockWebContentsPresentationManager::MockWebContentsPresentationManager() =
+    default;
+MockWebContentsPresentationManager::~MockWebContentsPresentationManager() =
+    default;
+
+bool MockWebContentsPresentationManager::HasDefaultPresentationRequest() const {
+  return default_presentation_request_.has_value();
+}
+
+const content::PresentationRequest&
+MockWebContentsPresentationManager::GetDefaultPresentationRequest() const {
+  return *default_presentation_request_;
+}
+
+void MockWebContentsPresentationManager::SetDefaultPresentationRequest(
+    const content::PresentationRequest& request) {
+  default_presentation_request_ = request;
+}
+
+void MockWebContentsPresentationManager::NotifyMediaRoutesChanged(
+    const std::vector<media_router::MediaRoute>& routes) {
+  for (auto& observer : observers_) {
+    observer.OnMediaRoutesChanged(routes);
+  }
+}
+
+void MockWebContentsPresentationManager::AddObserver(
+    media_router::WebContentsPresentationManager::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MockWebContentsPresentationManager::RemoveObserver(
+    media_router::WebContentsPresentationManager::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+base::WeakPtr<WebContentsPresentationManager>
+MockWebContentsPresentationManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}

@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_items_manager.h"
 #include "components/media_message_center/media_notification_item.h"
+#include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
+#include "content/public/browser/presentation_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -16,6 +18,7 @@ class WebContents;
 class MediaNotificationService;
 
 using media_message_center::MediaNotificationView;
+using media_router::WebContentsPresentationManager;
 
 class MockMediaNotificationItem
     : public media_message_center::MediaNotificationItem {
@@ -52,12 +55,13 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
                                          gfx::Rect bounds));
 
   // MediaDialogDelegate implementation.
-  MOCK_METHOD2(
+  MOCK_METHOD(
+      MediaNotificationContainerImpl*,
       ShowMediaSession,
-      MediaNotificationContainerImpl*(
-          const std::string& id,
-          base::WeakPtr<media_message_center::MediaNotificationItem> item));
-  MOCK_METHOD1(HideMediaSession, void(const std::string& id));
+      (const std::string& id,
+       base::WeakPtr<media_message_center::MediaNotificationItem> item));
+  MOCK_METHOD(void, HideMediaSession, (const std::string& id));
+
   std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
                                                    gfx::Rect bounds) override;
   void HideMediaDialog() override;
@@ -75,6 +79,39 @@ class MockMediaItemsManager : public MediaItemsManager {
 
   MOCK_METHOD(void, ShowItem, (const std::string&));
   MOCK_METHOD(void, HideItem, (const std::string&));
+};
+
+class MockWebContentsPresentationManager
+    : public WebContentsPresentationManager {
+ public:
+  MockWebContentsPresentationManager();
+  ~MockWebContentsPresentationManager() override;
+
+  void NotifyMediaRoutesChanged(
+      const std::vector<media_router::MediaRoute>& routes);
+  void SetDefaultPresentationRequest(
+      const content::PresentationRequest& request);
+
+  // WebContentsPresentationManager implementation.
+  bool HasDefaultPresentationRequest() const override;
+  const content::PresentationRequest& GetDefaultPresentationRequest()
+      const override;
+  void AddObserver(WebContentsPresentationManager::Observer* observer) override;
+  void RemoveObserver(
+      WebContentsPresentationManager::Observer* observer) override;
+  base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override;
+
+  MOCK_METHOD(void,
+              OnPresentationResponse,
+              (const content::PresentationRequest&,
+               media_router::mojom::RoutePresentationConnectionPtr,
+               const media_router::RouteRequestResult&));
+  MOCK_METHOD(std::vector<media_router::MediaRoute>, GetMediaRoutes, ());
+
+ private:
+  absl::optional<content::PresentationRequest> default_presentation_request_;
+  base::ObserverList<WebContentsPresentationManager::Observer> observers_;
+  base::WeakPtrFactory<MockWebContentsPresentationManager> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
