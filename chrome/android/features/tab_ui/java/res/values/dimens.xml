@@ -6,6 +6,7 @@
     <dimen name="tab_grid_favicon_size">18dp</dimen>
     <dimen name="tab_list_selected_inset">7dp</dimen>
     <dimen name="tab_list_selected_inset_low_end">6dp</dimen>
+    <dimen name="tab_list_selected_margin">7dp</dimen>
     <dimen name="tab_list_card_padding">8dp</dimen>
     <dimen name="tab_list_card_radius">4dp</dimen>
     <dimen name="tab_list_card_title_height">32dp</dimen>
