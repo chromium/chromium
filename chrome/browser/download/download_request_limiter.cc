@@ -127,9 +127,6 @@ void DownloadRequestLimiter::TabDownloadState::SetDownloadStatusAndNotify(
 
 void DownloadRequestLimiter::TabDownloadState::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
@@ -177,9 +174,6 @@ void DownloadRequestLimiter::TabDownloadState::DidStartNavigation(
 
 void DownloadRequestLimiter::TabDownloadState::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
@@ -241,8 +235,12 @@ void DownloadRequestLimiter::TabDownloadState::PromptUserForDownload(
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents_);
   if (permission_request_manager) {
-    // TODO(https://crbug.com/1061899): We should pass the frame which initiated
-    // the action instead of assuming that it was the current main frame.
+    // The RFH is used to scope the lifetime of the request and scoping it to
+    // the initiator doesn't make sense for downloads as download navigation
+    // requests are never committed and don't update the omnibox url.
+    // Download requests should only be granted by checking `request_origin`,
+    // so we use the primary main RenderFrameHost here, to avoid discarding the
+    // request in the case that the initiator RFH is already gone.
     permission_request_manager->AddRequest(
         web_contents_->GetMainFrame(),
         new DownloadPermissionRequest(factory_.GetWeakPtr(), request_origin));
