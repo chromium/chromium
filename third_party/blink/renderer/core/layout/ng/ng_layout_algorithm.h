@@ -114,7 +114,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
             *container_builder_.BfcBlockOffset()};
   }
 
-  NGInputNodeType Node() const { return node_; }
+  const NGInputNodeType& Node() const { return node_; }
 
   const NGBreakTokenType* BreakToken() const { return break_token_.get(); }
 
