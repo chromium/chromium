@@ -206,6 +206,7 @@ crbug.com/591099 external/wpt/css/css-position/position-absolute-center-003.html
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-004.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-crash-chrome-006.html [ Crash ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-dynamic-overflow-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-fit-content.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-in-inline-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-in-inline-004.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-replaced-intrinsic-size.tentative.html [ Failure ]
