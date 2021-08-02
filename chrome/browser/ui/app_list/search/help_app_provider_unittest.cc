@@ -9,13 +9,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 namespace test {
@@ -23,14 +24,17 @@ namespace test {
 namespace {
 void ExpectDiscoverTabChip(ChromeSearchResult* result) {
   EXPECT_EQ("help-app://discover", result->id());
-  EXPECT_EQ("Make your own game", base::UTF16ToASCII(result->title()));
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
+      result->title());
   EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
   EXPECT_EQ(ash::SearchResultDisplayType::kChip, result->display_type());
 }
 
 void ExpectReleaseNotesChip(ChromeSearchResult* result) {
   EXPECT_EQ("help-app://updates", result->id());
-  EXPECT_EQ("What's new with Chrome OS", base::UTF16ToASCII(result->title()));
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
+            result->title());
   EXPECT_EQ(ash::AppListSearchResultType::kHelpApp, result->result_type());
   EXPECT_EQ(ash::SearchResultDisplayType::kChip, result->display_type());
 }

@@ -15,6 +15,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 
@@ -69,10 +71,12 @@ TEST_F(HelpAppDiscoverTabNotificationTest, ShowsNotificationCorrectly) {
   discover_tab_notification_->Show();
 
   EXPECT_EQ(true, HasDiscoverTabNotification());
-  EXPECT_EQ("Design and build your own games",
-            base::UTF16ToASCII(GetDiscoverTabNotification().title()));
-  EXPECT_EQ("Learn from a game creator, get game design apps, and more",
-            base::UTF16ToASCII(GetDiscoverTabNotification().message()));
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_TITLE),
+      GetDiscoverTabNotification().title());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE),
+      GetDiscoverTabNotification().message());
 }
 
 TEST_F(HelpAppDiscoverTabNotificationTest, LogsMetricWhenNotificationShown) {

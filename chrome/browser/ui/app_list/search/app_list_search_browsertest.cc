@@ -48,9 +48,11 @@
 #include "chromeos/components/help_app_ui/help_app_manager_factory.h"
 #include "chromeos/components/help_app_ui/search/search.mojom.h"
 #include "chromeos/components/help_app_ui/search/search_handler.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
 
 using web_app::test::CrosapiParam;
@@ -188,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 
   ChromeSearchResult* result = FindResult("help-app://discover");
   ASSERT_TRUE(result);
-  EXPECT_EQ(base::UTF16ToASCII(result->title()), "Make your own game");
+  EXPECT_EQ(result->title(), l10n_util::GetStringUTF16(
+                                 IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP));
   EXPECT_EQ(result->metrics_type(), ash::HELP_APP_DISCOVER);
 
   // Open the search result. This should open the help app at the expected url.
@@ -231,7 +234,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
 
   auto* result = FindResult("help-app://updates");
   ASSERT_TRUE(result);
-  EXPECT_EQ(base::UTF16ToASCII(result->title()), "What's new with Chrome OS");
+  EXPECT_EQ(result->title(),
+            l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP));
   EXPECT_EQ(result->metrics_type(), ash::HELP_APP_UPDATES);
   // Displayed in first position.
   EXPECT_EQ(result->position_priority(), 1.0f);
