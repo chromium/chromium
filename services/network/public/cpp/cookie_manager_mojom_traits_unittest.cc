@@ -382,8 +382,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
       "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
       true, false, net::CookieSameSite::NO_RESTRICTION,
       net::COOKIE_PRIORITY_LOW, false,
-      absl::make_optional(
-          net::SchemefulSite::Deserialize("https://toplevelsite.com")),
+      absl::make_optional(net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"))),
       net::CookieSourceScheme::kSecure, 8433);
 
   net::CanonicalCookie copied;

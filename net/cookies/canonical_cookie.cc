@@ -348,21 +348,22 @@ CanonicalCookie& CanonicalCookie::operator=(const CanonicalCookie& other) =
 
 CanonicalCookie& CanonicalCookie::operator=(CanonicalCookie&& other) = default;
 
-CanonicalCookie::CanonicalCookie(std::string name,
-                                 std::string value,
-                                 std::string domain,
-                                 std::string path,
-                                 base::Time creation,
-                                 base::Time expiration,
-                                 base::Time last_access,
-                                 bool secure,
-                                 bool httponly,
-                                 CookieSameSite same_site,
-                                 CookiePriority priority,
-                                 bool same_party,
-                                 absl::optional<SchemefulSite> partition_key,
-                                 CookieSourceScheme source_scheme,
-                                 int source_port)
+CanonicalCookie::CanonicalCookie(
+    std::string name,
+    std::string value,
+    std::string domain,
+    std::string path,
+    base::Time creation,
+    base::Time expiration,
+    base::Time last_access,
+    bool secure,
+    bool httponly,
+    CookieSameSite same_site,
+    CookiePriority priority,
+    bool same_party,
+    absl::optional<CookiePartitionKey> partition_key,
+    CookieSourceScheme source_scheme,
+    int source_port)
     : name_(std::move(name)),
       value_(std::move(value)),
       domain_(std::move(domain)),
@@ -581,7 +582,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     CookieSameSite same_site,
     CookiePriority priority,
     bool same_party,
-    absl::optional<SchemefulSite> partition_key,
+    absl::optional<CookiePartitionKey> partition_key,
     CookieInclusionStatus* status) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -702,7 +703,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     CookieSameSite same_site,
     CookiePriority priority,
     bool same_party,
-    absl::optional<SchemefulSite> partition_key,
+    absl::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port) {
   std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
@@ -728,7 +729,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
     CookieSameSite same_site,
     CookiePriority priority,
     bool same_party,
-    absl::optional<SchemefulSite> partition_key,
+    absl::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port) {
   return base::WrapUnique(new CanonicalCookie(
@@ -749,37 +750,6 @@ void CanonicalCookie::SetSourcePort(int port) {
   } else {
     source_port_ = url::PORT_INVALID;
   }
-}
-
-bool CanonicalCookie::SerializePartitionKey(std::string& out) const {
-  if (!partition_key_) {
-    out = kEmptyCookiePartitionKey;
-    return true;
-  }
-  if (partition_key_->GetURL().SchemeIsFile()) {
-    out = partition_key_->SerializeFileSiteWithHost();
-    return true;
-  }
-  if (partition_key_->opaque())
-    return false;
-  out = partition_key_->Serialize();
-  return true;
-}
-
-// static
-bool CanonicalCookie::DeserializePartitionKey(
-    const std::string& in,
-    absl::optional<SchemefulSite>& out) {
-  if (in == kEmptyCookiePartitionKey) {
-    out = absl::nullopt;
-    return true;
-  }
-  auto schemeful_site = SchemefulSite::Deserialize(in);
-  // SchemefulSite is opaque if the input is invalid.
-  if (schemeful_site.opaque())
-    return false;
-  out = absl::make_optional(schemeful_site);
-  return true;
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(

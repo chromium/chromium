@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -41,8 +42,8 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 
   int index = 0;
   for (auto i = cookies.cbegin(); i != cookies.cend(); ++i) {
-    std::string pk = net::kEmptyCookiePartitionKey;
-    if (!i->SerializePartitionKey(pk))
+    std::string pk;
+    if (!net::CookiePartitionKey::Serialize(i->PartitionKey(), pk))
       continue;
     ScopedJavaLocalRef<jobject> java_cookie = Java_CookiesFetcher_createCookie(
         env, base::android::ConvertUTF8ToJavaString(env, i->Name()),
@@ -104,8 +105,8 @@ static void JNI_CookiesFetcher_RestoreCookies(
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
-  absl::optional<net::SchemefulSite> pk;
-  if (!net::CanonicalCookie::DeserializePartitionKey(
+  absl::optional<net::CookiePartitionKey> pk;
+  if (!net::CookiePartitionKey::Deserialize(
           base::android::ConvertJavaStringToUTF8(env, partition_key), pk)) {
     return;
   }

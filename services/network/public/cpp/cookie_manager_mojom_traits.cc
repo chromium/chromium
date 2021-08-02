@@ -463,6 +463,17 @@ bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
   return true;
 }
 
+bool StructTraits<network::mojom::CookiePartitionKeyDataView,
+                  net::CookiePartitionKey>::
+    Read(network::mojom::CookiePartitionKeyDataView partition_key,
+         net::CookiePartitionKey* out) {
+  net::SchemefulSite site;
+  if (!partition_key.ReadSite(&site))
+    return false;
+  *out = net::CookiePartitionKey(site);
+  return true;
+}
+
 bool StructTraits<
     network::mojom::CanonicalCookieDataView,
     net::CanonicalCookie>::Read(network::mojom::CanonicalCookieDataView cookie,
@@ -503,7 +514,7 @@ bool StructTraits<
   if (!cookie.ReadPriority(&priority))
     return false;
 
-  absl::optional<net::SchemefulSite> partition_key;
+  absl::optional<net::CookiePartitionKey> partition_key;
   if (!cookie.ReadPartitionKey(&partition_key))
     return false;
 

@@ -12,6 +12,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -176,6 +177,16 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
 };
 
 template <>
+struct StructTraits<network::mojom::CookiePartitionKeyDataView,
+                    net::CookiePartitionKey> {
+  static const net::SchemefulSite& site(const net::CookiePartitionKey& pk) {
+    return pk.site_;
+  }
+  static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
+                   net::CookiePartitionKey* out);
+};
+
+template <>
 struct StructTraits<network::mojom::CanonicalCookieDataView,
                     net::CanonicalCookie> {
   static const std::string& name(const net::CanonicalCookie& c) {
@@ -213,7 +224,7 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   static bool same_party(const net::CanonicalCookie& c) {
     return c.IsSameParty();
   }
-  static absl::optional<net::SchemefulSite> partition_key(
+  static absl::optional<net::CookiePartitionKey> partition_key(
       const net::CanonicalCookie& c) {
     return c.PartitionKey();
   }

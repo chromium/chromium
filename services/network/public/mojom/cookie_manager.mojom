@@ -149,6 +149,10 @@ struct CookieOptions {
   bool is_in_nontrivial_first_party_set = false;
 };
 
+struct CookiePartitionKey {
+  SchemefulSite site;
+};
+
 // See net/cookies/canonical_cookie.{h,cc} for documentation.
 // Keep defaults here in sync with those files.
 struct CanonicalCookie {
@@ -165,7 +169,7 @@ struct CanonicalCookie {
   CookiePriority priority = MEDIUM;
   CookieSourceScheme source_scheme = kUnset;
   bool same_party = false;
-  SchemefulSite? partition_key;
+  CookiePartitionKey? partition_key;
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
   int32 source_port = -1;

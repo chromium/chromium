@@ -69,7 +69,8 @@ TEST(CanonicalCookieTest, Constructor) {
       "A", "2", ".www.example.com", "/", current_time, base::Time(),
       base::Time(), false, false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, true,
-      absl::make_optional(net::SchemefulSite::Deserialize("https://foo.com")),
+      absl::make_optional(
+          CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"))),
       CookieSourceScheme::kNonSecure, 65536);
   EXPECT_EQ("A", cookie2->Name());
   EXPECT_EQ("2", cookie2->Value());
@@ -551,79 +552,6 @@ TEST(CanonicalCookieTest, EmptyExpiry) {
   EXPECT_FALSE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
   EXPECT_EQ(base::Time(), cookie->ExpiryDate());
-}
-
-TEST(CanonicalCookieTest, PartitionKeySerialization) {
-  // SerializePartitionKey: no parititon key
-  std::unique_ptr<CanonicalCookie> cookie =
-      CanonicalCookie::CreateUnsafeCookieForTesting(
-          "__Host-A", "B", "www.example.com", "/", base::Time::Now(),
-          base::Time::Now(), base::Time::Now(), /* secure */ true,
-          /* httponly */ false, CookieSameSite::UNSPECIFIED,
-          CookiePriority::COOKIE_PRIORITY_DEFAULT, /* sameparty */ false,
-          absl::nullopt);
-  std::string got;
-  EXPECT_TRUE(cookie->SerializePartitionKey(got));
-  EXPECT_EQ(net::kEmptyCookiePartitionKey, got);
-
-  // SerializePartitionKey: partition key present
-  cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "www.example.com", "/", base::Time::Now(),
-      base::Time::Now(), base::Time::Now(), /* secure */ true,
-      /* httponly */ false, CookieSameSite::UNSPECIFIED,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT, /* sameparty */ false,
-      absl::make_optional(SchemefulSite(GURL("https://toplevelsite.com"))));
-  EXPECT_TRUE(cookie->SerializePartitionKey(got));
-  EXPECT_EQ("https://toplevelsite.com", got);
-
-  // SerializePartitionKey: local file URLs
-  cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "www.example.com", "/", base::Time::Now(),
-      base::Time::Now(), base::Time::Now(), /* secure */ true,
-      /* httponly */ false, CookieSameSite::UNSPECIFIED,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT, /* sameparty */ false,
-      absl::make_optional(SchemefulSite(GURL("file:///path1/to/file.txt"))));
-  EXPECT_TRUE(cookie->SerializePartitionKey(got));
-  EXPECT_EQ("file://", got);
-
-  // SerializePartitionKey: file URLs with hostnames.
-  cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "www.example.com", "/", base::Time::Now(),
-      base::Time::Now(), base::Time::Now(), /* secure */ true,
-      /* httponly */ false, CookieSameSite::UNSPECIFIED,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT, /* sameparty */ false,
-      absl::make_optional(
-          SchemefulSite(GURL("file://toplevelsite1.com/path/to/file.txt"))));
-  EXPECT_TRUE(cookie->SerializePartitionKey(got));
-  EXPECT_EQ("file://toplevelsite1.com", got);
-
-  // SerializeParititonKey: opaque partition key
-  auto opaque = SchemefulSite(url::Origin());
-  cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-A", "B", "www.example.com", "/", base::Time::Now(),
-      base::Time::Now(), base::Time::Now(), /* secure */ true,
-      /* httponly */ false, CookieSameSite::UNSPECIFIED,
-      CookiePriority::COOKIE_PRIORITY_DEFAULT,
-      /* sameparty */ false, absl::make_optional(opaque));
-  EXPECT_FALSE(cookie->SerializePartitionKey(got));
-
-  // DeserializePartitionKey: empty partition key
-  absl::optional<SchemefulSite> partition_key;
-  EXPECT_TRUE(CanonicalCookie::DeserializePartitionKey(kEmptyCookiePartitionKey,
-                                                       partition_key));
-  EXPECT_FALSE(partition_key);
-
-  // DeserializePartitionKey: example site
-  SchemefulSite site = SchemefulSite(GURL("https://toplevelsite.com"));
-  EXPECT_TRUE(CanonicalCookie::DeserializePartitionKey(site.Serialize(),
-                                                       partition_key));
-  EXPECT_TRUE(partition_key);
-  EXPECT_FALSE(partition_key.value().opaque());
-  EXPECT_EQ(site, partition_key.value());
-
-  // DeserializePartitionKey: invalid partition key
-  EXPECT_FALSE(CanonicalCookie::DeserializePartitionKey("abc123foobar!!",
-                                                        partition_key));
 }
 
 TEST(CanonicalCookieTest, IsEquivalent) {
@@ -2421,8 +2349,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                   "__Host-A", "B", "x.y", "/", base::Time(), base::Time(),
                   base::Time(), true, false, CookieSameSite::UNSPECIFIED,
                   COOKIE_PRIORITY_LOW, false,
-                  absl::make_optional(
-                      net::SchemefulSite(GURL("https://toplevelsite.com"))))
+                  absl::make_optional(CookiePartitionKey::FromURLForTesting(
+                      GURL("https://toplevelsite.com"))))
                   ->IsCanonical());
 
   // Partitioned attribute invalid, no __Host- prefix.
@@ -2430,8 +2358,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    "A", "B", "x.y", "/", base::Time(), base::Time(),
                    base::Time(), true, false, CookieSameSite::UNSPECIFIED,
                    COOKIE_PRIORITY_LOW, false,
-                   absl::make_optional(
-                       net::SchemefulSite(GURL("https://toplevelsite.com"))))
+                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com"))))
                    ->IsCanonical());
 
   // Partitioned attribute invalid, SameParty attribute also included.
@@ -2439,8 +2367,8 @@ TEST(CanonicalCookieTest, IsCanonical) {
                    "__Host-A", "B", "x.y", "/", base::Time(), base::Time(),
                    base::Time(), true, false, CookieSameSite::UNSPECIFIED,
                    COOKIE_PRIORITY_LOW, true,
-                   absl::make_optional(
-                       net::SchemefulSite(GURL("https://toplevelsite.com"))))
+                   absl::make_optional(CookiePartitionKey::FromURLForTesting(
+                       GURL("https://toplevelsite.com"))))
                    ->IsCanonical());
 }
 
@@ -2664,7 +2592,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
       base::Time(), base::Time(), base::Time(), true /*secure*/,
       false /*httponly*/, CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_LOW,
       false /*same_party*/,
-      absl::make_optional(net::SchemefulSite(GURL("https://toplevelsite.com"))),
+      absl::make_optional(CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"))),
       &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(cc->IsPartitioned());
@@ -3060,8 +2989,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       two_hours_ago, one_hour_from_now, one_hour_ago, true /*secure*/, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       false /*same_party*/,
-      absl::optional<net::SchemefulSite>(
-          net::SchemefulSite(GURL("https://toplevelsite.com"))),
+      absl::optional<CookiePartitionKey>(CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"))),
       &status));
   EXPECT_TRUE(status.IsInclude());
   // Invalid: no __Host- prefix
@@ -3070,8 +2999,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       one_hour_from_now, one_hour_ago, true /*secure*/, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       false /*same_party*/,
-      absl::optional<net::SchemefulSite>(
-          net::SchemefulSite(GURL("https://toplevelsite.com"))),
+      absl::optional<CookiePartitionKey>(CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"))),
       &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
@@ -3082,8 +3011,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       two_hours_ago, one_hour_from_now, one_hour_ago, true /*secure*/, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       true /*same_party*/,
-      absl::optional<net::SchemefulSite>(
-          net::SchemefulSite(GURL("https://toplevelsite.com"))),
+      absl::optional<CookiePartitionKey>(CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"))),
       &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
