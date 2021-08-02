@@ -253,6 +253,8 @@ void AbstractInlineTextBox::GetWordBoundaries(
     return;
 
   TextBreakIterator* it = WordBreakIterator(text, 0, text.length());
+  if (!it)
+    return;
   absl::optional<int> word_start;
   for (int offset = 0;
        offset != kTextBreakDone && offset < static_cast<int>(text.length());
