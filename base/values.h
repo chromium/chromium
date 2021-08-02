@@ -749,16 +749,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindListKey(key)` instead.
   bool GetListWithoutPathExpansion(StringPiece key, ListValue** out_value);
 
-  // Removes the Value with the specified path from this dictionary (or one
-  // of its child dictionaries, if the path is more than just a local key).
-  // If `out_value` is non-NULL, the removed Value will be passed out via
-  // `out_value`.  If `out_value` is NULL, the removed value will be deleted.
-  // This method returns true if `path` is a valid path; otherwise it will
-  // return false and the DictionaryValue object will be unchanged.
-  // DEPRECATED, use `Value::RemovePath(path)` or `Value::ExtractPath(path)`
-  // instead.
-  bool Remove(StringPiece path, std::unique_ptr<Value>* out_value);
-
   // Like Remove(), but without special treatment of '.'.  This allows e.g. URLs
   // to be used as paths.
   // DEPRECATED, use `Value::RemoveKey(key)` or `Value::ExtractKey(key)`

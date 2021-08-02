@@ -79,5 +79,5 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
   }
 
   for (const std::string& key : entries_to_remove)
-    new_badge_prefs->Remove(key, nullptr);
+    new_badge_prefs->RemoveKey(key);
 }

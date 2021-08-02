@@ -133,7 +133,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
     ScopedUserPrefUpdate<base::DictionaryValue, base::Value::Type::DICTIONARY>
         dict(pref_service(), prefs::kLatestDCSFeatures);
     for (auto f : features)
-      dict->Remove(f.name, nullptr);
+      dict->RemoveKey(f.name);
     pref_service()->CommitPendingWrite();
   }
 

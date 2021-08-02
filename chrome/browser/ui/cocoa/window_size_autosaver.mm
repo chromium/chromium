@@ -87,10 +87,10 @@ const int kMinWindowHeight = 17;
       // Windows should never be very small.
       DictionaryPrefUpdate update(_prefService, _path);
       base::DictionaryValue* mutableWindowPrefs = update.Get();
-      mutableWindowPrefs->Remove("left", NULL);
-      mutableWindowPrefs->Remove("right", NULL);
-      mutableWindowPrefs->Remove("top", NULL);
-      mutableWindowPrefs->Remove("bottom", NULL);
+      mutableWindowPrefs->RemoveKey("left");
+      mutableWindowPrefs->RemoveKey("right");
+      mutableWindowPrefs->RemoveKey("top");
+      mutableWindowPrefs->RemoveKey("bottom");
     } else {
       [_window setFrame:NSMakeRect(x1, y1, x2 - x1, y2 - y1) display:YES];
 

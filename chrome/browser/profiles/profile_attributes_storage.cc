@@ -428,7 +428,7 @@ void ProfileAttributesStorage::RemoveProfile(
   DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
   base::DictionaryValue* attributes = update.Get();
   std::string key = StorageKeyFromProfilePath(profile_path);
-  attributes->Remove(key, nullptr);
+  attributes->RemoveKey(key);
   profile_attributes_entries_.erase(profile_path.value());
 
   // `OnProfileWasRemoved()` must be the first observer method being called

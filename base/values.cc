@@ -1367,23 +1367,6 @@ bool DictionaryValue::GetListWithoutPathExpansion(StringPiece key,
       key, const_cast<const ListValue**>(out_value));
 }
 
-bool DictionaryValue::Remove(StringPiece path,
-                             std::unique_ptr<Value>* out_value) {
-  DCHECK(IsStringUTF8AllowingNoncharacters(path));
-  StringPiece current_path(path);
-  DictionaryValue* current_dictionary = this;
-  size_t delimiter_position = current_path.rfind('.');
-  if (delimiter_position != StringPiece::npos) {
-    if (!GetDictionary(current_path.substr(0, delimiter_position),
-                       &current_dictionary))
-      return false;
-    current_path = current_path.substr(delimiter_position + 1);
-  }
-
-  return current_dictionary->RemoveWithoutPathExpansion(current_path,
-                                                        out_value);
-}
-
 bool DictionaryValue::RemoveWithoutPathExpansion(
     StringPiece key,
     std::unique_ptr<Value>* out_value) {

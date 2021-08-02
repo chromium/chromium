@@ -891,8 +891,8 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
       if (created_profile->GetString(kProfileXmlKey, &tkip_profile_xml) &&
           created_profile->GetBoolean(kProfileSharedKey, &shared)) {
         // Remove TKIP profile xml, so it will not be tried again.
-        created_profile->Remove(kProfileXmlKey, nullptr);
-        created_profile->Remove(kProfileSharedKey, nullptr);
+        created_profile->RemoveKey(kProfileXmlKey);
+        created_profile->RemoveKey(kProfileSharedKey);
         DWORD error_code = SetProfile(shared, tkip_profile_xml, true);
         if (error_code == ERROR_SUCCESS) {
           // Try to connect with new profile.

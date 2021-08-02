@@ -82,7 +82,7 @@ void BrowserStateInfoCache::RemoveBrowserState(
   DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
   base::DictionaryValue* cache = update.Get();
   std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
-  cache->Remove(key, nullptr);
+  cache->RemoveKey(key);
   sorted_keys_.erase(std::find(sorted_keys_.begin(), sorted_keys_.end(), key));
 
   for (auto& observer : observer_list_)

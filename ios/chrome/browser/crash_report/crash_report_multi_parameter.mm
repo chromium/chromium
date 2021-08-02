@@ -39,7 +39,7 @@ const int kMaximumBreakpadValueSize = 255;
 }
 
 - (void)removeValue:(NSString*)key {
-  _dictionary->Remove(base::SysNSStringToUTF8(key).c_str(), nullptr);
+  _dictionary->RemoveKey(base::SysNSStringToUTF8(key).c_str());
   [self updateCrashReport];
 }
 
@@ -64,7 +64,7 @@ const int kMaximumBreakpadValueSize = 255;
   std::string utf8_string = base::SysNSStringToUTF8(key);
   if (_dictionary->GetInteger(utf8_string.c_str(), &value)) {
     if (value <= 1) {
-      _dictionary->Remove(utf8_string.c_str(), nullptr);
+      _dictionary->RemoveKey(utf8_string.c_str());
     } else {
       _dictionary->SetInteger(utf8_string.c_str(), value - 1);
     }

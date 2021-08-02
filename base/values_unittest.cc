@@ -1559,36 +1559,6 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
   }
 }
 
-TEST(ValuesTest, DictionaryRemoval) {
-  std::string key = "test";
-  std::unique_ptr<Value> removed_item;
-
-  {
-    DictionaryValue dict;
-    EXPECT_EQ(0U, dict.DictSize());
-    EXPECT_TRUE(dict.DictEmpty());
-    dict.Set(key, std::make_unique<Value>());
-    EXPECT_TRUE(dict.HasKey(key));
-    EXPECT_FALSE(dict.Remove("absent key", &removed_item));
-    EXPECT_EQ(1U, dict.DictSize());
-    EXPECT_FALSE(dict.DictEmpty());
-
-    EXPECT_TRUE(dict.Remove(key, &removed_item));
-    EXPECT_FALSE(dict.HasKey(key));
-    ASSERT_TRUE(removed_item);
-    EXPECT_EQ(0U, dict.DictSize());
-    EXPECT_TRUE(dict.DictEmpty());
-  }
-
-  {
-    DictionaryValue dict;
-    dict.Set(key, std::make_unique<Value>());
-    EXPECT_TRUE(dict.HasKey(key));
-    EXPECT_TRUE(dict.Remove(key, nullptr));
-    EXPECT_FALSE(dict.HasKey(key));
-  }
-}
-
 TEST(ValuesTest, DictionaryWithoutPathExpansion) {
   DictionaryValue dict;
   dict.Set("this.is.expanded", std::make_unique<Value>());
@@ -1790,7 +1760,7 @@ TEST(ValuesTest, Equals) {
   // Check if Equals detects differences in only the keys.
   copy = dv.CreateDeepCopy();
   EXPECT_EQ(dv, *copy);
-  copy->Remove("a", nullptr);
+  copy->RemoveKey("a");
   copy->SetBoolKey("aa", false);
   EXPECT_NE(dv, *copy);
 }
