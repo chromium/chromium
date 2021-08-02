@@ -34,13 +34,13 @@
               <template is="dom-if" if="[[isToggleButton_(option.uiType)]]">
                 <cr-toggle checked="{{option.value}}"
                     on-click="onToggleButtonOrDropdownChange_"
-                    aria-labelledby="option-label">
+                    aria-label="[[option.label]]">
                 </cr-toggle>
               </template>
               <template is="dom-if" if="[[isDropdown_(option.uiType)]]">
                 <select class="md-select" value="{{option.value::change}}"
                     on-change="onToggleButtonOrDropdownChange_"
-                    aria-labelledby="option-label">
+                    aria-label="[[option.label]]">
                   <template is="dom-repeat" items="[[option.menuItems]]">
                     <option selected="[[item.selected]]" value="[[item.value]]">
                       [[item.label]]
@@ -51,7 +51,7 @@
               <template is="dom-if" if="[[isLink_(option.uiType)]]">
                 <cr-icon-button iron-icon="cr:arrow-right"
                     on-click="navigateToOtherPageInSettings_"
-                    aria-labelledby="option-label" role="link">
+                    aria-label="[[option.label]]" role="link">
                 </cr-icon-button>
               </template>
             </div>
@@ -59,22 +59,21 @@
             <template is="dom-repeat" items="[[option.dependentOptions]]"
                 as="dependant" id="dependent-settings">
               <div class="list-item" actionable>
-                <div class="dependent start"
-                  id="option-label" aria-hidden="true">
+                <div class="dependent start" aria-hidden="true">
                   [[dependant.label]]
                 </div>
                 <template is="dom-if"
                     if="[[isToggleButton_(dependant.uiType)]]">
                   <cr-toggle checked="{{dependant.value}}"
                       on-click="onToggleButtonOrDropdownChange_"
-                      aria-labelledby="option-label"
+                      aria-label="[[dependant.label]]"
                       disabled="[[dependentOptionsDisabled_(option.value)]]">
                   </cr-toggle>
                 </template>
                 <template is="dom-if" if="[[isDropdown_(dependant.uiType)]]">
                   <select class="md-select" value="{{dependant.value::change}}"
                       on-change="onToggleButtonOrDropdownChange_"
-                      aria-labelledby="dependant-label">
+                      aria-label="[[dependant.label]]"">
                     <template is="dom-repeat" items="[[dependant.menuItems]]">
                       <option selected="[[item.selected]]"
                         value="[[item.value]]">
@@ -86,7 +85,7 @@
                 <template is="dom-if" if="[[isLink_(dependant.uiType)]]">
                   <cr-icon-button class="icon-external"
                       on-click="onExternalLinkClick_"
-                      aria-labelledby="option-label">
+                      aria-label="[[dependant.label]]">
                   </cr-icon-button>
                 </template>
               </div>

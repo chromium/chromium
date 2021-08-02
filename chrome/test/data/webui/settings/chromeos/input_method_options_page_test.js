@@ -89,7 +89,7 @@ suite('InputMethodOptionsPage', function() {
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     const options = optionsPage.shadowRoot.querySelectorAll('.list-item');
     assertTrue(!!options);
-    assertEquals(options.length, 9);
+    assertEquals(options.length, 7);
     assertEquals(
         options[0].querySelector('.start').textContent.trim(),
         'Auto-correction');
@@ -105,7 +105,7 @@ suite('InputMethodOptionsPage', function() {
 
     assertEquals(
         options[1].querySelector('.start').textContent.trim(),
-        'Auto-capitalization');
+        'Sound on keypress');
     const toggleButton = options[1].querySelector('cr-toggle');
     assertEquals(toggleButton.checked, false);
     toggleButton.click();
@@ -113,7 +113,7 @@ suite('InputMethodOptionsPage', function() {
     assertEquals(toggleButton.checked, true);
     assertEquals(
         optionsPage.getPref(PREFS_KEY)
-            .value['xkb:us::eng']['physicalKeyboardEnableCapitalization'],
+            .value['xkb:us::eng']['enableSoundOnKeypress'],
         true);
   });
 });
