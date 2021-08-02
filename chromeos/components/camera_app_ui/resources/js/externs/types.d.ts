@@ -149,3 +149,8 @@ interface CallSite {
   getLineNumber(): number|undefined;
   getColumnNumber(): number|undefined;
 }
+
+// v8 specific stack trace customizing, see https://v8.dev/docs/stack-trace-api
+interface ErrorConstructor {
+  prepareStackTrace(error: Error, structuredStackTrace: CallSite[]): void;
+}
