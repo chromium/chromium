@@ -14,7 +14,7 @@ suite('BannerTests', function() {
 
   setup(function() {
     browserProxy = new TestResetBrowserProxy();
-    ResetBrowserProxyImpl.instance_ = browserProxy;
+    ResetBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     resetBanner = document.createElement('settings-reset-profile-banner');
     document.body.appendChild(resetBanner);

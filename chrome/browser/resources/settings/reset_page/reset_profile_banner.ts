@@ -10,12 +10,19 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ResetBrowserProxyImpl} from './reset_browser_proxy.js';
+
+interface SettingsResetProfileBannerElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
 /** @polymer */
 class SettingsResetProfileBannerElement extends PolymerElement {
@@ -27,25 +34,21 @@ class SettingsResetProfileBannerElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
-    /** @type {!CrDialogElement} */ (this.$.dialog).showModal();
+    this.$.dialog.showModal();
   }
 
-  /** @private */
-  onOkTap_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).cancel();
+  private onOkTap_() {
+    this.$.dialog.cancel();
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     ResetBrowserProxyImpl.getInstance().onHideResetProfileBanner();
   }
 
-  /** @private */
-  onResetTap_() {
+  private onResetTap_() {
     this.$.dialog.close();
     Router.getInstance().navigateTo(routes.RESET_DIALOG);
   }

@@ -431,4 +431,10 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
   }
 
   /** @interface */
-  export const RouteObserverMixinInterface = RouteObserverBehaviorInterface;
+  export class RouteObserverMixinInterface {
+    /**
+     * @param {!Route} newRoute
+     * @param {!Route=} opt_oldRoute
+     */
+    currentRouteChanged(newRoute, opt_oldRoute) {}
+  }

@@ -142,7 +142,7 @@ preprocess_if_expr("preprocess") {
     "prefs/pref_util.js",
     "privacy_page/privacy_page_browser_proxy.js",
     "privacy_page/security_keys_browser_proxy.js",
-    "reset_page/reset_browser_proxy.js",
+    "reset_page/reset_browser_proxy.ts",
     "route.js",
     "router.js",
     "safety_check_page/safety_check_browser_proxy.js",
@@ -264,9 +264,9 @@ preprocess_if_expr("preprocess_generated") {
     "privacy_page/security_keys_reset_dialog.js",
     "privacy_page/security_keys_set_pin_dialog.js",
     "privacy_page/security_keys_subpage.js",
-    "reset_page/reset_page.js",
-    "reset_page/reset_profile_dialog.js",
-    "reset_page/reset_profile_banner.js",
+    "reset_page/reset_page.ts",
+    "reset_page/reset_profile_dialog.ts",
+    "reset_page/reset_profile_banner.ts",
     "safety_check_page/safety_check_child.js",
     "safety_check_page/safety_check_extensions_child.js",
     "safety_check_page/safety_check_page.js",
@@ -382,7 +382,6 @@ group("closure_compile") {
     "privacy_page:closure_compile",
     "privacy_page/privacy_review:closure_compile",
     "privacy_sandbox:closure_compile",
-    "reset_page:closure_compile",
     "safety_check_page:closure_compile",
     "search_engines_page:closure_compile",
     "search_page:closure_compile",
@@ -752,10 +751,10 @@ ts_library("build_ts") {
     "privacy_page/security_keys_set_pin_dialog.js",
     "privacy_page/security_keys_subpage.js",
     "privacy_page/security_page.js",
-    "reset_page/reset_browser_proxy.js",
-    "reset_page/reset_page.js",
-    "reset_page/reset_profile_banner.js",
-    "reset_page/reset_profile_dialog.js",
+    "reset_page/reset_browser_proxy.ts",
+    "reset_page/reset_page.ts",
+    "reset_page/reset_profile_banner.ts",
+    "reset_page/reset_profile_dialog.ts",
     "route.js",
     "router.js",
     "safety_check_page/safety_check_browser_proxy.js",
@@ -876,6 +875,8 @@ ts_library("build_ts") {
     deps +=
         [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
   }
+
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   extra_deps = [
     ":preprocess",

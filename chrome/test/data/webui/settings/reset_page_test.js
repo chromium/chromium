@@ -29,7 +29,7 @@ suite('DialogTests', function() {
 
   setup(function() {
     resetPageBrowserProxy = new TestResetBrowserProxy();
-    ResetBrowserProxyImpl.instance_ = resetPageBrowserProxy;
+    ResetBrowserProxyImpl.setInstance(resetPageBrowserProxy);
 
     PolymerTest.clearBody();
     resetPage = document.createElement('settings-reset-page');

@@ -10,12 +10,14 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared_css.js';
+import './reset_profile_dialog.js';
 
 // <if expr="_google_chrome and is_win">
 import '../chrome_cleanup_page/chrome_cleanup_page.js';
 import '../incompatible_applications_page/incompatible_applications_page.js';
 // </if>
 
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,13 +28,15 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {SettingsResetProfileDialogElement} from './reset_profile_dialog.js';
 
+interface SettingsResetPageElement {
+  $: {
+    resetProfileDialog: CrLazyRenderElement<SettingsResetProfileDialogElement>,
+    resetProfile: HTMLElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverMixinInterface}
- */
-const SettingsResetPageElementBase = RouteObserverMixin(PolymerElement);
+const SettingsResetPageElementBase = RouteObserverMixin(PolymerElement) as
+    {new (): PolymerElement & RouteObserverMixinInterface};
 
 /** @polymer */
 class SettingsResetPageElement extends SettingsResetPageElementBase {
@@ -65,43 +69,36 @@ class SettingsResetPageElement extends SettingsResetPageElementBase {
    * RouteObserverMixin
    * @override
    */
-  currentRouteChanged(route) {
-    const lazyRender =
-        /** @type {!CrLazyRenderElement} */ (this.$.resetProfileDialog);
+  currentRouteChanged(route: Route) {
+    const lazyRender = this.$.resetProfileDialog;
 
     if (route === routes.TRIGGERED_RESET_DIALOG ||
         route === routes.RESET_DIALOG) {
-      /** @type {!SettingsResetProfileDialogElement} */ (lazyRender.get())
-          .show();
+      lazyRender.get().show();
     } else {
-      const dialog = /** @type {?SettingsResetProfileDialogElement} */ (
-          lazyRender.getIfExists());
+      const dialog = lazyRender.getIfExists();
       if (dialog) {
         dialog.cancel();
       }
     }
   }
 
-  /** @private */
-  onShowResetProfileDialog_() {
+  private onShowResetProfileDialog_() {
     Router.getInstance().navigateTo(
         routes.RESET_DIALOG, new URLSearchParams('origin=userclick'));
   }
 
-  /** @private */
-  onResetProfileDialogClose_() {
+  private onResetProfileDialogClose_() {
     Router.getInstance().navigateToPreviousRoute();
     focusWithoutInk(assert(this.$.resetProfile));
   }
 
   // <if expr="_google_chrome and is_win">
-  /** @private */
-  onChromeCleanupTap_() {
+  private onChromeCleanupTap_() {
     Router.getInstance().navigateTo(routes.CHROME_CLEANUP);
   }
 
-  /** @private */
-  onIncompatibleApplicationsTap_() {
+  private onIncompatibleApplicationsTap_() {
     Router.getInstance().navigateTo(routes.INCOMPATIBLE_APPLICATIONS);
   }
   // </if>
