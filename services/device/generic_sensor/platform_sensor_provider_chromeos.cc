@@ -39,6 +39,9 @@ absl::optional<mojom::SensorType> ConvertSensorType(
     case chromeos::sensors::mojom::DeviceType::MAGN:
       return mojom::SensorType::MAGNETOMETER;
 
+    case chromeos::sensors::mojom::DeviceType::GRAVITY:
+      return mojom::SensorType::GRAVITY;
+
     default:
       return absl::nullopt;
   }
@@ -51,6 +54,7 @@ bool DeviceNeedsLocationWithTypes(const std::vector<mojom::SensorType>& types) {
       case mojom::SensorType::ACCELEROMETER:
       case mojom::SensorType::GYROSCOPE:
       case mojom::SensorType::MAGNETOMETER:
+      case mojom::SensorType::GRAVITY:
         return true;
       default:
         break;
@@ -149,6 +153,21 @@ void PlatformSensorProviderChromeOS::CreateSensorInternal(
 
 void PlatformSensorProviderChromeOS::FreeResources() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+bool PlatformSensorProviderChromeOS::IsFusionSensorType(
+    mojom::SensorType type) const {
+  // Let iioservice provide the Gravity sensor.
+  switch (type) {
+    case mojom::SensorType::LINEAR_ACCELERATION:
+    case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
+    case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
+    case mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
+    case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
+      return true;
+    default:
+      return false;
+  }
 }
 
 bool PlatformSensorProviderChromeOS::IsSensorTypeAvailable(
@@ -444,6 +463,15 @@ void PlatformSensorProviderChromeOS::DetermineMotionSensors() {
         case mojom::SensorType::MAGNETOMETER: {
           auto& motion_sensor_info = motion_sensor_location_info[location];
           motion_sensor_info.count++;
+          motion_sensor_info.sensor_info_pairs.push_back(
+              std::make_pair(sensor.first, type));
+          break;
+        }
+
+        case mojom::SensorType::GRAVITY: {
+          auto& motion_sensor_info = motion_sensor_location_info[location];
+          // Don't need to increase |motion_sensor_info.count|, as gravity
+          // sensors shouldn't influence the decision.
           motion_sensor_info.sensor_info_pairs.push_back(
               std::make_pair(sensor.first, type));
           break;

@@ -100,6 +100,7 @@ void PlatformSensorChromeOS::OnSampleUpdated(
       break;
 
     case mojom::SensorType::ACCELEROMETER:
+    case mojom::SensorType::GRAVITY:
       DCHECK_EQ(channel_indices_.size(), 4u);
       reading.accel.x = GetScaledValue(sample.at(channel_indices_[0]));
       reading.accel.y = GetScaledValue(sample.at(channel_indices_[1]));
@@ -297,6 +298,10 @@ void PlatformSensorChromeOS::SetRequiredChannels() {
 
     case mojom::SensorType::MAGNETOMETER:
       axes_prefix = chromeos::sensors::mojom::kMagnetometerChannel;
+      break;
+
+    case mojom::SensorType::GRAVITY:
+      axes_prefix = chromeos::sensors::mojom::kGravityChannel;
       break;
 
     default:

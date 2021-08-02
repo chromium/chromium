@@ -50,6 +50,8 @@ class PlatformSensorProviderChromeOS
                             SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
   void FreeResources() override;
+
+  bool IsFusionSensorType(mojom::SensorType type) const override;
   bool IsSensorTypeAvailable(mojom::SensorType type) const override;
 
  private:

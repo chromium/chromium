@@ -29,6 +29,7 @@ constexpr char kAccelerometerChannels[][10] = {"accel_x", "accel_y", "accel_z"};
 constexpr char kGyroscopeChannels[][10] = {"anglvel_x", "anglvel_y",
                                            "anglvel_z"};
 constexpr char kMagnetometerChannels[][10] = {"magn_x", "magn_y", "magn_z"};
+constexpr char kGravityChannels[][10] = {"gravity_x", "gravity_y", "gravity_z"};
 
 constexpr double kScaleValue = 10.0;
 
@@ -279,6 +280,7 @@ class PlatformSensorChromeOSAxesTest
   SensorReadingXYZ& GetSensorReadingXYZ(SensorReading& reading) {
     switch (GetParam().first) {
       case mojom::SensorType::ACCELEROMETER:
+      case mojom::SensorType::GRAVITY:
         return reading.accel;
       case mojom::SensorType::GYROSCOPE:
         return reading.gyro;
@@ -299,6 +301,7 @@ class PlatformSensorChromeOSAxesTest
 
     switch (GetParam().first) {
       case mojom::SensorType::ACCELEROMETER:
+      case mojom::SensorType::GRAVITY:
         RoundAccelerometerReading(reading_xyz);
         break;
       case mojom::SensorType::GYROSCOPE:
@@ -387,11 +390,11 @@ TEST_P(PlatformSensorChromeOSAxesTest, GetSamples) {
 INSTANTIATE_TEST_SUITE_P(
     PlatformSensorChromeOSAxesTestRun,
     PlatformSensorChromeOSAxesTest,
-    ::testing::Values(std::make_pair(mojom::SensorType::ACCELEROMETER,
-                                     kAccelerometerChannels),
-                      std::make_pair(mojom::SensorType::GYROSCOPE,
-                                     kGyroscopeChannels),
-                      std::make_pair(mojom::SensorType::MAGNETOMETER,
-                                     kMagnetometerChannels)));
+    ::testing::Values(
+        std::make_pair(mojom::SensorType::ACCELEROMETER,
+                       kAccelerometerChannels),
+        std::make_pair(mojom::SensorType::GYROSCOPE, kGyroscopeChannels),
+        std::make_pair(mojom::SensorType::MAGNETOMETER, kMagnetometerChannels),
+        std::make_pair(mojom::SensorType::GRAVITY, kGravityChannels)));
 
 }  // namespace device
