@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
