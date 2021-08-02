@@ -65,11 +65,15 @@ void RegisterApp(const std::string& app_id) {
 }
 
 void ExpectVersionActive(const std::string& version) {
-  EXPECT_EQ(CreateGlobalPrefs(GetUpdaterScope())->GetActiveVersion(), version);
+  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(GetUpdaterScope());
+  ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
+  EXPECT_EQ(prefs->GetActiveVersion(), version);
 }
 
 void ExpectVersionNotActive(const std::string& version) {
-  EXPECT_NE(CreateGlobalPrefs(GetUpdaterScope())->GetActiveVersion(), version);
+  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(GetUpdaterScope());
+  ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
+  EXPECT_NE(prefs->GetActiveVersion(), version);
 }
 
 void PrintLog(UpdaterScope scope) {
