@@ -6,6 +6,7 @@ package org.chromium.components.permissions;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.SpannableString;
@@ -61,6 +62,10 @@ public class BluetoothScanningPermissionDialog {
     // not GC'ed.
     private final Activity mActivity;
 
+    // Always equal to mWindowAndroid.getContext().get(), but stored separately to make sure it's
+    // not GC'ed.
+    private final Context mContext;
+
     // The dialog this class encapsulates.
     private Dialog mDialog;
 
@@ -98,16 +103,18 @@ public class BluetoothScanningPermissionDialog {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         assert mActivity != null;
+        mContext = windowAndroid.getContext().get();
+        assert mContext != null;
         mDelegate = delegate;
         mNativeBluetoothScanningPermissionDialogPtr = nativeBluetoothScanningPermissionDialogPtr;
 
         // Emphasize the origin.
         SpannableString originSpannableString = new SpannableString(origin);
 
-        final boolean useDarkColors = !ColorUtils.inNightMode(mActivity);
+        final boolean useDarkColors = !ColorUtils.inNightMode(mContext);
         AutocompleteSchemeClassifier autocompleteSchemeClassifier =
                 mDelegate.createAutocompleteSchemeClassifier();
-        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mActivity.getResources(),
+        OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mContext.getResources(),
                 autocompleteSchemeClassifier, securityLevel,
                 /*isInternalPage=*/false, useDarkColors,
                 /*emphasizeScheme=*/true);
@@ -116,19 +123,19 @@ public class BluetoothScanningPermissionDialog {
         // Construct a full string and replace the |originSpannableString| text with emphasized
         // version.
         SpannableString title = new SpannableString(
-                mActivity.getString(R.string.bluetooth_scanning_prompt_origin, origin));
+                mContext.getString(R.string.bluetooth_scanning_prompt_origin, origin));
         int start = title.toString().indexOf(origin);
         TextUtils.copySpansFrom(originSpannableString, 0, originSpannableString.length(),
                 Object.class, title, start);
 
         String noneFound =
-                mActivity.getString(R.string.bluetooth_scanning_prompt_no_devices_found_prompt);
+                mContext.getString(R.string.bluetooth_scanning_prompt_no_devices_found_prompt);
         String blockButtonText =
-                mActivity.getString(R.string.bluetooth_scanning_prompt_block_button_text);
+                mContext.getString(R.string.bluetooth_scanning_prompt_block_button_text);
         String allowButtonText =
-                mActivity.getString(R.string.bluetooth_scanning_prompt_allow_button_text);
+                mContext.getString(R.string.bluetooth_scanning_prompt_allow_button_text);
 
-        LinearLayout dialogContainer = (LinearLayout) LayoutInflater.from(mActivity).inflate(
+        LinearLayout dialogContainer = (LinearLayout) LayoutInflater.from(mContext).inflate(
                 R.layout.bluetooth_scanning_permission_dialog, null);
 
         TextViewWithClickableSpans dialogTitle =
@@ -143,7 +150,7 @@ public class BluetoothScanningPermissionDialog {
         emptyMessage.setVisibility(View.VISIBLE);
 
         mListView = (ListView) dialogContainer.findViewById(R.id.items);
-        mItemAdapter = new DeviceItemAdapter(mActivity, /*itemsSelectable=*/false,
+        mItemAdapter = new DeviceItemAdapter(mContext, /*itemsSelectable=*/false,
                 R.layout.bluetooth_scanning_permission_dialog_row);
         mItemAdapter.setNotifyOnChange(true);
         mListView.setAdapter(mItemAdapter);
@@ -184,7 +191,7 @@ public class BluetoothScanningPermissionDialog {
                         listViewContainer.setLayoutParams(new LinearLayout.LayoutParams(
                                 LayoutParams.MATCH_PARENT,
                                 getListHeight(mActivity.getWindow().getDecorView().getHeight(),
-                                        mActivity.getResources().getDisplayMetrics().density)));
+                                        mContext.getResources().getDisplayMetrics().density)));
                     }
                 });
     }
@@ -203,7 +210,7 @@ public class BluetoothScanningPermissionDialog {
     @CalledByNative
     public void addOrUpdateDevice(String deviceId, String deviceName) {
         if (TextUtils.isEmpty(deviceName)) {
-            deviceName = mActivity.getString(R.string.bluetooth_scanning_device_unknown, deviceId);
+            deviceName = mContext.getString(R.string.bluetooth_scanning_device_unknown, deviceId);
         }
         mItemAdapter.addOrUpdate(deviceId, deviceName, /*icon=*/null, /*iconDescription=*/null);
         mListView.setVisibility(View.VISIBLE);
@@ -226,7 +233,7 @@ public class BluetoothScanningPermissionDialog {
     }
 
     private void showDialogForView(View view) {
-        mDialog = new Dialog(mActivity) {
+        mDialog = new Dialog(mContext) {
             @Override
             public void onWindowFocusChanged(boolean hasFocus) {
                 super.onWindowFocusChanged(hasFocus);
@@ -242,7 +249,7 @@ public class BluetoothScanningPermissionDialog {
         mDialog.setOnCancelListener(dialog -> finishDialog(Event.CANCELED));
 
         Window window = mDialog.getWindow();
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // On smaller screens, make the dialog fill the width of the screen,
             // and appear at the top.
             window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
