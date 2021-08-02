@@ -44,7 +44,7 @@ class CORE_EXPORT MobileFriendlinessChecker
 
  private:
   void ComputeSmallTextRatio(const LayoutObject& object);
-  void ComputeTextContentOutsideViewport(const LayoutObject& object);
+  int ComputeContentOutsideViewport();
   void ComputeBadTapTargetsRatio();
 
  private:

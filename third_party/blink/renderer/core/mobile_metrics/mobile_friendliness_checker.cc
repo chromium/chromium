@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
+#include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -333,12 +334,8 @@ void MobileFriendlinessChecker::EvaluateNow() {
   if (font_size_check_enabled_)
     mobile_friendliness_.small_text_ratio = text_area_sizes_.SmallTextRatio();
 
-  // As long as evaluated as MF, TextOutsideViewportPercentage UKM must not be
-  // -1 (means unknown). Even if there is no call of
-  // ComputeTextContentOutsideViewport(), as far as there are FCP notification
-  // and unload event, that value is not -1 anymore and to be 0.
-  mobile_friendliness_.text_content_outside_viewport_percentage = std::max(
-      0, mobile_friendliness_.text_content_outside_viewport_percentage);
+  mobile_friendliness_.text_content_outside_viewport_percentage =
+      ComputeContentOutsideViewport();
 
   frame_view_->DidChangeMobileFriendliness(mobile_friendliness_);
 }
@@ -387,8 +384,6 @@ int MobileFriendlinessChecker::TextAreaWithFontSize::SmallTextRatio() const {
 
 void MobileFriendlinessChecker::NotifyInvalidatePaint(
     const LayoutObject& object) {
-  ComputeTextContentOutsideViewport(object);
-
   if (font_size_check_enabled_)
     ComputeSmallTextRatio(object);
 }
@@ -418,63 +413,29 @@ void MobileFriendlinessChecker::ComputeSmallTextRatio(
   }
 }
 
-constexpr int kMaxAncestorCount = 5;
-bool CheckParentHasOverflowXHidden(const LayoutObject* obj) {
-  int ancestor_count = kMaxAncestorCount;
-  while (obj && ancestor_count > 0) {
-    const ComputedStyle* style = obj->Style();
-    if (style->OverflowX() == EOverflow::kHidden)
-      return true;
-    obj = obj->Parent();
-    --ancestor_count;
-  }
-  return false;
-}
-
-void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
-    const LayoutObject& object) {
+int MobileFriendlinessChecker::ComputeContentOutsideViewport() {
   int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().Width();
   if (frame_width == 0) {
-    return;
+    return 0;
   }
 
-  int total_text_width;
-  if (const auto* text = DynamicTo<LayoutText>(object)) {
-    const ComputedStyle* style = text->Style();
-    if (style->Visibility() != EVisibility::kVisible ||
-        style->ContentVisibility() != EContentVisibility::kVisible ||
-        style->Opacity() == 0.0 || CheckParentHasOverflowXHidden(&object))
-      return;
-    total_text_width = text->PhysicalRightOffset().ToInt();
-  } else if (const auto* image = DynamicTo<LayoutImage>(object)) {
-    const ComputedStyle* style = image->Style();
-    if (style->Visibility() != EVisibility::kVisible ||
-        style->ContentVisibility() != EContentVisibility::kVisible ||
-        style->Opacity() == 0.0 || CheckParentHasOverflowXHidden(&object))
-      return;
-    total_text_width = image->FrameRect().MaxX().ToInt();
-  } else {
-    return;
+  const auto* root_frame_viewport = frame_view_->GetRootFrameViewport();
+  if (root_frame_viewport == nullptr) {
+    return 0;
   }
 
   double initial_scale = frame_view_->GetPage()
                              ->GetPageScaleConstraintsSet()
                              .FinalConstraints()
                              .initial_scale;
-  if (initial_scale > 0)
-    total_text_width *= initial_scale;
+  int content_width =
+      root_frame_viewport->LayoutViewport().ContentsSize().Width() *
+      initial_scale;
+  int max_scroll_offset = content_width - frame_width;
 
-  int text_content_outside_viewport_percentage = 0;
-  if (total_text_width > frame_width) {
-    // We use ceil function here because we want to treat 100.1% as 101 which
-    // requires a scroll bar.
-    text_content_outside_viewport_percentage =
-        std::ceil((total_text_width - frame_width) * 100.0 / frame_width);
-  }
-
-  mobile_friendliness_.text_content_outside_viewport_percentage =
-      std::max(mobile_friendliness_.text_content_outside_viewport_percentage,
-               text_content_outside_viewport_percentage);
+  // We use ceil function here because we want to treat 100.1% as 101 which
+  // requires a scroll bar.
+  return std::ceil(max_scroll_offset * 100.0 / frame_width);
 }
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {

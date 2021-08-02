@@ -339,26 +339,24 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWide) {
   EXPECT_NE(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, TextTooWideOpacityZero) {
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideAbsolutePositioning) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(
       R"(
 <html>
   <body>
-    <pre style="opacity:0">)" +
-      std::string(10000, 'a') +
-      R"(</pre>
+    <pre style="position:absolute; left:2000px">a</pre>
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 317);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, TextTooWideVisibilityHidden) {
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideOverflowXHidden) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(
       R"(
 <html>
   <body>
-    <pre style="visibility:hidden">)" +
+    <pre style="overflow-x:hidden">)" +
       std::string(10000, 'a') + R"(</pre>
   </body>
 </html>
@@ -435,10 +433,22 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWide) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 317);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 319);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, ImageAbsolutePosition) {
+TEST_F(MobileFriendlinessCheckerTest, ImageTooWideTwoImages) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+<html>
+  <body style="width:4000px">
+    <img style="width:2000px; height:50px">
+    <img style="width:2000px; height:50px">
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 735);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ImageTooWideAbsolutePosition) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
 <html>
   <body>
@@ -482,6 +492,44 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
 )");
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 30);
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 100.0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+<html>
+  <head>
+    <style>
+      div.scrollmenu {
+        background-color: #333;
+        overflow: auto;
+        white-space: nowrap;
+      }
+      div.scrollmenu a {
+        display: inline-block;
+        color: white;
+        padding: 14px;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 minimum-scale=1.0">
+  </head>
+  <body style="font-size: 18px">
+  <div class="scrollmenu">
+    <a href="#1">First text</a>
+    <a href="#2">Second text</a>
+    <a href="#3">Third text</a>
+    <a href="#4">Fourth text</a>
+    <a href="#5">Fifth text</a>
+    <a href="#6">Sixth text</a>
+    <a href="#7">Seventh text</a>
+    <a href="#8">Eighth text</a>
+    <a href="#9">Ninth text</a>
+    <a href="#10">Tenth text</a>
+  </div>
+  </body>
+</html>
+)");
+  // the viewport
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0.0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, SingleTapTarget) {
