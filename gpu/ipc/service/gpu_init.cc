@@ -887,15 +887,6 @@ bool GpuInit::InitializeVulkan() {
   // Histogram GPU.SupportsVulkan and GPU.VulkanVersion were marked as expired.
   // TODO(magchen): Add back these two histograms here and re-enable them in
   // histograms.xml when we start Vulkan finch on Windows.
-  if (!vulkan_use_swiftshader) {
-    const bool supports_vulkan = !!vulkan_implementation_;
-    uint32_t vulkan_version = 0;
-    if (supports_vulkan) {
-      const auto& vulkan_info =
-          vulkan_implementation_->GetVulkanInstance()->vulkan_info();
-      vulkan_version = vulkan_info.used_api_version;
-    }
-  }
 
   if (!vulkan_implementation_)
     return false;
