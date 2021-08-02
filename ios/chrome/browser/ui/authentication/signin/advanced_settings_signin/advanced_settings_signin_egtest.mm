@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/ios/ios_util.h"
+#import "base/test/ios/wait_util.h"
 #import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -34,6 +35,8 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SyncSettingsConfirmButton;
 using l10n_util::GetNSString;
 using testing::ButtonWithAccessibilityLabel;
+using base::test::ios::WaitUntilConditionOrTimeout;
+using base::test::ios::kWaitForUIElementTimeout;
 
 namespace {
 
@@ -214,10 +217,18 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
   // Test the sync error message is visible.
   [[EarlGrey selectElementWithMatcher:GoogleServicesSettingsButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_SYNC_ERROR_TITLE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_SYNC_ERROR_TITLE))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"Could not find the Sync Error text");
 }
 
 // Verifies that advanced sign-in shows an alert dialog when being swiped to
