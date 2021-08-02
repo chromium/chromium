@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//android_webview/system_webview_apk_tmpl.gni")
 import("//android_webview/variables.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
@@ -25,6 +26,18 @@ python_library("webview_cts_tests") {
   deps = [ "//android_webview:system_webview_apk" ]
   data_deps = [ "//build/android:test_runner_py" ]
   data = [ "//android_webview/tools/cts_config/" ]
+}
+
+script_test("crx_smoke_tests") {
+  script =
+      "//android_webview/test/components/run_webview_component_smoketest.py"
+  run_under_python2 = true
+  args = [ "--webview-package-name=$system_webview_package_name" ]
+  data = [ "//android_webview/test/components/crx_smoke_tests.py" ]
+  data_deps = [
+    "//android_webview:system_webview_apk",
+    "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+  ]
 }
 
 script_test("system_webview_wpt") {
