@@ -41,8 +41,8 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
     FAILED           // The controller was started but encountered an error.
   };
 
-  // Returned from ActivateDataType.
-  enum ActivateDataTypeResult {
+  // Returned from Connect.
+  enum ConnectResult {
     // Indicates that the initial download for this type is already complete, or
     // wasn't needed in the first place (e.g. for proxy types).
     TYPE_ALREADY_DOWNLOADED,
@@ -79,12 +79,11 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // Called by DataTypeManager once the local model has loaded, but before
   // downloading initial data (if necessary). Returns whether the initial
   // download for this type is already complete.
-  virtual ActivateDataTypeResult ActivateDataType(
-      ModelTypeConfigurer* configurer) = 0;
+  virtual ConnectResult Connect(ModelTypeConfigurer* configurer) = 0;
 
-  // Called by DataTypeManager to deactivate the controlled data type.
+  // Called by DataTypeManager to disconnect the controlled data type.
   // See comments for ModelAssociationManager::OnSingleDataTypeWillStop.
-  virtual void DeactivateDataType(ModelTypeConfigurer* configurer) = 0;
+  virtual void Disconnect(ModelTypeConfigurer* configurer) = 0;
 
   // Stops the data type. If LoadModels() has not completed it will enter
   // STOPPING state first and eventually STOPPED. Once stopped, |callback| will

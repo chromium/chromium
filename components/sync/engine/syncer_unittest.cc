@@ -141,12 +141,12 @@ class SyncerTest : public testing::Test,
     // Pretend we've seen a local change, to make the nudge_tracker look normal.
     nudge_tracker_.RecordLocalChange(BOOKMARKS);
 
-    return syncer_->NormalSyncShare(context_->GetEnabledTypes(),
+    return syncer_->NormalSyncShare(context_->GetConnectedTypes(),
                                     &nudge_tracker_, cycle_.get());
   }
 
   bool SyncShareConfigure() {
-    return SyncShareConfigureTypes(context_->GetEnabledTypes());
+    return SyncShareConfigureTypes(context_->GetConnectedTypes());
   }
 
   bool SyncShareConfigureTypes(ModelTypeSet types) {
@@ -277,17 +277,17 @@ TEST_F(SyncerTest, CommitFiltersThrottledEntries) {
 
   // Sync without enabling bookmarks.
   mock_server_->ExpectGetUpdatesRequestTypes(
-      Difference(context_->GetEnabledTypes(), throttled_types));
+      Difference(context_->GetConnectedTypes(), throttled_types));
   ResetCycle();
   syncer_->NormalSyncShare(
-      Difference(context_->GetEnabledTypes(), throttled_types), &nudge_tracker_,
-      cycle_.get());
+      Difference(context_->GetConnectedTypes(), throttled_types),
+      &nudge_tracker_, cycle_.get());
 
   // Nothing should have been committed as bookmarks is throttled.
   EXPECT_EQ(0, GetProcessor(BOOKMARKS)->GetLocalChangesCallCount());
 
   // Sync again with bookmarks enabled.
-  mock_server_->ExpectGetUpdatesRequestTypes(context_->GetEnabledTypes());
+  mock_server_->ExpectGetUpdatesRequestTypes(context_->GetConnectedTypes());
   EXPECT_TRUE(SyncShareNudge());
   EXPECT_EQ(1, GetProcessor(BOOKMARKS)->GetLocalChangesCallCount());
 }

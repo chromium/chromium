@@ -68,7 +68,7 @@ class FakeSyncManager : public SyncManager {
   // loop for purposes of callbacks.
   void Init(InitArgs* args) override;
   ModelTypeSet InitialSyncEndedTypes() override;
-  ModelTypeSet GetEnabledTypes() override;
+  ModelTypeSet GetConnectedTypes() override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
   void StartSyncingNormally(base::Time last_poll_time) override;

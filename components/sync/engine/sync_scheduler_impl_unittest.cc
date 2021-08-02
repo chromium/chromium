@@ -532,7 +532,7 @@ TEST_F(SyncSchedulerImplTest, NudgeForDisabledType) {
   // The user enables a custom passphrase at this point, so
   // HISTORY_DELETE_DIRECTIVES gets disabled.
   DisconnectDataType(HISTORY_DELETE_DIRECTIVES);
-  ASSERT_FALSE(context()->GetEnabledTypes().Has(HISTORY_DELETE_DIRECTIVES));
+  ASSERT_FALSE(context()->GetConnectedTypes().Has(HISTORY_DELETE_DIRECTIVES));
 
   // There should be no sync cycle.
   EXPECT_CALL(*syncer(), NormalSyncShare).Times(0);

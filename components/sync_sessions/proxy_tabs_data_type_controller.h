@@ -23,13 +23,12 @@ class ProxyTabsDataTypeController : public syncer::DataTypeController {
   // DataTypeController interface.
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  ActivateDataTypeResult ActivateDataType(
-      syncer::ModelTypeConfigurer* configurer) override;
+  ConnectResult Connect(syncer::ModelTypeConfigurer* configurer) override;
   void Stop(syncer::ShutdownReason shutdown_reason,
             StopCallback callback) override;
   State state() const override;
   bool ShouldRunInTransportOnlyMode() const override;
-  void DeactivateDataType(syncer::ModelTypeConfigurer* configurer) override;
+  void Disconnect(syncer::ModelTypeConfigurer* configurer) override;
   void GetAllNodes(AllNodesCallback callback) override;
   void GetTypeEntitiesCount(
       base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)

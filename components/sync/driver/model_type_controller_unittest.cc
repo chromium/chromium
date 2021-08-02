@@ -100,16 +100,16 @@ class TestModelTypeConfigurer : public ModelTypeConfigurer {
     NOTREACHED() << "Not implemented.";
   }
 
-  void ActivateDataType(ModelType type,
-                        std::unique_ptr<DataTypeActivationResponse>
-                            activation_response) override {
+  void ConnectDataType(ModelType type,
+                       std::unique_ptr<DataTypeActivationResponse>
+                           activation_response) override {
     DCHECK_EQ(kTestModelType, type);
     DCHECK(!processor_);
     processor_ = std::move(activation_response->type_processor);
     processor_->ConnectSync(nullptr);
   }
 
-  void DeactivateDataType(ModelType type) override {
+  void DisconnectDataType(ModelType type) override {
     DCHECK_EQ(kTestModelType, type);
     DCHECK(processor_);
     processor_->DisconnectSync();
@@ -186,11 +186,11 @@ class ModelTypeControllerTest : public testing::Test {
     return true;
   }
 
-  void ActivateDataType(bool expect_downloaded) {
+  void Connect(bool expect_downloaded) {
     auto result = expect_downloaded
                       ? DataTypeController::TYPE_ALREADY_DOWNLOADED
                       : DataTypeController::TYPE_NOT_YET_DOWNLOADED;
-    EXPECT_EQ(result, controller_.ActivateDataType(&configurer_));
+    EXPECT_EQ(result, controller_.Connect(&configurer_));
     // ModelTypeProcessorProxy does posting of tasks.
     base::RunLoop().RunUntilIdle();
   }
@@ -203,8 +203,8 @@ class ModelTypeControllerTest : public testing::Test {
     loop.Run();
   }
 
-  void DeactivateDataTypeAndStop(ShutdownReason shutdown_reason) {
-    controller_.DeactivateDataType(&configurer_);
+  void DisconnectAndStop(ShutdownReason shutdown_reason) {
+    controller_.Disconnect(&configurer_);
     StopAndWait(shutdown_reason);
   }
 
@@ -249,7 +249,7 @@ TEST_F(ModelTypeControllerTest, Activate) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(LoadModels());
   EXPECT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
-  ActivateDataType(/*expect_downloaded=*/false);
+  Connect(/*expect_downloaded=*/false);
   EXPECT_TRUE(processor()->is_connected());
   EXPECT_EQ(DataTypeController::RUNNING, controller()->state());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
@@ -259,7 +259,7 @@ TEST_F(ModelTypeControllerTest, ActivateWithInitialSyncDone) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(LoadModels(/*initial_sync_done=*/true));
   EXPECT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
-  ActivateDataType(/*expect_downloaded=*/true);
+  Connect(/*expect_downloaded=*/true);
   EXPECT_TRUE(processor()->is_connected());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
 }
@@ -293,9 +293,9 @@ TEST_F(ModelTypeControllerTest, ActivateWithError) {
 
 TEST_F(ModelTypeControllerTest, Stop) {
   ASSERT_TRUE(LoadModels());
-  ActivateDataType(/*expect_downloaded=*/false);
+  Connect(/*expect_downloaded=*/false);
   EXPECT_TRUE(processor()->is_connected());
-  DeactivateDataTypeAndStop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  DisconnectAndStop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
 }
 
@@ -305,7 +305,7 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeEnabled) {
 
   // Ensures that metadata was not cleared.
   EXPECT_CALL(*delegate(), OnSyncStopping(KEEP_METADATA));
-  DeactivateDataTypeAndStop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
+  DisconnectAndStop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
   EXPECT_FALSE(processor()->is_connected());
 }
@@ -316,7 +316,7 @@ TEST_F(ModelTypeControllerTest, StopWhenDatatypeDisabled) {
   ASSERT_TRUE(LoadModels());
 
   EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA));
-  DeactivateDataTypeAndStop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
+  DisconnectAndStop(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
   EXPECT_EQ(DataTypeController::NOT_RUNNING, controller()->state());
   EXPECT_FALSE(processor()->is_connected());
 }
@@ -667,7 +667,7 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   std::move(start_callback).Run(std::move(activation_response));
   ASSERT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
 
-  ActivateDataType(/*expect_downloaded=*/false);
+  Connect(/*expect_downloaded=*/false);
   ASSERT_EQ(DataTypeController::RUNNING, controller()->state());
 
   // Now trigger the run-time error.

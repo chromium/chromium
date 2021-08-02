@@ -98,9 +98,9 @@ ModelTypeSet SyncManagerImpl::InitialSyncEndedTypes() {
   return model_type_registry_->GetInitialSyncEndedTypes();
 }
 
-ModelTypeSet SyncManagerImpl::GetEnabledTypes() {
+ModelTypeSet SyncManagerImpl::GetConnectedTypes() {
   DCHECK(initialized_);
-  return model_type_registry_->GetEnabledTypes();
+  return model_type_registry_->GetConnectedTypes();
 }
 
 void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
@@ -444,7 +444,7 @@ void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const ModelTypeSet types_to_refresh =
-      Intersection(types, model_type_registry_->GetEnabledTypes());
+      Intersection(types, model_type_registry_->GetConnectedTypes());
 
   if (!types.Empty()) {
     scheduler_->ScheduleLocalRefreshRequest(types_to_refresh);

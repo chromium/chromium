@@ -221,7 +221,7 @@ base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
 }
 
 ModelTypeSet SyncSchedulerImpl::GetEnabledAndUnblockedTypes() {
-  ModelTypeSet enabled_types = cycle_context_->GetEnabledTypes();
+  ModelTypeSet enabled_types = cycle_context_->GetConnectedTypes();
   ModelTypeSet enabled_protocol_types =
       Intersection(ProtocolTypes(), enabled_types);
   ModelTypeSet blocked_types = nudge_tracker_.GetBlockedTypes();
@@ -294,7 +294,7 @@ bool SyncSchedulerImpl::CanRunNudgeJobNow(JobPriority priority) {
     return false;
   }
 
-  const ModelTypeSet enabled_types = cycle_context_->GetEnabledTypes();
+  const ModelTypeSet enabled_types = cycle_context_->GetConnectedTypes();
   if (nudge_tracker_.GetBlockedTypes().HasAll(enabled_types)) {
     SDVLOG(1) << "Not running a nudge because we're fully type throttled or "
                  "backed off.";

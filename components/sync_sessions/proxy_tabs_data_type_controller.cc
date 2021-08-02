@@ -32,8 +32,7 @@ void ProxyTabsDataTypeController::LoadModels(
   model_load_callback.Run(type(), syncer::SyncError());
 }
 
-syncer::DataTypeController::ActivateDataTypeResult
-ProxyTabsDataTypeController::ActivateDataType(
+syncer::DataTypeController::ConnectResult ProxyTabsDataTypeController::Connect(
     syncer::ModelTypeConfigurer* configurer) {
   DCHECK(configurer);
   DCHECK_EQ(MODEL_LOADED, state_);
@@ -66,7 +65,7 @@ bool ProxyTabsDataTypeController::ShouldRunInTransportOnlyMode() const {
   return false;
 }
 
-void ProxyTabsDataTypeController::DeactivateDataType(
+void ProxyTabsDataTypeController::Disconnect(
     syncer::ModelTypeConfigurer* configurer) {
   if (state_ == RUNNING) {
     configurer->SetProxyTabsDatatypeEnabled(false);

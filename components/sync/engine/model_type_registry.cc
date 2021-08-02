@@ -85,12 +85,12 @@ void ModelTypeRegistry::SetProxyTabsDatatypeEnabled(bool enabled) {
   proxy_tabs_datatype_enabled_ = enabled;
 }
 
-ModelTypeSet ModelTypeRegistry::GetEnabledTypes() const {
-  ModelTypeSet enabled_types;
+ModelTypeSet ModelTypeRegistry::GetConnectedTypes() const {
+  ModelTypeSet types;
   for (const auto& worker : connected_model_type_workers_) {
-    enabled_types.Put(worker->GetModelType());
+    types.Put(worker->GetModelType());
   }
-  return enabled_types;
+  return types;
 }
 
 bool ModelTypeRegistry::proxy_tabs_datatype_enabled() const {

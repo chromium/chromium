@@ -122,8 +122,8 @@ void ModelTypeController::LoadModels(
                               base::AsWeakPtr(this)));
 }
 
-DataTypeController::ActivateDataTypeResult
-ModelTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
+DataTypeController::ConnectResult ModelTypeController::Connect(
+    ModelTypeConfigurer* configurer) {
   DCHECK(CalledOnValidThread());
   DCHECK(configurer);
   DCHECK(activation_response_);
@@ -133,7 +133,7 @@ ModelTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
       activation_response_->model_type_state.initial_sync_done();
   // Pass activation context to ModelTypeRegistry, where ModelTypeWorker gets
   // created and connected with the delegate (processor).
-  configurer->ActivateDataType(type(), std::move(activation_response_));
+  configurer->ConnectDataType(type(), std::move(activation_response_));
 
   state_ = RUNNING;
   DVLOG(1) << "Sync running for " << ModelTypeToString(type());
@@ -141,11 +141,11 @@ ModelTypeController::ActivateDataType(ModelTypeConfigurer* configurer) {
   return initial_sync_done ? TYPE_ALREADY_DOWNLOADED : TYPE_NOT_YET_DOWNLOADED;
 }
 
-void ModelTypeController::DeactivateDataType(ModelTypeConfigurer* configurer) {
+void ModelTypeController::Disconnect(ModelTypeConfigurer* configurer) {
   DCHECK(CalledOnValidThread());
   DCHECK(configurer);
   if (state_ == RUNNING) {
-    configurer->DeactivateDataType(type());
+    configurer->DisconnectDataType(type());
     state_ = MODEL_LOADED;
   }
 }
@@ -310,7 +310,7 @@ void ModelTypeController::OnDelegateStarted(
       break;
     case MODEL_STARTING:
       DCHECK(model_stop_callbacks_.empty());
-      // Hold on to the activation context until ActivateDataType is called.
+      // Hold on to the activation context until Connect is called.
       activation_response_ = std::move(activation_response);
       state_ = MODEL_LOADED;
       DVLOG(1) << "Sync start completed for " << ModelTypeToString(type());

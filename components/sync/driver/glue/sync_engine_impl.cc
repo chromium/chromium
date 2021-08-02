@@ -344,14 +344,14 @@ void SyncEngineImpl::ConfigureDataTypes(ConfigureParams params) {
                                 std::move(params)));
 }
 
-void SyncEngineImpl::ActivateDataType(
+void SyncEngineImpl::ConnectDataType(
     ModelType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
   DCHECK(!IsProxyType(type));
   model_type_connector_->ConnectDataType(type, std::move(activation_response));
 }
 
-void SyncEngineImpl::DeactivateDataType(ModelType type) {
+void SyncEngineImpl::DisconnectDataType(ModelType type) {
   DCHECK(!IsProxyType(type));
   model_type_connector_->DisconnectDataType(type);
 }

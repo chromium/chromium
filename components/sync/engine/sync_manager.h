@@ -133,7 +133,7 @@ class SyncManager {
 
   virtual ModelTypeSet InitialSyncEndedTypes() = 0;
 
-  virtual ModelTypeSet GetEnabledTypes() = 0;
+  virtual ModelTypeSet GetConnectedTypes() = 0;
 
   // Update tokens that we're using in Sync. Email must stay the same.
   virtual void UpdateCredentials(const SyncCredentials& credentials) = 0;

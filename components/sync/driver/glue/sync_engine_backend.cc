@@ -406,7 +406,7 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  const ModelTypeSet enabled_types = sync_manager_->GetEnabledTypes();
+  const ModelTypeSet enabled_types = sync_manager_->GetConnectedTypes();
   DCHECK(Intersection(enabled_types, ProxyTypes()).Empty());
 
   const ModelTypeSet failed_types =

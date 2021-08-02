@@ -28,10 +28,10 @@ class MockSyncEngine : public SyncEngine {
   // ModelTypeConfigurer:
   MOCK_METHOD(void, ConfigureDataTypes, (ConfigureParams), (override));
   MOCK_METHOD(void,
-              ActivateDataType,
+              ConnectDataType,
               (ModelType, std::unique_ptr<DataTypeActivationResponse>),
               (override));
-  MOCK_METHOD(void, DeactivateDataType, (ModelType), (override));
+  MOCK_METHOD(void, DisconnectDataType, (ModelType), (override));
   MOCK_METHOD(void, SetProxyTabsDatatypeEnabled, (bool), (override));
 
   // SyncEngine:

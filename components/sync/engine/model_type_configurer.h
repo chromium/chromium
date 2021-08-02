@@ -47,14 +47,17 @@ class ModelTypeConfigurer {
   // Changes the set of data types that are currently being synced.
   virtual void ConfigureDataTypes(ConfigureParams params) = 0;
 
-  // Activates change processing for the given data type.
-  // This must be called before initial sync for data type.
-  virtual void ActivateDataType(
+  // Connects the datatype |type|, which means the sync engine will propagate
+  // changes between the server and datatype's processor, as provided in
+  // |activation_response|. This must be called before requesting the initial
+  // download of a datatype via ConfigureDataTypes().
+  virtual void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
-  // Deactivates change processing for the given data type.
-  virtual void DeactivateDataType(ModelType type) = 0;
+  // Opposite of the above: stops treating |type| as a datatype that is
+  // propagating changes between the server and the processor.
+  virtual void DisconnectDataType(ModelType type) = 0;
 
   // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
   // the server during commits.

@@ -29,8 +29,7 @@ class FakeDataTypeController : public ModelTypeController {
 
   // ModelTypeController overrides.
   PreconditionState GetPreconditionState() const override;
-  ActivateDataTypeResult ActivateDataType(
-      ModelTypeConfigurer* configurer) override;
+  ConnectResult Connect(ModelTypeConfigurer* configurer) override;
 
  private:
   PreconditionState precondition_state_ = PreconditionState::kPreconditionsMet;

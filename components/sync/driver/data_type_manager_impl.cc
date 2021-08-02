@@ -188,18 +188,18 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet desired_types,
   Restart();
 }
 
-void DataTypeManagerImpl::ActivateDataTypes() {
+void DataTypeManagerImpl::ConnectDataTypes() {
   for (ModelType type : last_enabled_types_) {
     const auto& dtc_iter = controllers_->find(type);
     if (dtc_iter == controllers_->end())
       continue;
     DataTypeController* dtc = dtc_iter->second.get();
     if (dtc->state() == DataTypeController::MODEL_LOADED) {
-      // Only call ActivateDataType for types that completed LoadModels
+      // Only call Connect() for types that completed LoadModels()
       // successfully. Such types shouldn't be in an error state at the same
       // time.
       DCHECK(!data_type_status_table_.GetFailedTypes().Has(dtc->type()));
-      switch (dtc->ActivateDataType(configurer_)) {
+      switch (dtc->Connect(configurer_)) {
         case DataTypeController::TYPE_ALREADY_DOWNLOADED:
           // Proxy types (as opposed to protocol types) don't actually have any
           // data, so keep proxy types out of |downloaded_types_|.
@@ -338,7 +338,7 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   // TODO(pavely): By now some of datatypes in |configuration_types_queue_|
   // could have failed loading and should be excluded from configuration. I need
   // to adjust |configuration_types_queue_| for such types.
-  ActivateDataTypes();
+  ConnectDataTypes();
   StartNextConfiguration(/*higher_priority_types_before=*/ModelTypeSet());
 }
 
@@ -621,7 +621,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   auto c_it = controllers_->find(type);
   DCHECK(c_it != controllers_->end());
   // Delegate deactivation to the controller.
-  c_it->second->DeactivateDataType(configurer_);
+  c_it->second->Disconnect(configurer_);
 
   if (error.IsSet()) {
     data_type_status_table_.UpdateFailedDataType(type, error);
@@ -629,7 +629,7 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
     last_requested_context_.reason =
         GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
     // Do this asynchronously so the ModelLoadManager has a chance to
-    // finish stopping this type, otherwise DeactivateDataType() and Stop()
+    // finish stopping this type, otherwise Disconnect() and Stop()
     // end up getting called twice on the controller.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,

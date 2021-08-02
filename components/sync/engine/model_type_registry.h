@@ -64,8 +64,10 @@ class ModelTypeRegistry : public ModelTypeConnector,
   void OnPassphraseTypeChanged(PassphraseType type,
                                base::Time passphrase_time) override;
 
-  // Gets the set of enabled types.
-  ModelTypeSet GetEnabledTypes() const;
+  // Gets the set of connected types, which is essentially the set of types that
+  // the sync engine cares about. For each of these, a worker exists to
+  // propagate changes between the server and the local model's processor.
+  ModelTypeSet GetConnectedTypes() const;
 
   bool proxy_tabs_datatype_enabled() const;
 

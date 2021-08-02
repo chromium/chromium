@@ -75,7 +75,7 @@ ModelTypeSet FakeSyncManager::InitialSyncEndedTypes() {
   return initial_sync_ended_types_;
 }
 
-ModelTypeSet FakeSyncManager::GetEnabledTypes() {
+ModelTypeSet FakeSyncManager::GetConnectedTypes() {
   return progress_marker_types_;
 }
 
