@@ -76,8 +76,7 @@ v8::Local<v8::Module> ModuleRecord::Compile(
 
   if (!V8ScriptRunner::CompileModule(
            isolate, params, text_position, compile_options, no_cache_reason,
-           ReferrerScriptInfo(params.BaseURL(), options,
-                              ReferrerScriptInfo::BaseUrlSource::kOther))
+           ReferrerScriptInfo(params.BaseURL(), options))
            .ToLocal(&module)) {
     DCHECK(try_catch.HasCaught());
     exception_state.RethrowV8Exception(try_catch.Exception());

@@ -15,8 +15,7 @@ TEST(ReferrerScriptInfo, IsDefaultValue) {
   EXPECT_FALSE(ReferrerScriptInfo(KURL("http://example.com"),
                                   network::mojom::CredentialsMode::kInclude, "",
                                   kNotParserInserted,
-                                  network::mojom::ReferrerPolicy::kDefault,
-                                  ReferrerScriptInfo::BaseUrlSource::kOther)
+                                  network::mojom::ReferrerPolicy::kDefault)
                    .IsDefaultValue());
 }
 
@@ -28,10 +27,9 @@ TEST(ReferrerScriptInfo, ToFromV8) {
                   .ToV8HostDefinedOptions(scope.GetIsolate())
                   .IsEmpty());
 
-  ReferrerScriptInfo info(
-      url, network::mojom::CredentialsMode::kInclude, "foobar",
-      kNotParserInserted, network::mojom::ReferrerPolicy::kOrigin,
-      ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin);
+  ReferrerScriptInfo info(url, network::mojom::CredentialsMode::kInclude,
+                          "foobar", kNotParserInserted,
+                          network::mojom::ReferrerPolicy::kOrigin);
   v8::Local<v8::PrimitiveArray> v8_info =
       info.ToV8HostDefinedOptions(scope.GetIsolate());
 
@@ -44,8 +42,6 @@ TEST(ReferrerScriptInfo, ToFromV8) {
   EXPECT_EQ(kNotParserInserted, decoded.ParserState());
   EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
             decoded.GetReferrerPolicy());
-  EXPECT_EQ(ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin,
-            decoded.GetBaseUrlSource());
 }
 
 }  // namespace blink

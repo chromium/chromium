@@ -481,8 +481,7 @@ TEST_P(DynamicModuleResolverTest, ResolveWithReferrerScriptInfoBaseURL) {
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(
       module_request, wrong_base_url,
-      ReferrerScriptInfo(correct_base_url, ScriptFetchOptions(),
-                         ReferrerScriptInfo::BaseUrlSource::kOther),
+      ReferrerScriptInfo(correct_base_url, ScriptFetchOptions()),
       promise_resolver);
 
   v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());

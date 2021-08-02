@@ -18,7 +18,6 @@ enum HostDefinedOptionsIndex : size_t {
   kNonce,
   kParserState,
   kReferrerPolicy,
-  kBaseUrlSource,
   kLength
 };
 
@@ -67,14 +66,8 @@ ReferrerScriptInfo ReferrerScriptInfo::FromV8HostDefinedOptions(
           referrer_policy_int32)
           .value_or(network::mojom::ReferrerPolicy::kDefault);
 
-  v8::Local<v8::Primitive> base_url_source_value =
-      host_defined_options->Get(isolate, kBaseUrlSource);
-  SECURITY_CHECK(base_url_source_value->IsUint32());
-  BaseUrlSource base_url_source = static_cast<BaseUrlSource>(
-      base_url_source_value->IntegerValue(context).ToChecked());
-
   return ReferrerScriptInfo(base_url, credentials_mode, nonce, parser_state,
-                            referrer_policy, base_url_source);
+                            referrer_policy);
 }
 
 v8::Local<v8::PrimitiveArray> ReferrerScriptInfo::ToV8HostDefinedOptions(
@@ -109,11 +102,6 @@ v8::Local<v8::PrimitiveArray> ReferrerScriptInfo::ToV8HostDefinedOptions(
       isolate, static_cast<uint32_t>(referrer_policy_));
   host_defined_options->Set(isolate, HostDefinedOptionsIndex::kReferrerPolicy,
                             referrer_policy_value);
-
-  v8::Local<v8::Primitive> base_url_source_value = v8::Integer::NewFromUnsigned(
-      isolate, static_cast<uint32_t>(base_url_source_));
-  host_defined_options->Set(isolate, HostDefinedOptionsIndex::kBaseUrlSource,
-                            base_url_source_value);
 
   return host_defined_options;
 }

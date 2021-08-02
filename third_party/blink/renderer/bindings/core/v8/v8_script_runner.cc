@@ -477,26 +477,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     const KURL base_url = classic_script->BaseURL();
     KURL stored_base_url = (base_url == source.Url()) ? KURL() : base_url;
 
-    // TODO(hiroshige): Remove this code and related use counters once the
-    // measurement is done.
-    ReferrerScriptInfo::BaseUrlSource base_url_source =
-        ReferrerScriptInfo::BaseUrlSource::kOther;
-    if (source.SourceLocationType() ==
-            ScriptSourceLocationType::kExternalFile &&
-        !base_url.IsNull()) {
-      switch (sanitize_script_errors) {
-        case SanitizeScriptErrors::kDoNotSanitize:
-          base_url_source =
-              ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSSameOrigin;
-          break;
-        case SanitizeScriptErrors::kSanitize:
-          base_url_source =
-              ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin;
-          break;
-      }
-    }
-    const ReferrerScriptInfo referrer_info(
-        stored_base_url, classic_script->FetchOptions(), base_url_source);
+    const ReferrerScriptInfo referrer_info(stored_base_url,
+                                           classic_script->FetchOptions());
 
     v8::Local<v8::Script> script;
 

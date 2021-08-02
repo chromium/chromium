@@ -340,29 +340,6 @@ void DynamicModuleResolver::ResolveDynamically(
     return;
   }
 
-  switch (referrer_info.GetBaseUrlSource()) {
-    case ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSSameOrigin:
-      if (!modulator_
-               ->ResolveModuleSpecifier(module_request.specifier, BlankURL())
-               .IsValid()) {
-        UseCounter::Count(
-            ExecutionContext::From(modulator_->GetScriptState()),
-            WebFeature::kDynamicImportModuleScriptRelativeClassicSameOrigin);
-      }
-      break;
-    case ReferrerScriptInfo::BaseUrlSource::kClassicScriptCORSCrossOrigin:
-      if (!modulator_
-               ->ResolveModuleSpecifier(module_request.specifier, BlankURL())
-               .IsValid()) {
-        UseCounter::Count(
-            ExecutionContext::From(modulator_->GetScriptState()),
-            WebFeature::kDynamicImportModuleScriptRelativeClassicCrossOrigin);
-      }
-      break;
-    case ReferrerScriptInfo::BaseUrlSource::kOther:
-      break;
-  }
-
   // <spec step="4.4">Set fetch options to the descendant script fetch options
   // for referencing script's fetch options.</spec>
   //
