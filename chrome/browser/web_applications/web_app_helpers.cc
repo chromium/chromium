@@ -47,10 +47,6 @@ AppId GetAppIdFromApplicationName(const std::string& app_name) {
   return app_name.substr(prefix.length());
 }
 
-static std::string GenerateAppHashFromURL(const GURL& url) {
-  return crypto::SHA256HashString(url.spec());
-}
-
 std::string GenerateAppIdUnhashed(
     const absl::optional<std::string>& manifest_id,
     const GURL& start_url) {
@@ -77,23 +73,6 @@ AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {
           ? absl::optional<std::string>(base::UTF16ToUTF8(manifest.id.value()))
           : absl::nullopt,
       manifest.start_url);
-}
-
-// Generate the public key for the fake extension that we synthesize to contain
-// a web app.
-//
-// Web apps are not signed, but the public key for an extension doubles as
-// its unique identity, and we need one of those. A web app's unique identity
-// is its manifest URL, so we hash that (*) to create a public key. There will
-// be no corresponding private key, which means that these extensions cannot be
-// auto-updated using ExtensionUpdater.
-//
-// (*) The comment above says that we hash the manifest URL, but in practice,
-// it seems that we hash the start URL.
-std::string GenerateAppKeyFromURL(const GURL& url) {
-  std::string key;
-  base::Base64Encode(GenerateAppHashFromURL(url), &key);
-  return key;
 }
 
 bool IsValidWebAppUrl(const GURL& app_url) {

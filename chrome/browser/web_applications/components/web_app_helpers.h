@@ -50,7 +50,6 @@ std::string GenerateAppIdUnhashed(
     const GURL& start_url);
 
 AppId GenerateAppIdFromManifest(const blink::Manifest& manifest);
-std::string GenerateAppKeyFromURL(const GURL& url);
 
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);
