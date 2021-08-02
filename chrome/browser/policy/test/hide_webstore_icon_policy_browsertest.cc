@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/locale_settings.h"

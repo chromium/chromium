@@ -10,12 +10,16 @@
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/security_interstitials/core/controller_client.h"
-#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
+
+class Browser;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -29,7 +33,7 @@ class PolicyMap;
 
 void GetTestDataDirectory(base::FilePath* test_data_directory);
 
-class PolicyTest : public InProcessBrowserTest {
+class PolicyTest : public PlatformBrowserTest {
  public:
   // The possibilities for a boolean policy.
   enum class BooleanPolicy {
@@ -49,13 +53,6 @@ class PolicyTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
-  // Verifies that access to the given url |spec| is blocked.
-  void CheckURLIsBlockedInWebContents(content::WebContents* web_contents,
-                                      const GURL& url);
-
-  // Verifies that access to the given url |spec| is blocked.
-  void CheckURLIsBlocked(Browser* browser, const std::string& spec);
 
   void SetScreenshotPolicy(bool enabled);
 

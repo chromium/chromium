@@ -9,7 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/url_blocking_policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/search/search.h"
@@ -50,7 +50,7 @@ bool IsNonSwitchArgument(const base::CommandLine::StringType& s) {
 // Similar to PolicyTest but allows setting policies before the browser is
 // created. Each test parameter is a method that sets up the early policies
 // and stores the expected startup URLs in |expected_urls_|.
-class RestoreOnStartupPolicyTest : public PolicyTest,
+class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
                                    public testing::WithParamInterface<void (
                                        RestoreOnStartupPolicyTest::*)(void)> {
  public:

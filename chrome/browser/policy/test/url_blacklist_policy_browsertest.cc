@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/url_blocking_policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -96,7 +96,7 @@ int JSIncrementerFetch(content::WebContents* contents) {
 
 }  //  namespace
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklist) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklist) {
   // Checks that URLs can be blacklisted, and that exceptions can be made to
   // the blacklist.
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklist) {
   CheckCanOpenURL(browser(), kURLS[4]);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistIncognito) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistIncognito) {
   // Checks that URLs can be blacklisted, and that exceptions can be made to
   // the blacklist.
 
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistIncognito) {
   CheckCanOpenURL(incognito_browser, kURLS[4]);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistAndWhitelist) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistAndWhitelist) {
   // Regression test for http://crbug.com/755256. Blacklisting * and
   // whitelisting an origin should work.
 
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistAndWhitelist) {
       embedded_test_server()->GetURL("aaa.com", "/empty.html").spec());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistSubresources) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistSubresources) {
   // Checks that an image with a blacklisted URL is loaded, but an iframe with a
   // blacklisted URL is not.
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistSubresources) {
   EXPECT_EQ("error", blacklisted_iframe_load_result);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistClientRedirect) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistClientRedirect) {
   // Checks that a client side redirect to a blacklisted URL is blocked.
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistClientRedirect) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistServerRedirect) {
   // Checks that a server side redirect to a blacklisted URL is blocked.
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlacklist) {
   // Check that FileURLs can be blacklisted and DisabledSchemes works together
   // with URLblacklisting and URLwhitelisting.
 
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FileURLBlacklist) {
 
 // Tests that javascript-links are handled properly according to blacklist
 // settings, bug crbug/913334.
-IN_PROC_BROWSER_TEST_F(PolicyTest, JavascriptBlacklistable) {
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlacklistable) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&JSIncrementerPageHandler));
   ASSERT_TRUE(embedded_test_server()->Start());

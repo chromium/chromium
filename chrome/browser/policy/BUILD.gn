@@ -61,6 +61,8 @@ source_set("test_support") {
     sources += [
       "policy_test_utils.cc",
       "policy_test_utils.h",
+      "url_blocking_policy_test_utils.cc",
+      "url_blocking_policy_test_utils.h",
     ]
 
     deps += [
