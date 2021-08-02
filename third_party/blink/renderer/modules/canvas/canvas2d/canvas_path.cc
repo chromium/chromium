@@ -48,7 +48,7 @@ namespace blink {
 // DoublePoint & DoubleRect instead of FloatPoint & FloatRect.
 
 void CanvasPath::closePath() {
-  if (path_.IsEmpty())
+  if (UNLIKELY(path_.IsEmpty()))
     return;
   path_.CloseSubpath();
 }
@@ -56,9 +56,9 @@ void CanvasPath::closePath() {
 void CanvasPath::moveTo(double double_x, double double_y) {
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
-  if (!std::isfinite(x) || !std::isfinite(y))
+  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
     return;
-  if (!IsTransformInvertible()) {
+  if (UNLIKELY(!IsTransformInvertible())) {
     path_.MoveTo(GetTransform().MapPoint(FloatPoint(x, y)));
     return;
   }
@@ -68,15 +68,15 @@ void CanvasPath::moveTo(double double_x, double double_y) {
 void CanvasPath::lineTo(double double_x, double double_y) {
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
-  if (!std::isfinite(x) || !std::isfinite(y))
+  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
     return;
   FloatPoint p1 = FloatPoint(x, y);
 
-  if (!IsTransformInvertible()) {
+  if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
   }
 
-  if (!path_.HasCurrentPoint())
+  if (UNLIKELY(!path_.HasCurrentPoint()))
     path_.MoveTo(p1);
 
   path_.AddLineTo(p1);
@@ -91,18 +91,18 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
 
-  if (!std::isfinite(cpx) || !std::isfinite(cpy) || !std::isfinite(x) ||
-      !std::isfinite(y))
+  if (UNLIKELY(!std::isfinite(cpx) || !std::isfinite(cpy) ||
+               !std::isfinite(x) || !std::isfinite(y)))
     return;
   FloatPoint p1 = FloatPoint(x, y);
   FloatPoint cp = FloatPoint(cpx, cpy);
 
-  if (!IsTransformInvertible()) {
+  if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
     cp = GetTransform().MapPoint(cp);
   }
 
-  if (!path_.HasCurrentPoint())
+  if (UNLIKELY(!path_.HasCurrentPoint()))
     path_.MoveTo(FloatPoint(cpx, cpy));
 
   path_.AddQuadCurveTo(cp, p1);
@@ -120,20 +120,21 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
   float cp2y = base::saturated_cast<float>(double_cp2y);
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
-  if (!std::isfinite(cp1x) || !std::isfinite(cp1y) || !std::isfinite(cp2x) ||
-      !std::isfinite(cp2y) || !std::isfinite(x) || !std::isfinite(y))
+  if (UNLIKELY(!std::isfinite(cp1x) || !std::isfinite(cp1y) ||
+               !std::isfinite(cp2x) || !std::isfinite(cp2y) ||
+               !std::isfinite(x) || !std::isfinite(y)))
     return;
 
   FloatPoint p1 = FloatPoint(x, y);
   FloatPoint cp1 = FloatPoint(cp1x, cp1y);
   FloatPoint cp2 = FloatPoint(cp2x, cp2y);
 
-  if (!IsTransformInvertible()) {
+  if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
     cp1 = GetTransform().MapPoint(cp1);
     cp2 = GetTransform().MapPoint(cp2);
   }
-  if (!path_.HasCurrentPoint())
+  if (UNLIKELY(!path_.HasCurrentPoint()))
     path_.MoveTo(FloatPoint(cp1x, cp1y));
 
   path_.AddBezierCurveTo(cp1, cp2, p1);
@@ -150,11 +151,11 @@ void CanvasPath::arcTo(double double_x1,
   float x2 = base::saturated_cast<float>(double_x2);
   float y2 = base::saturated_cast<float>(double_y2);
   float r = base::saturated_cast<float>(double_r);
-  if (!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(x2) ||
-      !std::isfinite(y2) || !std::isfinite(r))
+  if (UNLIKELY(!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(x2) ||
+               !std::isfinite(y2) || !std::isfinite(r)))
     return;
 
-  if (r < 0) {
+  if (UNLIKELY(r < 0)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         "The radius provided (" + String::Number(r) + ") is negative.");
@@ -164,14 +165,14 @@ void CanvasPath::arcTo(double double_x1,
   FloatPoint p1 = FloatPoint(x1, y1);
   FloatPoint p2 = FloatPoint(x2, y2);
 
-  if (!IsTransformInvertible()) {
+  if (UNLIKELY(!IsTransformInvertible())) {
     p1 = GetTransform().MapPoint(p1);
     p2 = GetTransform().MapPoint(p2);
   }
 
-  if (!path_.HasCurrentPoint())
+  if (UNLIKELY(!path_.HasCurrentPoint()))
     path_.MoveTo(p1);
-  else if (p1 == path_.CurrentPoint() || p1 == p2 || !r)
+  else if (UNLIKELY(p1 == path_.CurrentPoint() || p1 == p2 || !r))
     lineTo(x1, y1);
   else
     path_.AddArcTo(p1, p2, r);
@@ -309,7 +310,7 @@ void DegenerateEllipse(CanvasPath* path,
   // arc.
   LineToFloatPoint(path, center + rotation_matrix.MapPoint(GetPointOnEllipse(
                                       radius_x, radius_y, start_angle)));
-  if ((!radius_x && !radius_y) || start_angle == end_angle)
+  if (UNLIKELY((!radius_x && !radius_y) || start_angle == end_angle))
     return;
 
   if (!anticlockwise) {
@@ -350,21 +351,22 @@ void CanvasPath::arc(double double_x,
   float radius = base::saturated_cast<float>(double_radius);
   float start_angle = base::saturated_cast<float>(double_start_angle);
   float end_angle = base::saturated_cast<float>(double_end_angle);
-  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(radius) ||
-      !std::isfinite(start_angle) || !std::isfinite(end_angle))
+  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
+               !std::isfinite(radius) || !std::isfinite(start_angle) ||
+               !std::isfinite(end_angle)))
     return;
 
-  if (radius < 0) {
+  if (UNLIKELY(radius < 0)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         "The radius provided (" + String::Number(radius) + ") is negative.");
     return;
   }
 
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible()))
     return;
 
-  if (!radius || start_angle == end_angle) {
+  if (UNLIKELY(!radius || start_angle == end_angle)) {
     // The arc is empty but we still need to draw the connecting line.
     lineTo(x + radius * cosf(start_angle), y + radius * sinf(start_angle));
     return;
@@ -391,19 +393,20 @@ void CanvasPath::ellipse(double double_x,
   float rotation = base::saturated_cast<float>(double_rotation);
   float start_angle = base::saturated_cast<float>(double_start_angle);
   float end_angle = base::saturated_cast<float>(double_end_angle);
-  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(radius_x) ||
-      !std::isfinite(radius_y) || !std::isfinite(rotation) ||
-      !std::isfinite(start_angle) || !std::isfinite(end_angle))
+  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
+               !std::isfinite(radius_x) || !std::isfinite(radius_y) ||
+               !std::isfinite(rotation) || !std::isfinite(start_angle) ||
+               !std::isfinite(end_angle)))
     return;
 
-  if (radius_x < 0) {
+  if (UNLIKELY(radius_x < 0)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                       "The major-axis radius provided (" +
                                           String::Number(radius_x) +
                                           ") is negative.");
     return;
   }
-  if (radius_y < 0) {
+  if (UNLIKELY(radius_y < 0)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                       "The minor-axis radius provided (" +
                                           String::Number(radius_y) +
@@ -411,13 +414,13 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible()))
     return;
 
   CanonicalizeAngle(&start_angle, &end_angle);
   float adjusted_end_angle =
       AdjustEndAngle(start_angle, end_angle, anticlockwise);
-  if (!radius_x || !radius_y || start_angle == adjusted_end_angle) {
+  if (UNLIKELY(!radius_x || !radius_y || start_angle == adjusted_end_angle)) {
     // The ellipse is empty but we still need to draw the connecting line to
     // start point.
     DegenerateEllipse(this, x, y, radius_x, radius_y, rotation, start_angle,
@@ -437,11 +440,11 @@ void CanvasPath::rect(double double_x,
   float y = base::saturated_cast<float>(double_y);
   float width = base::saturated_cast<float>(double_width);
   float height = base::saturated_cast<float>(double_height);
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible()))
     return;
 
-  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
-      !std::isfinite(height))
+  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
+               !std::isfinite(width) || !std::isfinite(height)))
     return;
 
   path_.AddRect(FloatRect(x, y, width, height));
@@ -455,7 +458,7 @@ void CanvasPath::roundRect(
     const HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>& radii,
     ExceptionState& exception_state) {
   const int num_radii = radii.size();
-  if (num_radii < 1 || num_radii > 4) {
+  if (UNLIKELY(num_radii < 1 || num_radii > 4)) {
     exception_state.ThrowRangeError(
         String::Number(num_radii) +
         " radii provided. Between one and four radii are necessary.");
@@ -465,11 +468,11 @@ void CanvasPath::roundRect(
   float y = base::saturated_cast<float>(double_y);
   float width = base::saturated_cast<float>(double_width);
   float height = base::saturated_cast<float>(double_height);
-  if (!IsTransformInvertible())
+  if (UNLIKELY(!IsTransformInvertible()))
     return;
 
-  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
-      !std::isfinite(height))
+  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
+               !std::isfinite(width) || !std::isfinite(height)))
     return;
 
   FloatSize r[num_radii];
