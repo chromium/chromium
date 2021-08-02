@@ -62,7 +62,7 @@ class VirtualFileSystem : public zip::FileAccessor {
 
   VirtualFileSystem() {
     base::FilePath test_dir;
-    base::FilePath foo_txt_path = test_dir.Append(FILE_PATH_LITERAL("foo.txt"));
+    base::FilePath foo_txt_path = test_dir.AppendASCII("foo.txt");
 
     base::FilePath file_path;
     base::File file;
@@ -70,15 +70,13 @@ class VirtualFileSystem : public zip::FileAccessor {
     DCHECK(success);
     files_[foo_txt_path] = std::move(file);
 
-    base::FilePath bar_dir = test_dir.Append(FILE_PATH_LITERAL("bar"));
-    base::FilePath bar1_txt_path =
-        bar_dir.Append(FILE_PATH_LITERAL("bar1.txt"));
+    base::FilePath bar_dir = test_dir.AppendASCII("bar");
+    base::FilePath bar1_txt_path = bar_dir.AppendASCII("bar1.txt");
     success = CreateFile(kBar1Content, &file_path, &file);
     DCHECK(success);
     files_[bar1_txt_path] = std::move(file);
 
-    base::FilePath bar2_txt_path =
-        bar_dir.Append(FILE_PATH_LITERAL("bar2.txt"));
+    base::FilePath bar2_txt_path = bar_dir.AppendASCII("bar2.txt");
     success = CreateFile(kBar2Content, &file_path, &file);
     DCHECK(success);
     files_[bar2_txt_path] = std::move(file);
@@ -176,22 +174,20 @@ class ZipTest : public PlatformTest {
     test_dir_ = temp_dir_.GetPath();
 
     base::FilePath zip_path(test_dir_);
-    zip_contents_.insert(zip_path.Append(FILE_PATH_LITERAL("foo.txt")));
-    zip_path = zip_path.Append(FILE_PATH_LITERAL("foo"));
+    zip_contents_.insert(zip_path.AppendASCII("foo.txt"));
+    zip_path = zip_path.AppendASCII("foo");
     zip_contents_.insert(zip_path);
-    zip_contents_.insert(zip_path.Append(FILE_PATH_LITERAL("bar.txt")));
-    zip_path = zip_path.Append(FILE_PATH_LITERAL("bar"));
+    zip_contents_.insert(zip_path.AppendASCII("bar.txt"));
+    zip_path = zip_path.AppendASCII("bar");
     zip_contents_.insert(zip_path);
-    zip_contents_.insert(zip_path.Append(FILE_PATH_LITERAL("baz.txt")));
-    zip_contents_.insert(zip_path.Append(FILE_PATH_LITERAL("quux.txt")));
-    zip_contents_.insert(zip_path.Append(FILE_PATH_LITERAL(".hidden")));
+    zip_contents_.insert(zip_path.AppendASCII("baz.txt"));
+    zip_contents_.insert(zip_path.AppendASCII("quux.txt"));
+    zip_contents_.insert(zip_path.AppendASCII(".hidden"));
 
     // Include a subset of files in |zip_file_list_| to test ZipFiles().
-    zip_file_list_.push_back(base::FilePath(FILE_PATH_LITERAL("foo.txt")));
-    zip_file_list_.push_back(
-        base::FilePath(FILE_PATH_LITERAL("foo/bar/quux.txt")));
-    zip_file_list_.push_back(
-        base::FilePath(FILE_PATH_LITERAL("foo/bar/.hidden")));
+    zip_file_list_.push_back(FP("foo.txt"));
+    zip_file_list_.push_back(FP("foo/bar/quux.txt"));
+    zip_file_list_.push_back(FP("foo/bar/.hidden"));
   }
 
   virtual void TearDown() { PlatformTest::TearDown(); }
@@ -228,7 +224,7 @@ class ZipTest : public PlatformTest {
         base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
     base::FilePath unzipped_entry_path = files.Next();
     size_t count = 0;
-    while (!unzipped_entry_path.value().empty()) {
+    while (!unzipped_entry_path.empty()) {
       EXPECT_EQ(zip_contents_.count(unzipped_entry_path), 1U)
           << "Couldn't find " << unzipped_entry_path.value();
       count++;
@@ -236,28 +232,15 @@ class ZipTest : public PlatformTest {
       if (base::PathExists(unzipped_entry_path) &&
           !base::DirectoryExists(unzipped_entry_path)) {
         // It's a file, check its contents are what we zipped.
-        // TODO(774156): figure out why the commented out EXPECT_TRUE below
-        // fails on the build bots (but not on the try-bots).
         base::FilePath relative_path;
-        bool append_relative_path_success =
-            test_dir_.AppendRelativePath(unzipped_entry_path, &relative_path);
-        if (!append_relative_path_success) {
-          LOG(ERROR) << "Append relative path failed, params: " << test_dir_
-                     << " and " << unzipped_entry_path;
-        }
+        ASSERT_TRUE(
+            test_dir_.AppendRelativePath(unzipped_entry_path, &relative_path))
+            << "Cannot append relative path failed, params: '" << test_dir_
+            << "' and '" << unzipped_entry_path << "'";
         base::FilePath original_path = original_dir.Append(relative_path);
-        const bool equal =
-            base::ContentsEqual(original_path, unzipped_entry_path);
-        if (equal) {
-          LOG(INFO) << "Original and unzipped file '" << relative_path
-                    << "' are equal";
-        } else {
-          LOG(ERROR) << "Original and unzipped file '" << relative_path
-                     << "' are different";
-        }
-        // EXPECT_TRUE(base::ContentsEqual(original_path, unzipped_entry_path))
-        //    << "Contents differ between original " << original_path.value()
-        //    << " and unzipped file " << unzipped_entry_path.value();
+        EXPECT_TRUE(base::ContentsEqual(original_path, unzipped_entry_path))
+            << "Original file '" << original_path << "' and unzipped file '"
+            << unzipped_entry_path << "' have different contents";
       }
       unzipped_entry_path = files.Next();
     }
@@ -579,17 +562,17 @@ TEST_F(ZipTest, ZipWithFileAccessor) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   const base::FilePath& temp_dir = scoped_temp_dir.GetPath();
   ASSERT_TRUE(zip::Unzip(zip_file, temp_dir));
-  base::FilePath bar_dir = temp_dir.Append(FILE_PATH_LITERAL("bar"));
+  base::FilePath bar_dir = temp_dir.AppendASCII("bar");
   EXPECT_TRUE(base::DirectoryExists(bar_dir));
   std::string file_content;
-  EXPECT_TRUE(base::ReadFileToString(
-      temp_dir.Append(FILE_PATH_LITERAL("foo.txt")), &file_content));
+  EXPECT_TRUE(
+      base::ReadFileToString(temp_dir.AppendASCII("foo.txt"), &file_content));
   EXPECT_EQ(VirtualFileSystem::kFooContent, file_content);
-  EXPECT_TRUE(base::ReadFileToString(
-      bar_dir.Append(FILE_PATH_LITERAL("bar1.txt")), &file_content));
+  EXPECT_TRUE(
+      base::ReadFileToString(bar_dir.AppendASCII("bar1.txt"), &file_content));
   EXPECT_EQ(VirtualFileSystem::kBar1Content, file_content);
-  EXPECT_TRUE(base::ReadFileToString(
-      bar_dir.Append(FILE_PATH_LITERAL("bar2.txt")), &file_content));
+  EXPECT_TRUE(
+      base::ReadFileToString(bar_dir.AppendASCII("bar2.txt"), &file_content));
   EXPECT_EQ(VirtualFileSystem::kBar2Content, file_content);
 }
 
