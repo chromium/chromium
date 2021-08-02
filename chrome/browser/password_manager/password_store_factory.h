@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 class Profile;
 
@@ -25,6 +26,9 @@ class PasswordStoreFactory
   static scoped_refptr<password_manager::PasswordStore> GetForProfile(
       Profile* profile,
       ServiceAccessType set);
+
+  static scoped_refptr<password_manager::PasswordStoreInterface>
+  GetInterfaceForProfile(Profile* profile, ServiceAccessType set);
 
   static PasswordStoreFactory* GetInstance();
 

@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -48,6 +49,7 @@
 #endif  // !defined(OS_ANDROID)
 
 using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 
 #if !defined(OS_ANDROID)
 
@@ -125,8 +127,20 @@ void SyncEnabledOrDisabled(Profile* profile) {
 #endif  // defined(OS_ANDROID)
 }
 
+// TODO(crbug.com/1218413): Delete this method when the migration to
+// PasswordStoreInterface is complete and rename the method below to
+// GetForProfile.
 // static
 scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
+    Profile* profile,
+    ServiceAccessType access_type) {
+  return base::WrapRefCounted(static_cast<PasswordStore*>(
+      GetInterfaceForProfile(profile, access_type).get()));
+}
+
+// static
+scoped_refptr<PasswordStoreInterface>
+AccountPasswordStoreFactory::GetInterfaceForProfile(
     Profile* profile,
     ServiceAccessType access_type) {
   if (!base::FeatureList::IsEnabled(
@@ -140,8 +154,9 @@ scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
       profile->IsOffTheRecord()) {
     return nullptr;
   }
-  return base::WrapRefCounted(static_cast<password_manager::PasswordStore*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true).get()));
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserContext(profile, true).get()));
 }
 
 // static
