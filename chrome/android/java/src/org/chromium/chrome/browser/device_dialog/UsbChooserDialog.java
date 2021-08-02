@@ -99,7 +99,7 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
         ItemChooserDialog.ItemChooserLabels labels =
                 new ItemChooserDialog.ItemChooserLabels(title, searching, noneFound, statusActive,
                         statusIdleNoneFound, statusIdleSomeFound, positiveButton);
-        mItemChooserDialog = new ItemChooserDialog(activity, this, labels);
+        mItemChooserDialog = new ItemChooserDialog(activity, activity.getWindow(), this, labels);
     }
 
     @Override

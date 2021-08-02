@@ -81,7 +81,7 @@ public class DeviceItemAdapter
     /**
      * Creates a device item adapter which can show a list of items.
      *
-     * @param context The context of the application.
+     * @param context The context used for layout inflation and resource loading.
      * @param rowLayoutResource The resource identifier for the item row.
      */
     public DeviceItemAdapter(
