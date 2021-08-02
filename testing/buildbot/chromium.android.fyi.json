@@ -25,7 +25,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -86,7 +87,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -155,7 +157,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -226,7 +229,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -295,7 +299,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -359,7 +364,8 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -420,7 +426,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -489,7 +496,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -558,7 +566,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -627,7 +636,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -696,7 +706,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -767,7 +778,8 @@
         },
         "name": "webkit_unit_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -837,7 +849,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -906,7 +919,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -975,7 +989,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1045,7 +1060,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1114,7 +1130,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1184,7 +1201,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1253,7 +1271,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1332,7 +1351,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1411,7 +1431,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1480,7 +1501,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1551,7 +1573,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1622,7 +1645,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1694,7 +1718,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1764,7 +1789,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1835,7 +1861,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1904,7 +1931,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1973,7 +2001,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2042,7 +2071,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2111,7 +2141,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2180,7 +2211,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2249,7 +2281,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2318,7 +2351,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2390,7 +2424,8 @@
         },
         "name": "gl_tests_validating",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2459,7 +2494,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2528,7 +2564,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2597,7 +2634,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2666,7 +2704,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2735,7 +2774,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2804,7 +2844,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2873,7 +2914,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -2942,7 +2984,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3011,7 +3054,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3081,7 +3125,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3150,7 +3195,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3219,7 +3265,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3288,7 +3335,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3357,7 +3405,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3426,7 +3475,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3495,7 +3545,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3565,7 +3616,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3635,7 +3687,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3705,7 +3758,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3774,7 +3828,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3843,7 +3898,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3912,7 +3968,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3981,7 +4038,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4050,7 +4108,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4119,7 +4178,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4188,7 +4248,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4257,7 +4318,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4327,7 +4389,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4397,7 +4460,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4467,7 +4531,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4537,7 +4602,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4606,7 +4672,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4676,7 +4743,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4746,7 +4814,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4815,7 +4884,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4888,7 +4958,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -4957,7 +5028,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5027,7 +5099,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5096,7 +5169,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5160,7 +5234,8 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5220,7 +5295,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5289,7 +5365,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5358,7 +5435,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5427,7 +5505,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5496,7 +5575,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5566,7 +5646,8 @@
         },
         "name": "webkit_unit_tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5636,7 +5717,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5705,7 +5787,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5774,7 +5857,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5844,7 +5928,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5913,7 +5998,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -5982,7 +6068,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6051,7 +6138,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6127,7 +6215,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6205,7 +6294,8 @@
           "--buildbucket-id=${buildbucket_build_id}"
         ],
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6274,7 +6364,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6343,7 +6434,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6413,7 +6505,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6483,7 +6576,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6553,7 +6647,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6623,7 +6718,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6692,7 +6788,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6761,7 +6858,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6830,7 +6928,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6899,7 +6998,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -6968,7 +7068,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7037,7 +7138,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7106,7 +7208,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7177,7 +7280,8 @@
         },
         "name": "gl_tests_validating",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7246,7 +7350,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7315,7 +7420,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7384,7 +7490,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7453,7 +7560,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7522,7 +7630,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7591,7 +7700,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7660,7 +7770,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7729,7 +7840,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7798,7 +7910,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7867,7 +7980,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -7936,7 +8050,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8005,7 +8120,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8074,7 +8190,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8143,7 +8260,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8212,7 +8330,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8281,7 +8400,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8350,7 +8470,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8420,7 +8541,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8489,7 +8611,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8558,7 +8681,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8627,7 +8751,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8696,7 +8821,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8765,7 +8891,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8834,7 +8961,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8903,7 +9031,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -8972,7 +9101,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9041,7 +9171,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9110,7 +9241,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9179,7 +9311,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9249,7 +9382,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9318,7 +9452,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9387,7 +9522,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9456,7 +9592,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9525,7 +9662,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9594,7 +9732,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9663,7 +9802,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9732,7 +9872,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9807,7 +9948,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9877,7 +10019,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -9946,7 +10089,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10015,7 +10159,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10088,7 +10233,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10147,7 +10293,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10206,7 +10353,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10265,7 +10413,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10324,7 +10473,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10383,7 +10533,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10443,7 +10594,8 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10501,7 +10653,8 @@
         },
         "name": "system_webview_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -10539,7 +10692,8 @@
         },
         "name": "weblayer_shell_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -10584,7 +10738,8 @@
         },
         "name": "chrome_public_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -10652,7 +10807,8 @@
         },
         "name": "weblayer_instrumentation_test_apk_ToT_Tests",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10732,7 +10888,8 @@
         },
         "name": "weblayer_skew_tests_with_client_from_91",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10818,7 +10975,8 @@
         },
         "name": "weblayer_skew_tests_with_client_from_92",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10904,7 +11062,8 @@
         },
         "name": "weblayer_skew_tests_with_client_from_93",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -10990,7 +11149,8 @@
         },
         "name": "weblayer_skew_tests_with_impl_from_91",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11076,7 +11236,8 @@
         },
         "name": "weblayer_skew_tests_with_impl_from_92",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11162,7 +11323,8 @@
         },
         "name": "weblayer_skew_tests_with_impl_from_93",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -11238,7 +11400,8 @@
         },
         "name": "weblayer_shell_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -11303,7 +11466,8 @@
         },
         "name": "weblayer_shell_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
@@ -11367,7 +11531,8 @@
         },
         "name": "system_webview_wpt",
         "resultdb": {
-          "enable": true
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
         "swarming": {
