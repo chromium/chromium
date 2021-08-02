@@ -25,6 +25,8 @@ void NGLineBoxFragmentBuilder::Reset() {
   oof_positioned_candidates_.Shrink(0);
   unpositioned_list_marker_ = NGUnpositionedListMarker();
 
+  bfc_block_offset_.reset();
+
   size_.inline_size = LayoutUnit();
   metrics_ = FontHeight::Empty();
   line_box_type_ = NGPhysicalLineBoxFragment::kNormalLineBox;
