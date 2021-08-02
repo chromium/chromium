@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_
 
 #include <string>
 
@@ -134,7 +134,7 @@ class DeprecatedIdleActionHandler : public IntRangePolicyHandlerBase {
   DeprecatedIdleActionHandler();
   ~DeprecatedIdleActionHandler() override;
 
-  // ConfigurationPolicyHandler methods:
+  // IntRangePolicyHandlerBase:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
@@ -212,4 +212,4 @@ class ArcServicePolicyHandler : public IntRangePolicyHandlerBase {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_HANDLERS_CONFIGURATION_POLICY_HANDLER_ASH_H_

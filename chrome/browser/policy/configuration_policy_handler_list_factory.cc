@@ -129,7 +129,7 @@
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_chromeos.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_policy_handler.h"

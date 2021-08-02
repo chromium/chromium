@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_chromeos.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"

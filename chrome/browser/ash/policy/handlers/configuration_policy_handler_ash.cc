@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_chromeos.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 
 #include <stdint.h>
 
