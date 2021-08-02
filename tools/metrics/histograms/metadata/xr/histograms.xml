@@ -29,7 +29,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="VRSessionTime" units="ms" expires_after="2021-09-12">
+<histogram name="VRSessionTime" units="ms" expires_after="2022-03-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -38,7 +38,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="VRSessionVideoCount" units="units" expires_after="2021-09-12">
+<histogram name="VRSessionVideoCount" units="units" expires_after="2022-03-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -47,7 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="VRSessionVideoTime" units="ms" expires_after="2021-09-12">
+<histogram name="VRSessionVideoTime" units="ms" expires_after="2022-03-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -57,7 +57,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="VRViewerType" enum="VRViewerType" expires_after="2021-09-19">
+<histogram name="VRViewerType" enum="VRViewerType" expires_after="2022-03-19">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>The type of headset being used for VR.</summary>
@@ -97,7 +97,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="XR.WebXR.ReferenceSpace.Succeeded" enum="XRReferenceSpaceType"
-    expires_after="2021-09-19">
+    expires_after="2022-03-19">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
