@@ -26,16 +26,17 @@
 namespace ash {
 namespace {
 
-// Horizontal space between suggestions in dips.
-constexpr int kHorizontalSpacing = 8;
+// Vertical space between header and content in dips.
+constexpr int kVerticalSpacing = 8;
 
-constexpr int kContinueColumnCount = 2;
-constexpr int kContinueColumnSpacing = 16;
-constexpr int kContinueRowSpacing = 10;
+// Continue files section constants.
+constexpr int kContinueColumnSpacing = 8;
+constexpr int kContinueRowSpacing = 8;
+constexpr int kMinFilesForContinueSection = 3;
 
-std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
+std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
   auto label = std::make_unique<views::Label>(text);
-  bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kBody);
+  bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kSubtitle);
   return label;
 }
 
@@ -75,23 +76,24 @@ std::vector<SearchResult*> GetTasksResultsFromSuggestionChips(
 
 }  // namespace
 
-ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate)
-    : view_delegate_(view_delegate) {
+ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
+                                         int columns)
+    : view_delegate_(view_delegate), columns_(columns) {
   DCHECK(view_delegate_);
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kHorizontalSpacing));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+      kVerticalSpacing));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
 
   // TODO(https://crbug.com/1204551): Localized strings.
   // TODO(https://crbug.com/1204551): Styling.
-  auto* continue_label = AddChildView(CreateLabel(u"Label"));
+  auto* continue_label = AddChildView(CreateContinueLabel(u"Continue"));
   continue_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   suggestions_container_ = AddChildView(std::make_unique<views::View>());
   suggestions_container_->SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      kContinueColumnCount, kContinueColumnSpacing, kContinueRowSpacing));
+      columns_, kContinueColumnSpacing, kContinueRowSpacing));
 
   std::vector<SearchResult*> tasks =
       GetTasksResultsFromSuggestionChips(view_delegate_->GetSearchModel());
@@ -100,7 +102,7 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate)
     suggestions_container_->AddChildView(
         std::make_unique<ContinueTaskView>(task));
   }
-  SetVisible(!tasks.empty());
+  SetVisible(GetTasksSuggestionsCount() > kMinFilesForContinueSection);
 }
 
 ContinueSectionView::~ContinueSectionView() = default;

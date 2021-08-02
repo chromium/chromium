@@ -30,6 +30,10 @@ using views::BoxLayout;
 
 namespace ash {
 
+namespace {
+constexpr int kContinueColumnCount = 2;
+}  // namespace
+
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
     ApplicationDragAndDropHost* drag_and_drop_host) {
@@ -56,8 +60,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   // Continue section row.
-  continue_section_ = scroll_contents->AddChildView(
-      std::make_unique<ContinueSectionView>(view_delegate));
+  continue_section_ =
+      scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
+          view_delegate, kContinueColumnCount));
 
   // Recent apps row.
   recent_apps_ = scroll_contents->AddChildView(

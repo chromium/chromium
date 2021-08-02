@@ -5,13 +5,11 @@
 #ifndef ASH_APP_LIST_VIEWS_CONTINUE_TASK_VIEW_H_
 #define ASH_APP_LIST_VIEWS_CONTINUE_TASK_VIEW_H_
 
-#include <memory>
-#include <string>
-
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
 
 namespace views {
+class ImageView;
 class Label;
 }
 
@@ -34,10 +32,13 @@ class ASH_EXPORT ContinueTaskView : public views::View {
   SearchResult* result() { return result_; }
 
  private:
-  void SetText(const std::u16string& task_title);
+  void SetIcon(const gfx::ImageSkia& icon);
+  gfx::Size GetIconSize() const;
 
   SearchResult* result_;
-  views::Label* title_;
+  views::Label* title_ = nullptr;
+  views::Label* subtitle_ = nullptr;
+  views::ImageView* icon_ = nullptr;
 };
 
 }  // namespace ash

@@ -19,7 +19,7 @@ class ASH_EXPORT ContinueSectionView : public views::View {
  public:
   METADATA_HEADER(ContinueSectionView);
 
-  explicit ContinueSectionView(AppListViewDelegate* view_delegate);
+  ContinueSectionView(AppListViewDelegate* view_delegate, int columns);
   ContinueSectionView(const ContinueSectionView&) = delete;
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;
@@ -30,6 +30,7 @@ class ASH_EXPORT ContinueSectionView : public views::View {
  private:
   AppListViewDelegate* const view_delegate_;
 
+  const int columns_;
   views::View* suggestions_container_ = nullptr;
 };
 
