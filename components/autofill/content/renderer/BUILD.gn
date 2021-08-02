@@ -61,6 +61,7 @@ static_library("test_support") {
   sources = [
     "focus_test_utils.cc",
     "focus_test_utils.h",
+    "form_cache_test_api.h",
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",
   ]

@@ -8,6 +8,7 @@
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
+#include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/test/render_view_test.h"
@@ -401,8 +402,8 @@ TEST_P(ParameterizedFormCacheBrowserTest, FreeDataOnElementRemoval) {
   FormCache form_cache(GetMainFrame());
   form_cache.ExtractNewForms(nullptr);
 
-  EXPECT_EQ(1u, form_cache.initial_select_values_.size());
-  EXPECT_EQ(1u, form_cache.initial_checked_state_.size());
+  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_select_values_size());
+  EXPECT_EQ(1u, FormCacheTestApi(&form_cache).initial_checked_state_size());
 
   ExecuteJavaScriptForTests(R"(
     const container = document.getElementById('container');
@@ -413,8 +414,8 @@ TEST_P(ParameterizedFormCacheBrowserTest, FreeDataOnElementRemoval) {
 
   std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
   EXPECT_EQ(0u, forms.size());
-  EXPECT_EQ(0u, form_cache.initial_select_values_.size());
-  EXPECT_EQ(0u, form_cache.initial_checked_state_.size());
+  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_select_values_size());
+  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).initial_checked_state_size());
 }
 
 // Test that the select element's user edited field state is set
@@ -519,12 +520,12 @@ TEST_P(ParameterizedFormCacheBrowserTest,
   form_cache.SetFieldsEligibleForManualFilling(
       fields_eligible_for_manual_filling);
 
-  EXPECT_TRUE(
-      form_cache.IsFormElementEligibleForManualFilling(first_name_element));
-  EXPECT_FALSE(
-      form_cache.IsFormElementEligibleForManualFilling(middle_name_element));
-  EXPECT_TRUE(
-      form_cache.IsFormElementEligibleForManualFilling(last_name_element));
+  EXPECT_TRUE(FormCacheTestApi(&form_cache)
+                  .IsFormElementEligibleForManualFilling(first_name_element));
+  EXPECT_FALSE(FormCacheTestApi(&form_cache)
+                   .IsFormElementEligibleForManualFilling(middle_name_element));
+  EXPECT_TRUE(FormCacheTestApi(&form_cache)
+                  .IsFormElementEligibleForManualFilling(last_name_element));
 }
 
 // Test that after adding an input element to an already extracted non-synthetic
@@ -560,9 +561,9 @@ TEST_P(ParameterizedFormCacheBrowserTest,
 
   // Check if the modified form with the same rendererId was not added again.
   if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    EXPECT_EQ(1u, form_cache.parsed_forms_rendererid_.size());
+    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
   } else {
-    EXPECT_EQ(1u, form_cache.parsed_forms_.size());
+    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_size());
   }
 }
 
@@ -598,9 +599,9 @@ TEST_P(ParameterizedFormCacheBrowserTest,
   // Check if the modified form with the same rendererId was not added again.
   // (We expect that all the unowned fields have the same rendererId.)
   if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    EXPECT_EQ(1u, form_cache.parsed_forms_rendererid_.size());
+    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
   } else {
-    EXPECT_EQ(1u, form_cache.parsed_forms_.size());
+    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_size());
   }
 }
 
@@ -616,7 +617,7 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   form_cache.ExtractNewForms(nullptr);
 
   EXPECT_EQ(1u, GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(0u, form_cache.parsed_forms_rendererid_.size());
+  EXPECT_EQ(0u, FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
 }
 
 // Test that the FormCache never contains more than |kMaxParseableFields|
@@ -639,7 +640,8 @@ TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
 
   EXPECT_EQ(kMaxParseableFields + 1,
             GetMainFrame()->GetDocument().Forms().size());
-  EXPECT_EQ(kMaxParseableFields, form_cache.parsed_forms_rendererid_.size());
+  EXPECT_EQ(kMaxParseableFields,
+            FormCacheTestApi(&form_cache).parsed_forms_rendererid_size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

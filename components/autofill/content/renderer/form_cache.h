@@ -62,27 +62,13 @@ class FormCache {
   bool ShowPredictions(const FormDataPredictions& form,
                        bool attach_predictions_to_dom);
 
-  // For a given |control_element| check whether it is eligible for manual
-  // filling on form interaction.
-  bool IsFormElementEligibleForManualFilling(
-      const blink::WebFormControlElement& control_element);
-
   // Stores the FieldRendererId of the fields that are eligible for manual
   // filling in a set.
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields_eligible_for_manual_filling);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ParameterizedFormCacheBrowserTest,
-                           FreeDataOnElementRemoval);
-  FRIEND_TEST_ALL_PREFIXES(
-      ParameterizedFormCacheBrowserTest,
-      RemoveReextractedModifiedNonSyntheticFormsWithSameRendererID);
-  FRIEND_TEST_ALL_PREFIXES(
-      ParameterizedFormCacheBrowserTest,
-      RemoveReextractedModifiedSyntheticFormsWithSameRendererID);
-  FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, FormCacheSizeUpperBound);
-  FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, DoNotStoreEmptyForms);
+  friend class FormCacheTestApi;
 
   // Scans |control_elements| and returns the number of editable elements.
   // Also logs warning messages for deprecated attribute if

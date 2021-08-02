@@ -556,13 +556,6 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   return true;
 }
 
-bool FormCache::IsFormElementEligibleForManualFilling(
-    const blink::WebFormControlElement& control_element) {
-  return fields_eligible_for_manual_filling_.find(
-             FieldRendererId(control_element.UniqueRendererFormControlId())) !=
-         fields_eligible_for_manual_filling_.end();
-}
-
 void FormCache::SetFieldsEligibleForManualFilling(
     const std::vector<FieldRendererId>& fields_eligible_for_manual_filling) {
   fields_eligible_for_manual_filling_ = base::flat_set<FieldRendererId>(
