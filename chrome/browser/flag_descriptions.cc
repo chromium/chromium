@@ -338,6 +338,12 @@ const char kAutofillEnableVirtualCardDescription[] =
     "When enabled, if all requirements are met, Autofill will offer to use "
     "virtual credit cards in form filling.";
 
+const char kAutofillFillMerchantPromoCodeFieldsName[] =
+    "Enable Autofill of promo code fields in forms";
+const char kAutofillFillMerchantPromoCodeFieldsDescription[] =
+    "When enabled, Autofill will attempt to fill merchant promo/coupon/gift "
+    "code fields when data is available.";
+
 const char kAutofillFixOfferInIncognitoName[] =
     "Enable the fix for Autofill offer in Incognito mode";
 const char kAutofillFixOfferInIncognitoDescription[] =
