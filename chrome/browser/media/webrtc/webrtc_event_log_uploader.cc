@@ -44,6 +44,8 @@ const char kProduct[] = "Chrome_ChromeOS";
 const char kProduct[] = "Chrome_Linux";
 #elif defined(OS_ANDROID)
 const char kProduct[] = "Chrome_Android";
+#elif defined(OS_FUCHSIA)
+const char kProduct[] = "Chrome_Fuchsia";
 #else
 #error Platform not supported.
 #endif

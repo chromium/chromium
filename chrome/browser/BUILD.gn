@@ -5440,6 +5440,7 @@ static_library("browser") {
       "crash_upload_list/crash_upload_list_fuchsia.h",
       "download/download_status_updater_fuchsia.cc",
       "icon_loader_fuchsia.cc",
+      "media/webrtc/window_icon_util_fuchsia.cc",
       "memory_details_fuchsia.cc",
       "obsolete_system/obsolete_system_stub.cc",
       "shell_integration_fuchsia.cc",
