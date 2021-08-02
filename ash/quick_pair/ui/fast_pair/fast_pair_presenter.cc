@@ -30,8 +30,9 @@ FastPairPresenter::~FastPairPresenter() = default;
 
 void FastPairPresenter::ShowDiscovery(scoped_refptr<Device> device,
                                       DiscoveryCallback callback) {
+  const auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
-      device->metadata_id,
+      metadata_id,
       base::BindOnce(&FastPairPresenter::ShowDiscoveryMetadataRetrieved,
                      weak_pointer_factory_.GetWeakPtr(), std::move(device),
                      std::move(callback)));
