@@ -85,8 +85,6 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kOk;
     case ProtoRmadErrorCode::RMAD_ERROR_WAIT:
       return MojomRmadErrorCode::kWait;
-    case ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT:
-      return MojomRmadErrorCode::kNeedReboot;
     case ProtoRmadErrorCode::RMAD_ERROR_EXPECT_REBOOT:
       return MojomRmadErrorCode::kExpectReboot;
     case ProtoRmadErrorCode::RMAD_ERROR_EXPECT_SHUTDOWN:
@@ -176,9 +174,6 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kWait:
       *out = ProtoRmadErrorCode::RMAD_ERROR_WAIT;
-      return true;
-    case MojomRmadErrorCode::kNeedReboot:
-      *out = ProtoRmadErrorCode::RMAD_ERROR_NEED_REBOOT;
       return true;
     case MojomRmadErrorCode::kExpectReboot:
       *out = ProtoRmadErrorCode::RMAD_ERROR_EXPECT_REBOOT;
@@ -299,9 +294,6 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
 MojomComponentType EnumTraits<MojomComponentType, ProtoComponentType>::ToMojom(
     ProtoComponentType component) {
   switch (component) {
-    case rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK:
-      return MojomComponentType::kMainboardRework;
-
     case rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC:
       return MojomComponentType::kAudioCodec;
     case rmad::RmadComponent::RMAD_COMPONENT_BATTERY:
@@ -358,10 +350,6 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
     MojomComponentType component,
     ProtoComponentType* out) {
   switch (component) {
-    case MojomComponentType::kMainboardRework:
-      *out = ProtoComponentType::RMAD_COMPONENT_MAINBOARD_REWORK;
-      return true;
-
     case MojomComponentType::kAudioCodec:
       *out = rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC;
       return true;

@@ -983,13 +983,8 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
-        EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
-        EXPECT_EQ(1, state.components_repair().component_repair_size());
-        EXPECT_EQ(state.components_repair().component_repair(0).component(),
-                  rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK);
-        EXPECT_EQ(state.components_repair().component_repair(0).repair_status(),
-                  rmad::ComponentsRepairState::ComponentRepairStatus::
-                      RMAD_REPAIR_STATUS_REPLACED);
+        // TODO(gavindodd): Check the rework_mainboard flag when it is in
+        // rmad.proto.
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(

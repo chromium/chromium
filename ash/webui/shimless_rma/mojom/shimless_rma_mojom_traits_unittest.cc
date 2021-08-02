@@ -113,8 +113,6 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
                                                 rmad::RmadErrorCode>(
       {{mojom::RmadErrorCode::kOk, rmad::RmadErrorCode::RMAD_ERROR_OK},
        {mojom::RmadErrorCode::kWait, rmad::RmadErrorCode::RMAD_ERROR_WAIT},
-       {mojom::RmadErrorCode::kNeedReboot,
-        rmad::RmadErrorCode::RMAD_ERROR_NEED_REBOOT},
        {mojom::RmadErrorCode::kExpectReboot,
         rmad::RmadErrorCode::RMAD_ERROR_EXPECT_REBOOT},
        {mojom::RmadErrorCode::kExpectShutdown,
@@ -192,10 +190,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
 TEST_F(ShimlessRmaMojoToProtoTest, RepairComponentsMatch) {
   constexpr auto enums =
       base::MakeFixedFlatMap<mojom::ComponentType, rmad::RmadComponent>(
-          {{mojom::ComponentType::kMainboardRework,
-            rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK},
-
-           {mojom::ComponentType::kAudioCodec,
+          {{mojom::ComponentType::kAudioCodec,
             rmad::RmadComponent::RMAD_COMPONENT_AUDIO_CODEC},
            {mojom::ComponentType::kBattery,
             rmad::RmadComponent::RMAD_COMPONENT_BATTERY},

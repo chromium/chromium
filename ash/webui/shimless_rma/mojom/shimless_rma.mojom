@@ -80,88 +80,86 @@ enum RmadErrorCode {
   // No error, and wait for a signal.
   kWait = 2,
 
-  // Need a reboot to continue.
-  kNeedReboot = 3,
   // Expect a reboot soon.
-  kExpectReboot = 4,
+  kExpectReboot = 3,
   // Expect a reboot soon.
-  kExpectShutdown = 5,
+  kExpectShutdown = 4,
 
   // The device is not in RMA mode.
-  kRmaNotRequired = 6,
+  kRmaNotRequired = 5,
 
   // No corresponding state handler for a state.
-  kStateHandlerMissing = 7,
+  kStateHandlerMissing = 6,
   // State handler initialization failed.
-  kStateHandlerInitializationFailed = 8,
+  kStateHandlerInitializationFailed = 7,
   // The request could not be processed (e.g. bad proto).
-  kRequestInvalid = 9,
+  kRequestInvalid = 8,
   // The request is missing mandatory arguments.
-  kRequestArgsMissing = 10,
+  kRequestArgsMissing = 9,
     // The request arguments are violating some rules of the state.
-  kRequestArgsViolation = 11,
+  kRequestArgsViolation = 10,
   // It is not possible to go back to the previous state at this point.
-  kTransitionFailed = 12,
+  kTransitionFailed = 11,
 
   // Failed to abort the RMA process.
-  kAbortFailed = 13,
+  kAbortFailed = 12,
 
   // An expected component was not found.
-  kMissingComponent = 14,
+  kMissingComponent = 13,
 
   // Cannot get the RSU challenge code.
-  kWriteProtectDisableRsuNoChallenge = 15,
+  kWriteProtectDisableRsuNoChallenge = 14,
   // The RSU code was incorrect.
-  kWriteProtectDisableRsuCodeInvalid = 16,
+  kWriteProtectDisableRsuCodeInvalid = 15,
   // The battery was not disconnected when WP disable was required.
-  kWriteProtectDisableBatteryNotDisconnected = 17,
+  kWriteProtectDisableBatteryNotDisconnected = 16,
   // WP was not disabled when required.
-  kWriteProtectSignalNotDetected = 18,
+  kWriteProtectSignalNotDetected = 17,
 
   // Firmware image could not be downloaded because a network connection was
   // unavailable.
-  kReimagingDownloadNoNetwork = 19,
+  kReimagingDownloadNoNetwork = 18,
   // Firmware image download did not complete because of a network error.
-  kReimagingDownloadNetworkError = 20,
+  kReimagingDownloadNetworkError = 19,
   // The user cancelled the firmware image download.
-  kReimagingDownloadCancelled = 21,
+  kReimagingDownloadCancelled = 20,
   // No valid USB device with a firmware image was found.
-  kReimagingUsbNotFound = 22,
+  kReimagingUsbNotFound = 21,
   // More than one USB device with a firmware image was found.
-  kReimagingUsbTooManyFound = 23,
+  kReimagingUsbTooManyFound = 22,
   // The firmware image found was corrupt.
-  kReimagingUsbInvalidImage = 24,
+  kReimagingUsbInvalidImage = 23,
   // The firmware image could not be written.
-  kReimagingImagingFailed = 25,
+  kReimagingImagingFailed = 24,
   // An unexpected failure prevented imaging from completing.
-  kReimagingUnknownFailure = 26,
+  kReimagingUnknownFailure = 25,
 
   // The device info is incorrect.
-  kDeviceInfoInvalid = 27,
+  kDeviceInfoInvalid = 26,
 
   // Calibration component is missing.
-  kCalibrationMissingComponent = 28,
+  kCalibrationMissingComponent = 27,
   // Calibration failed for a component.
-  kCalibrationFailed = 29,
+  kCalibrationFailed = 28,
 
   // Provisioning failed for the device.
-  kProvisioningFailed = 30,
+  kProvisioningFailed = 29,
 
   // Device could not be powerwashed.
-  kPowerwashFailed = 31,
+  kPowerwashFailed = 30,
 
   // Device finalization failed.
-  kFinalizationFailed = 32,
+  kFinalizationFailed = 31,
 
   // Logs failed to upload because the server could not be reached.
-  kLogUploadFtpServerCannotConnect = 33,
+  kLogUploadFtpServerCannotConnect = 32,
   // Logs failed to upload because the server refused the connection.
-  kLogUploadFtpServerConnectionRejected = 34,
+  kLogUploadFtpServerConnectionRejected = 33,
   // Logs failed to upload because the connection was interrupted.
-  kLogUploadFtpServerTransferFailed = 35,
+  kLogUploadFtpServerTransferFailed = 34,
 
   // It is not possible to cancel RMA finalization process at this point.
-  kCannotCancelRma = 36,
+  kCannotCancelRma = 35,
 };
 
 // TODO(gavindodd): This is copied from
@@ -188,35 +186,32 @@ enum ComponentType {
   // Used as a safety fallback default, and therefore should always trigger safe
   // fallback behavior when present.
   kComponentUnknown = 0,
-  // NOTE: This is a special case for mainboards that will be restocked after
-  // repair. The board will stay in RMA until it is used in another device.
-  kMainboardRework = 1,
 
   // Standard components.
-  kAudioCodec = 2,
-  kBattery = 3,
-  kStorage = 4,
-  kVpdCached = 5,
-  kNetwork = 6,  // Obsolete in M91.
-  kCamera = 7,
-  kStylus = 8,
-  kTouchpad = 9,
-  kTouchsreen = 10,
-  kDram = 11,
-  kDisplayPanel = 12,
-  kCellular = 13,
-  kEthernet = 14,
-  kWireless = 15,
+  kAudioCodec = 1,
+  kBattery = 2,
+  kStorage = 3,
+  kVpdCached = 4,
+  kNetwork = 5,  // Obsolete in M91.
+  kCamera = 6,
+  kStylus = 7,
+  kTouchpad = 8,
+  kTouchsreen = 9,
+  kDram = 10,
+  kDisplayPanel = 11,
+  kCellular = 12,
+  kEthernet = 13,
+  kWireless = 14,
 
   // Additional rmad components.
-  kGyroscope = 16,
-  kAccelerometer = 17,
-  kScreen = 18,
+  kGyroscope = 15,
+  kAccelerometer = 16,
+  kScreen = 17,
 
   // Irrelevant components.
   // TODO(chenghan): Do we really need these?
-  kKeyboard = 19,
-  kPowerButton = 20,
+  kKeyboard = 18,
+  kPowerButton = 19,
 };
 
 // Component repair state

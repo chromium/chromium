@@ -311,25 +311,9 @@ void ShimlessRmaService::ReworkMainboard(ReworkMainboardCallback callback) {
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  // Create a new proto so that the full component list is retained while
-  // transitioning to the next state.
-  // This is not strictly necessary, but as the UX should never display
-  // 'mainboard' it reduces the chance of error.
-  rmad::RmadState state;
-  state.set_allocated_components_repair(new rmad::ComponentsRepairState());
-  rmad::ComponentsRepairState::ComponentRepairStatus* component =
-      state.mutable_components_repair()->add_component_repair();
-  component->set_component(
-      rmad::RmadComponent::RMAD_COMPONENT_MAINBOARD_REWORK);
-  component->set_repair_status(
-      rmad::ComponentsRepairState::ComponentRepairStatus::
-          RMAD_REPAIR_STATUS_REPLACED);
-
-  chromeos::RmadClient::Get()->TransitionNextState(
-      state,
-      base::BindOnce(
-          &ShimlessRmaService::OnGetStateResponse<ReworkMainboardCallback>,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  // TODO(gavindodd): set mainboard_rework flag when new rmad.proto is in
+  // third_party
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReimageRequired(ReimageRequiredCallback callback) {
