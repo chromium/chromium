@@ -242,7 +242,6 @@ static_library("common") {
 
   deps = [
     "//build:chromeos_buildflags",
-    "//components/crash/core/app",
     "//components/google/core/common",
     "//components/live_caption:constants",
     "//components/metrics:call_stack_profile_builder",
@@ -331,6 +330,12 @@ static_library("common") {
       "//extensions/strings",
       "//media/cast:net",
       "//services/device/public/cpp/usb",
+    ]
+  }
+
+  if (!is_fuchsia) {
+    deps += [
+      "//components/crash/core/app",
     ]
   }
 

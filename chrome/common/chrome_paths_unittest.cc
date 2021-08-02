@@ -29,10 +29,9 @@ TEST(ChromePaths, UserCacheDir) {
   base::FilePath expected_cache_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &expected_cache_dir));
   expected_cache_dir = expected_cache_dir.Append("foobar");
-#elif(OS_ANDROID)
-  // No matter what the test_profile_dir is, Android always use the
-  // application's cache directory since multiple profiles are not
-  // supported.
+#elif (OS_ANDROID) || defined(OS_FUCHSIA)
+  // No matter what the test_profile_dir is, Android and Fuchsia always use the
+  // application's cache directory since multiple profiles are not supported.
   base::FilePath expected_cache_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &expected_cache_dir));
 #elif(OS_POSIX)
