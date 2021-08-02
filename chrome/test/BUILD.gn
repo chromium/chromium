@@ -4398,7 +4398,6 @@ test("unit_tests") {
     "../browser/page_load_metrics/observers/tab_restore_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/third_party_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/translate_page_load_metrics_observer_unittest.cc",
-    "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
     "../browser/password_manager/chrome_password_manager_client_unittest.cc",
     "../browser/performance_hints/performance_hints_observer_unittest.cc",
     "../browser/performance_hints/rewrite_handler_unittest.cc",
@@ -4623,6 +4622,12 @@ test("unit_tests") {
     # unit_tests than in base_unittests.
     "../../base/path_service_unittest.cc",
   ]
+
+  if (enable_paint_preview) {
+    sources += [
+      "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
+    ]
+  }
 
   if (is_android) {
     sources += [
