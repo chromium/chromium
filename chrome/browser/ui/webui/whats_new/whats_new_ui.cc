@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/chrome_version.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_handler.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -36,7 +39,11 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
       {"reloadButton", IDS_RELOAD},
   };
   source->AddLocalizedStrings(kStrings);
-
+  // Allow embedding of iframe from chrome.com
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ChildSrc,
+      base::StringPrintf("child-src https: %s;",
+                         whats_new::kChromeWhatsNewURLShort));
   return source;
 }
 
@@ -47,34 +54,11 @@ void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 0);
 }
 
-// static
-bool WhatsNewUI::ShouldShowForState(PrefService* local_state) {
-  if (!local_state)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(features::kChromeWhatsNewUI))
-    return false;
-
-  int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
-  return CHROME_VERSION_MAJOR > last_version;
-}
-
-// static
-void WhatsNewUI::SetLastVersion(PrefService* local_state) {
-  if (!local_state) {
-    return;
-  }
-
-  local_state->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
-}
-
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   content::WebUIDataSource* source =
       CreateWhatsNewUIHtmlSource(Profile::FromWebUI(web_ui));
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
-
-  // TODO(rbpotter): Once we have a way to detect that the content has loaded
-  // successfully, update the kLastWhatsNewVersion pref.
+  web_ui->AddMessageHandler(std::make_unique<WhatsNewHandler>());
 }
 
 WhatsNewUI::~WhatsNewUI() = default;

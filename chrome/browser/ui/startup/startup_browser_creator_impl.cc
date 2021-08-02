@@ -52,7 +52,7 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
-#include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -385,7 +385,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const bool whats_new_enabled =
-      promotional_tabs_enabled && WhatsNewUI::ShouldShowForState(local_state);
+      promotional_tabs_enabled && whats_new::ShouldShowForState(local_state);
 
   StartupTabs tabs = DetermineStartupTabs(
       StartupTabProviderImpl(), cmd_line_tabs, process_startup,
@@ -524,7 +524,7 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
     } else {
       // Record the current version so that What's New will not be shown until
       // after the next major version update.
-      WhatsNewUI::SetLastVersion(g_browser_process->local_state());
+      whats_new::SetLastVersion(g_browser_process->local_state());
     }
   }
 

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
@@ -29,6 +30,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -49,6 +51,12 @@ class PromotionalTabsEnabledPolicyTest
       const PromotionalTabsEnabledPolicyTest&) = delete;
 
  protected:
+  static std::string GetWhatsNewAutoURL() {
+    GURL url(chrome::kChromeUIWhatsNewURL);
+    return net::AppendQueryParameter(url, "auto", "true")
+        .possibly_invalid_spec();
+  }
+
   PromotionalTabsEnabledPolicyTest() {
     const std::vector<base::Feature> kEnabledFeatures = {
       features::kChromeWhatsNewUI,
@@ -56,6 +64,7 @@ class PromotionalTabsEnabledPolicyTest
       welcome::kForceEnabled,
 #endif
     };
+    whats_new::g_force_enable_for_tests = true;
     scoped_feature_list_.InitWithFeatures(kEnabledFeatures, {});
   }
   ~PromotionalTabsEnabledPolicyTest() override = default;
@@ -130,7 +139,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
       // One or more onboarding tabs should show.
       EXPECT_NE(url.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
       // Welcome should override What's New.
-      EXPECT_NE(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
+      EXPECT_NE(url.possibly_invalid_spec(), GetWhatsNewAutoURL());
       EXPECT_FALSE(search::IsNTPOrRelatedURL(url, browser()->profile())) << url;
       break;
   }
@@ -211,8 +220,8 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest, RunTest) {
       break;
     case BooleanPolicy::kNotConfigured:
     case BooleanPolicy::kTrue:
-      // Whats's New should show.
-      EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
+      // Whats's New should show with auto=true query param.
+      EXPECT_EQ(url.possibly_invalid_spec(), GetWhatsNewAutoURL());
       break;
   }
 }

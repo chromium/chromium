@@ -6,7 +6,9 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import './whats_new_error_page.js';
 import './strings.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class WhatsNewAppElement extends PolymerElement {
   static get is() {
@@ -15,12 +17,28 @@ export class WhatsNewAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      loadFailed_: Boolean,
+      showErrorPage_: Boolean,
+      url_: String,
     };
   }
 
-  // Temporarily default to true while there's no other content.
-  private loadFailed_: boolean = true;
+  private showErrorPage_: boolean = false;
+  private url_: string = '';
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    const queryParams = new URLSearchParams(window.location.search);
+    const isAutoOpen = queryParams.has('auto');
+    sendWithPromise('initialize', isAutoOpen).then(url => {
+      if (!url) {
+        this.showErrorPage_ = true;
+        return;
+      }
+
+      this.url_ = isAutoOpen ? url.concat('?latest=true') : url;
+    });
+  }
 
   static get template() {
     return html`{__html_template__}`;

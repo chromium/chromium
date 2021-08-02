@@ -252,7 +252,8 @@ StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
     bool whats_new_enabled) {
   StartupTabs tabs;
   if (whats_new_enabled) {
-    tabs.emplace_back(GURL(chrome::kChromeUIWhatsNewURL), false);
+    GURL url(chrome::kChromeUIWhatsNewURL);
+    tabs.emplace_back(net::AppendQueryParameter(url, "auto", "true"), false);
   }
   return tabs;
 }

@@ -421,5 +421,8 @@ hidden="true" so that these annotations don't show up in the document.
     <sender name="Memories">
       <traffic_annotation unique_id="memories_remote_model_request"/>
     </sender>
+    <sender name="Whats New">
+      <traffic_annotation unique_id="whats_new_handler"/>
+    </sender>
   </group>
 </groups>

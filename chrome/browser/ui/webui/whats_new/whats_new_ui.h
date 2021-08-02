@@ -13,7 +13,6 @@ class WebUI;
 }
 
 class PrefRegistrySimple;
-class PrefService;
 
 // The Web UI controller for the chrome://whats-new page.
 class WhatsNewUI : public content::WebUIController {
@@ -22,8 +21,6 @@ class WhatsNewUI : public content::WebUIController {
   ~WhatsNewUI() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-  static bool ShouldShowForState(PrefService* local_state);
-  static void SetLastVersion(PrefService* local_state);
 
   WhatsNewUI(const WhatsNewUI&) = delete;
   WhatsNewUI& operator=(const WhatsNewUI&) = delete;
