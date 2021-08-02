@@ -305,12 +305,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     LayoutUnit containing_block_adjustment,
     const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
     LogicalOffset additional_fixedpos_offset) {
-  LogicalOffset adjusted_offset = offset + offset_adjustment;
-
-  // The relative offset is already applied for inlines, so don't include it
-  // in the |adjusted_offset|, as well.
-  if (!fragment.IsInlineBox())
-    adjusted_offset += relative_offset;
+  LogicalOffset adjusted_offset = offset + offset_adjustment + relative_offset;
 
   // Collect the child's out of flow descendants.
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
