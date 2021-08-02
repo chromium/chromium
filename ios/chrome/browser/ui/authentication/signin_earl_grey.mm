@@ -112,9 +112,5 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       selectElementWithMatcher:GetSettingsGoogleSyncAndServicesCellMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
-- (void)triggerReauthDialogWithFakeIdentity:(FakeChromeIdentity*)identity {
-  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
-  GREYWaitForAppToIdle(@"App failed to idle");
-}
 
 @end

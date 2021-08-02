@@ -10,6 +10,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
@@ -410,7 +411,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 // app.
 - (void)testInterruptReauthSignin {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
-  [SigninEarlGrey triggerReauthDialogWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
   [ChromeEarlGrey simulateExternalAppURLOpening];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
