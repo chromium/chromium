@@ -140,6 +140,12 @@ bool HasAnimationsOrTransitions(const StyleResolverState& state) {
           state.GetAnimatingElement()->HasAnimations());
 }
 
+bool IsAnimationStyleChange(Element& element) {
+  if (auto* element_animations = element.GetElementAnimations())
+    return element_animations->IsAnimationStyleChange();
+  return false;
+}
+
 bool ShouldComputeBaseComputedStyle(const ComputedStyle* base_computed_style) {
 #if DCHECK_IS_ON()
   // The invariant in the base computed style optimization is that as long as
@@ -208,6 +214,25 @@ void MaybeResetCascade(StyleCascade& cascade) {
 #if DCHECK_IS_ON()
   cascade.Reset();
 #endif  // DCHECK_IS_ON()
+}
+
+void PreserveTextAutosizingMultiplierIfNeeded(
+    StyleResolverState& state,
+    const StyleRequest& style_request) {
+  const ComputedStyle* old_style = state.GetElement().GetComputedStyle();
+  if (!style_request.IsPseudoStyleRequest() && old_style) {
+    state.Style()->SetTextAutosizingMultiplier(
+        old_style->TextAutosizingMultiplier());
+  }
+}
+
+bool TextAutosizingMultiplierChanged(const StyleResolverState& state,
+                                     const ComputedStyle& base_computed_style) {
+  // Note that |old_style| can be a style replaced by
+  // TextAutosizer::ApplyMultiplier.
+  const ComputedStyle* old_style = state.GetElement().GetComputedStyle();
+  return old_style && (old_style->TextAutosizingMultiplier() !=
+                       base_computed_style.TextAutosizingMultiplier());
 }
 
 }  // namespace
@@ -701,40 +726,19 @@ static ElementAnimations* GetElementAnimations(
   return state.GetAnimatingElement()->GetElementAnimations();
 }
 
-static const ComputedStyle* CachedAnimationBaseComputedStyle(
-    StyleResolverState& state) {
-  ElementAnimations* element_animations = GetElementAnimations(state);
-  if (!element_animations)
+static StyleBaseData* GetBaseData(const StyleResolverState& state) {
+  Element* animating_element = state.GetAnimatingElement();
+  if (!animating_element)
     return nullptr;
-
-  return element_animations->BaseComputedStyle();
+  auto* old_style = animating_element->GetComputedStyle();
+  return old_style ? old_style->BaseData().get() : nullptr;
 }
 
-static void UpdateAnimationBaseComputedStyle(StyleResolverState& state,
-                                             StyleCascade& cascade,
-                                             bool forced_update) {
-  if (!state.GetAnimatingElement())
-    return;
-
-  if (!state.CanCacheBaseStyle())
-    return;
-
-  if (forced_update)
-    state.GetAnimatingElement()->EnsureElementAnimations();
-
-  ElementAnimations* element_animations =
-      state.GetAnimatingElement()->GetElementAnimations();
-  if (!element_animations)
-    return;
-
-  if (element_animations->IsAnimationStyleChange() &&
-      element_animations->BaseComputedStyle()) {
-    return;
-  }
-
-  std::unique_ptr<CSSBitset> important_set = cascade.GetImportantSet();
-  element_animations->UpdateBaseComputedStyle(state.Style(),
-                                              std::move(important_set));
+static const ComputedStyle* CachedAnimationBaseComputedStyle(
+    StyleResolverState& state) {
+  if (auto* base_data = GetBaseData(state))
+    return base_data->GetBaseComputedStyle();
+  return nullptr;
 }
 
 static void IncrementResolvedStyleCounters(const StyleRequest& style_request,
@@ -985,16 +989,11 @@ void StyleResolver::ApplyBaseStyle(
       return;
     }
 
-    if (!style_request.IsPseudoStyleRequest() && element->GetComputedStyle() &&
-        element->GetComputedStyle()->TextAutosizingMultiplier() !=
-            state.Style()->TextAutosizingMultiplier()) {
-      // Preserve the text autosizing multiplier on style recalc. Autosizer will
-      // update it during layout if needed.
-      // NOTE: this must occur before ApplyMatchedProperties for correct
-      // computation of font-relative lengths.
-      state.Style()->SetTextAutosizingMultiplier(
-          element->GetComputedStyle()->TextAutosizingMultiplier());
-    }
+    // Preserve the text autosizing multiplier on style recalc. Autosizer will
+    // update it during layout if needed.
+    // NOTE: This must occur before CascadeAndApplyMatchedProperties for correct
+    // computation of font-relative lengths.
+    PreserveTextAutosizingMultiplierIfNeeded(state, style_request);
 
     CascadeAndApplyMatchedProperties(state, cascade);
 
@@ -1016,6 +1015,8 @@ void StyleResolver::ApplyBaseStyle(
   if (base_is_usable) {
     DCHECK(animation_base_computed_style);
     state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
+    state.StyleRef().SetBaseData(
+        scoped_refptr<StyleBaseData>(GetBaseData(state)));
     state.Style()->SetStyleType(style_request.pseudo_id);
     if (!state.ParentStyle()) {
       state.SetParentStyle(InitialStyleForElement());
@@ -1268,12 +1269,13 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   DCHECK(animating_element == &element ||
          animating_element->ParentOrShadowHostElement() == element);
 
-  if (!HasAnimationsOrTransitions(state)) {
-    // Ensure that the base computed style is not stale even if not currently
-    // running an animation or transition. This ensures that any new transitions
-    // use the correct starting point based on the "before change" style.
-    UpdateAnimationBaseComputedStyle(state, cascade, false);
+  if (!HasAnimationsOrTransitions(state))
     return false;
+
+  if (!IsAnimationStyleChange(*animating_element) ||
+      !state.StyleRef().BaseData()) {
+    state.StyleRef().SetBaseData(StyleBaseData::Create(
+        ComputedStyle::Clone(state.StyleRef()), cascade.GetImportantSet()));
   }
 
   CSSAnimations::CalculateAnimationUpdate(
@@ -1288,10 +1290,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   CSSAnimations::SnapshotCompositorKeyframes(
       element, state.AnimationUpdate(), *state.Style(), state.ParentStyle());
 
-  bool has_update = !state.AnimationUpdate().IsEmpty();
-  UpdateAnimationBaseComputedStyle(state, cascade, has_update);
-
-  if (!has_update)
+  if (state.AnimationUpdate().IsEmpty())
     return false;
 
   const ActiveInterpolationsMap& animations =
@@ -1463,10 +1462,11 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     return false;
 
   ElementAnimations* element_animations = GetElementAnimations(state);
-  if (!element_animations || !element_animations->BaseComputedStyle())
+  if (!element_animations || !element_animations->IsAnimationStyleChange())
     return false;
 
-  if (!element_animations->IsAnimationStyleChange())
+  StyleBaseData* base_data = GetBaseData(state);
+  if (!base_data || !base_data->GetBaseComputedStyle())
     return false;
 
   // Animating a custom property can have side effects on other properties
@@ -1484,10 +1484,8 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // animation. We cannot use the base computed style optimization in such
   // cases.
   if (CSSAnimations::IsAnimatingFontAffectingProperties(element_animations)) {
-    if (element_animations->BaseComputedStyle() &&
-        element_animations->BaseComputedStyle()->HasFontRelativeUnits()) {
+    if (base_data->GetBaseComputedStyle()->HasFontRelativeUnits())
       return false;
-    }
   }
 
   // Normally, we apply all active animation effects on top of the style created
@@ -1497,8 +1495,13 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // style, we disable the base computed style optimization.
   // [1] https://drafts.csswg.org/css-cascade-4/#cascade-origin
   if (CSSAnimations::IsAnimatingStandardProperties(
-          element_animations, element_animations->BaseImportantSet(),
+          element_animations, base_data->GetBaseImportantSet(),
           KeyframeEffect::kDefaultPriority)) {
+    return false;
+  }
+
+  if (TextAutosizingMultiplierChanged(state,
+                                      *base_data->GetBaseComputedStyle())) {
     return false;
   }
 

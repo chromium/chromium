@@ -2784,7 +2784,6 @@ void Element::DetachLayoutTree(bool performing_reattach) {
         element_animations->CssAnimations().Cancel();
         element_animations->SetAnimationStyleChange(false);
       }
-      element_animations->ClearBaseComputedStyle();
     }
   }
 

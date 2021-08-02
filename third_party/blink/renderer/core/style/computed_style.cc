@@ -102,11 +102,13 @@ ASSERT_SIZE(BorderValue, SameSizeAsBorderValue);
 struct SameSizeAsComputedStyleBase {
   SameSizeAsComputedStyleBase() {
     base::debug::Alias(&data_refs);
+    base::debug::Alias(&pointers);
     base::debug::Alias(&bitfields);
   }
 
  private:
   void* data_refs[8];
+  void* pointers[1];
   unsigned bitfields[5];
 };
 
@@ -592,6 +594,18 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
 void ComputedStyle::ClearCachedPseudoElementStyles() const {
   if (cached_data_ && cached_data_->pseudo_element_styles_)
     cached_data_->pseudo_element_styles_->clear();
+}
+
+const ComputedStyle* ComputedStyle::GetBaseComputedStyle() const {
+  if (auto* base_data = BaseData().get())
+    return base_data->GetBaseComputedStyle();
+  return nullptr;
+}
+
+const CSSBitset* ComputedStyle::GetBaseImportantSet() const {
+  if (auto* base_data = BaseData().get())
+    return base_data->GetBaseImportantSet();
+  return nullptr;
 }
 
 bool ComputedStyle::InheritedEqual(const ComputedStyle& other) const {
@@ -2110,6 +2124,9 @@ void ComputedStyle::SetLetterSpacing(float letter_spacing) {
 }
 
 void ComputedStyle::SetTextAutosizingMultiplier(float multiplier) {
+  if (TextAutosizingMultiplier() == multiplier)
+    return;
+
   SetTextAutosizingMultiplierInternal(multiplier);
 
   float size = SpecifiedFontSize();

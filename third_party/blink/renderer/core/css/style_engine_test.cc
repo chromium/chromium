@@ -2504,18 +2504,21 @@ TEST_F(StyleEngineTest, PseudoElementBaseComputedStyle) {
   before->SetNeedsAnimationStyleRecalc();
   UpdateAllLifecyclePhases();
 
-  scoped_refptr<ComputedStyle> base_computed_style =
-      animations->base_computed_style_;
+  ASSERT_TRUE(before->GetComputedStyle());
+  const ComputedStyle* base_computed_style =
+      before->GetComputedStyle()->GetBaseComputedStyle();
   EXPECT_TRUE(base_computed_style);
 
   before->SetNeedsAnimationStyleRecalc();
   UpdateAllLifecyclePhases();
 
-  EXPECT_TRUE(animations->base_computed_style_);
+  ASSERT_TRUE(before->GetComputedStyle());
+  EXPECT_TRUE(before->GetComputedStyle()->GetBaseComputedStyle());
 #if !DCHECK_IS_ON()
   // When DCHECK is enabled, BaseComputedStyle() returns null and we repeatedly
   // create new instances which means the pointers will be different here.
-  EXPECT_EQ(base_computed_style, animations->base_computed_style_);
+  EXPECT_EQ(base_computed_style,
+            before->GetComputedStyle()->GetBaseComputedStyle());
 #endif
 }
 
