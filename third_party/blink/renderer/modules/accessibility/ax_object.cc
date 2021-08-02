@@ -2079,7 +2079,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     SetNeedsToUpdateChildren();
     cached_is_inert_or_aria_hidden_ = is_inert_or_aria_hidden;
   }
-  cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
+  cached_is_descendant_of_disabled_node_ = ComputeIsDescendantOfDisabledNode();
 
   bool is_ignored = ComputeAccessibilityIsIgnored();
   bool is_ignored_but_included_in_tree =
@@ -2392,18 +2392,18 @@ bool AXObject::IsDescendantOfDisabledNode() const {
   return cached_is_descendant_of_disabled_node_;
 }
 
-const AXObject* AXObject::DisabledAncestor() const {
+bool AXObject::ComputeIsDescendantOfDisabledNode() const {
+  if (IsA<Document>(GetNode()))
+    return false;
+
   bool disabled = false;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kDisabled, disabled)) {
-    if (disabled)
-      return this;
-    return nullptr;
-  }
+  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kDisabled, disabled))
+    return disabled;
 
   if (AXObject* parent = ParentObject())
-    return parent->DisabledAncestor();
+    return parent->IsDescendantOfDisabledNode();
 
-  return nullptr;
+  return false;
 }
 
 bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
