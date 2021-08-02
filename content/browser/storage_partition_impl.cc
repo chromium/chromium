@@ -569,14 +569,6 @@ bool IsPrimaryMainFrameRequest(int process_id, int routing_id) {
          frame_tree_node->current_frame_host()->IsInPrimaryMainFrame();
 }
 
-bool IsMainFrameRequest(int process_id, int routing_id) {
-  if (process_id != network::mojom::kBrowserProcessId)
-    return false;
-
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(routing_id);
-  return frame_tree_node && frame_tree_node->IsMainFrame();
-}
-
 // This class lives on the UI thread. It is self-owned and will delete itself
 // after any of the SSLClientAuthHandler::Delegate methods are invoked (or when
 // a mojo connection error occurs).
@@ -1747,38 +1739,65 @@ void StoragePartitionImpl::OnAuthRequired(
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder) {
-  bool is_main_frame = false;
+  bool is_primary_main_frame = false;
   base::RepeatingCallback<WebContents*(void)> web_contents_getter;
   int process_id = url_loader_network_observers_.current_context().process_id;
   int routing_id = url_loader_network_observers_.current_context().routing_id;
-  if (window_id) {
-    DCHECK_EQ(network::mojom::kBrowserProcessId, process_id);
-    DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
-    if (service_worker_context_->context()) {
-      auto* container_host =
-          service_worker_context_->context()->GetContainerHostByWindowId(
-              *window_id);
-      if (container_host) {
-        int frame_tree_node_id = container_host->frame_tree_node_id();
-        if (FrameTreeNode* frame_tree_node =
-                FrameTreeNode::GloballyFindByID(frame_tree_node_id)) {
-          is_main_frame = frame_tree_node->IsMainFrame();
-          web_contents_getter = base::BindRepeating(
-              &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
+
+  if (process_id == network::mojom::kBrowserProcessId) {
+    // Route via `frame_tree_node_id`.
+    int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+    if (window_id) {
+      // Use `window_id` if it is provided. This observer is created for service
+      // workers.
+      DCHECK_EQ(routing_id, RenderFrameHost::kNoFrameTreeNodeId);
+      if (service_worker_context_->context()) {
+        auto* container_host =
+            service_worker_context_->context()->GetContainerHostByWindowId(
+                *window_id);
+        if (container_host) {
+          // TODO(https://crbug.com/1223838): Use RenderFrameHost instead of
+          // FrameTreeNode when possible.
+          frame_tree_node_id = container_host->frame_tree_node_id();
         }
       }
+    } else {
+      // This observer is created for NavigationRequest. See
+      // `CreateURLLoaderNetworkObserverForNavigationRequest()`.
+      frame_tree_node_id = routing_id;
+    }
+    if (CancelIfPrerendering(frame_tree_node_id,
+                             PrerenderHost::FinalStatus::kLoginAuthRequested)) {
+      return;
+    }
+
+    FrameTreeNode* frame_tree_node =
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+    if (frame_tree_node) {
+      is_primary_main_frame =
+          frame_tree_node->current_frame_host()->IsInPrimaryMainFrame();
+      web_contents_getter = base::BindRepeating(
+          &WebContents::FromFrameTreeNodeId, frame_tree_node_id);
     }
   } else {
-    // TODO(https://crbug.com/1219655): Use IsPrimaryMainFrameRequest and remove
-    // IsMainFrameRequest.
-    is_main_frame = IsMainFrameRequest(process_id, routing_id);
+    DCHECK(!window_id);
+    if (CancelIfPrerendering(GlobalRenderFrameHostId(process_id, routing_id),
+                             PrerenderHost::FinalStatus::kLoginAuthRequested)) {
+      return;
+    }
+
+    is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
+  }
+
+  if (!web_contents_getter) {
     web_contents_getter =
         base::BindRepeating(GetWebContents, process_id, routing_id);
   }
-  OnAuthRequiredContinuation(process_id, routing_id, request_id, url,
-                             is_main_frame, first_auth_attempt, auth_info,
-                             head_headers, std::move(auth_challenge_responder),
-                             web_contents_getter);
+
+  OnAuthRequiredContinuation(
+      process_id, routing_id, request_id, url, is_primary_main_frame,
+      first_auth_attempt, auth_info, head_headers,
+      std::move(auth_challenge_responder), web_contents_getter);
 }
 
 void StoragePartitionImpl::OnCertificateRequested(

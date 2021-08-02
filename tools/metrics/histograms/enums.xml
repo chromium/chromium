@@ -66244,6 +66244,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="23" label="kDidFailLoad"/>
   <int value="24" label="kStop"/>
   <int value="25" label="kSslCertificateError"/>
+  <int value="26" label="kLoginAuthRequested"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

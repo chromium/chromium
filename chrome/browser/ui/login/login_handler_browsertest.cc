@@ -2450,20 +2450,115 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SplitAuthCacheByNetworkIsolationKey::kFalse,
                       SplitAuthCacheByNetworkIsolationKey::kTrue));
 
-IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
-                       TestBasicAuthDisabledOnPrerendering) {
-  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest, CancelOnAuthRequested) {
+  base::HistogramTester histogram_tester;
 
+  // Navigate to an initial page.
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+
+  // Keep an observer for auth requests.
   NavigationController* controller = &GetWebContents()->GetController();
   LoginPromptBrowserTestObserver observer;
   observer.Register(content::Source<NavigationController>(controller));
 
-  GURL prerender_url = embedded_test_server()->GetURL(kAuthBasicPage);
-  prerender_helper().AddPrerenderAsync(prerender_url);
-  prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
-  int host_id = prerender_helper().GetHostForUrl(prerender_url);
-  EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL(kAuthBasicPage);
+  prerender_helper().AddPrerenderAsync(kPrerenderingUrl);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  int host_id = prerender_helper().GetHostForUrl(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // No authentication request has been prompted to the user.
+  EXPECT_EQ(0, observer.auth_needed_count());
+}
+
+IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
+                       CancelOnAuthRequestedSubFrame) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+
+  // Keep an observer for auth requests.
+  NavigationController* controller = &GetWebContents()->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_helper().AddPrerender(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  // Fetch a subframe that requires authentication.
+  const GURL kAuthIFrameUrl = embedded_test_server()->GetURL(kAuthBasicPage);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  ignore_result(ExecJs(prerender_rfh,
+                       "var i = document.createElement('iframe'); i.src = '" +
+                           kAuthIFrameUrl.spec() +
+                           "'; document.body.appendChild(i);"));
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // No authentication request has been prompted to the user.
+  EXPECT_EQ(0, observer.auth_needed_count());
+}
+
+IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
+                       CancelOnAuthRequestedSubResource) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetWebContents());
+
+  // Keep an observer for auth requests.
+  NavigationController* controller = &GetWebContents()->GetController();
+  LoginPromptBrowserTestObserver observer;
+  observer.Register(content::Source<NavigationController>(controller));
+
+  // Start prerendering `kPrerenderingUrl`.
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
+  int host_id = prerender_helper().AddPrerender(kPrerenderingUrl);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  prerender_helper().WaitForPrerenderLoadCompletion(kPrerenderingUrl);
+
+  ASSERT_NE(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Fetch a subresrouce.
+  std::string fetch_subresource_script = R"(
+        const imgElement = document.createElement('img');
+        imgElement.src = '/auth-basic/favicon.gif';
+        document.body.appendChild(imgElement);
+  )";
+  ignore_result(ExecJs(prerender_helper().GetPrerenderedMainFrameHost(host_id),
+                       fetch_subresource_script));
+
+  // The prerender should be destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  // No authentication request has been prompted to the user.
   EXPECT_EQ(0, observer.auth_needed_count());
 }
 }  // namespace
