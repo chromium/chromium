@@ -619,6 +619,7 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   syncErrorItem.text = GetNSString(IDS_IOS_SYNC_ERROR_TITLE);
   syncErrorItem.detailText =
       GetSyncErrorDescriptionForSyncSetupService(self.syncSetupService);
+  syncErrorItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   switch (itemType) {
     case ShowPassphraseDialogErrorItemType:
       // Special case only for the sync passphrase error message. The regular
