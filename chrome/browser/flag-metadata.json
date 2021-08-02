@@ -1260,7 +1260,7 @@
   {
     "name": "drive-fs-bidirectional-native-messaging",
     "owners": [ "austinct@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 98
   },
   {
       "name": "dynamic-color-android",
