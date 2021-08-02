@@ -117,18 +117,10 @@ class HistogramSynchronizer::RequestContext {
 
     RequestContext* request = it->second;
     DCHECK_EQ(sequence_number, request->sequence_number_);
-    bool received_process_group_count = request->received_process_group_count_;
-    int unresponsive_processes = request->processes_pending_;
-
     std::move(request->callback_).Run();
 
     delete request;
     outstanding_requests_.Get().erase(it);
-
-    UMA_HISTOGRAM_BOOLEAN("Histogram.ReceivedProcessGroupCount",
-                          received_process_group_count);
-    UMA_HISTOGRAM_COUNTS_1M("Histogram.PendingProcessNotResponding",
-                            unresponsive_processes);
   }
 
   // Delete all the entries in |outstanding_requests_| map.
