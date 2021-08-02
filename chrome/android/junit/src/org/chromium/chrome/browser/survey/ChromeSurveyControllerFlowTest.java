@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.messages.MessageDispatcher;
-import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
@@ -349,8 +348,7 @@ public class ChromeSurveyControllerFlowTest {
         Assert.assertNotNull(mMessageDispatcher);
         mTestSurveyController.onDownloadSuccessRunnable.run();
         assertSurveyInfoBarShown(false);
-        verify(mMessageDispatcher)
-                .enqueueMessage(any(), eq(mMockWebContent), eq(MessageScopeType.WINDOW), eq(false));
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
     }
 
     @Test

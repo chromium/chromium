@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Java counterpart to MessageDispatcherBridge. Enables C++ feature code to enqueue/dismiss messages
@@ -26,6 +27,15 @@ public class MessageDispatcherBridge {
         if (messageDispatcher == null) return false;
         messageDispatcher.enqueueMessage(
                 message.getMessageProperties(), webContents, scopeType, highPriority);
+        return true;
+    }
+
+    @CalledByNative
+    private static boolean enqueueWindowScopedMessage(
+            MessageWrapper message, WindowAndroid windowAndroid, boolean highPriority) {
+        MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
+        if (messageDispatcher == null) return false;
+        messageDispatcher.enqueueWindowScopedMessage(message.getMessageProperties(), highPriority);
         return true;
     }
 

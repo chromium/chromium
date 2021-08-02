@@ -60,6 +60,7 @@ static_library("android") {
     ":jni_headers",
     "//base",
     "//content/public/browser",
+    "//ui/android:android",
   ]
 }
 

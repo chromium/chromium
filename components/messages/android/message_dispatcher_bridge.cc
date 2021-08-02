@@ -49,6 +49,21 @@ bool MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
   return false;
 }
 
+bool MessageDispatcherBridge::EnqueueWindowScopedMessage(
+    MessageWrapper* message,
+    ui::WindowAndroid* window_android,
+    MessagePriority priority) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (Java_MessageDispatcherBridge_enqueueWindowScopedMessage(
+          env, message->GetJavaMessageWrapper(),
+          window_android->GetJavaObject(),
+          priority == MessagePriority::kUrgent) == JNI_TRUE) {
+    message->SetMessageEnqueued();
+    return true;
+  }
+  return false;
+}
+
 void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,
                                              content::WebContents* web_contents,
                                              DismissReason dismiss_reason) {

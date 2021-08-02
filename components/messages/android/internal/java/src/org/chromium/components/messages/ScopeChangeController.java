@@ -145,7 +145,10 @@ class ScopeChangeController {
         public WindowScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             mDelegate = delegate;
             mScopeKey = scopeKey;
-            WindowAndroid windowAndroid = scopeKey.webContents.getTopLevelNativeWindow();
+            assert scopeKey.scopeType
+                    == MessageScopeType.WINDOW
+                : "WindowScopeObserver should only monitor window scope events.";
+            WindowAndroid windowAndroid = scopeKey.windowAndroid;
             windowAndroid.addActivityStateObserver(this);
             mDelegate.onScopeChange(new MessageScopeChange(scopeKey.scopeType, scopeKey,
                     windowAndroid.getActivityState() == ActivityState.RESUMED
@@ -173,7 +176,7 @@ class ScopeChangeController {
 
         @Override
         public void destroy() {
-            mScopeKey.webContents.getTopLevelNativeWindow().removeActivityStateObserver(this);
+            mScopeKey.windowAndroid.removeActivityStateObserver(this);
         }
     }
 }

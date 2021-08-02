@@ -46,7 +46,6 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -254,8 +253,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                                     this::recordSurveyPromptMetrics)
                             .build();
 
-            mMessageDispatcher.enqueueMessage(
-                    message, tab.getWebContents(), MessageScopeType.WINDOW, false);
+            mMessageDispatcher.enqueueWindowScopedMessage(message, false);
         } else {
             InfoBarContainer.get(tab).addAnimationListener(this);
 

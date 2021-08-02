@@ -515,7 +515,7 @@ public class RootUiCoordinator
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
                     mMessageContainerCoordinator::getMessageMaxTranslation,
                     new ChromeMessageAutodismissDurationProvider(),
-                    mWindowAndroid::startAnimationOverContent);
+                    mWindowAndroid::startAnimationOverContent, mActivity.getWindowAndroid());
             mMessageQueueMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                     mMessageContainerCoordinator, mActivityTabProvider,
                     mLayoutStateProviderOneShotSupplier, mActivity.getModalDialogManagerSupplier(),
