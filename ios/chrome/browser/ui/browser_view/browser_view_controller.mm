@@ -3778,17 +3778,20 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     if (web::UrlHasWebScheme(link)) {
       // Open in New Tab.
+      UrlLoadParams loadParams = UrlLoadParams::InNewTab(link);
+      loadParams.SetInBackground(YES);
+      loadParams.in_incognito = self.isOffTheRecord;
+      loadParams.append_to = kCurrentTab;
+      loadParams.web_params.referrer = referrer;
+      loadParams.origin_point = [params.view convertPoint:params.location
+                                                   toView:nil];
       UIAction* openNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
         BrowserViewController* strongSelf = weakSelf;
         if (!strongSelf)
           return;
-        UrlLoadParams params = UrlLoadParams::InNewTab(link);
-        params.SetInBackground(YES);
-        params.in_incognito = strongSelf.isOffTheRecord;
-        params.append_to = kCurrentTab;
-        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(params);
+        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
+            ->Load(loadParams);
       }];
-
       [menuElements addObject:openNewTab];
 
       if (!_isOffTheRecord) {
