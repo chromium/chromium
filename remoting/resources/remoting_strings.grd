@@ -913,7 +913,7 @@ If '<ph name="SERVICE_SCRIPT_NAME">$3<ex>org.chromium.chromoting.me2me.sh</ex></
         <message name="IDS_SESSION_DIALOG_MESSAGE" desc="The message to show at the top of the session-selection dialog.">
           Select a session to launch within your Chrome Remote Desktop environment. (Note that some session types may not support running within Chrome Remote Desktop and on the local console simultaneously.)
         </message>
-        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions.">
+        <message name="IDS_SESSION_DIALOG_NAME_COLUMN" desc="The title of the column containing the names of potential sessions." meaning="Name of an inanimate object">
           Name
         </message>
         <message name="IDS_SESSION_DIALOG_COMMENT_COLUMN" desc="The title of the column containing the comment/description of potential sessions.">

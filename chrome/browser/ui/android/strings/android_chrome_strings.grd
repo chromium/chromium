@@ -3201,7 +3201,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_EDIT_FOLDER" desc='Title of the "Edit Folder" form dialog. [CHAR_LIMIT=30]'>
         Edit folder
       </message>
-      <message name="IDS_BOOKMARK_NAME" desc="Label specifying the title of the bookmark. [CHAR_LIMIT=32]">
+      <message name="IDS_BOOKMARK_NAME" desc="Label specifying the title of the bookmark. [CHAR_LIMIT=32]" meaning="Name of an inanimate object">
         Name
       </message>
       <message name="IDS_BOOKMARK_URL" desc="Label specifying the url of the bookmark. [CHAR_LIMIT=32]">
