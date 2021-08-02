@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -16,6 +17,9 @@
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -24,6 +28,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -204,18 +210,34 @@ class ExceptionToAbortStreamingScope {
   DISALLOW_COPY_AND_ASSIGN(ExceptionToAbortStreamingScope);
 };
 
+void SendCachedData(String response_url,
+                    base::Time response_time,
+                    blink::mojom::CodeCacheHost* code_cache_host,
+                    Vector<uint8_t> serialized_module) {
+  scoped_refptr<CachedMetadata> cached_metadata =
+      CachedMetadata::CreateFromSerializedData(std::move(serialized_module));
+
+  base::span<const uint8_t> serialized_data = cached_metadata->SerializedData();
+  CachedMetadataSender::SendToCodeCacheHost(
+      code_cache_host, mojom::blink::CodeCacheType::kWebAssembly, response_url,
+      response_time, serialized_data.data(), serialized_data.size());
+}
+
 class WasmStreamingClient : public v8::WasmStreaming::Client {
  public:
   WasmStreamingClient(const String& response_url,
-                      const base::Time& response_time)
+                      const base::Time& response_time,
+                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                      blink::mojom::CodeCacheHost* code_cache_host)
       : response_url_(response_url.IsolatedCopy()),
-        response_time_(response_time) {}
+        response_time_(response_time),
+        main_thread_task_runner_(std::move(task_runner)),
+        code_cache_host_(code_cache_host) {}
 
   void OnModuleCompiled(v8::CompiledWasmModule compiled_module) override {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.compiledModule", TRACE_EVENT_SCOPE_THREAD,
                          "url", response_url_.Utf8());
-
     v8::MemorySpan<const uint8_t> wire_bytes =
         compiled_module.GetWireBytesRef();
     // Our heuristic for whether it's worthwhile to cache is that the module
@@ -239,28 +261,28 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
 
     // The resources needed for caching may have been GC'ed, but we should still
     // save the compiled module. Use the platform API directly.
-    scoped_refptr<CachedMetadata> cached_metadata = CachedMetadata::Create(
+    Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedData(
         kWasmModuleTag,
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
         serialized_module.size);
 
-    base::span<const uint8_t> serialized_data =
-        cached_metadata->SerializedData();
     // Make sure the data could be copied.
     if (serialized_data.size() < serialized_module.size)
       return;
 
-    // TODO(mythria): Also support using context specific code cache host here.
-    // When we pass nullptr for CodeCacheHost we use per-process interface.
-    // Currently this code is run on a thread started via a Platform::PostJob.
-    // So it isn't safe to use CodeCacheHost interface that was bound on the
-    // frame / worker threads. We should instead post a task back to the frame /
-    // worker threads with the required data which can then write to generated
-    // code caches.
-    CachedMetadataSender::SendToCodeCacheHost(
-        /*code_cache_host*/ nullptr, mojom::blink::CodeCacheType::kWebAssembly,
-        response_url_, response_time_, serialized_data.data(),
-        serialized_data.size());
+    // TODO(mythria): Add support for worklets and remove this code that uses
+    // per-process interface.
+    if (!main_thread_task_runner_.get()) {
+      SendCachedData(response_url_, response_time_, nullptr,
+                     std::move(serialized_data));
+      return;
+    }
+
+    main_thread_task_runner_->PostTask(
+        FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+                       &SendCachedData, response_url_, response_time_,
+                       WTF::CrossThreadUnretained(code_cache_host_),
+                       std::move(serialized_data))));
   }
 
   void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
@@ -271,9 +293,30 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
   String response_url_;
   base::Time response_time_;
   scoped_refptr<CachedMetadata> cached_module_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  blink::mojom::CodeCacheHost* code_cache_host_;
 
   DISALLOW_COPY_AND_ASSIGN(WasmStreamingClient);
 };
+
+scoped_refptr<base::SingleThreadTaskRunner> GetContextTaskRunner(
+    ExecutionContext& execution_context) {
+  if (execution_context.IsWorkerGlobalScope()) {
+    WorkerOrWorkletGlobalScope& global_scope =
+        To<WorkerOrWorkletGlobalScope>(execution_context);
+    return global_scope.GetThread()
+        ->GetWorkerBackingThread()
+        .BackingThread()
+        .GetTaskRunner();
+  }
+
+  if (execution_context.IsWindow()) {
+    return Thread::MainThread()->GetTaskRunner();
+  }
+
+  DCHECK(execution_context.IsWorkletGlobalScope());
+  return nullptr;
+}
 
 void StreamFromResponseCallback(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -336,8 +379,13 @@ void StreamFromResponseCallback(
   streaming->SetUrl(url_utf8.c_str(), url_utf8.size());
   if (auto* cache_handler =
           response->BodyBuffer()->GetCachedMetadataHandler()) {
+    auto* execution_context = ExecutionContext::From(script_state);
+    DCHECK_NE(execution_context, nullptr);
+
     auto client = std::make_shared<WasmStreamingClient>(
-        url, response->GetResponse()->InternalResponse()->ResponseTime());
+        url, response->GetResponse()->InternalResponse()->ResponseTime(),
+        GetContextTaskRunner(*execution_context),
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context));
     streaming->SetClient(client);
     scoped_refptr<CachedMetadata> cached_module =
         cache_handler->GetCachedMetadata(kWasmModuleTag);

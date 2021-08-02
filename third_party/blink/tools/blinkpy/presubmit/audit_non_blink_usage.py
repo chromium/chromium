@@ -930,6 +930,7 @@ _CONFIG = [
             'third_party/blink/renderer/core/execution_context/execution_context.cc',
             'third_party/blink/renderer/modules/service_worker/service_worker_script_cached_metadata_handler.h',
             'third_party/blink/renderer/modules/service_worker/service_worker_script_cached_metadata_handler.cc',
+            'third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.cc',
         ],
         'allowed': [
             # TODO(mythria): Allow use of non-blink mojo interface. Once
